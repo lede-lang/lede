@@ -17,7 +17,8 @@ const HELP = `${USAGE}
 commands:
   build   compile a page to one self-contained HTML file (stdout without -o); refuses on errors
   watch   rebuild next to the source on every save
-  check   print file:line:col diagnostics; exit 1 if any is an error, 2 on a usage error
+  check   print file:line:col diagnostics, then a last line: ok if there were none, else the
+          counts (a warning is not ok); exit 1 if any is an error, 2 on a usage error
   ast     print the parsed document as JSON
 
 options:
@@ -66,6 +67,12 @@ function report(file: string, src: string, diags: Diagnostic[]): void {
   }
 }
 
+/** The last line of `check`: `ok` only when nothing was reported, so a warning is never followed by a success word. */
+function summary(errors: number, warnings: number): string {
+  const counts = [errors && `${errors} error(s)`, warnings && `${warnings} warning(s)`].filter(Boolean);
+  return counts.length ? counts.join(', ') : 'ok';
+}
+
 async function build(file: string, out: string | null, flags: Set<string>): Promise<boolean> {
   const { src, doc } = load(file);
   report(file, src, doc.diagnostics);
@@ -108,6 +115,7 @@ async function main(argv: string[]): Promise<number> {
       return (await build(files[0], out, flags)) ? 0 : 1;
     case 'check': {
       let bad = 0;
+      let warned = 0;
       const all: Record<string, Diagnostic[]> = {};
       for (const f of files) {
         const dry = flags.has('--dry-run');
@@ -129,9 +137,10 @@ async function main(argv: string[]): Promise<number> {
         all[f] = doc.diagnostics;
         if (!flags.has('--json')) report(f, src, doc.diagnostics);
         bad += doc.diagnostics.filter((d) => d.severity === 'error').length;
+        warned += doc.diagnostics.filter((d) => d.severity === 'warning').length;
       }
       if (flags.has('--json')) process.stdout.write(`${JSON.stringify(all, null, 2)}\n`);
-      else process.stderr.write(bad ? `${bad} error(s)\n` : 'ok\n');
+      else process.stderr.write(`${summary(bad, warned)}\n`);
       return bad ? 1 : 0;
     }
     case 'ast':

@@ -295,7 +295,10 @@ The command is `lede`, the bin of the npm package `@lede-lang/cli` (Node 22.12+;
 packages are `@lede-lang/core` (parser) and `@lede-lang/html` (renderer). The three share one version (D48).
 
 `lede check FILE... [--json] [--fix [--dry-run]]` prints every diagnostic and exits 1 if any is an error, 0 otherwise (2 for a usage
-error or a missing file). `lede --help` lists every command and flag.
+error or a missing file). Without `--json`, its last line, on stderr, is `ok` only when no file had a diagnostic of either severity;
+otherwise it is the counts summed over every file: `1 warning(s)`, `2 error(s)` or `1 error(s), 2 warning(s)`. A warning leaves the exit
+code at 0 but never gets `ok`: read the diagnostics above that line, since the exit code does not carry them. With `--json` there is no
+such line. `lede --help` lists every command and flag.
 
 `lede build FILE [-o OUT] [--force] [--unsafe-html] [--allow-remote]` compiles the first FILE to one page. Diagnostics go to stderr as
 for `check`. With `-o` the page is written to OUT and a size line goes to stderr; without it the page goes to stdout. A document with
@@ -335,6 +338,9 @@ the surface (`bg`, `surface` or `accent-tint`). New keys may be added; existing 
   side of it rejoins, whether the `;` left a lone fragment or two short rows), and a header cell split at a thousands comma;
 - a number the parser already read across an unquoted thousands comma (W `csv-thousands`; the number is quoted);
 - `kpi L | 74 of 120 | 61.7% | bar` (W `kpi-bar` with a plain unsigned percent in the change field): the two fields swap;
+- any other `kpi` line whose `bar` the compiler could not draw (`kpi L | ~75% | roughly three-quarters | bar`, a signed change, a
+  reference value out of range): the `bar` field is dropped. Marked a guess: the page does not change, because no bar was drawn, but
+  the writer may have wanted one and should give the value as a percent from 0 to 100;
 - `grid N` followed by exactly N `###` sections (W `grid-unfilled`): the line becomes `cards`;
 - a name on an inline table (`table vendors = ...`, W `table-option`): the word is dropped, unless another keyword line
   uses it or it is a table option name (`table bar = ...`).
@@ -515,7 +521,9 @@ edge-arrow = "->" | "-->" | "<->" | "-x-" | "-x->" ;
 `a -x- b : label` and `a -x-> b : label` declare an edge that must not exist (a forbidden path).
 AST: an edge with `style: "blocked"` and `both: false`; chains and fan-out work as for `->`. `-x-`
 needs a space on both sides, so an id such as `a-x-b` is still an id. Both spellings parse to the
-same edge. Errors are those of any edge (`diagram-syntax` for a missing target).
+same edge. Errors are those of any edge (`diagram-syntax` for a missing target). The renderer draws the edge dashed, with a circled
+X at the middle of its longest straight stretch (on a straight edge, halfway along); not halfway by total length, which can fall on a
+bend of a routed edge, next to whatever else arrives there.
 
 ### E.3 Chart `focus="x value"`
 `focus=` may name a value of the chart's x column as well as a series; the chart emphasizes that bar

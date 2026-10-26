@@ -143,14 +143,36 @@ test('kpi bar: a plain percent in the change field swaps with the value, as a gu
   assert.equal(warnings(r.src).length, 0);
 });
 
-test('kpi bar: a signed change, a reference value or a percent inside a phrase is not swapped', () => {
-  for (const src of [
-    'kpi Done | 74 of 120 | +3% | bar\n',
-    'data r = d; 500\nkpi Done | =r.d | 61.7% | bar\n',
-    'kpi Raised | $3.18M | 70.7% of $4.5M goal | bar\n',
+test('kpi bar: a signed change, a reference value or a percent inside a phrase is not swapped; the bar is dropped', () => {
+  for (const [src, want] of [
+    ['kpi Done | 74 of 120 | +3% | bar\n', 'kpi Done | 74 of 120 | +3%\n'],
+    ['data r = d; 500\nkpi Done | =r.d | 61.7% | bar\n', 'data r = d; 500\nkpi Done | =r.d | 61.7%\n'],
+    ['kpi Raised | $3.18M | 70.7% of $4.5M goal | bar\n', 'kpi Raised | $3.18M | 70.7% of $4.5M goal\n'],
   ]) {
-    assert.equal(fix(src).src, src);
+    const r = fix(src);
+    assert.equal(r.src, want);
+    assert.equal(r.applied[0].guess, true);
+    assert.equal(warnings(r.src).length, 0);
   }
+});
+
+test('kpi bar: an approximate value (~75%) loses `bar`, which drew nothing, and keeps its note and tone', () => {
+  const r = fix('kpi Reading share | ~75% | roughly three-quarters | bar\nkpi Cost | ~$3 | per run | good | bar\n');
+  assert.equal(r.src, 'kpi Reading share | ~75% | roughly three-quarters\nkpi Cost | ~$3 | per run | good\n');
+  assert.deepEqual(
+    r.applied.map((a) => [a.code, a.guess]),
+    [
+      ['kpi-bar', true],
+      ['kpi-bar', true],
+    ],
+  );
+  assert.match(r.applied[0].note, /bar dropped/);
+  assert.equal(warnings(r.src).length, 0);
+});
+
+test('kpi bar: with no change field the bare `bar` goes and no trailing bar is left', () => {
+  assert.equal(fix('kpi Share | ~75% | bar\n').src, 'kpi Share | ~75%\n');
+  assert.equal(fix('kpi Share | ~75% | | bar\n').src, 'kpi Share | ~75%\n');
 });
 
 test('grid N followed by exactly N ### sections becomes cards, as a guess (the column count is not kept)', () => {

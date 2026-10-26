@@ -503,3 +503,23 @@ Claude 5.5 tokenizer, 1.387 times as many, and left the cap in legacy units. The
 are 2,913 at the measured ratio, rounded down to 2,910, and the file passes by 2. Nothing enforces it in a test, because counting needs the
 API; it is checked by hand when the model reference changes. D35 and D50 stay as written; this entry supersedes D50's "stays in legacy
 units". The figures that quoted 2,100 (README, CLAUDE.md, and the site and PRFAQ outside this repository) say 2,910 on the 5.5 tokenizer.
+
+## D56. Four fixes from a writer dogfood run: the `check` last line, the kpi bar repair, flag hyphens in code, the blocked cross
+Three Sonnet writers, each given only the installed skill, wrote a page from a real document (a cost post, an explainer, a runbook).
+All three compiled, with no script and no horizontal overflow at 390 px; the numbers and every command matched their sources. Four defects
+showed (n = 3, one model tier, so a smoke test and not a benchmark; nothing here changes the model reference or the published numbers).
+1. `lede check` printed its warnings and then `ok`, with exit 0, so a model that read the last line or the code took a warning for
+   success. The last line is now `ok` only when nothing was reported, else the counts (`1 warning(s)`, `1 error(s), 2 warning(s)`). The exit
+   codes are unchanged (§9). Rejected: exit 1 on a warning, which would fail `build` pipelines for diagnostics the format defines as
+   non-fatal.
+2. `--fix` repaired a `kpi ... | bar` only when the change field held a plain percent, though the skill says it repairs "kpi bars".
+   Any other bar the compiler could not draw (`~75%`) now loses the `bar` field, as a guess. No bar was drawn, so the page is unchanged;
+   the repair makes the warning go and the writer's number stay as written. Rejected: stripping the `~`, which would state 75% where
+   the source said "roughly".
+3. A code span longer than 32 characters could break after the first `-` of `--depth`, leaving `git fetch --` at the end of a line on a
+   phone. A hyphen that opens a flag (at the start, after a space or after another hyphen) is no longer a break point; a hyphen inside a
+   word, `/`, `.` and `_` still are. Copying the text is unaffected: `<wbr>` adds no characters.
+4. A blocked edge's cross went halfway along the route by total length, which can fall on a bend, beside another edge's arrowhead, and
+   read as blocking that edge. It now goes at the middle of the route's longest straight stretch, which is the same point on a straight edge.
+The `SKILL.md` gaps the writers also found (approximate values, a fan-out label that repeats on every target, nodes with no kind) need
+words in the model reference, which sits at its 2,910-token cap (D55); they are not changed here.

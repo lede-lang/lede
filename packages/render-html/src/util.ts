@@ -70,11 +70,17 @@ export function inline(src: string): string {
     .replaceAll('\u0002', '_');
 }
 
-/** Inline code is one unbreakable token; a long one may break after / . - _ only. */
+/**
+ * Inline code is one unbreakable token; a long one may break after / . - _ only. A hyphen that opens a flag (`--depth`,
+ * `-n`: at the start, after a space or after another hyphen) is not a break point: a line ending in `--` reads as a
+ * different command.
+ */
 const CODE_MAX = 32;
 function codeTok(raw: string): string {
   if (Array.from(raw).length <= CODE_MAX) return `<code>${esc(raw)}</code>`;
-  const body = Array.from(raw, (ch) => esc(ch) + (/[/.\-_]/.test(ch) ? '<wbr>' : '')).join('');
+  const chars = Array.from(raw);
+  const breaks = (ch: string, i: number) => /[/._]/.test(ch) || (ch === '-' && i > 0 && !/[\s-]/.test(chars[i - 1]));
+  const body = chars.map((ch, i) => esc(ch) + (breaks(ch, i) ? '<wbr>' : '')).join('');
   return `<code class="brk">${body.replace(/(<wbr>)+$/, '')}</code>`;
 }
 

@@ -66,6 +66,42 @@ test('check --fix --dry-run prints the changed lines, writes nothing, and exits 
   assert.equal(readFileSync(join(dir, 'p.lede'), 'utf8'), src);
 });
 
+test('check ends with ok only when nothing was reported; a warning or an error gets its count', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  writeFileSync(join(dir, 'clean.lede'), '# Hi\n');
+  writeFileSync(join(dir, 'warn.lede'), 'kpi Share | ~75% | roughly three-quarters | bar\n');
+  writeFileSync(join(dir, 'both.lede'), 'kpi Share | ~75% | x | bar\ndata t = a,b; one,Nice; no link\ntable t\n');
+  const last = (r: { stderr: string }) => r.stderr.trimEnd().split('\n').at(-1);
+
+  const clean = run(['check', 'clean.lede'], dir);
+  assert.equal(clean.status, 0);
+  assert.equal(last(clean), 'ok');
+
+  const warn = run(['check', 'warn.lede'], dir);
+  assert.equal(warn.status, 0, 'a warning is not an error: the exit code stays 0');
+  assert.match(warn.stderr, /\[kpi-bar\]/);
+  assert.equal(last(warn), '1 warning(s)');
+  assert.doesNotMatch(warn.stderr, /\bok\b/);
+
+  const both = run(['check', 'both.lede'], dir);
+  assert.equal(both.status, 1);
+  assert.equal(last(both), '1 error(s), 1 warning(s)');
+
+  const all = run(['check', 'clean.lede', 'warn.lede', 'both.lede'], dir);
+  assert.equal(last(all), '1 error(s), 2 warning(s)', 'the line sums over every file');
+  assert.equal(run(['check', 'warn.lede', '--json'], dir).stderr, '', '--json prints no summary line');
+});
+
+test('check --fix drops a kpi bar that cannot be drawn and reports it as a guess', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  writeFileSync(join(dir, 'k.lede'), 'kpi Share | ~75% | roughly three-quarters | bar\n');
+  const r = run(['check', 'k.lede', '--fix'], dir);
+  assert.equal(r.status, 0);
+  assert.match(r.stderr, /fixed \[kpi-bar\] bar dropped.*\(a guess: check it\)/);
+  assert.equal(r.stderr.trimEnd().split('\n').at(-1), 'ok');
+  assert.equal(readFileSync(join(dir, 'k.lede'), 'utf8'), 'kpi Share | ~75% | roughly three-quarters\n');
+});
+
 // Regression (#15): process.exit() ended the process before a piped stdout drained, cutting output at the 64 KiB pipe buffer on macOS.
 test('build to stdout writes the whole page through a pipe', () => {
   const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));

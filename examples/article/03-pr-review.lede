@@ -75,7 +75,7 @@ Each hunk is followed by the findings that apply to it. Severity is marked by ta
 
 Before, every row was written and the return value ignored. After, the function pauses on `false` and resumes on `'drain'`. Read the three hunks in order.
 
-#### Hunk 1: the signature and the flag
+### Hunk 1: the signature and the flag
 
 ```diff
 @@ -1,10 +1,21 @@
@@ -94,7 +94,7 @@ Before, every row was written and the return value ignored. After, the function 
 
 !! **NIT, line 4.** `paused` reads like `cursor.isPaused()` but means "waiting for drain". Rename it `waitingForDrain` so the next reader does not swap them.
 
-#### Hunk 2: the pause and resume
+### Hunk 2: the pause and resume
 
 ```diff
 @@ -5,3 +6,10 @@ function streamExport(cursor, res, { highWaterMark = 16 * 1024 } = {}) {
@@ -114,7 +114,7 @@ Before, every row was written and the return value ignored. After, the function 
 
 ! **NICE, lines 11 to 14.** `once('drain')` removes itself after firing. No manual listener cleanup is needed in the normal path.
 
-#### Hunk 3: end and error
+### Hunk 3: end and error
 
 ```diff
 @@ -7,2 +17,4 @@ function streamExport(cursor, res, { highWaterMark = 16 * 1024 } = {}) {
@@ -136,7 +136,7 @@ res.once('close', () => cursor.destroy()); // client left: release the connectio
 
 ### test/export/stream.test.js
 
-#### Hunk 4: the slow-consumer test
+### Hunk 4: the slow-consumer test
 
 ```diff
 @@ -0,0 +1,21 @@
