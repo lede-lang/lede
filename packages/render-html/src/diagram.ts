@@ -753,18 +753,23 @@ function fitGroupLabels(d: DiagramBlock, p: Placed): void {
   p.width = Math.max(p.width - x0, Math.ceil(Math.max(...boxes.map((b) => b.x + b.w))) + 4);
 }
 
-/** The point halfway along a polyline, by length. */
-function midpoint(pts: P[]): P {
-  let total = 0;
-  for (let i = 1; i < pts.length; i++) total += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y);
-  let at = total / 2;
+/**
+ * Where a blocked edge's cross goes: the middle of its longest straight stretch. Halfway by total length often lands on a
+ * bend, which puts the circle at a corner of the route, beside whatever else arrives there, and makes it look like it
+ * blocks that instead. On a straight edge the two are the same point.
+ */
+export function crossPoint(pts: { x: number; y: number }[]): { x: number; y: number } {
+  let best = 1;
+  let longest = -1;
   for (let i = 1; i < pts.length; i++) {
     const len = Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y);
-    if (at <= len && len > 0)
-      return { x: pts[i - 1].x + ((pts[i].x - pts[i - 1].x) * at) / len, y: pts[i - 1].y + ((pts[i].y - pts[i - 1].y) * at) / len };
-    at -= len;
+    if (len > longest) {
+      longest = len;
+      best = i;
+    }
   }
-  return pts[pts.length - 1];
+  const [a, b] = [pts[best - 1], pts[best]];
+  return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
 }
 const BLK_R = 7; // blocked-edge marker radius
 
@@ -778,7 +783,7 @@ function clearLabels(p: Placed): void {
   const crosses = new Map<Placed['edges'][number], Box>();
   for (const e of p.edges)
     if (e.edge.style === 'blocked' && e.points.length > 1) {
-      const c = midpoint(e.points);
+      const c = crossPoint(e.points);
       crosses.set(e, { x: c.x - BLK_R - 2, y: c.y - BLK_R - 2, w: 2 * BLK_R + 4, h: 2 * BLK_R + 4 });
     }
   const hard = (c: Box): boolean =>
@@ -1153,10 +1158,10 @@ function drawPlaced(d: DiagramBlock, p: Placed, uid: string, compact: boolean): 
       `<path class="${cls}" d="${roundedPath(e.points)}" marker-end="url(#${uid}-a)"${start}><title>${esc(`${e.edge.from} → ${e.edge.to}${e.edge.label ? `: ${e.edge.label}` : ''}`)}</title></path>`,
     );
   }
-  // A blocked edge is crossed out halfway along: a circle over the line with an X in it.
+  // A blocked edge is crossed out in the middle of its longest straight stretch: a circle over the line with an X in it.
   for (const e of p.edges) {
     if (e.edge.style !== 'blocked' || e.points.length < 2) continue;
-    const c = midpoint(e.points);
+    const c = crossPoint(e.points);
     const k = 3;
     out.push(
       `<g class="blk"><circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="${BLK_R}"/><path d="M${(c.x - k).toFixed(1)},${(c.y - k).toFixed(1)} L${(c.x + k).toFixed(1)},${(c.y + k).toFixed(1)} M${(c.x + k).toFixed(1)},${(c.y - k).toFixed(1)} L${(c.x - k).toFixed(1)},${(c.y + k).toFixed(1)}"/></g>`,

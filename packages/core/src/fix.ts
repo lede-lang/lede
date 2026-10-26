@@ -329,18 +329,32 @@ function diagramClash(d: Diagnostic, lines: string[]): Edit | null {
 /**
  * `kpi Done | 74 of 120 | 61.7% | bar`: the bar takes the value, and the writer put the percent in the change field.
  * Swap the two. A guess: the headline number changes, and only a plain unsigned percent is moved.
+ *
+ * Any other `bar` the compiler could not draw (`kpi Share | ~75% | roughly three-quarters | bar`) loses the word `bar`. A
+ * guess: no bar was drawn, so the page does not change, but the writer may have wanted one and should give the value as a
+ * percent from 0 to 100.
  */
 function kpiPercent(d: Diagnostic, text: string): Edit | null {
   const m = /^(\s*kpi\s+)(.*)$/.exec(text);
   if (!m) return null;
   const parts = m[2].split('|').map((p) => p.trim());
   const [label, value, delta] = parts;
-  if (!label || !value || value.startsWith('=') || delta === undefined || !PERCENT.test(delta) || !parts.slice(3).includes('bar'))
-    return null;
+  if (!label || !value) return null;
+  if (!value.startsWith('=') && delta !== undefined && PERCENT.test(delta) && parts.slice(3).includes('bar'))
+    return one(
+      d.line,
+      `${m[1]}${[label, delta, value, ...parts.slice(3)].join(' | ')}`,
+      `${delta} moved to the value, ${value} to the change`,
+      true,
+    );
+  // The parser reads a field that is exactly `bar`, from the third on, as the flag.
+  const kept = parts.filter((p, i) => i < 2 || p !== 'bar');
+  if (kept.length === parts.length) return null;
+  while (kept.length > 2 && kept[kept.length - 1] === '') kept.pop();
   return one(
     d.line,
-    `${m[1]}${[label, delta, value, ...parts.slice(3)].join(' | ')}`,
-    `${delta} moved to the value, ${value} to the change`,
+    `${m[1]}${kept.join(' | ')}`,
+    `bar dropped, since no bar can be drawn for "${value}"; use a value from 0 to 100 to draw one`,
     true,
   );
 }
