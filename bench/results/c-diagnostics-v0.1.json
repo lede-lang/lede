@@ -1,0 +1,76 @@
+{
+ "haiku/03.lede": [
+  "warning 13:7 chart-option: ignored chart option \"($K)\"",
+  "error 13:7 unknown-column: stages has no column Value (columns: Stage, Deals, Value ($K))"
+ ],
+ "haiku/07.lede": [
+  "warning 18:7 chart-option: ignored chart option \"bugs\"",
+  "error 18:7 unknown-column: burn has no column open (columns: day, open bugs)"
+ ],
+ "haiku/08.lede": [
+  "error 33:168 data-row-width: row \"Orders DB,RDS PostgreSQL 16 on db.r6g.xlarge\" has 2 fields; _table1 has 3 columns (Component,Runtime,Purpose)",
+  "error 33:214 data-row-width: row \"Multi-AZ,Stores orders\" has 2 fields; _table1 has 3 columns (Component,Runtime,Purpose)"
+ ],
+ "haiku/11.lede": [
+  "error 24:5 diagram-syntax: group id prodvpc is already used",
+  "error 26:5 diagram-syntax: group id devvpc is already used"
+ ],
+ "haiku/12.lede": [
+  "warning 31:7 chart-option: ignored chart option \"budget\"",
+  "warning 31:7 chart-option: ignored chart option \"(ms),measured\"",
+  "warning 31:7 chart-option: ignored chart option \"p95\"",
+  "warning 31:7 chart-option: ignored chart option \"(ms)\"",
+  "error 31:7 unknown-column: latency has no column p95 (columns: step, p95 budget (ms), measured p95 (ms))"
+ ],
+ "haiku/13.lede": [
+  "warning 31:7 chart-option: ignored chart option \"(min)\"",
+  "error 31:7 unknown-column: stages has no column Median (columns: Stage, Median (min), p90 (min))"
+ ],
+ "haiku/16.lede": [
+  "warning 20:7 chart-option: ignored chart option \"rate\"",
+  "error 20:7 unknown-column: errs has no column error (columns: time, error rate)"
+ ],
+ "haiku/20.lede": [
+  "warning 20:7 chart-option: ignored chart option \"rate\"",
+  "error 20:7 unknown-column: succ has no column success (columns: time, success rate)"
+ ],
+ "haiku/22.lede": [
+  "error 16:126 data-row-width: row \"Kafka,per partition,very high,high,yes up to retention,$1,450\" has 7 fields; _table1 has 6 columns (Option,Ordering,Throughput ceiling,Ops burden,Replay,Monthly cost)"
+ ],
+ "haiku/23.lede": [
+  "warning 16:7 chart-option: ignored chart option \"Cloud,Self-hosted\"",
+  "error 16:7 unknown-column: cum has no column Grafana (columns: year, Datadog, Grafana Cloud, Self-hosted)"
+ ],
+ "haiku/25.lede": [
+  "warning 14:7 chart-option: ignored chart option \"Atlas\"",
+  "error 14:7 unknown-column: cost has no column MongoDB (columns: traffic, PostgreSQL, DynamoDB, MongoDB Atlas)"
+ ],
+ "haiku/26.lede": [
+  "warning 14:7 chart-option: ignored chart option \"Actions,CircleCI,Buildkite\"",
+  "error 14:7 unknown-column: bench has no column GitHub (columns: pipeline, GitHub Actions, CircleCI, Buildkite)"
+ ],
+ "haiku/31.lede": [
+  "warning 23:7 chart-option: ignored chart option \"C\"",
+  "error 23:7 unknown-column: daily has no column Variant (columns: day, Control, Variant C)"
+ ],
+ "haiku/34.lede": [
+  "warning 13:7 chart-option: ignored chart option \"sessions,Target\"",
+  "error 13:7 unknown-column: stab has no column Crash-free (columns: version, Crash-free sessions, Target)"
+ ],
+ "opus/02.lede": [
+  "warning 21:7 chart-option: ignored chart option \"consumed\"",
+  "error 21:7 unknown-column: slos has no column Budget (columns: Service, SLO target, Current, Budget consumed)"
+ ],
+ "opus/03.lede": [
+  "warning 14:7 chart-option: ignored chart option \"($K)\"",
+  "error 14:7 unknown-column: stages has no column Value (columns: Stage, Deals, Value ($K))"
+ ],
+ "opus/13.lede": [
+  "warning 32:7 chart-option: ignored chart option \"(min)\"",
+  "error 32:7 unknown-column: stages has no column Median (columns: Stage, Median (min), p90 (min))"
+ ],
+ "opus/17.lede": [
+  "warning 8:7 table-option: ignored table option \"left\"",
+  "error 8:7 unknown-column: certs has no column Days (columns: Domain, Expires, Days left)"
+ ]
+}

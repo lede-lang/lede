@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Booking Web Tier Architecture</title>
+<style>
+:root{
+  --bg:#f5f6f8;--surface:#ffffff;--surface-2:#eff2f6;--text:#151b26;--muted:#5a6476;--border:#d9dee6;--line:#4a5568;
+  --accent:#c2410c;--accent-soft:#fff0e6;--vpc:#eef4fb;--vpc-stroke:#6b93c9;--grp:#ffffff;--grp-stroke:#a9bcd6;--res:#f3f5f8;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0d1117;--surface:#151a22;--surface-2:#1d232d;--text:#e6eaf0;--muted:#9aa4b5;--border:#2c3340;--line:#aab5c6;
+  --accent:#ff9f5a;--accent-soft:#36210f;--vpc:#132131;--vpc-stroke:#4c78b0;--grp:#18202b;--grp-stroke:#34465f;--res:#222a36;
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:28px 16px 56px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 6px}
+h1{font-size:1.7rem;line-height:1.2;margin:0 0 10px;letter-spacing:-.01em}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--muted);font-size:.9rem;margin:0;padding:0;list-style:none}
+.meta b{color:var(--text);font-weight:600}
+section{margin-top:34px}
+h2{font-size:1.2rem;margin:0 0 12px}
+p{margin:0 0 10px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em}
+.diagram{padding:16px 12px}
+.diagram svg{display:block;width:100%;max-width:580px;height:auto;margin:0 auto}
+svg text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+svg .acct{fill:none;stroke:var(--muted);stroke-width:1.5;stroke-dasharray:6 4}
+svg .vpcbox{fill:var(--vpc);stroke:var(--vpc-stroke);stroke-width:1.5}
+svg .grp{fill:var(--grp);stroke:var(--grp-stroke);stroke-width:1.2}
+svg .res{fill:var(--res);stroke:var(--line);stroke-width:1.3}
+svg .edge{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .ext{fill:var(--surface-2);stroke:var(--muted);stroke-width:1.3}
+svg .t{fill:var(--text);font-size:12.5px;font-weight:600}
+svg .s{fill:var(--muted);font-size:10.5px}
+svg .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10.5px;fill:var(--muted)}
+svg .acctl{fill:var(--muted);font-size:12px;font-weight:700}
+svg .vpcl{fill:var(--text);font-size:13px;font-weight:700}
+svg .grpl{fill:var(--muted);font-size:11.5px;font-weight:700}
+svg .cap{fill:var(--muted);font-size:10px;font-weight:700;letter-spacing:.08em}
+svg .conn{stroke:var(--line);stroke-width:1.6;fill:none}
+svg .cl{fill:var(--text);font-size:11px;font-style:italic;paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+svg .cl.v{stroke:var(--vpc)}
+svg .cl.g{stroke:var(--grp)}
+svg .arrowhead{fill:var(--line)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.82rem;color:var(--muted);margin:12px 4px 0;padding:0;list-style:none}
+.legend li{display:flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:18px;height:12px;border-radius:3px}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:11px 8px;border-bottom:1px solid var(--border);vertical-align:top}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+tbody tr:last-child td{border-bottom:0}
+.table-card{padding:4px 10px}
+td .sub{display:block;font-size:.85rem;color:var(--muted)}
+footer{margin-top:40px;color:var(--muted);font-size:.82rem}
+@media (max-width:480px){body{font-size:15px}h1{font-size:1.4rem}th,td{padding:10px 5px}.diagram{padding:12px 6px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <p class="eyebrow">Calloway Travel &middot; Architecture</p>
+    <h1>Booking web tier</h1>
+    <ul class="meta">
+      <li>Owner <b>Booking Platform</b></li>
+      <li>Region <b>eu-west-1</b></li>
+      <li>Reviewed <b>2026-09-28</b></li>
+    </ul>
+  </header>
+
+  <section>
+    <h2>Overview</h2>
+    <p>Customers reach us through CloudFront with a WAF in front. The tier is spread over two Availability Zones so it can survive losing one.</p>
+  </section>
+
+  <section>
+    <h2>Diagram</h2>
+    <div class="card diagram">
+      <svg viewBox="0 0 440 720" role="img" aria-labelledby="dt dd">
+        <title id="dt">Booking web tier diagram</title>
+        <desc id="dd">Travelers reach CloudFront and WAF over HTTPS. CloudFront and WAF send origin requests to the Application Load Balancer in the public subnets of the Booking VPC, 10.40.0.0/16, in the Booking account. The load balancer sends traffic on port 8080 to Web Fleet A and Web Fleet B, Auto Scaling groups in the app subnets. Both web fleets send SQL to Bookings DB Primary in the data subnets, which uses synchronous replication to Bookings DB Standby. Web Fleet A sends outbound traffic through NAT Gateway A to the Partner Inventory API over HTTPS. Web Fleet B writes receipts through the S3 Gateway Endpoint.</desc>
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path class="arrowhead" d="M0,0 L10,5 L0,10 z"/>
+          </marker>
+        </defs>
+
+        <!-- Outside the account -->
+        <text class="cap" x="16" y="20">OUTSIDE THE ACCOUNT</text>
+        <rect class="ext" x="160" y="28" width="120" height="40" rx="20"/>
+        <text class="t" x="220" y="52" text-anchor="middle">Travelers</text>
+        <rect class="edge" x="150" y="100" width="140" height="48" rx="8"/>
+        <text class="t" x="220" y="120" text-anchor="middle">CloudFront</text>
+        <text class="t" x="220" y="137" text-anchor="middle">and WAF</text>
+        <rect class="ext" x="16" y="100" width="130" height="48" rx="8"/>
+        <text class="t" x="81" y="120" text-anchor="middle">Partner</text>
+        <text class="t" x="81" y="137" text-anchor="middle">Inventory API</text>
+
+        <!-- Account and VPC -->
+        <rect class="acct" x="8" y="176" width="424" height="532" rx="12"/>
+        <text class="acctl" x="20" y="196">Booking account</text>
+        <rect class="vpcbox" x="18" y="206" width="404" height="492" rx="10"/>
+        <text class="vpcl" x="30" y="226">Booking VPC</text>
+        <text class="mono" x="410" y="226" text-anchor="end">10.40.0.0/16</text>
+
+        <!-- Public subnets -->
+        <rect class="grp" x="28" y="238" width="384" height="104" rx="8"/>
+        <text class="grpl" x="38" y="256">Public subnets</text>
+        <text class="mono" x="402" y="256" text-anchor="end">10.40.0.0/23</text>
+        <rect class="res" x="38" y="268" width="112" height="52" rx="7"/>
+        <text class="t" x="94" y="298" text-anchor="middle">NAT Gateway A</text>
+        <rect class="edge" x="164" y="268" width="112" height="52" rx="7"/>
+        <text class="t" x="220" y="290" text-anchor="middle">Application</text>
+        <text class="t" x="220" y="307" text-anchor="middle">Load Balancer</text>
+        <rect class="res" x="290" y="268" width="112" height="52" rx="7"/>
+        <text class="t" x="346" y="298" text-anchor="middle">NAT Gateway B</text>
+
+        <!-- App subnets -->
+        <rect class="grp" x="28" y="366" width="384" height="96" rx="8"/>
+        <text class="grpl" x="38" y="384">App subnets</text>
+        <text class="mono" x="402" y="384" text-anchor="end">10.40.10.0/23</text>
+        <rect class="res" x="38" y="394" width="150" height="56" rx="7"/>
+        <text class="t" x="113" y="417" text-anchor="middle">Web Fleet A</text>
+        <text class="s" x="113" y="435" text-anchor="middle">Auto Scaling group</text>
+        <rect class="res" x="252" y="394" width="150" height="56" rx="7"/>
+        <text class="t" x="327" y="417" text-anchor="middle">Web Fleet B</text>
+        <text class="s" x="327" y="435" text-anchor="middle">Auto Scaling group</text>
+
+        <!-- Data subnets -->
+        <rect class="grp" x="28" y="486" width="260" height="202" rx="8"/>
+        <text class="grpl" x="38" y="504">Data subnets</text>
+        <text class="mono" x="278" y="681" text-anchor="end">10.40.20.0/23</text>
+        <rect class="res" x="48" y="516" width="140" height="52" rx="7"/>
+        <text class="t" x="118" y="538" text-anchor="middle">Bookings DB</text>
+        <text class="s" x="118" y="555" text-anchor="middle">Primary</text>
+        <rect class="res" x="48" y="620" width="140" height="52" rx="7"/>
+        <text class="t" x="118" y="642" text-anchor="middle">Bookings DB</text>
+        <text class="s" x="118" y="659" text-anchor="middle">Standby</text>
+
+        <!-- S3 endpoint (in VPC) -->
+        <rect class="res" x="300" y="516" width="112" height="52" rx="7"/>
+        <text class="t" x="356" y="538" text-anchor="middle">S3 Gateway</text>
+        <text class="t" x="356" y="555" text-anchor="middle">Endpoint</text>
+
+        <!-- Flows -->
+        <line class="conn" x1="220" y1="68" x2="220" y2="99" marker-end="url(#ah)"/>
+        <text class="cl" x="228" y="89">HTTPS</text>
+
+        <line class="conn" x1="220" y1="148" x2="220" y2="267" marker-end="url(#ah)"/>
+        <text class="cl" x="228" y="172">origin request</text>
+
+        <line class="conn" x1="136" y1="268" x2="136" y2="149" marker-end="url(#ah)"/>
+        <text class="cl" x="142" y="172">HTTPS</text>
+
+        <line class="conn" x1="196" y1="320" x2="151" y2="393" marker-end="url(#ah)"/>
+        <text class="cl v" x="166" y="360" text-anchor="end">port 8080</text>
+        <line class="conn" x1="244" y1="320" x2="289" y2="393" marker-end="url(#ah)"/>
+        <text class="cl v" x="274" y="360">port 8080</text>
+
+        <line class="conn" x1="70" y1="394" x2="70" y2="321" marker-end="url(#ah)"/>
+        <text class="cl g" x="76" y="337">outbound</text>
+
+        <line class="conn" x1="150" y1="450" x2="150" y2="515" marker-end="url(#ah)"/>
+        <text class="cl v" x="144" y="477" text-anchor="end">SQL</text>
+        <line class="conn" x1="290" y1="450" x2="181" y2="515" marker-end="url(#ah)"/>
+        <text class="cl v" x="240" y="477" text-anchor="end">SQL</text>
+
+        <line class="conn" x1="118" y1="568" x2="118" y2="619" marker-end="url(#ah)"/>
+        <text class="cl g" x="126" y="590">synchronous</text>
+        <text class="cl g" x="126" y="604">replication</text>
+
+        <line class="conn" x1="356" y1="450" x2="356" y2="515" marker-end="url(#ah)"/>
+        <text class="cl v" x="362" y="481">receipts</text>
+      </svg>
+      <ul class="legend">
+        <li><span class="sw" style="border:1.5px dashed var(--muted)"></span>AWS account</li>
+        <li><span class="sw" style="background:var(--vpc);border:1.5px solid var(--vpc-stroke)"></span>VPC</li>
+        <li><span class="sw" style="background:var(--grp);border:1.2px solid var(--grp-stroke)"></span>Subnet group</li>
+        <li><span class="sw" style="background:var(--accent-soft);border:1.5px solid var(--accent)"></span>Entry path</li>
+        <li><span class="sw" style="background:var(--surface-2);border:1.3px solid var(--muted)"></span>Outside the account</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Capacity</h2>
+    <div class="card table-card">
+      <table>
+        <thead><tr><th>Component</th><th>Size</th><th>Scaling</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Web fleets</strong><span class="sub">Web Fleet A, Web Fleet B</span></td><td class="mono">m6i.large</td><td>3 to 12 instances per AZ, scaling on CPU above 55%</td></tr>
+          <tr><td><strong>Bookings DB</strong><span class="sub">Primary and Standby</span></td><td><span class="mono">db.r6g.2xlarge</span><span class="sub">Multi-AZ</span></td><td>Storage autoscaling to 4 TB</td></tr>
+          <tr><td><strong>NAT gateways</strong><span class="sub">NAT Gateway A, NAT Gateway B</span></td><td>One per AZ</td><td>5 Gbps each</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>Calloway Travel &middot; Booking web tier &middot; Owner Booking Platform &middot; eu-west-1 &middot; Reviewed 2026-09-28</footer>
+</main>
+</body>
+</html>

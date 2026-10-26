@@ -1,0 +1,38 @@
+[
+  {
+    "severity": "error",
+    "code": "undeclared-diagram",
+    "line": 1,
+    "col": 1
+  },
+  {
+    "severity": "error",
+    "code": "diagram-name",
+    "line": 2,
+    "col": 9
+  },
+  {
+    "severity": "error",
+    "code": "diagram-syntax",
+    "line": 4,
+    "col": 4
+  },
+  {
+    "severity": "error",
+    "code": "diagram-syntax",
+    "line": 5,
+    "col": 4
+  },
+  {
+    "severity": "error",
+    "code": "diagram-redeclared",
+    "line": 6,
+    "col": 9
+  },
+  {
+    "severity": "warning",
+    "code": "diagram-empty",
+    "line": 3,
+    "col": 1
+  }
+]

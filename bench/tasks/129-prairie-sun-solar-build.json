@@ -1,0 +1,72 @@
+{
+  "id": "129-prairie-sun-solar-build",
+  "category": "status",
+  "title": "Prairie Sun solar construction status",
+  "brief": "Prairie Sun Energy is building a 40 MW solar farm, and the construction manager, Ingrid Valdez, needs a status page for the lenders and the owner as of 2026-10-16. Overall status is red. Headlines: 60480 of 96000 panels installed, 63.0 percent; 14 of 20 inverters installed; 41.5 million dollars budget with 27.8 million spent (67.0 percent). Panels installed per week over the last four weeks: 3300, 3050, 3200, 3150, an average of 3175. To finish all panels by 2026-12-04, 7 weeks away, the crew has to average 5074 a week, so at the current pace panels would be finished about 2027-01-02. Under \"Milestones\": Site grading, done 2026-05-22; Foundations and trackers, done 2026-09-04; Panels installed, planned 2026-12-04, forecast 2027-01-02; Substation witness test, 2026-11-19; Energization, 2027-01-15, at risk; Commercial operation, 2027-02-01. Under \"Needs attention\": a second crew starting 2026-10-26 would add about 2200 panels a week, taking the rate to about 5375 a week, enough only if no more than 2 weather days are lost; the owner must approve 380000 dollars for the second crew by 2026-10-21. Sections: \"Project at a glance\", \"Installation pace\", \"Milestones\" and \"Needs attention\".",
+  "checklist": {
+    "sections": [
+      "Project at a glance",
+      "Installation pace",
+      "Milestones",
+      "Needs attention"
+    ],
+    "visible": [
+      "Ingrid Valdez",
+      "Site grading",
+      "Foundations and trackers",
+      "Panels installed",
+      "Substation witness test",
+      "Energization",
+      "Commercial operation"
+    ],
+    "values": [
+      "40 MW",
+      "60480",
+      "96000",
+      "63.0",
+      "14 of 20",
+      "41.5 million",
+      "27.8 million",
+      "67.0",
+      "3300",
+      "3050",
+      "3200",
+      "3150",
+      "3175",
+      "5074",
+      "2026-12-04",
+      "2026-05-22",
+      "2026-09-04",
+      "2027-01-02",
+      "2026-11-19",
+      "2027-01-15",
+      "2027-02-01",
+      "2026-10-26",
+      "2200",
+      "5375",
+      "380000",
+      "2026-10-21"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Update panels installed to 63840, which is 66.5 percent, and move the second crew approval deadline to 2026-10-23.",
+    "expect_visible": [],
+    "expect_values": [
+      "63840",
+      "66.5",
+      "2026-10-23"
+    ],
+    "expect_absent": [
+      "60480",
+      "63.0",
+      "2026-10-21"
+    ]
+  }
+}

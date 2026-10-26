@@ -1,0 +1,157 @@
+{
+ "generated": "node bench/src/tally-diagnostics.ts",
+ "corpora": {
+  "bench/gen/*/C": 570,
+  "bench/article/*/as-written": 36,
+  "examples/**/as-written": 12
+ },
+ "pages": 618,
+ "invalidAsWritten": 17,
+ "invalidAfterFix": 1,
+ "ranking": [
+  {
+   "rank": 1,
+   "code": "data-row-width",
+   "severity": "error",
+   "count": 33,
+   "files": 13,
+   "afterFixCount": 0,
+   "afterFixFiles": 0,
+   "pages": [
+    "bench/gen/haiku/C/08.lede",
+    "bench/gen/haiku-r6/C/79.lede",
+    "bench/gen/opus-r6/C/109.lede",
+    "bench/gen/opus-r6/C/126.lede",
+    "bench/gen/sonnet-r5/C/76.lede",
+    "bench/article/r3/as-written/r3-01.lede",
+    "bench/article/r3/as-written/r3-05.lede",
+    "bench/article/r3/as-written/r3-11.lede",
+    "bench/article/r3/as-written/r3-12.lede",
+    "bench/article/r4/as-written/r4-08.lede",
+    "bench/article/r4/as-written/r4-12.lede",
+    "examples/article/as-written/07-ticket-triage.lede",
+    "examples/article/as-written/11-incident-report.lede"
+   ]
+  },
+  {
+   "rank": 2,
+   "code": "kpi-bar",
+   "severity": "warning",
+   "count": 18,
+   "files": 11,
+   "afterFixCount": 3,
+   "afterFixFiles": 3,
+   "pages": [
+    "bench/gen/opus-r6/C/100.lede",
+    "bench/gen/opus-r6/C/119.lede",
+    "bench/gen/opus-r6/C/127.lede",
+    "bench/gen/opus-r6/C/129.lede",
+    "bench/gen/opus-r6/C/130.lede",
+    "bench/gen/opus-r6/C/97.lede",
+    "bench/gen/sonnet-r6/C/126.lede",
+    "bench/gen/sonnet-r6/C/127.lede",
+    "bench/gen/sonnet-r6/C/128.lede",
+    "bench/gen/sonnet-r6/C/129.lede",
+    "bench/gen/sonnet-r6/C/130.lede"
+   ]
+  },
+  {
+   "rank": 3,
+   "code": "grid-unfilled",
+   "severity": "warning",
+   "count": 4,
+   "files": 4,
+   "afterFixCount": 0,
+   "afterFixFiles": 0,
+   "pages": [
+    "bench/gen/sonnet-r6/C/106.lede",
+    "bench/gen/sonnet-r6/C/107.lede",
+    "bench/gen/sonnet-r6/C/109.lede",
+    "bench/gen/sonnet-r6/C/110.lede"
+   ]
+  },
+  {
+   "rank": 4,
+   "code": "unknown-column",
+   "severity": "error",
+   "count": 2,
+   "files": 2,
+   "afterFixCount": 0,
+   "afterFixFiles": 0,
+   "pages": [
+    "bench/gen/sonnet-r6/C/112.lede",
+    "examples/article/as-written/02-impl-plan.lede"
+   ]
+  },
+  {
+   "rank": 5,
+   "code": "heading-depth",
+   "severity": "warning",
+   "count": 4,
+   "files": 1,
+   "afterFixCount": 0,
+   "afterFixFiles": 0,
+   "pages": [
+    "examples/article/as-written/03-pr-review.lede"
+   ]
+  },
+  {
+   "rank": 6,
+   "code": "csv-thousands",
+   "severity": "warning",
+   "count": 1,
+   "files": 1,
+   "afterFixCount": 0,
+   "afterFixFiles": 0,
+   "pages": [
+    "bench/gen/haiku/C/22.lede"
+   ]
+  },
+  {
+   "rank": 7,
+   "code": "table-option",
+   "severity": "warning",
+   "count": 1,
+   "files": 1,
+   "afterFixCount": 0,
+   "afterFixFiles": 0,
+   "pages": [
+    "bench/gen/sonnet-r6/C/108.lede"
+   ]
+  },
+  {
+   "rank": 8,
+   "code": "unknown-data",
+   "severity": "error",
+   "count": 1,
+   "files": 1,
+   "afterFixCount": 1,
+   "afterFixFiles": 1,
+   "pages": [
+    "bench/article/r3/as-written/r3-10.lede"
+   ]
+  },
+  {
+   "rank": 9,
+   "code": "name-clash",
+   "severity": "error",
+   "count": 1,
+   "files": 1,
+   "afterFixCount": 0,
+   "afterFixFiles": 0,
+   "pages": [
+    "examples/article/as-written/08-feature-flags.lede"
+   ]
+  },
+  {
+   "rank": null,
+   "code": "chart-option",
+   "severity": "warning",
+   "count": 0,
+   "files": 0,
+   "afterFixCount": 1,
+   "afterFixFiles": 1,
+   "pages": []
+  }
+ ]
+}

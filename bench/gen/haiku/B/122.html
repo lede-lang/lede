@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drift Harbor Client Rollback Runbook</title>
+<style>
+:root {
+  --bg: #f4f5f9;
+  --card: #ffffff;
+  --text: #1d2233;
+  --muted: #5d6478;
+  --accent: #5b3fd1;
+  --accent-soft: #eeeafc;
+  --warn: #a61b3c;
+  --warn-soft: #fdecef;
+  --border: #d8dbe7;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1018;
+    --card: #181b27;
+    --text: #e8eaf4;
+    --muted: #9ca3bb;
+    --accent: #a897ff;
+    --accent-soft: #211d3d;
+    --warn: #ff8fa6;
+    --warn-soft: #3a1820;
+    --border: #2a2f42;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1018;
+  --card: #181b27;
+  --text: #e8eaf4;
+  --muted: #9ca3bb;
+  --accent: #a897ff;
+  --accent-soft: #211d3d;
+  --warn: #ff8fa6;
+  --warn-soft: #3a1820;
+  --border: #2a2f42;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+.wrap { max-width: 860px; margin: 0 auto; padding: 24px 16px 48px; }
+header { border-bottom: 3px solid var(--accent); padding-bottom: 14px; margin-bottom: 20px; }
+.org { color: var(--muted); font-size: 14px; text-transform: uppercase; letter-spacing: .06em; }
+h1 { font-size: 27px; line-height: 1.2; margin: 6px 0 8px; }
+h2 { font-size: 20px; color: var(--accent); margin: 28px 0 10px; }
+.meta { color: var(--muted); font-size: 14px; }
+section, .card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+}
+.trigger { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 12px 14px; border-radius: 6px; }
+.never { background: var(--warn-soft); border-left: 4px solid var(--warn); padding: 12px 14px; border-radius: 6px; font-weight: 600; }
+.step {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px 14px 16px;
+  margin-bottom: 12px;
+}
+.step-head { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+.num {
+  flex: 0 0 auto;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--accent); color: var(--card);
+  font-weight: 700; text-align: center; line-height: 30px;
+}
+.step-head h3 { margin: 0; font-size: 18px; }
+ol.sub { list-style: lower-alpha; padding-left: 22px; margin: 6px 0 0; }
+ol.sub li { margin: 6px 0; }
+.bar-wrap { margin-top: 12px; }
+.ramp { display: grid; gap: 8px; grid-template-columns: 1fr; }
+.ramp div { background: var(--accent-soft); border-radius: 8px; padding: 10px 12px; }
+.ramp strong { color: var(--accent); }
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+th { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .04em; }
+.contacts td:first-child { font-weight: 600; width: 45%; }
+svg text { fill: var(--text); }
+@media (min-width: 700px) {
+  .ramp { grid-template-columns: repeat(4, 1fr); }
+  h1 { font-size: 32px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="org">Quillfeather Interactive &middot; Live Ops</div>
+  <h1>Drift Harbor: Rolling Back a Bad Client Patch</h1>
+  <div class="meta">Game: Drift Harbor &middot; Owner: Live Ops &middot; Version 2026-10-13</div>
+</header>
+
+<section>
+  <h2 style="margin-top:0">When to roll back</h2>
+  <div class="trigger">
+    <p>After a patch release, roll back when either condition is met:</p>
+    <ul>
+      <li>The crash rate is above <strong>2 percent</strong> of sessions for <strong>15 minutes</strong>.</li>
+      <li>Login failures are above <strong>5 percent</strong> for <strong>10 minutes</strong>.</li>
+    </ul>
+    <p style="margin-bottom:0">The Live Ops lead must approve the rollback in the <strong>#liveops-war-room</strong> channel.</p>
+  </div>
+</section>
+
+<section>
+  <h2 style="margin-top:0">Do not roll back if</h2>
+  <div class="never">
+    The patch contained a database schema migration, such as migration 0087 in patch 4.13.
+    Rolling back after a schema migration corrupts player inventories. Older clients cannot read the new schema, so go forward with a hotfix instead.
+  </div>
+</section>
+
+<h2>Rollback steps</h2>
+
+<div class="step">
+  <div class="step-head"><span class="num">1</span><h3>Stop the bleeding</h3></div>
+  <ol class="sub">
+    <li>Pause the deploy pipeline.</li>
+    <li>Set matchmaking to maintenance mode with the in-game message &ldquo;Back soon&rdquo;.</li>
+  </ol>
+</div>
+
+<div class="step">
+  <div class="step-head"><span class="num">2</span><h3>Point players to the last good build</h3></div>
+  <ol class="sub">
+    <li>In the release console, set the live manifest to build <strong>4.12.3</strong>.</li>
+    <li>Invalidate the CDN cache, which takes about 10 minutes.</li>
+  </ol>
+</div>
+
+<div class="step">
+  <div class="step-head"><span class="num">3</span><h3>Verify</h3></div>
+  <ol class="sub">
+    <li>Install the build on 3 test accounts, one each on PC, console and mobile.</li>
+    <li>Confirm login and a full match on each.</li>
+  </ol>
+</div>
+
+<div class="step">
+  <div class="step-head"><span class="num">4</span><h3>Reopen in stages</h3></div>
+  <ol class="sub">
+    <li>Let in 10 percent of players.</li>
+    <li>After 5 minutes, open to 25 percent.</li>
+    <li>After 5 more minutes, open to 50 percent.</li>
+    <li>After another 5 minutes, open to 100 percent if the crash rate stays under 1 percent.</li>
+  </ol>
+  <div class="bar-wrap">
+    <svg viewBox="0 0 600 70" width="100%" role="img" aria-label="Reopen ramp: 10, 25, 50, 100 percent over 15 minutes">
+      <g font-size="13">
+        <rect x="0" y="20" width="140" height="22" rx="4" fill="var(--accent-soft)" stroke="var(--accent)"/>
+        <rect x="150" y="20" width="140" height="22" rx="4" fill="var(--accent-soft)" stroke="var(--accent)"/>
+        <rect x="300" y="20" width="140" height="22" rx="4" fill="var(--accent-soft)" stroke="var(--accent)"/>
+        <rect x="450" y="20" width="150" height="22" rx="4" fill="var(--accent)"/>
+        <text x="8" y="16">10%</text>
+        <text x="158" y="16">25% (+5 min)</text>
+        <text x="308" y="16">50% (+10 min)</text>
+        <text x="458" y="16">100% (+15 min)</text>
+        <text x="0" y="62" fill="var(--muted)">Start</text>
+        <text x="520" y="62" fill="var(--muted)">Full</text>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-head"><span class="num">5</span><h3>Communicate</h3></div>
+  <ol class="sub">
+    <li>Post a status update within 30 minutes of the decision.</li>
+    <li>Schedule compensation of 500 gems for every active account.</li>
+  </ol>
+</div>
+
+<h2>Contacts</h2>
+<section>
+<table class="contacts">
+  <tbody>
+    <tr><td>Live Ops lead</td><td>Soledad Ortega</td></tr>
+    <tr><td>Release engineer on call</td><td>Thabo Mokoena</td></tr>
+    <tr><td>Community manager</td><td>Ji-ho Han</td></tr>
+  </tbody>
+</table>
+</section>
+</div>
+</body>
+</html>

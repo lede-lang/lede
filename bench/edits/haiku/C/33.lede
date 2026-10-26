@@ -1,0 +1,25 @@
+@title Rooftop Solar, January to October 2026
+@subtitle Brookfield Community Co-op facilities report, in kWh
+
+kpi Total produced | 68,930 kWh | Jan to Oct
+kpi Total consumed | 72,010 kWh | Jan to Oct
+kpi Self-sufficiency | 95.7% | produced over consumed, good
+kpi Grid credits earned | $1,184 | Jan to Sep
+
+# Production vs consumption
+
+data solar = month,Produced,Consumed,Net; Jan,3120,7940,-4820; Feb,4080,7410,-3330; Mar,5960,7020,-1060; Apr,7340,6650,690; May,8810,6480,2330; Jun,9470,7210,2260; Jul,9620,7860,1760; Aug,8730,7590,1140; Sep,6890,6720,170; Oct,4910,7130,-2220
+
+chart line solar x=month y=Produced,Consumed unit=kWh title="Solar production and consumption by month"
+
+# Monthly detail
+
+table solar cols=month,Produced,Consumed,Net title="Monthly detail, net is produced minus consumed"
+
+Surplus months, where production exceeded consumption, are **Apr, May, Jun, Jul, Aug and Sep**. January, February, March and October were net consumers.
+
+# Notes
+
+The inverter was down for 4 days in March. That outage is the main reason March shows the lowest production of the spring months.
+
+! The board will vote on adding battery storage on 2026-11-12.

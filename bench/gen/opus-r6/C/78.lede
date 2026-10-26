@@ -1,0 +1,29 @@
+@title 2027 Dental Plan Options
+@subtitle Fenwick Studios, 112 employees. Open enrollment closes 2026-11-20.
+@author Dalia Lund, HR lead
+@date 2026-11-20
+
+kpi Recommended default | Premier | $492 a year | good
+
+## Plans
+data plans = plan,monthly premium,annual maximum,deductible,orthodontia,annual premium; Basic,14,1000,75,None,168; Plus,28,1500,50,None,336; Premier,41,2500,25,"50%, lifetime max $1,500",492; Family Max,63,3000,0,"50%, lifetime max $2,000",756
+table = Plan,Employee premium,Annual maximum,Deductible,Orthodontia; Basic,$14/month,"$1,000",$75,None; Plus,$28/month,"$1,500",$50,None; **Premier**,**$41/month**,"**$2,500**",**$25**,"**50%, lifetime max $1,500**"; Family Max,$63/month,"$3,000",None,"50%, lifetime max $2,000"
+
+## Annual premium
+chart bar plans x=plan y=annual premium unit=$ focus="Premier" title="Annual employee premium"
+
+## Who each plan suits
+38 employees said in the pulse survey that they have children who will need braces soon, which is why orthodontia matters.
+cards
+### Basic
+Lowest cost at $168 a year. Suits employees with routine cleanings only and no orthodontia needs.
+### Plus
+$336 a year for a higher $1,500 maximum and a lower deductible. No orthodontia.
+### Premier
+$492 a year. A $2,500 maximum, a $25 deductible and orthodontia at 50% up to $1,500. Suits most families expecting braces.
+### Family Max
+$756 a year. No deductible and orthodontia up to $2,000. Pays off only for families with ongoing orthodontia.
+
+## Recommendation
+We recommend **Premier** as the default plan. It is the cheapest plan that covers orthodontia, which matters to the 38 employees whose children will need braces soon.
+! Family Max costs $264 more a year than Premier and only pays off for families with ongoing orthodontia.

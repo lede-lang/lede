@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Postmortem INC-2291: Billing API Outage — Brightwave Telecom</title>
+<style>
+:root {
+  --bg: #f6f6f7;
+  --card: #ffffff;
+  --text: #1c1d21;
+  --muted: #61646d;
+  --border: #e1e2e6;
+  --grid: #ececef;
+  --err: #d93a2b;
+  --err-fill: rgba(217, 58, 43, 0.12);
+  --marker: #6b7280;
+  --tag-bg: #fdecea;
+  --tag-fg: #a3271c;
+  --call-bg: #fff6df;
+  --call-edge: #d69c0a;
+  --call-fg: #4f3600;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1012;
+    --card: #18191c;
+    --text: #ebecef;
+    --muted: #9fa2ab;
+    --border: #2b2c31;
+    --grid: #24252a;
+    --err: #ff6f61;
+    --err-fill: rgba(255, 111, 97, 0.16);
+    --marker: #9ca3af;
+    --tag-bg: #3b1714;
+    --tag-fg: #ff9d93;
+    --call-bg: #2d240d;
+    --call-edge: #e8b52e;
+    --call-fg: #f9e2a6;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.page { max-width: 920px; margin: 0 auto; padding: 28px 16px 64px; }
+.tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag { font-size: 0.78rem; font-weight: 700; padding: 2px 10px; border-radius: 999px; background: var(--tag-bg); color: var(--tag-fg); }
+.tag.plain { background: var(--border); color: var(--muted); }
+h1 { margin: 10px 0 4px; font-size: 1.6rem; line-height: 1.3; }
+.meta { color: var(--muted); margin: 0; font-size: 0.92rem; }
+.tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 22px; }
+.tile { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+.tile .k { color: var(--muted); font-size: 0.82rem; }
+.tile .v { font-size: 1.8rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.3; }
+section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-top: 16px; }
+h2 { margin: 0 0 10px; font-size: 1.12rem; }
+p { margin: 0; }
+p + p { margin-top: 8px; }
+.scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 9px 10px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); white-space: nowrap; }
+tbody tr:last-child td { border-bottom: 0; }
+td.t { font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.92rem; white-space: nowrap; width: 1%; }
+tr.key td { font-weight: 600; }
+td.due { white-space: nowrap; font-variant-numeric: tabular-nums; }
+svg { display: block; width: 100%; height: auto; }
+.ax { fill: var(--muted); font-size: 12px; }
+.callout { margin-top: 14px; background: var(--call-bg); border-left: 5px solid var(--call-edge); border-radius: 8px; padding: 12px 16px; color: var(--call-fg); }
+.callout strong { display: block; margin-bottom: 2px; }
+code { font: 0.9em ui-monospace, SFMono-Regular, Menlo, monospace; }
+@media (max-width: 680px) {
+  .tiles { grid-template-columns: 1fr 1fr; }
+  .tile .v { font-size: 1.45rem; }
+  section { padding: 16px 14px; }
+  th, td { padding: 8px 6px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="tags"><span class="tag">Sev2</span><span class="tag plain">INC-2291</span><span class="tag plain">Resolved</span></div>
+  <h1>Postmortem: Billing API outage</h1>
+  <p class="meta">Brightwave Telecom · 2026-09-03 · Owner: Billing Platform</p>
+
+  <div class="tiles">
+    <div class="tile"><div class="k">Duration</div><div class="v">47 min</div></div>
+    <div class="tile"><div class="k">Peak error rate</div><div class="v">38.5%</div></div>
+    <div class="tile"><div class="k">Failed requests</div><div class="v">182,400</div></div>
+    <div class="tile"><div class="k">Customers affected</div><div class="v">13,150</div></div>
+  </div>
+
+  <section>
+    <h2>Summary</h2>
+    <p>At 14:02 UTC a configuration change lowered the Billing API's database connection pool from 200 connections to 20. With far fewer connections available, requests queued waiting for a connection and timed out, driving the error rate as high as 38.5%. Once pool exhaustion was identified, the change was rolled back and errors returned to baseline by 14:49.</p>
+  </section>
+
+  <section>
+    <h2>Timeline</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Time (UTC)</th><th>Event</th></tr></thead>
+        <tbody>
+          <tr class="key"><td class="t">14:02</td><td>Config change merged and deployed</td></tr>
+          <tr><td class="t">14:06</td><td>Error rate alert fires</td></tr>
+          <tr><td class="t">14:09</td><td>On-call acknowledges</td></tr>
+          <tr><td class="t">14:21</td><td>Incident declared Sev2</td></tr>
+          <tr><td class="t">14:33</td><td>Connection pool exhaustion identified</td></tr>
+          <tr class="key"><td class="t">14:41</td><td>Rollback started</td></tr>
+          <tr><td class="t">14:49</td><td>Errors return to baseline</td></tr>
+          <tr><td class="t">14:53</td><td>Incident resolved</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Error rate</h2>
+    <svg viewBox="0 0 600 270" role="img" aria-label="Line chart of error rate at 5-minute intervals: 14:00 0.2%, 14:05 4.1%, 14:10 17.8%, 14:15 29.6%, 14:20 38.5%, 14:25 36.9%, 14:30 37.2%, 14:35 35.0%, 14:40 33.4%, 14:45 12.7%, 14:50 0.6%, 14:55 0.3%.">
+      <g stroke="var(--grid)">
+        <line x1="50" y1="220" x2="590" y2="220"/>
+        <line x1="50" y1="170" x2="590" y2="170"/>
+        <line x1="50" y1="120" x2="590" y2="120"/>
+        <line x1="50" y1="70" x2="590" y2="70"/>
+        <line x1="50" y1="20" x2="590" y2="20"/>
+      </g>
+      <g class="ax" text-anchor="end">
+        <text x="42" y="224">0%</text><text x="42" y="174">10%</text><text x="42" y="124">20%</text>
+        <text x="42" y="74">30%</text><text x="42" y="24">40%</text>
+      </g>
+      <g stroke="var(--marker)" stroke-width="1.2" stroke-dasharray="3 3">
+        <line x1="78.9" y1="20" x2="78.9" y2="220"/>
+        <line x1="447.6" y1="20" x2="447.6" y2="220"/>
+      </g>
+      <text x="84" y="34" font-size="11.5" fill="var(--muted)">14:02 change deployed</text>
+      <text x="453" y="34" font-size="11.5" fill="var(--muted)">14:41 rollback</text>
+      <polygon fill="var(--err-fill)" points="60,220 60,219 107.27,199.5 154.55,131 201.82,72 249.09,27.5 296.36,35.5 343.64,34 390.91,45 438.18,53 485.45,156.5 532.73,217 580,218.5 580,220"/>
+      <polyline fill="none" stroke="var(--err)" stroke-width="3" stroke-linejoin="round" points="60,219 107.27,199.5 154.55,131 201.82,72 249.09,27.5 296.36,35.5 343.64,34 390.91,45 438.18,53 485.45,156.5 532.73,217 580,218.5"/>
+      <g fill="var(--card)" stroke="var(--err)" stroke-width="2">
+        <circle cx="60" cy="219" r="3.5"/><circle cx="107.27" cy="199.5" r="3.5"/><circle cx="154.55" cy="131" r="3.5"/>
+        <circle cx="201.82" cy="72" r="3.5"/><circle cx="296.36" cy="35.5" r="3.5"/>
+        <circle cx="343.64" cy="34" r="3.5"/><circle cx="390.91" cy="45" r="3.5"/><circle cx="438.18" cy="53" r="3.5"/>
+        <circle cx="485.45" cy="156.5" r="3.5"/><circle cx="532.73" cy="217" r="3.5"/><circle cx="580" cy="218.5" r="3.5"/>
+      </g>
+      <circle cx="249.09" cy="27.5" r="5.5" fill="var(--err)"/>
+      <text x="249.09" y="50" text-anchor="middle" font-size="12" font-weight="700" fill="var(--err)">Peak 38.5%</text>
+      <g class="ax" text-anchor="middle">
+        <text x="60" y="242">14:00</text><text x="154.55" y="242">14:10</text><text x="249.09" y="242">14:20</text>
+        <text x="343.64" y="242">14:30</text><text x="438.18" y="242">14:40</text><text x="532.73" y="242">14:50</text>
+      </g>
+      <text x="320" y="264" text-anchor="middle" class="ax">Time (UTC), 5-minute intervals</text>
+    </svg>
+  </section>
+
+  <section>
+    <h2>Root cause</h2>
+    <p>The change set the connection pool size to 20, a tenth of its previous value of 200. Under normal afternoon load the Billing API needs far more concurrent database connections than that, so requests waited for a free connection until they hit their timeout. The database itself stayed healthy throughout; the bottleneck was entirely in the application's pool. Nothing in review or deployment flagged the new value as unsafe.</p>
+    <div class="callout" role="note">
+      <strong>Contributing factor</strong>
+      The config linter did not validate bounds on the connection pool size, so a value of 20 passed every automated check.
+    </div>
+  </section>
+
+  <section>
+    <h2>Action items</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Action</th><th>Owner</th><th>Due</th></tr></thead>
+        <tbody>
+          <tr><td>Add bounds validation for pool settings</td><td>Marta Kowalski</td><td class="due">2026-09-24</td></tr>
+          <tr><td>Canary config changes to 5% of pods first</td><td>Ravi Shah</td><td class="due">2026-10-08</td></tr>
+          <tr><td>Alert on pool saturation above 80%</td><td>Billing on-call</td><td class="due">2026-09-17</td></tr>
+          <tr><td>Write a runbook for connection pool exhaustion</td><td>Lena Fischer</td><td class="due">2026-10-15</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+</body>
+</html>

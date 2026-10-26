@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Platform Engineering Weekly Status, Week Ending 2026-10-16</title>
+<style>
+:root{--bg:#f5f6f8;--card:#ffffff;--text:#1c2230;--muted:#5d6679;--line:#dadfe8;--accent:#2a5bd7;--warn-bg:#fff3dc;--warn-bd:#d98a1c;--warn-tx:#5e3c00;--good:#1d7f57;--bad:#b83b2a;}
+@media (prefers-color-scheme: dark){
+:root:not([data-theme="light"]){--bg:#0e1117;--card:#171c26;--text:#e5e9f1;--muted:#9ba4b6;--line:#2b3343;--accent:#7ea6ff;--warn-bg:#3a2a0f;--warn-bd:#e0a040;--warn-tx:#ffdca6;--good:#4fc28d;--bad:#ff8a78;}
+}
+:root[data-theme="dark"]{--bg:#0e1117;--card:#171c26;--text:#e5e9f1;--muted:#9ba4b6;--line:#2b3343;--accent:#7ea6ff;--warn-bg:#3a2a0f;--warn-bd:#e0a040;--warn-tx:#ffdca6;--good:#4fc28d;--bad:#ff8a78;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:960px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:1.6rem;line-height:1.2;margin:0 0 4px}
+h2{font-size:1.15rem;margin:34px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.sub{color:var(--muted);margin:0 0 22px;font-size:.95rem}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.tile .v{font-size:1.9rem;font-weight:700;color:var(--accent)}
+.tile .l{color:var(--muted);font-size:.85rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;overflow-x:auto}
+ul{padding-left:20px;margin:8px 0}
+li{margin:6px 0}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:.85rem;text-transform:uppercase;letter-spacing:.03em}
+.st{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.85rem;font-weight:600;background:var(--line)}
+.st.done{color:var(--good)}
+.st.risk{color:var(--warn-bd)}
+.st.block{color:var(--bad)}
+.callout{border-left:4px solid var(--warn-bd);background:var(--warn-bg);color:var(--warn-tx);padding:14px 16px;border-radius:8px;margin:16px 0}
+.callout strong{display:block;margin-bottom:4px}
+svg{width:100%;height:auto;display:block}
+svg text{fill:var(--muted);font-size:12px}
+.grid{stroke:var(--line);stroke-width:1}
+.axis{stroke:var(--muted);stroke-width:1}
+.line{stroke:var(--accent);stroke-width:2.5;fill:none}
+.dot{fill:var(--accent)}
+.legend{color:var(--muted);font-size:.85rem;margin:6px 0 0}
+</style>
+</head>
+<body>
+<main>
+<h1>Platform Engineering Weekly Status</h1>
+<p class="sub">Week ending 2026-10-16 · Prepared for leadership</p>
+
+<section class="tiles" aria-label="Headline metrics">
+  <div class="tile"><div class="v">47</div><div class="l">Deploys this week</div></div>
+  <div class="tile"><div class="v">132</div><div class="l">PRs merged</div></div>
+  <div class="tile"><div class="v">2</div><div class="l">Open incidents</div></div>
+  <div class="tile"><div class="v">9</div><div class="l">On-call pages</div></div>
+</section>
+
+<h2>Highlights</h2>
+<ul>
+  <li>The Postgres 16 upgrade finished on all 14 clusters.</li>
+  <li>Build cache hit rate climbed to 87 percent.</li>
+  <li>The new staging environment is live for the Checkout team.</li>
+</ul>
+
+<h2>PRs merged per week</h2>
+<div class="card">
+<svg viewBox="0 0 600 260" role="img" aria-label="Line chart of PRs merged per week from W33 to W41, rising from 98 to 132">
+  <line class="grid" x1="50" y1="20" x2="580" y2="20"/>
+  <line class="grid" x1="50" y1="86.67" x2="580" y2="86.67"/>
+  <line class="grid" x1="50" y1="153.33" x2="580" y2="153.33"/>
+  <line class="axis" x1="50" y1="220" x2="580" y2="220"/>
+  <text x="42" y="24" text-anchor="end">140</text>
+  <text x="42" y="90.67" text-anchor="end">120</text>
+  <text x="42" y="157.33" text-anchor="end">100</text>
+  <text x="42" y="224" text-anchor="end">80</text>
+  <polyline class="line" points="50,160 116.25,140 182.5,96.67 248.75,123.33 315,83.33 381.25,66.67 447.5,93.33 513.75,56.67 580,46.67"/>
+  <circle class="dot" cx="50" cy="160" r="4"/>
+  <circle class="dot" cx="116.25" cy="140" r="4"/>
+  <circle class="dot" cx="182.5" cy="96.67" r="4"/>
+  <circle class="dot" cx="248.75" cy="123.33" r="4"/>
+  <circle class="dot" cx="315" cy="83.33" r="4"/>
+  <circle class="dot" cx="381.25" cy="66.67" r="4"/>
+  <circle class="dot" cx="447.5" cy="93.33" r="4"/>
+  <circle class="dot" cx="513.75" cy="56.67" r="4"/>
+  <circle class="dot" cx="580" cy="46.67" r="4"/>
+  <text x="50" y="242" text-anchor="middle">W33</text>
+  <text x="116.25" y="242" text-anchor="middle">W34</text>
+  <text x="182.5" y="242" text-anchor="middle">W35</text>
+  <text x="248.75" y="242" text-anchor="middle">W36</text>
+  <text x="315" y="242" text-anchor="middle">W37</text>
+  <text x="381.25" y="242" text-anchor="middle">W38</text>
+  <text x="447.5" y="242" text-anchor="middle">W39</text>
+  <text x="513.75" y="242" text-anchor="middle">W40</text>
+  <text x="580" y="242" text-anchor="middle">W41</text>
+</svg>
+<p class="legend">Nine weeks, W33 to W41. Latest week: 132 merged, up from 98 in W33.</p>
+</div>
+
+<h2>Workstreams</h2>
+<div class="card">
+<table>
+  <thead><tr><th>Workstream</th><th>Owner</th><th>Status</th><th>ETA</th></tr></thead>
+  <tbody>
+    <tr><td>Postgres upgrade</td><td>Priya Nair</td><td><span class="st done">Done</span></td><td>2026-10-09</td></tr>
+    <tr><td>Service mesh rollout</td><td>Tomas Ruiz</td><td>On track</td><td>2026-11-06</td></tr>
+    <tr><td>Cost tagging</td><td>Mei Chen</td><td><span class="st risk">At risk</span></td><td>2026-10-30</td></tr>
+    <tr><td>Runner autoscaling</td><td>Dev Patel</td><td><span class="st block">Blocked</span></td><td>2026-11-20</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Risks</h2>
+<div class="callout" role="note">
+  <strong>Warning: runner autoscaling is blocked</strong>
+  The work is waiting on a quota increase from the cloud provider (ticket CASE-4471). If it is not approved by 2026-10-23, the November date slips.
+</div>
+</main>
+</body>
+</html>

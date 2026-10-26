@@ -1,0 +1,21 @@
+@title Lost or stolen laptop: response card
+@subtitle IT Security, effective 2026-11-01
+
+## First rule
+!! Report a lost or stolen laptop within 15 minutes of noticing. Call the service desk on extension 4100. Do not report by email.
+
+## Service desk steps
+1. Mark the device as lost in the device manager. This locks it and starts remote wipe on next connection.
+2. Disable the user's sessions and revoke their VPN certificate.
+3. Check whether the laptop held client files outside the document management system. This is not allowed, but it does happen.
+4. If it did, notify the General Counsel's office within 1 hour. Client confidentiality rules may require telling the client.
+5. Order a replacement. Standard turnaround is 1 business day.
+6. File the report in the incident log within 24 hours.
+
+## Encryption
+! Full-disk encryption is enforced on all laptops, so a lost device is not automatically a data breach. It must still be reported.
+
+## Quick reference
+- Service desk: 4100
+- Security hotline: 4199 (after hours)
+- Channel: #it-security

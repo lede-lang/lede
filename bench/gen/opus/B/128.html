@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Student Information System Upgrade Status · Harlow University</title>
+<style>
+:root{--bg:#f4f4f7;--surface:#ffffff;--ink:#1b1c22;--muted:#5c5f6b;--line:#e1e2e8;--track:#e9eaef;--accent:#4b3f9e;--red:#c0362c;--red-bg:#fdecea;--amber:#b06d00;--amber-bg:#fff3dc;--green:#1d7745;--green-bg:#e6f4ec;--grey-bg:#ececf1}
+@media (prefers-color-scheme:dark){:root{--bg:#111116;--surface:#1a1a21;--ink:#e8e8ee;--muted:#a0a2ae;--line:#2d2e38;--track:#272833;--accent:#a99cff;--red:#ff8f85;--red-bg:#3a1c1a;--amber:#f2b55c;--amber-bg:#35280f;--green:#72d39c;--green-bg:#15301f;--grey-bg:#2a2b35}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:26px 16px 64px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:650}
+h1{font-size:clamp(1.6rem,5vw,2.25rem);line-height:1.15;margin:.35rem 0 .6rem}
+h2{font-size:1.2rem;margin:0 0 .9rem;line-height:1.3}
+p{margin:.2rem 0 .8rem}
+.meta{display:flex;flex-wrap:wrap;gap:4px 18px;color:var(--muted);font-size:.9rem;margin:0;padding:0;list-style:none;align-items:center}
+.meta b{color:var(--ink);font-weight:600}
+.overall{display:inline-flex;align-items:center;gap:8px;background:var(--amber-bg);color:var(--amber);font-weight:700;border-radius:999px;padding:3px 12px;font-size:.85rem;text-transform:uppercase;letter-spacing:.05em}
+.overall::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--amber)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:16px}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.kpi .k{font-size:.8rem;color:var(--muted);font-weight:600}
+.kpi .v{font-size:1.45rem;font-weight:760;font-variant-numeric:tabular-nums;line-height:1.2}
+.kpi .s{font-size:.8rem;color:var(--muted)}
+.kpi.warn .v{color:var(--red)}
+.budget{margin-top:18px}
+.budget svg{width:100%;height:auto;display:block}
+.budget text{font:17px-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;fill:var(--muted)}
+.budget .lbl{fill:var(--ink);font-weight:600}
+.ms{display:grid;gap:14px}
+.m .top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.m .name{font-weight:650}
+.m .pct{font-variant-numeric:tabular-nums;font-weight:700}
+.m .bar{height:10px;background:var(--track);border-radius:5px;margin-top:6px;overflow:hidden}
+.m .bar div{height:100%;border-radius:5px}
+.pill{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border-radius:999px;padding:1px 9px;margin-left:8px;vertical-align:1px}
+.pill.g{background:var(--green-bg);color:var(--green)}
+.pill.a{background:var(--amber-bg);color:var(--amber)}
+.pill.r{background:var(--red-bg);color:var(--red)}
+.pill.d{background:var(--green);color:var(--surface)}
+.pill.p{background:var(--grey-bg);color:var(--muted)}
+.m .sub{font-size:.82rem;color:var(--muted);margin-top:3px}
+.risks{display:grid;gap:10px;list-style:none;margin:0;padding:0}
+.risk{border:1px solid var(--line);border-left:5px solid var(--c);border-radius:10px;padding:12px 14px}
+.risk .hd{display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px 10px;font-size:.82rem;color:var(--muted);margin-bottom:4px}
+.risk .hd b{color:var(--ink)}
+.risk p{margin:0}
+.decision{border-left:6px solid var(--amber)}
+.opts{display:grid;gap:10px;margin-top:12px}
+.opt{border:1px solid var(--line);border-radius:12px;padding:14px}
+.opt .tag{font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.opt h3{margin:2px 0 4px;font-size:1.05rem}
+.opt p{margin:0;font-size:.93rem}
+.opt .con{color:var(--red)}
+footer{margin-top:24px;color:var(--muted);font-size:.85rem;text-align:center}
+@media (min-width:680px){.kpis{grid-template-columns:repeat(4,1fr)}.opts{grid-template-columns:1fr 1fr}.card{padding:24px 26px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="eyebrow">Harlow University · IT Office</div>
+  <h1>Student information system upgrade</h1>
+  <ul class="meta">
+    <li><span class="overall">Overall amber</span></li>
+    <li>As of <b>2026-10-16</b></li>
+    <li>Go-live <b>2027-01-11</b>, ahead of spring registration</li>
+  </ul>
+
+  <section class="card" id="glance">
+    <h2>At a glance</h2>
+    <div class="kpis">
+      <div class="kpi"><div class="k">Approved budget</div><div class="v">$2.60M</div></div>
+      <div class="kpi"><div class="k">Spent</div><div class="v">$1.74M</div><div class="s">66.9% of approved</div></div>
+      <div class="kpi"><div class="k">Forecast at completion</div><div class="v">$2.78M</div></div>
+      <div class="kpi warn"><div class="k">Forecast overrun</div><div class="v">+$0.18M</div><div class="s">over approved budget</div></div>
+    </div>
+    <div class="budget">
+      <svg viewBox="0 0 600 88" role="img" aria-label="Budget bar on a scale of 0 to 3 million dollars: spent 1.74 million, approved 2.6 million, forecast 2.78 million.">
+        <rect x="10" y="30" width="580" height="22" rx="5" fill="var(--track)"/>
+        <rect x="10" y="30" width="336.4" height="22" rx="5" fill="var(--accent)"/>
+        <rect x="512.7" y="30" width="34.8" height="22" fill="var(--red)" opacity=".85"/>
+        <line x1="512.7" y1="22" x2="512.7" y2="60" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="547.5" y1="22" x2="547.5" y2="60" stroke="var(--red)" stroke-width="2" stroke-dasharray="3 2"/>
+        <text x="10" y="18" class="lbl">Spent $1.74M</text>
+        <text x="505" y="18" text-anchor="end" class="lbl">Approved $2.60M</text>
+        <text x="590" y="78" text-anchor="end" style="fill:var(--red);font-weight:600">Forecast $2.78M</text>
+        <text x="10" y="78">$0</text>
+        <text x="300" y="78" text-anchor="middle">$1.5M</text>
+      </svg>
+    </div>
+  </section>
+
+  <section class="card" id="milestones">
+    <h2>Milestones</h2>
+    <div class="ms">
+      <div class="m"><div class="top"><div class="name">Data cleanup <span class="pill d">Done</span></div><div class="pct">100%</div></div><div class="bar"><div style="width:100%;background:var(--green)"></div></div></div>
+      <div class="m"><div class="top"><div class="name">System configuration <span class="pill g">Green</span></div><div class="pct">85%</div></div><div class="bar"><div style="width:85%;background:var(--green)"></div></div></div>
+      <div class="m"><div class="top"><div class="name">Integration testing <span class="pill a">Amber</span></div><div class="pct">40%</div></div><div class="bar"><div style="width:40%;background:var(--amber)"></div></div></div>
+      <div class="m"><div class="top"><div class="name">User training <span class="pill g">Green</span></div><div class="pct">10%</div></div><div class="bar"><div style="width:10%;background:var(--green)"></div></div></div>
+      <div class="m"><div class="top"><div class="name">Cutover rehearsal <span class="pill p">Planned</span></div><div class="pct">0%</div></div><div class="bar"><div style="width:0"></div></div><div class="sub">Planned for 2026-12-07</div></div>
+    </div>
+  </section>
+
+  <section class="card" id="risks">
+    <h2>Risks</h2>
+    <ul class="risks">
+      <li class="risk" style="--c:var(--red)"><div class="hd"><span><span class="pill r" style="margin-left:0">High</span></span><span>Owner: <b>Beatrice Lindgren</b></span></div><p>The financial aid integration is failing <b>14 of 60</b> test cases.</p></li>
+      <li class="risk" style="--c:var(--amber)"><div class="hd"><span><span class="pill a" style="margin-left:0">Medium</span></span><span>Owner: <b>Omar Faraj</b></span></div><p>Registrar staff have only <b>55 of the 120</b> planned training seats confirmed.</p></li>
+      <li class="risk" style="--c:var(--amber)"><div class="hd"><span><span class="pill a" style="margin-left:0">Medium</span></span><span>Owner: <b>Greta Nilsson</b></span></div><p>A freeze on course catalog changes must begin by <b>2026-11-20</b>, and <b>3 departments</b> have not agreed.</p></li>
+    </ul>
+  </section>
+
+  <section class="card decision" id="decision">
+    <h2>Decision needed</h2>
+    <p>The steering committee is asked to choose one:</p>
+    <div class="opts">
+      <div class="opt"><div class="tag">Option A</div><h3>Approve $0.18M of extra vendor support</h3><p>Support through 2027-01-31; keeps go-live on 2027-01-11.</p></div>
+      <div class="opt"><div class="tag">Option B</div><h3>Move go-live to 2027-02-15</h3><p class="con">Would miss the first week of spring registration.</p></div>
+    </div>
+  </section>
+
+  <footer>Harlow University IT Office · Student information system upgrade · Status as of 2026-10-16</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,30 @@
+{
+  "source": "artifact db QGnYucUTc9fWm8irgHiN3T, collection spotcheck, read 2026-10-18",
+  "round": "heldout",
+  "pairs": 12,
+  "picks": {
+    "P005": "RIGHT", "P009": "LEFT", "P014": "TIE", "P016": "RIGHT", "P022": "RIGHT", "P029": "TIE",
+    "P033": "LEFT", "P036": "LEFT", "P042": "LEFT", "P047": "RIGHT", "P053": "LEFT", "P059": "RIGHT"
+  },
+  "resolved": {
+    "P005": {"writer": "haiku", "task": "45", "owner": "html", "judge": "lede"},
+    "P009": {"writer": "haiku", "task": "49", "owner": "lede", "judge": "lede"},
+    "P014": {"writer": "haiku", "task": "54", "owner": "tie", "judge": "html"},
+    "P016": {"writer": "haiku", "task": "56", "owner": "html", "judge": "html"},
+    "P022": {"writer": "haiku", "task": "62", "owner": "html", "judge": "html"},
+    "P029": {"writer": "haiku", "task": "69", "owner": "tie", "judge": "html"},
+    "P033": {"writer": "opus", "task": "43", "owner": "html", "judge": "html"},
+    "P036": {"writer": "opus", "task": "46", "owner": "html", "judge": "html"},
+    "P042": {"writer": "opus", "task": "52", "owner": "html", "judge": "html"},
+    "P047": {"writer": "opus", "task": "57", "owner": "html", "judge": "html"},
+    "P053": {"writer": "opus", "task": "63", "owner": "html", "judge": "html"},
+    "P059": {"writer": "opus", "task": "69", "owner": "lede", "judge": "tie"}
+  },
+  "summary": {
+    "owner_lede_win_or_tie": 4,
+    "owner_lede_win_or_tie_haiku": 3,
+    "owner_lede_win_or_tie_opus": 1,
+    "judge_lede_win_or_tie_same_pairs": 3,
+    "owner_judge_agreement": 8
+  }
+}

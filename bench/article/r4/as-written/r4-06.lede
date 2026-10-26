@@ -1,0 +1,127 @@
+@title Goal moment: motion spec and sequence check
+@subtitle Riverside U14 v St. Catherine's, 2-1, with the goal sequence and the goal-then-red-card case
+@width wide
+
+kpi Riverside U14 v St. Catherine's | 2-1 | full time | neutral
+
+## The numbers at a glance
+
+kpi Goal sequence budget | 6,000 ms | hard limit | neutral
+kpi Planned sequence | 5,020 ms | 980 ms spare | good
+kpi Worst case, all in a row | 5,920 ms | 80 ms spare | bad
+kpi Hold on the scorer name | 4,000 ms | 80% of the planned sequence | neutral
+
+!! This page cannot play animations, and I cannot change a duration or an easing here and let you watch. What follows is the spec laid out on a time scale, a sequence check, and starting values to try in whatever you prototype with. Nothing below is tuned by eye, and the tuned numbers have to come from you.
+
+## The spec, as given
+
+data spec = event,ms,easing,notes
+data spec += score digit roll,420,ease-out,slow? Dev says it feels sluggish on old phones
+data spec += goal flash behind team name,900,linear,must not trigger photosensitive warnings (max 3 flashes/sec)
+data spec += scorer name slide-in,350,"cubic-bezier(0.2, 0.8, 0.2, 1)","“Mbeki, 23'” etc; names with apostrophes truncate badly"
+data spec += scorer name hold,4000,n/a,
+data spec += scorer name slide-out,250,ease-in,
+data spec += red card drop,600,ease-in-out,designer wants a small bounce
+data spec += substitution swap arrows,500,ease-in-out,
+data spec += half-time banner,800,ease-out,
+data spec += full-time confetti,2500,,"only if the home team wins; product owner unsure"
+data spec += VAR check pulse,1200,ease-in-out,"loops until decision, then stops; “stop it politely”"
+data spec += connection lost fade,300,ease-out,
+data spec += stale data warning (after 15 s),200,,"amber, never red"
+data spec += tab refocus catch-up,0,,"jumps to current score with no animation; some say it should still animate"
+
+chart hbar spec y=ms unit=ms labels title="Duration of each event"
+
+table spec
+
+## The goal sequence on a time scale
+
+The spec gives durations but not start times, so I assumed this order: the score roll and the flash start together, the name slides in once the roll ends, holds, then leaves.
+
+data goal = step,start,end
+data goal += Score digit roll,0,420
+data goal += Goal flash behind team name,0,900
+data goal += Scorer name slide-in,420,770
+data goal += Scorer name hold,770,4770
+data goal += Scorer name slide-out,4770,5020
+
+chart range goal from=start to=end target="6000 6 s budget" title="Goal sequence, in ms from the goal"
+
+The sequence ends at 5,020 ms. How tight it is depends on how the steps are ordered:
+
+data order = ordering,total,spare
+data order += Roll and flash together then name after roll,5020,980
+data order += Name waits for the flash to end,5500,500
+data order += Everything one after another,5920,80
+
+chart hbar order y=total unit=ms labels target="6000 budget" title="Total sequence length by ordering"
+
+The 4,000 ms hold is the only lever big enough to matter. Every other step together is 1,020 ms.
+
+## A goal, then a red card 20 seconds later
+
+This is a plausible match to run it against:
+
+table = minute,event,team,scorer or player,score after; 23',Goal,Riverside U14,"Mbeki",1-0; 35',Half-time,,,1-0; 44',Goal,St. Catherine's,"D'Souza",1-1; 52',Substitution,Riverside U14,,1-1; 67',Goal,Riverside U14,"Van der Merwe",2-1; 67' + 20 s,Red card,St. Catherine's,,2-1; 70',Full-time,,,2-1
+
+At full time Riverside are the home side and win, so the confetti fires, unless the product owner decides otherwise. The scorer strings that will be shown are “Mbeki, 23'” (10 characters), “D'Souza, 44'” (12) and “Van der Merwe, 67'” (18). The last two are the ones to test for truncation.
+
+data both = event,start,end
+data both += Score digit roll,0,420
+data both += Goal flash behind team name,0,900
+data both += Scorer name slide-in,420,770
+data both += Scorer name hold,770,4770
+data both += Scorer name slide-out,4770,5020
+data both += Stale data warning if the feed goes quiet,15000,15200
+data both += Red card drop,20000,20600
+
+chart range both from=start to=end target="6000 goal budget" title="Goal at 0 s, red card at 20 s"
+
+Run as stated, the two never meet: the goal sequence is over by about 5 s and the red card lands at 20 s. Two things can still go wrong.
+
+- **The stale data warning.** It fires after 15 s without data, which is between the goal and the card. If a clock tick counts as data, it never fires. If only match events count, it shows amber for 200 ms at 15 s and the red card then clears it. Decide which.
+- **Events that arrive closer together.** Feeds do not always deliver them 20 s apart. Pick a rule for what happens on overlap: queue the second event, interrupt the first, or merge them.
+
+data gap = red card arrives,lands during,what to decide
+data gap += 20 s after the goal,nothing (sequence ended at 5.0 s),nothing
+data gap += 5 s after the goal,the end of the name slide-out (4.77 to 5.02 s),does the card wait 20 ms or cut in?
+data gap += 2 s after the goal,the name hold,does the card drop over a name that is still being read?
+data gap += 0.5 s after the goal,the name slide-in,does the score roll and flash finish first?
+
+table gap
+
+Also test a goal under a VAR check, since the VAR pulse loops until the decision and may already be running when the goal sequence starts.
+
+## Constraints, checked
+
+- **Under 6 s.** Yes in every ordering above, but with only 80 ms spare if the steps run strictly one after another.
+- **Score digits readable throughout.** The roll is 420 ms and then the digits sit still for the rest of the sequence. The flash is behind the team name, so keep it from washing out the digits at its brightest.
+- **Photosensitivity (max 3 flashes/sec).** One goal flash is a single event of 900 ms. If the flash is pulsed more than once, count the pulses inside any one second. The VAR pulse at 1,200 ms is under 1 per second alone, but add it to a goal flash and any other flashing effect on screen at the same time.
+- **Phones in glare.** The name banner and score need strong contrast against their backgrounds and against the flash. Check on a phone outdoors, not only on a desk monitor.
+
+## Values to try
+
+These are starting points for testing, not final numbers.
+
+data try = event,now,try,why
+data try += score digit roll,420 ms ease-out,300 ms ease-out,"Dev says 420 ms feels sluggish on old phones, so animate transform and opacity only, and measure on the slowest phone you support"
+data try += goal flash,900 ms linear,900 ms ease-out,"A linear flash looks mechanical, and ease-out lets it fade after the peak. Still one flash only."
+data try += red card drop,600 ms ease-in-out,"600 ms cubic-bezier(0.34, 1.56, 0.64, 1)","Ease-in-out has no overshoot, so it cannot bounce. This curve overshoots slightly and settles."
+data try += scorer name hold,4000 ms,3000 to 4000 ms,"This is the only big time saving if you need more slack. Test whether a parent can read the name in glare in 3 s."
+data try += tab refocus catch-up,0 ms,0 ms,"Keep the jump. A catch-up animation on return would replay events the viewer already missed."
+
+table try
+
+## Reduced motion
+
+Almost everything becomes an instant change. What each event should do, as a proposal:
+
+table = event,reduced motion; score digit roll,Change the digit at once; goal flash,"A static highlight behind the team name, no flashing"; scorer name slide-in and slide-out,"Appear and disappear at once, keep the 4,000 ms hold"; red card drop,Appear at once; substitution swap arrows,Appear at once; half-time banner,Appear at once; full-time confetti,Off; VAR check pulse,"A static VAR check label until the decision, then remove it"; connection lost fade,Instant; stale data warning,Instant and still amber; tab refocus catch-up,Already instant
+
+## Open questions
+
+1. Is the confetti home-win only, or any win? (Product owner is unsure.)
+2. Should the tab refocus catch-up stay at 0 ms? Some say it should animate.
+3. How should a long or apostrophe name be shortened, for example “Van der Merwe, 67'”: truncate the name, shrink the type, or wrap to two lines?
+4. What counts as data for the 15 s stale warning?
+5. What is the rule when events overlap: queue, interrupt or merge?

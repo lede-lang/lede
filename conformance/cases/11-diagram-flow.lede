@@ -1,0 +1,11 @@
+diagram arch dir=LR title="Topology"
+arch: api "Payments API" svc "ECS · 6 tasks" focus
+arch: db "Orders DB" db
+arch: user -> api -> db : sql
+arch: api -> q, cache
+arch: q --> worker : async
+arch: a <-> b
+arch: group priv "Private" api, db
+arch: group vpc "VPC" priv, q
+arch: group "Unnamed" worker
+arch: api "Payments API v2"

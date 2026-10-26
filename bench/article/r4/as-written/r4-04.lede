@@ -1,0 +1,105 @@
+@title Review guide: paediatric dose rounding change
+@subtitle Pharmacy system PR, 11 files, release Thursday
+@width wide
+
+!! Short version: do not approve until three things are answered. (1) Does the pump firmware accept 1-decimal mL/h, and was that tested on real hardware or a simulator? (2) Is the vancomycin cap change (80 to 60 mg/kg/day) backed by the P&T approval itself, not a comment about it? (3) How was the gentamicin fixture generated, and does it check the code against anything independent of the code? Green checks only prove the code does what the author's tests say.
+
+kpi Files changed | 11
+kpi Lines | +1,698 / -144 | 1,120 of the added lines are one fixture file | neutral
+kpi Checks | Green | tests pass, which does not show the clinical rules are right | neutral
+kpi Release | Thursday | ward summary for St. Brendan's due before | bad
+
+## What the change is really doing
+
+Three things, only the first two matter clinically.
+1. **Changes how doses are rounded**, with new rules per weight band (src/dosing/round.ts, bands.ts). The bands are now 0-3 kg, 3-10 kg, 10-25 kg and 25+ kg.
+2. **Changes what the pump is told**: infusion rates are now sent as mL/h with 1 decimal instead of 2 (src/pump/export.ts), and the max mg/kg/day cap is now set per drug (limits.ts).
+3. **Changes one drug's cap**: vancomycin goes from 80 to 60 mg/kg/day in config/formulary-overrides.yaml. This is a clinical policy change hiding in a 6-line config edit.
+
+The rest is tests, docs, a unit-conversion helper and a cosmetic label change.
+
+## Clinical bits, plainly
+
+- Children's doses are calculated from body weight (mg per kg). A small rounding step is a larger share of a small dose, so a newborn is far more exposed to rounding than an adult.
+- An infusion pump delivers a drug as a rate, in mL per hour. The system converts the dose to a rate and rounds it to a precision the pump accepts. Going from 2 decimals to 1 means steps of 0.1 mL/h instead of 0.01 mL/h, so the rate can be off by up to 0.05 mL/h instead of 0.005. At 0.5 mL/h that is up to 10% of the rate. At 5 mL/h it is up to 1%. The slowest infusions, which are the smallest patients, take the biggest hit.
+- Half-up vs banker's rounding only differs on an exact half (2.5 becomes 3 under half-up, but 2 under banker's rounding, which picks the nearest even number). Half-up always rounds exact halves up, so over many doses it leans high. Banker's rounding leans neither way. For doses near a safety cap, lean-high is the wrong default.
+- A max mg/kg/day cap is the safety net: it stops an order that is too large for the child's weight. A lower cap means some orders that used to go through will now be clamped or flagged.
+- Weight bands group children by size because the safe dosing rules differ for a 2 kg newborn and a 20 kg child. The edges of the bands are where bugs live.
+
+## Where to spend your time
+
+data files = file,added,removed,attention,why it matters
+data files += src/dosing/round.ts,88,41,**Read closely**,"The change itself: new rounding rules by weight band. Priya's half-up question is open."
+data files += src/pump/export.ts,52,20,**Read closely**,"Last step before the pump. Rate precision drops from 2 decimals to 1 mL/h. Tomasz's firmware question is open."
+data files += config/formulary-overrides.yaml,6,2,**Read closely**,"Six lines, but it lowers the vancomycin cap from 80 to 60 mg/kg/day. A clinical decision inside a config file."
+data files += src/dosing/limits.ts,9,4,**Read closely**,"The max mg/kg/day cap is now per-drug. Check what happens to a drug with no entry."
+data files += src/dosing/bands.ts,30,12,**Read closely**,"Weight bands 0-3, 3-10, 10-25, 25+ kg. Check which band exactly 3, 10 and 25 kg fall into."
+data files += src/pump/units.ts,14,0,**Read closely**,"New mcg to mg helpers. Small, but a 1,000x unit slip is the classic dosing error."
+data files += test/dosing/round.test.ts,260,35,Skim the edges,"48 new cases. Look only at band boundaries and exact .5 values."
+data files += test/pump/export.test.ts,71,9,Skim,"Is there a case where a 2-decimal rate now rounds to 1 decimal and the result is checked against what the pump accepts?"
+data files += test/dosing/fixtures/gentamicin.json,1120,0,Spot-check,"66% of all added lines. Generated from the formulary and nobody has read it. Do not read it; sample a few rows at band edges against the formulary and ask how it was generated."
+data files += docs/dosing-rules.md,45,18,Skim,"Check it matches the code. The ward summary will probably be written from this."
+data files += src/ui/DoseBadge.tsx,3,3,Skip,"Cosmetic: mL/hr to mL/h."
+
+chart hbar files y=added,removed stack title="Lines changed by file"
+
+table files
+
+## Where a mistake could hurt a patient
+
+cards
+### Pump precision (export.ts)
+Rates now go out with 1 decimal. If the firmware accepts 2 and the new code assumes it only needs 1, the pump may run at a slightly different rate than the system calculated. Worst for the lowest rates, which means the smallest patients.
+### Rounding direction (round.ts)
+Half-up rounds exact halves up every time. Ask whether rounding happens before or after the max cap is applied. If before, a rounded-up dose can land above the cap.
+### Vancomycin cap (formulary-overrides.yaml)
+The cap drops from 80 to 60 mg/kg/day. Doses ordered above 60 are now clamped or flagged. Ask which, and whether the prescriber and pharmacist can see that it happened. The only evidence of approval is a comment saying P&T approved it on 14 Sep.
+### Band edges and per-drug caps (bands.ts, limits.ts)
+A child at exactly 3 kg, 10 kg or 25 kg must land in one band only. A drug missing from the per-drug cap table must fail loudly, not fall back to no cap.
+### Units (units.ts)
+Anything converting mcg to mg that is off by a factor of 1,000 gives a dose that is 1,000 times too small or too large. Check the direction and that it has a test each way.
+### The fixture
+The gentamicin fixture is 1,120 lines nobody has read, generated from the formulary. If the expected values were produced by the same logic being tested, the tests agree with the code by construction.
+
+## Questions for the author
+
+1. Does the pump firmware accept 1-decimal rates, and was this tested on a pump or only in a simulator? (Tomasz asked; no answer shown.)
+2. Why half-up rather than banker's rounding? Is the choice documented, and who signed off on it clinically? (Priya asked.)
+3. Is rounding done before or after the max mg/kg/day cap, and can a rounded dose exceed the cap?
+4. Is rounding done in floating point? Which function rounds, and what does it do with exact halves and with values like 2.675?
+5. Which band do exactly 3, 10 and 25 kg fall into, and is there a test for each edge?
+6. What happens to a drug with no per-drug cap entry, and to a weight outside every band, such as 0 or a missing weight?
+7. What changes in practice for a patient on vancomycin at 60 to 80 mg/kg/day? Is the prescriber told? Where is the P&T approval record of 14 Sep, not just the comment?
+8. Why is there a gentamicin fixture and no vancomycin one, when vancomycin is the drug whose cap changed?
+9. How was the gentamicin fixture generated, and from which version of the formulary? Does anything check it independently of the new code?
+10. Does round.test.ts include the old 2-decimal behaviour as a comparison, so we can see exactly what shifted?
+11. Is there a rollback plan if a ward reports a wrong rate after Thursday?
+
+## Comments so far
+
+table = file,who,comment,status; src/dosing/round.ts,Priya,"“why half-up and not banker's?”",No reply shown; src/pump/export.ts,Tomasz,"“pump firmware accepts 2, are we sure?”",No reply shown; config/formulary-overrides.yaml,Dr. Adeyemi-Clarke,"“approved by P&T 14 Sep”",Approval claimed but no record linked; test/dosing/fixtures/gentamicin.json,nobody,Nobody has read it,Unreviewed
+
+Seven files have no comments at all, including bands.ts, limits.ts and units.ts, which I rate as read-closely.
+
+## Suggested order for tonight
+
+- [ ] Read round.ts and export.ts first, with Priya's and Tomasz's questions in mind.
+- [ ] Open formulary-overrides.yaml and ask for the P&T approval record.
+- [ ] Read bands.ts and limits.ts for the edge cases (3, 10, 25 kg; missing drug).
+- [ ] Skim round.test.ts for the boundary and exact-half cases only.
+- [ ] Sample 5 to 10 rows of the fixture against the formulary, including rows at the band edges.
+- [ ] Post the questions above, then request changes or hold approval until the answers arrive.
+
+## Draft note for the St. Brendan's ward champion
+
+The ward champion needs a summary before Thursday. Do not send it until questions 1, 3 and 7 are answered.
+
+- Doses for children are now rounded using new rules per weight band: 0-3 kg, 3-10 kg, 10-25 kg and 25+ kg.
+- Pump rates are sent with 1 decimal place instead of 2. Pending confirmation that the pumps accept this.
+- The daily maximum dose limit is now set per drug.
+- The vancomycin daily maximum goes from 80 to 60 mg/kg/day, per the Pharmacy and Therapeutics approval of 14 Sep. Pending sight of that approval.
+- The display label changes from "mL/hr" to "mL/h". Nothing else changes on screen.
+
+## What I could not establish
+
+I have only the file list, notes and comments, not the code. I cannot tell what the old bands were, how the rounding is implemented, or whether the pump accepts 1 decimal. The clinical effect of the vancomycin change is a question for the pharmacist or Dr. Adeyemi-Clarke, not for a developer to judge.

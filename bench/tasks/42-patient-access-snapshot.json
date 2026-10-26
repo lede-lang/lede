@@ -1,0 +1,76 @@
+{
+  "id": "42-patient-access-snapshot",
+  "category": "status",
+  "title": "Northfield patient access snapshot",
+  "brief": "Northfield Community Health needs a patient access snapshot for September 2026 that the clinic directors can read before their Monday meeting on 2026-10-19. The number they care about most is the median days to the next available new-patient appointment: 9.2 days against a target of 7. Alongside it show the no-show rate of 7.1 percent, phone abandonment of 4.3 percent and patient satisfaction of 4.5 out of 5. Under \"Clinics\" compare the five clinics on median wait in days, no-show rate and phone abandonment: Eastgate 12.4, 11.8 percent, 6.9 percent; Lakeview 8.1, 5.9 percent, 3.2 percent; Millbrook 7.3, 6.2 percent, 3.8 percent; Harlan Street 10.9, 7.4 percent, 4.9 percent; Riverside 6.4, 4.8 percent, 2.9 percent. Eastgate and Harlan Street are the problem spots and leadership must notice them immediately. Under \"Wait trend\" show median wait for the last six months: Apr 6.8, May 7.2, Jun 7.9, Jul 8.4, Aug 9.0, Sep 9.2. Under \"What we are doing\", three actions: a Saturday clinic at Eastgate starting 2026-11-07 (Eastgate lost Dr. Hana Yoshida in August and has 2 open physician posts), text reminders two days before visits (the Lakeview pilot cut its no-show rate from 8.0 to 5.9 percent), and phone lines at Harlan Street staying open until 19:00.",
+  "checklist": {
+    "sections": [
+      "Clinics",
+      "Wait trend",
+      "What we are doing"
+    ],
+    "visible": [
+      "Median days",
+      "No-show rate",
+      "Phone abandonment",
+      "Patient satisfaction",
+      "Eastgate",
+      "Lakeview",
+      "Millbrook",
+      "Harlan Street",
+      "Riverside",
+      "Hana Yoshida"
+    ],
+    "values": [
+      "9.2",
+      "7",
+      "7.1",
+      "4.3",
+      "4.5",
+      "12.4",
+      "11.8",
+      "6.9",
+      "8.1",
+      "5.9",
+      "3.2",
+      "7.3",
+      "6.2",
+      "3.8",
+      "10.9",
+      "7.4",
+      "4.9",
+      "6.4",
+      "4.8",
+      "2.9",
+      "6.8",
+      "7.2",
+      "7.9",
+      "8.4",
+      "9.0",
+      "2026-11-07",
+      "19:00",
+      "2026-10-19",
+      "8.0"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "table",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "The Eastgate Saturday clinic now starts on 2026-11-14 instead of 2026-11-07, and the Harlan Street phone lines will stay open until 20:00 instead of 19:00.",
+    "expect_visible": [
+      "2026-11-14"
+    ],
+    "expect_values": [
+      "20:00"
+    ],
+    "expect_absent": [
+      "2026-11-07",
+      "19:00"
+    ]
+  }
+}

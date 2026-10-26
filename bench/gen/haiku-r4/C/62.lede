@@ -1,0 +1,29 @@
+@title Energy use at Lakewood University, FY2026
+@subtitle Fiscal year ending 2026-06-30, for the sustainability committee
+
+## Summary
+
+Total electricity use was 12,050 MWh, down from 12,780 MWh the year before, a 5.7 percent fall. At an average of $0.112 per kWh, that cost $1,349,600. Campus-wide intensity was 19.1 kWh per square foot.
+
+kpi Electricity | 12,050 MWh | down 5.7% on FY2025 | good
+kpi Electricity cost | $1,349,600 | at $0.112 per kWh
+kpi Campus intensity | 19.1 | kWh per sq ft
+
+## By building
+
+data buildings = building,floor area (sq ft),annual MWh,kWh per sq ft; Science Hall,"182,000",4210,23.1; Library,"96,000",1520,15.8; Student Center,"128,000",2380,18.6; Engineering Annex,"74,000",2050,27.7; Residence Hall North,"150,000",1890,12.6
+
+table buildings title="Electricity and intensity by building, FY2026"
+
+Science Hall uses the most in absolute terms, at 4,210 MWh. The Engineering Annex is the least efficient per square foot, at 27.7 kWh. These are not the same buildings, which is why both measures matter.
+
+grid 2
+
+chart hbar buildings y=annual MWh unit=MWh labels title="Annual use by building"
+
+chart hbar buildings y=kWh per sq ft unit=kWh labels title="Intensity by building"
+
+## What is changing
+
+- The LED retrofit in the Library was completed in October 2025.
+- An HVAC controls upgrade is planned for Science Hall and the Engineering Annex. It is budgeted at $640,000 for FY2027 and is expected to save about 9 percent in those two buildings.

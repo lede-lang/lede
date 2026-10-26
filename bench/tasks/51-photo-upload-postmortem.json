@@ -1,0 +1,65 @@
+{
+  "id": "51-photo-upload-postmortem",
+  "category": "runbook",
+  "title": "Stonebridge photo upload postmortem",
+  "brief": "Please write up the postmortem for INC-3017 at Stonebridge Realty, the listing photo upload outage on 2026-08-27, owned by the Listings Platform team. The numbers people will ask about first: it lasted 112 minutes, upload failures peaked at 100 percent, 8340 listings were left with missing photos, and 412 support tickets came in. What happened, for a \"Summary\" section: a storage policy change meant to restrict bucket access to our VPC endpoint also blocked uploads made with pre-signed URLs from agents' phones, so every mobile upload returned 403. Then \"Timeline\" with times in UTC, annotate the moments that mattered: 10:15 policy change applied through Terraform; 10:22 uploads begin failing with 403; 10:31 first customer ticket reaches support; 10:48 incident declared Sev2; 11:20 the policy diff is identified as the cause; 11:58 hotfix applied removing the deny statement; 12:07 uploads recover. A \"Why it was not caught\" section covering: the change was tested only from the office network, staging has no mobile upload test, and the policy linter does not model pre-signed URLs. A \"What went well\" section: the declared incident had a clear commander within 17 minutes, and the rollback itself took under 10 minutes once the cause was known. Finish with \"Action items\", each with an owner and due date: add a pre-signed URL upload test to staging, Greta Lindqvist, 2026-09-18; require policy changes to be applied to staging first, Omar Haddad, 2026-09-25; alert when upload 403s exceed 2 percent for 5 minutes, Listings on-call, 2026-09-11. Blameless tone.",
+  "checklist": {
+    "sections": [
+      "Summary",
+      "Timeline",
+      "Why it was not caught",
+      "What went well",
+      "Action items"
+    ],
+    "visible": [
+      "INC-3017",
+      "Listings Platform",
+      "Greta Lindqvist",
+      "Omar Haddad",
+      "pre-signed",
+      "403",
+      "Terraform",
+      "Sev2"
+    ],
+    "values": [
+      "112",
+      "100",
+      "8340",
+      "412",
+      "10:15",
+      "10:22",
+      "10:31",
+      "10:48",
+      "11:20",
+      "11:58",
+      "12:07",
+      "17",
+      "10",
+      "2",
+      "5",
+      "2026-09-18",
+      "2026-09-25",
+      "2026-09-11"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add an action item \"Run a game day for storage policy changes\", owner Yuki Tanabe, due 2026-10-30, and correct the support ticket count to 436.",
+    "expect_visible": [
+      "game day",
+      "Yuki Tanabe"
+    ],
+    "expect_values": [
+      "436",
+      "2026-10-30"
+    ],
+    "expect_absent": [
+      "412"
+    ]
+  }
+}

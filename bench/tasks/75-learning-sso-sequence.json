@@ -1,0 +1,53 @@
+{
+  "id": "75-learning-sso-sequence",
+  "category": "architecture",
+  "title": "Kestrel single sign-on sequence",
+  "brief": "Kestrel Learning needs a page for its platform team on how single sign-on works for the course portal, version dated 2026-10-08. Section \"Sign-in sequence\" with six parties, named exactly: Browser, Course Portal, Identity Provider, Token Service, User Directory, Audit Log. In order: Browser tells Course Portal \"open /courses\"; Course Portal tells Browser \"redirect to Identity Provider\"; Browser sends Identity Provider \"authorization request with PKCE\"; Identity Provider asks User Directory \"verify credentials and groups\"; User Directory answers Identity Provider \"verified, groups returned\"; Identity Provider asks Token Service \"issue tokens\"; Token Service answers Identity Provider \"tokens issued\"; Identity Provider tells Browser \"redirect with one-time code\"; Browser sends Course Portal \"one-time code\"; Course Portal asks Token Service \"exchange code for tokens\"; Token Service tells Audit Log \"record sign-in\"; Course Portal tells Browser \"session cookie, 24 hours\". Section \"Token lifetimes\": ID token 10 minutes, access token 30 minutes, refresh token 8 hours, session cookie 24 hours, one-time code 60 seconds. Section \"Rules\" with three points: staff accounts must pass MFA, a one-time code can be used once only, and sign-in events are kept for 400 days. Make sure readers see that a code expires after 60 seconds and works only once.",
+  "checklist": {
+    "sections": [
+      "Sign-in sequence",
+      "Token lifetimes",
+      "Rules"
+    ],
+    "visible": [
+      "Browser",
+      "Course Portal",
+      "Identity Provider",
+      "Token Service",
+      "User Directory",
+      "Audit Log",
+      "authorization request with PKCE",
+      "redirect with one-time code",
+      "record sign-in",
+      "MFA"
+    ],
+    "values": [
+      "10 minutes",
+      "30 minutes",
+      "8 hours",
+      "24 hours",
+      "60 seconds",
+      "400 days",
+      "2026-10-08"
+    ]
+  },
+  "needs": [
+    "sequence",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the refresh token lifetime from 8 hours to 12 hours and the one-time code lifetime from 60 seconds to 30 seconds.",
+    "expect_visible": [
+      "12 hours"
+    ],
+    "expect_values": [
+      "30 seconds"
+    ],
+    "expect_absent": [
+      "8 hours",
+      "60 seconds"
+    ]
+  }
+}

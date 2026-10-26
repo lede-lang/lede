@@ -1,0 +1,192 @@
+@title PR 2841: backpressure for CSV and NDJSON export
+@subtitle A review guide that explains the streaming logic first, then walks the diff with findings under each hunk
+@author Claude, Reviewer
+@date 2026-10-19
+@width wide
+
+## Verdict
+
+!!! **Request changes.** The backpressure logic is correct and well tested, but one path leaks a database connection: if the client disconnects while the export is paused, nothing resumes or closes the cursor.
+
+kpi Blocking | 1 | fix before merge | bad
+kpi Nits | 3 | optional | neutral
+kpi Nice | 3 | worth keeping | good
+
+The PR touches 2 files, `src/export/stream.js` (+15 -4) and `test/export/stream.test.js` (+21), about 40 changed lines.
+
+## Backpressure in one minute
+
+You asked for focus on the streaming logic, so here is the model before the diff.
+
+A fast producer (the database cursor) can emit rows faster than a slow consumer (the HTTP response to a client on a poor connection) can send them. Node does not stop the producer on its own when you use `on('data')`. Unsent rows pile up in the response's memory buffer. For a 2 GB export that buffer grows until the process is killed.
+
+The protocol has three parts.
+
+1. `res.write(chunk)` returns `true` while the buffer has room and `false` once it passes its high-water mark (16 KiB by default).
+2. On `false`, the producer must stop: call `cursor.pause()`.
+3. When the buffer empties, `res` emits `'drain'`. The producer resumes: `cursor.resume()`.
+
+diagram bp dir=LR title="The pause and resume loop"
+bp: db "Cursor" db "produces rows" focus
+bp: app "streamExport" fn "the code in this PR"
+bp: res "HTTP response" svc "buffer, 16 KiB mark"
+bp: client "Client" user "slow link"
+bp: db -> app : data row
+bp: app -> res : write(row)
+bp: res -> client : bytes
+bp: res --> app : false means full
+bp: app --> db : pause()
+bp: res --> app : drain event
+bp: app --> db : resume()
+
+The same loop as a timeline of one saturation cycle.
+
+diagram cycle sequence title="One pause and resume cycle"
+cycle: db "Cursor" db
+cycle: app "streamExport" fn
+cycle: res "HTTP response" svc
+cycle: db -> app : data row
+cycle: app -> res : write(row)
+cycle: res --> app : true
+cycle: note res : client is slow, buffer fills
+cycle: db -> app : data row
+cycle: app -> res : write(row)
+cycle: res --> app : false
+cycle: app -> db : pause()
+cycle: note res : buffer drains to the client
+cycle: res --> app : drain
+cycle: app -> db : resume()
+
+table = term,meaning; `write()` returns `false`,"the buffer passed the high-water mark; stop sending"; `highWaterMark`,"the buffer size that triggers `false`; 16 KiB for a response by default"; `'drain'`,"the buffer is empty again; safe to send"; `pause()` and `resume()`,"stop and restart `'data'` events on the cursor"
+
+### Why the PR was needed
+
+The benchmark in the PR description exports a 2 GB table to a client throttled to 5 Mbps. Memory before the fix grows without limit; after it stays flat.
+
+data mem = minute,before,after; m0,120,118; m1,210,126; m2,340,131; m3,480,129; m4,610,133; m5,760,130; m6,890,132; m7,1010,131; m8,1130,134
+
+chart line mem x=minute y=before,after unit=MB target="512 pod limit" title="Process memory during a 2 GB export" focus=after
+
+## The diff, annotated
+
+Each hunk is followed by the findings that apply to it. Severity is marked by tag and callout level: **BLOCKING** is a red alert, **NIT** is a warning, **NICE** is a note.
+
+### src/export/stream.js
+
+Before, every row was written and the return value ignored. After, the function pauses on `false` and resumes on `'drain'`. Read the three hunks in order.
+
+#### Hunk 1: the signature and the flag
+
+```diff
+@@ -1,10 +1,21 @@
+ 'use strict';
+
+-function streamExport(cursor, res) {
+-  cursor.on('data', (row) => {
+-    res.write(JSON.stringify(row) + '\n');
+-  });
++function streamExport(cursor, res, { highWaterMark = 16 * 1024 } = {}) {
++  let paused = false;
++
+```
+
+!! **NIT, line 3.** `highWaterMark` is accepted but never used. The buffer threshold belongs to `res`, so this option cannot change it. Remove it, or pass it where the response is created.
+
+!! **NIT, line 4.** `paused` reads like `cursor.isPaused()` but means "waiting for drain". Rename it `waitingForDrain` so the next reader does not swap them.
+
+#### Hunk 2: the pause and resume
+
+```diff
+@@ -5,3 +6,10 @@ function streamExport(cursor, res, { highWaterMark = 16 * 1024 } = {}) {
++  cursor.on('data', (row) => {
++    const ok = res.write(JSON.stringify(row) + '\n');
++    if (ok || paused) return;
++    paused = true;
++    cursor.pause();
++    res.once('drain', () => {
++      paused = false;
++      cursor.resume();
++    });
++  });
+```
+
+! **NICE, line 7.** Using the return value of `write()` as the signal is exactly right. The guard `if (ok || paused) return` also prevents stacking several `'drain'` listeners when more rows arrive after the first `false`.
+
+! **NICE, lines 11 to 14.** `once('drain')` removes itself after firing. No manual listener cleanup is needed in the normal path.
+
+#### Hunk 3: end and error
+
+```diff
+@@ -7,2 +17,4 @@ function streamExport(cursor, res, { highWaterMark = 16 * 1024 } = {}) {
+   cursor.on('end', () => res.end());
+-}
++  cursor.on('error', (err) => res.destroy(err));
++}
+```
+
+!!! **BLOCKING, lines 17 to 18.** There is no handler for the client going away. If the client disconnects while `paused` is true, `res` emits `'close'` and never `'drain'`. The `drain` listener never fires, the cursor stays paused forever and the database connection is held until the server times out. With mobile clients on 2 GB exports this exhausts the pool. Destroy the cursor when the response closes.
+
+```js
+cursor.on('end', () => res.end());
+cursor.on('error', (err) => res.destroy(err));
+res.once('close', () => cursor.destroy()); // client left: release the connection
+```
+
+! **NICE, line 18.** Destroying the response on a cursor error is better than ending it. The client sees an aborted transfer instead of a file that looks complete but is truncated.
+
+### test/export/stream.test.js
+
+#### Hunk 4: the slow-consumer test
+
+```diff
+@@ -0,0 +1,21 @@
++const test = require('node:test');
++const assert = require('node:assert');
++const { once } = require('node:events');
++const { Readable, Writable } = require('node:stream');
++const { streamExport } = require('../../src/export/stream');
++
++test('keeps the response buffer bounded for a slow consumer', async () => {
++  const cursor = Readable.from(Array.from({ length: 1000 }, (_, i) => ({ i })));
++  let peak = 0;
++  const res = new Writable({
++    highWaterMark: 256,
++    write(_chunk, _enc, cb) { setTimeout(cb, 1); },
++  });
++  const timer = setInterval(() => {
++    peak = Math.max(peak, res.writableLength);
++  }, 5);
++  streamExport(cursor, res);
++  await once(res, 'finish');
++  clearInterval(timer);
++  assert.ok(peak < 1024, `peak buffer ${peak} B`);
++});
+```
+
+! **NICE, lines 9 to 12.** The test uses a deliberately slow `Writable`. That is the only reliable way to exercise `'drain'` without a real network.
+
+!! **NIT, lines 13 to 15.** Sampling `writableLength` every 5 ms can miss the real peak and pass for the wrong reason. Track it inside `write()` instead.
+
+```js
+write(chunk, _enc, cb) {
+  peak = Math.max(peak, this.writableLength);
+  setTimeout(cb, 1);
+},
+```
+
+!! **No test covers the missing path.** Add a case where `res.destroy()` is called mid-export and assert that the cursor is destroyed. It fails today and passes with the blocking fix.
+
+## All findings
+
+table = id,severity,where,summary,action; B1,**blocking**,"stream.js 17 to 18","cursor never released when client disconnects while paused","add `res.once('close', ...)` and a test"; N1,**nit**,"stream.js 3","`highWaterMark` option is unused","remove it"; N2,**nit**,"stream.js 4","`paused` name hides its meaning","rename to `waitingForDrain`"; N3,**nit**,"test 13 to 15","interval sampling can miss the peak","record inside `write()`"; Y1,**nice**,"stream.js 7","uses the `write()` return value","keep"; Y2,**nice**,"stream.js 11 to 14","`once('drain')` self-cleans","keep"; Y3,**nice**,"test 9 to 12","slow `Writable` exercises drain","keep"
+
+## Before you approve
+
+- [ ] B1 fixed and the disconnect test added
+- [ ] Run the new test locally and confirm it passes
+- [ ] Confirm the DB pool size is shown in the connection metrics after a cancelled export
+- [ ] Check that `highWaterMark` has no other caller before removing it
+
+step Reproduce B1 with curl --limit-rate 1k and Ctrl-C | now | Reviewer
+step Author applies the close handler and test | 2026-10-20 | PR author
+step Re-review the delta only | 2026-10-21 | Reviewer

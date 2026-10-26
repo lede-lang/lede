@@ -1,0 +1,54 @@
+{
+  "id": "91-edge-cert-rotation",
+  "category": "runbook",
+  "title": "Edge proxy certificate rotation runbook",
+  "brief": "Redwater Media's Platform team needs a runbook for rotating the TLS certificates on the 18 edge proxies, owned by Platform Security. Sections: \"When to rotate\", \"Before you start\", \"Rotation steps\", \"Rollback\" and \"Escalation\". When to rotate: when a certificate has 30 days or fewer left, which the CERT_EXPIRY_30D alert announces; the certificates cover 12 hostnames. Before you start: have the change record open, confirm no deploy is running in #deploys, and check that the internal CA is healthy. Rotation steps, in order, with sub-steps. 1 Confirm expiry: a) run openssl x509 -enddate -noout on the live certificate, b) compare with the alert. 2 Request the new certificate: a) run certctl request --profile edge-prod, b) check that the output lists all 12 hostnames. 3 Stage it on the canary proxy edge-canary-01 only: a) copy it to /etc/edge/certs/next, b) reload the proxy. 4 Verify the canary: a) openssl s_client -connect edge-canary-01:443 shows the new expiry date, b) handshake errors stay under 0.1 percent for 20 minutes. 5 Roll out to the other 17 proxies in batches of 3, waiting 5 minutes between batches. 6 Revoke the old certificate after 48 hours and record it in the change record. Readers must be told firmly never to delete the old private key before step 6. Rollback: the previous certificate stays in /etc/edge/certs/previous for 7 days; copy it back and reload. Escalation: page Platform Security if any proxy shows more than 2 percent handshake errors, and post in #platform-sec.",
+  "checklist": {
+    "sections": [
+      "When to rotate",
+      "Before you start",
+      "Rotation steps",
+      "Rollback",
+      "Escalation"
+    ],
+    "visible": [
+      "CERT_EXPIRY_30D",
+      "#deploys",
+      "certctl request --profile edge-prod",
+      "edge-canary-01",
+      "/etc/edge/certs/previous",
+      "openssl s_client",
+      "#platform-sec",
+      "Platform Security"
+    ],
+    "values": [
+      "30 days",
+      "12 hostnames",
+      "18",
+      "0.1 percent",
+      "20 minutes",
+      "17",
+      "batches of 3",
+      "5 minutes",
+      "48 hours",
+      "7 days",
+      "2 percent"
+    ]
+  },
+  "needs": [
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the rollout to batches of 2 proxies, waiting 10 minutes between batches.",
+    "expect_visible": [],
+    "expect_values": [
+      "batches of 2",
+      "10 minutes"
+    ],
+    "expect_absent": [
+      "batches of 3",
+      "5 minutes"
+    ]
+  }
+}

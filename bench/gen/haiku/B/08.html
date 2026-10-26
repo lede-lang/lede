@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orders Platform Architecture</title>
+<style>
+:root{--page:#f5f4f0;--card:#ffffff;--ink:#1e2430;--mute:#5d6572;--edge:#d5d3cb;--accent:#0e6e79;--accent-soft:#e3f1f2;--warn-bg:#fff1e4;--warn-bd:#d0671c;--warn-ink:#5b2c00;}
+@media (prefers-color-scheme: dark){
+:root:not([data-theme="light"]){--page:#0f1214;--card:#161b1f;--ink:#e4e8ea;--mute:#98a2a8;--edge:#2c3439;--accent:#5fc5cf;--accent-soft:#16292c;--warn-bg:#3a200d;--warn-bd:#e27f3c;--warn-ink:#ffd2aa;}
+}
+:root[data-theme="dark"]{--page:#0f1214;--card:#161b1f;--ink:#e4e8ea;--mute:#98a2a8;--edge:#2c3439;--accent:#5fc5cf;--accent-soft:#16292c;--warn-bg:#3a200d;--warn-bd:#e27f3c;--warn-ink:#ffd2aa;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+.doc{max-width:900px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:1.6rem;margin:0 0 4px}
+.owner{color:var(--mute);font-size:.92rem;margin:0 0 6px}
+h2{font-size:1.12rem;margin:30px 0 10px;padding-bottom:4px;border-bottom:1px solid var(--edge)}
+p{margin:8px 0}
+.frame{background:var(--card);border:1px solid var(--edge);border-radius:10px;padding:10px;overflow-x:auto}
+svg{display:block;width:100%;min-width:560px;height:auto}
+svg text{font-size:12px;fill:var(--ink)}
+svg .m{fill:var(--mute);font-size:11px}
+svg .hd{font-weight:700;font-size:12.5px;fill:var(--accent)}
+svg .grp{fill:none;stroke:var(--mute);stroke-width:1.2;stroke-dasharray:5 4}
+svg .sub{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1}
+svg .node{fill:var(--card);stroke:var(--accent);stroke-width:1.4}
+svg .ext{fill:var(--page);stroke:var(--mute);stroke-width:1.2}
+svg .edge{fill:none;stroke:var(--mute);stroke-width:1.5}
+svg .ah{fill:var(--mute)}
+table{width:100%;border-collapse:collapse;font-size:.94rem;min-width:480px}
+th,td{padding:9px 8px;text-align:left;border-bottom:1px solid var(--edge);vertical-align:top}
+th{color:var(--mute);font-weight:600;font-size:.84rem}
+.card{background:var(--card);border:1px solid var(--edge);border-radius:10px;padding:10px;overflow-x:auto}
+.warn{margin:18px 0;padding:14px 16px;background:var(--warn-bg);border-left:4px solid var(--warn-bd);color:var(--warn-ink);border-radius:8px}
+.warn strong{display:block;margin-bottom:2px}
+</style>
+</head>
+<body>
+<main class="doc">
+  <h1>Orders Platform Architecture</h1>
+  <p class="owner">Owner: Commerce Platform team · Kestrel Outfitters · Last reviewed 2026-10-01</p>
+
+  <h2>Overview</h2>
+  <p>The Orders platform takes web orders, reserves stock and charges cards. It handles about 3,200 orders per hour at peak, and all order writes go through a single Multi-AZ database.</p>
+
+  <h2>Architecture diagram</h2>
+  <div class="frame">
+  <svg viewBox="0 0 760 560" role="img" aria-label="Architecture diagram. Customers reach an Application Load Balancer in the Orders VPC inside the Prod account. The ALB routes /orders to the Orders Service and /inventory to the Inventory Service. The Orders Service uses Orders DB, publishes to the Order Events queue, and calls Stripe. The Inventory Service polls Order Events. ECR Registry in the Shared services account serves images to the Orders Service.">
+    <defs>
+      <marker id="arrA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path class="ah" d="M0,0 L10,5 L0,10 z"/>
+      </marker>
+    </defs>
+
+    <!-- groups -->
+    <rect class="grp" x="160" y="16" width="470" height="400" rx="10"/>
+    <text class="hd" x="172" y="38">Prod account</text>
+    <rect class="sub" x="176" y="50" width="300" height="290" rx="8"/>
+    <text class="hd" x="188" y="70">Orders VPC · 10.20.0.0/16</text>
+    <rect class="grp" x="12" y="440" width="300" height="100" rx="10"/>
+    <text class="hd" x="24" y="462">Shared services account</text>
+
+    <!-- outside nodes -->
+    <rect class="ext" x="16" y="88" width="120" height="44" rx="6"/>
+    <text x="76" y="115" text-anchor="middle">Customers</text>
+    <rect class="ext" x="650" y="300" width="100" height="44" rx="6"/>
+    <text x="700" y="327" text-anchor="middle">Stripe</text>
+
+    <!-- inside nodes -->
+    <rect class="node" x="196" y="90" width="260" height="40" rx="6"/>
+    <text x="326" y="115" text-anchor="middle">Application Load Balancer</text>
+    <rect class="node" x="196" y="180" width="120" height="50" rx="6"/>
+    <text x="256" y="202" text-anchor="middle">Orders Service</text>
+    <text class="m" x="256" y="218" text-anchor="middle">ECS Fargate</text>
+    <rect class="node" x="340" y="180" width="116" height="50" rx="6"/>
+    <text x="398" y="202" text-anchor="middle">Inventory Service</text>
+    <text class="m" x="398" y="218" text-anchor="middle">ECS Fargate</text>
+    <rect class="node" x="196" y="268" width="120" height="44" rx="6"/>
+    <text x="256" y="294" text-anchor="middle">Orders DB</text>
+    <rect class="node" x="360" y="360" width="130" height="40" rx="6"/>
+    <text x="425" y="385" text-anchor="middle">Order Events</text>
+    <rect class="node" x="30" y="475" width="150" height="40" rx="6"/>
+    <text x="105" y="500" text-anchor="middle">ECR Registry</text>
+
+    <!-- connections -->
+    <line class="edge" x1="136" y1="110" x2="196" y2="110" marker-end="url(#arrA)"/>
+    <text class="m" x="166" y="102" text-anchor="middle">HTTPS</text>
+
+    <line class="edge" x1="240" y1="130" x2="240" y2="180" marker-end="url(#arrA)"/>
+    <text class="m" x="234" y="160" text-anchor="end">/orders</text>
+
+    <line class="edge" x1="398" y1="130" x2="398" y2="180" marker-end="url(#arrA)"/>
+    <text class="m" x="404" y="170">/inventory</text>
+
+    <line class="edge" x1="256" y1="230" x2="256" y2="268" marker-end="url(#arrA)"/>
+    <text class="m" x="262" y="254">SQL</text>
+
+    <path class="edge" d="M 316 215 H 330 V 380 H 360" marker-end="url(#arrA)"/>
+    <text class="m" x="336" y="300">publish</text>
+
+    <path class="edge" d="M 440 360 V 232" marker-end="url(#arrA)"/>
+    <text class="m" x="446" y="300">poll</text>
+
+    <path class="edge" d="M 286 180 V 152 H 700 V 300" marker-end="url(#arrA)"/>
+    <text class="m" x="600" y="146" text-anchor="middle">charge</text>
+
+    <path class="edge" d="M 60 475 V 205 H 196" marker-end="url(#arrA)"/>
+    <text class="m" x="76" y="198">image pull</text>
+  </svg>
+  </div>
+
+  <h2>Components</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>Component</th><th>Runtime</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>Orders Service</td><td>ECS Fargate, 6 tasks</td><td>Accepts orders, reserves stock, charges the card and publishes order events</td></tr>
+        <tr><td>Inventory Service</td><td>ECS Fargate, 4 tasks</td><td>Reserves and releases stock from order events</td></tr>
+        <tr><td>Orders DB</td><td>RDS PostgreSQL 16 on db.r6g.xlarge, Multi-AZ</td><td>System of record for orders</td></tr>
+        <tr><td>Order Events</td><td>Standard SQS queue, 14 day retention</td><td>Carries order events to downstream consumers</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Failure modes</h2>
+  <div class="warn" role="note">
+    <strong>Orders DB failover</strong>
+    A Multi-AZ failover on Orders DB takes about 60 seconds. During that window order writes fail, and the storefront shows a retry banner.
+  </div>
+</main>
+</body>
+</html>

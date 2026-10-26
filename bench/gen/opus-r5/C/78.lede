@@ -1,0 +1,26 @@
+@title 2027 Dental Plan Options
+@subtitle Choosing the default dental plan for Fenwick Studios
+@author Dalia Lund, HR Lead
+@date Open enrollment closes 2026-11-20
+
+kpi Recommended default | Premier | $492 a year per employee | neutral
+
+We recommend **Premier** as the default plan for our 112 employees. In the pulse survey, 38 employees said they have children who will need braces soon, so orthodontia coverage matters.
+
+# Plans
+table = Plan,Monthly premium,Annual maximum,Deductible,Orthodontia; Basic,$14,"$1,000",$75,None; Plus,$28,"$1,500",$50,None; **Premier**,**$41**,"**$2,500**",**$25**,"50%, lifetime max $1,500"; Family Max,$63,"$3,000",None,"50%, lifetime max $2,000"
+
+# Annual premium
+Employee premium for the full year.
+
+data premium = plan,usd; Basic,168; Plus,336; Premier,492; Family Max,756
+chart bar premium unit=$ title="Annual employee premium" focus="Premier"
+
+# Who each plan suits
+- **Basic ($168 a year):** employees who want low cost and expect only checkups and cleanings.
+- **Plus ($336 a year):** employees who expect some fillings or crowns and want a higher maximum, but need no orthodontia.
+- **Premier ($492 a year):** families with children who may need braces, and anyone who wants a $2,500 maximum and a low deductible.
+- **Family Max ($756 a year):** families with ongoing orthodontia who will use the higher $2,000 lifetime orthodontia maximum and $3,000 annual maximum.
+
+# Recommendation
+! Make Premier the default plan. It covers orthodontia for the 38 employees whose children need braces soon. Family Max costs $264 more a year and only pays off for families with ongoing orthodontia, so it stays available as an opt-in upgrade.

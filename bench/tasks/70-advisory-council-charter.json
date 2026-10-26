@@ -1,0 +1,56 @@
+{
+  "id": "70-advisory-council-charter",
+  "category": "prose",
+  "title": "Windrow Customer Advisory Council charter",
+  "brief": "Draft the charter page for the Windrow Software Customer Advisory Council, effective 2027-01-01, sponsored by Chief Product Officer Ines Carvalho. Headings, in this order: \"Purpose\", \"Membership\", \"Meetings\", \"What the council does and does not do\", \"Confidentiality\". Purpose: give customers a structured, regular way to shape the product roadmap and to tell us plainly what is not working. Membership: 14 seats, 12 customers and 2 Windrow product leads, chosen to reflect the customer base by size and industry; customer members serve two-year terms, renewable once, and half the customer seats rotate each year to keep continuity; the chair is Ines Carvalho and the vice chair is elected by customer members. Meetings: quarterly, two hours, held on 2027-03-10, 2027-06-09, 2027-09-08 and 2027-12-08, with an agenda sent 10 days ahead and written minutes shared within 5 business days; a quorum is 8 members including at least 6 customers. What the council does: reviews roadmap themes, tests early designs, and ranks customer-submitted requests; what it does not do: it does not approve pricing, cannot commit Windrow to a delivery date, and does not replace the normal support channel. Confidentiality: all members sign a mutual NDA before the first meeting, and roadmap material shown is confidential unless marked otherwise. Short, formal, no jargon.",
+  "checklist": {
+    "sections": [
+      "Purpose",
+      "Membership",
+      "Meetings",
+      "What the council does and does not do",
+      "Confidentiality"
+    ],
+    "visible": [
+      "Windrow Software",
+      "Ines Carvalho",
+      "vice chair",
+      "NDA",
+      "quorum",
+      "roadmap"
+    ],
+    "values": [
+      "2027-01-01",
+      "14",
+      "12",
+      "2",
+      "two-year",
+      "2027-03-10",
+      "2027-06-09",
+      "2027-09-08",
+      "2027-12-08",
+      "10 days",
+      "5 business days",
+      "8",
+      "6"
+    ]
+  },
+  "needs": [
+    "list",
+    "table"
+  ],
+  "edit": {
+    "request": "Change the number of seats to 16, with 14 customers and 2 Windrow product leads, and the quorum to 9 members including at least 7 customers. Add a fifth meeting date on 2027-02-10 as a kickoff.",
+    "expect_visible": [
+      "kickoff",
+      "2027-02-10",
+      "14 customers",
+      "9 members",
+      "7 customers"
+    ],
+    "expect_values": [
+      "16"
+    ],
+    "expect_absent": []
+  }
+}

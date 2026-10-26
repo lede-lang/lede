@@ -1,0 +1,112 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "data",
+      "name": "runs",
+      "line": 1
+    },
+    {
+      "type": "chart",
+      "kind": "line",
+      "data": "runs",
+      "x": "week",
+      "y": [
+        "deploys",
+        "rollbacks"
+      ],
+      "title": null,
+      "stack": false,
+      "labels": false,
+      "unit": null,
+      "min": null,
+      "max": null,
+      "focus": null,
+      "target": null,
+      "line": 2
+    },
+    {
+      "type": "chart",
+      "kind": "bar",
+      "data": "runs",
+      "x": "week",
+      "y": [
+        "deploys"
+      ],
+      "title": "Deploys",
+      "stack": false,
+      "labels": true,
+      "unit": "ms",
+      "min": null,
+      "max": null,
+      "focus": null,
+      "target": null,
+      "line": 3
+    },
+    {
+      "type": "chart",
+      "kind": "hbar",
+      "data": "runs",
+      "x": "owner",
+      "y": [
+        "deploys",
+        "rollbacks"
+      ],
+      "title": null,
+      "stack": true,
+      "labels": false,
+      "unit": null,
+      "min": 0,
+      "max": 40,
+      "focus": "deploys",
+      "target": null,
+      "line": 4
+    },
+    {
+      "type": "chart",
+      "kind": "area",
+      "data": "runs",
+      "x": "week",
+      "y": [
+        "deploys",
+        "rollbacks"
+      ],
+      "title": null,
+      "stack": true,
+      "labels": false,
+      "unit": null,
+      "min": null,
+      "max": null,
+      "focus": null,
+      "target": null,
+      "line": 5
+    }
+  ],
+  "data": {
+    "runs": {
+      "name": "runs",
+      "columns": [
+        "week",
+        "deploys",
+        "rollbacks",
+        "owner"
+      ],
+      "rows": [
+        [
+          "W1",
+          "14",
+          "2",
+          "ana"
+        ],
+        [
+          "W2",
+          "19",
+          "1",
+          "bo"
+        ]
+      ],
+      "line": 1
+    }
+  },
+  "diagnostics": []
+}

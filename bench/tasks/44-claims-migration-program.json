@@ -1,0 +1,61 @@
+{
+  "id": "44-claims-migration-program",
+  "category": "status",
+  "title": "Cordova claims system migration status",
+  "brief": "I need the program status page for the claims system migration at Cordova Mutual, as of 2026-10-16, for the steering committee. Overall we have moved 1.89 million of 3.00 million policy records, which is 63 percent. Budget approved is 8.4 million dollars and 5.7 million has been spent (68 percent). The go-live target is still 2027-02-15 and the program is amber overall. Under \"Workstreams\" show the six workstreams with owner, percent complete and a red/amber/green status: Data migration, Sunita Rao, 63, amber; Claims UI rebuild, Oliver Grant, 78, green; Payments integration, Fatima Aziz, 45, red; Document archive, Leo Park, 90, green; Staff training, Chen Wei, 20, green; Regulatory sign-off, Ingrid Solheim, 35, amber. Payments integration is red because the payment processor's test environment has been five weeks late; the fallback is to build against recorded responses, which costs about 3 weeks of extra effort. Under \"Decision needed\": one decision for the committee by 2026-11-06, to cut over all states at once, or in two waves (the 14 smaller states first in January, the rest in February). Our recommendation is two waves because it halves the number of simultaneous agent re-trainings. Lay the decision out so a committee member who only reads that part gets it.",
+  "checklist": {
+    "sections": [
+      "Workstreams",
+      "Decision needed"
+    ],
+    "visible": [
+      "Data migration",
+      "Claims UI rebuild",
+      "Payments integration",
+      "Document archive",
+      "Staff training",
+      "Regulatory sign-off",
+      "Sunita Rao",
+      "Oliver Grant",
+      "Fatima Aziz",
+      "Leo Park",
+      "Chen Wei",
+      "Ingrid Solheim",
+      "two waves"
+    ],
+    "values": [
+      "1.89",
+      "3.00",
+      "63",
+      "8.4",
+      "5.7",
+      "68",
+      "2027-02-15",
+      "78",
+      "45",
+      "90",
+      "20",
+      "35",
+      "five weeks",
+      "3",
+      "14",
+      "2026-11-06"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "table",
+    "callout",
+    "list"
+  ],
+  "edit": {
+    "request": "Payments integration moves from red to amber at 52 percent complete because the processor environment finally came online on 2026-10-14. The go-live date stays the same.",
+    "expect_visible": [
+      "2026-10-14"
+    ],
+    "expect_values": [
+      "52"
+    ],
+    "expect_absent": []
+  }
+}

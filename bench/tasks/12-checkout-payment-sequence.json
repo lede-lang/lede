@@ -1,0 +1,55 @@
+{
+  "id": "12-checkout-payment-sequence",
+  "category": "architecture",
+  "title": "Checkout payment flow",
+  "brief": "Payments Engineering at Tidewater Grocers needs a design page for the in-app checkout payment flow (version 2, dated 2026-09-22). Section titled \"Payment sequence\": a sequence diagram with participants named exactly: Mobile App, Checkout API, Fraud Service, Payment Gateway, Ledger. Messages: Mobile App to Checkout API \"POST /checkout with cart and card token\"; Checkout API to Fraud Service \"score order\"; Fraud Service to Checkout API \"risk score\"; Checkout API to Payment Gateway \"authorize amount\"; Payment Gateway to Checkout API \"auth code\"; Checkout API to Ledger \"record pending charge\"; Ledger to Checkout API \"entry id\"; Checkout API to Mobile App \"order confirmed\". Show an alternative branch: if the risk score is above 80, Checkout API replies to Mobile App \"step-up verification required\" and does not call the Payment Gateway. Section titled \"Latency budget\": a table with columns Step, p95 budget (ms), Measured p95 (ms): Fraud scoring, 120, 96; Authorization, 450, 512; Ledger write, 40, 31; Total checkout, 800, 811. Also a bar chart comparing budget vs measured for those four steps. Section titled \"Open issues\": a warning callout that Authorization is over budget by 62 ms because the gateway's us-east endpoint is called from us-west-2, and a bulleted list of next steps: move to the regional endpoint, add a 2 second timeout with one retry, alert when total p95 exceeds 800.",
+  "checklist": {
+    "sections": [
+      "Payment sequence",
+      "Latency budget",
+      "Open issues"
+    ],
+    "visible": [
+      "Mobile App",
+      "Checkout API",
+      "Fraud Service",
+      "Payment Gateway",
+      "Ledger",
+      "step-up verification required",
+      "record pending charge",
+      "Measured p95",
+      "Fraud scoring"
+    ],
+    "values": [
+      "80",
+      "120",
+      "96",
+      "450",
+      "512",
+      "40",
+      "31",
+      "800",
+      "811",
+      "62"
+    ]
+  },
+  "needs": [
+    "sequence",
+    "table",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Rename \"Fraud Service\" to \"Risk Engine\" in the diagram and anywhere else on the page, and update the Fraud scoring measured p95 to 88.",
+    "expect_visible": [
+      "Risk Engine"
+    ],
+    "expect_values": [
+      "88"
+    ],
+    "expect_absent": [
+      "Fraud Service"
+    ]
+  }
+}

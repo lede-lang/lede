@@ -1,0 +1,5 @@
+data burn = day,Open Bugs,closed bugs,Value ($K); Mon,12,3,4.5; Tue,9,6,5
+chart line burn x=day y=open bugs,closed bugs title="Burn down"
+chart bar burn y=Value ($K) labels
+table burn cols=day,value ($k) sort=-open bugs
+kpi Open | =burn.open bugs

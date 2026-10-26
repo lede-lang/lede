@@ -1,0 +1,55 @@
+{
+  "id": "90-school-open-house-guide",
+  "category": "prose",
+  "title": "Cedarwood Elementary open house guide",
+  "brief": "Write the open house guide for families at Cedarwood Elementary, from the principal, Dr. Leonie Osei. Headings: \"When and where\", \"Schedule\", \"What to bring\", \"Getting here\" and \"Questions\". When and where: Thursday 2026-11-12 from 17:30 to 19:30 in the main building at 410 Elm Street. Schedule: 17:30 welcome from the principal in the gym; 17:50 classroom tours in groups of 8 families, each about 30 minutes; 18:30 kindergarten information session in the library; 18:45 after-school program table in the cafeteria; 19:15 closing words. What to bring, for families planning to register for 2027-28 kindergarten: a birth certificate, proof of address and immunization records; registration opens on 2027-01-12. Getting here: free parking in the Elm Street lot, 60 spaces, and a free shuttle every 10 minutes from the Pine Street church lot; childcare for siblings is offered in the music room. Questions: call 555-0166 or write to office@cedarwood.example. Warm and welcoming, short sentences.",
+  "checklist": {
+    "sections": [
+      "When and where",
+      "Schedule",
+      "What to bring",
+      "Getting here",
+      "Questions"
+    ],
+    "visible": [
+      "Cedarwood Elementary",
+      "Dr. Leonie Osei",
+      "kindergarten",
+      "immunization records",
+      "shuttle",
+      "office@cedarwood.example"
+    ],
+    "values": [
+      "2026-11-12",
+      "17:30",
+      "19:30",
+      "410 Elm Street",
+      "17:50",
+      "8 families",
+      "30 minutes",
+      "18:30",
+      "18:45",
+      "19:15",
+      "2027-01-12",
+      "60 spaces",
+      "10 minutes",
+      "555-0166"
+    ]
+  },
+  "needs": [
+    "list",
+    "table"
+  ],
+  "edit": {
+    "request": "Move the open house to 2026-11-19 and start the classroom tours at 17:45 instead of 17:50.",
+    "expect_visible": [],
+    "expect_values": [
+      "2026-11-19",
+      "17:45"
+    ],
+    "expect_absent": [
+      "2026-11-12",
+      "17:50"
+    ]
+  }
+}

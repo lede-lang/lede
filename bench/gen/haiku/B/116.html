@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Borrowing FAQ</title>
+<style>
+:root {
+  --bg: #f6f5f0; --card: #ffffff; --ink: #242320; --muted: #5f5d55; --rule: #dedbd1;
+  --accent: #2d5a7b; --soft: #e7eef4;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14161a; --card: #1d2026; --ink: #e9e8e3; --muted: #a4a39a; --rule: #343842;
+    --accent: #8ebfdc; --soft: #1c2832;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14161a; --card: #1d2026; --ink: #e9e8e3; --muted: #a4a39a; --rule: #343842;
+  --accent: #8ebfdc; --soft: #1c2832;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.6; font-size: 17px; }
+main { max-width: 680px; margin: 0 auto; padding: 24px 16px 48px; }
+header h1 { font-size: 1.8rem; margin: 0 0 6px; line-height: 1.2; }
+header p { margin: 0; color: var(--muted); }
+.notice { background: var(--soft); border-radius: 10px; padding: 14px 16px; margin: 18px 0 0; }
+.notice strong { color: var(--accent); }
+section { background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 18px 20px; margin-top: 16px; }
+h2 { font-size: 1.2rem; color: var(--accent); margin: 0 0 8px; }
+p { margin: 0 0 10px; }
+ul { padding-left: 20px; margin: 0 0 10px; }
+li { margin-bottom: 6px; }
+.contact { margin-top: 20px; font-size: 0.95rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Borrowing FAQ</h1>
+    <p>Millbrook Public Library</p>
+  </header>
+
+  <div class="notice">
+    <p><strong>New from 1 November 2026:</strong> we no longer charge late fines. Items can still become overdue, so read the section on late returns below.</p>
+  </div>
+
+  <section>
+    <h2>Who can join the library?</h2>
+    <p>Membership is free. You can join if you live, work or study in Millbrook County.</p>
+    <p>Children under 18 need a parent or guardian to sign them up.</p>
+  </section>
+
+  <section>
+    <h2>How many items can I borrow?</h2>
+    <p>You can borrow up to 30 items at once.</p>
+    <ul>
+      <li>No more than 5 of them can be DVDs.</li>
+      <li>No more than 2 of them can be Wi-Fi hotspots.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>How long can I keep things?</h2>
+    <ul>
+      <li>Books and audiobooks: 21 days.</li>
+      <li>DVDs: 7 days.</li>
+      <li>Wi-Fi hotspots: 14 days.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>What if I return something late?</h2>
+    <p>There are no late fines from 1 November 2026.</p>
+    <p>But if an item is 30 days overdue, we treat it as lost. You will be charged its replacement cost, up to $25 for each item.</p>
+    <p>While your account owes $10 or more, you cannot borrow anything new. Pay the balance to start borrowing again.</p>
+  </section>
+
+  <section>
+    <h2>How do I renew?</h2>
+    <p>You can renew online, in the app, or at the desk.</p>
+    <p>You can renew an item up to 3 times, unless another reader is waiting for it.</p>
+  </section>
+
+  <section>
+    <h2>How do I reserve an item?</h2>
+    <p>Reservations are free. You can have up to 15 reserved items at once.</p>
+    <p>When your item is ready, we email you. It then waits for you at the desk for 7 days.</p>
+  </section>
+
+  <p class="contact">Questions? Email <strong>help@millbrooklibrary.example</strong> or visit the desk on weekdays from 09:00 to 18:00.</p>
+</main>
+</body>
+</html>

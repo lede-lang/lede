@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Route 9 Corridor Decision</title>
+<style>
+:root{color-scheme:light dark;--bg:#f6f5f1;--card:#fff;--ink:#1b1d21;--muted:#5d6168;--line:#dddad2;--accent:#00627a;--accent-soft:#e1f1f5;--rec:#0a7a45;--rec-soft:#e5f5ec;--warn:#9a4a00;--warn-soft:#fff3e0;--c1:#8a9bab;--c2:#00627a;--c3:#8a9bab}
+@media (prefers-color-scheme:dark){:root{--bg:#101214;--card:#181b1f;--ink:#e8eaed;--muted:#9da3ab;--line:#2e3238;--accent:#5cc4dc;--accent-soft:#12303a;--rec:#4cc98a;--rec-soft:#12301f;--warn:#f2a650;--warn-soft:#33240f;--c1:#6b7987;--c2:#5cc4dc;--c3:#6b7987}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+main{max-width:860px;margin:0 auto;padding:30px 16px 64px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+h1{font-size:clamp(1.55rem,6vw,2.3rem);line-height:1.15;margin:.35rem 0 .7rem}
+.meta{display:flex;flex-wrap:wrap;gap:.4rem .6rem;font-size:.86rem;color:var(--muted)}
+.meta span{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:.15rem .7rem}
+.ask{margin-top:20px;background:var(--rec-soft);border:1px solid var(--rec);border-left-width:6px;border-radius:12px;padding:16px}
+.ask .k{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;font-weight:800;color:var(--rec)}
+.ask p{margin:.3rem 0 0}
+section{margin-top:40px}
+h2{font-size:1.3rem;margin:0 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+p{margin:0 0 .8rem}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.95rem;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{padding:10px 10px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+th:first-child,td:first-child{text-align:left;color:var(--muted);font-weight:600}
+thead th{font-size:.92rem;color:var(--ink);vertical-align:bottom}
+thead th.rec{color:var(--rec)}
+td.rec,th.rec{background:var(--rec-soft)}
+tbody tr:last-child td{border-bottom:none}
+.badge{display:inline-block;font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:var(--rec);color:var(--card);border-radius:4px;padding:1px 5px;margin-bottom:3px}
+.desc{font-size:.8rem;color:var(--muted);font-weight:400;display:block}
+@media (max-width:480px){table{font-size:.85rem}th,td{padding:8px 6px}.desc{display:none}}
+.note{font-size:.88rem;color:var(--muted);margin-top:10px}
+.chart{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.chart svg{display:block;width:100%;height:auto;max-width:640px}
+.grant{margin-top:14px;background:var(--accent-soft);border-radius:10px;padding:12px 14px;font-size:.95rem}
+.trade{display:grid;gap:12px}
+@media (min-width:720px){.trade{grid-template-columns:repeat(3,1fr)}}
+.tc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.tc.rec{border-color:var(--rec);box-shadow:0 0 0 1px var(--rec) inset}
+.tc h3{margin:0 0 8px;font-size:1.05rem}
+.tc ul{margin:0;padding:0;list-style:none;font-size:.94rem}
+.tc li{padding-left:1.4rem;position:relative;margin:6px 0}
+.tc li::before{position:absolute;left:0;font-weight:800}
+.tc li.pro::before{content:"+";color:var(--rec)}
+.tc li.con::before{content:"−";color:var(--warn)}
+.recbox{background:var(--card);border:2px solid var(--rec);border-radius:14px;padding:18px}
+.recbox h3{margin:0 0 6px;font-size:1.25rem;color:var(--rec)}
+.timeline{margin:16px 0 0;padding:0;list-style:none;border-left:3px solid var(--line);margin-left:6px}
+.timeline li{position:relative;padding:0 0 14px 18px}
+.timeline li::before{content:"";position:absolute;left:-8px;top:6px;width:13px;height:13px;border-radius:50%;background:var(--card);border:3px solid var(--muted)}
+.timeline li.now::before{border-color:var(--rec);background:var(--rec)}
+.timeline .d{font-weight:800;font-variant-numeric:tabular-nums}
+footer{margin-top:48px;font-size:.85rem;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<main>
+<header>
+<div class="eyebrow">Riverbend Transportation Department · Council decision</div>
+<h1>Improving the Route 9 transit corridor</h1>
+<div class="meta"><span>Council vote: 2026-12-02</span><span>Three options</span></div>
+<div class="ask" role="note"><div class="k">Decision needed on 2026-12-02</div><p>The department recommends <strong>bus rapid transit</strong>. Council approval on <strong>2026-12-02</strong> is needed to apply for a federal grant covering up to 50% of capital cost by its <strong>2027-01-31</strong> deadline.</p></div>
+</header>
+
+<section id="options">
+<h2>Options</h2>
+<div class="tbl">
+<table>
+<thead><tr><th></th><th>Enhanced bus<span class="desc">More frequent buses, signal priority</span></th><th class="rec"><span class="badge">Recommended</span><br>Bus rapid transit<span class="desc">Dedicated lanes and stations</span></th><th>Light rail</th></tr></thead>
+<tbody>
+<tr><td>Capital cost</td><td>$85M</td><td class="rec">$310M</td><td>$940M</td></tr>
+<tr><td>Time to build</td><td>2 years</td><td class="rec">4 years</td><td>8 years</td></tr>
+<tr><td>Weekday riders by 2035</td><td>14,000</td><td class="rec">26,000</td><td>38,000</td></tr>
+<tr><td>Operating cost</td><td>$22M/yr</td><td class="rec">$31M/yr</td><td>$44M/yr</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section id="cost-per-rider">
+<h2>Capital cost per rider</h2>
+<p>Capital cost divided by expected weekday riders in 2035.</p>
+<div class="chart">
+<svg viewBox="0 0 400 200" role="img" aria-label="Capital cost per weekday rider: enhanced bus about 6,100 dollars, bus rapid transit about 11,900 dollars, light rail about 24,700 dollars.">
+<g font-size="13" fill="var(--ink)">
+<text x="0" y="20" font-weight="650">Enhanced bus</text>
+<rect x="0" y="28" width="73.2" height="22" rx="3" fill="var(--c1)"/>
+<text x="81" y="44" font-weight="700">≈ $6,100</text>
+<text x="0" y="82" font-weight="650" fill="var(--c2)">Bus rapid transit (recommended)</text>
+<rect x="0" y="90" width="142.8" height="22" rx="3" fill="var(--c2)"/>
+<text x="151" y="106" font-weight="700">≈ $11,900</text>
+<text x="0" y="144" font-weight="650">Light rail</text>
+<rect x="0" y="152" width="296.4" height="22" rx="3" fill="var(--c3)"/>
+<text x="304" y="168" font-weight="700">≈ $24,700</text>
+</g>
+<text x="0" y="194" font-size="11" fill="var(--muted)">Bars to scale, from $0.</text>
+</svg>
+</div>
+<div class="grant">A federal grant can cover <strong>up to 50% of capital cost</strong> for whichever option is approved. The application is due <strong>2027-01-31</strong> and requires a council-approved option.</div>
+</section>
+
+<section id="trade-offs">
+<h2>Trade-offs</h2>
+<div class="trade">
+<div class="tc"><h3>Enhanced bus</h3><ul><li class="pro">Cheapest, and fastest to deliver (2 years)</li><li class="con">Carries the fewest riders</li><li class="con">Buses still share congested lanes</li></ul></div>
+<div class="tc rec"><h3>Bus rapid transit</h3><ul><li class="pro">The middle path on cost, time and riders</li><li class="pro">Could be upgraded to rail later</li><li class="con">About twice enhanced bus's capital cost per rider</li></ul></div>
+<div class="tc"><h3>Light rail</h3><ul><li class="pro">Carries the most riders</li><li class="pro">Attracts development along the corridor</li><li class="con">Takes 8 years to build</li><li class="con">The city could not fund its share without a bond measure</li></ul></div>
+</div>
+</section>
+
+<section id="recommendation">
+<h2>Recommendation</h2>
+<div class="recbox">
+<h3>Approve bus rapid transit</h3>
+<p>The transportation department recommends bus rapid transit: dedicated lanes and stations for $310M, built in 4 years, carrying an expected 26,000 weekday riders by 2035, with room to upgrade to rail later.</p>
+<p style="margin:0"><strong>The council must approve it on 2026-12-02</strong> for the city to meet the federal grant deadline.</p>
+<ol class="timeline">
+<li class="now"><span class="d">2026-12-02</span> · Council vote on an option</li>
+<li><span class="d">2027-01-31</span> · Federal grant application due (needs a council-approved option)</li>
+</ol>
+</div>
+</section>
+
+<footer>Riverbend City · Transportation Department · Prepared for the council vote on 2026-12-02</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,42 @@
+@title Matchmaking and Game Servers
+@subtitle Embergate Online live architecture
+@author Backend Services
+@date 2026-09-22
+@width wide
+
+# Overview
+Players are matched into 10-player games and placed on the nearest regional game server fleet. Each region can run alone if another region fails.
+
+!! The Player Profile Database and the Leaderboard Service are the only shared parts. Watch them first in any regional failover.
+
+# Architecture
+diagram arch dir=LR title="Matchmaking and game servers"
+arch: players "Players" user
+arch: edge "Global Edge" lb "routes to closest region"
+arch: mm "Matchmaker" svc
+arch: alloc "Session Allocator" svc
+arch: fleet "Game Server Fleet" svc
+arch: cache "Regional Cache" cache
+arch: profile "Player Profile Database" db focus
+arch: lb "Leaderboard Service" svc focus
+arch: players -> edge : connect
+arch: edge -> mm : queue request
+arch: mm -> cache : skill ratings
+arch: mm -> profile : load profile
+arch: mm -> alloc : match of 10
+arch: alloc -> fleet : start session
+arch: players -> fleet : UDP game traffic
+arch: fleet -> lb : match results
+arch: group region "Regional Stack (same in each of 3 regions)" mm, alloc, fleet, cache
+arch: group shared "Shared across regions" profile, lb
+arch: legend
+
+# Regions and capacity
+kpi Servers per region | 150 | scales to 400
+kpi Players per region | 9,000 | concurrent
+kpi Median match time | 10 s | target
+kpi p95 match time | 30 s | target
+
+table = region,game servers,matches per server,concurrent players; us-east,150,6,"9,000"; eu-central,150,6,"9,000"; ap-southeast,150,6,"9,000"
+
+Each server runs 6 matches of 10 players. A region scales up to 400 game servers when more than 2,000 players are waiting in its queue.

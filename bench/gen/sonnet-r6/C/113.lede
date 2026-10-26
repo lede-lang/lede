@@ -1,0 +1,35 @@
+@title Online and Blended Course Completion
+@subtitle Summary for the academic senate meeting of 2026-11-10
+@author Dr. Aaliyah Brandt, Institutional Research
+@date 2026-11-10
+
+# Completion at a glance
+
+kpi Completion, Spring 2026 | 79.0% | +9 pts since Fall 2024 | good
+kpi Biggest jump | +5 pts | Fall 2025 | good
+kpi Online gap | -18 pts | vs in person | bad
+
+Completion is up 9 points in four terms. Online courses still complete about 18 points below in-person ones, so online is the format with the most room to improve.
+
+# Term by term
+
+data terms = term,enrolled,completed,rate; Fall 2024,1240,868,70.0; Spring 2025,1315,947,72.0; Fall 2025,1410,1086,77.0; Spring 2026,1502,1187,79.0
+
+chart line terms x=term y=rate unit=% labels min=60 max=85 mark="Fall 2025 tutoring" title="Completion rate by term"
+
+table terms cols=term,enrolled,completed,rate
+
+The biggest single jump, 5 points, came in Fall 2025, when free tutoring for first-year students started on 2025-08-25.
+
+# By format, Spring 2026
+
+data formats = format,enrolled,completed,rate; In person,520,447,86.0; Hybrid,600,480,80.0; Online,382,260,68.1
+
+chart hbar formats x=format y=rate unit=% labels min=0 max=100 focus="Online" title="Completion rate by delivery format"
+
+table formats cols=format,enrolled,completed,rate
+
+# Notes
+
+- Completed means a passing grade, not attendance.
+- Withdrawals before the census date, the 15th day of the term, are not counted as enrolled.

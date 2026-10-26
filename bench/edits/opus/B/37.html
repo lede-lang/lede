@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Welcome to Customer Success</title>
+<style>
+:root{--bg:#f8f5fa;--surface:#fff;--text:#231d29;--muted:#6a6172;--border:#e5dcea;--accent:#7a4a9e;--accent-soft:#f1e8f7;--tip-bg:#fff6dc;--tip:#c99a14;--tip-text:#5c4300}
+@media (prefers-color-scheme:dark){:root{--bg:#141117;--surface:#1d1922;--text:#ece6f0;--muted:#a69cae;--border:#352d3c;--accent:#c39be3;--accent-soft:#2a2033;--tip-bg:#2f270c;--tip:#d9b03a;--tip-text:#f3dc97}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:17px/1.7 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:40px 16px 64px}
+.letter{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:clamp(22px,5vw,44px)}
+.eyebrow{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);font-weight:700;margin:0 0 8px}
+h1{font-size:clamp(28px,6vw,38px);line-height:1.15;margin:0 0 24px}
+.greet{font-size:20px;font-weight:600;margin:0 0 10px}
+p{margin:0 0 14px}
+h2{font-size:21px;margin:34px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+ul.week{list-style:none;padding:0;margin:0}
+ul.week li{display:grid;grid-template-columns:110px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+ul.week li:last-child{border-bottom:0}
+ul.week b{color:var(--accent)}
+@media (max-width:460px){ul.week li{grid-template-columns:1fr;gap:0}}
+.milestone{margin:0 0 14px;padding-left:16px;border-left:3px solid var(--accent)}
+.milestone strong{display:block;color:var(--accent);font-size:14px;text-transform:uppercase;letter-spacing:.06em}
+ul.people{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+ul.people li{background:var(--accent-soft);border-radius:10px;padding:10px 14px}
+ul.people span{display:block;font-size:14px;color:var(--muted)}
+.tip{background:var(--tip-bg);border:1px solid var(--tip);border-left-width:6px;border-radius:10px;padding:14px 16px;color:var(--tip-text);margin:30px 0}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92em}
+.signoff{margin-top:30px}
+.signoff .name{font-weight:700;margin:0}
+.signoff .role{color:var(--muted);margin:0}
+</style>
+</head>
+<body>
+<main>
+<div class="letter">
+<p class="eyebrow">Larkspur Software · November 2026 cohort</p>
+<h1>Welcome to Customer Success</h1>
+
+<p class="greet">Hello, and welcome!</p>
+<p>We are so glad you are here. You are joining a team of 42 people across Denver, Dublin and Singapore, which means that somewhere in the world, a teammate is almost always awake and helping a customer get more out of Larkspur. We are a friendly, curious group, and we take our customers' success personally. This letter covers what your first days and months will look like, so you can focus on settling in.</p>
+
+<h2>Your first week</h2>
+<ul class="week">
+<li><b>Monday</b><span>Laptop pickup at 10:00, followed by a welcome breakfast.</span></li>
+<li><b>Tuesday</b><span>Product deep dive with the Solutions team.</span></li>
+<li><b>Wednesday</b><span>Shadow two customer calls.</span></li>
+<li><b>Thursday</b><span>Support tooling training.</span></li>
+<li><b>Friday</b><span>Lunch with your onboarding buddy.</span></li>
+</ul>
+
+<h2>Your first 90 days</h2>
+<div class="milestone"><strong>By day 30</strong>Your main job is to learn the product. Ask questions, sit in on calls and get comfortable with how our customers actually use Larkspur day to day.</div>
+<div class="milestone"><strong>By day 60</strong>You will own five accounts alongside your buddy. They will be there to help you prepare, follow up and handle anything unexpected.</div>
+<div class="milestone"><strong>By day 90</strong>You will run quarterly business reviews on your own. By then you will know your accounts well, and you will have plenty of support behind you.</div>
+
+<h2>People to know</h2>
+<ul class="people">
+<li><strong>Nadia Farouk</strong><span>VP of Customer Success</span></li>
+<li><strong>Owen Achterberg</strong><span>Head of Support</span></li>
+<li><strong>Priyanka Rao</strong><span>Enablement lead</span></li>
+<li><strong>Jonas Weber</strong><span>IT help desk lead</span></li>
+</ul>
+
+<div class="tip" role="note"><strong>Tip:</strong> The <code>#cs-newbies</code> channel is the best place to ask anything. No question is too small.</div>
+
+<p>Take your time, be curious, and don't hesitate to reach out. We hired you because we believe in what you'll bring, and we can't wait to work with you.</p>
+
+<div class="signoff">
+<p>Warmly,</p>
+<p class="name">Nadia Farouk</p>
+<p class="role">VP of Customer Success, Larkspur Software</p>
+</div>
+</div>
+</main>
+</body>
+</html>

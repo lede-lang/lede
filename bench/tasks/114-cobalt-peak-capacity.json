@@ -1,0 +1,72 @@
+{
+  "id": "114-cobalt-peak-capacity",
+  "category": "data",
+  "title": "Cobalt Parcel peak capacity",
+  "brief": "Cobalt Parcel's network planning lead, Rafael Ostrowski, needs a peak-season capacity summary for the operations directors, covering the peak window from 2026-11-23 to 2026-12-23. Five depots, with daily capacity and forecast peak daily volume in parcels, and utilization. Tulsa: 42000 capacity, 39600 forecast, 94.3 percent. Omaha: 36000, 28800, 80.0. Memphis: 55000, 57200, 104.0. Denver: 30000, 26100, 87.0. Boise: 18000, 14400, 80.0. Network total: 181000 capacity, 166100 forecast, 91.8 percent utilization, 14900 parcels of headroom. Memphis is the one depot over capacity, by 2200 parcels a day, and Tulsa has only 2400 of headroom, so the plan is to reroute 2200 Memphis parcels a day to Tulsa from 2026-11-23, which brings Memphis to exactly 100.0 percent and Tulsa to 99.5 percent, so both would be at their limit with no slack. Omaha could take up to 7200 more parcels a day but rerouting there adds a day of transit. Seasonal hiring is 640 people in total, 210 of them for Memphis. Sections: \"Network at a glance\", \"Depot capacity\", \"Memphis and Tulsa plan\" and \"Risks\". The risks to cover: any outage or weather delay at Memphis or Tulsa during the window has nowhere to go except Omaha, and the plan relies on all 640 seasonal workers starting by 2026-11-16.",
+  "checklist": {
+    "sections": [
+      "Network at a glance",
+      "Depot capacity",
+      "Memphis and Tulsa plan",
+      "Risks"
+    ],
+    "visible": [
+      "Tulsa",
+      "Omaha",
+      "Memphis",
+      "Denver",
+      "Boise",
+      "Rafael Ostrowski",
+      "seasonal"
+    ],
+    "values": [
+      "2026-11-23",
+      "2026-12-23",
+      "42000",
+      "39600",
+      "94.3",
+      "36000",
+      "28800",
+      "80.0",
+      "55000",
+      "57200",
+      "104.0",
+      "30000",
+      "26100",
+      "87.0",
+      "18000",
+      "14400",
+      "181000",
+      "166100",
+      "91.8",
+      "14900",
+      "2200",
+      "2400",
+      "99.5",
+      "7200",
+      "640",
+      "210",
+      "2026-11-16"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "The Memphis forecast has been raised to 58000 parcels a day, which is 105.5 percent and 3000 over capacity, and the reroute to Tulsa becomes 2400 parcels a day.",
+    "expect_visible": [],
+    "expect_values": [
+      "58000",
+      "105.5",
+      "3000"
+    ],
+    "expect_absent": [
+      "57200",
+      "104.0"
+    ]
+  }
+}

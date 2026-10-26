@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ticketing Platform Architecture</title>
+<style>
+:root{
+  --bg:#f4f6f9;--surface:#ffffff;--surface-2:#edf0f5;--ink:#141820;--ink-2:#374050;--muted:#5d6779;--line:#d8dde6;--line-2:#a6afbf;
+  --accent:#1f5fae;--accent-soft:#e5eefa;
+  --sub-fill:#fbf7ec;--sub-line:#b59a55;
+  --vnet-fill:#eaf1fb;--vnet-line:#7d9fd0;
+  --sn-fill:#f7faff;--sn-line:#a9c0e3;
+  --edge:#444d5c;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1117;--surface:#161a22;--surface-2:#1d2230;--ink:#e7ebf2;--ink-2:#c3cad6;--muted:#98a2b4;--line:#293040;--line-2:#4a5468;
+    --accent:#7fb2ff;--accent-soft:#16284a;
+    --sub-fill:#1d1a12;--sub-line:#7d6a3a;
+    --vnet-fill:#121c2c;--vnet-line:#36588c;
+    --sn-fill:#16223a;--sn-line:#3a5b8e;
+    --edge:#a3adbd;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:920px;margin:0 auto;padding:28px 16px 72px}
+.eyebrow{margin:0;font-size:.78rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+h1{margin:.35rem 0 .5rem;font-size:clamp(1.65rem,5vw,2.35rem);line-height:1.15;letter-spacing:-.015em}
+.lede{margin:0 0 14px;color:var(--ink-2);font-size:1.05rem;max-width:62ch}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.meta li{font-size:.84rem;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 11px}
+.meta b{font-weight:600;color:var(--muted);margin-right:4px}
+section{margin-top:40px}
+h2{margin:0 0 14px;font-size:1.3rem;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+h2::before{content:"";flex:none;width:4px;height:1.1em;border-radius:2px;background:var(--accent)}
+p{margin:0 0 12px;max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+@media (max-width:520px){.card{padding:14px 8px}}
+svg{display:block;width:100%;height:auto}
+svg text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+
+.diagram-grid{display:grid;gap:18px}
+@media (min-width:800px){.diagram-grid{grid-template-columns:minmax(0,1fr) 290px;align-items:start}}
+.diagram-grid svg{max-width:470px;margin:0 auto}
+.z-sub{fill:var(--sub-fill);stroke:var(--sub-line);stroke-width:1.4;stroke-dasharray:7 4}
+.z-vnet{fill:var(--vnet-fill);stroke:var(--vnet-line);stroke-width:1.3}
+.z-sn{fill:var(--sn-fill);stroke:var(--sn-line);stroke-width:1.1}
+.zl{font-size:10.5px;font-weight:700;letter-spacing:.07em;fill:var(--ink-2)}
+.zl2{font-size:10.5px;font-weight:600;fill:var(--ink-2)}
+.zip{font-weight:500;fill:var(--muted)}
+.nd{fill:var(--surface);stroke:var(--accent);stroke-width:1.3}
+.ext{fill:var(--surface);stroke:var(--line-2);stroke-width:1.3;stroke-dasharray:4 3}
+.nm{font-size:12.5px;font-weight:650;fill:var(--ink)}
+.dt{font-size:10.5px;fill:var(--muted)}
+.ed{fill:none;stroke:var(--edge);stroke-width:1.5}
+.ah{fill:var(--edge)}
+.lb{font-size:11px;fill:var(--ink-2)}
+.side-title{margin:0 0 6px;font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.flows{list-style:none;margin:0 0 16px;padding:0;counter-reset:f}
+.flows li{counter-increment:f;padding:8px 0;border-top:1px solid var(--line);font-size:.9rem;display:grid;grid-template-columns:24px 1fr;column-gap:10px}
+.flows li::before{content:counter(f);grid-row:span 2;width:22px;height:22px;margin-top:1px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:.74rem;font-weight:700;display:grid;place-items:center}
+.flows .route{font-weight:600}
+.flows .how{color:var(--muted)}
+.legend{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:.86rem;color:var(--ink-2)}
+.legend li{display:flex;align-items:center;gap:8px}
+.legend i{flex:none;width:22px;height:14px;border-radius:3px;border:1.4px solid}
+.legend .l1{background:var(--sub-fill);border-color:var(--sub-line);border-style:dashed}
+.legend .l2{background:var(--vnet-fill);border-color:var(--vnet-line)}
+.legend .l3{background:var(--sn-fill);border-color:var(--sn-line)}
+.legend .l4{background:var(--surface);border-color:var(--line-2);border-style:dashed}
+
+.cap{display:grid;gap:12px}
+@media (min-width:720px){.cap{grid-template-columns:repeat(3,1fr)}}
+.cap h3{margin:0 0 2px;font-size:1.02rem}
+.cap .where{margin:0 0 12px;font-size:.82rem;color:var(--muted)}
+.cap .big{font-size:1.6rem;font-weight:780;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--accent)}
+.cap .big small{font-size:.9rem;font-weight:600;color:var(--ink-2)}
+.cap .more{margin:8px 0 0;font-size:.9rem;color:var(--ink-2)}
+
+.rec{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+@media (min-width:720px){.rec{grid-template-columns:1fr 1fr 1.2fr}}
+.rec .card{text-align:left}
+.rec .k{font-size:.78rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.rec .v{font-size:2rem;font-weight:800;line-height:1.1;margin-top:4px;font-variant-numeric:tabular-nums}
+.rec .d{font-size:.88rem;color:var(--ink-2);margin-top:4px}
+.rec .tested{grid-column:1/-1}
+@media (min-width:720px){.rec .tested{grid-column:auto}}
+.rec .tested .v{font-size:1.45rem}
+footer{margin-top:48px;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <p class="eyebrow">Tidewater Ferries · Architecture</p>
+    <h1>Online ticketing platform on Azure</h1>
+    <p class="lede">How bookings move from passengers to the database, the payment provider and the scanners at our port terminals.</p>
+    <ul class="meta">
+      <li><b>Owner</b>Digital Channels</li>
+      <li><b>Region</b>North Europe</li>
+      <li><b>Reviewed</b>2026-09-22</li>
+    </ul>
+  </header>
+
+  <section id="overview">
+    <h2>Overview</h2>
+    <p>Passengers book through Azure Front Door, which passes their requests to the booking web app in our Ticketing subscription. Every booking is written to one database and announced as an event, so that the scanners at the port terminals stay in step.</p>
+  </section>
+
+  <section id="diagram">
+    <h2>Diagram</h2>
+    <div class="card diagram-grid">
+      <svg viewBox="0 0 360 606" role="img" aria-labelledby="dg-t dg-d">
+        <title id="dg-t">Ticketing platform network and data flow</title>
+        <desc id="dg-d">Passengers reach Front Door over HTTPS. Front Door sends origin requests to the Booking Web App, which calls the Ticketing API over REST. Both are in the App subnet 10.50.1.0/24. The Ticketing API writes to Reservations DB, Azure SQL, on port 1433, and publishes ticket issued events to Booking Events, Service Bus; both are in the Data subnet 10.50.2.0/24. The subnets are inside the Ticketing VNet 10.50.0.0/16 in the Ticketing subscription. The Ticketing API calls the external Payment Provider for card authorization. Booking Events syncs to Port Terminal Scanners every 30 seconds.</desc>
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="9.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker>
+        </defs>
+        <!-- external top -->
+        <rect class="ext" x="110" y="8" width="140" height="36" rx="18"/>
+        <text class="nm" x="180" y="30.5" text-anchor="middle">Passengers</text>
+        <path class="ed" d="M180 44 V78" marker-end="url(#ah)"/>
+        <text class="lb" x="188" y="65">HTTPS</text>
+        <rect class="ext" x="110" y="78" width="140" height="40" rx="8"/>
+        <text class="nm" x="180" y="102.5" text-anchor="middle">Front Door</text>
+        <rect class="ext" x="262" y="78" width="94" height="40" rx="8"/>
+        <text class="nm" x="309" y="95" text-anchor="middle">Payment</text>
+        <text class="nm" x="309" y="110" text-anchor="middle">Provider</text>
+
+        <!-- subscription -->
+        <rect class="z-sub" x="6" y="150" width="330" height="372" rx="12"/>
+        <text class="zl" x="16" y="168">TICKETING SUBSCRIPTION</text>
+        <rect class="z-vnet" x="14" y="176" width="314" height="336" rx="10"/>
+        <text class="zl2" x="24" y="193">Ticketing VNet <tspan class="zip">10.50.0.0/16</tspan></text>
+        <rect class="z-sn" x="22" y="202" width="298" height="152" rx="8"/>
+        <text class="zl2" x="32" y="218">App subnet <tspan class="zip">10.50.1.0/24</tspan></text>
+        <rect class="z-sn" x="22" y="392" width="298" height="110" rx="8"/>
+        <text class="zl2" x="32" y="408">Data subnet <tspan class="zip">10.50.2.0/24</tspan></text>
+
+        <!-- front door to web app -->
+        <path class="ed" d="M180 118 V230" marker-end="url(#ah)"/>
+        <text class="lb" x="172" y="138" text-anchor="end">origin request</text>
+
+        <rect class="nd" x="110" y="230" width="140" height="40" rx="8"/>
+        <text class="nm" x="180" y="254.5" text-anchor="middle">Booking Web App</text>
+        <path class="ed" d="M180 270 V300" marker-end="url(#ah)"/>
+        <text class="lb" x="188" y="289">REST</text>
+        <rect class="nd" x="52" y="300" width="256" height="40" rx="8"/>
+        <text class="nm" x="180" y="324.5" text-anchor="middle">Ticketing API</text>
+
+        <!-- api to payment -->
+        <path class="ed" d="M308 320 H348 V118" marker-end="url(#ah)"/>
+        <text class="lb" x="342" y="138" text-anchor="end">card authorization</text>
+
+        <!-- api to data -->
+        <path class="ed" d="M105 340 V418" marker-end="url(#ah)"/>
+        <text class="lb" x="112" y="370">SQL, port 1433</text>
+        <path class="ed" d="M255 340 V418" marker-end="url(#ah)"/>
+        <text class="lb" x="248" y="386" text-anchor="end">ticket issued</text>
+
+        <rect class="nd" x="45" y="418" width="120" height="50" rx="8"/>
+        <text class="nm" x="105" y="439" text-anchor="middle">Reservations DB</text>
+        <text class="dt" x="105" y="456" text-anchor="middle">Azure SQL</text>
+        <rect class="nd" x="195" y="418" width="120" height="50" rx="8"/>
+        <text class="nm" x="255" y="439" text-anchor="middle">Booking Events</text>
+        <text class="dt" x="255" y="456" text-anchor="middle">Service Bus</text>
+
+        <!-- events to scanners -->
+        <path class="ed" d="M255 468 V556" marker-end="url(#ah)"/>
+        <text class="lb" x="262" y="542">sync every 30 s</text>
+        <rect class="ext" x="175" y="556" width="160" height="40" rx="8"/>
+        <text class="nm" x="255" y="580.5" text-anchor="middle">Port Terminal Scanners</text>
+      </svg>
+      <div>
+        <p class="side-title">Flows</p>
+        <ol class="flows">
+          <li><span class="route">Passengers → Front Door</span><span class="how">HTTPS</span></li>
+          <li><span class="route">Front Door → Booking Web App</span><span class="how">origin request</span></li>
+          <li><span class="route">Booking Web App → Ticketing API</span><span class="how">REST</span></li>
+          <li><span class="route">Ticketing API → Reservations DB</span><span class="how">SQL, port 1433</span></li>
+          <li><span class="route">Ticketing API → Payment Provider</span><span class="how">card authorization</span></li>
+          <li><span class="route">Ticketing API → Booking Events</span><span class="how">ticket issued</span></li>
+          <li><span class="route">Booking Events → Port Terminal Scanners</span><span class="how">sync every 30 s</span></li>
+        </ol>
+        <p class="side-title">Boundaries</p>
+        <ul class="legend">
+          <li><i class="l1"></i>Ticketing subscription</li>
+          <li><i class="l2"></i>Ticketing VNet, 10.50.0.0/16</li>
+          <li><i class="l3"></i>Subnet</li>
+          <li><i class="l4"></i>Outside the subscription</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="capacity">
+    <h2>Capacity</h2>
+    <div class="cap">
+      <div class="card">
+        <h3>Booking Web App</h3>
+        <p class="where">App subnet</p>
+        <div class="big">3–10 <small>instances</small></div>
+        <p class="more">Scales at 60% CPU.</p>
+      </div>
+      <div class="card">
+        <h3>Ticketing API</h3>
+        <p class="where">App subnet</p>
+        <div class="big">4–16 <small>pods</small></div>
+      </div>
+      <div class="card">
+        <h3>Reservations DB</h3>
+        <p class="where">Data subnet · Azure SQL</p>
+        <div class="big">8 <small>vCores</small></div>
+        <p class="more">Read replica in the paired region.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="recovery">
+    <h2>Recovery targets</h2>
+    <div class="rec">
+      <div class="card"><div class="k">Recovery point objective</div><div class="v">5 min</div><div class="d">Most data we accept losing</div></div>
+      <div class="card"><div class="k">Recovery time objective</div><div class="v">1 hour</div><div class="d">Longest time to restore service</div></div>
+      <div class="card tested"><div class="k">Last tested</div><div class="v">2026-08-19</div></div>
+    </div>
+  </section>
+
+  <footer>Tidewater Ferries · Online ticketing platform · Digital Channels · North Europe · reviewed 2026-09-22</footer>
+</main>
+</body>
+</html>

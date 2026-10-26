@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>New Shelter Campaign Status · Riverside Animal Rescue</title>
+<style>
+:root{--bg:#f7f5f2;--surface:#ffffff;--ink:#1d1b1a;--muted:#625d58;--line:#e6e1da;--track:#ede8e1;--accent:#c4572a;--accent2:#e9a27f;--accent3:#f3cdb9;--accent-bg:#fbeee7;--danger:#b42318;--warn:#9a5800;--warn-bg:#fff3dc;--ok:#1d7745;--ok-bg:#e6f4ec;--upcoming:#2a5bd7}
+@media (prefers-color-scheme:dark){:root{--bg:#131110;--surface:#1d1a18;--ink:#eeeae6;--muted:#a8a099;--line:#35302b;--track:#2e2925;--accent:#f08a5d;--accent2:#b8603c;--accent3:#7a4430;--accent-bg:#3a241a;--danger:#ff8f85;--warn:#f2b55c;--warn-bg:#35280f;--ok:#72d39c;--ok-bg:#15301f;--upcoming:#86a8ff}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:26px 16px 64px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:650}
+h1{font-size:clamp(1.6rem,5.5vw,2.25rem);line-height:1.15;margin:.35rem 0 .6rem}
+h2{font-size:1.2rem;margin:0 0 .9rem;line-height:1.3}
+p{margin:.2rem 0 .8rem}
+.meta{display:flex;flex-wrap:wrap;gap:4px 18px;color:var(--muted);font-size:.9rem;margin:0;padding:0;list-style:none}
+.meta b{color:var(--ink);font-weight:600}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:16px}
+.hero .raised{font-size:clamp(2.2rem,10vw,3rem);font-weight:780;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.hero .of{color:var(--muted);font-size:1rem;margin-top:4px}
+.prog{position:relative;margin:22px 0 30px}
+.prog .track{height:18px;background:var(--track);border-radius:9px;overflow:hidden}
+.prog .fill{height:100%;background:var(--accent);border-radius:9px 0 0 9px}
+.prog .mk{position:absolute;top:-6px;bottom:-6px;width:2px;background:var(--ink)}
+.prog .mk span{position:absolute;top:30px;left:50%;transform:translateX(-50%);font-size:.75rem;white-space:nowrap;color:var(--muted);font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.stat .v{font-size:1.25rem;font-weight:720;font-variant-numeric:tabular-nums}
+.stat .k{font-size:.8rem;color:var(--muted)}
+.match{margin-top:14px;background:var(--accent-bg);border-radius:12px;padding:14px 16px}
+.match h3{margin:0 0 4px;font-size:1rem}
+.match .mbar{height:10px;background:var(--track);border-radius:5px;overflow:hidden;margin:10px 0 6px}
+.match .mbar div{height:100%;background:var(--accent)}
+.match .row{display:flex;justify-content:space-between;font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.levels{display:grid;gap:16px}
+.lvl .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.lvl .name{font-weight:650}
+.lvl .name small{display:block;font-weight:400;color:var(--muted);font-size:.82rem}
+.lvl .amt{font-weight:720;font-variant-numeric:tabular-nums;white-space:nowrap}
+.lvl .bar{height:14px;background:var(--track);border-radius:7px;margin-top:6px;overflow:hidden}
+.lvl .bar div{height:100%;border-radius:7px}
+.lvl .sub{font-size:.82rem;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums}
+.tl{list-style:none;margin:0;padding:0}
+.tl li{position:relative;padding:0 0 18px 34px}
+.tl li:last-child{padding-bottom:0}
+.tl li::before{content:"";position:absolute;left:7px;top:22px;bottom:0;width:2px;background:var(--line)}
+.tl li:last-child::before{display:none}
+.tl .dot{position:absolute;left:0;top:4px;width:16px;height:16px;border-radius:50%;border:2px solid var(--muted);background:var(--surface)}
+.tl .done .dot{background:var(--ok);border-color:var(--ok)}
+.tl .up .dot{border-color:var(--upcoming);box-shadow:0 0 0 4px color-mix(in srgb,var(--upcoming) 22%,transparent)}
+.tl .t{font-weight:650}
+.tl .d{font-size:.88rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.pill{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:1px 8px;margin-left:6px;vertical-align:1px}
+.pill.done{background:var(--ok-bg);color:var(--ok)}
+.pill.up{background:var(--warn-bg);color:var(--warn)}
+.pill.plan{background:var(--track);color:var(--muted)}
+.attn{border-left:6px solid var(--warn)}
+.attn h2{color:var(--warn)}
+.gap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.gap div{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.gap .v{font-size:1.3rem;font-weight:740;font-variant-numeric:tabular-nums}
+.gap .k{font-size:.82rem;color:var(--muted)}
+footer{margin-top:24px;color:var(--muted);font-size:.85rem;text-align:center}
+@media (min-width:640px){.card{padding:24px 26px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="eyebrow">Riverside Animal Rescue · New shelter campaign</div>
+  <h1>Campaign status</h1>
+  <ul class="meta">
+    <li>As of <b>2026-10-16</b></li>
+    <li>For the board and major donors</li>
+    <li>From <b>Henrietta Voss</b>, Executive Director</li>
+  </ul>
+
+  <section class="card hero" id="glance">
+    <h2>Campaign at a glance</h2>
+    <div class="raised">$3.42M</div>
+    <div class="of">raised toward a <b>$5.0M</b> goal · <b>68.4%</b></div>
+    <div class="prog" role="img" aria-label="Progress: 3.42 million of 5.0 million raised, 68.4 percent. Construction threshold at 4.0 million, 80 percent.">
+      <div class="track"><div class="fill" style="width:68.4%"></div></div>
+      <div class="mk" style="left:80%"><span>$4.0M to build</span></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="v">1,860</div><div class="k">donors</div></div>
+      <div class="stat"><div class="v">$1.58M</div><div class="k">to go</div></div>
+      <div class="stat"><div class="v">68.4%</div><div class="k">of goal</div></div>
+    </div>
+    <div class="match">
+      <h3>Matching challenge open</h3>
+      <p style="margin:0">An anonymous donor will match up to <b>$250,000</b> of new gifts through <b>2026-12-31</b>.</p>
+      <div class="mbar" role="img" aria-label="96,000 of 250,000 dollars matched, 38.4 percent"><div style="width:38.4%"></div></div>
+      <div class="row"><span><b style="color:var(--ink)">$96,000</b> matched</span><span>$154,000 still available</span></div>
+    </div>
+  </section>
+
+  <section class="card" id="levels">
+    <h2>Gifts by level</h2>
+    <div class="levels">
+      <div class="lvl">
+        <div class="top"><div class="name">Lead gifts<small>over $100,000</small></div><div class="amt">$2.10M</div></div>
+        <div class="bar"><div style="width:61.4%;background:var(--accent)"></div></div>
+        <div class="sub">6 gifts · 61% of funds raised</div>
+      </div>
+      <div class="lvl">
+        <div class="top"><div class="name">Major gifts<small>$10,000 to $100,000</small></div><div class="amt">$0.93M</div></div>
+        <div class="bar"><div style="width:27.2%;background:var(--accent2)"></div></div>
+        <div class="sub">74 gifts · 27% of funds raised</div>
+      </div>
+      <div class="lvl">
+        <div class="top"><div class="name">Community gifts<small>under $10,000</small></div><div class="amt">$0.39M</div></div>
+        <div class="bar"><div style="width:11.4%;background:var(--accent3)"></div></div>
+        <div class="sub">1,780 gifts · 11% of funds raised</div>
+      </div>
+    </div>
+    <p style="margin:14px 0 0;font-size:.85rem;color:var(--muted)">Bars show each level's share of the $3.42M raised.</p>
+  </section>
+
+  <section class="card" id="milestones">
+    <h2>Construction milestones</h2>
+    <ol class="tl">
+      <li class="done"><span class="dot"></span><div class="t">Land purchase <span class="pill done">Done</span></div><div class="d">2026-03-14</div></li>
+      <li class="done"><span class="dot"></span><div class="t">Permits approved <span class="pill done">Done</span></div><div class="d">2026-07-22</div></li>
+      <li class="up"><span class="dot"></span><div class="t">Groundbreaking <span class="pill up">Upcoming</span></div><div class="d">2026-11-08 · depends on reaching $4.0M</div></li>
+      <li><span class="dot"></span><div class="t">Framing complete <span class="pill plan">Planned</span></div><div class="d">2027-03-19</div></li>
+      <li><span class="dot"></span><div class="t">Opening day <span class="pill plan">Planned</span></div><div class="d">2027-09-15</div></li>
+    </ol>
+  </section>
+
+  <section class="card attn" id="attention">
+    <h2>Needs attention</h2>
+    <p>Construction starts only when <b>$4.0M</b> is in hand or pledged. The campaign is <b>$0.58M short</b> of that.</p>
+    <div class="gap">
+      <div><div class="v">$0.58M</div><div class="k">short of the $4.0M construction threshold</div></div>
+      <div><div class="v">$0.5M</div><div class="k">two pending lead gift proposals, together</div></div>
+    </div>
+    <p style="margin:0">The <b>2026-11-08 groundbreaking</b> depends on those two proposals, due for decision by <b>2026-10-30</b>. Even if both are approved, about $0.08M would remain to be found.</p>
+  </section>
+
+  <footer>Riverside Animal Rescue · New shelter campaign status · As of 2026-10-16</footer>
+</main>
+</body>
+</html>

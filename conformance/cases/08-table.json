@@ -1,0 +1,85 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "data",
+      "name": "runs",
+      "line": 1
+    },
+    {
+      "type": "table",
+      "data": "runs",
+      "cols": null,
+      "sort": null,
+      "limit": null,
+      "title": null,
+      "line": 2
+    },
+    {
+      "type": "table",
+      "data": "runs",
+      "cols": [
+        "deploys"
+      ],
+      "sort": {
+        "col": "deploys",
+        "desc": true
+      },
+      "limit": 2,
+      "title": "Top",
+      "line": 3
+    },
+    {
+      "type": "table",
+      "data": "_table1",
+      "cols": null,
+      "sort": null,
+      "limit": null,
+      "title": "Inline",
+      "line": 4
+    }
+  ],
+  "data": {
+    "runs": {
+      "name": "runs",
+      "columns": [
+        "week",
+        "deploys"
+      ],
+      "rows": [
+        [
+          "W1",
+          "14"
+        ],
+        [
+          "W2",
+          "19"
+        ],
+        [
+          "W3",
+          "9"
+        ]
+      ],
+      "line": 1
+    },
+    "_table1": {
+      "name": "_table1",
+      "columns": [
+        "a",
+        "b"
+      ],
+      "rows": [
+        [
+          "1",
+          "2"
+        ],
+        [
+          "3",
+          "4"
+        ]
+      ],
+      "line": 4
+    }
+  },
+  "diagnostics": []
+}

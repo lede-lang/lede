@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orchard Press: Lease or Buy the New Press</title>
+<style>
+:root{
+  color-scheme:light dark;
+  --bg:#f7f5f1;--surface:#ffffff;--surface2:#efebe4;--fg:#211d19;--muted:#645d54;--line:#e0d9ce;
+  --buy:#8a5a1f;--buy-soft:#f6ead8;
+  --lease:#1f6a7a;--lease-soft:#dcf0f3;
+  --good:#17754a;--good-soft:#e0f3e8;
+  --warn:#9a4c00;--warn-soft:#fff0d9;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#131110;--surface:#1d1a18;--surface2:#272320;--fg:#efebe5;--muted:#aaa194;--line:#332e2a;
+    --buy:#e5b571;--buy-soft:#33261a;
+    --lease:#62c4d6;--lease-soft:#12303a;
+    --good:#5dd596;--good-soft:#112f20;
+    --warn:#ffb65e;--warn-soft:#35260f;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:22px 16px 56px}
+.eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--lease);margin:0}
+h1{font-size:clamp(1.55rem,5.5vw,2.15rem);line-height:1.18;margin:.3em 0 .5em}
+h2{font-size:1.25rem;line-height:1.3;margin:2.3rem 0 .7rem;padding-bottom:.4rem;border-bottom:2px solid var(--line)}
+h3{font-size:1.05rem;margin:0 0 .6rem}
+p{margin:0 0 .8rem}
+.meta{display:flex;flex-wrap:wrap;gap:6px 8px;list-style:none;padding:0;margin:14px 0 0}
+.meta li{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 11px;font-size:.84rem;color:var(--muted)}
+.meta b{color:var(--fg);font-weight:600}
+.verdict{margin-top:18px;padding:16px;border-radius:14px;background:var(--lease-soft);border:2px solid var(--lease)}
+.verdict .k{font-size:.74rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--lease)}
+.verdict p{margin:.2rem 0 0;font-size:1.08rem;font-weight:650}
+.cols{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.opt{background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--buy);border-radius:12px;padding:14px 16px}
+.opt.lease{border-top-color:var(--lease)}
+.opt .net{font-size:1.9rem;font-weight:800;line-height:1.1;margin:.1rem 0 .6rem}
+.opt.buy .net{color:var(--buy)}.opt.lease .net{color:var(--lease)}
+.opt .net small{display:block;font-size:.74rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:2px}
+dl{margin:0}
+dl div{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid var(--line)}
+dt{color:var(--muted);font-size:.93rem}
+dd{margin:0;font-weight:650;text-align:right}
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.chart svg{width:100%;max-width:560px;height:auto;display:block;margin:0 auto}
+table{border-collapse:collapse;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:12px;font-size:.95rem}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+td.r,th.r{text-align:right;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+th{font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--surface2)}
+tr.tot td{font-weight:800;background:var(--surface2)}
+.neg{color:var(--good)}
+.note{font-size:.88rem;color:var(--muted);margin:.7rem 0 0}
+.risk{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--buy);border-radius:12px;padding:12px 14px}
+.risk.lease{border-left-color:var(--lease)}
+.risk h3{margin-bottom:.3rem}
+.risk p{margin:0}
+.rec{background:var(--surface);border:2px solid var(--lease);border-radius:14px;padding:16px}
+.rec ul{margin:.6rem 0 0;padding-left:1.2rem}
+.rec li{margin:.4rem 0}
+.honest{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--warn-soft);border-left:5px solid var(--warn)}
+.honest b{color:var(--warn)}
+svg text{font-family:inherit}
+.lbl{font-size:13px;font-weight:650;fill:var(--fg)}
+.val{font-size:13.5px;font-weight:800;fill:var(--fg)}
+.grid{stroke:var(--line);stroke-width:1}
+.tl{font-size:11px;fill:var(--muted);text-anchor:middle}
+.dim{stroke:var(--warn);stroke-width:1.6;fill:none}
+.dg{stroke:var(--warn);stroke-width:1;stroke-dasharray:3 3}
+.dl{font-size:12px;font-weight:700;fill:var(--warn)}
+footer{margin-top:2.5rem;font-size:.85rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Decision page</p>
+  <h1>Lease or buy the new digital press?</h1>
+  <ul class="meta">
+    <li>Owner <b>Lucinda Marsh</b></li>
+    <li>Meeting <b>2026-11-12</b></li>
+    <li>Volume <b>about 2.4 million pages a month</b></li>
+    <li>Horizon <b>four years</b></li>
+  </ul>
+  <div class="verdict">
+    <div class="k">We recommend</div>
+    <p>Lease the press. It costs 17,600 dollars more over four years, but it needs no large cash outlay.</p>
+  </div>
+</header>
+
+<h2>Options</h2>
+<div class="cols">
+  <div class="opt buy">
+    <h3>Buy</h3>
+    <div class="net"><small>Net four-year cost</small>$349,600</div>
+    <dl>
+      <div><dt>Purchase price</dt><dd>$412,000</dd></div>
+      <div><dt>Service contract</dt><dd>$14,400 a year</dd></div>
+      <div><dt>Service over four years</dt><dd>$57,600</dd></div>
+      <div><dt>Expected resale after four years</dt><dd>$120,000</dd></div>
+    </dl>
+  </div>
+  <div class="opt lease">
+    <h3>Lease</h3>
+    <div class="net"><small>Four-year cost</small>$367,200</div>
+    <dl>
+      <div><dt>Payment</dt><dd>$7,650 a month</dd></div>
+      <div><dt>Term</dt><dd>48 months</dd></div>
+      <div><dt>Service</dt><dd>Included</dd></div>
+      <div><dt>Deposit</dt><dd>$15,300 (two payments)</dd></div>
+      <div><dt>Optional buyout at the end</dt><dd>$95,000</dd></div>
+    </dl>
+  </div>
+</div>
+
+<h2>Four-year cost</h2>
+<div class="chart">
+<svg viewBox="0 0 400 190" role="img" aria-labelledby="ct cd">
+  <title id="ct">Four-year cost, buy versus lease</title>
+  <desc id="cd">Buy costs 349,600 dollars net of resale over four years. Lease costs 367,200 dollars. The lease costs 17,600 dollars more.</desc>
+  <path class="grid" d="M0 20V150M82.5 20V150M165 20V150M247.5 20V150M330 20V150"/>
+  <text class="lbl" x="0" y="14">Buy, net of resale</text>
+  <rect x="0" y="22" width="288.4" height="28" rx="3" style="fill:var(--buy)"/>
+  <text class="val" x="296" y="41">349,600</text>
+  <text class="lbl" x="0" y="72">Lease, 48 payments</text>
+  <rect x="0" y="80" width="302.9" height="28" rx="3" style="fill:var(--lease)"/>
+  <text class="val" x="311" y="99">367,200</text>
+
+  <path class="dg" d="M288.4 52V132M302.9 110V132"/>
+  <path class="dim" d="M288.4 128V136M288.4 132H302.9M302.9 128V136"/>
+  <text class="dl" x="302.9" y="150" style="text-anchor:end">Lease costs 17,600 more</text>
+
+  <path class="grid" d="M0 156H330"/>
+  <text class="tl" x="0" y="172" style="text-anchor:start">$0</text>
+  <text class="tl" x="82.5" y="172">$100k</text>
+  <text class="tl" x="165" y="172">$200k</text>
+  <text class="tl" x="247.5" y="172">$300k</text>
+  <text class="tl" x="330" y="172">$400k</text>
+</svg>
+</div>
+<table>
+  <thead><tr><th scope="col">Four-year cost, in dollars</th><th scope="col" class="r">Buy</th><th scope="col" class="r">Lease</th></tr></thead>
+  <tbody>
+    <tr><td>Purchase price</td><td class="r">412,000</td><td class="r">&ndash;</td></tr>
+    <tr><td>Service</td><td class="r">57,600</td><td class="r">included</td></tr>
+    <tr><td>Resale after four years</td><td class="r neg">&minus;120,000</td><td class="r">&ndash;</td></tr>
+    <tr><td>48 payments of 7,650</td><td class="r">&ndash;</td><td class="r">367,200</td></tr>
+    <tr class="tot"><td>Net four-year cost</td><td class="r">349,600</td><td class="r">367,200</td></tr>
+  </tbody>
+</table>
+<p class="note">The lease total leaves out the optional 95,000 dollar buyout. Cash needed at the start: 412,000 dollars to buy, 15,300 dollars of deposit to lease.</p>
+
+<h2>Risks</h2>
+<div class="cols">
+  <div class="risk">
+    <h3>If we buy</h3>
+    <p>Buying ties up cash we need for the new bindery, and the resale value is a guess.</p>
+  </div>
+  <div class="risk lease">
+    <h3>If we lease</h3>
+    <p>The lease locks us in for 48 months, although the buyout price is fixed today.</p>
+  </div>
+</div>
+
+<h2>Recommendation</h2>
+<div class="rec">
+  <h3>Lease the press</h3>
+  <ul>
+    <li>It keeps the cash for the new bindery: 15,300 dollars of deposit instead of a 412,000 dollar purchase.</li>
+    <li>Its cost is fixed at 367,200 dollars with service included. The cost of buying depends on a resale value we can only guess; buying wins only if the press resells for more than 102,400 dollars.</li>
+    <li>If we want to own the press after 48 months, the buyout price is already fixed at 95,000 dollars.</li>
+  </ul>
+  <p class="honest"><b>The honest cost:</b> the lease costs 17,600 dollars more than buying over four years, about 367 dollars more a month.</p>
+</div>
+
+<footer>Orchard Press · decision page for the meeting on 2026-11-12 · owner Lucinda Marsh</footer>
+</div>
+</body>
+</html>

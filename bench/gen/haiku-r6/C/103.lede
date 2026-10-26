@@ -1,0 +1,38 @@
+@title Lab Result Routing
+@subtitle Who is told, and when
+@author Calder Valley Hospital laboratory informatics team
+@date 2026-10-02
+
+## Routing flow
+diagram route dir=TB title="Routing flow"
+route: verify "Result verified in lab system" svc
+route: crit "Critical value?" decision
+route: phone "Phone the ordering clinician" svc "urgent" focus
+route: rb "Read-back confirmed within 15 minutes?" decision
+route: logrb "Log the read-back" svc "urgent"
+route: esc "Escalate to department head" svc "urgent"
+route: flag "Flagged abnormal?" decision
+route: inbox "Add to clinician inbox" svc "routine"
+route: file "File without alert" svc "routine"
+route: release "Release to patient portal" svc "routine"
+route: verify -> crit
+route: crit -> phone : yes
+route: phone -> rb
+route: rb -> logrb : yes
+route: rb -> esc : no
+route: esc -> logrb
+route: crit -> flag : no
+route: flag -> inbox : yes
+route: flag -> file : no
+route: inbox -> release
+route: file -> release
+
+!! Critical values need a phone call within 10 minutes of verification. Do not wait for the clinician inbox.
+
+## Time limits
+table = Step,Limit,Track; Phone call for a critical value,within 10 minutes of verification,Urgent; Read-back confirmation,within 15 minutes of the call,Urgent; Abnormal result review,in the clinician inbox within 1 business day,Routine; Routine result release,to the patient portal after 24 hours,Routine; Abnormal result hold,for 72 hours so the clinician can speak to the patient first,Routine
+
+## Who is called
+- Weekdays, 07:00 to 19:00: the ordering clinician.
+- Nights and weekends: the covering physician, through the hospital operator.
+- Department head: Dr. Naomi Eze.

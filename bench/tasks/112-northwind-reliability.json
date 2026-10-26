@@ -1,0 +1,67 @@
+{
+  "id": "112-northwind-reliability",
+  "category": "data",
+  "title": "Northwind reliability, January to September 2026",
+  "brief": "Northwind Utilities must report electric reliability for January to September 2026 to the state regulator and to its own board, and the reliability engineer, Sven Lindqvist, wants a data summary page. The system serves 412000 customers. The average outage time per customer so far this year is 99.6 minutes, against a regulator target of 105 for the period. By district, with customers, outage events and average outage minutes per customer: Coastal, 98000, 41, 112; Valley, 142000, 58, 84; Hills, 61000, 37, 176; Metro, 87000, 22, 49; Plains, 24000, 19, 131. That is 177 outage events in all. The system as a whole meets the target, but Hills (176), Plains (131) and Coastal (112) are each above 105, and Hills is the worst by a wide margin. Causes of outage minutes: storms 46 percent, equipment failure 27, vegetation 15, other 12. Mention that a tree-trimming program in Hills was approved to start on 2026-11-02 with a budget of 1.8 million dollars, covering 210 line miles, and that Metro's low figure reflects its underground cables. Sections: \"Reliability at a glance\", \"By district\", \"Causes\" and \"Next steps\". Make sure the district comparison shows both the biggest districts and the worst performers, and that readers can see which districts are above the 105 target.",
+  "checklist": {
+    "sections": [
+      "Reliability at a glance",
+      "By district",
+      "Causes",
+      "Next steps"
+    ],
+    "visible": [
+      "Coastal",
+      "Valley",
+      "Hills",
+      "Metro",
+      "Plains",
+      "Sven Lindqvist",
+      "storms",
+      "equipment failure",
+      "vegetation"
+    ],
+    "values": [
+      "412000",
+      "99.6",
+      "105",
+      "98000",
+      "142000",
+      "61000",
+      "87000",
+      "24000",
+      "112",
+      "84",
+      "176",
+      "49",
+      "131",
+      "177",
+      "46",
+      "27",
+      "15",
+      "12",
+      "1.8 million",
+      "210",
+      "2026-11-02"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Hills was corrected to 160 average outage minutes after a data check, which brings the system average to 97.3 minutes.",
+    "expect_visible": [],
+    "expect_values": [
+      "160",
+      "97.3"
+    ],
+    "expect_absent": [
+      "176",
+      "99.6"
+    ]
+  }
+}

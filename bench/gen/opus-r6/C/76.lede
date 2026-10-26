@@ -1,0 +1,36 @@
+@title Digital Press: Lease or Buy
+@subtitle Decision for the meeting on 2026-11-12, Orchard Press commercial print shop
+@author Lucinda Marsh, Owner
+@date 2026-11-12
+
+kpi Recommendation | Lease | costs $17,600 more over 4 years | neutral
+
+The new digital press will print about 2.4 million pages a month. We compare buying and leasing over a four-year horizon.
+
+## Options
+cards
+### Buy
+- Purchase price: $412,000
+- Service contract: $14,400 a year ($57,600 over 4 years)
+- Expected resale after 4 years: $120,000
+- **Net four-year cost: $349,600**
+### Lease
+- $7,650 a month for 48 months ($367,200)
+- Service included
+- Deposit: two monthly payments ($15,300)
+- Optional buyout at the end: $95,000, fixed today
+- **Four-year cost: $367,200**
+
+## Four-year cost
+data cost = option,usd; Buy,349600; Lease,367200
+chart hbar cost unit=$ labels title="Net four-year cost"
+table = Item,Buy,Lease; Upfront cash,"$412,000","$15,300 deposit"; Payments,—,"$367,200 (48 × $7,650)"; Service,"$57,600",included; Resale or buyout,"−$120,000 resale","$95,000 optional buyout"; **Net four-year cost**,"**$349,600**","**$367,200**"
+
+## Risks
+- **Buy:** ties up cash we need for the new bindery.
+- **Buy:** the $120,000 resale value is a guess.
+- **Lease:** locks us in for 48 months, although the buyout price is fixed today.
+
+## Recommendation
+We recommend the **lease**.
+! The lease costs **$17,600 more** over four years than buying. We accept that premium because it avoids a $412,000 cash outlay and keeps cash free for the new bindery.

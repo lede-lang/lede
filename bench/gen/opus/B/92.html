@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>INC-3302 Postmortem</title>
+<style>
+:root{--bg:#f6f5f2;--surface:#ffffff;--surface-2:#f0efeb;--text:#1c1d20;--muted:#5f636b;--line:#e3e1db;--accent:#1f5fbf;--accent-soft:#e6eefb;--ok:#1d7a46;--ok-soft:#e3f3e9;--warn:#9a5b00;--warn-soft:#fbefd9;--bad:#b3261e;--bad-soft:#fbe5e3;--code-bg:#f1f0ec;--seg1:#c9c6bd;--seg2:#d4473d;--seg3:#e3a33b;--seg4:#4f86d9;--seg5:#2f9a63;color-scheme:light dark}
+@media (prefers-color-scheme:dark){:root{--bg:#121315;--surface:#1b1c1f;--surface-2:#232428;--text:#ecebe7;--muted:#a3a6ad;--line:#303237;--accent:#7aa7f0;--accent-soft:#1d2a40;--ok:#5cc58a;--ok-soft:#173023;--warn:#e5ad52;--warn-soft:#352816;--bad:#f2837a;--bad-soft:#3a1d1b;--code-bg:#26272b;--seg1:#55575d;--seg2:#e0645a;--seg3:#e5ad52;--seg4:#6c9ce6;--seg5:#4fbf82}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:32px 16px 64px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-size:clamp(1.6rem,5vw,2.2rem);line-height:1.2;margin:.25em 0 .3em;letter-spacing:-.01em}
+h2{font-size:1.25rem;margin:0 0 .8rem}
+p{margin:.4em 0}
+section{margin-top:36px}
+.sub{color:var(--muted);margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{font-size:.8rem;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:3px 10px;color:var(--muted)}
+.chip b{color:var(--text)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:22px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
+.kpi .v{font-size:2rem;font-weight:750;line-height:1.1;letter-spacing:-.02em}
+.kpi .v small{font-size:1rem;font-weight:600;color:var(--muted)}
+.kpi .l{color:var(--muted);font-size:.9rem;margin-top:4px}
+.kpi.hot .v{color:var(--bad)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em;background:var(--code-bg);padding:.1em .35em;border-radius:5px;overflow-wrap:anywhere}
+.bar{position:relative;margin:26px 0 8px}
+.track{display:flex;height:22px;border-radius:6px;overflow:hidden}
+.track span{display:block;height:100%}
+.deadline{position:absolute;top:-20px;bottom:-6px;left:16.8%;border-left:2px dashed var(--text)}
+.deadline em{position:absolute;top:-2px;left:4px;font-style:normal;font-size:.72rem;font-weight:700;white-space:nowrap}
+.axis{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted)}
+.legend{list-style:none;padding:0;margin:14px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:6px 16px;font-size:.88rem}
+.legend li{display:flex;gap:8px;align-items:baseline}
+.sw{flex:none;width:12px;height:12px;border-radius:3px;transform:translateY(1px)}
+.tl{list-style:none;margin:0;padding:0;position:relative}
+.tl::before{content:"";position:absolute;left:62px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tl li{display:grid;grid-template-columns:52px 22px 1fr;gap:0 8px;padding:8px 0;align-items:start}
+.tl time{font-variant-numeric:tabular-nums;font-weight:700;font-size:.92rem;text-align:right;padding-top:1px}
+.tl .pt{width:12px;height:12px;border-radius:50%;background:var(--surface);border:2px solid var(--muted);margin:5px 0 0 4px;position:relative;z-index:1}
+.tl li.miss .pt{background:var(--bad);border-color:var(--bad)}
+.tl li.good .pt{background:var(--ok);border-color:var(--ok)}
+.tl li.miss span:last-child{color:var(--bad);font-weight:600}
+.list{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.list li{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px 12px 16px;border-left:4px solid var(--warn)}
+.list.good li{border-left-color:var(--ok)}
+table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--surface-2)}
+tr:last-child td{border-bottom:0}
+td.d{white-space:nowrap;font-variant-numeric:tabular-nums}
+@media (max-width:560px){
+table,tbody,tr,td{display:block;width:100%}
+thead{display:none}
+table{border:0;background:none}
+tr{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:10px;padding:10px 14px}
+td{border:0;padding:3px 0}
+td[data-l]::before{content:attr(data-l);display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+td.a{font-weight:600}
+}
+.note{font-size:.88rem;color:var(--muted);margin-top:10px}
+footer{margin-top:44px;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<main class="wrap">
+<div class="eyebrow">Marrow Retail · Postmortem · Blameless</div>
+<h1>INC-3302: Nightly sales reports late on 2026-10-06</h1>
+<p class="sub">Owned by the Data Platform team. All times UTC.</p>
+<div class="chips"><span class="chip">Due <b>03:00</b></span><span class="chip">Published <b>11:40</b></span><span class="chip">Status <b>Resolved</b></span></div>
+
+<div class="kpis">
+<div class="kpi hot"><div class="v">8h 40m</div><div class="l">late: due 03:00, sent 11:40</div></div>
+<div class="kpi"><div class="v">214</div><div class="l">store managers got empty or stale reports</div></div>
+<div class="kpi"><div class="v">95 <small>min</small></div><div class="l">to run the backfill</div></div>
+</div>
+
+<section id="summary">
+<h2>Summary</h2>
+<div class="card">
+<p>The point-of-sale vendor added a column named <code>tender_subtype</code> to the sales feed without notice. The ingestion job failed on the unexpected column. The failure alert was routed to a retired channel, so nobody knew until a store manager asked why their report was empty.</p>
+<p>Once the Data Platform on-call was paged, the cause was found, the schema mapping was patched and the reports were backfilled. No incorrect numbers were published.</p>
+</div>
+</section>
+
+<section id="timeline">
+<h2>Timeline</h2>
+<div class="card">
+<div class="bar" role="img" aria-label="Incident phases from 01:15 to 11:40: 55 minutes before the first failure, 5 hours 15 minutes failing undetected, 70 minutes from report to cause, 90 minutes to patch and start backfill, 95 minutes of backfill">
+<div class="track">
+<span style="width:8.8%;background:var(--seg1)"></span>
+<span style="width:50.4%;background:var(--seg2)"></span>
+<span style="width:11.2%;background:var(--seg3)"></span>
+<span style="width:14.4%;background:var(--seg4)"></span>
+<span style="width:15.2%;background:var(--seg5)"></span>
+</div>
+<div class="deadline"><em>03:00 deadline</em></div>
+</div>
+<div class="axis"><span>01:15</span><span>11:40</span></div>
+<ul class="legend">
+<li><span class="sw" style="background:var(--seg1)"></span><span>01:15–02:10 · change live, job not yet run (55 min)</span></li>
+<li><span class="sw" style="background:var(--seg2)"></span><span>02:10–07:25 · failing, undetected (5h 15m)</span></li>
+<li><span class="sw" style="background:var(--seg3)"></span><span>07:25–08:35 · reported, paged, diagnosed (70 min)</span></li>
+<li><span class="sw" style="background:var(--seg4)"></span><span>08:35–10:05 · patch and prepare (90 min)</span></li>
+<li><span class="sw" style="background:var(--seg5)"></span><span>10:05–11:40 · backfill (95 min)</span></li>
+</ul>
+</div>
+<div class="card" style="margin-top:12px">
+<ol class="tl">
+<li><time>01:15</time><span class="pt"></span><span>Vendor deploys the schema change.</span></li>
+<li><time>02:10</time><span class="pt"></span><span>Ingestion job fails for the first time.</span></li>
+<li><time>02:40</time><span class="pt"></span><span>Retries exhausted.</span></li>
+<li class="miss"><time>03:00</time><span class="pt"></span><span>Reports miss their deadline. No alert reaches anyone.</span></li>
+<li><time>07:25</time><span class="pt"></span><span>A store manager asks in <code>#retail-ops</code> why the report is empty.</span></li>
+<li><time>07:50</time><span class="pt"></span><span>Support pages the Data Platform on-call.</span></li>
+<li><time>08:35</time><span class="pt"></span><span>Cause identified.</span></li>
+<li><time>09:20</time><span class="pt"></span><span>Schema mapping patched.</span></li>
+<li><time>10:05</time><span class="pt"></span><span>Backfill starts.</span></li>
+<li class="good"><time>11:40</time><span class="pt"></span><span>Reports published.</span></li>
+</ol>
+</div>
+</section>
+
+<section id="factors">
+<h2>Contributing factors</h2>
+<ul class="list">
+<li><strong>Alert routing.</strong> The failure alert still routed to the retired channel <code>#data-alerts-old</code>, so it reached no one.</li>
+<li><strong>No schema contract check.</strong> Vendor feeds had no check that would catch an unannounced column before ingestion.</li>
+<li><strong>Serial backfill.</strong> The backfill ran serially, which stretched recovery to 95 minutes.</li>
+</ul>
+</section>
+
+<section id="well">
+<h2>What went well</h2>
+<ul class="list good">
+<li>Once paged, the on-call found the cause in <strong>45 minutes</strong> (07:50 to 08:35).</li>
+<li><strong>No wrong numbers were published.</strong> Reports were late or empty, never incorrect.</li>
+</ul>
+</section>
+
+<section id="actions">
+<h2>Action items</h2>
+<table>
+<thead><tr><th>Action</th><th>Owner</th><th>Due</th></tr></thead>
+<tbody>
+<tr><td class="a" data-l="Action">Route pipeline alerts to the on-call pager</td><td data-l="Owner">Samuel Achterberg</td><td class="d" data-l="Due">2026-10-16</td></tr>
+<tr><td class="a" data-l="Action">Require 14 days' notice of feed changes in the vendor contract</td><td data-l="Owner">Vendor Management</td><td class="d" data-l="Due">2026-10-30</td></tr>
+<tr><td class="a" data-l="Action">Add a schema contract check on vendor feeds</td><td data-l="Owner">Lucia Fontaine</td><td class="d" data-l="Due">2026-11-06</td></tr>
+<tr><td class="a" data-l="Action">Parallelize the backfill by partition</td><td data-l="Owner">Data Platform on-call</td><td class="d" data-l="Due">2026-11-20</td></tr>
+</tbody>
+</table>
+<p class="note">Sorted by due date.</p>
+</section>
+
+<footer>INC-3302 · Marrow Retail Data Platform · This review focuses on systems and process, not individuals.</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,42 @@
+@title How a Finished Lab Result Is Routed
+@subtitle Who gets told, and when
+@author Laboratory Informatics, Calder Valley Hospital
+@date 2026-10-02
+
+For new unit clerks and nurses. Critical values are urgent and need a phone call within minutes. Abnormal and routine results follow slower, scheduled steps.
+
+## Routing flow
+
+diagram routing dir=TB title="Path of a verified lab result"
+routing: start "Result verified in lab system" svc
+routing: crit "Critical value?" decision
+routing: phone "Phone the ordering clinician" svc "Urgent" focus
+routing: readback "Read back confirmed within 15 minutes?" decision
+routing: log "Log the read-back" svc
+routing: esc "Escalate to department head" svc "Urgent" focus
+routing: abn "Flagged abnormal?" decision
+routing: inbox "Add to clinician inbox" svc
+routing: file "File without alert" svc
+routing: release "Release to patient portal" ext
+routing: start -> crit
+routing: crit -> phone : yes
+routing: phone -> readback
+routing: readback -> log : yes
+routing: readback -> esc : no
+routing: esc -> log
+routing: crit -> abn : no
+routing: abn -> inbox : yes
+routing: abn -> file : no
+routing: inbox -> release
+routing: file -> release
+routing: legend
+
+## Time limits
+
+table = Step,Limit,Urgency; Phone call for a critical value,within 10 minutes of verification,**Urgent**; Read-back confirmation,within 15 minutes of the call,**Urgent**; Abnormal result review in clinician inbox,within 1 business day,Routine; Routine result released to patient portal,after 24 hours,Routine; Abnormal result held before release,72 hours so the clinician can speak to the patient first,Routine
+
+## Who is called
+
+kpi Weekdays 07:00 to 19:00 | The ordering clinician
+kpi Nights and weekends | Covering physician, through the hospital operator
+kpi Department head | Dr. Naomi Eze

@@ -1,0 +1,52 @@
+{
+  "id": "117-corbel-finch-closing-letter",
+  "category": "prose",
+  "title": "Corbel & Finch Elm Street closing letter",
+  "brief": "Marguerite Pell, owner of Corbel & Finch Books, wants to write a letter to customers for the shop's website about closing the Elm Street store. Warm and honest, first person plural, no marketing gloss. Headings: \"What is changing\", \"Why\", \"What stays the same\", \"How to say goodbye\". The facts: the Elm Street shop, open for 17 years, closes for good after trading on 2026-12-23; the Harbor Road shop, the online shop and the school book fairs all continue; the reasons are that the Elm Street rent will rise 70 percent when the lease renews on 2027-01-01, and that more than half of sales now happen at Harbor Road or online, so the family chose to keep the two places that are growing; gift certificates and store credit are honored at Harbor Road and online until 2027-12-31; loyalty points move over automatically with nothing for customers to do; all stock at Elm Street is 20 percent off from 2026-11-28; the last Saturday story hour is on 2026-12-19 at 11:00, and a farewell evening with the staff and local authors is on 2026-12-22 from 17:00 to 20:00; the Elm Street team of 6 booksellers will move to Harbor Road, so the faces will be the same. Thank readers sincerely, and end with Marguerite's name.",
+  "checklist": {
+    "sections": [
+      "What is changing",
+      "Why",
+      "What stays the same",
+      "How to say goodbye"
+    ],
+    "visible": [
+      "Marguerite Pell",
+      "Elm Street",
+      "Harbor Road",
+      "gift certificates"
+    ],
+    "values": [
+      "17 years",
+      "2026-12-23",
+      "70 percent",
+      "2027-01-01",
+      "2027-12-31",
+      "20 percent",
+      "2026-11-28",
+      "2026-12-19",
+      "11:00",
+      "2026-12-22",
+      "17:00",
+      "20:00",
+      "6 booksellers"
+    ]
+  },
+  "needs": [
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the closing date to 2026-12-30 and the discount to 30 percent, and add a sentence that the farewell evening will have a raffle to benefit the school book fairs.",
+    "expect_visible": [
+      "raffle"
+    ],
+    "expect_values": [
+      "2026-12-30",
+      "30 percent"
+    ],
+    "expect_absent": [
+      "2026-12-23",
+      "20 percent"
+    ]
+  }
+}

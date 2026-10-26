@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Telemetry pipeline architecture</title>
+<style>
+:root{--bg:#f6f5f1;--fg:#1c1c1a;--muted:#5f5d57;--card:#ffffff;--line:#d8d5cb;--accent:#1d5c74;--accent-bg:#e4eff3;--warn:#8c2a1c;--warn-bg:#fbe9e5}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#131416;--fg:#ebeae6;--muted:#a4a29b;--card:#1d1f22;--line:#3a3c38;--accent:#86c3da;--accent-bg:#1c2d35;--warn:#f2a797;--warn-bg:#3b211c}}
+:root[data-theme="dark"]{--bg:#131416;--fg:#ebeae6;--muted:#a4a29b;--card:#1d1f22;--line:#3a3c38;--accent:#86c3da;--accent-bg:#1c2d35;--warn:#f2a797;--warn-bg:#3b211c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+main{max-width:820px;margin:0 auto;padding:24px 16px 56px}
+header{border-bottom:2px solid var(--fg);padding-bottom:14px;margin-bottom:6px}
+h1{font-size:1.65rem;line-height:1.2;margin:0 0 6px}
+h2{font-size:1.15rem;margin:34px 0 10px;padding-top:4px}
+p{margin:0 0 12px}
+.meta{color:var(--muted);font-size:.9rem;margin:0}
+.note{color:var(--muted);font-size:.9rem}
+.wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.8rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+.callout{border-left:4px solid var(--warn);background:var(--warn-bg);color:var(--warn);padding:12px 14px;border-radius:6px;font-weight:600;margin:14px 0}
+.flow{display:flex;flex-direction:column;align-items:stretch}
+.node{background:var(--card);border:1.5px solid var(--accent);border-radius:8px;padding:9px 12px;font-weight:600;text-align:center}
+.edge{color:var(--muted);font-size:.85rem;text-align:center;padding:6px 0}
+.edge::before{content:"\2193";display:block;color:var(--accent);font-size:1.1rem;line-height:1.1}
+.zone{border:1.5px dashed var(--line);border-radius:12px;padding:12px;margin:6px 0}
+.zlabel{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600;margin:0 0 8px}
+.branches{border-left:3px solid var(--accent);margin:4px 0 0 6px;padding-left:12px}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>Telemetry pipeline architecture</h1>
+<p class="meta">Skerry Wind Power &middot; Owner: Asset Data team &middot; Region: eu-north-1 &middot; Reviewed 2026-10-02</p>
+</header>
+
+<h2>Overview</h2>
+<p>Turbine readings from each of the six offshore wind farms flow into one central stream, and they are processed once there. The processed data is then split into a fast store for dashboards and a cheap archive for audits.</p>
+
+<h2>Pipeline diagram</h2>
+<div class="flow">
+  <div class="zone">
+    <p class="zlabel">On site at each farm (outside the cloud account)</p>
+    <div class="node">Turbine Controllers</div>
+    <div class="edge">OPC UA, 1 Hz</div>
+    <div class="node">Edge Gateway</div>
+  </div>
+  <div class="edge">MQTT over TLS, batched every 5 s</div>
+  <div class="zone">
+    <p class="zlabel">Cloud account, eu-north-1</p>
+    <div class="node">Telemetry Stream</div>
+    <div class="edge">consumer</div>
+    <div class="node">Stream Processor</div>
+    <div class="branches">
+      <div class="edge" style="text-align:left">10 s aggregates</div>
+      <div class="node">Timeseries Store</div>
+      <div class="edge" style="text-align:left">queries</div>
+      <div class="node">Operations Dashboard</div>
+      <div class="edge" style="text-align:left">Parquet every 15 minutes</div>
+      <div class="node">Raw Archive</div>
+      <div class="edge" style="text-align:left">threshold breach</div>
+      <div class="node">Alerting Service</div>
+    </div>
+  </div>
+</div>
+
+<h2>Capacity and retention</h2>
+<div class="wrap">
+<table>
+  <thead><tr><th>Component</th><th>Capacity</th><th>Retention</th></tr></thead>
+  <tbody>
+    <tr><td>Telemetry Stream</td><td>24 shards; 18,000 messages per second at peak</td><td class="note">Not stated in this review</td></tr>
+    <tr><td>Timeseries Store</td><td class="note">Not stated in this review</td><td>7 days in memory and 3 years on magnetic storage</td></tr>
+    <tr><td>Raw Archive</td><td class="note">Not stated in this review</td><td>10 years, moved to cold storage after 90 days</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>If the uplink fails</h2>
+<p>The Edge Gateway buffers up to 6 hours of readings on disk. When the link returns, it replays them in order.</p>
+<div class="callout">Outages longer than 6 hours lose data. After that limit, the oldest readings are dropped. Do not treat history older than the buffer as complete.</div>
+</main>
+</body>
+</html>

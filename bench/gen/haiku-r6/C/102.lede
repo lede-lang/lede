@@ -1,0 +1,31 @@
+@title Sale-to-Stock Flow
+@subtitle How a register sale reaches the online stock count
+@author Retail Platform team
+@date 2026-10-08
+
+## Sale-to-stock sequence
+diagram sale sequence title="Sale-to-stock sequence"
+sale: pos "Store POS" svc
+sale: edge "Edge Sync Agent" svc
+sale: api "Inventory API" svc
+sale: ledger "Stock Ledger" store
+sale: front "Storefront" svc
+sale: pos -> edge : sale recorded, 2 units of SKU 48113
+sale: edge -> api : POST /adjustments, batched every 5 seconds
+sale: api -> ledger : append decrement
+sale: ledger --> api : new on-hand count
+sale: api --> edge : 202 Accepted
+sale: api -> front : publish stock change
+
+When the store loses its connection, Store POS keeps selling and Edge Sync Agent keeps the adjustments in a local queue. When the link returns, the agent sends them in order as "replay queued adjustments" to Inventory API.
+
+!! The Stock Ledger is the only source of truth.
+! The Storefront count may lag by up to 20 seconds.
+
+## Timing budget
+table = Hop,Limit; Register to edge agent,under 1 second; Agent batch interval,5 seconds; Inventory API to ledger,under 200 milliseconds; Ledger to storefront,under 10 seconds; End-to-end target,under 20 seconds for 99% of sales
+
+## Good to know
+- The local queue holds up to 4 hours of sales, which is about 3000 adjustments at a busy store.
+- Adjustments carry an idempotency key, so replays never double count.
+- Online orders reserve stock for 15 minutes at checkout.

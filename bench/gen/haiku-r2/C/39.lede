@@ -1,0 +1,28 @@
+@title How We Cut Our Checkout Page Weight in Half
+@author Sam Whitlock
+
+# Where we started
+
+Our checkout page had grown the way most checkout pages do. Every experiment added a script, every redesign added a stylesheet, and nobody had been asked to take anything out. When we finally measured it, the page weighed 1.9 MB and took 4.8 seconds to become interactive on a mid-range phone. That is slow enough that people on a train, or on a patchy connection, give up before they pay.
+
+We wanted to fix that without rebuilding the page from scratch, so we went looking for the heaviest pieces first.
+
+# The three big wins
+
+Most of the gain came from three changes:
+
+1. We replaced a 310 KB date picker with the browser's native one.
+2. We lazy-loaded the reviews widget, so it only downloads when someone scrolls near it.
+3. We served product photos at the size they are displayed, instead of the full-resolution originals.
+
+Each change was small on its own. Together they took the page from 1.9 MB down to 0.9 MB, and the time to interactive from 4.8 seconds to 2.1 seconds.
+
+# What did not work
+
+We tried inlining all of our styles into the HTML, on the theory that one fewer request would help. It made repeat visits slower, because the styles could no longer be cached on their own. The lesson we took from it is simple: measure a change on a repeat visit as well as a first one.
+
+# What is next
+
+Mobile conversion rose from 2.6 percent to 3.1 percent in the four weeks after the new page went live on 2026-08-04. We are pleased with that, but we want to be careful about it. Many things change in four weeks, and we did not run a controlled test. We cannot prove that the faster page caused all of that lift. What we can say is that the faster page did not hurt conversion, and that was the result we were checking for.
+
+We will keep going, and the next pages on our list are the ones readers reach after checkout. If you want to help us keep pages this light, see the Kiln careers page.

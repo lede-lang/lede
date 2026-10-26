@@ -1,0 +1,56 @@
+{
+  "id": "23-observability-comparison",
+  "category": "comparison",
+  "title": "Observability stack for 2027",
+  "brief": "Our SRE team at Copperleaf Insurance is choosing an observability stack for 2027 and I need a comparison page for the budget meeting. We run 340 hosts, ingest about 2.1 TB of logs per month, and have 14 engineers on call. Options: Datadog, Grafana Cloud, and Self-hosted (Prometheus, Loki and Grafana on our own Kubernetes). Section titled \"Comparison table\" with columns Option, Setup effort, Alerting, Log search, Lock-in, Annual cost: Datadog, low, excellent, excellent, high, 412000 dollars; Grafana Cloud, low, good, good, medium, 236000 dollars; Self-hosted, high, good, fair, low, 148000 dollars plus 1.5 engineers. Section titled \"Three-year cost\": a line chart of cumulative cost in thousands of dollars for 2027, 2028 and 2029: Datadog 412, 865, 1363; Grafana Cloud 236, 496, 782; Self-hosted including staff time 418, 706, 1004. Section titled \"Pros and cons\" as short lists per option. Section titled \"Recommendation\": Grafana Cloud, because it is the cheapest once staff time is counted and keeps our dashboards portable. Add a note callout that the Datadog quote expires on 2026-11-30 and that Self-hosted assumes we can hire the 1.5 engineers, which is not yet approved.",
+  "checklist": {
+    "sections": [
+      "Comparison table",
+      "Three-year cost",
+      "Pros and cons",
+      "Recommendation"
+    ],
+    "visible": [
+      "Datadog",
+      "Grafana Cloud",
+      "Self-hosted",
+      "Setup effort",
+      "Log search",
+      "Lock-in",
+      "Annual cost"
+    ],
+    "values": [
+      "340",
+      "2.1",
+      "412000",
+      "236000",
+      "148000",
+      "865",
+      "1363",
+      "496",
+      "782",
+      "418",
+      "706",
+      "1004",
+      "2026-11-30"
+    ]
+  },
+  "needs": [
+    "table",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Datadog sent a revised quote: change its annual cost to 348000 dollars and its cumulative three-year line to 348, 731 and 1149.",
+    "expect_visible": [
+      "Datadog"
+    ],
+    "expect_values": [
+      "348000",
+      "731",
+      "1149"
+    ],
+    "expect_absent": []
+  }
+}

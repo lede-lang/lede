@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parcelwise Shipment Webhooks</title>
+<style>
+:root{--bg:#f4f5f7;--card:#ffffff;--fg:#1b1f26;--muted:#5b6370;--line:#d9dee6;--accent:#2a56c6;--good:#17794a;--goodbg:#e2f4ea;--warn:#8a5200;--warnbg:#fcf0d9;--bad:#b3261e;--badbg:#fbe3e0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0f1115;--card:#181b21;--fg:#e6e9ef;--muted:#9aa3b0;--line:#2b313b;--accent:#8fb0ff;--good:#62d39b;--goodbg:#15301f;--warn:#f0b35c;--warnbg:#36290f;--bad:#ff8b82;--badbg:#3b1a18}}
+:root[data-theme="dark"]{--bg:#0f1115;--card:#181b21;--fg:#e6e9ef;--muted:#9aa3b0;--line:#2b313b;--accent:#8fb0ff;--good:#62d39b;--goodbg:#15301f;--warn:#f0b35c;--warnbg:#36290f;--bad:#ff8b82;--badbg:#3b1a18}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:1.6rem;line-height:1.2;margin:0 0 6px}
+h2{font-size:1.15rem;margin:34px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+p.sub{color:var(--muted);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.callout{border-left:4px solid var(--warn);background:var(--warnbg);padding:12px 14px;border-radius:8px;margin:14px 0}
+.callout.bad{border-color:var(--bad);background:var(--badbg)}
+.tbl{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tbl th,.tbl td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top;font-size:.94rem}
+.tbl th{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.tbl tr:last-child td{border-bottom:0}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.scroll{overflow-x:auto}
+.scroll svg{min-width:840px}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+code{font-size:.9em}
+svg{display:block;width:100%;height:auto}
+svg .box{fill:var(--card);stroke:var(--accent);stroke-width:1.2}
+svg text{fill:var(--fg);font-size:12px}
+svg .sm{fill:var(--muted);font-size:11px}
+svg .lbl{font-size:11px;paint-order:stroke;stroke:var(--bg);stroke-width:4px;stroke-linejoin:round}
+svg .ln{stroke:var(--muted);stroke-width:1.4;fill:none}
+svg .ln.d{stroke-dasharray:5 4}
+svg .arr{fill:var(--muted)}
+ul{padding-left:20px}
+li{margin:8px 0}
+@media (max-width:560px){.tbl th,.tbl td{padding:7px 6px;font-size:.88rem}.wrap{padding:18px 14px 40px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Shipment webhooks: delivery, retries and failure</h1>
+<p class="sub">Parcelwise integrations documentation &middot; version dated 2026-10-05</p>
+
+<h2>Delivery sequence</h2>
+<div class="card scroll" id="seq"></div>
+<div class="callout bad" style="margin-top:14px">
+  <strong>A response slower than 10 seconds counts as a failure.</strong> The delivery is retried on the schedule below, even if your endpoint processed the event after the timeout.
+</div>
+
+<h2>Retry schedule</h2>
+<div class="scroll">
+<table class="tbl">
+  <thead><tr><th>Attempt</th><th>Delay after the previous failure</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>Immediate</td></tr>
+    <tr><td>2</td><td>1 minute</td></tr>
+    <tr><td>3</td><td>5 minutes</td></tr>
+    <tr><td>4</td><td>30 minutes</td></tr>
+    <tr><td>5</td><td>2 hours</td></tr>
+    <tr><td>6</td><td>12 hours</td></tr>
+  </tbody>
+</table>
+</div>
+<p style="margin-top:10px">After attempt 6 fails, the event is parked in the Dead Letter Queue.</p>
+
+<h2>Good to know</h2>
+<ul>
+  <li>Every request carries an <code>X-Parcelwise-Signature</code> header, which is the HMAC-SHA256 of the request body.</li>
+  <li>Events can arrive out of order. Compare the sequence number, not the arrival order.</li>
+  <li>Parked events are kept for 14 days. You can replay them from the dashboard.</li>
+</ul>
+</div>
+<script>
+const P = ["Order Service","Event Bus","Delivery Worker","Merchant Endpoint","Dead Letter Queue"];
+const M = [
+  {from:0,to:1,t:"publish order.shipped"},
+  {from:1,to:2,t:"deliver event"},
+  {from:2,to:3,t:"POST /webhooks, signed, 10 s timeout"},
+  {from:3,to:2,t:"503 Service Unavailable",reply:true},
+  {from:2,to:1,t:"requeue with 1 minute delay"},
+  {from:1,to:2,t:"deliver event, attempt 2"},
+  {from:2,to:3,t:"POST /webhooks"},
+  {from:3,to:2,t:"200 OK",reply:true},
+  {from:2,to:1,t:"acknowledge"},
+  {div:"If the merchant never recovers"},
+  {from:2,to:4,t:"park after attempt 6"}
+];
+function seq(P, M){
+  const COL0=100, GAP=160, TOP=16, HEAD=40, ROW=42, W=COL0*2+GAP*(P.length-1);
+  const cx = i => COL0 + i*GAP;
+  let y = TOP + HEAD + 26;
+  const items = [];
+  for (const m of M){ items.push(Object.assign({}, m, {y:y})); y += ROW; }
+  const H = y + 10;
+  let s = `<svg viewBox="0 0 ${W} ${H}" style="min-width:${W}px" role="img" aria-label="Sequence diagram of webhook delivery">`;
+  s += `<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arr"/></marker></defs>`;
+  P.forEach((n,i)=>{ const x=cx(i); s+=`<line class="ln d" style="stroke:var(--line)" x1="${x}" y1="${TOP+HEAD}" x2="${x}" y2="${H-6}"/>`; });
+  P.forEach((n,i)=>{ const x=cx(i); s+=`<rect class="box" x="${x-65}" y="${TOP}" width="130" height="${HEAD}" rx="6"/><text x="${x}" y="${TOP+HEAD/2+4}" text-anchor="middle">${n}</text>`; });
+  for (const it of items){
+    if (it.div){
+      s+=`<line x1="10" y1="${it.y-12}" x2="${W-10}" y2="${it.y-12}" style="stroke:var(--line)" stroke-dasharray="2 4"/>`;
+      s+=`<text class="sm lbl" x="${W/2}" y="${it.y+4}" text-anchor="middle">${it.div}</text>`;
+      continue;
+    }
+    const x1=cx(it.from), x2=cx(it.to);
+    s+=`<line class="ln${it.reply?' d':''}" x1="${x1}" y1="${it.y}" x2="${x2}" y2="${it.y}" marker-end="url(#ah)"/>`;
+    s+=`<text class="lbl" x="${(x1+x2)/2}" y="${it.y-6}" text-anchor="middle">${it.t}</text>`;
+  }
+  return s + `</svg>`;
+}
+document.getElementById('seq').innerHTML = seq(P, M);
+</script>
+</body>
+</html>

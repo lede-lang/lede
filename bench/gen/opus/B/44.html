@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claims Migration Program Status</title>
+<style>
+:root{
+  --bg:#f4f5f7;--surface:#ffffff;--text:#171c26;--muted:#5b6475;--border:#dde1e8;
+  --accent:#1d4f91;--accent-soft:#e7eef8;
+  --green:#18794e;--green-soft:#e4f4eb;--amber:#a15c00;--amber-soft:#fff1d9;--red:#b42318;--red-soft:#fdeceb;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0e1116;--surface:#161a21;--text:#e6e9ef;--muted:#9aa3b3;--border:#2b313c;
+  --accent:#86b0ef;--accent-soft:#1a2740;
+  --green:#4cc38a;--green-soft:#10281c;--amber:#f2b15a;--amber-soft:#302310;--red:#ff7d73;--red-soft:#3a1715;
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:920px;margin:0 auto;padding:28px 16px 56px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 6px}
+.titlerow{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+h1{font-size:1.75rem;line-height:1.2;margin:0 0 8px;letter-spacing:-.01em}
+.meta{color:var(--muted);font-size:.95rem;margin:0}
+.overall{display:inline-flex;align-items:center;gap:8px;font-weight:700;border-radius:999px;padding:6px 14px;background:var(--amber-soft);color:var(--amber);border:1px solid var(--amber);white-space:nowrap}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:0 0 auto}
+.dot.g{background:var(--green)}.dot.a{background:var(--amber)}.dot.r{background:var(--red)}
+section{margin-top:34px}
+h2{font-size:1.2rem;margin:0 0 12px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:22px}
+.kpi .label{font-size:.85rem;color:var(--muted);font-weight:500}
+.kpi .value{font-size:1.75rem;font-weight:700;line-height:1.15;margin:6px 0 4px;font-variant-numeric:tabular-nums}
+.kpi .value small{font-size:.95rem;color:var(--muted);font-weight:600}
+.kpi .note{font-size:.85rem;color:var(--muted)}
+.prog{height:8px;border-radius:999px;background:var(--border);margin-top:10px;overflow:hidden}
+.prog span{display:block;height:100%;background:var(--accent);border-radius:999px}
+.kpi.status{background:var(--amber-soft);border-color:var(--amber)}
+.kpi.status .value{color:var(--amber)}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:11px 8px;border-bottom:1px solid var(--border);vertical-align:middle}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+tbody tr:last-child td{border-bottom:0}
+.table-card{padding:4px 10px}
+.ws{font-weight:650}
+.owner{display:block;font-size:.85rem;color:var(--muted);font-weight:400}
+.pct{width:34%}
+.pctrow{display:flex;align-items:center;gap:10px}
+.pctrow .track{flex:1;height:8px;background:var(--border);border-radius:999px;overflow:hidden;min-width:50px}
+.pctrow .track span{display:block;height:100%;border-radius:999px}
+.pctrow b{min-width:38px;text-align:right}
+.rag{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:700;border-radius:999px;padding:2px 10px;white-space:nowrap}
+.rag.g{background:var(--green-soft);color:var(--green)}
+.rag.a{background:var(--amber-soft);color:var(--amber)}
+.rag.r{background:var(--red);color:var(--surface)}
+tr.red td{background:var(--red-soft)}
+tr.note td{background:var(--red-soft);padding-top:0;font-size:.92rem}
+tr.redtop td{border-bottom:0}
+.note-inner{border-top:1px dashed var(--red);padding-top:10px}
+.decision{border:2px solid var(--accent);border-radius:14px;background:var(--surface);overflow:hidden}
+.decision .dhead{background:var(--accent);color:var(--surface);padding:14px 20px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline}
+.decision .dhead h3{margin:0;font-size:1.1rem}
+.decision .dhead .by{font-weight:700;font-size:.95rem;white-space:nowrap}
+.decision .dbody{padding:18px 20px}
+.decision .q{font-size:1.05rem;margin:0 0 6px;font-weight:600}
+.decision .ctx{margin:0 0 16px;color:var(--muted);font-size:.93rem}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.opt{border:1px solid var(--border);border-radius:10px;padding:14px 16px;position:relative}
+.opt .lbl{font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.opt h4{margin:4px 0 8px;font-size:1rem}
+.opt p{margin:0;font-size:.93rem}
+.opt.rec{border:2px solid var(--green);background:var(--green-soft)}
+.opt.rec .badge{position:absolute;top:-11px;right:12px;background:var(--green);color:var(--surface);font-size:.72rem;font-weight:800;letter-spacing:.05em;border-radius:999px;padding:2px 10px}
+.waves{display:flex;gap:6px;margin-top:10px;font-size:.8rem;font-weight:600}
+.waves span{flex:1;border-radius:6px;padding:4px 8px;background:var(--surface);border:1px solid var(--border)}
+.recline{margin:16px 0 0;padding:12px 14px;border-left:4px solid var(--green);background:var(--green-soft);border-radius:8px}
+.recline strong{color:var(--green)}
+footer{margin-top:40px;color:var(--muted);font-size:.82rem}
+@media (max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}.options{grid-template-columns:1fr;gap:18px}}
+@media (max-width:480px){
+  body{font-size:15px}
+  h1{font-size:1.45rem}
+  th,td{padding:10px 5px}
+  .kpi{padding:14px}
+  .kpi .value{font-size:1.5rem}
+  .pct{width:auto}
+  .pctrow{flex-direction:column;align-items:stretch;gap:4px}
+  .pctrow b{text-align:left}
+  .rag{padding:2px 8px}
+  .decision .dbody,.decision .dhead{padding-left:16px;padding-right:16px}
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <p class="eyebrow">Cordova Mutual &middot; Steering committee</p>
+    <div class="titlerow">
+      <div>
+        <h1>Claims system migration: program status</h1>
+        <p class="meta">As of 2026-10-16</p>
+      </div>
+      <span class="overall"><span class="dot a"></span>Overall: Amber</span>
+    </div>
+  </header>
+
+  <div class="kpis">
+    <div class="card kpi">
+      <div class="label">Policy records migrated</div>
+      <div class="value">1.89<small>M of 3.00M</small></div>
+      <div class="note">63% complete</div>
+      <div class="prog" aria-hidden="true"><span style="width:63%"></span></div>
+    </div>
+    <div class="card kpi">
+      <div class="label">Budget spent</div>
+      <div class="value">$5.7<small>M of $8.4M</small></div>
+      <div class="note">68% of approved budget</div>
+      <div class="prog" aria-hidden="true"><span style="width:68%"></span></div>
+    </div>
+    <div class="card kpi">
+      <div class="label">Go-live target</div>
+      <div class="value">2027-02-15</div>
+      <div class="note">Unchanged</div>
+    </div>
+    <div class="card kpi status">
+      <div class="label">Overall status</div>
+      <div class="value">Amber</div>
+      <div class="note">1 workstream red, 2 amber</div>
+    </div>
+  </div>
+
+  <section>
+    <h2>Workstreams</h2>
+    <div class="card table-card">
+      <table>
+        <thead><tr><th>Workstream &middot; owner</th><th class="pct">Complete</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="ws">Data migration</span><span class="owner">Sunita Rao</span></td>
+            <td class="pct"><div class="pctrow"><b>63%</b><div class="track"><span style="width:63%;background:var(--amber)"></span></div></div></td>
+            <td><span class="rag a"><span class="dot a"></span>Amber</span></td>
+          </tr>
+          <tr>
+            <td><span class="ws">Claims UI rebuild</span><span class="owner">Oliver Grant</span></td>
+            <td class="pct"><div class="pctrow"><b>78%</b><div class="track"><span style="width:78%;background:var(--green)"></span></div></div></td>
+            <td><span class="rag g"><span class="dot g"></span>Green</span></td>
+          </tr>
+          <tr class="red redtop">
+            <td><span class="ws">Payments integration</span><span class="owner">Fatima Aziz</span></td>
+            <td class="pct"><div class="pctrow"><b>45%</b><div class="track"><span style="width:45%;background:var(--red)"></span></div></div></td>
+            <td><span class="rag r">Red</span></td>
+          </tr>
+          <tr class="note">
+            <td colspan="3"><div class="note-inner"><strong>Why red:</strong> the payment processor's test environment is five weeks late. Fallback: build against recorded responses, at a cost of about 3 weeks of extra effort.</div></td>
+          </tr>
+          <tr>
+            <td><span class="ws">Document archive</span><span class="owner">Leo Park</span></td>
+            <td class="pct"><div class="pctrow"><b>90%</b><div class="track"><span style="width:90%;background:var(--green)"></span></div></div></td>
+            <td><span class="rag g"><span class="dot g"></span>Green</span></td>
+          </tr>
+          <tr>
+            <td><span class="ws">Staff training</span><span class="owner">Chen Wei</span></td>
+            <td class="pct"><div class="pctrow"><b>20%</b><div class="track"><span style="width:20%;background:var(--green)"></span></div></div></td>
+            <td><span class="rag g"><span class="dot g"></span>Green</span></td>
+          </tr>
+          <tr>
+            <td><span class="ws">Regulatory sign-off</span><span class="owner">Ingrid Solheim</span></td>
+            <td class="pct"><div class="pctrow"><b>35%</b><div class="track"><span style="width:35%;background:var(--amber)"></span></div></div></td>
+            <td><span class="rag a"><span class="dot a"></span>Amber</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Decision needed</h2>
+    <div class="decision">
+      <div class="dhead">
+        <h3>Cutover approach for the new claims system</h3>
+        <span class="by">Decide by 2026-11-06</span>
+      </div>
+      <div class="dbody">
+        <p class="q">Should we cut over all states at once, or in two waves?</p>
+        <p class="ctx">The claims system migration is 63% through its 3.00 million policy records, amber overall, with go-live targeted for 2027-02-15. The committee needs to choose how states move to the new system.</p>
+        <div class="options">
+          <div class="opt">
+            <div class="lbl">Option A</div>
+            <h4>All states at once</h4>
+            <p>Every state cuts over together in a single event. All agents are re-trained for the switch at the same time.</p>
+            <div class="waves"><span>All states</span></div>
+          </div>
+          <div class="opt rec">
+            <span class="badge">RECOMMENDED</span>
+            <div class="lbl">Option B</div>
+            <h4>Two waves</h4>
+            <p>The 14 smaller states cut over first in January; the remaining states follow in February.</p>
+            <div class="waves"><span>Jan: 14 smaller states</span><span>Feb: the rest</span></div>
+          </div>
+        </div>
+        <p class="recline"><strong>Our recommendation: two waves.</strong> It halves the number of simultaneous agent re-trainings.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>Cordova Mutual &middot; Claims system migration program &middot; Status as of 2026-10-16</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{"pair":"P002","winner":"LEFT","reason":"Left has a clean, legible line chart and a table that fits at phone width, while right's bar chart has an overlapping target label on desktop, a tiny unreadable chart on the phone, and a clipped table."}
+{"pair":"P010","winner":"LEFT","reason":"Both sequence diagrams overflow on the phone, but left's tables fit the screen while right's table is cut off at the right edge, and left's overall layout is more polished."}
+{"pair":"P014","winner":"LEFT","reason":"Left has a clear KPI row, a bar chart and an action table, while right's headline number wraps mid-digit on desktop and it has no chart."}
+{"pair":"P024","winner":"LEFT","reason":"Left's chart and tables are clean and legible at both widths, while right's x-axis labels collide on desktop and its phone chart is tiny and the winners table is clipped."}
+{"pair":"P029","winner":"RIGHT","reason":"Right has a better article hierarchy with an eyebrow, a byline with role and bolded list lead-ins, and it reads comfortably at both widths, though the two are close."}
+{"pair":"P031","winner":"RIGHT","reason":"Right's larger labelled trend chart, compact sites table with variance column and clearer severity callout read better than left's sparse unlabelled chart and verbose phone cards."}
+{"pair":"P039","winner":"RIGHT","reason":"Right's sequence diagram is large, readable and fits the phone, while left's tiny monospace diagram is cut off at phone width and loses content."}
+{"pair":"P043","winner":"LEFT","reason":"Left is a well-structured runbook with clear danger and approval callouts, checkboxes and step cards that hold up on the phone, while right is plainer."}
+{"pair":"P044","winner":"RIGHT","reason":"Right's visual timeline, opt-out bars and well-organized sections are more polished, while left's headline number breaks mid-digit on desktop."}
+{"pair":"P047","winner":"RIGHT","reason":"Right's heatmap scorecard, cost bars and highlighted recommendation card communicate the decision better and stay legible on the phone."}

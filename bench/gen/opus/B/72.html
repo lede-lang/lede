@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prescription Refill Flow</title>
+<style>
+:root{
+  --bg:#f4f7f6;--surface:#ffffff;--surface-2:#edf2f0;--ink:#14191a;--ink-2:#363f41;--muted:#5d696b;--line:#d6dedc;--line-2:#a7b4b2;
+  --accent:#0f7466;--accent-soft:#e0f1ee;
+  --warn:#b3261e;--warn-soft:#fdeceb;--warn-line:#efb4ae;
+  --edge:#3f4a4c;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0d1212;--surface:#151b1b;--surface-2:#1c2424;--ink:#e7eeed;--ink-2:#c2ccca;--muted:#96a4a2;--line:#283231;--line-2:#465452;
+    --accent:#5fd0bd;--accent-soft:#12302b;
+    --warn:#ff8f86;--warn-soft:#361614;--warn-line:#6e2b26;
+    --edge:#a5b2b0;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:28px 16px 72px}
+.eyebrow{margin:0;font-size:.78rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+h1{margin:.35rem 0 .5rem;font-size:clamp(1.65rem,5vw,2.35rem);line-height:1.15;letter-spacing:-.015em}
+.lede{margin:0 0 14px;color:var(--ink-2);font-size:1.05rem;max-width:62ch}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.meta li{font-size:.84rem;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 11px}
+.meta b{font-weight:600;color:var(--muted);margin-right:4px}
+section{margin-top:40px}
+h2{margin:0 0 14px;font-size:1.3rem;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+h2::before{content:"";flex:none;width:4px;height:1.1em;border-radius:2px;background:var(--accent)}
+p{margin:0 0 12px;max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+@media (max-width:520px){.card{padding:14px 8px}}
+svg{display:block;width:100%;height:auto}
+svg text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+
+.stop{display:flex;gap:14px;align-items:flex-start;margin-top:22px;padding:16px 18px;border-radius:14px;background:var(--warn);color:#fff}
+@media (prefers-color-scheme:dark){.stop{background:#8f1d17;color:#fff}}
+.stop svg{width:34px;height:34px;flex:none;margin-top:2px}
+.stop .t{margin:0;font-size:1.2rem;font-weight:800;line-height:1.25}
+.stop .s{margin:4px 0 0;font-size:.95rem;opacity:.95}
+
+.seq{max-width:560px;margin:0 auto}
+.hd{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.25}
+.hn{font-size:12px;font-weight:700;fill:var(--ink)}
+.ll{stroke:var(--line-2);stroke-width:1.25;stroke-dasharray:4 4}
+.m{fill:none;stroke:var(--edge);stroke-width:1.5}
+.r{stroke-dasharray:5 4}
+.mw{stroke:var(--warn)}
+.ah{fill:var(--edge)}
+.ahw{fill:var(--warn)}
+.ml{font-size:11px;fill:var(--ink);paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+.ml .n{font-weight:700;fill:var(--accent)}
+.mlw{fill:var(--warn)}
+.mlw .n{fill:var(--warn)}
+.fr{fill:none;stroke:var(--muted);stroke-width:1.1}
+.frd{stroke:var(--muted);stroke-width:1.1;stroke-dasharray:6 4}
+.tab{fill:var(--surface-2);stroke:var(--muted);stroke-width:1.1}
+.tabt{font-size:11px;font-weight:700;fill:var(--ink)}
+.gd{font-size:11px;font-weight:600;fill:var(--muted)}
+.gdw{font-size:11px;font-weight:700;fill:var(--warn)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin:12px 4px 0;font-size:.84rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.legend i{display:inline-block;width:26px;border-top:2px solid var(--edge)}
+.legend i.d{border-top-style:dashed}
+.legend i.w{border-top:2px dashed var(--warn)}
+
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.78rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:700}
+td.t{white-space:nowrap;font-weight:700;font-variant-numeric:tabular-nums;color:var(--accent);text-align:right}
+th.t{text-align:right}
+td .sub{display:block;font-size:.85rem;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+.note{margin:14px 0 0;padding:12px 14px;border-radius:10px;background:var(--surface-2);font-size:.9rem;color:var(--ink-2)}
+.note b{color:var(--ink)}
+
+.rules{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.rules li{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.rules .ix{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-weight:800;font-size:.9rem}
+.rules li.crit{border:2px solid var(--warn);background:var(--warn-soft)}
+.rules li.crit .ix{background:var(--warn);color:#fff}
+.rules .rt{margin:0;font-weight:700}
+.rules li.crit .rt{color:var(--warn);font-size:1.1rem}
+.rules .rd{margin:2px 0 0;color:var(--ink-2);font-size:.93rem}
+footer{margin-top:48px;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <p class="eyebrow">Medora Health · Integrations architecture</p>
+    <h1>How a prescription refill reaches the pharmacy</h1>
+    <p class="lede">The path of a refill request from the Patient App, through the clinic's record system, to the Pharmacy Portal.</p>
+    <ul class="meta">
+      <li><b>For</b>Integrations team</li>
+      <li><b>Version</b>2026-09-30</li>
+    </ul>
+    <div class="stop" role="alert">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.2 2h7.6L22 8.2v7.6L15.8 22H8.2L2 15.8V8.2Z" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><path d="M7.5 12h9" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>
+      <div>
+        <p class="t">Controlled substances are never refilled through the app.</p>
+        <p class="s">This applies to every request, whatever the clinic or pharmacy.</p>
+      </div>
+    </div>
+  </header>
+
+  <section id="sequence">
+    <h2>Refill sequence</h2>
+    <div class="card">
+      <svg class="seq" viewBox="0 0 360 462" role="img" aria-labelledby="sq-t sq-d">
+        <title id="sq-t">Refill sequence diagram</title>
+        <desc id="sq-d">1. Patient App to Refill Service: request refill. 2. Refill Service to Clinic EHR: check active prescription and refills left. If the clinic approves: 3. Clinic EHR to Refill Service: approved, 2 refills remaining. 4. Refill Service to Pharmacy Portal: e-prescription, NCPDP SCRIPT. 5. Pharmacy Portal to Refill Service: accepted, ready in 2 hours. 6. Refill Service to Patient App: refill confirmed. If the clinic declines: 3b. Clinic EHR to Refill Service: denied, visit needed. 4b. Refill Service to Patient App: book a visit.</desc>
+        <defs>
+          <marker id="a" viewBox="0 0 10 10" refX="9.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker>
+          <marker id="aw" viewBox="0 0 10 10" refX="9.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahw"/></marker>
+        </defs>
+        <!-- lifelines -->
+        <line class="ll" x1="48" y1="46" x2="48" y2="452"/>
+        <line class="ll" x1="138" y1="46" x2="138" y2="452"/>
+        <line class="ll" x1="228" y1="46" x2="228" y2="452"/>
+        <line class="ll" x1="316" y1="46" x2="316" y2="452"/>
+        <!-- heads -->
+        <rect class="hd" x="6" y="6" width="84" height="40" rx="8"/>
+        <text class="hn" x="48" y="23" text-anchor="middle">Patient</text><text class="hn" x="48" y="38" text-anchor="middle">App</text>
+        <rect class="hd" x="96" y="6" width="84" height="40" rx="8"/>
+        <text class="hn" x="138" y="23" text-anchor="middle">Refill</text><text class="hn" x="138" y="38" text-anchor="middle">Service</text>
+        <rect class="hd" x="186" y="6" width="84" height="40" rx="8"/>
+        <text class="hn" x="228" y="23" text-anchor="middle">Clinic</text><text class="hn" x="228" y="38" text-anchor="middle">EHR</text>
+        <rect class="hd" x="274" y="6" width="84" height="40" rx="8"/>
+        <text class="hn" x="316" y="23" text-anchor="middle">Pharmacy</text><text class="hn" x="316" y="38" text-anchor="middle">Portal</text>
+
+        <!-- 1 -->
+        <line class="m" x1="48" y1="84" x2="138" y2="84" marker-end="url(#a)"/>
+        <text class="ml" x="93" y="77" text-anchor="middle"><tspan class="n">1 </tspan>request refill</text>
+        <!-- 2 -->
+        <line class="m" x1="138" y1="136" x2="228" y2="136" marker-end="url(#a)"/>
+        <text class="ml" x="183" y="116" text-anchor="middle"><tspan class="n">2 </tspan>check active prescription</text>
+        <text class="ml" x="183" y="129" text-anchor="middle">and refills left</text>
+
+        <!-- alt frame -->
+        <rect class="fr" x="4" y="152" width="352" height="288" rx="4"/>
+        <path class="tab" d="M4 152 H50 V164 L42 172 H4 Z"/>
+        <text class="tabt" x="14" y="166">alt</text>
+        <text class="gd" x="58" y="167">[clinic approves]</text>
+
+        <!-- 3 -->
+        <line class="m r" x1="228" y1="200" x2="138" y2="200" marker-end="url(#a)"/>
+        <text class="ml" x="183" y="193" text-anchor="middle"><tspan class="n">3 </tspan>approved, 2 refills remaining</text>
+        <!-- 4 -->
+        <line class="m" x1="138" y1="240" x2="316" y2="240" marker-end="url(#a)"/>
+        <text class="ml" x="227" y="233" text-anchor="middle"><tspan class="n">4 </tspan>e-prescription, NCPDP SCRIPT</text>
+        <!-- 5 -->
+        <line class="m r" x1="316" y1="280" x2="138" y2="280" marker-end="url(#a)"/>
+        <text class="ml" x="227" y="273" text-anchor="middle"><tspan class="n">5 </tspan>accepted, ready in 2 hours</text>
+        <!-- 6 -->
+        <line class="m r" x1="138" y1="320" x2="48" y2="320" marker-end="url(#a)"/>
+        <text class="ml" x="93" y="313" text-anchor="middle"><tspan class="n">6 </tspan>refill confirmed</text>
+
+        <line class="frd" x1="4" y1="338" x2="356" y2="338"/>
+        <text class="gdw" x="12" y="355">[clinic declines]</text>
+
+        <!-- 3b -->
+        <line class="m r mw" x1="228" y1="386" x2="138" y2="386" marker-end="url(#aw)"/>
+        <text class="ml mlw" x="183" y="379" text-anchor="middle"><tspan class="n">3b </tspan>denied, visit needed</text>
+        <!-- 4b -->
+        <line class="m r mw" x1="138" y1="426" x2="48" y2="426" marker-end="url(#aw)"/>
+        <text class="ml mlw" x="93" y="419" text-anchor="middle"><tspan class="n">4b </tspan>book a visit</text>
+      </svg>
+      <div class="legend">
+        <span><i></i>request</span>
+        <span><i class="d"></i>reply</span>
+        <span><i class="w"></i>clinic declines</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="targets">
+    <h2>Service targets</h2>
+    <div class="card">
+      <table>
+        <thead><tr><th>Call</th><th class="t">Target</th></tr></thead>
+        <tbody>
+          <tr><td>EHR check<span class="sub">Refill Service ↔ Clinic EHR (steps 2–3)</span></td><td class="t">within 3 s</td></tr>
+          <tr><td>Pharmacy acknowledgement<span class="sub">Refill Service ↔ Pharmacy Portal (steps 4–5)</span></td><td class="t">within 30 s</td></tr>
+          <tr><td>Confirmation shown in the app<span class="sub">Measured from the request (steps 1–6)</span></td><td class="t">within 10 s<br><span style="font-weight:500;color:var(--muted);font-size:.82rem">of the request</span></td></tr>
+        </tbody>
+      </table>
+      <p class="note"><b>To check:</b> the pharmacy may take up to 30 s to acknowledge, but the app confirmation is due within 10 s of the request. A slow pharmacy acknowledgement will miss the app target as the sequence is drawn.</p>
+    </div>
+  </section>
+
+  <section id="rules">
+    <h2>Rules</h2>
+    <ul class="rules">
+      <li class="crit"><span class="ix">!</span><div><p class="rt">Controlled substances are never refilled through the app.</p><p class="rd">No exceptions.</p></div></li>
+      <li><span class="ix">2</span><div><p class="rt">A refill covers at most a 90-day supply.</p></div></li>
+      <li><span class="ix">3</span><div><p class="rt">Requests made after 21:00 wait in a queue until 07:00.</p><p class="rd">They are processed when the queue opens in the morning.</p></div></li>
+    </ul>
+  </section>
+
+  <footer>Medora Health · Prescription refill integration · version 2026-09-30</footer>
+</main>
+</body>
+</html>

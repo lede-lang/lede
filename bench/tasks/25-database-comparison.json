@@ -1,0 +1,56 @@
+{
+  "id": "25-database-comparison",
+  "category": "comparison",
+  "title": "Member-profile database choice",
+  "brief": "The Accounts team at Lattice Fitness needs to pick a database for the new member-profile service; the decision is due 2026-11-04. Workload: 9 million member profiles of about 2 KB each, 3500 reads per second and 220 writes per second at peak, mostly key lookups plus a few admin searches by email and gym. Options: PostgreSQL (RDS), DynamoDB, and MongoDB Atlas. Section titled \"Comparison\" as a table with columns Option, Query flexibility, Scaling model, Ops effort, Multi-region: PostgreSQL, high, vertical plus read replicas, medium, read replicas only; DynamoDB, low, automatic, low, global tables; MongoDB Atlas, medium, sharding, medium, global clusters. Section titled \"Cost at scale\": a grouped bar chart of estimated monthly cost in dollars at three traffic levels: today (PostgreSQL 780, DynamoDB 540, MongoDB Atlas 910), 3x traffic (PostgreSQL 1640, DynamoDB 1420, MongoDB Atlas 1870), 10x traffic (PostgreSQL 4300, DynamoDB 4650, MongoDB Atlas 5200). Section titled \"Pros and cons\" with lists per option. Section titled \"Recommendation\": PostgreSQL, because admin search needs flexible queries and its cost stays within 220 dollars a month of DynamoDB at our realistic 3x horizon; state that in a callout, and add a warning that write volume above 2000 per second would force us to revisit sharding.",
+  "checklist": {
+    "sections": [
+      "Comparison",
+      "Cost at scale",
+      "Pros and cons",
+      "Recommendation"
+    ],
+    "visible": [
+      "PostgreSQL",
+      "DynamoDB",
+      "MongoDB Atlas",
+      "Query flexibility",
+      "Scaling model",
+      "Multi-region",
+      "global tables"
+    ],
+    "values": [
+      "3500",
+      "220",
+      "780",
+      "540",
+      "910",
+      "1640",
+      "1420",
+      "1870",
+      "4300",
+      "4650",
+      "5200",
+      "2000",
+      "2026-11-04"
+    ]
+  },
+  "needs": [
+    "table",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add a fourth traffic level to the cost chart, 20x traffic: PostgreSQL 8100, DynamoDB 9200, MongoDB Atlas 9900.",
+    "expect_visible": [
+      "20x"
+    ],
+    "expect_values": [
+      "8100",
+      "9200",
+      "9900"
+    ],
+    "expect_absent": []
+  }
+}

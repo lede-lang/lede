@@ -1,0 +1,27 @@
+@title Tidebreakers launch week
+@subtitle Status through Friday 2026-10-16
+@author Starlark Games
+@date 2026-10-16
+
+Tidebreakers launched Monday 2026-10-12 at 09:00 Pacific in 38 countries. Week one went pretty well.
+
+kpi Installs | 1.38M
+kpi Peak daily active users | 412,000 | Thu
+kpi Day-1 retention | 41.3%
+kpi Crash-free sessions | 99.2% | up from 97.6% at launch | good
+kpi Store rating | 4.4
+
+## Launch week
+
+data dau = day,daily active users; Mon,268000; Tue,331000; Wed,369000; Thu,412000; Fri,398000
+chart line dau y=daily active users title="Daily active users" mark="Tue Hotfix 1.0.1" mark="Wed Servers doubled" mark="Thu Store feature"
+
+- **Monday:** the login queue peaked at 22,000 players at 14:20. We added auth capacity to clear it.
+- **Tuesday:** hotfix 1.0.1 shipped, fixing a launch crash on Android 12 devices. Crash-free sessions went from 97.6% to 99.0%.
+- **Wednesday:** we doubled server capacity to 120 game servers.
+- **Thursday:** the store featured the game in 14 countries, and daily players hit the week's peak of 412,000.
+- **Friday:** we announced the first weekend event, starting 2026-10-17.
+
+## Open issues
+
+table = priority,issue,owner,target date; **P1**,Matchmaking timeouts in Asia-Pacific,Keiko Arai,2026-10-19; P2,Purchase restore failing on some iOS devices,Dan Whitaker,2026-10-23; P3,Leaderboard shows stale ranks after midnight UTC,Samira Boateng,2026-10-30

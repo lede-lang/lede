@@ -1,0 +1,58 @@
+{
+  "id": "79-settlement-message-backbone",
+  "category": "comparison",
+  "title": "Fernhill settlement message backbone",
+  "brief": "Fernhill Payments' platform lead, Ewan Calloway, needs a decision page on the message backbone for the new settlement service, for the architecture review on 2026-11-09. Requirements: 4200 messages per second at peak, 6 consuming services, ordering per customer account, and the ability to replay the last 7 days for audits. Three options: Managed Kafka, SQS with SNS, and a self-run RabbitMQ cluster. Monthly cost in dollars: 5850, 2100 and 3400, so 70200, 25200 and 40800 a year. Operations effort in hours per month: 12, 3 and 30. Ordering per account: Kafka yes, through partition keys; SQS yes, through FIFO queues, but each queue is capped near 3000 messages per second so we would need two; RabbitMQ yes, through queue sharding that we would build ourselves. Replay of 7 days: Kafka built in; SQS not available, we would have to archive to storage ourselves; RabbitMQ possible only with the streams plugin, which the team has not used. Use the sections \"Comparison\", \"Monthly cost\", \"Risks\" and \"Recommendation\". Recommend Managed Kafka even though it costs 3750 dollars a month more than SQS, because replay is an audit requirement; the main risk is that only 2 of our 9 engineers have run Kafka before, so we budget 5 days of training.",
+  "checklist": {
+    "sections": [
+      "Comparison",
+      "Monthly cost",
+      "Risks",
+      "Recommendation"
+    ],
+    "visible": [
+      "Managed Kafka",
+      "SQS",
+      "RabbitMQ",
+      "partition",
+      "FIFO",
+      "replay",
+      "Ewan Calloway"
+    ],
+    "values": [
+      "4200",
+      "7 days",
+      "5850",
+      "2100",
+      "3400",
+      "70200",
+      "25200",
+      "40800",
+      "3000",
+      "3750",
+      "2 of our 9",
+      "5 days",
+      "2026-11-09"
+    ]
+  },
+  "needs": [
+    "table",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "The Managed Kafka quote dropped to 4900 dollars a month. Update its monthly cost, its annual cost (58800) and the gap to SQS (2800 dollars a month) everywhere.",
+    "expect_visible": [],
+    "expect_values": [
+      "4900",
+      "58800",
+      "2800"
+    ],
+    "expect_absent": [
+      "5850",
+      "70200",
+      "3750"
+    ]
+  }
+}

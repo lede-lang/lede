@@ -1,0 +1,45 @@
+@title Write It Down Before You Build It
+@subtitle Short design notes save more time than they cost
+@author Daniel Reyes, Staff Engineer, Thornbury Labs
+
+## The meeting that should have been a page
+Last spring six of us spent an hour in a room arguing about how a new export job should handle partial failures. Halfway through, someone asked what the job was supposed to do when the upstream API returned an empty page. Nobody knew. Two people had assumed it meant "done", one had assumed it meant "retry", and the person who had already started writing the code had assumed it could not happen.
+
+We left the room with a decision, but we also left with the uncomfortable sense that we had found the question by luck. If nobody had happened to ask, we would have shipped three different mental models in one service. The hour was not wasted, but most of it was spent getting six people to the same starting line. A single page, written by one person before the meeting, would have put us there in ten minutes of reading.
+
+That is the whole argument of this post. Short written design notes save more time than they cost, and they save it at the point where time is cheapest: before any code exists.
+
+## What a design note is
+A design note is one to two pages, written before code, and read asynchronously. Each of those three properties matters.
+
+One to two pages keeps it honest. Length is where vague thinking hides, and a short note forces the author to say what they actually intend rather than describe every option they once considered.
+
+Before code means the note is about the decision, not a record of it. Once the code exists, the note turns into documentation, and documentation is read by people who can no longer change the outcome.
+
+Read asynchronously means reviewers meet it on their own time, with their own questions, instead of in a room where the loudest assumption wins. People who would never interrupt a meeting will leave a sharp comment in a margin.
+
+> The page is where you find out what you do not know.
+
+The surprising benefit falls to the author. Writing a paragraph that explains why the export job retries forces you to decide what it retries, how many times, and what happens after the last one. Gaps that survive a conversation rarely survive a sentence.
+
+## What it is not
+A design note is not a specification. It does not list every field, endpoint and error code. Those details belong in the code and its tests, where they can be checked. A note that tries to be a spec grows to twenty pages, takes a week to write, and goes stale the day implementation starts.
+
+It is also not a permission slip. Nobody needs to sign off before you start building, and a note is not a way to push a decision up the org chart. The point is to expose the reasoning so that people who know something you do not can say so early. If the note becomes a gate, people start writing it to get through the gate instead of to think, and the value disappears.
+
+## The cost
+Writing costs time, and engineers are right to be suspicious of process that eats it. So we measured. At Thornbury, the median design note took 3 hours to write.
+
+Against that, the team counted 11 projects in 2026 where a note caught a wrong assumption before any code was written. Some of those catches were small: a field that turned out to be optional, a rate limit nobody had checked. Others would have meant rewriting a service after launch. Even if each catch saved only a few days of rework, three hours a note is a bargain.
+
+The cost that is harder to measure is the meetings we did not hold. When a note circulates first, the review meeting, if there is one at all, starts at the disagreement instead of at the explanation.
+
+## Start small
+You do not need a template committee or a new tool to begin. Pick the next piece of work that will take more than a week, open a blank document, and write one page before you write any code. Share it with the two or three people most likely to know something you do not, and give them a day.
+
+Every note, however short, should answer four prompts:
+
+- What problem are we solving?
+- Why now?
+- What did we consider?
+- How will we know it worked?

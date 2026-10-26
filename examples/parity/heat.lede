@@ -1,0 +1,7 @@
+@title Vendor scorecard
+# Vendor scorecard
+
+data vendors = vendor,price,support,security,fit; Alder,7,9,6,8; Birch,5,6,9,7; Cedar,9,4,5,6; Dogwood,6,8,8,9
+table vendors heat title="All numeric columns"
+table vendors heat=price,fit title="Two columns"
+table heat = team,velocity,quality; Red,31,88; Blue,24,92; Green,40,71

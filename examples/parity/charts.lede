@@ -1,0 +1,22 @@
+@title Chart rules
+# Chart rules
+
+data weeks = week,visits,orders; W01,1200,310; W02,1260,322; W03,1190,300; W04,1310,335; W05,1275,328; W06,1330,340; W07,1285,331; W08,1360,352; W09,1345,349; W10,1390,360; W11,1405,366; W12,1432,371; W13,1450,375; W14,1470,380
+data flat = week,rate; W01,96.4; W02,96.9; W03,97.2; W04,97.0; W05,96.8; W06,97.4
+data span = week,rate; W01,40; W02,52; W03,61; W04,70
+data days = day,sessions; 1 Oct,410; 2 Oct,430; 3 Oct,390; 4 Oct,455; 5 Oct,470; 6 Oct,440; 7 Oct,415; 8 Oct,460; 9 Oct,480; 10 Oct,495; 11 Oct,420; 12 Oct,430; 13 Oct,510; 14 Oct,525
+
+chart line weeks y=visits title="Visits, fourteen weeks"
+chart line days title="Days with long labels"
+chart line flat unit=% title="Narrow span"
+chart area span title="Wide span area"
+chart bar flat unit=% title="Narrow span bars"
+chart bar span target="68 monthly goal for the quarter" title="Target and bars"
+chart bar weeks y=visits,orders stack labels title="Stacked totals"
+chart bar span focus="W03" title="Focus on one week"
+chart bar weeks y=visits,orders focus=orders title="Focus a series"
+chart bar span title="Three bars"
+
+data months = month,signups,churn; January 2026,1200,80; February 2026,1250,95; March 2026,1310,70; April 2026,1280,88; May 2026,1390,91; June 2026,1420,76; July 2026,1475,83; August 2026,1500,99; September 2026,1540,72
+chart bar months y=signups title="Nine long month labels"
+chart area months y=signups,churn title="Two series, long labels"

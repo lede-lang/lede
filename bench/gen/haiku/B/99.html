@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Support desk status, week 42</title>
+<style>
+:root{color-scheme:light dark;--bg:#f5f6f8;--card:#ffffff;--text:#1c2230;--muted:#5d6779;--line:#dde2ea;--accent:#2d5fd1;--crit:#b3261e;--critbg:#fde8e6;--warn:#8a5a00;--warnbg:#fff4dc;--ok:#1d7a4b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1117;--card:#171c26;--text:#e6e9ef;--muted:#9ba5b6;--line:#2a3242;--accent:#7fa6ff;--crit:#ff8d84;--critbg:#3d1816;--warn:#f2c26b;--warnbg:#3a2e12;--ok:#6fd49a}}
+:root[data-theme="dark"]{--bg:#0e1117;--card:#171c26;--text:#e6e9ef;--muted:#9ba5b6;--line:#2a3242;--accent:#7fa6ff;--crit:#ff8d84;--critbg:#3d1816;--warn:#f2c26b;--warnbg:#3a2e12;--ok:#6fd49a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:1.7rem;line-height:1.2;margin:0 0 4px}
+h2{font-size:1.2rem;margin:28px 0 10px;padding-top:14px;border-top:1px solid var(--line)}
+.meta{color:var(--muted);font-size:.92rem}
+.kpis{display:grid;gap:8px;grid-template-columns:1fr 1fr;margin:14px 0}
+@media (min-width:600px){.kpis{grid-template-columns:repeat(5,1fr)}}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.kpi b{display:block;font-size:1.3rem;font-variant-numeric:tabular-nums;color:var(--accent)}
+.kpi span{color:var(--muted);font-size:.82rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:600}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.slow td{background:var(--critbg)}
+tr.slow td:first-child{box-shadow:inset 4px 0 0 var(--crit)}
+.flag{display:inline-block;font-size:.76rem;font-weight:700;color:#fff;background:var(--crit);border-radius:999px;padding:1px 7px;margin-left:6px}
+.attn{border-left:4px solid var(--warn);background:var(--warnbg);border-radius:8px;padding:10px 14px;margin:8px 0}
+ul{padding-left:1.2em}
+li{margin:6px 0}
+svg text{fill:var(--muted);font-size:12px;font-family:system-ui,sans-serif}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>Support desk status</h1>
+<p class="meta">Pinecrest Software · Week 42 (ending 2026-10-16) · Support lead: Adaeze Nwosu</p>
+
+<div class="kpis">
+  <div class="kpi"><b>2,486</b><span>Tickets received</span></div>
+  <div class="kpi"><b>2,391</b><span>Tickets solved</span></div>
+  <div class="kpi"><b>612</b><span>Open backlog</span></div>
+  <div class="kpi"><b>2.7 h</b><span>Median first response (target 2.0 h)</span></div>
+  <div class="kpi"><b>91.2%</b><span>Customer satisfaction</span></div>
+</div>
+
+<h2 id="backlog">Open backlog, last 10 weeks</h2>
+<div class="card">
+  <svg viewBox="0 0 600 190" width="100%" role="img" aria-label="Open backlog rose every week from 410 in W33 to 612 in W42">
+    <line x1="20" y1="160" x2="580" y2="160" stroke="var(--line)"/>
+    <polyline fill="none" stroke="var(--accent)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" points="20,153.2 82.2,142.9 144.4,134.1 206.7,112.3 268.9,88.4 331.1,70.7 393.3,53.6 455.6,38 517.8,25 580,15.5"/>
+    <g fill="var(--accent)">
+      <circle cx="20" cy="153.2" r="4"/><circle cx="82.2" cy="142.9" r="4"/><circle cx="144.4" cy="134.1" r="4"/><circle cx="206.7" cy="112.3" r="4"/><circle cx="268.9" cy="88.4" r="4"/><circle cx="331.1" cy="70.7" r="4"/><circle cx="393.3" cy="53.6" r="4"/><circle cx="455.6" cy="38" r="4"/><circle cx="517.8" cy="25" r="4"/><circle cx="580" cy="15.5" r="4"/>
+    </g>
+    <text x="20" y="176" text-anchor="middle">W33</text>
+    <text x="82.2" y="176" text-anchor="middle">W34</text>
+    <text x="144.4" y="176" text-anchor="middle">W35</text>
+    <text x="206.7" y="176" text-anchor="middle">W36</text>
+    <text x="268.9" y="176" text-anchor="middle">W37</text>
+    <text x="331.1" y="176" text-anchor="middle">W38</text>
+    <text x="393.3" y="176" text-anchor="middle">W39</text>
+    <text x="455.6" y="176" text-anchor="middle">W40</text>
+    <text x="517.8" y="176" text-anchor="middle">W41</text>
+    <text x="580" y="176" text-anchor="middle">W42</text>
+  </svg>
+  <p class="meta" style="margin:4px 0 0">Backlog went from 410 in W33 to 612 in W42. It has grown every week.</p>
+</div>
+
+<h2 id="category">By category</h2>
+<div class="scroll">
+<table>
+  <thead><tr><th>Category</th><th class="n">Tickets received</th><th class="n">Median first response (h)</th></tr></thead>
+  <tbody>
+    <tr class="slow"><td>Billing <span class="flag">SLOW</span></td><td class="n">702</td><td class="n"><strong>3.4</strong></td></tr>
+    <tr><td>Login and access</td><td class="n">548</td><td class="n">1.6</td></tr>
+    <tr class="slow"><td>Bugs <span class="flag">SLOW</span></td><td class="n">497</td><td class="n"><strong>3.1</strong></td></tr>
+    <tr><td>How-to</td><td class="n">421</td><td class="n">2.2</td></tr>
+    <tr><td>Feature requests</td><td class="n">318</td><td class="n">3.0</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="attention">Needs attention</h2>
+<div class="attn">The backlog has grown every week since W33.</div>
+<div class="attn">Three agents are on leave until 2026-10-30.</div>
+<div class="attn">The billing queue lost the most capacity.</div>
+
+<h2 id="next">Next week</h2>
+<div class="card">
+  <ul>
+    <li>Two new agents start on <strong>2026-11-02</strong>.</li>
+    <li>Saturday coverage is added from <strong>2026-10-24</strong>.</li>
+  </ul>
+</div>
+</main>
+</body>
+</html>

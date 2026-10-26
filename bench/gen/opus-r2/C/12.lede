@@ -1,0 +1,45 @@
+@title Checkout Payment Flow
+@subtitle In-app checkout design, version 2
+@author Payments Engineering, Tidewater Grocers
+@date 2026-09-22
+
+## Payment sequence
+diagram pay sequence title="Checkout payment (happy path)"
+pay: app "Mobile App" user
+pay: api "Checkout API" svc
+pay: fraud "Fraud Service" svc
+pay: gw "Payment Gateway" ext
+pay: ledger "Ledger" db
+pay: app -> api : POST /checkout with cart and card token
+pay: api -> fraud : score order
+pay: fraud --> api : risk score
+pay: note api : risk score 80 or below continues
+pay: api -> gw : authorize amount
+pay: gw --> api : auth code
+pay: api -> ledger : record pending charge
+pay: ledger --> api : entry id
+pay: api --> app : order confirmed
+
+diagram stepup sequence title="Alternative: risk score above 80"
+stepup: app "Mobile App" user
+stepup: api "Checkout API" svc
+stepup: fraud "Fraud Service" svc
+stepup: gw "Payment Gateway" ext
+stepup: app -> api : POST /checkout with cart and card token
+stepup: api -> fraud : score order
+stepup: fraud --> api : risk score
+stepup: note api : score above 80, Payment Gateway not called
+stepup: api --> app : step-up verification required
+
+## Latency budget
+data latency = Step,p95 budget (ms),Measured p95 (ms); Fraud scoring,120,96; Authorization,450,512; Ledger write,40,31; Total checkout,800,811
+table latency
+chart bar latency x=Step y=p95 budget (ms),Measured p95 (ms) unit=ms title="p95 budget vs measured"
+
+## Open issues
+!! Authorization is over budget by 62 ms because the gateway's us-east endpoint is called from us-west-2.
+
+Next steps:
+- Move to the gateway's regional endpoint.
+- Add a 2 second timeout with one retry.
+- Alert when total checkout p95 exceeds 800 ms.

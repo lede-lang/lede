@@ -1,0 +1,11 @@
+@title Orchard season numbers
+@subtitle Fixture for number formatting
+# Orchard season numbers
+
+kpi Crates | 210000 | +4% | good
+kpi Revenue | $1392000 | +9% | good
+kpi Latency | 210000 ms
+kpi Pickers | 48
+
+data blocks = block,year,crates,revenue,share,note; North,2024,109200,$1450000,42%,heavy; South,2025,87500.5,$980250,31%,steady; East,2025,950,$12000,4%,new
+table blocks title="Harvest by block"

@@ -1,0 +1,36 @@
+@title Copperline Cafe: Quarterly Results
+@subtitle Q4 2025 to Q3 2026, for franchise owners (14 locations, all figures in dollars)
+
+data results = quarter,revenue,operating profit; Q4 2025,1842000,243000; Q1 2026,1756000,192000; Q2 2026,1968000,307000; Q3 2026,2134000,375000
+data margin = quarter,operating margin; Q4 2025,13.2; Q1 2026,10.9; Q2 2026,15.6; Q3 2026,17.6
+
+# Headline
+
+Q3 2026 was our strongest quarter in the period.
+
+kpi Q3 revenue | $2,134,000 | +8.4% on Q2, +15.9% on Q4 2025 | good
+kpi Q3 operating profit | $375,000 | 17.6% margin | good
+
+Trailing four quarters:
+
+kpi Revenue | $7,700,000 | trailing four quarters | neutral
+kpi Operating profit | $1,117,000 | trailing four quarters | neutral
+kpi Margin | 14.5% | trailing four quarters | neutral
+
+# Quarterly results
+
+table = quarter,revenue,cost of goods,labor,rent and other,operating profit,margin; Q4 2025,"$1,842,000","$589,000","$612,000","$398,000","$243,000",13.2%; Q1 2026,"$1,756,000","$561,000","$598,000","$405,000","$192,000",10.9%; Q2 2026,"$1,968,000","$618,000","$631,000","$412,000","$307,000",15.6%; Q3 2026,"$2,134,000","$662,000","$676,000","$421,000","$375,000",17.6%; Trailing four quarters,"$7,700,000",,,,"$1,117,000",14.5%
+
+chart bar results y=revenue,operating profit unit=$ title="Revenue and operating profit by quarter"
+
+# Margin trend
+
+Operating margin fell to 10.9% in Q1, then climbed two quarters in a row to 17.6% in Q3.
+
+chart line margin unit=% labels title="Operating margin"
+
+# Notes
+
+- Q1 is the seasonal low.
+- Two new locations opened on 2026-05-18, which explains part of the Q2 and Q3 growth.
+- The Q3 figures are unaudited.

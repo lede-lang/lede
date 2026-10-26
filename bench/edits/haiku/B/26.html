@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CI Provider Comparison</title>
+<style>
+:root{--bg:#fafaf7;--fg:#1c1e21;--muted:#5d636b;--accent:#1d6fa3;--card:#ffffff;--border:#e2e0d9;--warn:#9a4a00;--warn-bg:#fff3e0;--note:#e9f2f8;--c1:#1d6fa3;--c2:#d9822b;--c3:#6b5bb5;--good:#2e7d4f}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121316;--fg:#e9e9ec;--muted:#9ea4ad;--accent:#6cb8e6;--card:#1b1d22;--border:#2e3138;--warn:#f2b35e;--warn-bg:#2b2112;--note:#152731;--c1:#6cb8e6;--c2:#eba45a;--c3:#a996e8;--good:#6cc08f}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:820px;margin:0 auto;padding:32px 16px 56px}
+h1{font-size:clamp(1.55rem,4.5vw,2.1rem);line-height:1.2;margin:.2em 0 .3em}
+.dek{color:var(--muted);margin:0 0 1.5em}
+h2{font-size:1.25rem;margin:2.1em 0 .6em;padding-bottom:.3em;border-bottom:1px solid var(--border)}
+h3{font-size:1.02rem;margin:1.3em 0 .3em}
+p,ul,ol{margin:.7em 0}
+li{margin:.25em 0}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.95rem;margin:1em 0}
+th,td{padding:.55em .65em;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+th{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.callout{border-left:4px solid var(--accent);background:var(--note);padding:12px 16px;border-radius:6px;margin:1.3em 0}
+.callout.warn{border-color:var(--warn);background:var(--warn-bg)}
+.callout strong{display:block;margin-bottom:.15em}
+figure{margin:1.6em 0}
+figcaption{font-size:.85rem;color:var(--muted);margin-top:.4em}
+svg{display:block;width:100%;height:auto}
+svg text{font-size:14px;fill:var(--muted)}
+.c1{fill:var(--c1)}.c2{fill:var(--c2)}.c3{fill:var(--c3)}
+.axis{stroke:var(--muted);stroke-width:1}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.88rem;color:var(--muted);margin:.4em 0}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.i1{background:var(--c1)}.i2{background:var(--c2)}.i3{background:var(--c3)}
+@media (max-width:480px){body{font-size:15px}.wrap{padding:24px 16px 48px}th,td{padding:.45em .4em;font-size:.88rem}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>Replacing Jenkins: choosing a CI provider</h1>
+<p class="dek">Developer Experience, Ridgeback Robotics. Covers the firmware and cloud repositories.</p>
+
+<p>We run about 38,000 build minutes a month for 120 engineers. Some jobs need ARM runners, and the firmware pipeline needs a hardware-in-the-loop lab. We are comparing GitHub Actions, CircleCI and Buildkite.</p>
+
+<h2>Comparison</h2>
+<div class="scroll">
+<table>
+<thead><tr><th>Provider</th><th class="num">Median build time (min)</th><th>ARM runners</th><th>Self-hosted agents</th><th class="num">Monthly cost</th></tr></thead>
+<tbody>
+<tr><td>GitHub Actions</td><td class="num">14.2</td><td>Yes</td><td>Yes</td><td class="num">$2,860</td></tr>
+<tr><td>CircleCI</td><td class="num">11.8</td><td>Yes</td><td>Yes</td><td class="num">$3,420</td></tr>
+<tr><td>Buildkite</td><td class="num">9.6</td><td>Via our own agents</td><td>Yes (required)</td><td class="num">$2,150 plus our compute</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>Benchmarks</h2>
+<p>Median build time in minutes for our four reference pipelines on each provider.</p>
+<figure>
+<div class="legend"><span><i class="i1"></i>GitHub Actions</span><span><i class="i2"></i>CircleCI</span><span><i class="i3"></i>Buildkite</span></div>
+<svg viewBox="0 0 600 300" role="img" aria-labelledby="t26 d26">
+<title id="t26">Median build time by pipeline and provider</title>
+<desc id="d26">Grouped bars in minutes. firmware-build: GitHub Actions 21.4, CircleCI 17.9, Buildkite 13.2. cloud-api-tests: 9.8, 8.1, 7.4. docs-site: 3.1, 2.7, 2.9. sim-regression: 34.5, 29.0, 22.6.</desc>
+<line class="axis" x1="20" y1="260" x2="580" y2="260"/>
+<rect class="c1" x="52" y="117.33" width="30" height="142.67"/>
+<rect class="c2" x="82" y="140.67" width="30" height="119.33"/>
+<rect class="c3" x="112" y="172" width="30" height="88"/>
+<text x="67" y="111.33" text-anchor="middle">21.4</text>
+<text x="97" y="134.67" text-anchor="middle">17.9</text>
+<text x="127" y="166" text-anchor="middle">13.2</text>
+<rect class="c1" x="187" y="194.67" width="30" height="65.33"/>
+<rect class="c2" x="217" y="206" width="30" height="54"/>
+<rect class="c3" x="247" y="210.67" width="30" height="49.33"/>
+<text x="202" y="188.67" text-anchor="middle">9.8</text>
+<text x="232" y="200" text-anchor="middle">8.1</text>
+<text x="262" y="204.67" text-anchor="middle">7.4</text>
+<rect class="c1" x="322" y="239.33" width="30" height="20.67"/>
+<rect class="c2" x="352" y="242" width="30" height="18"/>
+<rect class="c3" x="382" y="240.67" width="30" height="19.33"/>
+<text x="337" y="233.33" text-anchor="middle">3.1</text>
+<text x="367" y="236" text-anchor="middle">2.7</text>
+<text x="397" y="234.67" text-anchor="middle">2.9</text>
+<rect class="c1" x="457" y="30" width="30" height="230"/>
+<rect class="c2" x="487" y="66.67" width="30" height="193.33"/>
+<rect class="c3" x="517" y="109.33" width="30" height="150.67"/>
+<text x="472" y="24" text-anchor="middle">34.5</text>
+<text x="502" y="60.67" text-anchor="middle">29.0</text>
+<text x="532" y="103.33" text-anchor="middle">22.6</text>
+<text x="97" y="282" text-anchor="middle">firmware-build</text>
+<text x="232" y="282" text-anchor="middle">cloud-api-tests</text>
+<text x="367" y="282" text-anchor="middle">docs-site</text>
+<text x="502" y="282" text-anchor="middle">sim-regression</text>
+</svg>
+<figcaption>Median build time in minutes. Lower is better.</figcaption>
+</figure>
+
+<h2>Pros and cons</h2>
+<h3>GitHub Actions</h3>
+<ul>
+<li>Pro: lowest monthly cost of the managed options, and it sits next to our code.</li>
+<li>Pro: supports ARM runners and self-hosted agents.</li>
+<li>Con: the slowest median build time of the three.</li>
+</ul>
+<h3>CircleCI</h3>
+<ul>
+<li>Pro: faster than GitHub Actions on every reference pipeline.</li>
+<li>Pro: supports ARM runners and self-hosted agents.</li>
+<li>Con: the highest monthly cost, at $3,420.</li>
+</ul>
+<h3>Buildkite</h3>
+<ul>
+<li>Pro: fastest median build time, at 9.6 minutes.</li>
+<li>Pro: built around self-hosted agents, which the lab needs.</li>
+<li>Con: ARM runners are only through our own agents.</li>
+<li>Con: we would run the agents ourselves, and the cost is on top of our compute.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<div class="callout">
+<strong>Recommended: Buildkite</strong>
+The hardware-in-the-loop lab needs self-hosted agents anyway, and Buildkite makes them required rather than optional. It was also the fastest on our reference pipelines.
+</div>
+
+<div class="callout warn">
+<strong>Operational cost</strong>
+Buildkite moves runner patching onto the DevEx on-call rotation. We estimate this at 6 hours a month.
+</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,122 @@
+{
+ "source": "artifact UaoXXoe6YeQDa1MmzwKXiB, collection spotcheck, read 2026-10-19",
+ "round": "v04 gate",
+ "picks": {
+  "P036": "LEFT",
+  "P046": "RIGHT",
+  "P051": "TIE",
+  "P056": "TIE",
+  "P092": "RIGHT",
+  "P102": "LEFT",
+  "P107": "LEFT",
+  "P117": "TIE",
+  "P153": "RIGHT",
+  "P157": "LEFT",
+  "P168": "RIGHT",
+  "P172": "LEFT"
+ },
+ "notes": {
+  "P036": "The left document has an overflow issue because the cards/boxes are wider than the rest of the page. for the left page, I wish the tradeoffs were in a table and not just bullets. ",
+  "P092": "The left diagram is wider than the rest of the page, and it has a lot of wasted space. In the right page, the \"offline case\" is displayed very well.  However, in the right screen, in the mobile version, the diagram does not scroll ( that might be a desktop issue and not a page with the diagram/page). ",
+  "P102": "Theyre both very good, but one simply displays better, i think in either approrach with more turns theyll become the same. ",
+  "P153": "Theyre both very good, the right one looks more refined. "
+ },
+ "chips": {
+  "P092": {
+   "good": [
+    "Diagram",
+    "Table",
+    "Cards or tiles"
+   ],
+   "bad": [
+    "Diagram"
+   ]
+  }
+ },
+ "resolved": {
+  "P036": {
+   "model": "haiku-r6",
+   "task": "106",
+   "owner": "lede",
+   "judge_s1": "lede",
+   "judge_s2": "lede"
+  },
+  "P046": {
+   "model": "haiku-r6",
+   "task": "116",
+   "owner": "html",
+   "judge_s1": "html",
+   "judge_s2": "html"
+  },
+  "P051": {
+   "model": "haiku-r6",
+   "task": "121",
+   "owner": "tie",
+   "judge_s1": "html",
+   "judge_s2": "html"
+  },
+  "P056": {
+   "model": "haiku-r6",
+   "task": "126",
+   "owner": "tie",
+   "judge_s1": "html",
+   "judge_s2": "html"
+  },
+  "P092": {
+   "model": "sonnet-r6",
+   "task": "102",
+   "owner": "html",
+   "judge_s1": "html",
+   "judge_s2": "html"
+  },
+  "P102": {
+   "model": "sonnet-r6",
+   "task": "112",
+   "owner": "html",
+   "judge_s1": "html",
+   "judge_s2": "html"
+  },
+  "P107": {
+   "model": "sonnet-r6",
+   "task": "117",
+   "owner": "html",
+   "judge_s1": "html",
+   "judge_s2": "html"
+  },
+  "P117": {
+   "model": "sonnet-r6",
+   "task": "127",
+   "owner": "tie",
+   "judge_s1": "html",
+   "judge_s2": "html"
+  },
+  "P153": {
+   "model": "opus-r6",
+   "task": "103",
+   "owner": "html",
+   "judge_s1": "html",
+   "judge_s2": "html"
+  },
+  "P157": {
+   "model": "opus-r6",
+   "task": "107",
+   "owner": "html",
+   "judge_s1": "lede",
+   "judge_s2": "lede"
+  },
+  "P168": {
+   "model": "opus-r6",
+   "task": "118",
+   "owner": "html",
+   "judge_s1": "html",
+   "judge_s2": "html"
+  },
+  "P172": {
+   "model": "opus-r6",
+   "task": "122",
+   "owner": "lede",
+   "judge_s1": "html",
+   "judge_s2": "html"
+  }
+ }
+}

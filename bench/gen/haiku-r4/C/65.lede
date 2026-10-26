@@ -1,0 +1,29 @@
+@title Greenhouse gas inventory, 2023 to 2025
+@subtitle Pelham Furniture, tonnes of CO2e
+
+## Headline
+
+Emissions are down 3,630 tonnes, or 13.7 percent, since 2023. Scope 2 fell 54.6 percent as we moved 6 of our 8 sites to renewable electricity contracts. Scope 3 is now 86.6 percent of the total, which is the real challenge.
+
+kpi Total 2025 | 22,870 t | down 13.7% since 2023 | good
+kpi Scope 2 2025 | 1,480 t | down 54.6% since 2023 | good
+kpi Scope 3 share | 86.6% | of the 2025 total
+kpi 2030 target | 18,550 t | 4,320 t to go
+
+Our target is a 30 percent cut against 2023 by 2030. That means reaching 18,550 tonnes or lower, so we have 4,320 tonnes to go from 2025.
+
+## Emissions by scope
+
+data mix = year,Scope 1,Scope 2 (market-based),Scope 3; 2023,1840,3260,21400; 2024,1720,2610,20900; 2025,1590,1480,19800
+
+table mix title="Tonnes CO2e by scope"
+
+chart bar mix stack unit=t title="Emissions by scope, tonnes CO2e"
+
+Totals were 26,500 tonnes in 2023, 25,230 in 2024 and 22,870 in 2025.
+
+## Method and caveats
+
+- Scope 3 covers purchased materials, upstream transport and business travel only. It does not include use of sold products.
+- The 2023 baseline was restated in 2025, after supplier data improved.
+- The inventory follows the GHG Protocol and has not been externally assured yet.

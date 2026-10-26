@@ -1,0 +1,63 @@
+@title Crew Rules Review: Regional Fleet Q4
+@subtitle All 21 settings checked against their limits and against each other
+@width wide
+
+! This page is a review of the file as it stands. Every value is inside its allowed range and no two settings contradict each other. Nothing has been changed, so the file at the bottom is identical to the live one. The reference gives me no way to edit values on the page.
+
+kpi Settings | 21
+kpi Numeric, in range | 15 of 15 | none outside limits | good
+kpi Cross-setting conflicts | 0 | 2 stated rules, 1 implied | good
+kpi At a limit | 3 | duty domestic, 28-day block, 365-day block | neutral
+
+## Numeric settings against their limits
+
+The position column and bar show where the current value sits between the minimum and the maximum, as a percentage (0% is the minimum, 100% is the maximum). Three settings sit exactly on a regulator maximum, so any increase there is a breach.
+
+data numeric = setting,value,min,max,position,source or note; duty.max_hours_domestic,13.0,8,13,100,regulator; duty.max_hours_extended,14.5,13,15,75,needs captain's discretion flag; rest.min_hours_home_base,11,10,24,7,regulator; rest.min_hours_layover,10,9,24,7,must not exceed rest.min_hours_home_base; rest.weekly_hours,36,30,72,14,"union agreement, was 34 until 2025"; flight.max_sectors_per_duty,6,1,8,71,; flight.max_block_hours_28d,100,60,100,100,regulator; flight.max_block_hours_365d,1000,800,1000,100,regulator; reserve.callout_notice_min,90,60,240,17,"minutes, union"; reserve.max_consecutive_days,5,1,7,67,; reserve.airport_standby_hours,4,0,8,50,counts toward duty; swap.window_hours_before,48,12,168,23,; base.hotel_cap_usd,189,100,350,36,per night; base.crew_bus_headway_min,25,10,60,30,; fatigue.risk_threshold,0.72,0.50,0.90,55,"score, above this triggers review"
+
+table numeric bar=position
+
+## Settings that are not plain numbers
+
+data other = setting,value,allowed,note; swap.allow_cross_fleet,false,true or false,only true if training.cross_fleet_ok is true; training.cross_fleet_ok,true,true or false,; base.name,Port Wren (PWR),text,shown on rosters; fatigue.night_duty_start,22:00,24-hour time,; fatigue.night_duty_end,06:00,24-hour time,night window crosses midnight; legal.contact,ops-compliance@portwren.example,text,
+
+table other
+
+## Contradiction checks
+
+table = check,current values,result; rest.min_hours_layover must not exceed rest.min_hours_home_base,10 against 11,Pass; swap.allow_cross_fleet is true only if training.cross_fleet_ok is true,false with training true,Pass; "Extended duty limit at least the domestic limit (implied by the ranges, not stated in the file)","14.5 against 13.0",Pass; Extended duty needs the captain's discretion flag,no such setting in this file,Cannot check
+
+!! Two things the file cannot show. The captain's discretion flag for duty.max_hours_extended is not one of the 21 settings, so I cannot tell whether it is set. And reserve.airport_standby_hours counts toward duty, but the file has no figure to compare it with, so that interaction is not checked.
+
+! When you edit, keep the extended duty limit at or above the domestic one, and check rest.min_hours_layover whenever rest.min_hours_home_base moves.
+
+## What changed against live
+
+Nothing. No edits were requested on the page, and I have no copy of the live file other than the one you pasted, so a diff would be empty.
+
+## Settings file, layout unchanged
+
+```
+# crew rules, regional fleet (Q4)
+duty.max_hours_domestic = 13.0   # allowed 8-13, regulator
+duty.max_hours_extended = 14.5   # allowed 13-15, needs captain's discretion flag
+rest.min_hours_home_base = 11    # allowed 10-24, regulator
+rest.min_hours_layover = 10      # allowed 9-24; must not exceed rest.min_hours_home_base
+rest.weekly_hours = 36           # allowed 30-72, union agreement, was 34 until 2025
+flight.max_sectors_per_duty = 6  # allowed 1-8
+flight.max_block_hours_28d = 100 # allowed 60-100, regulator
+flight.max_block_hours_365d = 1000 # allowed 800-1,000, regulator
+reserve.callout_notice_min = 90  # minutes, allowed 60-240, union
+reserve.max_consecutive_days = 5 # allowed 1-7
+reserve.airport_standby_hours = 4  # allowed 0-8; counts toward duty
+swap.window_hours_before = 48    # allowed 12-168
+swap.allow_cross_fleet = false   # true or false; only true if training.cross_fleet_ok is true
+training.cross_fleet_ok = true   # true or false
+base.name = "Port Wren (PWR)"    # text; shown on rosters
+base.hotel_cap_usd = 189         # allowed 100-350 per night
+base.crew_bus_headway_min = 25   # allowed 10-60
+fatigue.risk_threshold = 0.72    # allowed 0.50-0.90 (score), above this triggers review
+fatigue.night_duty_start = "22:00"  # 24-hour time
+fatigue.night_duty_end = "06:00"    # 24-hour time
+legal.contact = "ops-compliance@portwren.example"  # text
+```

@@ -1,0 +1,72 @@
+{
+  "id": "113-whitfield-course-completion",
+  "category": "data",
+  "title": "Whitfield course completion by term",
+  "brief": "Whitfield College's institutional research office, led by Dr. Aaliyah Brandt, is preparing a course completion summary for the academic senate meeting on 2026-11-10. Term by term, the number of students enrolled in online and blended courses and the number who completed with a passing grade. Fall 2024: 1240 enrolled, 868 completed (70.0 percent). Spring 2025: 1315, 947 (72.0). Fall 2025: 1410, 1086 (77.0). Spring 2026: 1502, 1187 (79.0). For Spring 2026 by delivery format: in person 520 enrolled, 447 completed (86.0 percent); hybrid 600, 480 (80.0); online 382, 260 (68.1). Points for the senate: completion is up 9 points in four terms; the biggest single jump, 5 points, came in Fall 2025 when free tutoring for first-year students started on 2025-08-25; and online courses still complete about 18 points below in-person ones, so online is the format with the most room to improve. Sections: \"Completion at a glance\", \"Term by term\", \"By format, Spring 2026\" and \"Notes\". In the notes, remind readers that completed means a passing grade, not attendance, and that withdrawals before the census date on the 15th day of the term are not counted as enrolled.",
+  "checklist": {
+    "sections": [
+      "Completion at a glance",
+      "Term by term",
+      "By format, Spring 2026",
+      "Notes"
+    ],
+    "visible": [
+      "Fall 2024",
+      "Spring 2025",
+      "Fall 2025",
+      "Spring 2026",
+      "in person",
+      "hybrid",
+      "online",
+      "Dr. Aaliyah Brandt",
+      "census date"
+    ],
+    "values": [
+      "2026-11-10",
+      "1240",
+      "868",
+      "70.0",
+      "1315",
+      "947",
+      "72.0",
+      "1410",
+      "1086",
+      "77.0",
+      "1502",
+      "1187",
+      "79.0",
+      "520",
+      "447",
+      "86.0",
+      "600",
+      "480",
+      "80.0",
+      "382",
+      "260",
+      "68.1",
+      "2025-08-25"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list"
+  ],
+  "edit": {
+    "request": "Spring 2026 enrollment was corrected to 1512 with the same 1187 completions, so completion is 78.5 percent, and online enrollment is 392, so online completion is 66.3 percent.",
+    "expect_visible": [],
+    "expect_values": [
+      "1512",
+      "78.5",
+      "392",
+      "66.3"
+    ],
+    "expect_absent": [
+      "1502",
+      "79.0",
+      "382",
+      "68.1"
+    ]
+  }
+}

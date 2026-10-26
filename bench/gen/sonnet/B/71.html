@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skerry Wind Power: Telemetry Pipeline Architecture</title>
+<style>
+:root{
+  color-scheme:light dark;
+  --bg:#f4f6f8;--surface:#ffffff;--surface2:#eaeff3;--fg:#15202b;--muted:#566472;--line:#d5dce3;
+  --accent:#0b6e8f;--accent-soft:#dff0f6;
+  --good:#17754a;--good-soft:#dff3e8;
+  --warn:#a15500;--warn-soft:#fff0da;--warn-line:#e9b26a;
+  --bad:#b3261e;--bad-soft:#fde8e6;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1317;--surface:#161c22;--surface2:#1e262d;--fg:#e7ecf0;--muted:#98a7b4;--line:#2c3740;
+    --accent:#58c0e6;--accent-soft:#12303c;
+    --good:#5dd596;--good-soft:#11301f;
+    --warn:#ffb65e;--warn-soft:#33230d;--warn-line:#8a5a1d;
+    --bad:#ff8c82;--bad-soft:#3b1815;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:22px 16px 56px}
+.eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin:0}
+h1{font-size:clamp(1.55rem,5.5vw,2.15rem);line-height:1.18;margin:.3em 0 .5em}
+h2{font-size:1.25rem;line-height:1.3;margin:2.3rem 0 .7rem;padding-bottom:.4rem;border-bottom:2px solid var(--line)}
+h3{font-size:1rem;margin:0 0 .5rem}
+p{margin:0 0 .8rem}
+.meta{display:flex;flex-wrap:wrap;gap:6px 8px;list-style:none;padding:0;margin:14px 0 0}
+.meta li{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 11px;font-size:.84rem;color:var(--muted)}
+.meta b{color:var(--fg);font-weight:600}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.diagram{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;justify-content:center}
+.diagram svg{width:100%;max-width:470px;height:auto;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.84rem;color:var(--muted);margin:10px 2px 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:14px;height:14px;border-radius:4px;border:1.6px solid var(--accent);background:var(--accent-soft)}
+.sw.site{border-style:dashed;border-color:var(--muted);background:var(--surface2)}
+.sw.store{border-color:var(--good);background:var(--good-soft)}
+.sw.alert{border-color:var(--warn);background:var(--warn-soft)}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+dl{margin:0}
+dt{font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:.65rem}
+dt:first-child{margin-top:0}
+dd{margin:.1rem 0 0;font-size:1.02rem}
+dd strong{font-size:1.35rem;line-height:1.2}
+.alert{background:var(--warn-soft);border:2px solid var(--warn-line);border-radius:14px;padding:16px}
+.alert .top{display:flex;gap:14px;align-items:center}
+.alert .big{font-size:2.5rem;font-weight:800;line-height:1;color:var(--warn);white-space:nowrap}
+.alert .big small{display:block;font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;font-weight:700;margin-top:4px}
+.alert .lead{margin:0;font-size:1.05rem;font-weight:600}
+.alert ol{margin:1rem 0 .4rem;padding-left:1.25rem}
+.alert li{margin:.35rem 0}
+.alert svg{width:100%;height:auto;display:block;margin-top:.8rem;max-width:520px}
+.limit{margin:.9rem 0 0;padding:10px 12px;border-radius:10px;background:var(--bad-soft);color:var(--fg);border-left:5px solid var(--bad);font-weight:600}
+svg text{font-family:inherit}
+.zone{fill:none;stroke:var(--line);stroke-width:1.5}
+.zone.out{stroke-dasharray:5 4}
+.zt{font-size:11px;font-weight:700;letter-spacing:.06em;fill:var(--muted)}
+.zs{font-size:11px;fill:var(--muted)}
+.nd{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.6}
+.nd.site{fill:var(--surface2);stroke:var(--muted);stroke-dasharray:4 3}
+.nd.store{fill:var(--good-soft);stroke:var(--good)}
+.nd.alert{fill:var(--warn-soft);stroke:var(--warn)}
+.nd.plain{fill:var(--surface);stroke:var(--fg)}
+.nt{font-size:13.5px;font-weight:650;fill:var(--fg);text-anchor:middle}
+.ns{font-size:11px;fill:var(--muted);text-anchor:middle}
+.ln{stroke:var(--muted);stroke-width:1.7;fill:none}
+.ah{fill:var(--muted)}
+.fl{font-size:11.5px;fill:var(--muted)}
+.fl.r{text-anchor:start}
+.ax{font-size:11px;fill:var(--muted)}
+footer{margin-top:2.5rem;font-size:.85rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Architecture</p>
+  <h1>Telemetry pipeline for the 6 offshore wind farms</h1>
+  <ul class="meta">
+    <li>Owner <b>Asset Data team</b></li>
+    <li>Region <b>eu-north-1</b></li>
+    <li>Reviewed <b>2026-10-02</b></li>
+  </ul>
+</header>
+
+<h2>Overview</h2>
+<p>Turbine readings flow from each farm into one central stream and are processed once. The processed data is then split into a fast store for dashboards and a cheap archive for audits.</p>
+
+<h2>Pipeline diagram</h2>
+<div class="diagram">
+<svg viewBox="0 0 400 772" role="img" aria-labelledby="dt dd">
+  <title id="dt">Telemetry pipeline diagram</title>
+  <desc id="dd">Turbine Controllers send to the Edge Gateway on site. The Edge Gateway sends to the Telemetry Stream in the cloud account. The Stream Processor consumes the stream and feeds the Timeseries Store, the Raw Archive and the Alerting Service. The Operations Dashboard queries the Timeseries Store.</desc>
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah"/></marker>
+  </defs>
+
+  <rect class="zone out" x="6" y="6" width="388" height="186" rx="12"/>
+  <text class="zt" x="18" y="26">ON SITE · EACH OF THE 6 FARMS</text>
+  <text class="zs" x="18" y="41">Outside the cloud account</text>
+
+  <rect class="nd site" x="120" y="54" width="260" height="40" rx="8"/>
+  <text class="nt" x="250" y="79">Turbine Controllers</text>
+  <path class="ln" d="M250 94V141" marker-end="url(#ar)"/>
+  <text class="fl" x="260" y="122">OPC UA, 1 Hz</text>
+  <rect class="nd site" x="120" y="142" width="260" height="40" rx="8"/>
+  <text class="nt" x="250" y="167">Edge Gateway</text>
+
+  <path class="ln" d="M250 182V299" marker-end="url(#ar)"/>
+  <text class="fl" x="260" y="213">MQTT over TLS,</text>
+  <text class="fl" x="260" y="228">batched every 5 s</text>
+
+  <rect class="zone" x="6" y="250" width="388" height="516" rx="12"/>
+  <text class="zt" x="18" y="270">CLOUD ACCOUNT · eu-north-1</text>
+
+  <rect class="nd" x="120" y="300" width="260" height="40" rx="8"/>
+  <text class="nt" x="250" y="325">Telemetry Stream</text>
+  <path class="ln" d="M250 340V387" marker-end="url(#ar)"/>
+  <text class="fl" x="260" y="368">consumer</text>
+
+  <rect class="nd" x="120" y="388" width="260" height="40" rx="8"/>
+  <text class="nt" x="250" y="413">Stream Processor</text>
+
+  <path class="ln" d="M120 408H20V640"/>
+  <path class="ln" d="M20 486H119" marker-end="url(#ar)"/>
+  <path class="ln" d="M20 562H119" marker-end="url(#ar)"/>
+  <path class="ln" d="M20 640H119" marker-end="url(#ar)"/>
+
+  <text class="fl" x="28" y="480">threshold</text>
+  <text class="fl" x="28" y="498">breach</text>
+  <text class="fl" x="28" y="556">Parquet every</text>
+  <text class="fl" x="28" y="574">15 minutes</text>
+  <text class="fl" x="28" y="634">10 s</text>
+  <text class="fl" x="28" y="652">aggregates</text>
+
+  <rect class="nd alert" x="120" y="468" width="260" height="36" rx="8"/>
+  <text class="nt" x="250" y="491">Alerting Service</text>
+
+  <rect class="nd store" x="120" y="540" width="260" height="44" rx="8"/>
+  <text class="nt" x="250" y="560">Raw Archive</text>
+  <text class="ns" x="250" y="575">cheap archive for audits</text>
+
+  <rect class="nd store" x="120" y="618" width="260" height="44" rx="8"/>
+  <text class="nt" x="250" y="638">Timeseries Store</text>
+  <text class="ns" x="250" y="653">fast store for dashboards</text>
+
+  <path class="ln" d="M250 662V705" marker-end="url(#ar)"/>
+  <text class="fl" x="260" y="688">queries</text>
+
+  <rect class="nd plain" x="120" y="706" width="260" height="40" rx="8"/>
+  <text class="nt" x="250" y="731">Operations Dashboard</text>
+</svg>
+</div>
+<div class="legend" aria-hidden="true">
+  <span><i class="sw site"></i>On site, outside the cloud account</span>
+  <span><i class="sw"></i>Cloud: stream and processing</span>
+  <span><i class="sw store"></i>Storage</span>
+  <span><i class="sw alert"></i>Alerting</span>
+</div>
+
+<h2>Capacity and retention</h2>
+<div class="grid">
+  <div class="card">
+    <h3>Telemetry Stream</h3>
+    <dl>
+      <dt>Size</dt><dd><strong>24</strong> shards</dd>
+      <dt>Peak load</dt><dd><strong>18,000</strong> messages per second</dd>
+    </dl>
+  </div>
+  <div class="card">
+    <h3>Timeseries Store</h3>
+    <dl>
+      <dt>Retention, fast tier</dt><dd><strong>7 days</strong> in memory</dd>
+      <dt>Retention, long tier</dt><dd><strong>3 years</strong> on magnetic storage</dd>
+    </dl>
+  </div>
+  <div class="card">
+    <h3>Raw Archive</h3>
+    <dl>
+      <dt>Retention</dt><dd><strong>10 years</strong></dd>
+      <dt>Cold storage</dt><dd>Moved after <strong>90 days</strong></dd>
+    </dl>
+  </div>
+</div>
+
+<h2>If the uplink fails</h2>
+<div class="alert" role="note">
+  <div class="top">
+    <div class="big">6 h<small>buffer limit</small></div>
+    <p class="lead">The Edge Gateway keeps at most 6 hours of readings. Anything older is lost.</p>
+  </div>
+  <ol>
+    <li>The Edge Gateway buffers up to <strong>6 hours</strong> of readings on disk.</li>
+    <li>When the link returns, it replays them <strong>in order</strong>.</li>
+    <li>After 6 hours, the <strong>oldest readings are dropped</strong>.</li>
+  </ol>
+  <p class="limit">An outage longer than 6 hours means a permanent gap in the data. Check for it before trusting a trend.</p>
+  <svg viewBox="0 0 400 112" role="img" aria-labelledby="ot od">
+    <title id="ot">Example: a 10 hour outage</title>
+    <desc id="od">In a 10 hour outage the first 4 hours of readings are dropped and the last 6 hours are buffered and replayed in order.</desc>
+    <text x="0" y="16" font-size="12" font-weight="700" fill="currentColor" style="fill:var(--fg)">Example: a 10 hour outage</text>
+    <rect x="0" y="28" width="160" height="30" rx="4" style="fill:var(--bad-soft);stroke:var(--bad)" stroke-width="1.6"/>
+    <rect x="160" y="28" width="240" height="30" rx="4" style="fill:var(--good-soft);stroke:var(--good)" stroke-width="1.6"/>
+    <text x="80" y="47" text-anchor="middle" font-size="12" font-weight="650" style="fill:var(--bad)">4 h dropped</text>
+    <text x="280" y="47" text-anchor="middle" font-size="12" font-weight="650" style="fill:var(--good)">6 h replayed in order</text>
+    <path d="M0 64v6M160 64v6M400 64v6" style="stroke:var(--muted)" stroke-width="1.5"/>
+    <text class="ax" x="0" y="84" text-anchor="start">Outage starts</text>
+    <text class="ax" x="160" y="84" text-anchor="middle">+4 h</text>
+    <text class="ax" x="400" y="84" text-anchor="end">Link returns (+10 h)</text>
+    <text class="ax" x="0" y="104" style="fill:var(--muted)">The buffer keeps the newest 6 hours; the oldest 4 hours are gone.</text>
+  </svg>
+</div>
+
+<footer>Skerry Wind Power · Asset Data team · reviewed 2026-10-02</footer>
+</div>
+</body>
+</html>

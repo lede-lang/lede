@@ -1,0 +1,40 @@
+@title Clickstream data platform
+@subtitle Data Engineering · Harbor Media · as of 2026-09-30
+
+# Overview
+
+We collect about 1,800 million events per day from our apps and land them in a lake that analysts query.
+
+# Architecture diagram
+
+diagram clicks dir=LR title="Clickstream data platform"
+clicks: web "Web and Mobile Apps" ext
+clicks: kstream "Clickstream Stream" queue "Kinesis"
+clicks: fh "Firehose" svc
+clicks: raw "Raw Bucket" store "S3"
+clicks: curated "Curated Bucket" store "S3"
+clicks: glue "Glue Catalog" store
+clicks: emr "EMR Cluster" svc
+clicks: rs "Redshift Cluster" db "ra3.4xlarge"
+clicks: looker "Looker" ext
+clicks: web -> kstream : events
+clicks: kstream -> fh : batch
+clicks: fh -> raw : parquet every 5 min
+clicks: raw -> emr : nightly ETL
+clicks: emr -> curated : cleaned tables
+clicks: curated -> rs : COPY
+clicks: glue -> emr : schemas
+clicks: rs -> looker : SQL
+clicks: group lake "Lake VPC 10.40.0.0/16" emr, rs
+clicks: group analytics "Analytics account" raw, curated, glue, lake
+clicks: group ingest "Ingest account" kstream, fh
+
+# Datasets
+
+table = Dataset,Daily volume (GB),Retention (days),Owner; raw_events,940,30,Ingest squad; sessions,120,400,Analytics Eng; page_views,310,400,Analytics Eng; ad_impressions,260,90,Ad Tech
+
+# Known limits
+
+- Firehose buffering means data arrives up to 5 minutes late.
+- The nightly ETL finishes around 03:40 UTC.
+- Redshift is a 4-node ra3.4xlarge cluster. It queues queries above 50 concurrent users.

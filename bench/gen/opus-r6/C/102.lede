@@ -1,0 +1,35 @@
+@title From Register to Stock Count
+@subtitle How a store sale reaches the online stock count at Halsted Home Goods
+@author Retail Platform
+@date 2026-10-08
+
+!!! The Stock Ledger is the only source of truth for stock. The Storefront count may lag the ledger by up to 20 seconds.
+
+# Sale-to-stock sequence
+diagram sale sequence title="Sale to stock count"
+sale: pos "Store POS" svc
+sale: agent "Edge Sync Agent" svc
+sale: api "Inventory API" svc
+sale: ledger "Stock Ledger" db
+sale: store "Storefront" svc
+sale: pos -> agent : sale recorded, 2 units of SKU 48113
+sale: agent -> api : POST /adjustments, batched every 5 s
+sale: api -> ledger : append decrement
+sale: ledger --> api : new on-hand count
+sale: api --> agent : 202 Accepted
+sale: api -> store : publish stock change
+sale: opt "store link lost"
+sale: pos -> agent : keeps selling
+sale: note agent : holds adjustments in local queue
+sale: agent -> api : replay queued adjustments
+sale: end
+
+When the store loses its connection, the Store POS keeps selling and the Edge Sync Agent keeps the adjustments in a local queue. When the link returns, it sends them to the Inventory API in order.
+
+# Timing budget
+table = hop,limit; Register to agent,under 1 s; Agent batch interval,5 s; API to ledger,under 200 ms; Ledger to storefront,under 10 s; **End to end (p99 of sales)**,**under 20 s**
+
+# Good to know
+- The local queue holds up to 4 hours of sales, about 3,000 adjustments at a busy store.
+- Adjustments carry an idempotency key, so replays never double count.
+- Online orders reserve stock for 15 minutes at checkout.

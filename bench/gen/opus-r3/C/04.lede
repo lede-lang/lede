@@ -1,0 +1,15 @@
+@title Days without a Sev1
+@subtitle Fernhill Labs SRE
+
+kpi Days since last Sev1 | 143 | last: search outage, 2026-05-26 | good
+
+data incidents = month,Sev1,Sev2; Jan,1,4; Feb,0,3; Mar,1,5; Apr,0,2; May,1,4; Jun,0,1; Jul,0,3; Aug,0,2; Sep,0,1
+chart bar incidents x=month y=Sev1,Sev2 title="Sev1 and Sev2 incidents per month, 2026"
+
+## Longest streaks
+
+- **Current streak:** 143 days
+- Previous record: 97 days (2025)
+- Runner-up: 64 days (2024)
+
+! The streak counter resets only on a declared Sev1, not on Sev2s. Any engineer can declare one from the #incidents channel.

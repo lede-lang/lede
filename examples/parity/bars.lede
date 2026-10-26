@@ -1,0 +1,7 @@
+@title Workstreams
+# Workstreams
+
+data work = stream,owner,done,budget; Intake,Ana,80%,12000; Review,Bo,45%,8000; Launch,Cy,10%,20000
+table work bar=done title="Progress"
+table work bar=budget title="Budget share"
+table bar=done = stream,done; Intake,80%; Review,45%; Launch,10%

@@ -1,0 +1,33 @@
+@title Peak-season capacity, 2026-11-23 to 2026-12-23
+@subtitle Cobalt Parcel, five depots, daily parcel volumes
+@author Rafael Ostrowski, Network Planning Lead
+
+## Network at a glance
+kpi Network utilization | 91.8% | forecast 166,100 of 181,000 | neutral
+kpi Headroom | 14,900 | parcels a day across the network | neutral
+kpi Seasonal hiring | 640 | people, 210 of them for Memphis | neutral
+
+## Depot capacity
+data depots = depot,capacity,forecast peak,utilization; Tulsa,42000,39600,94.3; Omaha,36000,28800,80.0; Memphis,55000,57200,104.0; Denver,30000,26100,87.0; Boise,18000,14400,80.0
+
+chart hbar depots y=utilization unit=% labels target="100 capacity" title="Peak utilization by depot"
+
+table depots sort=-utilization
+
+Memphis is the only depot over capacity, by 2,200 parcels a day. Tulsa has only 2,400 parcels a day of headroom.
+
+## Memphis and Tulsa plan
+The plan is to reroute 2,200 Memphis parcels a day to Tulsa from 2026-11-23. That brings Memphis to exactly 100.0% and Tulsa to 99.5%, so both depots would run at their limit with no slack.
+
+kpi Memphis after reroute | 100.0% | at capacity | bad
+kpi Tulsa after reroute | 99.5% | was 94.3% | bad
+
+step Reroute 2,200 parcels a day from Memphis to Tulsa | by 2026-11-23
+
+Omaha could take up to 7,200 more parcels a day. Rerouting there instead would add a day of transit.
+
+## Risks
+! Memphis and Tulsa have no slack in this plan. An outage or weather delay at either depot during the window has nowhere to go except Omaha.
+
+- The plan relies on all 640 seasonal workers starting by 2026-11-16.
+- Rerouting to Omaha adds a day of transit to each parcel.

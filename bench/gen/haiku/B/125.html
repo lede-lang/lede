@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Month-End Close Runbook</title>
+<style>
+:root {
+  --bg: #f4f5f7;
+  --card: #ffffff;
+  --text: #1b2330;
+  --muted: #5a6474;
+  --accent: #23456b;
+  --accent-soft: #e6edf6;
+  --warn: #9b2c1f;
+  --warn-soft: #fbeae6;
+  --border: #d5dbe4;
+  --ok: #2f7d4f;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1218;
+    --card: #161d27;
+    --text: #e5eaf2;
+    --muted: #97a3b4;
+    --accent: #8db8ea;
+    --accent-soft: #19283b;
+    --warn: #f5a093;
+    --warn-soft: #3a1f1a;
+    --border: #283342;
+    --ok: #7fcf9a;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1218;
+  --card: #161d27;
+  --text: #e5eaf2;
+  --muted: #97a3b4;
+  --accent: #8db8ea;
+  --accent-soft: #19283b;
+  --warn: #f5a093;
+  --warn-soft: #3a1f1a;
+  --border: #283342;
+  --ok: #7fcf9a;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+.wrap { max-width: 880px; margin: 0 auto; padding: 24px 16px 48px; }
+header { border-bottom: 3px solid var(--accent); padding-bottom: 14px; margin-bottom: 20px; }
+.org { color: var(--muted); font-size: 14px; text-transform: uppercase; letter-spacing: .06em; }
+h1 { font-size: 27px; line-height: 1.2; margin: 6px 0 6px; }
+.meta { color: var(--muted); font-size: 14px; }
+h2 { font-size: 20px; color: var(--accent); margin: 28px 0 10px; }
+section, .card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+.lockbox {
+  background: var(--warn-soft);
+  border-left: 5px solid var(--warn);
+  padding: 14px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.timeline { position: relative; margin: 0; padding: 0; list-style: none; }
+.timeline li {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.timeline li:last-child { border-bottom: 0; }
+.day {
+  font-weight: 700;
+  color: var(--card);
+  background: var(--accent);
+  border-radius: 8px;
+  text-align: center;
+  padding: 6px 4px;
+  height: fit-content;
+}
+.day.lock { background: var(--warn); }
+.checklist { list-style: none; padding: 0; margin: 0; }
+.checklist li { padding: 8px 0 8px 32px; position: relative; border-bottom: 1px solid var(--border); }
+.checklist li:last-child { border-bottom: 0; }
+.checklist li::before {
+  content: "\2713";
+  position: absolute; left: 6px; top: 8px;
+  width: 20px; height: 20px; border-radius: 4px;
+  background: var(--accent-soft); color: var(--accent);
+  text-align: center; line-height: 20px; font-weight: 700;
+}
+ol.steps { padding-left: 24px; margin: 0; }
+ol.steps li { margin: 10px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+td:first-child { font-weight: 600; width: 45%; }
+@media (min-width: 700px) {
+  h1 { font-size: 32px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="org">Tallow &amp; Brook Distribution &middot; Finance Operations</div>
+  <h1>Month-End Close Runbook</h1>
+  <div class="meta">Owner: Controller &middot; Version dated 2026-10-01 &middot; Goal: close the books within 5 working days</div>
+</header>
+
+<div class="lockbox">The books lock at 12:00 on day 5. Nothing is posted after that without an approved reopen request.</div>
+
+<h2>Calendar</h2>
+<section>
+<ul class="timeline">
+  <li><div class="day">Day 1</div><div>Cut off sales and purchasing at 17:00. Finish bank reconciliations.</div></li>
+  <li><div class="day">Day 2</div><div>Post accruals and depreciation. Reconcile inventory to the warehouse count.</div></li>
+  <li><div class="day">Day 3</div><div>Eliminate intercompany balances between the three legal entities. Reconcile payroll.</div></li>
+  <li><div class="day">Day 4</div><div>Review variances.</div></li>
+  <li><div class="day lock">Day 5</div><div>The Controller signs off. The books lock at 12:00.</div></li>
+</ul>
+</section>
+
+<h2>Before sign-off</h2>
+<section>
+<ul class="checklist">
+  <li>Every balance sheet account is reconciled.</li>
+  <li>Any reconciling difference is under 50 dollars or explained.</li>
+  <li>Variances over 5 percent and over 10,000 dollars each have a written explanation.</li>
+  <li>Intercompany balances net to zero.</li>
+  <li>The trial balance debits equal credits.</li>
+</ul>
+</section>
+
+<h2>If a deadline slips</h2>
+<section>
+<ol class="steps">
+  <li>Tell the Controller the same day.</li>
+  <li>Decide whether the slip delays sign-off. If day 5 will be missed by more than 1 working day, notify the CFO, Valentina Sokolov.</li>
+  <li>Do not post late entries after the lock without a reopen request signed by the Controller.</li>
+  <li>Record the cause in the close log.</li>
+</ol>
+</section>
+
+<h2>Contacts</h2>
+<section>
+<table>
+  <tbody>
+    <tr><td>Controller</td><td>Marcus Eldridge</td></tr>
+    <tr><td>Accounts payable lead</td><td>Noor Haddad</td></tr>
+    <tr><td>CFO</td><td>Valentina Sokolov</td></tr>
+  </tbody>
+</table>
+</section>
+</div>
+</body>
+</html>

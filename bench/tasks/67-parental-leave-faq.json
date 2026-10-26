@@ -1,0 +1,55 @@
+{
+  "id": "67-parental-leave-faq",
+  "category": "prose",
+  "title": "Tessellate parental leave FAQ",
+  "brief": "HR at Tessellate Software needs an FAQ page for the new parental leave policy, effective 2026-11-01, so employees stop emailing the People Team the same questions. Use these questions as headings, in this order: \"How much leave do I get?\", \"Who is eligible?\", \"When can I start and finish?\", \"Can I split my leave?\", \"What happens to my pay, benefits and equity?\", \"How do I come back?\", \"How do I apply?\". The facts: primary caregivers get 16 weeks of leave at full pay and secondary caregivers get 8 weeks at full pay, for birth, adoption and foster placement alike; the policy applies to employees who have worked at Tessellate for at least 6 months on the day leave starts; leave can start up to 2 weeks before the expected date and has to be finished within 12 months of the birth or placement; leave can be taken in at most 2 blocks, with the second block agreed with your manager at least 4 weeks ahead; health insurance continues at the normal employer contribution, and equity keeps vesting during leave; when you return you can work a transition schedule of 80 percent time at 100 percent pay for the first 4 weeks; to apply, tell your manager and the People Team at least 30 days ahead (or as soon as you can for an early arrival) through the leave form in the HR portal, and questions go to leave@tessellate.example or the #people-help channel. Warm, plain language; this is about people's families.",
+  "checklist": {
+    "sections": [
+      "How much leave do I get?",
+      "Who is eligible?",
+      "When can I start and finish?",
+      "Can I split my leave?",
+      "What happens to my pay, benefits and equity?",
+      "How do I come back?",
+      "How do I apply?"
+    ],
+    "visible": [
+      "primary caregivers",
+      "secondary caregivers",
+      "People Team",
+      "HR portal",
+      "leave@tessellate.example",
+      "#people-help",
+      "equity"
+    ],
+    "values": [
+      "16 weeks",
+      "8 weeks",
+      "6 months",
+      "2 weeks",
+      "12 months",
+      "2 blocks",
+      "4 weeks",
+      "80 percent",
+      "30 days",
+      "2026-11-01"
+    ]
+  },
+  "needs": [
+    "list"
+  ],
+  "edit": {
+    "request": "Change the primary caregiver leave to 18 weeks and the eligibility to 3 months of service, and add a line saying that the policy was updated on 2026-10-20.",
+    "expect_visible": [
+      "2026-10-20"
+    ],
+    "expect_values": [
+      "18 weeks",
+      "3 months"
+    ],
+    "expect_absent": [
+      "16 weeks",
+      "6 months"
+    ]
+  }
+}

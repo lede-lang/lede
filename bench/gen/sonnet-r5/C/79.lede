@@ -1,0 +1,33 @@
+@title Message backbone for the settlement service
+@subtitle Options and recommendation for the architecture review on 2026-11-09
+@author Ewan Calloway, Platform lead, Fernhill Payments
+@date 2026-11-09
+
+We recommend Managed Kafka, even though it costs 3750 dollars a month more than SQS with SNS, because replay is an audit requirement.
+
+kpi Peak load | 4200 msg/s
+kpi Consumers | 6 services
+kpi Ordering | Per customer account
+kpi Replay | Last 7 days
+
+## Comparison
+
+table = option,ordering per account,7-day replay,operations hours per month; **Managed Kafka**,"Yes, through partition keys",Built in,12; SQS with SNS,"Yes, through FIFO queues. Each queue is capped near 3000 messages per second, so we would need two.","Not available. We would have to archive to storage ourselves.",3; Self-run RabbitMQ,"Yes, through queue sharding that we would build ourselves.","Only with the streams plugin, which the team has not used.",30
+
+## Monthly cost
+
+data cost = option,monthly,annual; Managed Kafka,5850,70200; SQS with SNS,2100,25200; Self-run RabbitMQ,3400,40800
+
+chart bar cost y=monthly unit=$ labels focus="Managed Kafka" title="Monthly cost"
+
+table cost cols=option,monthly,annual
+
+## Risks
+
+- Only 2 of our 9 engineers have run Kafka before, so we budget 5 days of training.
+- SQS cannot replay, and a single FIFO queue cannot carry our peak of 4200 messages per second.
+- RabbitMQ needs 30 hours of operations a month, and we would build the ordering ourselves.
+
+## Recommendation
+
+Choose Managed Kafka. It costs 3750 dollars a month more than SQS with SNS, and it is the only option with built-in replay of the last 7 days, which audits require. Budget 5 days of training to cover the Kafka experience gap.

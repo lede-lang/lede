@@ -1,0 +1,40 @@
+@title Cold Room B temperature alarm
+@subtitle Marlowe Vaccine Depot runbook
+@author Depot Operations
+
+kpi Safe range | 2 to 8 °C
+kpi Stock in Cold Room B | 12,400 doses
+kpi Escalate to Operations Director | after 2 hours
+
+!!! Never discard any dose. Quarantine it. Only the Quality Manager decides what happens to a lot.
+
+## Alarm levels
+
+table = level,when it applies; Warning,Above 8 °C for 10 minutes; Critical,Above 12 °C or below 0 °C
+
+## First 15 minutes
+
+1. Acknowledge the alarm on the monitoring panel within 5 minutes.
+2. Check that the door is fully shut and the seal is intact.
+3. Check that the compressor has power and note the temperature shown on the data logger.
+4. Call the refrigeration contractor Polar Service on 555-0190. They respond within 4 hours.
+
+## Moving stock
+
+If the temperature is still above 8 °C after 15 minutes, move the doses.
+
+table = destination,doses; Backup Cold Room C,9000; 6 validated transport boxes with ice packs,3400
+
+Log every box on the transfer sheet.
+
+## Quarantine and escalation
+
+!!! Nobody discards anything. Only the Quality Manager decides.
+
+- Any lot out of range for more than 30 minutes in total is quarantined.
+- Tell the Quality Manager immediately.
+- If the alarm is not resolved within 2 hours, call the Operations Director.
+
+## Contacts
+
+table = role,name,phone; Night supervisor,Gabriela Nunez,555-0187; Quality Manager,Peter Aldous,555-0152; Refrigeration contractor,Polar Service,555-0190

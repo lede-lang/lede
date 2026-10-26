@@ -1,0 +1,19 @@
+@title Four lanes
+# Four lanes
+
+diagram order sequence title="Place an order"
+order: cust "Customer" user
+order: shop "Shop front" svc
+order: pay "Payments" svc
+order: ship "Shipping" ext
+order: cust -> shop : POST /orders
+order: shop -> pay : authorize card
+order: note pay : checks the fraud score
+order: pay --> shop : approved
+order: alt "stock available"
+order: shop -> ship : create label
+order: ship --> shop : label id
+order: else "out of stock"
+order: shop --> cust : backorder notice
+order: end
+order: shop --> cust : confirmation email

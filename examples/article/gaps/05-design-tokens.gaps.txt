@@ -1,0 +1,4 @@
+Color swatches: cannot paint color chips; replaced by tables of token, hex, role and measured contrast, plus a contrast hbar with a 4.5 AA target line.
+Type scale rendered at real sizes: cannot render text at size; replaced by a table with a bar= column scaled to px size and an hbar chart of sizes.
+Spacing scale as visual blocks: replaced by an hbar chart in px and a token table.
+Button variants rendered as they will appear: cannot render components; replaced by variant cards with exact token recipes, a size table and a state matrix table (I avoided a ```=html fence because sanitized inline styling is not guaranteed to survive).

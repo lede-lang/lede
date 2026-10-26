@@ -1,0 +1,65 @@
+@title Fundraiser Variety Night: Running Order
+@subtitle 16 acts, curtain 19:30, hard stop 21:45
+@date Working draft
+@width wide
+
+!!! All 16 acts cannot fit. With every changeover counted and one 20-minute interval, the show ends at 22:17, which is 32 minutes after the 21:45 limit. At least about 30 minutes of acts and changeovers have to go, or the limit has to move. Every other rule is met in the order below.
+
+kpi Projected finish | 22:17 | 32 min over the 21:45 limit | bad
+kpi Act time | 111 min | 16 acts
+kpi Changeovers | 36 min | 43 min in the column, minus 7 min absorbed by the interval
+kpi Interval | 20 min | after slot 6, 20:35 to 20:55
+
+## The acts as submitted
+
+data acts = no,act,performers,length (min),changeover (min),notes; 1,Welcome and raffle pitch,Margit Halloran-Voss,6,1,"OPENER, fixed"; 2,“Moon River” (acoustic),Teodor Beck,5,2,needs stool and one mic; 3,The Mutual Admiration Society (sketch),Pell & Whitcombe,9,4,"large set, desk and 2 chairs"; 4,"Youth choir, 3 songs",Harbour Street Juniors,12,5,"28 kids, risers"; 5,"Fire-eating (indoor, licensed)",Cass O'Dowd,7,3,needs 10 min notice for fire marshal; 6,"Poem: “What the River Said, Twice”",Imogen Farouk,4,0,; 7,Aerial silks,Lotte Brandstetter,8,6,rig must be hung before show; 8,Fog and lasers (tech showcase),Dev Sharma,6,5,residue on floor and rig; 9,"Stand-up, clean set",Frankie Tan-Ellery,10,1,will run over if not warned; 10,Ukulele trio,The Lost Chords,7,3,; 11,Silent auction results,Margit Halloran-Voss,3,0,; 12,Tango,Ruiz & Adeyemi,5,2,recorded music; 13,Ballad: “I'll Be Seeing You”,Ottoline Park,4,2,; 14,"Puppet piece (adult, mild language)",Gosforth Marionettes,11,7,"huge set, slow strike"; 15,Cast sing-along,Whole company,8,0,"CLOSER, fixed"; 16,"Magic: card tricks, close-up on camera",Harlan Quist,6,2,needs the projector
+
+table acts
+
+## Proposed running order
+
+I treated the changeover column as the minutes needed after that act. The interval absorbs the strike after the act before it, so the puppet piece (7 min strike) goes just before the interval. The 16 acts are all in; nothing is cut here.
+
+data order = slot,time,act,performers,length (min),changeover (min); 1,19:30,Welcome and raffle pitch,Margit Halloran-Voss,6,1; 2,19:37,The Mutual Admiration Society (sketch),Pell & Whitcombe,9,4; 3,19:50,"Youth choir, 3 songs",Harbour Street Juniors,12,5; 4,20:07,"Fire-eating (indoor, licensed)",Cass O'Dowd,7,3; 5,20:17,“Moon River” (acoustic),Teodor Beck,5,2; 6,20:24,"Puppet piece (adult, mild language)",Gosforth Marionettes,11,7; Interval,20:35,Interval (puppet strike happens inside it),,20,0; 7,20:55,Aerial silks,Lotte Brandstetter,8,6; 8,21:09,Fog and lasers (tech showcase),Dev Sharma,6,5; 9,21:20,"Stand-up, clean set",Frankie Tan-Ellery,10,1; 10,21:31,Ukulele trio,The Lost Chords,7,3; 11,21:41,Silent auction results,Margit Halloran-Voss,3,0; 12,21:44,Ballad: “I'll Be Seeing You”,Ottoline Park,4,2; 13,21:50,"Poem: “What the River Said, Twice”",Imogen Farouk,4,0; 14,21:54,Tango,Ruiz & Adeyemi,5,2; 15,22:01,"Magic: card tricks, close-up on camera",Harlan Quist,6,2; 16,22:09,Cast sing-along,Whole company,8,0
+
+table order
+
+data timeline = item,start,end; 1 Welcome,0,6; 2 Sketch,7,16; 3 Youth choir,20,32; 4 Fire-eating,37,44; 5 Moon River,47,52; 6 Puppet,54,65; Interval,65,85; 7 Aerial,85,93; 8 Fog and lasers,99,105; 9 Stand-up,110,120; 10 Ukulele,121,128; 11 Auction results,131,134; 12 Ballad,134,138; 13 Poem,140,144; 14 Tango,144,149; 15 Magic,151,157; 16 Sing-along,159,167
+
+chart range timeline from=start to=end target="135 21:45 limit" title="Minutes after curtain up (0 = 19:30)"
+
+## Rule check
+
+table = rule,result,detail; Curtain up 19:30,Pass,slot 1 starts 19:30; Finish by 21:45,Failed,"projected 22:17, 32 min over"; One 20-minute interval,Pass,"20:35 to 20:55, about 65 min in"; Opener and closer fixed,Pass,Welcome is slot 1 and the sing-along is slot 16; Changeover minutes from last column,Pass,all counted except the puppet strike inside the interval; Aerialist not after fog act,Pass,"aerial silks is slot 7, directly after the puppet piece; fog is slot 8"; No two musical acts back to back,Pass,"Moon River, choir, ukulele, ballad and sing-along are never adjacent; tango (recorded music) counted as dance, and it passes either way"; Youth choir on before 20:30,Pass,"on 19:50, off 20:02"
+
+## Watch on the night
+
+- Fire-eating needs 10 minutes' notice for the fire marshal: warn them before 19:57 (act is at 20:07).
+- Stand-up will run over if not warned: it is slot 9, so any overrun pushes every later time, and there is no slack before the 21:45 limit anyway.
+- The puppet strike (7 min) has to be finished inside the 20-minute interval for the 20:55 restart to hold.
+
+## Call sheet text
+
+```
+VARIETY NIGHT - RUNNING ORDER (draft)
+Curtain up 19:30
+
+19:30  Welcome and raffle pitch - Margit Halloran-Voss (6 min, +1)
+19:37  The Mutual Admiration Society (sketch) - Pell & Whitcombe (9 min, +4)
+19:50  Youth choir, 3 songs - Harbour Street Juniors (12 min, +5)
+20:07  Fire-eating (indoor, licensed) - Cass O'Dowd (7 min, +3)
+20:17  "Moon River" (acoustic) - Teodor Beck (5 min, +2)
+20:24  Puppet piece (adult, mild language) - Gosforth Marionettes (11 min, +7)
+20:35  INTERVAL (20 min)
+20:55  Aerial silks - Lotte Brandstetter (8 min, +6)
+21:09  Fog and lasers (tech showcase) - Dev Sharma (6 min, +5)
+21:20  Stand-up, clean set - Frankie Tan-Ellery (10 min, +1)
+21:31  Ukulele trio - The Lost Chords (7 min, +3)
+21:41  Silent auction results - Margit Halloran-Voss (3 min, +0)
+21:44  Ballad: "I'll Be Seeing You" - Ottoline Park (4 min, +2)
+21:50  Poem: "What the River Said, Twice" - Imogen Farouk (4 min, +0)
+21:54  Tango - Ruiz & Adeyemi (5 min, +2)
+22:01  Magic: card tricks, close-up on camera - Harlan Quist (6 min, +2)
+22:09  Cast sing-along - Whole company (8 min)
+22:17  Finish (limit is 21:45: over by 32 min)
+```

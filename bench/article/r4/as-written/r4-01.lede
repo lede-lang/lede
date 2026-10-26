@@ -1,0 +1,120 @@
+@title Dunmore Road intake: four ways to clear the weighbridge queue
+@subtitle Yesterday's 16 arrivals replayed under four different fixes, ahead of September
+@width wide
+
+kpi Mean wait | 30.8 min | yesterday, 16 trucks | bad
+kpi Longest wait | 58 min | Reyes-McAllister, 07:55 | bad
+kpi Over 30 min | 9 of 16 trucks | arrivals 06:52 to 08:26 | bad
+kpi Operators before 08:00 | 1 | 2 scales, so one sits idle | neutral
+
+## The short version
+
+First come, first served is not the problem by itself. The problem is that before 08:00 there is one operator for two scales, and the arrivals bunch up between 06:30 and 08:30. Four fixes are compared below. They attack four different things: capacity, when trucks arrive, how long each truck takes, and which trucks need the scale at all.
+
+- **Second operator from 06:00** adds capacity. In the replay the mean wait falls from 32.8 min to 0.8 min. Budget: about $18,500 for the season.
+- **Appointment slots** shape demand. They do not add capacity, so the same delay just moves off the yard and into the drivers' diaries.
+- **Pre-registered fast lane** cuts handling time per truck. It works only if handling really drops, and nobody has measured that yet.
+- **Gate moisture screen** removes work that never needed the scale. It helps, but only by a little on this log.
+
+! The log has no date or day of week. This is one morning. If it was not a Tuesday to Thursday, scale the numbers up before you trust them for the rush you care about.
+
+## What the log shows
+
+data log = Arrival,Haulier,Load (bu),Crop,Moisture (%),Wait (min),Notes; 06:12,O'Brien Haulage,"1,240",Hard red wheat,13.8,4,; 06:20,Kowalczyk & Sons,980,Hard red wheat,14.1,11,"wanted lane 2; lane 2 shut for calibration"; 06:31,D'Angelo Farms,"2,115",Durum,13.2,19,"third trip today, “why do I wait with a full load?”"; 06:44,"Prairie Rose Co-op (Bin 7, east side)","3,480",Canola,8.9,27,; 06:52,Nguyen Bros,"1,050",Hard red wheat,15.6,31,"rejected: moisture over 14.5%, sent to dryer"
+data log += 07:05,"Halvorsen Grain, Ltd.","2,760",Barley,12.4,38,scale reset mid-weigh; 07:09,M. Okonkwo,640,Oats,11.7,44,small load stuck behind semis; 07:23,O'Brien Haulage,"1,310",Hard red wheat,13.9,41,; 07:38,"Sunderland & Pike (contract: “Fall Spot”)","4,020",Corn,15.1,52,longest wait of the day; 07:41,Kowalczyk & Sons,"1,005",Hard red wheat,14.0,49,
+data log += 07:55,Reyes-McAllister,"1,870",Durum,13.5,58,"driver left, came back 08:40"; 08:10,D'Angelo Farms,"2,090",Durum,13.1,47,; 08:26,Prairie Rose Co-op (Bin 2),"3,215",Canola,9.2,35,queue finally shrinking; 08:44,St. Anne's Mill,"2,500",Hard red wheat,13.7,22,; 09:02,Nguyen Bros,"1,120",Hard red wheat,14.2,9,back from dryer; 09:15,"Halvorsen Grain, Ltd.","2,810",Barley,12.2,6,
+
+data waits = arrival,wait; 06:12,4; 06:20,11; 06:31,19; 06:44,27; 06:52,31; 07:05,38; 07:09,44; 07:23,41; 07:38,52; 07:41,49; 07:55,58; 08:10,47; 08:26,35; 08:44,22; 09:02,9; 09:15,6
+
+chart line waits x=arrival y=wait unit=min title="Wait by arrival time, yesterday's log" mark="07:55 peak, 58 min" target="30 min"
+
+The queue builds for an hour and a half, peaks around 07:55 and only drains once the second scale is staffed at 08:00. The 06:12 truck waited 4 min. The 07:55 truck waited 58.
+
+table log
+
+## How the replay works
+
+Every option is replayed on the same 16 trucks, in arrival order, with these assumptions. They are mine, not measured, so treat the results as a comparison between options rather than a forecast.
+
+- Handling time is **20 min per truck per operator**. The log has no handling-time column. 20 min is the single value that makes a first-come-first-served replay land near the log (mean 32.8 vs 30.8 min, longest 51 vs 58 min). The log's own start-to-start gaps before 08:00 run 10 to 21 min.
+- One operator runs one scale. Before 08:00 only one scale is working. From 08:00 both are.
+- Arrival times stay as logged, except under appointments, where the truck moves to its slot.
+- No breakdowns. The lane 2 calibration and the mid-weigh scale reset in the log are not replayed.
+
+data summary = option,mean wait,longest wait,trucks over 30 min; Log (actual),30.8,58,9; Replay baseline (model),32.8,51,9; Second operator from 06:00,0.8,4,0; Appointments (yard wait),0,0,0; Pre-registered fast lane,5.8,19,0; Gate moisture screen,22.9,43,5
+
+## Four genuinely different fixes
+
+cards
+
+### A. Second operator from 06:00
+- **Changes:** capacity. The idle scale is used before 08:00.
+- **Replay:** mean wait 0.8 min, longest 4 min, nobody over 30 min. About 8.5 truck-hours of yard time back on this one morning (525 min of waiting down to 13).
+- **Driver effort:** none. Drivers just turn up.
+- **Build or buy:** roster a second operator for 06:00 to 08:00. Your figure: about $18,500 for the season.
+- **Weak spot:** fixes only the early-shift gap. Rejects, resets and calibration stops still hurt.
+
+### B. Appointment slots
+- **Changes:** when trucks arrive. Hauliers book a window.
+- **Replay:** yard wait 0 min if everyone keeps their slot. But capacity is unchanged, so the average slot lands 32.8 min later than the time the driver actually arrived, and up to 51 min later. Nine drivers would be pushed more than 30 min.
+- **Driver effort:** the highest. Book, keep the window, rebook when weather moves the harvest.
+- **Build or buy:** a booking tool, SMS reminders, and a rule for walk-ups and no-shows.
+- **Weak spot:** it only wins if waiting at the farm is cheaper than waiting in the yard with a full load, or if trucks can be steered into idle hours (before 06:12 or after 09:15).
+
+### C. Pre-registered fast lane
+- **Changes:** handling time per truck. Hauliers register once (account, crop, bin, contract) and show a code. The operator only weighs and probes.
+- **Replay:** at 12 min handling, mean wait 5.8 min, longest 19 min, nobody over 30. At 15 min handling it is mean 14.6 min, longest 34 min. At 20 min (today) nothing changes.
+- **Driver effort:** medium. One registration, then a code each trip.
+- **Build or buy:** a registration and ticket tool, a scan at the scale, and a link to the scale software (the log shows a reset mid-weigh).
+- **Weak spot:** 12 min is a target, not a measurement.
+
+### D. Gate moisture screen
+- **Changes:** which trucks need the scale. A probe at the gate sends over-limit loads straight to the dryer.
+- **Replay:** in this log only Nguyen Bros at 06:52 (15.6%) was rejected, after waiting 31 min. Screened at the gate, mean wait is 22.9 min, longest 43 min, 5 trucks over 30 min.
+- **Driver effort:** low. One quick probe at the gate.
+- **Build or buy:** a moisture meter and a person at the gate. Before 08:00 the only operator is already on the scale, so this needs a body too.
+- **Weak spot:** one reject in 16 trucks. A nudge, not a fix.
+
+## Side by side
+
+chart hbar summary y=mean wait,longest wait unit=min title="Wait under each option (replay, same 16 trucks)"
+
+table = Option,Mean wait,Longest wait,Driver effort,Build or buy,Cost; **First come first served (log)**,30.8 min,58 min,"None, but drivers sit with a full load",Nothing,$0; **A. Second operator from 06:00**,0.8 min,4 min,None: drivers just turn up,A second operator for 06:00 to 08:00,"About $18,500 per season (your figure)"; **B. Appointment slots**,0 min in the yard (slot is 32.8 min later than arrival on average),Slot up to 51 min later than arrival,"Highest: book, keep the window, rebook when weather moves",Booking tool plus SMS reminders plus a walk-up rule,Not priced: needs a quote; **C. Pre-registered fast lane**,5.8 min (if handling drops to 12 min),19 min,Medium: register once and show a code each trip,Registration and ticket tool plus a scan at the scale,Not priced: needs a quote; **D. Gate moisture screen**,22.9 min,43 min,Low: one quick probe at the gate,A moisture meter and a person at the gate before 08:00,Not priced: needs a quote
+
+Handling time matters most for option C, so here is how sensitive it is.
+
+data sens = handling time,mean wait,longest wait; 20 min (today),32.8,51; 15 min,14.6,34; 12 min,5.8,19
+chart bar sens y=mean wait,longest wait unit=min title="Pre-registered fast lane: wait by handling time"
+
+## Truck by truck
+
+Wait in minutes for each arrival. Appointments are left out here because the wait just becomes the schedule shift, which equals the baseline column.
+
+data replay = arrival,haulier,log,baseline,second operator,pre-registered,gate screen; 06:12,O'Brien Haulage,4,0,0,0,0; 06:20,Kowalczyk & Sons,11,12,0,4,12; 06:31,D'Angelo Farms,19,21,1,5,21; 06:44,"Prairie Rose Co-op (Bin 7, east side)",27,28,0,4,28; 06:52,Nguyen Bros,31,40,0,8,2
+data replay += 07:05,"Halvorsen Grain, Ltd.",38,47,0,7,27; 07:09,M. Okonkwo,44,51,3,15,43; 07:23,O'Brien Haulage,41,49,1,13,37; 07:38,"Sunderland & Pike (contract: “Fall Spot”)",52,42,0,10,34; 07:41,Kowalczyk & Sons,49,51,3,19,39
+data replay += 07:55,Reyes-McAllister,58,45,3,5,37; 08:10,D'Angelo Farms,47,42,0,2,30; 08:26,Prairie Rose Co-op (Bin 2),35,34,0,0,26; 08:44,St. Anne's Mill,22,28,0,0,16; 09:02,Nguyen Bros,9,18,0,0,10; 09:15,"Halvorsen Grain, Ltd.",6,17,0,0,5
+
+chart line replay x=arrival y=log,baseline,second operator,pre-registered,gate screen unit=min title="Wait by arrival time under each option"
+
+table replay heat
+
+! In the gate-screen column the 06:52 Nguyen Bros truck is turned away after an assumed 2 min probe. That is why its wait is 2, not 0.
+
+## What I would decide
+
+1. **Fund the 06:00 to 08:00 operator, or decide not to.** It is the only option that removes the early queue on its own, and it is the only cost you have a number for.
+2. **Measure real handling time on a rush morning.** Option C lives or dies on whether pre-registration gets a truck through in 12 to 15 min instead of 20. That is the number to find out before pricing a build.
+3. **Do not treat appointments as the main fix.** They add no capacity. Use them only if hauliers can really move to quiet hours.
+4. **Gate screen is a bolt-on.** Add it to A or C if the probe can be run by someone who is not the scale operator.
+
+A and C combine well. A and B do not need each other.
+
+## Check the log before trusting it
+
+- No date or day of week, so the Tuesday to Thursday rush cannot be isolated.
+- D'Angelo Farms is on its "third trip today" at 06:31, but the log starts at 06:12 and shows no earlier D'Angelo trips. The log may be missing arrivals.
+- The 07:38 Sunderland & Pike note says "longest wait of the day" at 52 min, but Reyes-McAllister waited 58 min at 07:55.
+- Reyes-McAllister's driver left and came back at 08:40, so the 58 min may include time the driver was not there.
+- The 14.5% moisture limit in the 06:52 note is for wheat. The 07:38 corn at 15.1% was not rejected, so limits must differ by crop. Confirm them before a gate screen is designed.
+- The 07:09 Okonkwo note says a small load was stuck behind semis for 44 min, which suggests loads were not served strictly in arrival order. The replay serves strictly in order.
+- Nothing is logged after 09:15. If the day went on, the quiet afternoon is not in this replay.

@@ -1,0 +1,43 @@
+@title Route 9 Transit Options
+@subtitle Decision page for councillors, vote on 2026-12-02
+@author Riverbend City Transportation Department
+
+## Options
+cards
+### Enhanced bus
+- More frequent buses and signal priority at lights
+- Capital cost: $85M
+- Build time: 2 years
+- Weekday riders by 2035: 14,000
+- Operating cost: $22M a year
+
+### Bus rapid transit
+- Dedicated lanes and stations
+- Capital cost: $310M
+- Build time: 4 years
+- Weekday riders by 2035: 26,000
+- Operating cost: $31M a year
+
+### Light rail
+- Capital cost: $940M
+- Build time: 8 years
+- Weekday riders by 2035: 38,000
+- Operating cost: $44M a year
+
+## Capital cost per rider
+data cpr = option,usd; Enhanced bus,6100; Bus rapid transit,11900; Light rail,24700
+chart hbar cpr unit=$ title="Capital cost per weekday rider"
+
+Light rail costs about four times as much per rider as enhanced bus.
+
+## Trade-offs
+- Enhanced bus is cheap and fast to deliver. It carries the fewest riders and still shares congested lanes.
+- Bus rapid transit is the middle path, and it could be upgraded to rail later.
+- Light rail carries the most riders and attracts development. It takes 8 years, and the city could not fund its share without a bond measure.
+
+A federal grant can cover up to 50% of capital cost. The application is due 2027-01-31 and requires a council-approved option.
+
+## Recommendation
+The department recommends bus rapid transit.
+
+!! The council must approve an option on 2026-12-02 to meet the federal grant deadline of 2027-01-31.

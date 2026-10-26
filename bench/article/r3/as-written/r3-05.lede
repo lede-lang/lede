@@ -1,0 +1,139 @@
+@title How retries and timeouts compound on a ferry booking
+@subtitle Why a slow vessel-status service turns into a pile-up, and where the worst-case wait comes from.
+@width wide
+
+!! Not checked against the code. You asked me to compare the production settings dump with what the code really does. I did not read the repo, so every statement below comes from the dump and the incident figures you gave me. Where the dump and the code disagree, the dump is the less trustworthy source for the question "what will the next deploy do", and the code (plus any environment overrides) is the less trustworthy source for "what was running last week". The checklist at the end tells you what to look up.
+
+kpi Load balancer cut-off | 30 s | what the customer waits at most
+kpi booking-api worst case | 30.6 s | longer than the cut-off | bad
+kpi vessel-status worst case | 23.75 s | 5 tries of 4 s plus waits
+kpi Vessel-status calls per seat check | up to 15 | 3 x 5 | bad
+
+## The mechanism in five steps
+
+Each service has a retry policy: how many attempts, how long to wait for each one (the timeout per try), and how long to pause between attempts (the delay, which grows by the multiplier each time and is randomized by the jitter). The key point is that a slow service is worse than a dead one. A dead service fails instantly and the caller gives up quickly. A slow service makes every attempt run to its full timeout, and then the retry policy launches another.
+
+1. vessel-status gets slower than its 4 s per-try timeout. Every call now burns the full 4 s and then fails.
+2. Each caller's policy turns one request into several. vessel-status is retried up to 5 times, and it has 0% jitter, so clients that failed together retry together, in waves.
+3. seat-inventory calls vessel-status. seat-inventory gives up on its own 5 s try, but the vessel-status work it started keeps running. Then seat-inventory starts try 2 and try 3, each with its own batch of up to 5 calls. One seat check can leave up to 15 requests on a service that is already struggling.
+4. That extra load keeps vessel-status slow, so more calls time out, so more retries are sent. This is the pile-up.
+5. At 30 s the load balancer drops the customer, who clicks "Book now" again. The old work is still running, and a fresh set starts.
+
+## Who calls whom
+
+!! Assumption: I read each row of the dump as the policy that callers use when they call that service. So vessel-status 5 x 4 s is how seat-inventory (and possibly booking-api) calls vessel-status. Your dump says booking-api "calls the next three"; I took that to mean the three rows after it (fare-calculator, vessel-status, seat-inventory), and I assumed payment-gateway is in the booking path too. If instead each row is the policy a service uses for its own outbound calls, the chain through seat-inventory is 3 x 3 = 9 calls, not 15. The code settles both questions.
+
+diagram flow dir=LR title="Booking request path as I read the dump"
+flow: user "Customer" user "clicks Book now"
+flow: lb "Load balancer" lb "cuts at 30 s"
+flow: booking "booking-api" svc "3 x 10 s"
+flow: fare "fare-calculator" svc "4 x 3 s"
+flow: seat "seat-inventory" svc "3 x 5 s"
+flow: vessel "vessel-status" svc "5 x 4 s, no jitter" focus
+flow: pay "payment-gateway" ext "2 x 15 s"
+flow: notif "notification-svc" queue "6 x 5 s"
+flow: loyalty "loyalty-points" svc "3 x 6 s"
+flow: user -> lb
+flow: lb -> booking
+flow: booking -> fare, seat, pay
+flow: seat -> vessel : capacity
+flow: booking --> vessel : direct?
+flow: booking --> notif : async
+flow: booking --> loyalty : unclear
+
+The nightly port-schedule-sync and the refund-worker are background jobs and are not on the "Book now" path as far as the dump says.
+
+## Where the worst-case wait comes from
+
+For one service the worst case is attempts x timeout per try, plus the pauses between attempts. I ignored jitter, which adds at most 10 to 30% to the pauses and so changes little. For the services on the booking path:
+
+data worst = Service,Waiting on timeouts (s),Pausing between tries (s)
+data worst += booking-api,30,0.6
+data worst += fare-calculator,12,0.475
+data worst += vessel-status,20,3.75
+data worst += seat-inventory,15,0.45
+data worst += payment-gateway,30,0.5
+data worst += loyalty-points,18,0.9
+chart hbar worst stack unit=s labels title="Worst case per service: nearly all of it is waiting on timeouts"
+
+The wait comes from the timeouts, not from the backoff delays. The delays, the part people tune, are small by comparison.
+
+Each service on its own, including the background jobs (my arithmetic from the dump):
+
+data calc = Service,Attempts,Timeouts (s),Pauses (s),Worst case (s),Largest pause (s),Max Delay cap (s),Cap reached
+data calc += booking-api,3,30,0.6,30.6,0.4,5,No
+data calc += fare-calculator,4,12,0.475,12.475,0.225,2,No
+data calc += vessel-status,5,20,3.75,23.75,2,8,No
+data calc += seat-inventory,3,15,0.45,15.45,0.3,3,No
+data calc += payment-gateway,2,30,0.5,30.5,0.5,10,No
+data calc += notification-svc,6,30,31,61,16,60,No
+data calc += port-schedule-sync,8,160,64.34,224.34,22.78,120,No
+data calc += loyalty-points,3,18,0.9,18.9,0.6,4,No
+data calc += refund-worker,5,60,19.03,79.03,11.72,30,No
+table calc heat=Worst case (s)
+
+### How the retries multiply
+
+Nested retries multiply instead of adding. Here is one booking-api request to seat-inventory, with vessel-status hanging on every call and the vessel-status work never cancelled once seat-inventory gives up on its try:
+
+data spans = Span,Start,End
+data spans += seat-inventory try 1,0,5
+data spans += seat-inventory try 2,5.15,10.15
+data spans += seat-inventory try 3,10.45,15.45
+data spans += vessel-status work from try 1,0,23.75
+data spans += vessel-status work from try 2,5.15,28.9
+data spans += vessel-status work from try 3,10.45,34.2
+chart range spans from=Start to=End target="30 LB cut-off" title="Seconds since the first call: work outlives the customer's wait"
+
+The seat-inventory tries end by 15.45 s. The vessel-status work they started goes on until 34.2 s, past the load balancer's cut-off, and at around 10.5 s all three batches overlap on the slow service.
+
+data amp = Layer,Attempts,Calls reaching vessel-status
+data amp += One seat-inventory try,5,5
+data amp += booking-api asking seat-inventory,3,15
+table amp
+
+If cancellation propagates, so that a try giving up cancels the calls under it, only about 2 of the 5 calls start inside each 5 s try, so 6 instead of 15 (mine). Whether it propagates is a code question. If booking-api also calls vessel-status directly, add up to 5 more per attempt.
+
+## What the incident figures say
+
+On Sept 3 the booking error rate reached 38% for 41 minutes and p99 latency was 74 s against a normal 1.9 s.
+
+!! The 74 s does not fit a 30 s load balancer cut-off unless it was measured inside booking-api rather than at the load balancer. If so, that is the orphaned work above showing up in the metrics. Adding up the dump's worst cases for a sequential walk (fare-calculator 12.5 s, vessel-status 23.75 s, seat-inventory 15.45 s, payment-gateway 30.5 s) gives about 82 s, which is in the same range as 74 s. I have not verified where p99 was measured or whether the calls are sequential.
+
+## Settings that look like mistakes or leftovers
+
+data flags = Setting,Why it looks wrong,Confidence
+data flags += vessel-status jitter 0%,"The note says “temporary” since the March outage. With no jitter, retries from many clients land together, which makes a pile-up worse. It was still in place on Sept 3.",High
+data flags += Max Delay on every service,"None of the nine caps is ever reached. The largest pause on each service is well under its cap (for example vessel-status pauses top out at 2 s against a cap of 8 s). The caps look like leftovers from earlier attempt counts, or they do nothing.",High
+data flags += booking-api 3 x 10 s,"Worst case 30.6 s, just over the load balancer's 30 s. The third attempt cannot finish usefully, and the work keeps running after the customer is cut off.",High
+data flags += seat-inventory 5 s per try over vessel-status 23.75 s,"The outer timeout is shorter than the inner worst case, so inner work is orphaned and re-launched on every outer retry.",High
+data flags += payment-gateway 2 x 15 s,"Worst case 30.5 s, past the load balancer cut-off. If a customer is cut off mid-payment and clicks again, check that payments are safe to repeat (idempotent), or there is a double-charge risk.",Needs the code
+data flags += notification-svc 6 attempts and up to 61 s,"The note says it is async and should not block bookings. Confirm it really is a queue and not awaited.",Needs the code
+data flags += loyalty-points 3 x 6 s with failures swallowed,"If it is called inline, a booking can wait up to 18.9 s on something whose failure is ignored anyway (see OPS-5521).",Needs the code
+data flags += port-schedule-sync blank jitter,"Blank is not the same as 0. It may mean a default applies. Worst case is 224 s, which is fine for a nightly job.",Low
+table flags
+
+## The settings dump as supplied
+
+data dump = Service,Max Attempts,Initial Delay (ms),Multiplier,Max Delay (s),Timeout per Try (s),Jitter (%),Notes
+data dump += booking-api,3,200,2.0,5,10,20,Entry point; calls the next three
+data dump += fare-calculator,4,100,1.5,2,3,10,
+data dump += vessel-status,5,250,2.0,8,4,0,“Temporary” no-jitter since the March outage
+data dump += seat-inventory,3,150,2.0,3,5,25,Calls vessel-status for capacity
+data dump += payment-gateway,2,500,3.0,10,15,15,"Third-party; their SLA is 99.5%"
+data dump += notification-svc,6,"1,000",2.0,60,5,30,"Async; shouldn't block bookings"
+data dump += port-schedule-sync,8,"2,000",1.5,120,20,,Nightly job
+data dump += loyalty-points,3,300,2.0,4,6,20,"Failures are swallowed; see ticket OPS-5521"
+data dump += refund-worker,5,750,2.5,30,12,10,Dead-letter after last attempt
+table dump
+
+## Check the dump against the code
+
+- [ ] Find where each service builds its retry policy and compare attempts, delays, multiplier, cap, timeout and jitter with the table above.
+- [ ] Look for overrides in environment variables or config files that would differ from the code defaults.
+- [ ] Settle which way the rows read: policy for calls into a service, or policy for its own outbound calls.
+- [ ] Check which services booking-api actually calls, and whether it calls vessel-status directly.
+- [ ] Check whether a timeout on an outer call cancels the inner calls, or lets them run on.
+- [ ] Check where p99 latency is measured, and the load balancer's real timeout.
+- [ ] Check that the payment call is idempotent and that notification-svc is truly async.
+- [ ] Decide on the vessel-status jitter: it was meant to be temporary.

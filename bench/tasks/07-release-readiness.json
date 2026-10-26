@@ -1,0 +1,55 @@
+{
+  "id": "07-release-readiness",
+  "category": "status",
+  "title": "Atlas 4.2.0 release readiness",
+  "brief": "Please build the go/no-go page for the Atlas mobile app release 4.2.0, targeted for 2026-10-22, owned by the Release Council. Put the overall call in a prominent callout at the very top: \"Recommendation: Conditional go\", provided blockers clear by 2026-10-20. Then four tiles: Open blockers 3, Crash-free sessions in beta 99.71 percent, Test pass rate 96.4 percent, Days to release 6. Section titled \"Readiness checklist\" as a table with columns Area, Owner, Status, Notes: Feature complete, Ana Brooks, Ready, all 12 epics merged; Regression suite, QA Guild, Ready, 1842 of 1911 tests passing; Accessibility audit, Kofi Mensah, Not ready, 2 contrast issues open; Localization, Ines Duarte, Ready, 14 languages signed off; Store listing, Growth team, Not ready, tablet screenshots pending; Rollback plan, Ana Brooks, Ready, staged rollout starting at 5 percent. Section titled \"Bug burndown\": a line chart of open release bugs per day: Oct 7 41, Oct 8 37, Oct 9 34, Oct 10 30, Oct 11 26, Oct 12 21, Oct 13 17, Oct 14 12, Oct 15 9, Oct 16 7. Section titled \"Blockers\": a numbered list of the three blockers: two accessibility contrast issues on the checkout screen (one each for the price label and the disabled button), and missing store screenshots for tablets.",
+  "checklist": {
+    "sections": [
+      "Readiness checklist",
+      "Bug burndown",
+      "Blockers"
+    ],
+    "visible": [
+      "Conditional go",
+      "Open blockers",
+      "Crash-free sessions",
+      "Test pass rate",
+      "Accessibility audit",
+      "Store listing",
+      "Rollback plan",
+      "Regression suite"
+    ],
+    "values": [
+      "4.2.0",
+      "99.71",
+      "96.4",
+      "1842",
+      "1911",
+      "41",
+      "37",
+      "34",
+      "30",
+      "26",
+      "21",
+      "17",
+      "2026-10-22"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "The accessibility issues were fixed: mark Accessibility audit as Ready with the note \"contrast issues resolved\", drop Open blockers to 1, and change the recommendation to \"Go\".",
+    "expect_visible": [
+      "contrast issues resolved"
+    ],
+    "expect_values": [],
+    "expect_absent": [
+      "Conditional go"
+    ]
+  }
+}

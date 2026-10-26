@@ -1,0 +1,60 @@
+{
+  "id": "98-orion-release-readiness",
+  "category": "status",
+  "title": "Orion 5.0 release readiness",
+  "brief": "The release manager for the Orion mobile app, Lorenzo Baptiste, wants a readiness page for the 5.0 release, as of 2026-10-16, for the go/no-go meeting on 2026-10-22 at 10:00. The target release is 2026-10-27. Right now 5 of 9 release criteria are met, with 8200 beta testers active. Under \"Readiness checklist\" show all nine with current value, required value and status: Feature complete, yes, yes, met; Open P1 bugs, 0, 0, met; Open P2 bugs, 6, at most 5, not met; Beta crash-free sessions, 99.4 percent, at least 99.5 percent, not met; Accessibility audit, passed on 2026-10-09, pass, met; Languages complete, 14 of 16, 16 of 16, at risk; Load test at 3 times peak, passed, pass, met; Rollback rehearsed, yes, yes, met; App store submission, scheduled for 2026-10-20, submitted by 2026-10-21, on track. Under \"Gaps to close\", each with an owner and due date: open P2 bugs, Hannah Weiss, 2026-10-21; crash-free sessions, Ibrahim Sesay, 2026-10-21; the two missing languages (Thai and Hebrew), Chloe Dubois, 2026-10-20. Under \"Decision\": we recommend a conditional go if all three gaps are closed by 2026-10-21, and otherwise slipping the release by one week to 2026-11-03. People will read this on their phones.",
+  "checklist": {
+    "sections": [
+      "Readiness checklist",
+      "Gaps to close",
+      "Decision"
+    ],
+    "visible": [
+      "Lorenzo Baptiste",
+      "Open P1 bugs",
+      "Open P2 bugs",
+      "Beta crash-free sessions",
+      "Accessibility audit",
+      "Languages complete",
+      "Rollback rehearsed",
+      "Hannah Weiss",
+      "Ibrahim Sesay",
+      "Chloe Dubois",
+      "Thai",
+      "Hebrew"
+    ],
+    "values": [
+      "5 of 9",
+      "8200",
+      "2026-10-22",
+      "10:00",
+      "2026-10-27",
+      "99.4",
+      "99.5",
+      "14 of 16",
+      "16 of 16",
+      "2026-10-09",
+      "2026-10-20",
+      "2026-10-21",
+      "2026-11-03"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Open P2 bugs are now down to 4 and beta crash-free sessions are 99.6 percent, so both criteria are met. That makes 7 of 9 criteria met.",
+    "expect_visible": [],
+    "expect_values": [
+      "7 of 9",
+      "99.6"
+    ],
+    "expect_absent": [
+      "5 of 9",
+      "99.4"
+    ]
+  }
+}

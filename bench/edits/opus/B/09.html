@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clickstream Data Platform — Harbor Media</title>
+<style>
+:root {
+  --bg: #f4f6f9;
+  --panel: #ffffff;
+  --ink: #18202b;
+  --ink-soft: #5b6676;
+  --rule: #dde2ea;
+  --ingest-fill: #fff4e6;
+  --ingest-edge: #d48a1f;
+  --analytics-fill: #eef4ff;
+  --analytics-edge: #4b7bd6;
+  --vpc-fill: #e3efe6;
+  --vpc-edge: #3f9a62;
+  --node-fill: #ffffff;
+  --node-edge: #98a2b3;
+  --ext-fill: #f3eefc;
+  --ext-edge: #8a6cd1;
+  --wire: #475467;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1016;
+    --panel: #161a22;
+    --ink: #e6eaf0;
+    --ink-soft: #98a2b3;
+    --rule: #29303b;
+    --ingest-fill: #2a1f10;
+    --ingest-edge: #e7a548;
+    --analytics-fill: #141f33;
+    --analytics-edge: #6f9cf0;
+    --vpc-fill: #142a1c;
+    --vpc-edge: #5cc184;
+    --node-fill: #1c212b;
+    --node-edge: #667085;
+    --ext-fill: #231b36;
+    --ext-edge: #a98bf0;
+    --wire: #b8c0cc;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.doc { max-width: 1000px; margin: 0 auto; padding: 28px 16px 60px; }
+h1 { margin: 0; font-size: 1.6rem; }
+.byline { color: var(--ink-soft); margin: 4px 0 0; font-size: 0.92rem; }
+section { background: var(--panel); border: 1px solid var(--rule); border-radius: 12px; padding: 18px 20px; margin-top: 16px; }
+h2 { margin: 0 0 10px; font-size: 1.12rem; }
+p { margin: 0; }
+.diagram { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.diagram svg { display: block; width: 100%; min-width: 720px; height: auto; }
+.swipe { display: none; font-size: 0.82rem; color: var(--ink-soft); margin-top: 6px; }
+svg text { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.g-label { font-size: 13px; font-weight: 700; }
+.n rect { fill: var(--node-fill); stroke: var(--node-edge); stroke-width: 1.5; }
+.n.x rect { fill: var(--ext-fill); stroke: var(--ext-edge); }
+.n text { fill: var(--ink); font-size: 13px; font-weight: 600; text-anchor: middle; }
+.n text.s { fill: var(--ink-soft); font-size: 11px; font-weight: 400; }
+.w { fill: none; stroke: var(--wire); stroke-width: 1.6; }
+.wl { fill: var(--ink); font-size: 12px; font-weight: 600; paint-order: stroke; stroke: var(--panel); stroke-width: 5px; stroke-linejoin: round; }
+.scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; min-width: 480px; }
+th, td { padding: 10px; border-bottom: 1px solid var(--rule); text-align: left; }
+th.r, td.r { text-align: right; }
+th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft); }
+tbody tr:last-child td { border-bottom: 0; }
+code { font: 0.9em ui-monospace, SFMono-Regular, Menlo, monospace; }
+ul { margin: 0; padding-left: 1.2em; }
+li { margin: 6px 0; }
+@media (max-width: 760px) {
+  section { padding: 16px 14px; }
+  .swipe { display: block; }
+}
+</style>
+</head>
+<body>
+<div class="doc">
+  <h1>Clickstream Data Platform</h1>
+  <p class="byline">Harbor Media · Data Engineering · As of 2026-09-30</p>
+
+  <section>
+    <h2>Overview</h2>
+    <p>Our web and mobile apps emit about 1,800 million clickstream events per day. Those events stream through Kinesis and Firehose in the ingest account, land as Parquet in a data lake in the analytics account, and are cleaned nightly by EMR into curated tables. Analysts query the results in Redshift, mostly through Superset.</p>
+  </section>
+
+  <section>
+    <h2>Architecture diagram</h2>
+    <div class="diagram">
+      <svg viewBox="0 0 1060 520" role="img" aria-labelledby="t9 d9">
+        <title id="t9">Clickstream data platform architecture</title>
+        <desc id="d9">Web and Mobile Apps send events to Clickstream Stream (Kinesis) in the Ingest account, which batches into Firehose. Firehose writes Parquet every 5 minutes to Raw Bucket in the Analytics account. A nightly ETL on the EMR Cluster, inside the Lake VPC, reads Raw Bucket using schemas from Glue Catalog and writes cleaned tables to Curated Bucket. The EMR Cluster also writes features to a Feature Store inside the Lake VPC. Curated Bucket is loaded into the Redshift Cluster with COPY, and Superset queries Redshift with SQL.</desc>
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--wire)"/>
+          </marker>
+        </defs>
+
+        <!-- Groups -->
+        <rect x="150" y="10" width="160" height="210" rx="14" fill="var(--ingest-fill)" stroke="var(--ingest-edge)" stroke-width="1.5" stroke-dasharray="6 4"/>
+        <text class="g-label" x="162" y="32" fill="var(--ingest-edge)">Ingest account</text>
+
+        <rect x="380" y="20" width="520" height="480" rx="14" fill="var(--analytics-fill)" stroke="var(--analytics-edge)" stroke-width="1.5" stroke-dasharray="6 4"/>
+        <text class="g-label" x="394" y="44" fill="var(--analytics-edge)">Analytics account</text>
+
+        <rect x="400" y="280" width="490" height="200" rx="12" fill="var(--vpc-fill)" stroke="var(--vpc-edge)" stroke-width="1.5"/>
+        <text class="g-label" x="414" y="302" fill="var(--vpc-edge)">Lake VPC <tspan font-weight="400">· 10.40.0.0/16</tspan></text>
+
+        <!-- Wires -->
+        <path class="w" d="M120 75 H168" marker-end="url(#ah)"/>
+        <path class="w" d="M230 100 V138" marker-end="url(#ah)"/>
+        <path class="w" d="M290 165 H408" marker-end="url(#ah)"/>
+        <path class="w" d="M490 190 V348" marker-end="url(#ah)"/>
+        <path class="w" d="M630 190 L547 348" marker-end="url(#ah)"/>
+        <path class="w" d="M560 365 H700 V230 H790 V192" marker-end="url(#ah)"/>
+        <path class="w" d="M830 190 V348" marker-end="url(#ah)"/>
+        <path class="w" d="M870 375 H928" marker-end="url(#ah)"/>
+        <path class="w" d="M490 400 V435 H578" marker-end="url(#ah)"/>
+
+        <!-- Wire labels -->
+        <text class="wl" x="144" y="67" text-anchor="middle">events</text>
+        <text class="wl" x="238" y="124">batch</text>
+        <text class="wl" x="349" y="143" text-anchor="middle">parquet</text>
+        <text class="wl" x="349" y="157" text-anchor="middle">every 5 min</text>
+        <text class="wl" x="498" y="245">nightly ETL</text>
+        <text class="wl" x="598" y="258">schemas</text>
+        <text class="wl" x="630" y="356" text-anchor="middle">cleaned tables</text>
+        <text class="wl" x="838" y="262">COPY</text>
+        <text class="wl" x="899" y="367" text-anchor="middle">SQL</text>
+        <text class="wl" x="536" y="439" text-anchor="middle">features</text>
+
+        <!-- External -->
+        <g class="n x">
+          <rect x="10" y="50" width="110" height="50" rx="8"/>
+          <text x="65" y="71">Web and</text>
+          <text x="65" y="87">Mobile Apps</text>
+        </g>
+        <g class="n x">
+          <rect x="930" y="350" width="110" height="50" rx="8"/>
+          <text x="985" y="380">Superset</text>
+        </g>
+
+        <!-- Ingest -->
+        <g class="n">
+          <rect x="170" y="50" width="120" height="50" rx="8"/>
+          <text x="230" y="71">Clickstream Stream</text>
+          <text class="s" x="230" y="88">Kinesis</text>
+        </g>
+        <g class="n">
+          <rect x="170" y="140" width="120" height="50" rx="8"/>
+          <text x="230" y="161">Firehose</text>
+          <text class="s" x="230" y="178">Kinesis Data Firehose</text>
+        </g>
+
+        <!-- Analytics -->
+        <g class="n">
+          <rect x="410" y="140" width="130" height="50" rx="8"/>
+          <text x="475" y="161">Raw Bucket</text>
+          <text class="s" x="475" y="178">S3</text>
+        </g>
+        <g class="n">
+          <rect x="580" y="140" width="130" height="50" rx="8"/>
+          <text x="645" y="170">Glue Catalog</text>
+        </g>
+        <g class="n">
+          <rect x="750" y="140" width="130" height="50" rx="8"/>
+          <text x="815" y="161">Curated Bucket</text>
+          <text class="s" x="815" y="178">S3</text>
+        </g>
+
+        <!-- Lake VPC -->
+        <g class="n">
+          <rect x="420" y="350" width="140" height="50" rx="8"/>
+          <text x="490" y="380">EMR Cluster</text>
+        </g>
+        <g class="n">
+          <rect x="730" y="350" width="140" height="50" rx="8"/>
+          <text x="800" y="371">Redshift Cluster</text>
+          <text class="s" x="800" y="388">4 × ra3.4xlarge</text>
+        </g>
+        <g class="n">
+          <rect x="580" y="410" width="130" height="50" rx="8"/>
+          <text x="645" y="440">Feature Store</text>
+        </g>
+      </svg>
+    </div>
+    <p class="swipe">Scroll sideways to see the full diagram.</p>
+  </section>
+
+  <section>
+    <h2>Datasets</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Dataset</th><th class="r">Daily volume (GB)</th><th class="r">Retention (days)</th><th>Owner</th></tr></thead>
+        <tbody>
+          <tr><td><code>raw_events</code></td><td class="r">940</td><td class="r">30</td><td>Ingest squad</td></tr>
+          <tr><td><code>sessions</code></td><td class="r">120</td><td class="r">400</td><td>Analytics Eng</td></tr>
+          <tr><td><code>page_views</code></td><td class="r">310</td><td class="r">400</td><td>Analytics Eng</td></tr>
+          <tr><td><code>ad_impressions</code></td><td class="r">260</td><td class="r">90</td><td>Ad Tech</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Known limits</h2>
+    <ul>
+      <li>Firehose buffering means data can arrive up to 5 minutes late.</li>
+      <li>The nightly ETL finishes around 03:40 UTC; curated tables are not fresh before then.</li>
+      <li>Redshift is a 4-node ra3.4xlarge cluster and queues queries above 50 concurrent users.</li>
+    </ul>
+  </section>
+</div>
+</body>
+</html>

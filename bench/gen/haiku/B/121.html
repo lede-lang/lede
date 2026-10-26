@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Heat-Wave Demand Emergency Runbook</title>
+<style>
+:root {
+  --bg: #f5f6f8;
+  --card: #ffffff;
+  --text: #1c2430;
+  --muted: #5b6676;
+  --accent: #0b6e4f;
+  --accent-soft: #e3f3ed;
+  --warn: #9a3412;
+  --warn-soft: #fff1e8;
+  --border: #d9dee6;
+  --stage1: #b7791f;
+  --stage2: #c05621;
+  --stage3: #9b2c2c;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1419;
+    --card: #171e26;
+    --text: #e6ebf1;
+    --muted: #9aa6b5;
+    --accent: #4fd1a5;
+    --accent-soft: #14302a;
+    --warn: #fdba74;
+    --warn-soft: #3a2415;
+    --border: #2a3440;
+    --stage1: #f6c26b;
+    --stage2: #f49a6b;
+    --stage3: #f08080;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1419;
+  --card: #171e26;
+  --text: #e6ebf1;
+  --muted: #9aa6b5;
+  --accent: #4fd1a5;
+  --accent-soft: #14302a;
+  --warn: #fdba74;
+  --warn-soft: #3a2415;
+  --border: #2a3440;
+  --stage1: #f6c26b;
+  --stage2: #f49a6b;
+  --stage3: #f08080;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+.wrap { max-width: 860px; margin: 0 auto; padding: 24px 16px 48px; }
+header { padding: 8px 0 16px; border-bottom: 3px solid var(--accent); margin-bottom: 20px; }
+.org { color: var(--muted); font-size: 14px; text-transform: uppercase; letter-spacing: .06em; }
+h1 { font-size: 28px; line-height: 1.2; margin: 6px 0 8px; }
+.meta { color: var(--muted); font-size: 14px; }
+h2 { font-size: 20px; margin: 28px 0 10px; color: var(--accent); }
+h3 { font-size: 17px; margin: 18px 0 6px; }
+section, .card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+}
+.rule {
+  background: var(--accent-soft);
+  border-left: 4px solid var(--accent);
+  padding: 12px 14px;
+  border-radius: 6px;
+  margin: 10px 0;
+}
+.never {
+  background: var(--warn-soft);
+  border-left: 4px solid var(--warn);
+  padding: 12px 14px;
+  border-radius: 6px;
+  margin: 10px 0;
+  font-weight: 600;
+}
+.stages { display: grid; gap: 12px; grid-template-columns: 1fr; }
+.stage {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: var(--card);
+  border-top-width: 5px;
+}
+.stage.s1 { border-top-color: var(--stage1); }
+.stage.s2 { border-top-color: var(--stage2); }
+.stage.s3 { border-top-color: var(--stage3); }
+.stage h3 { margin-top: 0; }
+.pct { font-weight: 700; font-variant-numeric: tabular-nums; }
+ol.steps { padding-left: 0; list-style: none; counter-reset: step; }
+ol.steps > li {
+  counter-increment: step;
+  position: relative;
+  padding: 12px 14px 12px 52px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 12px;
+  background: var(--card);
+}
+ol.steps > li::before {
+  content: counter(step);
+  position: absolute;
+  left: 14px; top: 12px;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--card);
+  font-weight: 700;
+  text-align: center;
+  line-height: 28px;
+}
+ol.steps ol.sub { list-style: lower-alpha; padding-left: 20px; margin: 8px 0 0; }
+ol.steps ol.sub li { margin: 4px 0; }
+.decide { display: grid; gap: 12px; grid-template-columns: 1fr; }
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; }
+.contacts td:first-child { font-weight: 600; width: 45%; }
+.svgwrap { overflow-x: auto; }
+svg text { fill: var(--text); }
+@media (min-width: 700px) {
+  .stages, .decide { grid-template-columns: 1fr 1fr 1fr; }
+  h1 { font-size: 32px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="org">Northgrid Electric &middot; System Operations</div>
+  <h1>Heat-Wave Demand Emergency Runbook</h1>
+  <div class="meta">For the on-duty system operator &middot; Version 2026-10-10 &middot; Available supply 5,200 MW</div>
+</header>
+
+<section>
+  <h2 style="margin-top:0">When to use</h2>
+  <p>Use this runbook when the day-ahead forecast or live demand reaches <span class="pct">92 percent</span> of available supply.</p>
+  <div class="rule"><strong>A stage is declared by the Duty Director, never by a single operator.</strong> If you believe a stage is needed, call the Duty Director and wait for the declaration before acting on it.</div>
+</section>
+
+<h2>Stages</h2>
+<div class="stages">
+  <article class="stage s1">
+    <h3>Stage 1 &middot; 92% of supply</h3>
+    <div class="pct">4,784 MW</div>
+    <ul>
+      <li>Issue a conservation alert by text and app to 380,000 customers.</li>
+      <li>Ask large industrial customers on interruptible contracts to get ready to reduce load on 30 minutes of notice.</li>
+      <li>Confirm that standby generation at 3 peaking plants can start within 20 minutes.</li>
+    </ul>
+  </article>
+  <article class="stage s2">
+    <h3>Stage 2 &middot; 97% of supply</h3>
+    <div class="pct">5,044 MW</div>
+    <ul>
+      <li>Call the demand response program, which delivers about 210 MW.</li>
+      <li>Start buying emergency imports from the neighboring utility.</li>
+      <li>Brief the regulator by phone.</li>
+    </ul>
+  </article>
+  <article class="stage s3">
+    <h3>Stage 3 &middot; 100% of supply</h3>
+    <div class="pct">5,200 MW</div>
+    <ul>
+      <li>Begin rotating outages in blocks A to L, in order.</li>
+      <li>Each block is off for at most 60 minutes.</li>
+      <li>Never repeat a block before all twelve have been used.</li>
+    </ul>
+  </article>
+</div>
+
+<h2>Steps for rotating outages</h2>
+<div class="never"><strong>Hospitals, the 911 center and water pumping stations must never be switched off.</strong> Check the exclusion list before every block is opened.</div>
+
+<ol class="steps">
+  <li>
+    <strong>Get approval</strong>
+    <ol class="sub">
+      <li>The Duty Director approves in the log.</li>
+      <li>The regulator is told within 30 minutes.</li>
+    </ol>
+  </li>
+  <li>
+    <strong>Protect critical sites</strong>
+    <ol class="sub">
+      <li>Confirm that hospitals, the 911 center and water pumping stations are excluded.</li>
+      <li>Check that the exclusion list was updated this month.</li>
+    </ol>
+  </li>
+  <li>
+    <strong>Run the blocks</strong>
+    <ol class="sub">
+      <li>Open the first block's feeders.</li>
+      <li>Restore it after 60 minutes at most, then open the next block.</li>
+      <li>Update the public outage map every 15 minutes.</li>
+    </ol>
+  </li>
+  <li>
+    <strong>Stand down</strong>
+    <ol class="sub">
+      <li>End rotating outages when demand stays below 95 percent for 60 minutes.</li>
+      <li>Restore all blocks.</li>
+      <li>File the event report within 24 hours.</li>
+    </ol>
+  </li>
+</ol>
+
+<h2>Contacts</h2>
+<section>
+<table class="contacts">
+  <tbody>
+    <tr><td>Duty Director</td><td>Lorenzo Baptiste</td></tr>
+    <tr><td>Regulator liaison</td><td>Dagny Holt</td></tr>
+    <tr><td>Communications on call</td><td>Femi Adeyemi</td></tr>
+  </tbody>
+</table>
+</section>
+</div>
+</body>
+</html>

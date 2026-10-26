@@ -1,0 +1,5 @@
+Inline margin annotations beside diff lines: not expressible, so the diff is split into small ```diff hunks with the findings as callouts directly under each hunk, citing line numbers.
+Color-coded findings per line: used callout levels (blocking as critical, nit as warning, nice as note) plus bold tags, a kpi row with tones, and a findings table.
+Interactive filtering or collapsing by severity: used one findings table with a severity column instead.
+Line-number gutter on the diff: not available in a fence, so line numbers are cited in each annotation.
+Live memory graph from a real benchmark: used a line chart of fictional data with a limit target.

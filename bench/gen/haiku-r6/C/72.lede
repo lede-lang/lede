@@ -1,0 +1,29 @@
+@title Prescription refill flow
+@subtitle Medora Health · Integrations team · Version dated 2026-09-30
+
+## Refill sequence
+diagram refill sequence title="Refill sequence"
+refill: app "Patient App" user
+refill: svc "Refill Service" svc
+refill: ehr "Clinic EHR" ext
+refill: pharm "Pharmacy Portal" ext
+refill: app -> svc : request refill
+refill: svc -> ehr : check active prescription and refills left
+refill: alt "clinic approves"
+refill: ehr --> svc : approved, 2 refills remaining
+refill: svc -> pharm : e-prescription, NCPDP SCRIPT
+refill: pharm --> svc : accepted, ready in 2 hours
+refill: svc --> app : refill confirmed
+refill: else "clinic declines"
+refill: ehr --> svc : denied, visit needed
+refill: svc --> app : book a visit
+refill: end
+
+## Service targets
+table = Call,Target; Clinic EHR check,within 3 s; Pharmacy acknowledgement,within 30 s; Confirmation shown in the app,within 10 s of the request
+
+## Rules
+!!! Controlled substances are never refilled through the app.
+
+- A refill covers at most a 90-day supply.
+- Requests made after 21:00 wait in a queue until 07:00.

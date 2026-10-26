@@ -1,0 +1,47 @@
+@title Electric Reliability, Jan to Sep 2026
+@subtitle Northwind Utilities report to the state regulator and the board
+@author Sven Lindqvist, Reliability Engineer
+@date 2026-10
+
+# Reliability at a glance
+
+kpi Avg outage time per customer | 99.6 min | target 105 min | good
+
+kpi Customers served | 412,000
+kpi Outage events | 177
+kpi Districts above target | 3 of 5 | Hills, Plains, Coastal | bad
+kpi Worst district | Hills | 176 min | bad
+
+The system as a whole meets the regulator target of 105 minutes per customer for January to September. Three districts do not: Hills (176 min), Plains (131 min) and Coastal (112 min). Hills is the worst by a wide margin.
+
+# By district
+
+data districts = district,customers,events,minutes; Coastal,98000,41,112; Valley,142000,58,84; Hills,61000,37,176; Metro,87000,22,49; Plains,24000,19,131
+
+chart hbar districts x=district y=minutes unit=min target="105 target" focus="Hills" title="Average outage minutes per customer"
+
+table = District,Customers,Outage events,Avg minutes per customer,vs 105 target; Hills,"61,000",37,**176**,Above; Plains,"24,000",19,**131**,Above; Coastal,"98,000",41,**112**,Above; Valley,"142,000",58,84,Below; Metro,"87,000",22,49,Below; **System**,**412,000**,**177**,**99.6**,**Below**
+
+- **Valley** is the biggest district (142,000 customers) and meets the target at 84 min.
+- **Coastal** is the second-biggest district (98,000 customers) and is above target at 112 min, so it has the most customers of the three over-target districts.
+- **Hills** is small (61,000 customers) but its 176 min is 71 min over target.
+- **Metro**'s low figure of 49 min reflects its underground cables.
+
+chart hbar districts x=district y=customers title="Customers by district"
+
+# Causes
+
+data causes = cause,share; Storms,46; Equipment failure,27; Vegetation,15; Other,12
+
+chart hbar causes unit=% labels title="Share of outage minutes by cause"
+
+Storms account for nearly half of outage minutes. Vegetation, at 15%, is the cause most directly addressed by the Hills program below.
+
+# Next steps
+
+step Start Hills tree-trimming program: 210 line miles, $1.8M budget | 2026-11-02 | Hills district
+
+- Report the January to September results to the state regulator and the board.
+- Continue to watch Plains (131 min) and Coastal (112 min), the other two districts above target.
+
+! Metro's 49 min reflects its underground cables, so it is not a like-for-like comparison with the overhead districts.

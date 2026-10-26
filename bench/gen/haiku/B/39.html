@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cutting Checkout Page Weight</title>
+<style>
+:root{--bg:#fdf9f4;--fg:#2a211b;--muted:#7a6b5f;--accent:#9c4a1e;--card:#ffffff;--border:#eadfd3;--note:#f8ece0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#17130f;--fg:#efe6dc;--muted:#a79a8c;--accent:#f0a06a;--card:#211b16;--border:#3a3029;--note:#2b2019}}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.7 Charter,Georgia,"Iowan Old Style",serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:660px;margin:0 auto;padding:36px 18px 60px}
+.by{font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--muted);margin:0 0 1.8em}
+h1{font:700 2rem/1.2 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;margin:0 0 .3em}
+h2{font:700 1.2rem/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;margin:2em 0 .5em;color:var(--accent)}
+p,ol{margin:.8em 0}
+li{margin:.4em 0}
+.cta{margin-top:2.2em;padding:14px 16px;background:var(--note);border-radius:8px;border-left:4px solid var(--accent)}
+.cta a{color:var(--accent)}
+@media (max-width:480px){body{font-size:16px}.wrap{padding:26px 16px 48px}h1{font-size:1.65rem}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>How We Cut Our Checkout Page Weight in Half</h1>
+<p class="by">Sam Whitlock, Kiln Coffee Roasters engineering blog</p>
+
+<h2>Where we started</h2>
+<p>Our checkout page had grown the way most checkout pages do. Every feature added a script, a stylesheet or an image, and nobody took any of them away. By the time we measured it, the page weighed 1.9 MB. On a mid-range phone it took 4.8 seconds to become interactive. That is a long time to stare at a spinner when you are about to pay for coffee.</p>
+
+<h2>The three big wins</h2>
+<p>We did not find one magic fix. We found three ordinary ones, and each was a small change.</p>
+<ol>
+<li>We replaced a 310 KB date picker with the native one that the browser already ships.</li>
+<li>We lazy-loaded the reviews widget, so it only loads when someone scrolls near it.</li>
+<li>We served product photos at the size they are displayed, instead of the full-size originals.</li>
+</ol>
+<p>Together these brought the page down to 0.9 MB, and it became interactive in 2.1 seconds on the same phone.</p>
+
+<h2>What did not work</h2>
+<p>We tried inlining all of our styles into the page to avoid a second request. It looked sensible on paper. In practice, repeat visits got slower, because the browser could no longer cache the stylesheet and reuse it across pages. We reverted that change within a week.</p>
+
+<h2>What is next</h2>
+<p>Mobile conversion rose from 2.6 percent to 3.1 percent in the four weeks after we launched on 2026-08-04. We are pleased with that, but we cannot prove the speedup caused all of it. Pricing changes, a new promotion and seasonal traffic all happened in the same window. What we can say is that the faster page did not hurt.</p>
+<p>If you enjoy this kind of work, come and join us. Visit the Kiln careers page to see what we are hiring for.</p>
+</main>
+</body>
+</html>

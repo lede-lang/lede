@@ -1,0 +1,60 @@
+{
+  "id": "46-hub-spoke-network-aws",
+  "category": "architecture",
+  "title": "Alderwood network architecture",
+  "brief": "Our cloud team at Alderwood Health Analytics needs an architecture page for the network layout of our AWS landing zone in us-east-2, last reviewed 2026-10-09. Open with a short \"Overview\": three accounts joined by a transit gateway, all internet-bound traffic inspected before it leaves, and a Direct Connect link back to our Columbus data center. Then \"Network diagram\". The Network account contains the Transit Gateway and an Inspection VPC (10.0.0.0/16) holding a Network Firewall and a NAT Gateway. The Prod account contains the Claims VPC (10.10.0.0/16) with Claims API (runs on ECS) and Claims DB (Aurora). The Staging account contains the Staging VPC (10.20.0.0/16) with Claims API Staging. Outside AWS sit the Columbus Data Center and the Internet. Connections: Claims VPC to Transit Gateway \"attachment\"; Staging VPC to Transit Gateway \"attachment\"; Transit Gateway to Inspection VPC \"egress inspection\"; Inspection VPC to Internet \"via NAT\"; Columbus Data Center to Transit Gateway \"Direct Connect, 2 x 1 Gbps\"; Claims API to Claims DB \"port 5432\". Then \"Address plan\": for each VPC, its account, CIDR and subnet layout: Inspection VPC, Network, 10.0.0.0/16, 2 firewall subnets and 2 NAT subnets; Claims VPC, Prod, 10.10.0.0/16, 3 private app subnets and 3 data subnets; Staging VPC, Staging, 10.20.0.0/16, 2 private app subnets and 2 data subnets. Last, \"Routing rules\": no internet gateways in workload VPCs, staging may never route to prod, and the Direct Connect link reaches prod only. The staging-to-prod rule is the one auditors ask about, so make sure it is not missed.",
+  "checklist": {
+    "sections": [
+      "Overview",
+      "Network diagram",
+      "Address plan",
+      "Routing rules"
+    ],
+    "visible": [
+      "Network account",
+      "Prod account",
+      "Staging account",
+      "Inspection VPC",
+      "Claims VPC",
+      "Staging VPC",
+      "Transit Gateway",
+      "Network Firewall",
+      "NAT Gateway",
+      "Claims API",
+      "Claims DB",
+      "Claims API Staging",
+      "Columbus Data Center",
+      "Internet",
+      "egress inspection",
+      "attachment"
+    ],
+    "values": [
+      "10.0.0.0/16",
+      "10.10.0.0/16",
+      "10.20.0.0/16",
+      "us-east-2",
+      "2026-10-09",
+      "5432",
+      "2 x 1 Gbps",
+      "3"
+    ]
+  },
+  "needs": [
+    "diagram",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add a Dev account containing a Dev VPC (10.30.0.0/16) with a node called Claims API Dev, connected to the Transit Gateway with an arrow labeled \"attachment\", and add a row for it in the address plan with 2 private app subnets.",
+    "expect_visible": [
+      "Dev account",
+      "Dev VPC",
+      "Claims API Dev"
+    ],
+    "expect_values": [
+      "10.30.0.0/16"
+    ],
+    "expect_absent": []
+  }
+}

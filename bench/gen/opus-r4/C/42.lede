@@ -1,0 +1,32 @@
+@title Northfield patient access
+@subtitle Snapshot for September 2026, for the clinic directors' meeting on 2026-10-19
+@author Northfield Community Health
+@date 2026-10-19
+
+kpi Median days to next new-patient appointment | 9.2 days | target 7 days | bad
+
+Wait times are 2.2 days over target and have risen every month since April.
+
+kpi No-show rate | 7.1%
+kpi Phone abandonment | 4.3%
+kpi Patient satisfaction | 4.5 / 5
+
+## Clinics
+
+!! **Eastgate and Harlan Street are the problem spots.** Both are well over the 7-day target and have the highest no-show and phone abandonment rates.
+
+data clinics = clinic,median wait; Eastgate,12.4; Harlan Street,10.9; Lakeview,8.1; Millbrook,7.3; Riverside,6.4
+chart hbar clinics y=median wait unit=days target="7 Target" title="Median wait by clinic"
+
+table = clinic,median wait,no-show rate,phone abandonment,status; **Eastgate**,**12.4 days**,**11.8%**,**6.9%**,At risk; **Harlan Street**,**10.9 days**,**7.4%**,**4.9%**,At risk; Lakeview,8.1 days,5.9%,3.2%,Watch; Millbrook,7.3 days,6.2%,3.8%,Watch; Riverside,6.4 days,4.8%,2.9%,On track
+
+## Wait trend
+
+data trend = month,median wait; Apr,6.8; May,7.2; Jun,7.9; Jul,8.4; Aug,9.0; Sep,9.2
+chart line trend y=median wait unit=days target="7 Target" title="Median days to next new-patient appointment"
+
+## What we are doing
+
+1. **Saturday clinic at Eastgate**, starting 2026-11-07. Eastgate lost Dr. Hana Yoshida in August and has 2 open physician posts.
+2. **Text reminders two days before visits.** The Lakeview pilot cut its no-show rate from 8.0% to 5.9%.
+3. **Longer phone hours at Harlan Street**, with lines staying open until 19:00.

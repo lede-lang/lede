@@ -1,0 +1,23 @@
+@title Cloud cost dashboard
+@subtitle Retail Engineering · Halcyon Stores · April to September 2026
+
+kpi September spend | $184,200
+kpi Month-over-month | +6.4% | | bad
+kpi Budget | $190,000
+kpi Savings Plan coverage | 71%
+
+# Monthly spend
+
+data monthly = month,spend; Apr,151300; May,158900; Jun,162400; Jul,169800; Aug,173100; Sep,184200; Oct,192600
+chart line monthly x=month y=spend unit=$ title="Total monthly spend"
+
+# September by service
+
+data sep = service,spend; EC2,68400; RDS,39100; S3,17800; CloudFront,12600; EKS,21300; Data transfer,14900; Other,10100
+chart bar sep x=service y=spend unit=$ labels title="September spend by service"
+
+# Cost anomalies
+
+table = Date,Service,Team,Excess ($),Cause; 2026-09-08,EC2,Search,4200,forgotten load-test fleet; 2026-09-17,Data transfer,Media,2900,cross-region replication misconfigured; 2026-09-25,RDS,Billing,1700,oversized snapshot retention; 2026-10-06,EKS,Platform,3100,idle GPU node group
+
+!! At the current growth rate, October will exceed the $190,000 budget. Teams should review the rightsizing report by 2026-10-24.

@@ -1,0 +1,6 @@
+@title Signups
+# Signups
+
+data su = month,free,paid; Jan,820,120; Feb,860,140; Mar,910,170; Apr,1250,230; May,1420,310; Jun,1380,350; Jul,1500,410; Aug,1610,450
+
+chart area su y=free,paid stack title="Monthly signups by plan" mark="Apr Product Hunt launch" mark="Jun pricing change" mark="Aug annual plans"

@@ -1,0 +1,35 @@
+{
+  "name": "lede-workspace",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test packages/*/test/*.test.ts conformance/run.test.ts test/set-version.test.ts",
+    "build": "tsc -b packages/cli/tsconfig.build.json",
+    "test:pack": "node --test test/pack.test.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lede": "node packages/cli/src/cli.ts",
+    "lint": "oxlint --deny-warnings",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "check:examples": "find examples -name '*.lede' -not -path '*/as-written/*' -print0 | xargs -0 node packages/cli/src/cli.ts check",
+    "commitlint": "commitlint"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.5.3",
+    "@commitlint/config-conventional": "^20.5.3",
+    "@lede-lang/core": "workspace:*",
+    "@lede-lang/html": "workspace:*",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/exec": "^7.1.0",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.6",
+    "@types/node": "^22.10.0",
+    "conventional-changelog-conventionalcommits": "^9.3.1",
+    "oxfmt": "^0.73.0",
+    "oxlint": "^1.89.0",
+    "oxlint-tsgolint": "^7.0.2004",
+    "semantic-release": "^25.0.9",
+    "semantic-release-unsquash": "^0.4.0",
+    "typescript": "^5.9.3"
+  }
+}

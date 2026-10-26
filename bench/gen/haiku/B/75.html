@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Course portal single sign-on</title>
+<style>
+:root{--bg:#f6f5f1;--fg:#1c1c1a;--muted:#5f5d57;--card:#ffffff;--line:#d8d5cb;--accent:#1d5c74;--accent-bg:#e4eff3;--warn:#8c2a1c;--warn-bg:#fbe9e5}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#131416;--fg:#ebeae6;--muted:#a4a29b;--card:#1d1f22;--line:#3a3c38;--accent:#86c3da;--accent-bg:#1c2d35;--warn:#f2a797;--warn-bg:#3b211c}}
+:root[data-theme="dark"]{--bg:#131416;--fg:#ebeae6;--muted:#a4a29b;--card:#1d1f22;--line:#3a3c38;--accent:#86c3da;--accent-bg:#1c2d35;--warn:#f2a797;--warn-bg:#3b211c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+main{max-width:820px;margin:0 auto;padding:24px 16px 56px}
+header{border-bottom:2px solid var(--fg);padding-bottom:14px;margin-bottom:6px}
+h1{font-size:1.65rem;line-height:1.2;margin:0 0 6px}
+h2{font-size:1.15rem;margin:34px 0 10px;padding-top:4px}
+p{margin:0 0 12px}
+.meta{color:var(--muted);font-size:.9rem;margin:0}
+.note{color:var(--muted);font-size:.9rem}
+.wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.8rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+.steps{list-style:none;margin:0;padding:0}
+.steps li{display:grid;grid-template-columns:30px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.steps .n{width:30px;height:30px;border-radius:50%;background:var(--accent-bg);color:var(--accent);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.85rem}
+.from,.to{font-weight:600}
+.msg{color:var(--muted);font-size:.95rem;margin-top:2px}
+.callout{border-left:6px solid var(--warn);background:var(--warn-bg);color:var(--warn);padding:14px 16px;border-radius:6px;font-weight:700;margin:14px 0}
+.rules{margin:0;padding-left:20px}
+.rules li{margin-bottom:8px}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>Course portal single sign-on</h1>
+<p class="meta">Kestrel Learning &middot; Platform team &middot; Version dated 2026-10-08</p>
+</header>
+
+<div class="callout">A one-time code expires 60 seconds after it is issued, and it works only once.</div>
+
+<h2>Sign-in sequence</h2>
+<p class="note">Six parties: Browser, Course Portal, Identity Provider, Token Service, User Directory, Audit Log.</p>
+<ol class="steps">
+  <li><span class="n">1</span><div><span class="from">Browser</span> &rarr; <span class="to">Course Portal</span><div class="msg">open /courses</div></div></li>
+  <li><span class="n">2</span><div><span class="from">Course Portal</span> &rarr; <span class="to">Browser</span><div class="msg">redirect to Identity Provider</div></div></li>
+  <li><span class="n">3</span><div><span class="from">Browser</span> &rarr; <span class="to">Identity Provider</span><div class="msg">authorization request with PKCE</div></div></li>
+  <li><span class="n">4</span><div><span class="from">Identity Provider</span> &rarr; <span class="to">User Directory</span><div class="msg">verify credentials and groups</div></div></li>
+  <li><span class="n">5</span><div><span class="from">User Directory</span> &rarr; <span class="to">Identity Provider</span><div class="msg">verified, groups returned</div></div></li>
+  <li><span class="n">6</span><div><span class="from">Identity Provider</span> &rarr; <span class="to">Token Service</span><div class="msg">issue tokens</div></div></li>
+  <li><span class="n">7</span><div><span class="from">Token Service</span> &rarr; <span class="to">Identity Provider</span><div class="msg">tokens issued</div></div></li>
+  <li><span class="n">8</span><div><span class="from">Identity Provider</span> &rarr; <span class="to">Browser</span><div class="msg">redirect with one-time code</div></div></li>
+  <li><span class="n">9</span><div><span class="from">Browser</span> &rarr; <span class="to">Course Portal</span><div class="msg">one-time code</div></div></li>
+  <li><span class="n">10</span><div><span class="from">Course Portal</span> &rarr; <span class="to">Token Service</span><div class="msg">exchange code for tokens</div></div></li>
+  <li><span class="n">11</span><div><span class="from">Token Service</span> &rarr; <span class="to">Audit Log</span><div class="msg">record sign-in</div></div></li>
+  <li><span class="n">12</span><div><span class="from">Course Portal</span> &rarr; <span class="to">Browser</span><div class="msg">session cookie, 24 hours</div></div></li>
+</ol>
+
+<h2>Token lifetimes</h2>
+<div class="wrap">
+<table>
+  <thead><tr><th>Token or credential</th><th>Lifetime</th></tr></thead>
+  <tbody>
+    <tr><td>One-time code</td><td>60 seconds</td></tr>
+    <tr><td>ID token</td><td>10 minutes</td></tr>
+    <tr><td>Access token</td><td>30 minutes</td></tr>
+    <tr><td>Refresh token</td><td>8 hours</td></tr>
+    <tr><td>Session cookie</td><td>24 hours</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Rules</h2>
+<ul class="rules">
+  <li>Staff accounts must pass MFA.</li>
+  <li>A one-time code can be used once only.</li>
+  <li>Sign-in events are kept for 400 days.</li>
+</ul>
+</main>
+</body>
+</html>

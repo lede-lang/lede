@@ -1,0 +1,8 @@
+```ts
+  const a = 1;
+    nested();
+```
+```=html
+<div class="x">raw <b>html</b></div>
+```
+html: <span>inline html</span>

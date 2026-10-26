@@ -1,0 +1,22 @@
+@title 2026 Revenue by Region
+@subtitle January to September, thousands of dollars
+@author Finance, Vantage Outdoor Gear
+
+kpi Year-to-date revenue | $13,567K
+kpi Best month | $1,712K | September
+kpi APAC growth | 44.8% | Jan to Sep | good
+kpi Americas share | 45.2% | of YTD revenue
+
+## Monthly revenue
+data rev = month,EMEA,APAC,Americas,Total; Jan,412,288,620,1320; Feb,398,301,595,1294; Mar,455,322,648,1425; Apr,471,315,671,1457; May,503,344,702,1549; Jun,528,368,735,1631; Jul,497,390,718,1605; Aug,482,402,690,1574; Sep,541,417,754,1712
+chart line rev x=month y=EMEA,APAC,Americas unit=K$ title="Monthly revenue by region ($K)"
+
+## Revenue table
+table rev title="Monthly revenue ($K)"
+
+## Highlights
+- APAC was the fastest-growing region, up 44.8% from January to September.
+- EMEA dipped in July and August because of the summer sales holiday.
+- September was the record month at $1,712K.
+
+! Figures are unaudited and exclude the wholesale channel.

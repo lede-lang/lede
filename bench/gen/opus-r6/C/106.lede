@@ -1,0 +1,40 @@
+@title Route 9 Corridor Decision
+@subtitle Riverbend Transportation Department, for the City Council vote on 2026-12-02
+@date 2026-12-02
+
+!!! Decision needed on 2026-12-02: approve bus rapid transit. The federal grant (up to 50% of capital cost) is due 2027-01-31 and requires a council-approved option.
+
+# Options
+cards
+### Enhanced bus
+More frequent buses and signal priority at lights.
+- Capital cost: $85M
+- Build time: 2 years
+- Weekday riders by 2035: 14,000
+- Operating cost: $22M a year
+### Bus rapid transit (recommended)
+Dedicated lanes and stations.
+- Capital cost: $310M
+- Build time: 4 years
+- Weekday riders by 2035: 26,000
+- Operating cost: $31M a year
+### Light rail
+Rail line with stations.
+- Capital cost: $940M
+- Build time: 8 years
+- Weekday riders by 2035: 38,000
+- Operating cost: $44M a year
+
+# Capital cost per rider
+data perrider = option,cost per rider; Enhanced bus,6100; Bus rapid transit,11900; Light rail,24700
+chart hbar perrider unit=$ focus="Bus rapid transit" title="Capital cost per weekday rider"
+
+# Trade-offs
+- **Enhanced bus** is cheap and fast to deliver, but carries the fewest riders and buses still share congested lanes.
+- **Bus rapid transit** is the middle path, and could be upgraded to rail later.
+- **Light rail** carries the most riders and attracts development, but takes 8 years, and the city could not fund its share without a bond measure.
+
+# Recommendation
+The department recommends **bus rapid transit**: 26,000 weekday riders for $310M, delivered in 4 years, with a path to rail later.
+
+!! The council must approve bus rapid transit on 2026-12-02 so the department can apply for the federal grant by 2027-01-31.

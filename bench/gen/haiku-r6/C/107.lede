@@ -1,0 +1,41 @@
+@title Spring 2027 Fundraiser Choice
+@subtitle Decision page for the board, 2026-11-17
+@author Priya Venkataraman, Development Director
+
+The goal is to net at least $100,000.
+
+## Options
+cards
+### Spring gala
+- Net revenue: $120,000 to $180,000
+- Up-front cost: $60,000
+- Effort: about 400 staff and volunteer hours
+- Main risk: depends on a few large sponsors
+
+### Family walkathon
+- Net revenue: $70,000 to $110,000
+- Up-front cost: $25,000
+- Effort: about 250 hours
+- Main risk: weather on the day
+
+### Online giving campaign
+- Net revenue: $40,000 to $95,000
+- Up-front cost: $8,000
+- Effort: about 120 hours
+- Main risk: results depend on social media reach
+
+## Net revenue range
+data net = option,low,high; Spring gala,120000,180000; Family walkathon,70000,110000; Online giving campaign,40000,95000
+chart range net from=low to=high bands=100000 title="Net revenue range, USD, against the 100000 goal"
+
+The gala's whole range stays above the goal. The walkathon reaches the goal only near the top of its range, and the online campaign never reaches it on its own.
+
+## Risks
+- Spring gala: concentration in a few large sponsors.
+- Family walkathon: weather on the day.
+- Online giving campaign: social media reach.
+
+## Recommendation
+Choose the spring gala, with the online giving campaign as a low-cost add-on. The gala is the only option whose whole range stays above the goal, but it needs the most money up front and the most effort.
+
+!! The board must approve the $60,000 gala budget on 2026-11-17 for a gala date of 2027-04-24.

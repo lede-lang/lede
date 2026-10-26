@@ -1,0 +1,23 @@
+@title 2026 Engagement Survey Results
+@subtitle People Ops at Hollow Creek Software, survey closed 2026-09-26
+
+kpi Response rate | 87% | 412 of 474 employees
+kpi Overall engagement | 74% | favorable
+kpi eNPS | 31 | 2026 survey
+
+# Results by question
+
+data survey = question,Favorable 2025,Favorable 2026; I understand our strategy,61,72; My manager supports my growth,70,76; I have the tools to do my job,64,59; Workload is sustainable,52,48; I would recommend working here,73,79; Decisions are communicated well,49,58
+
+chart hbar survey y="Favorable 2025,Favorable 2026" unit=% title="Percent favorable, 2025 vs 2026"
+
+# By department
+
+table = Department,Responses,Response rate,Engagement; Engineering,168,89 percent,71 percent; Sales,92,81 percent,77 percent; Support,74,90 percent,69 percent; Operations,48,86 percent,80 percent; G&A,30,88 percent,83 percent
+
+# Focus areas
+
+- Tools fell from 64% to 59% favorable.
+- Workload sustainability fell from 52% to 48% favorable.
+
+! Support has the lowest engagement at 69%. A listening session is set for 2026-10-28.

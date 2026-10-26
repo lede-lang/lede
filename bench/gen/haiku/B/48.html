@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Return Decisions</title>
+<style>
+:root{--bg:#f4f5f7;--card:#ffffff;--fg:#1b1f26;--muted:#5b6370;--line:#d9dee6;--accent:#2a56c6;--good:#17794a;--goodbg:#e2f4ea;--warn:#8a5200;--warnbg:#fcf0d9;--bad:#b3261e;--badbg:#fbe3e0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0f1115;--card:#181b21;--fg:#e6e9ef;--muted:#9aa3b0;--line:#2b313b;--accent:#8fb0ff;--good:#62d39b;--goodbg:#15301f;--warn:#f0b35c;--warnbg:#36290f;--bad:#ff8b82;--badbg:#3b1a18}}
+:root[data-theme="dark"]{--bg:#0f1115;--card:#181b21;--fg:#e6e9ef;--muted:#9aa3b0;--line:#2b313b;--accent:#8fb0ff;--good:#62d39b;--goodbg:#15301f;--warn:#f0b35c;--warnbg:#36290f;--bad:#ff8b82;--badbg:#3b1a18}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:1.6rem;line-height:1.2;margin:0 0 6px}
+h2{font-size:1.15rem;margin:34px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+p.sub{color:var(--muted);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.callout{border-left:4px solid var(--warn);background:var(--warnbg);padding:12px 14px;border-radius:8px;margin:14px 0}
+.tbl{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tbl th,.tbl td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top;font-size:.94rem}
+.tbl th{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.tbl tr:last-child td{border-bottom:0}
+.scroll{overflow-x:auto}
+.scroll .tbl{min-width:420px}
+svg{display:block;width:100%;max-width:460px;height:auto;margin:0 auto}
+svg .box{fill:var(--card);stroke:var(--muted);stroke-width:1.2}
+svg .dec{stroke:var(--accent);stroke-width:1.8}
+svg text{fill:var(--fg);font-size:14px}
+svg .lbl{font-size:12px;paint-order:stroke;stroke:var(--bg);stroke-width:4px;stroke-linejoin:round}
+svg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .arr{fill:var(--muted)}
+ul{padding-left:20px}
+li{margin:6px 0}
+@media (max-width:560px){.tbl th,.tbl td{padding:7px 6px;font-size:.88rem}.wrap{padding:18px 14px 40px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>How a return request gets decided</h1>
+<p class="sub">Greenmoor Apparel customer care &middot; current as of 2026-10-12</p>
+
+<h2>Decision flow</h2>
+<div class="card">
+<svg viewBox="0 0 460 830" role="img" aria-label="Flowchart of the return decision: 30-day window, final-sale check, warehouse inspection, value threshold and refund paths">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arr"/></marker></defs>
+
+  <rect class="box" x="20" y="20" width="240" height="50" rx="8"/>
+  <text x="140" y="49" text-anchor="middle">Return requested</text>
+
+  <rect class="box dec" x="20" y="110" width="240" height="52" rx="8"/>
+  <text x="140" y="140" text-anchor="middle">Within 30 days of delivery?</text>
+  <rect class="box" x="290" y="110" width="150" height="52" rx="8"/>
+  <text x="365" y="140" text-anchor="middle">Decline return</text>
+
+  <rect class="box dec" x="20" y="200" width="240" height="52" rx="8"/>
+  <text x="140" y="230" text-anchor="middle">Final-sale item?</text>
+
+  <rect class="box" x="20" y="290" width="240" height="52" rx="8"/>
+  <text x="140" y="320" text-anchor="middle">Issue prepaid label</text>
+
+  <rect class="box" x="20" y="380" width="240" height="52" rx="8"/>
+  <text x="140" y="410" text-anchor="middle">Item received at warehouse</text>
+
+  <rect class="box dec" x="20" y="470" width="240" height="52" rx="8"/>
+  <text x="140" y="500" text-anchor="middle">Inspection passes?</text>
+  <rect class="box" x="290" y="470" width="150" height="52" rx="8"/>
+  <text x="365" y="492" text-anchor="middle">Offer store credit</text>
+  <text x="365" y="508" text-anchor="middle">at 50 percent</text>
+
+  <rect class="box dec" x="20" y="560" width="240" height="52" rx="8"/>
+  <text x="140" y="590" text-anchor="middle">Order value over 200 dollars?</text>
+
+  <rect class="box" x="20" y="650" width="240" height="52" rx="8"/>
+  <text x="140" y="680" text-anchor="middle">Returns Lead review</text>
+
+  <rect class="box" x="20" y="740" width="240" height="52" rx="8"/>
+  <text x="140" y="770" text-anchor="middle">Refund to original payment</text>
+
+  <line class="ln" x1="140" y1="70" x2="140" y2="110" marker-end="url(#ah)"/>
+  <line class="ln" x1="260" y1="136" x2="290" y2="136" marker-end="url(#ah)"/>
+  <text class="lbl" x="275" y="128" text-anchor="middle">no</text>
+  <line class="ln" x1="140" y1="162" x2="140" y2="200" marker-end="url(#ah)"/>
+  <text class="lbl" x="148" y="186">yes</text>
+  <line class="ln" x1="140" y1="252" x2="140" y2="290" marker-end="url(#ah)"/>
+  <text class="lbl" x="148" y="276">no</text>
+  <path class="ln" d="M260,226 L365,226 L365,162" marker-end="url(#ah)"/>
+  <text class="lbl" x="300" y="220" text-anchor="middle">yes</text>
+  <line class="ln" x1="140" y1="342" x2="140" y2="380" marker-end="url(#ah)"/>
+  <line class="ln" x1="140" y1="432" x2="140" y2="470" marker-end="url(#ah)"/>
+  <line class="ln" x1="260" y1="496" x2="290" y2="496" marker-end="url(#ah)"/>
+  <text class="lbl" x="275" y="488" text-anchor="middle">fail</text>
+  <line class="ln" x1="140" y1="522" x2="140" y2="560" marker-end="url(#ah)"/>
+  <text class="lbl" x="148" y="546">pass</text>
+  <line class="ln" x1="140" y1="612" x2="140" y2="650" marker-end="url(#ah)"/>
+  <text class="lbl" x="148" y="636">yes</text>
+  <path class="ln" d="M260,586 L275,586 L275,766 L260,766" marker-end="url(#ah)"/>
+  <text class="lbl" x="282" y="676">no</text>
+  <line class="ln" x1="140" y1="702" x2="140" y2="740" marker-end="url(#ah)"/>
+  <text class="lbl" x="148" y="724">approved</text>
+</svg>
+</div>
+
+<h2>Service levels</h2>
+<div class="scroll">
+<table class="tbl">
+  <thead><tr><th>Step</th><th>Target</th></tr></thead>
+  <tbody>
+    <tr><td>Label issued</td><td>Within 1 business hour of request</td></tr>
+    <tr><td>Item inspection</td><td>Within 2 business days of arrival</td></tr>
+    <tr><td>Refund posted</td><td>Within 3 business days of inspection</td></tr>
+    <tr><td>Returns Lead review</td><td>Within 1 business day</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Exceptions</h2>
+<ul>
+  <li>Damaged-on-arrival items skip the 30-day check and the final-sale check.</li>
+  <li>Gift returns always get store credit.</li>
+  <li>Customers with more than 4 returns in 90 days are routed to the Returns Lead.</li>
+</ul>
+</div>
+</body>
+</html>

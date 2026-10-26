@@ -1,0 +1,44 @@
+@title Release candidate bug triage
+@subtitle 10 open bugs, to be sorted into Must fix, Should fix or Defer before Friday
+@width wide
+
+!! Release policy: crashes and data loss cannot be deferred. B-101 (save corruption) and B-106 (crash on launch) are Must fix before anything else is discussed.
+
+kpi Open bugs | 10 | all unsorted
+kpi Locked as Must fix | 2 | by policy | bad
+kpi Left to decide | 8
+kpi Reports in total | 937
+
+## All bugs, unsorted
+
+data bugs = id,title,severity,platform,reports; B-101,Save corrupts after level 40,Critical,All,212; B-102,"Undo greyed out after hint, then Retry",Major,iOS,87; B-103,Typo: 'Congradulations' on win screen,Minor,All,15; B-104,"Music stops, resumes only after restart; headphones unplugged",Major,Android,143; B-105,Daily puzzle shows yesterday's date in UTC+13,Major,All,9; B-106,"Crash on launch, iPad Mini 4",Critical,iOS,31; B-107,Colour-blind mode: red/green tiles identical,Major,All,66; B-108,Leaderboard slow (>8s) with 1000+ friends,Minor,Android,22; B-109,"Settings; Sound toggle resets on update",Minor,All,48; B-110,Achievement 'Speed Run' unlockable by pausing,Minor,All,304
+
+table bugs bar=reports title="Open bugs by report count"
+
+chart hbar bugs x=id y=reports labels title="Reports per bug"
+
+## What the data says
+
+- B-110 has the second-highest report count (304) but is only Minor. Reports alone would push it up; severity pulls it down. This is the one to argue about.
+- B-104 (143 reports, Android) and B-102 (87 reports, iOS) are the Major bugs most players are hitting.
+- B-107 has few reports (66) but is an accessibility failure: players cannot tell tiles apart.
+- B-105 has the fewest reports (9) and only affects UTC+13, but it is a wrong-date bug on every platform.
+- B-103 is a typo with 15 reports; it is cheap to fix and visible on the win screen.
+
+## Decision sheet
+
+Fill this in together. Order inside each group is the order you will fix them. Paste the result into the ticket tracker.
+
+```
+MUST FIX (in order)
+1. B-101  Save corrupts after level 40        note:
+2. B-106  Crash on launch, iPad Mini 4        note:
+
+SHOULD FIX (in order)
+1.
+
+DEFER
+1.
+```
+
+! Unsorted bugs to place: B-102, B-103, B-104, B-105, B-107, B-108, B-109, B-110.

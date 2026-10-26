@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Observability Stack 2027</title>
+<style>
+:root{--bg:#f5f6f8;--surface:#fff;--text:#1a1f29;--muted:#5f6878;--border:#dce0e7;--accent:#b8661a;--c1:#7a4fc9;--c2:#d4691f;--c3:#2a8a8a;--note-bg:#eef3fb;--note-border:#4a78c2;--rec-bg:#fdf3e8}
+@media (prefers-color-scheme:dark){:root{--bg:#10131a;--surface:#191d26;--text:#e4e7ee;--muted:#9aa2b2;--border:#2b313d;--accent:#f0a258;--c1:#a986ef;--c2:#f29a55;--c3:#55c4c4;--note-bg:#18233a;--note-border:#6c9ae0;--rec-bg:#2c2014}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:920px;margin:0 auto;padding:32px 16px 64px}
+.eyebrow{font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 0 6px}
+h1{font-size:clamp(26px,5vw,36px);line-height:1.15;margin:0 0 12px}
+.ctx{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 30px;padding:0;list-style:none}
+.ctx li{background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:4px 12px;font-size:14px}
+section{margin-bottom:34px}
+h2{font-size:21px;margin:0 0 14px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:640px}
+th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--border)}
+thead th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+tbody tr:last-child td,tbody tr:last-child th{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.small{display:block;font-size:13px;color:var(--muted)}
+.chart{padding:18px}
+svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin:0 0 8px;padding:0;list-style:none;font-size:14px}
+.legend i{display:inline-block;width:14px;height:4px;border-radius:2px;vertical-align:middle;margin-right:6px}
+.cap{color:var(--muted);font-size:14px;margin:8px 0 0}
+.pc{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.pc .panel{padding:14px 16px}
+.pc h3{margin:0 0 6px;font-size:17px}
+.pc h4{margin:10px 0 2px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.pc ul{margin:0;padding-left:20px}
+.rec{background:var(--rec-bg);border:1px solid var(--accent);border-radius:12px;padding:18px}
+.rec p{margin:0}
+.rec .big{font-size:20px;font-weight:700;margin-bottom:6px}
+.note{margin-top:14px;background:var(--note-bg);border-left:5px solid var(--note-border);border-radius:8px;padding:12px 16px}
+.note strong{display:block}
+.note ul{margin:4px 0 0;padding-left:20px}
+</style>
+</head>
+<body>
+<main>
+<p class="eyebrow">Copperleaf Insurance · SRE</p>
+<h1>Choosing an observability stack for 2027</h1>
+<ul class="ctx" aria-label="Current footprint">
+<li>340 hosts</li><li>~2.1 TB logs per month</li><li>14 engineers on call</li>
+</ul>
+
+<section>
+<h2>Comparison table</h2>
+<div class="panel table-wrap">
+<table>
+<thead><tr><th>Option</th><th>Setup effort</th><th>Alerting</th><th>Log search</th><th>Lock-in</th><th class="num">Annual cost</th></tr></thead>
+<tbody>
+<tr><th scope="row">Datadog</th><td>Low</td><td>Excellent</td><td>Excellent</td><td>High</td><td class="num">$412,000</td></tr>
+<tr><th scope="row">Grafana Cloud</th><td>Low</td><td>Good</td><td>Good</td><td>Medium</td><td class="num">$236,000</td></tr>
+<tr><th scope="row">Self-hosted<span class="small">Prometheus, Loki, Grafana on our Kubernetes</span></th><td>High</td><td>Good</td><td>Fair</td><td>Low</td><td class="num">$148,000<span class="small">plus 1.5 engineers</span></td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section>
+<h2>Three-year cost</h2>
+<div class="panel chart">
+<ul class="legend">
+<li><i style="background:var(--c1)"></i>Datadog</li>
+<li><i style="background:var(--c2)"></i>Grafana Cloud</li>
+<li><i style="background:var(--c3)"></i>Self-hosted (incl. staff time)</li>
+</ul>
+<svg viewBox="0 0 640 310" role="img" aria-label="Line chart of cumulative cost in thousands of dollars. Datadog 412, 865, 1363. Grafana Cloud 236, 496, 782. Self-hosted including staff time 418, 706, 1004, for 2027 to 2029.">
+<g stroke="var(--border)" stroke-width="1">
+<line x1="60" y1="270" x2="500" y2="270"/><line x1="60" y1="210" x2="500" y2="210"/><line x1="60" y1="150" x2="500" y2="150"/><line x1="60" y1="90" x2="500" y2="90"/><line x1="60" y1="30" x2="500" y2="30"/>
+</g>
+<g fill="var(--muted)" font-size="12" text-anchor="end">
+<text x="52" y="274">$0</text><text x="52" y="214">$350K</text><text x="52" y="154">$700K</text><text x="52" y="94">$1.05M</text><text x="52" y="34">$1.4M</text>
+</g>
+<g fill="var(--muted)" font-size="13" text-anchor="middle">
+<text x="100" y="294">2027</text><text x="280" y="294">2028</text><text x="460" y="294">2029</text>
+</g>
+<g fill="none" stroke-width="3" stroke-linejoin="round">
+<polyline stroke="var(--c1)" points="100,199.37 280,121.71 460,36.34"/>
+<polyline stroke="var(--c2)" points="100,229.54 280,184.97 460,135.94"/>
+<polyline stroke="var(--c3)" points="100,198.34 280,148.97 460,97.89"/>
+</g>
+<g stroke="var(--surface)" stroke-width="2">
+<circle cx="100" cy="199.37" r="5" fill="var(--c1)"/><circle cx="280" cy="121.71" r="5" fill="var(--c1)"/><circle cx="460" cy="36.34" r="5" fill="var(--c1)"/>
+<circle cx="100" cy="229.54" r="5" fill="var(--c2)"/><circle cx="280" cy="184.97" r="5" fill="var(--c2)"/><circle cx="460" cy="135.94" r="5" fill="var(--c2)"/>
+<circle cx="100" cy="198.34" r="5" fill="var(--c3)"/><circle cx="280" cy="148.97" r="5" fill="var(--c3)"/><circle cx="460" cy="97.89" r="5" fill="var(--c3)"/>
+</g>
+<g font-size="13" font-weight="600">
+<text x="472" y="40" fill="var(--c1)">Datadog $1,363K</text>
+<text x="472" y="102" fill="var(--c3)">Self-hosted $1,004K</text>
+<text x="472" y="140" fill="var(--c2)">Grafana $782K</text>
+</g>
+<g font-size="12" fill="var(--muted)" text-anchor="middle">
+<text x="280" y="113">$865K</text><text x="280" y="140">$706K</text><text x="280" y="203">$496K</text>
+<text x="100" y="186">$412K / $418K</text><text x="100" y="250">$236K</text>
+</g>
+</svg>
+<p class="cap">Cumulative cost in thousands of dollars. Self-hosted includes staff time for 1.5 engineers.</p>
+</div>
+</section>
+
+<section>
+<h2>Pros and cons</h2>
+<div class="pc">
+<div class="panel"><h3>Datadog</h3>
+<h4>Pros</h4><ul><li>Lowest setup effort</li><li>Excellent alerting and log search</li></ul>
+<h4>Cons</h4><ul><li>Most expensive: $1.36M over three years</li><li>High lock-in</li></ul></div>
+<div class="panel"><h3>Grafana Cloud</h3>
+<h4>Pros</h4><ul><li>Low setup effort</li><li>Cheapest over three years</li><li>Dashboards stay portable</li></ul>
+<h4>Cons</h4><ul><li>Alerting and log search are good, not excellent</li><li>Medium lock-in</li></ul></div>
+<div class="panel"><h3>Self-hosted</h3>
+<h4>Pros</h4><ul><li>Lowest license cost</li><li>Low lock-in</li></ul>
+<h4>Cons</h4><ul><li>High setup effort and needs 1.5 engineers</li><li>Fair log search only</li></ul></div>
+</div>
+</section>
+
+<section>
+<h2>Recommendation</h2>
+<div class="rec">
+<p class="big">Choose Grafana Cloud.</p>
+<p>It is the cheapest option once staff time is counted ($782K over three years against $1,004K self-hosted and $1,363K for Datadog), and it keeps our dashboards portable.</p>
+</div>
+<div class="note" role="note">
+<strong>Note</strong>
+<ul>
+<li>The Datadog quote expires on 2026-11-30.</li>
+<li>The Self-hosted figures assume we can hire 1.5 engineers. That hire is not yet approved.</li>
+</ul>
+</div>
+</section>
+</main>
+</body>
+</html>

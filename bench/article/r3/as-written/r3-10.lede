@@ -1,0 +1,117 @@
+@title How a Water-Damage Claim Moves Through the Company
+@subtitle Where claims wait, where we redo work, and what the rework costs. Source: Q3 claims operations dashboard.
+@author Operations Analysis
+
+A homeowner's water-damage claim (a burst pipe, a leaking roof) passes through ten steps, and each step belongs to a different team. The waiting comes from hand-offs between teams, from homeowners who have to be home for an inspection, and from contractor estimates that disagree. This page shows the path a claim takes, how long each step takes, and what it costs us when a claim has to be sent back and done again.
+
+# The words you will see
+
+table = term,what it means; First notice of loss (FNOL),"The customer's first report that damage happened, by phone, app, or through their agent."; Coverage check,"Confirming the policy was active and covers this kind of loss. A lapsed policy (premium unpaid) or a “non-owner occupied” one (the owner does not live there, for example a rental) needs extra review."; Adjuster,"The employee who decides what we owe. Field adjusters visit the home; desk adjusters work from reports, photos and contractor quotes."; Estimate & scope,"The written list of what must be repaired (the scope) and what it will cost (the estimate)."; Supervisor approval,"A second sign-off, required when the payout would be more than $10,000."; Fraud screen,"A check for signs of a false or inflated claim. Suspicious claims go to Special investigations for a full review."; Mitigation,"Emergency work to stop the damage getting worse, such as pumping out water and drying the structure, done by outside vendors."; Sent back (rework),"A claim returned to an earlier step because something was missing or wrong. Every send-back costs staff time a second time."; Reopened,"A claim we closed that the customer comes back to, here within 90 days."; Median,"The middle claim: half of claims finish the step faster than this, half take longer."; 90th percentile (90th pct),"The slow tail: 9 in 10 claims finish the step within this time, and 1 in 10 takes longer."
+
+kpi Claims reported in Q3 | 4,812 | all enter at first notice of loss
+kpi Send-backs | about 1,725 | estimate from the Sent Back (%) column | neutral
+kpi Rework cost | about $366,000 | 1,725 loops x $212 of staff time | bad
+kpi Reopened within 90 days | 22% | of closed claims | bad
+
+# The path of a claim
+
+Every claim follows the main line from first notice of loss to closure. Three things branch off it: claims over $10,000 take a supervisor detour, a few claims are referred for a full fraud review, and urgent claims get a mitigation vendor in parallel with the inspection. The dashed lines into **Sent back for rework** are the claims returned to an earlier step; the three biggest sources are shown, with the share of claims entering that step that get sent back.
+
+diagram path dir=LR title="Path of a homeowner water-damage claim"
+path: cust "Homeowner" user
+path: fnol "First notice of loss" team "Contact center"
+path: cov "Coverage check" team "Policy services"
+path: assign "Assign adjuster" team "Dispatch"
+path: field "Field inspection" team "Field adjusters"
+path: est "Estimate & scope" team "Desk adjusters" focus
+path: big "Over $10,000?" decision
+path: sup "Supervisor approval" team "Claims supervisors"
+path: fraud "Fraud screen" team "Special investigations"
+path: si "Full fraud review" team "187 claims (3.9%)"
+path: pay "Payment issued" team "Finance"
+path: close "Closure & survey" team "Claims admin"
+path: mit "Mitigation vendor dispatch" ext "Vendor mgmt"
+path: rework "Sent back for rework" queue focus
+path: cust -> fnol : reports loss
+path: fnol -> cov -> assign -> field -> est -> big
+path: big -> sup : yes
+path: big -> fraud : no
+path: sup -> fraud
+path: fraud -> pay -> close
+path: fraud --> si : referral
+path: assign --> mit : urgent only
+path: cov --> rework : 6.8%
+path: field --> rework : 9.4%
+path: est --> rework : 14.7%
+path: legend
+
+# How long each step takes
+
+Two numbers per step. The **median** is the typical claim. The **90th percentile** is the slow tail: the wait that 1 claim in 10 exceeds at that step.
+
+chart hbar times y=median,slow tail unit=d labels title="Days per step: median (typical) vs 90th percentile (slow tail)"
+
+!! Do not add up the Median column and call it the wait. Medians do not add into a median for the whole claim, and nobody experiences the typical time at every step. Adding the medians gives about 10 days from first notice to payment for a claim under $10,000 (about 12 with supervisor approval, about 14 to 16 through closure). A claim that lands in the slow tail at just three steps (field inspection 11.5 days, supervisor approval 9.8, estimate and scope 7.1) can wait about 28 days. Percentiles cannot be added at all; that example only shows how fast the tails stack up.
+
+Customers feel the tail. Satisfaction is 71 for claims finished in under 14 days and 38 for claims that take more than 30 days.
+
+data csat = group,satisfaction score; Under 14 days,71; Over 30 days,38
+
+chart bar csat y=satisfaction score labels title="Customer satisfaction by total claim time (score)"
+
+## Every step, in order
+
+data flow = step,team,median days (typical),90th pct days (slow tail),claims entering,sent back,notes; First notice of loss,Contact center,0.1,0.4,"4,812",3.1%,"Phone 61%, app 33%, agent 6%"
+data flow += Coverage check,Policy services,0.9,3.2,"4,812",6.8%,Lapsed or “non-owner occupied” policies get stuck here
+data flow += Assign adjuster,Dispatch,1.4,6.0,"4,483",1.2%,Backlog after the Sept 11 storm
+data flow += Field inspection,Field adjusters,3.8,11.5,"4,429",9.4%,"Needs homeowner's availability; reschedules count"
+data flow += Estimate & scope,Desk adjusters,2.2,7.1,"4,012",14.7%,"Biggest rework; contractor estimates disagree"
+data flow += "Supervisor approval (> $10,000)",Claims supervisors,1.9,9.8,"1,206",5.5%,"Under $10,000 skips this step"
+data flow += Fraud screen,Special investigations,0.6,2.0,"4,012",2.3%,187 referred for full review (3.9%)
+data flow += Payment issued,Finance,1.1,2.7,"3,794",0.8%,Checks vs. direct deposit: 44% / 56%
+data flow += Mitigation vendor dispatch,Vendor mgmt,0.7,1.9,"2,950",,Runs in parallel with inspection for urgent cases
+data flow += Closure & survey,Claims admin,4.0,14.0,"3,794",0%,Survey response rate 17%
+
+table flow title="Q3 claims operations dashboard, by step"
+
+# Where claims wait
+
+- **Closure & survey** has the longest slow tail (14.0 days) and a 4.0-day median, but it comes after payment, so it does not delay the customer's money.
+- **Field inspection** is the longest wait before payment: 3.8 days typical, 11.5 in the slow tail. It depends on the homeowner being available, and reschedules count.
+- **Supervisor approval** has the widest gap between typical and slow: 1.9 days against 9.8, roughly five times. It applies to the 1,206 claims over $10,000, about 30% of the 4,012 that reach estimate and scope.
+- **Assign adjuster** goes from 1.4 days to 6.0 in the tail. The dashboard notes a backlog after the Sept 11 storm.
+- Across all ten steps the slow tail is between about 2.5 and 5 times the median, so every step has a long tail, not just the obvious ones.
+
+# Where we pay twice
+
+Each time a claim is sent back, someone does the work again. One rework loop costs about $212 in staff time. Multiplying each step's claims entering by its sent-back share gives the estimate below. It counts one loop per send-back, so a claim sent back twice would count twice.
+
+data rework = step,cost; Estimate & scope,125000; Field inspection,88300; Coverage check,69400; First notice of loss,31600; Fraud screen,19600; Supervisor approval,14100; Assign adjuster,11400; Payment issued,6400
+
+chart hbar rework unit=$ labels title="Estimated rework cost per quarter, by step"
+
+table = step,claims entering,sent back,send-backs (est.),cost (est.); Estimate & scope,"4,012",14.7%,590,"$125,000"; Field inspection,"4,429",9.4%,416,"$88,300"; Coverage check,"4,812",6.8%,327,"$69,400"; First notice of loss,"4,812",3.1%,149,"$31,600"; Fraud screen,"4,012",2.3%,92,"$19,600"; Supervisor approval,"1,206",5.5%,66,"$14,100"; Assign adjuster,"4,483",1.2%,54,"$11,400"; Payment issued,"3,794",0.8%,30,"$6,400"; **Total (rounded)**,,,**about 1,725**,**about $366,000**
+
+! Estimate and scope alone accounts for roughly a third of the rework cost (about $125,000 of $366,000), and the notes say why: contractor estimates disagree.
+
+The $366,000 is staff time only. It does not include the cost of the 22% of claims that are reopened within 90 days. If that 22% applies to the 3,794 claims that reach closure, that is roughly 835 reopened claims, and the dashboard gives no cost for them.
+
+# What a claim is worth
+
+The average claim paid is $14,238.60, but the median is $7,905. A few large claims pull the average up; the typical claim is under the $10,000 line and never needs a supervisor.
+
+# What you can do something about
+
+1. **Estimate & scope.** The biggest send-back rate (14.7%) and the biggest rework bill (about $125,000 a quarter). Ask why contractor estimates disagree and whether a shared estimate format or a pre-approved contractor list would cut the loops.
+2. **Field inspection.** The longest typical wait before payment, and 9.4% of inspections are sent back (about $88,300). Scheduling with homeowners and reschedules are the lever.
+3. **Supervisor approval.** A 1.9-day typical wait that stretches to 9.8 days for 1 claim in 10. Look at queue coverage and at whether the $10,000 threshold is still the right line.
+4. **Coverage check.** 6.8% sent back, with lapsed and non-owner-occupied policies getting stuck. Earlier screening of those two cases would take pressure off the rest of the path.
+5. **Dispatch backlog.** The 6.0-day slow tail reflects the Sept 11 storm. Decide whether surge capacity is worth having before the next one.
+
+# What these numbers cannot tell us
+
+- 4,812 claims entered and 3,794 reached payment, a gap of 1,018. The dashboard does not say how many were denied, withdrawn, or still open at quarter end.
+- It does not say where a sent-back claim goes, only how many were sent back at each step. The dashed lines in the diagram show the loop, not the destination.
+- Fraud referrals: 187 claims went to full review, but the dashboard gives no time or outcome for that review.
+- Mitigation vendor dispatch has no sent-back figure, and 2,950 claims entered it, so it applies to a subset of claims.
+- Median, 90th percentile and send-back figures are per step. The dashboard does not give a median or 90th percentile for the whole claim.

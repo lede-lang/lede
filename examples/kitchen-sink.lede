@@ -1,0 +1,78 @@
+@title Payments platform review
+@subtitle Q3 2026 · prepared for the platform council
+@author Platform team
+@date 2026-10-01
+# Payments platform review
+
+kpi Uptime | 99.97% | +0.02 pts | good
+kpi p99 latency | 182 ms | -12% | good
+kpi Monthly cost | $41,200 | +8% | bad
+kpi Incidents | 3 | | down from 5
+
+## Architecture
+
+diagram aws dir=LR title="Production topology"
+aws: user "Customer" user
+aws: cf "CloudFront" ext
+aws: alb "Public ALB" lb
+aws: api "Payments API" svc "ECS · 6 tasks" focus
+aws: worker "Settlement worker" fn
+aws: q "settlement-q" queue
+aws: db "Orders DB" db "Aurora PG 16"
+aws: stripe "Stripe" ext
+aws: group pub "Public subnets" alb
+aws: group priv "Private subnets" api, worker, q, db
+aws: group vpc "VPC 10.20.0.0/16" pub, priv
+aws: group prod "Prod account 4411" vpc
+aws: user -> cf -> alb : https
+aws: alb -> api
+aws: api -> db : sql
+aws: api -> q : enqueue
+aws: q --> worker : poll
+aws: worker -> stripe : payout
+aws: stripe --> api : webhook
+
+## Login flow
+
+diagram login sequence title="OAuth login with PKCE"
+login: browser "Browser" user
+login: app "Web app" svc
+login: idp "Identity provider" ext
+login: browser -> app : GET /login
+login: app --> browser : 302 to IdP
+login: browser -> idp : authorize + code_challenge
+login: note idp : user signs in with MFA
+login: idp --> browser : code
+login: browser -> app : code
+login: app -> idp : token + code_verifier
+login: idp --> app : id_token
+login: app -> app : create session
+
+## Traffic
+
+data traffic = month,EMEA,APAC,Americas; Jan,410,380,655; Feb,430,372,690; Mar,455,401,712; Apr,470,420,730; May,510,433,766; Jun,540,460,801
+data cost = service,USD; Compute,18400; "Database, Aurora",11200; Data transfer,6100; Observability,3900; Other,1600
+
+grid 2
+chart line traffic title="Requests per month (millions)"
+chart bar traffic y=EMEA,APAC stack title="EMEA + APAC, stacked"
+
+chart hbar cost unit=$ title="Monthly cost by service"
+table cost sort=-USD title="Cost detail"
+
+## Runbook
+
+1. Page the on-call in #payments-oncall.
+2. Freeze deploys with `deployctl freeze payments`.
+3. Check the **settlement-q** depth.
+- [x] Dashboards updated
+- [ ] Alarms reviewed
+
+!! Never replay webhooks by hand; use the replay tool.
+! Settlement runs at 02:00 UTC.
+
+> Make the common path fast and the rare path safe.
+> — Platform principles
+
+table = option,cost,latency,verdict; SQS,low,25 ms,**chosen**; Kafka,high,8 ms,overkill; RabbitMQ,medium,12 ms,ops burden
+\table stakes are high this quarter.

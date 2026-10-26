@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Copperline Cafe: Quarterly Results, Q4 2025 to Q3 2026</title>
+<style>
+:root{
+  --bg:#faf6f1; --surface:#ffffff; --ink:#2a211b; --muted:#6a5d52; --line:#e8dfd5;
+  --copper:#a2481c; --copper-soft:#f6e6da; --on-copper:#ffffff;
+  --c1:#8a6a52; --c2:#b99a7f; --c3:#d9c3ae; --profit:#2f7d57; --on-c1:#fff; --on-c2:#2a211b; --on-c3:#2a211b; --on-profit:#fff;
+  --up:#2f7d57;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#17120f; --surface:#211a15; --ink:#f1e9e1; --muted:#b0a296; --line:#352b23;
+    --copper:#e58a56; --copper-soft:#33211a; --on-copper:#1a0f09;
+    --c1:#8a6a52; --c2:#6a533f; --c3:#4a3a2d; --profit:#5cc08c; --on-c1:#fff; --on-c2:#f1e9e1; --on-c3:#f1e9e1; --on-profit:#07140d;
+    --up:#5cc08c;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 56px}
+header{padding:30px 0 4px}
+.eyebrow{font-size:.76rem;letter-spacing:.09em;text-transform:uppercase;color:var(--copper);font-weight:700;margin:0 0 6px}
+h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(1.85rem,7vw,2.7rem);line-height:1.12;margin:0 0 8px}
+.lede{color:var(--muted);margin:0}
+section{margin-top:36px}
+h2{font-family:Georgia,"Times New Roman",serif;font-size:1.4rem;margin:0 0 12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.hero{background:var(--copper);color:var(--on-copper);border-radius:16px;padding:20px}
+.hero .k{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;opacity:.9;font-weight:650}
+.hero .big{font-family:Georgia,serif;font-size:2.5rem;font-weight:700;line-height:1.1;margin:4px 0}
+.hero .s{font-size:.95rem;opacity:.95}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+.tile .k{font-size:.76rem;color:var(--muted);line-height:1.3}
+.tile .n{font-family:Georgia,serif;font-size:1.35rem;font-weight:700;margin-top:3px;line-height:1.15}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{background:var(--copper-soft);border-radius:99px;padding:4px 12px;font-size:.88rem}
+.chip b{color:var(--up)}
+.hint{font-size:.8rem;color:var(--muted);margin:0 0 8px}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:separate;border-spacing:0;width:100%;min-width:470px;font-size:.92rem;font-variant-numeric:tabular-nums}
+th,td{padding:9px 10px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+thead th{font-size:.76rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:700;background:var(--surface);line-height:1.25}
+thead th small{display:block;text-transform:none;letter-spacing:0;font-weight:500}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--surface);z-index:1;border-right:1px solid var(--line)}
+tbody th{font-weight:500;text-align:left}
+tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
+tr.sum th,tr.sum td{font-weight:700;background:var(--copper-soft)}
+tr.sum th:first-child{background:var(--copper-soft)}
+.share{margin-top:20px}
+.share h3{font-size:1rem;margin:0 0 4px}
+.share .sub{font-size:.85rem;color:var(--muted);margin:0 0 10px}
+.srow{display:grid;grid-template-columns:3.6rem 1fr;gap:8px;align-items:center;margin-bottom:8px}
+.srow .q{font-size:.85rem;font-weight:650}
+.stack{display:flex;height:34px;border-radius:7px;overflow:hidden}
+.stack span{flex:var(--v) 1 0;display:flex;align-items:center;justify-content:center;font-size:.76rem;font-weight:700;min-width:0}
+.s1{background:var(--c1);color:var(--on-c1)}
+.s2{background:var(--c2);color:var(--on-c2)}
+.s3{background:var(--c3);color:var(--on-c3)}
+.s4{background:var(--profit);color:var(--on-profit)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.8rem;color:var(--muted);margin:10px 0 0}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+svg.chart{display:block;width:100%;height:auto}
+svg.chart text{fill:var(--muted);font:12px system-ui,sans-serif}
+svg.chart .grid{stroke:var(--line);stroke-width:1}
+svg.chart .base{stroke:var(--muted);stroke-width:1}
+svg.chart .line{fill:none;stroke:var(--copper);stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+svg.chart .dot{fill:var(--surface);stroke:var(--copper);stroke-width:3}
+svg.chart .val{fill:var(--ink);font-weight:700;font-size:13px}
+.caption{font-size:.88rem;color:var(--muted);margin:10px 0 0}
+.notes{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.notes li{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--copper);border-radius:10px;padding:12px 14px}
+@media (max-width:440px){.tiles{grid-template-columns:1fr 1fr}.tiles .tile:last-child{grid-column:1 / -1}.hero .big{font-size:2.1rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Copperline Cafe, franchise owners</p>
+  <h1>Quarterly results: Q4 2025 to Q3 2026</h1>
+  <p class="lede">Fourteen locations, four quarters. All figures in US dollars.</p>
+</header>
+
+<section aria-labelledby="headline">
+  <h2 id="headline">Headline</h2>
+  <div class="hero">
+    <div class="k">Q3 2026 operating margin</div>
+    <div class="big">17.6%</div>
+    <div class="s">$375,000 operating profit on $2,134,000 of revenue, our best quarter of the last four.</div>
+  </div>
+  <div class="chips">
+    <span class="chip">Q3 revenue <b>+8.4%</b> on Q2</span>
+    <span class="chip">Q3 revenue <b>+15.9%</b> on Q4 2025</span>
+  </div>
+  <div class="tiles">
+    <div class="tile"><div class="k">Trailing four quarters, revenue</div><div class="n">$7,700,000</div></div>
+    <div class="tile"><div class="k">Trailing four quarters, operating profit</div><div class="n">$1,117,000</div></div>
+    <div class="tile"><div class="k">Trailing four quarters, margin</div><div class="n">14.5%</div></div>
+  </div>
+</section>
+
+<section aria-labelledby="quarterly">
+  <h2 id="quarterly">Quarterly results</h2>
+  <div class="card">
+    <p class="hint">Swipe the table sideways on a small screen. The row names stay in view.</p>
+    <div class="scroll" tabindex="0" role="region" aria-label="Quarterly results table, scrollable">
+      <table>
+        <thead>
+          <tr><th scope="col">Dollars</th><th scope="col">Q4 2025</th><th scope="col">Q1 2026</th><th scope="col">Q2 2026</th><th scope="col">Q3 2026<small>unaudited</small></th></tr>
+        </thead>
+        <tbody>
+          <tr class="sum"><th scope="row">Revenue</th><td>1,842,000</td><td>1,756,000</td><td>1,968,000</td><td>2,134,000</td></tr>
+          <tr><th scope="row">Cost of goods</th><td>589,000</td><td>561,000</td><td>618,000</td><td>662,000</td></tr>
+          <tr><th scope="row">Labor</th><td>612,000</td><td>598,000</td><td>631,000</td><td>676,000</td></tr>
+          <tr><th scope="row">Rent and other</th><td>398,000</td><td>405,000</td><td>412,000</td><td>421,000</td></tr>
+          <tr class="sum"><th scope="row">Operating profit</th><td>243,000</td><td>192,000</td><td>307,000</td><td>375,000</td></tr>
+          <tr><th scope="row">Margin</th><td>13.2%</td><td>10.9%</td><td>15.6%</td><td>17.6%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="share">
+      <h3>Where each revenue dollar went</h3>
+      <p class="sub">Share of revenue, by quarter.</p>
+      <div class="srow"><span class="q">Q4 2025</span><div class="stack" role="img" aria-label="Q4 2025: cost of goods 32.0 percent, labor 33.2, rent and other 21.6, operating profit 13.2"><span class="s1" style="--v:589">32.0</span><span class="s2" style="--v:612">33.2</span><span class="s3" style="--v:398">21.6</span><span class="s4" style="--v:243">13.2</span></div></div>
+      <div class="srow"><span class="q">Q1 2026</span><div class="stack" role="img" aria-label="Q1 2026: cost of goods 31.9 percent, labor 34.1, rent and other 23.1, operating profit 10.9"><span class="s1" style="--v:561">31.9</span><span class="s2" style="--v:598">34.1</span><span class="s3" style="--v:405">23.1</span><span class="s4" style="--v:192">10.9</span></div></div>
+      <div class="srow"><span class="q">Q2 2026</span><div class="stack" role="img" aria-label="Q2 2026: cost of goods 31.4 percent, labor 32.1, rent and other 20.9, operating profit 15.6"><span class="s1" style="--v:618">31.4</span><span class="s2" style="--v:631">32.1</span><span class="s3" style="--v:412">20.9</span><span class="s4" style="--v:307">15.6</span></div></div>
+      <div class="srow"><span class="q">Q3 2026</span><div class="stack" role="img" aria-label="Q3 2026: cost of goods 31.0 percent, labor 31.7, rent and other 19.7, operating profit 17.6"><span class="s1" style="--v:662">31.0</span><span class="s2" style="--v:676">31.7</span><span class="s3" style="--v:421">19.7</span><span class="s4" style="--v:375">17.6</span></div></div>
+      <p class="legend"><span><i style="background:var(--c1)"></i>Cost of goods</span><span><i style="background:var(--c2)"></i>Labor</span><span><i style="background:var(--c3)"></i>Rent and other</span><span><i style="background:var(--profit)"></i>Operating profit</span></p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="trend">
+  <h2 id="trend">Margin trend</h2>
+  <div class="card">
+    <svg class="chart" viewBox="0 0 360 230" role="img" aria-label="Operating margin by quarter: Q4 2025 13.2 percent, Q1 2026 10.9, Q2 2026 15.6, Q3 2026 17.6">
+      <line class="grid" x1="44" x2="350" y1="140" y2="140"/>
+      <line class="grid" x1="44" x2="350" y1="100" y2="100"/>
+      <line class="grid" x1="44" x2="350" y1="60" y2="60"/>
+      <line class="grid" x1="44" x2="350" y1="20" y2="20"/>
+      <line class="base" x1="44" x2="350" y1="180" y2="180"/>
+      <text x="38" y="184" text-anchor="end">0%</text>
+      <text x="38" y="144" text-anchor="end">5%</text>
+      <text x="38" y="104" text-anchor="end">10%</text>
+      <text x="38" y="64" text-anchor="end">15%</text>
+      <text x="38" y="24" text-anchor="end">20%</text>
+      <polyline class="line" points="80,74.4 146,92.8 212,55.2 278,39.2"/>
+      <circle class="dot" cx="80" cy="74.4" r="5"/>
+      <circle class="dot" cx="146" cy="92.8" r="5"/>
+      <circle class="dot" cx="212" cy="55.2" r="5"/>
+      <circle class="dot" cx="278" cy="39.2" r="5"/>
+      <text class="val" x="80" y="62" text-anchor="middle">13.2%</text>
+      <text class="val" x="146" y="116" text-anchor="middle">10.9%</text>
+      <text class="val" x="212" y="43" text-anchor="middle">15.6%</text>
+      <text class="val" x="278" y="27" text-anchor="middle">17.6%</text>
+      <text x="80" y="200" text-anchor="middle">Q4 2025</text>
+      <text x="146" y="200" text-anchor="middle">Q1 2026</text>
+      <text x="212" y="200" text-anchor="middle">Q2 2026</text>
+      <text x="278" y="200" text-anchor="middle">Q3 2026</text>
+    </svg>
+    <p class="caption">Margin dipped to 10.9% in Q1, then rose for two straight quarters to 17.6%. The axis starts at zero.</p>
+  </div>
+</section>
+
+<section aria-labelledby="notes">
+  <h2 id="notes">Notes</h2>
+  <ul class="notes">
+    <li>Q1 is the seasonal low.</li>
+    <li>Two new locations opened on May 18, 2026, which explains part of the Q2 and Q3 growth.</li>
+    <li>The Q3 figures are unaudited.</li>
+  </ul>
+</section>
+</div>
+</body>
+</html>

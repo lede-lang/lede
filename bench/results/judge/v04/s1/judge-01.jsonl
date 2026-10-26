@@ -1,0 +1,10 @@
+{"pair":"P001","winner":"RIGHT","reason":"RIGHT draws the pipeline as a proper branching diagram with legend and legible phone layout, while LEFT flattens the fan-out into a misleading nested linear stack."}
+{"pair":"P002","winner":"RIGHT","reason":"RIGHT renders a real sequence diagram with alt/else frame that reflows legibly on phone, whereas LEFT is only a plain numbered list."}
+{"pair":"P003","winner":"RIGHT","reason":"RIGHT's flowchart shows the decision diamonds and branches clearly at both widths, while LEFT's linear box chain hides the branching in a text list."}
+{"pair":"P004","winner":"LEFT","reason":"LEFT has a true architecture diagram with highlighted focus node and KPI cards, whereas RIGHT is a stack of boxes plus redundant tables that feels heavier and less polished."}
+{"pair":"P005","winner":"RIGHT","reason":"RIGHT gives a real twelve-step sequence diagram on desktop and a clean numbered fallback on phone, versus LEFT's plain list."}
+{"pair":"P006","winner":"LEFT","reason":"LEFT is clean and consistent in both modes, while RIGHT's bar chart has clipped value labels (349,60 and 367,2) and an oversized awkward caption."}
+{"pair":"P007","winner":"LEFT","reason":"LEFT works at phone width with a compact table and clear bars, while RIGHT's tables are cut off at the right edge on the phone."}
+{"pair":"P008","winner":"LEFT","reason":"LEFT adds a well-scaled bar chart and turns the plan table into readable cards on phone, while RIGHT's plans table is clipped at phone width and has no chart."}
+{"pair":"P009","winner":"LEFT","reason":"LEFT's comparison table and risks are accurate and polished despite phone clipping, whereas RIGHT's comparison table is corrupted with a bogus 'we would archive ourselves' row and missing cells."}
+{"pair":"P010","winner":"RIGHT","reason":"RIGHT has tidy date pills, a highlighted winner bar and phone cards with no clipping, while LEFT's phone bids table is cut off and its oversized chart type is inconsistent."}

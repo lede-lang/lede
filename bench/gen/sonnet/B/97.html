@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Q4 Sales Status, Week 42</title>
+<style>
+:root{
+  --bg:#f5f6f9;--surface:#ffffff;--ink:#181c27;--muted:#5a6272;--line:#dde1ea;
+  --accent:#2750c7;--accent-soft:#e8edfb;--bar:#3d63d9;--bar-hi:#1b3fa8;
+  --behind:#b4400f;--behind-bg:#fdeadf;--ok:#1b7a46;--ok-bg:#e4f4ea;
+  --track:#e4e8ef;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1118;--surface:#161a23;--ink:#e8ebf3;--muted:#9ba3b4;--line:#272c39;
+    --accent:#8fa8f5;--accent-soft:#1a2340;--bar:#6c8af0;--bar-hi:#a9bcf8;
+    --behind:#ffa070;--behind-bg:#33190d;--ok:#6fd498;--ok-bg:#12281b;
+    --track:#262c3a;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:18px 16px 48px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:8px 0 4px}
+h1{font-size:1.6rem;line-height:1.2;margin:0 0 4px}
+.asof{color:var(--muted);margin:0 0 16px;font-size:.92rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 14px}
+.hero .big{font-size:2.8rem;font-weight:800;line-height:1;color:var(--accent);font-variant-numeric:tabular-nums}
+.hero .big small{font-size:1.2rem;font-weight:700;color:var(--muted)}
+.hero .lbl{color:var(--muted);font-size:.95rem;margin:2px 0 0}
+.track{position:relative;height:16px;background:var(--track);border-radius:8px;overflow:hidden;margin:12px 0 0}
+.track i{display:block;height:100%;background:var(--accent);border-radius:8px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 14px}
+.kpis div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+.kpis .k{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700}
+.kpis .v{font-size:1.45rem;font-weight:800;line-height:1.2;font-variant-numeric:tabular-nums}
+@media (max-width:420px){.kpis .v{font-size:1.2rem}.kpis div{padding:10px 8px}}
+h2{font-size:1.2rem;margin:26px 0 10px;line-height:1.3}
+.chart svg{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font:11px system-ui,sans-serif}
+.chart .val{fill:var(--ink);font-weight:700;font-size:12px}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.cap{font-size:.85rem;color:var(--muted);margin:6px 0 0}
+.reg{list-style:none;padding:0;margin:0}
+.reg li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 10px}
+.reg li.behind{border-color:var(--behind);border-width:2px;background:var(--behind-bg)}
+.reg .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.reg .n{font-weight:700}
+.reg .pc{font-size:1.4rem;font-weight:800;font-variant-numeric:tabular-nums}
+.reg li.behind .pc{color:var(--behind)}
+.reg .t{position:relative;height:12px;background:var(--track);border-radius:6px;overflow:hidden;margin:8px 0 6px}
+.reg .t i{display:block;height:100%;background:var(--bar);border-radius:6px}
+.reg li.behind .t i{background:var(--behind)}
+.reg .d{font-size:.9rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.badge{display:inline-block;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;border-radius:6px;padding:1px 8px;margin-left:6px;vertical-align:middle}
+.badge.b{background:var(--behind);color:#fff}
+.badge.o{background:var(--ok-bg);color:var(--ok)}
+@media (prefers-color-scheme:dark){.badge.b{color:#1a0d05}}
+.deal{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 10px}
+.deal .row{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.deal .n{font-weight:700}
+.deal .amt{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.deal .m{font-size:.9rem;color:var(--muted);margin-top:2px}
+.next{list-style:none;padding:0;margin:0}
+.next li{display:flex;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 10px;align-items:center}
+.next .d{flex:none;text-align:center;min-width:3.6rem;background:var(--accent-soft);border-radius:8px;padding:4px 6px;color:var(--accent);font-weight:800;line-height:1.15}
+.next .d small{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.next .d span{font-size:1.4rem}
+.next p{margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Corvina Software &middot; Sales Operations</p>
+  <h1>Fiscal Q4 status, week 42</h1>
+  <p class="asof">Week ending 2026-10-16. Q4 began 2026-08-31 (week 36).</p>
+
+  <div class="card hero">
+    <div class="big">$6.9M <small>of $11.5M</small></div>
+    <p class="lbl">Q4 bookings to date, <strong>60 percent</strong> of target</p>
+    <div class="track" role="img" aria-label="60 percent of target booked"><i style="width:60%"></i></div>
+  </div>
+
+  <div class="kpis">
+    <div><div class="k">Open pipeline</div><div class="v">$14.8M</div></div>
+    <div><div class="k">Win rate</div><div class="v">27%</div></div>
+    <div><div class="k">Average deal</div><div class="v">$84K</div></div>
+  </div>
+
+  <h2>Weekly bookings</h2>
+  <div class="card chart">
+    <svg viewBox="0 0 360 220" role="img" aria-label="Weekly bookings in millions of dollars: W36 0.5, W37 0.7, W38 0.6, W39 1.1, W40 0.9, W41 1.4, W42 1.7">
+      <!-- plot area: x 36..350, y 20 (2.0) .. 180 (0). 80px per 1.0 -->
+      <line class="grid" x1="36" y1="20" x2="350" y2="20"/>
+      <line class="grid" x1="36" y1="60" x2="350" y2="60"/>
+      <line class="grid" x1="36" y1="100" x2="350" y2="100"/>
+      <line class="grid" x1="36" y1="140" x2="350" y2="140"/>
+      <line class="grid" x1="36" y1="180" x2="350" y2="180" style="stroke:var(--muted)"/>
+      <text x="30" y="24" text-anchor="end">2.0</text>
+      <text x="30" y="64" text-anchor="end">1.5</text>
+      <text x="30" y="104" text-anchor="end">1.0</text>
+      <text x="30" y="144" text-anchor="end">0.5</text>
+      <text x="30" y="184" text-anchor="end">0</text>
+      <text x="36" y="12" text-anchor="start">$M booked per week</text>
+      <!-- bars: width 32, slots 44.8 apart starting x=44 -->
+      <rect x="44" y="140" width="32" height="40" rx="3" fill="var(--bar)"/>
+      <rect x="88.8" y="124" width="32" height="56" rx="3" fill="var(--bar)"/>
+      <rect x="133.6" y="132" width="32" height="48" rx="3" fill="var(--bar)"/>
+      <rect x="178.4" y="92" width="32" height="88" rx="3" fill="var(--bar)"/>
+      <rect x="223.2" y="108" width="32" height="72" rx="3" fill="var(--bar)"/>
+      <rect x="268" y="68" width="32" height="112" rx="3" fill="var(--bar)"/>
+      <rect x="312.8" y="44" width="32" height="136" rx="3" fill="var(--bar-hi)"/>
+      <text class="val" x="60" y="134" text-anchor="middle">0.5</text>
+      <text class="val" x="104.8" y="118" text-anchor="middle">0.7</text>
+      <text class="val" x="149.6" y="126" text-anchor="middle">0.6</text>
+      <text class="val" x="194.4" y="86" text-anchor="middle">1.1</text>
+      <text class="val" x="239.2" y="102" text-anchor="middle">0.9</text>
+      <text class="val" x="284" y="62" text-anchor="middle">1.4</text>
+      <text class="val" x="328.8" y="38" text-anchor="middle">1.7</text>
+      <text x="60" y="198" text-anchor="middle">W36</text>
+      <text x="104.8" y="198" text-anchor="middle">W37</text>
+      <text x="149.6" y="198" text-anchor="middle">W38</text>
+      <text x="194.4" y="198" text-anchor="middle">W39</text>
+      <text x="239.2" y="198" text-anchor="middle">W40</text>
+      <text x="284" y="198" text-anchor="middle">W41</text>
+      <text x="328.8" y="198" text-anchor="middle">W42</text>
+    </svg>
+    <p class="cap">Millions of dollars. W42 is the best week of the quarter at $1.7M.</p>
+  </div>
+
+  <h2>Regions</h2>
+  <ul class="reg">
+    <li>
+      <div class="row"><span class="n">North America <span class="badge o">Ahead</span></span><span class="pc">65%</span></div>
+      <div class="t" role="img" aria-label="65 percent of target"><i style="width:65%"></i></div>
+      <div class="d">Booked $3.4M of $5.2M target</div>
+    </li>
+    <li class="behind">
+      <div class="row"><span class="n">EMEA <span class="badge b">Behind</span></span><span class="pc">56%</span></div>
+      <div class="t" role="img" aria-label="56 percent of target"><i style="width:56%"></i></div>
+      <div class="d">Booked $2.3M of $4.1M target</div>
+    </li>
+    <li class="behind">
+      <div class="row"><span class="n">APAC <span class="badge b">Behind</span></span><span class="pc">55%</span></div>
+      <div class="t" role="img" aria-label="55 percent of target"><i style="width:55%"></i></div>
+      <div class="d">Booked $1.2M of $2.2M target</div>
+    </li>
+  </ul>
+  <p class="cap">Ahead or behind is measured against the overall 60 percent. Target, booked and percent in millions of dollars.</p>
+
+  <h2>Deals to watch</h2>
+  <div class="deal">
+    <div class="row"><span class="n">Hollis Rail</span><span class="amt">$1.2M</span></div>
+    <div class="m">EMEA &middot; closes 2026-10-30 &middot; Ravi Menon</div>
+  </div>
+  <div class="deal">
+    <div class="row"><span class="n">Pacific Grid</span><span class="amt">$900K</span></div>
+    <div class="m">APAC &middot; closes 2026-11-13 &middot; Aiko Fujimoto</div>
+  </div>
+  <div class="deal">
+    <div class="row"><span class="n">Northline Clinics</span><span class="amt">$750K</span></div>
+    <div class="m">North America &middot; closes 2026-10-23 &middot; Dana Whitfield</div>
+  </div>
+
+  <h2>Next week</h2>
+  <ul class="next">
+    <li>
+      <div class="d"><small>Oct</small><span>19</span></div>
+      <p><strong>Forecast call</strong><br><span style="color:var(--muted)">2026-10-19</span></p>
+    </li>
+    <li>
+      <div class="d"><small>Oct</small><span>21</span></div>
+      <p><strong>APAC pipeline review</strong><br><span style="color:var(--muted)">2026-10-21</span></p>
+    </li>
+  </ul>
+</div>
+</body>
+</html>

@@ -1,0 +1,14 @@
+@title Fund balance
+# Fund balance
+
+kpi Reserve fund | 7440000 | +2.1% | good
+
+kpi Annual budget | $18250000 | +1% | good
+kpi Contributions this quarter | 1234567 | +3% | good
+kpi Members | 9876543 | +0.4% | good
+
+Use `/var/lib/ledger/archive/2026/q3/summary.json` for the exact file and `fund.sync --dry-run` before any import.
+Short: `rollback`, `a/b`, `--force`.
+
+data wide = quarterly contribution category,approved allocation total,remaining unspent balance,projected year end variance; Q1,120000,30000,-2000; Q2,140000,50000,1500; Q3,150000,60000,3200
+table wide title="Wide header table"

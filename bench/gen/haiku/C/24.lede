@@ -1,0 +1,42 @@
+@title Frontend Framework for the Scheduling Admin App
+@subtitle Internal Tools guild, Wrenfield University IT
+
+We are rewriting the course-scheduling admin app. It has about 60 screens, five developers, and is mostly forms and tables. This page compares React, Vue and Svelte.
+
+# Criteria
+
+- Team familiarity
+- Form and table libraries
+- Hiring pool
+- Bundle size
+- Long-term support
+
+# Comparison
+
+table = Framework,Team familiarity,Form/table ecosystem,Bundle size (KB),Hiring pool; React,4 of 5 developers,excellent,142,large; Vue,1 of 5 developers,good,98,medium; Svelte,0 of 5 developers,fair,41,small
+
+# Pros and cons
+
+### React
+
+- Pros: four of five developers know it, the data grid we need exists today, large hiring pool
+- Cons: largest bundle of the three
+
+### Vue
+
+- Pros: smaller bundle, good form and table libraries, medium hiring pool
+- Cons: only one developer knows it
+
+### Svelte
+
+- Pros: smallest bundle, pleasant to write
+- Cons: no developer knows it, fair ecosystem for tables, small hiring pool
+
+# Recommendation
+
+! React, mainly because four of the five developers already know it and the data grid we need exists today.
+
+> We are optimizing for the next five years of maintenance, not the first five weeks of building.
+> — Hannah Osei
+
+Svelte was the favorite in the prototype spike. We will revisit it for smaller tools.

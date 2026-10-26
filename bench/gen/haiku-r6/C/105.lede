@@ -1,0 +1,40 @@
+@title Matchmaking and Game Servers
+@subtitle Architecture for engineers joining the live team
+@author Backend Services team
+@date 2026-09-22
+
+Owned by Backend Services. Reviewed 2026-09-22.
+
+## Overview
+Players are matched into 10-player games and placed on the nearest regional server fleet. Each region can run alone if another region fails.
+
+## Architecture
+diagram arch dir=LR title="Matchmaking and game servers"
+arch: players "Players" user
+arch: ge "Global Edge" lb
+arch: mm "Matchmaker" svc
+arch: alloc "Session Allocator" svc
+arch: fleet "Game Server Fleet" svc
+arch: cache "Regional Cache" store
+arch: pdb "Player Profile Database" db "shared"
+arch: lbsvc "Leaderboard Service" svc "shared"
+arch: players -> ge : connect
+arch: ge -> mm : queue request
+arch: mm -> cache : skill ratings
+arch: mm -> pdb : load profile
+arch: mm -> alloc : match of 10 players
+arch: alloc -> fleet : start session
+arch: players --> fleet : UDP game traffic
+arch: fleet -> lbsvc : match results
+arch: group reg "Regional Stack (same in each of 3 regions)" mm, alloc, fleet, cache
+
+!! The Player Profile Database and the Leaderboard Service are the only shared parts. Watch them first in a regional failover.
+
+## Regions and capacity
+Three regions: us-east, eu-central and ap-southeast. Each has the same setup.
+
+table = Region,Game servers,Concurrent players; us-east,150,9000; eu-central,150,9000; ap-southeast,150,9000
+
+- Each server runs 6 matches of 10 players, so each region supports 9000 concurrent players.
+- Median matchmaking time target: 10 seconds. 95th percentile target: 30 seconds.
+- Servers scale up to 400 per region when more than 2000 players are waiting in the queue.

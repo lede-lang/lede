@@ -1,0 +1,25 @@
+@title Picking a queue for the ingest service
+
+We need a queue that survives a zone outage and costs under $400 a month at today's volume.
+
+data cost = option,monthly; Managed,380; Self-hosted,240; Hosted SaaS,610
+
+cards
+### Managed queue (recommended)
+Runs in two zones, no patching. **$380** a month at 40M messages.
+- 99.95% SLA
+- Replays up to 7 days
+kpi Monthly cost | $380 | | good
+
+### Self-hosted cluster
+Cheapest on paper, but someone owns upgrades and on-call.
+- Three brokers across zones
+- Upgrades twice a year
+!! Needs a named owner before we commit.
+
+### Hosted SaaS
+Easiest start; costs grow fastest with volume.
+table = item,value; Monthly,$610; Lock-in,high
+
+## Cost side by side
+chart hbar cost title="Monthly cost, USD" unit=$

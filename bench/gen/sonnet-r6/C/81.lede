@@ -1,0 +1,26 @@
+@title Summer Reading 2026 Wrap-Up
+@subtitle Hollis Public Library, June to August 2026
+@author Hollis Public Library
+
+## Summer at a glance
+
+kpi Registered | 1,248 | children and teens
+kpi Finished | 683 | 54.7% of readers | good
+kpi Books logged | 8,325 | 6.7 per reader
+kpi Closing party | 310 | people on 2026-09-12
+
+Thank you to every young reader who joined us this summer. More than half of those who signed up finished the program.
+
+## Books logged by month
+
+data books = month,books; Jun,2340; Jul,3115; Aug,2870
+chart bar books x=month y=books focus="Jul" labels title="Books logged per month"
+
+July was the busiest month, with 3,115 books logged. Across the three months readers logged 8,325 books.
+
+## Readers by age group
+
+data ages = age group,readers; Under 8,402; 8 to 12,561; 13 to 17,285
+chart hbar ages x=age group y=readers labels title="Registered readers by age group"
+
+The 8 to 12 group was the largest, with 561 of the 1,248 registered readers.

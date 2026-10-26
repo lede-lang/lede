@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ticketing platform architecture</title>
+<style>
+:root{--bg:#f6f5f1;--fg:#1c1c1a;--muted:#5f5d57;--card:#ffffff;--line:#d8d5cb;--accent:#1d5c74;--accent-bg:#e4eff3;--warn:#8c2a1c;--warn-bg:#fbe9e5}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#131416;--fg:#ebeae6;--muted:#a4a29b;--card:#1d1f22;--line:#3a3c38;--accent:#86c3da;--accent-bg:#1c2d35;--warn:#f2a797;--warn-bg:#3b211c}}
+:root[data-theme="dark"]{--bg:#131416;--fg:#ebeae6;--muted:#a4a29b;--card:#1d1f22;--line:#3a3c38;--accent:#86c3da;--accent-bg:#1c2d35;--warn:#f2a797;--warn-bg:#3b211c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+main{max-width:820px;margin:0 auto;padding:24px 16px 56px}
+header{border-bottom:2px solid var(--fg);padding-bottom:14px;margin-bottom:6px}
+h1{font-size:1.65rem;line-height:1.2;margin:0 0 6px}
+h2{font-size:1.15rem;margin:34px 0 10px;padding-top:4px}
+p{margin:0 0 12px}
+.meta{color:var(--muted);font-size:.9rem;margin:0}
+.note{color:var(--muted);font-size:.9rem}
+.wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.8rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+.zone{border:1.5px dashed var(--line);border-radius:12px;padding:12px;margin:8px 0}
+.zlabel{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600;margin:0 0 8px}
+.row{display:flex;flex-direction:column;gap:0}
+.node{background:var(--card);border:1.5px solid var(--accent);border-radius:8px;padding:9px 12px;font-weight:600;text-align:center}
+.edge{color:var(--muted);font-size:.85rem;text-align:center;padding:6px 0}
+.edge::before{content:"\2193";display:block;color:var(--accent);font-size:1.1rem;line-height:1.1}
+.subnets{display:flex;flex-direction:column;gap:4px}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>Ticketing platform architecture</h1>
+<p class="meta">Tidewater Ferries &middot; Owner: Digital Channels &middot; Region: North Europe &middot; Reviewed 2026-09-22</p>
+</header>
+
+<h2>Overview</h2>
+<p>Passengers book through Azure Front Door. Every booking is written to one database and announced as an event, so that the scanners at the terminals stay in step.</p>
+
+<h2>Diagram</h2>
+<div class="node" style="background:transparent;border-style:dashed;font-weight:600">Passengers</div>
+<div class="edge">HTTPS</div>
+<div class="node">Front Door</div>
+<div class="edge">origin request</div>
+
+<div class="zone">
+  <p class="zlabel">Ticketing subscription</p>
+  <div class="zone" style="margin:0">
+    <p class="zlabel">Ticketing VNet (10.50.0.0/16)</p>
+    <div class="zone" style="margin:0 0 8px">
+      <p class="zlabel">App subnet (10.50.1.0/24)</p>
+      <div class="node">Booking Web App</div>
+      <div class="edge">REST</div>
+      <div class="node">Ticketing API</div>
+    </div>
+    <div class="zone" style="margin:0">
+      <p class="zlabel">Data subnet (10.50.2.0/24)</p>
+      <div class="node">Reservations DB (Azure SQL)</div>
+      <div class="node" style="margin-top:8px">Booking Events (Service Bus)</div>
+    </div>
+  </div>
+</div>
+
+<p class="note" style="margin-top:12px">Outside the subscription, the Ticketing API calls the Payment Provider for card authorization, and Booking Events syncs with the Port Terminal Scanners.</p>
+<div class="node" style="margin-top:8px">Payment Provider</div>
+<div class="node" style="margin-top:8px">Port Terminal Scanners</div>
+
+<h2>Flows</h2>
+<div class="wrap">
+<table>
+  <thead><tr><th>From</th><th>To</th><th>Label</th></tr></thead>
+  <tbody>
+    <tr><td>Passengers</td><td>Front Door</td><td>HTTPS</td></tr>
+    <tr><td>Front Door</td><td>Booking Web App</td><td>origin request</td></tr>
+    <tr><td>Booking Web App</td><td>Ticketing API</td><td>REST</td></tr>
+    <tr><td>Ticketing API</td><td>Reservations DB</td><td>SQL, port 1433</td></tr>
+    <tr><td>Ticketing API</td><td>Payment Provider</td><td>card authorization</td></tr>
+    <tr><td>Ticketing API</td><td>Booking Events</td><td>ticket issued</td></tr>
+    <tr><td>Booking Events</td><td>Port Terminal Scanners</td><td>sync every 30 s</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Capacity</h2>
+<div class="wrap">
+<table>
+  <thead><tr><th>Component</th><th>Sizing</th></tr></thead>
+  <tbody>
+    <tr><td>Booking Web App</td><td>3 to 10 instances at 60 percent CPU</td></tr>
+    <tr><td>Ticketing API</td><td>4 to 16 pods</td></tr>
+    <tr><td>Reservations DB</td><td>8 vCores, with a read replica in the paired region</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Recovery targets</h2>
+<div class="wrap">
+<table>
+  <thead><tr><th>Target</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>Recovery point objective (RPO)</td><td>5 minutes</td></tr>
+    <tr><td>Recovery time objective (RTO)</td><td>1 hour</td></tr>
+    <tr><td>Last tested</td><td>2026-08-19</td></tr>
+  </tbody>
+</table>
+</div>
+</main>
+</body>
+</html>

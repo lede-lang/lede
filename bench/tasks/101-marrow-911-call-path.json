@@ -1,0 +1,54 @@
+{
+  "id": "101-marrow-911-call-path",
+  "category": "architecture",
+  "title": "Marrow County 911 call path",
+  "brief": "The Marrow County Emergency Communications District needs an architecture page for how a 911 call is received and dispatched, owned by the Public Safety Systems team and reviewed on 2026-09-30. Open with \"Overview\", two sentences: calls arrive from the telephone carriers into the primary dispatch center, and a backup dispatch center across the county can take over if the primary is lost. Then \"Call path\", showing the \"Primary Dispatch Center\", which contains a \"Call Router\", \"CAD Server A\" (the computer-aided dispatch system, active), \"CAD Server B\" (hot standby) and a \"Radio Gateway\"; and the \"Backup Dispatch Center\", which contains a \"Standby Call Router\" and a \"CAD Replica\". Outside both centers are the \"Callers\", the \"Telecom Carriers\", the \"State GIS Service\" and the \"Field Units\". Flows: Callers to Telecom Carriers \"voice and caller location\"; Telecom Carriers to Call Router \"SIP trunks\"; Call Router to CAD Server A \"call record\"; CAD Server A to CAD Server B \"state sync\"; CAD Server A to CAD Replica \"asynchronous replication\"; Call Router to Standby Call Router \"heartbeat\"; CAD Server A to State GIS Service \"address lookup\"; CAD Server A to Radio Gateway \"dispatch message\"; Radio Gateway to Field Units \"P25 radio\". Then \"Failover targets\", each component and its target: call routing switches to the Standby Call Router within 30 seconds; CAD Server B takes over within 2 minutes; the CAD Replica lags by under 5 seconds; the whole backup center is fully staffed and taking calls within 10 minutes. Make sure readers see that the backup center is activated only when the shift supervisor declares the primary unavailable, never automatically.",
+  "checklist": {
+    "sections": [
+      "Overview",
+      "Call path",
+      "Failover targets"
+    ],
+    "visible": [
+      "Primary Dispatch Center",
+      "Backup Dispatch Center",
+      "Call Router",
+      "CAD Server A",
+      "CAD Server B",
+      "Radio Gateway",
+      "Standby Call Router",
+      "CAD Replica",
+      "Callers",
+      "Telecom Carriers",
+      "State GIS Service",
+      "Field Units",
+      "shift supervisor"
+    ],
+    "values": [
+      "2026-09-30",
+      "30 seconds",
+      "2 minutes",
+      "5 seconds",
+      "10 minutes",
+      "P25"
+    ]
+  },
+  "needs": [
+    "diagram",
+    "table",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the CAD Server B takeover target from 2 minutes to 90 seconds, and add a node called \"Paging Gateway\" in the Primary Dispatch Center with an arrow from CAD Server A labeled \"station alerts\".",
+    "expect_visible": [
+      "Paging Gateway",
+      "station alerts"
+    ],
+    "expect_values": [
+      "90 seconds"
+    ],
+    "expect_absent": [
+      "2 minutes"
+    ]
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "id": "89-water-bill-guide",
+  "category": "prose",
+  "title": "How to read your Tarn Valley water bill",
+  "brief": "Tarn Valley Water wants a customer page that explains how to read the quarterly water bill, for the website and the printed insert. Headings: \"Your bill at a glance\", \"Usage charges\", \"Fixed charges\", \"Ways to pay\" and \"If you cannot pay on time\". Facts: bills are issued every 3 months; usage is metered in cubic meters (m3) and charged in three tiers: the first 30 m3 at 1.85 dollars per m3, the next 30 m3 at 2.60 dollars, and anything above 60 m3 at 3.90 dollars. The sewer charge is 80 percent of the usage charge. The fixed service charge is 38.40 dollars per quarter. Worked example for a household that used 72 m3: usage 55.50 + 78.00 + 46.80 = 180.30 dollars, sewer 144.24 dollars, service charge 38.40 dollars, total 362.94 dollars. Payment is due 21 days after the issue date; pay online at tarnvalleywater.example/pay, by phone on 555-0121, or in person at the Main Street office on weekdays from 8:30 to 16:30; autopay takes 2 dollars off each bill. If you cannot pay, call 555-0133 before the due date to set up a payment plan; a late fee of 5 percent is added after 30 days. Warm, plain language, no jargon.",
+  "checklist": {
+    "sections": [
+      "Your bill at a glance",
+      "Usage charges",
+      "Fixed charges",
+      "Ways to pay",
+      "If you cannot pay on time"
+    ],
+    "visible": [
+      "Tarn Valley Water",
+      "sewer charge",
+      "service charge",
+      "autopay",
+      "tarnvalleywater.example/pay",
+      "payment plan"
+    ],
+    "values": [
+      "30 m3",
+      "1.85",
+      "2.60",
+      "3.90",
+      "80 percent",
+      "38.40",
+      "72 m3",
+      "55.50",
+      "78.00",
+      "46.80",
+      "180.30",
+      "144.24",
+      "362.94",
+      "21 days",
+      "555-0121",
+      "555-0133",
+      "2 dollars",
+      "5 percent",
+      "30 days"
+    ]
+  },
+  "needs": [
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "The fixed service charge is going up to 41.20 dollars per quarter. Update it everywhere, including the worked example total (365.74 dollars).",
+    "expect_visible": [],
+    "expect_values": [
+      "41.20",
+      "365.74"
+    ],
+    "expect_absent": [
+      "38.40",
+      "362.94"
+    ]
+  }
+}

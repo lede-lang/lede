@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lost Laptop Response Card</title>
+<style>
+:root{--bg:#f4f5f7;--card:#ffffff;--fg:#1b1f26;--muted:#5b6370;--line:#d9dee6;--accent:#2a56c6;--good:#17794a;--goodbg:#e2f4ea;--warn:#8a5200;--warnbg:#fcf0d9;--bad:#b3261e;--badbg:#fbe3e0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0f1115;--card:#181b21;--fg:#e6e9ef;--muted:#9aa3b0;--line:#2b313b;--accent:#8fb0ff;--good:#62d39b;--goodbg:#15301f;--warn:#f0b35c;--warnbg:#36290f;--bad:#ff8b82;--badbg:#3b1a18}}
+:root[data-theme="dark"]{--bg:#0f1115;--card:#181b21;--fg:#e6e9ef;--muted:#9aa3b0;--line:#2b313b;--accent:#8fb0ff;--good:#62d39b;--goodbg:#15301f;--warn:#f0b35c;--warnbg:#36290f;--bad:#ff8b82;--badbg:#3b1a18}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:1.6rem;line-height:1.2;margin:0 0 6px}
+h2{font-size:1.1rem;margin:28px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+p.sub{color:var(--muted);margin:0 0 16px}
+.first{background:var(--card);border:2px solid var(--bad);border-radius:12px;padding:16px 18px}
+.first .big{font-size:1.25rem;font-weight:700;color:var(--bad);margin:0 0 4px}
+.callout{border-left:4px solid var(--good);background:var(--goodbg);padding:12px 14px;border-radius:8px;margin:14px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+ol{padding-left:22px}
+li{margin:8px 0}
+.qr{display:grid;grid-template-columns:1fr;gap:10px}
+.qr div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.qr b{display:block;font-size:1.05rem}
+.qr span{color:var(--muted);font-size:.92rem}
+@media (min-width:560px){.qr{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:560px){.wrap{padding:18px 14px 40px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Lost or stolen laptop: response card</h1>
+<p class="sub">Wexford Legal IT &middot; effective 2026-11-01 &middot; owner: IT Security</p>
+
+<div class="first">
+  <p class="big">Report it within 15 minutes of noticing.</p>
+  <p style="margin:0">Call the service desk on <strong>extension 4100</strong>. Do not report by email.</p>
+</div>
+
+<div class="callout">
+  <strong>A lost laptop is not automatically a data breach.</strong> Full-disk encryption is enforced on all laptops. It must still be reported.
+</div>
+
+<h2>What the service desk does</h2>
+<ol>
+  <li>Mark the device as lost in the device manager. This locks it and starts a remote wipe on its next connection.</li>
+  <li>Disable the user's sessions and revoke their VPN certificate.</li>
+  <li>Check whether the laptop held client files outside the document management system. This is not allowed, but it does happen.</li>
+  <li>If it did, notify the General Counsel's office within 1 hour. Client confidentiality rules may require telling the client.</li>
+  <li>Order a replacement. Standard turnaround is 1 business day.</li>
+  <li>File the report in the incident log within 24 hours.</li>
+</ol>
+
+<h2>Quick reference</h2>
+<div class="qr">
+  <div><b>Service desk</b><span>Extension 4100</span></div>
+  <div><b>Security hotline</b><span>4199 (after hours)</span></div>
+  <div><b>Channel</b><span>#it-security</span></div>
+</div>
+</div>
+</body>
+</html>

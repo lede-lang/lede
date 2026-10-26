@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Northfield Patient Access, September 2026</title>
+<style>
+:root{
+  --bg:#f4f6f7;--surface:#ffffff;--text:#14201f;--muted:#566463;--border:#dce3e3;
+  --accent:#0f6e74;--accent-soft:#e3f2f2;--grid:#e2e8e8;
+  --good:#18794e;--good-soft:#e4f4eb;--warn:#9a5800;--warn-soft:#fff1d9;--bad:#b42318;--bad-soft:#fdeceb;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0d1213;--surface:#151c1d;--text:#e4ecec;--muted:#98a8a7;--border:#29393a;
+  --accent:#5cc8cf;--accent-soft:#12302f;--grid:#243233;
+  --good:#4cc38a;--good-soft:#10281c;--warn:#f2b15a;--warn-soft:#302310;--bad:#ff7d73;--bad-soft:#3a1715;
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:28px 16px 56px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 6px}
+h1{font-size:1.75rem;line-height:1.2;margin:0 0 8px;letter-spacing:-.01em}
+.meta{color:var(--muted);font-size:.95rem;margin:0}
+section{margin-top:34px}
+h2{font-size:1.2rem;margin:0 0 12px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+.headline{display:grid;grid-template-columns:1.4fr 1fr;gap:12px;margin-top:22px}
+.hero{border:1px solid var(--bad);background:var(--bad-soft);padding:20px 22px}
+.hero .label{font-weight:600;font-size:.95rem}
+.hero .value{font-size:3.2rem;font-weight:800;line-height:1;margin:10px 0 6px;color:var(--bad);font-variant-numeric:tabular-nums}
+.hero .value small{font-size:1.2rem;font-weight:700;margin-left:4px}
+.hero .note{font-size:.95rem}
+.hero .note strong{color:var(--bad)}
+.meter{position:relative;height:10px;background:var(--surface);border-radius:999px;margin:14px 0 6px;border:1px solid var(--border)}
+.meter .fill{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--bad)}
+.meter .tick{position:absolute;top:-5px;bottom:-5px;width:2px;background:var(--text)}
+.meter-scale{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted)}
+.side{display:grid;gap:12px}
+.mini{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:14px 18px}
+.mini .label{font-size:.92rem;color:var(--muted)}
+.mini .value{font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:11px 8px;border-bottom:1px solid var(--border);vertical-align:middle}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+tr:last-child td{border-bottom:0}
+.num{text-align:right;white-space:nowrap}
+.table-card{padding:4px 10px}
+tr.flag td{background:var(--bad-soft)}
+tr.flag .name{color:var(--bad)}
+.name{font-weight:700}
+.flagtag{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.04em;background:var(--bad);color:var(--surface);border-radius:999px;padding:1px 8px;margin-left:6px;vertical-align:2px}
+.wait{min-width:150px}
+.wait .v{font-weight:700}
+.bar{position:relative;height:8px;background:var(--border);border-radius:999px;margin-top:5px}
+.bar .f{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:999px}
+tr.flag .bar .f{background:var(--bad)}
+.bar .t{position:absolute;left:50%;top:-4px;bottom:-4px;width:2px;background:var(--text)}
+.worse{font-weight:700;color:var(--bad)}
+.legend{font-size:.83rem;color:var(--muted);margin:10px 4px 6px}
+.chart svg{display:block;width:100%;height:auto}
+.caption{font-size:.85rem;color:var(--muted);margin:8px 0 0}
+svg .grid{stroke:var(--grid)}
+svg .axis{fill:var(--muted);font-size:12px}
+svg .line{fill:none;stroke:var(--bad);stroke-width:2.5;stroke-linejoin:round}
+svg .dot{fill:var(--surface);stroke:var(--bad);stroke-width:2.5}
+svg .target{stroke:var(--good);stroke-width:1.5;stroke-dasharray:5 4}
+svg .val{font-size:12px;font-weight:700;fill:var(--text);paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+svg .tl{fill:var(--good);font-weight:700}
+.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;counter-reset:a}
+.action{position:relative;padding-top:18px}
+.action .n{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--surface);font-weight:800;font-size:.9rem;margin-bottom:8px}
+.action h3{font-size:1rem;margin:0 0 6px}
+.action p{margin:0;font-size:.93rem}
+.action .why{margin-top:8px;font-size:.85rem;color:var(--muted)}
+.where{display:inline-block;font-size:.75rem;font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:6px;padding:1px 7px;margin-bottom:6px}
+footer{margin-top:40px;color:var(--muted);font-size:.82rem}
+@media (max-width:760px){.headline{grid-template-columns:1fr}.actions{grid-template-columns:1fr}}
+@media (max-width:480px){
+  body{font-size:15px}
+  h1{font-size:1.45rem}
+  .hero .value{font-size:2.7rem}
+  th,td{padding:10px 5px}
+  .wait{min-width:110px}
+  .flagtag{margin-left:0}
+  th{font-size:.68rem}
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <p class="eyebrow">Patient access snapshot</p>
+    <h1>Northfield Community Health, September 2026</h1>
+    <p class="meta">For the clinic directors' meeting, Monday 2026-10-19</p>
+  </header>
+
+  <div class="headline">
+    <div class="card hero">
+      <div class="label">Median days to next available new-patient appointment</div>
+      <div class="value">9.2<small>days</small></div>
+      <div class="note">Target 7 days &middot; <strong>2.2 days over target</strong>, and rising for six straight months.</div>
+      <div class="meter" aria-hidden="true">
+        <div class="fill" style="width:76.7%"></div>
+        <div class="tick" style="left:58.3%"></div>
+      </div>
+      <div class="meter-scale" aria-hidden="true"><span>0</span><span>Target 7</span><span>12 days</span></div>
+    </div>
+    <div class="side">
+      <div class="card mini"><span class="label">No-show rate</span><span class="value">7.1%</span></div>
+      <div class="card mini"><span class="label">Phone abandonment</span><span class="value">4.3%</span></div>
+      <div class="card mini"><span class="label">Patient satisfaction</span><span class="value">4.5<span style="font-size:1rem;color:var(--muted);font-weight:600"> / 5</span></span></div>
+    </div>
+  </div>
+
+  <section>
+    <h2>Clinics</h2>
+    <div class="card table-card">
+      <table>
+        <thead>
+          <tr><th>Clinic</th><th class="wait">Median wait</th><th class="num">No-show</th><th class="num">Phone aband.</th></tr>
+        </thead>
+        <tbody>
+          <tr class="flag">
+            <td><span class="name">Eastgate</span> <span class="flagtag">PROBLEM</span></td>
+            <td class="wait"><span class="v">12.4 days</span><div class="bar"><div class="f" style="width:88.6%"></div><div class="t"></div></div></td>
+            <td class="num worse">11.8%</td>
+            <td class="num worse">6.9%</td>
+          </tr>
+          <tr class="flag">
+            <td><span class="name">Harlan Street</span> <span class="flagtag">PROBLEM</span></td>
+            <td class="wait"><span class="v">10.9 days</span><div class="bar"><div class="f" style="width:77.9%"></div><div class="t"></div></div></td>
+            <td class="num worse">7.4%</td>
+            <td class="num worse">4.9%</td>
+          </tr>
+          <tr>
+            <td><span class="name">Lakeview</span></td>
+            <td class="wait"><span class="v">8.1 days</span><div class="bar"><div class="f" style="width:57.9%"></div><div class="t"></div></div></td>
+            <td class="num">5.9%</td>
+            <td class="num">3.2%</td>
+          </tr>
+          <tr>
+            <td><span class="name">Millbrook</span></td>
+            <td class="wait"><span class="v">7.3 days</span><div class="bar"><div class="f" style="width:52.1%"></div><div class="t"></div></div></td>
+            <td class="num">6.2%</td>
+            <td class="num">3.8%</td>
+          </tr>
+          <tr>
+            <td><span class="name">Riverside</span></td>
+            <td class="wait"><span class="v">6.4 days</span><div class="bar"><div class="f" style="width:45.7%"></div><div class="t"></div></div></td>
+            <td class="num">4.8%</td>
+            <td class="num">2.9%</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="legend">Sorted by median wait, longest first. Bars run 0 to 14 days; the dark tick marks the 7-day target. Red figures are worse than the all-clinic rate (no-show 7.1%, abandonment 4.3%).</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Wait trend</h2>
+    <div class="card chart">
+      <svg viewBox="0 0 480 236" role="img" aria-label="Median wait in days, April to September 2026: Apr 6.8, May 7.2, Jun 7.9, Jul 8.4, Aug 9.0, Sep 9.2. Target 7 days.">
+        <line class="grid" x1="52" y1="24" x2="466" y2="24"/>
+        <line class="grid" x1="52" y1="68" x2="466" y2="68"/>
+        <line class="grid" x1="52" y1="112" x2="466" y2="112"/>
+        <line class="grid" x1="52" y1="200" x2="466" y2="200"/>
+        <text class="axis" x="40" y="28" text-anchor="end">10</text>
+        <text class="axis" x="40" y="72" text-anchor="end">9</text>
+        <text class="axis" x="40" y="116" text-anchor="end">8</text>
+        <text class="axis" x="40" y="160" text-anchor="end">7</text>
+        <text class="axis" x="40" y="204" text-anchor="end">6</text>
+        <line class="target" x1="52" y1="156" x2="466" y2="156"/>
+        <text class="val tl" x="462" y="174" text-anchor="end">Target 7 days</text>
+        <polyline class="line" points="52,164.8 133.6,147.2 215.2,116.4 296.8,94.4 378.4,68 460,59.2"/>
+        <circle class="dot" cx="52" cy="164.8" r="4"/>
+        <circle class="dot" cx="133.6" cy="147.2" r="4"/>
+        <circle class="dot" cx="215.2" cy="116.4" r="4"/>
+        <circle class="dot" cx="296.8" cy="94.4" r="4"/>
+        <circle class="dot" cx="378.4" cy="68" r="4"/>
+        <circle class="dot" cx="460" cy="59.2" r="5" style="fill:var(--bad)"/>
+        <text class="val" x="52" y="185" text-anchor="middle">6.8</text>
+        <text class="val" x="133.6" y="135" text-anchor="middle">7.2</text>
+        <text class="val" x="215.2" y="104" text-anchor="middle">7.9</text>
+        <text class="val" x="296.8" y="82" text-anchor="middle">8.4</text>
+        <text class="val" x="378.4" y="56" text-anchor="middle">9.0</text>
+        <text class="val" x="460" y="47" text-anchor="end" style="fill:var(--bad)">9.2</text>
+        <text class="axis" x="52" y="222" text-anchor="middle">Apr</text>
+        <text class="axis" x="133.6" y="222" text-anchor="middle">May</text>
+        <text class="axis" x="215.2" y="222" text-anchor="middle">Jun</text>
+        <text class="axis" x="296.8" y="222" text-anchor="middle">Jul</text>
+        <text class="axis" x="378.4" y="222" text-anchor="middle">Aug</text>
+        <text class="axis" x="460" y="222" text-anchor="middle" style="font-weight:700;fill:var(--text)">Sep</text>
+      </svg>
+      <p class="caption">Median days to next new-patient appointment, all clinics. Axis starts at 6 days. Above the 7-day target every month since May.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>What we are doing</h2>
+    <div class="actions">
+      <div class="card action">
+        <div class="n">1</div>
+        <span class="where">Eastgate</span>
+        <h3>Saturday clinic from 2026-11-07</h3>
+        <p>Adds weekend new-patient capacity at the clinic with the longest wait.</p>
+        <p class="why">Eastgate lost Dr. Hana Yoshida in August and has 2 open physician posts.</p>
+      </div>
+      <div class="card action">
+        <div class="n">2</div>
+        <span class="where">All clinics</span>
+        <h3>Text reminders two days before visits</h3>
+        <p>Rolls out the reminder approach piloted at Lakeview.</p>
+        <p class="why">The Lakeview pilot cut its no-show rate from 8.0% to 5.9%.</p>
+      </div>
+      <div class="card action">
+        <div class="n">3</div>
+        <span class="where">Harlan Street</span>
+        <h3>Phone lines open until 19:00</h3>
+        <p>Longer phone hours to bring down abandoned calls and help patients book.</p>
+        <p class="why">Harlan Street abandonment is 4.9%, above the 4.3% all-clinic rate.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>Northfield Community Health &middot; Patient access snapshot, September 2026</footer>
+</main>
+</body>
+</html>

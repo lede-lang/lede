@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CI Provider Comparison</title>
+<style>
+:root{--bg:#f3f5f7;--surface:#fff;--text:#161c24;--muted:#5a6473;--border:#d9dfe7;--gha:#5b6b82;--cci:#2f9e8f;--bk:#d35b2f;--rec-bg:#fcefe9;--rec:#d35b2f;--warn-bg:#fff5dc;--warn:#c58c0d;--warn-text:#644500}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1116;--surface:#171c23;--text:#e2e7ee;--muted:#97a1b0;--border:#29303b;--gha:#9aaac2;--cci:#4fc9b8;--bk:#f08a62;--rec-bg:#33201a;--rec:#f08a62;--warn-bg:#2e2509;--warn:#d6a332;--warn-text:#f4da97}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:900px;margin:0 auto;padding:32px 16px 64px}
+.eyebrow{font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 0 6px}
+h1{font-size:clamp(26px,5vw,34px);line-height:1.2;margin:0 0 10px}
+.lede{color:var(--muted);margin:0 0 30px}
+section{margin-bottom:34px}
+h2{font-size:21px;margin:0 0 12px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:620px}
+th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--border)}
+thead th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+tbody tr:last-child>*{border-bottom:0}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.sub{display:block;font-size:13px;color:var(--muted)}
+.chart{padding:18px}
+svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:16px;list-style:none;margin:0 0 8px;padding:0;font-size:14px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.pc{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.pc .panel{padding:14px 16px}
+.pc h3{margin:0 0 4px;font-size:17px}
+.pc h4{margin:10px 0 2px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.pc ul{margin:0;padding-left:20px}
+.callout{border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.callout .label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.callout p{margin:4px 0 0}
+.rec{background:var(--rec-bg);border:1px solid var(--rec)}
+.rec .label{color:var(--rec)}
+.warn{background:var(--warn-bg);border:1px solid var(--warn);border-left-width:6px;color:var(--warn-text)}
+</style>
+</head>
+<body>
+<main>
+<p class="eyebrow">Ridgeback Robotics · Developer Experience</p>
+<h1>Replacing Jenkins: CI providers compared</h1>
+<p class="lede">For the firmware and cloud repos: roughly 38,000 build minutes per month and 120 engineers. Some jobs need ARM runners and a hardware-in-the-loop lab.</p>
+
+<section>
+<h2>Comparison</h2>
+<div class="panel table-wrap">
+<table>
+<thead><tr><th>Provider</th><th class="num">Median build time (min)</th><th>ARM runners</th><th>Self-hosted agents</th><th class="num">Monthly cost</th></tr></thead>
+<tbody>
+<tr><th scope="row">GitHub Actions</th><td class="num">14.2</td><td>Yes</td><td>Yes</td><td class="num">$2,860</td></tr>
+<tr><th scope="row">CircleCI</th><td class="num">11.8</td><td>Yes</td><td>Yes</td><td class="num">$3,420</td></tr>
+<tr><th scope="row">Buildkite</th><td class="num">9.6</td><td>Via our own agents</td><td>Yes (required)</td><td class="num">$2,150<span class="sub">plus our compute</span></td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section>
+<h2>Benchmarks</h2>
+<div class="panel chart">
+<ul class="legend">
+<li><i style="background:var(--gha)"></i>GitHub Actions</li>
+<li><i style="background:var(--cci)"></i>CircleCI</li>
+<li><i style="background:var(--bk)"></i>Buildkite</li>
+</ul>
+<svg viewBox="0 0 640 310" role="img" aria-label="Grouped bar chart of median build time in minutes. firmware-build: GitHub Actions 21.4, CircleCI 17.9, Buildkite 13.2. cloud-api-tests: 9.8, 8.1, 7.4. docs-site: 3.1, 2.7, 2.9. sim-regression: 34.5, 29.0, 22.6.">
+<g stroke="var(--border)" stroke-width="1">
+<line x1="70" y1="270" x2="620" y2="270"/><line x1="70" y1="235.71" x2="620" y2="235.71"/><line x1="70" y1="201.43" x2="620" y2="201.43"/><line x1="70" y1="167.14" x2="620" y2="167.14"/><line x1="70" y1="132.86" x2="620" y2="132.86"/><line x1="70" y1="98.57" x2="620" y2="98.57"/><line x1="70" y1="64.29" x2="620" y2="64.29"/><line x1="70" y1="30" x2="620" y2="30"/>
+</g>
+<g fill="var(--muted)" font-size="12" text-anchor="end">
+<text x="62" y="274">0</text><text x="62" y="239.71">5</text><text x="62" y="205.43">10</text><text x="62" y="171.14">15</text><text x="62" y="136.86">20</text><text x="62" y="102.57">25</text><text x="62" y="68.29">30</text><text x="62" y="34">35 min</text>
+</g>
+<rect x="83.75" y="123.26" width="34" height="146.74" fill="var(--gha)"/>
+<rect x="121.75" y="147.26" width="34" height="122.74" fill="var(--cci)"/>
+<rect x="159.75" y="179.49" width="34" height="90.51" fill="var(--bk)"/>
+<rect x="221.25" y="202.8" width="34" height="67.2" fill="var(--gha)"/>
+<rect x="259.25" y="214.46" width="34" height="55.54" fill="var(--cci)"/>
+<rect x="297.25" y="219.26" width="34" height="50.74" fill="var(--bk)"/>
+<rect x="358.75" y="248.74" width="34" height="21.26" fill="var(--gha)"/>
+<rect x="396.75" y="251.49" width="34" height="18.51" fill="var(--cci)"/>
+<rect x="434.75" y="250.11" width="34" height="19.89" fill="var(--bk)"/>
+<rect x="496.25" y="33.43" width="34" height="236.57" fill="var(--gha)"/>
+<rect x="534.25" y="71.14" width="34" height="198.86" fill="var(--cci)"/>
+<rect x="572.25" y="115.03" width="34" height="154.97" fill="var(--bk)"/>
+<g fill="var(--text)" font-size="12" text-anchor="middle" font-variant-numeric="tabular-nums">
+<text x="100.75" y="118">21.4</text><text x="138.75" y="142">17.9</text><text x="176.75" y="174">13.2</text>
+<text x="238.25" y="198">9.8</text><text x="276.25" y="209">8.1</text><text x="314.25" y="214">7.4</text>
+<text x="375.75" y="244">3.1</text><text x="413.75" y="246">2.7</text><text x="451.75" y="245">2.9</text>
+<text x="513.25" y="28">34.5</text><text x="551.25" y="66">29.0</text><text x="589.25" y="110">22.6</text>
+</g>
+<g fill="var(--text)" font-size="13" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">
+<text x="138.75" y="292">firmware-build</text><text x="276.25" y="292">cloud-api-tests</text><text x="413.75" y="292">docs-site</text><text x="551.25" y="292">sim-regression</text>
+</g>
+</svg>
+</div>
+</section>
+
+<section>
+<h2>Pros and cons</h2>
+<div class="pc">
+<div class="panel"><h3>GitHub Actions</h3>
+<h4>Pros</h4><ul><li>Hosted ARM runners</li><li>Supports self-hosted agents</li></ul>
+<h4>Cons</h4><ul><li>Slowest median build at 14.2 min</li><li>$2,860 a month</li></ul></div>
+<div class="panel"><h3>CircleCI</h3>
+<h4>Pros</h4><ul><li>Hosted ARM runners</li><li>Faster than GitHub Actions on every pipeline</li></ul>
+<h4>Cons</h4><ul><li>Most expensive at $3,420 a month</li></ul></div>
+<div class="panel"><h3>Buildkite</h3>
+<h4>Pros</h4><ul><li>Fastest median build at 9.6 min</li><li>Lowest license cost at $2,150</li><li>Self-hosted agents fit the hardware lab</li></ul>
+<h4>Cons</h4><ul><li>ARM only via our own agents</li><li>We pay for our own compute</li><li>We patch the runners</li></ul></div>
+</div>
+</section>
+
+<section>
+<h2>Recommendation</h2>
+<div class="callout rec">
+<div class="label">Recommendation</div>
+<p><strong>Buildkite.</strong> The hardware-in-the-loop lab needs self-hosted agents anyway.</p>
+</div>
+<div class="callout warn" role="note">
+<div class="label">Warning</div>
+<p>Buildkite moves runner patching onto the DevEx on-call, estimated at 6 hours a month.</p>
+</div>
+</section>
+</main>
+</body>
+</html>

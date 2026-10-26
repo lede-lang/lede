@@ -1,0 +1,43 @@
+@title Observability Stack for 2027
+@subtitle Comparison for the budget meeting
+@author SRE team, Copperleaf Insurance
+
+We run 340 hosts, ingest about 2.1 TB of logs per month, and have 14 engineers on call. This page compares three options for the 2027 observability stack.
+
+# Comparison table
+
+table = Option,Setup effort,Alerting,Log search,Lock-in,Annual cost; Datadog,low,excellent,excellent,high,"$412,000"; Grafana Cloud,low,good,good,medium,"$236,000"; Self-hosted,high,good,fair,low,"$148,000 plus 1.5 engineers"
+
+# Three-year cost
+
+data cum = year,Datadog,Grafana Cloud,Self-hosted incl staff; 2027,412,236,418; 2028,865,496,706; 2029,1363,782,1004
+chart line cum x=year y=Datadog,Grafana Cloud,Self-hosted incl staff unit=$K title="Cumulative cost, thousands of dollars"
+
+# Pros and cons
+
+### Datadog
+
+- Pro: excellent alerting and log search.
+- Pro: low setup effort.
+- Con: high lock-in.
+- Con: the highest annual cost.
+
+### Grafana Cloud
+
+- Pro: low setup effort.
+- Pro: dashboards stay portable.
+- Con: log search is good, not excellent.
+- Con: medium lock-in.
+
+### Self-hosted
+
+- Pro: low lock-in, and the lowest license cost.
+- Con: high setup effort.
+- Con: fair log search.
+- Con: needs about 1.5 engineers to run.
+
+# Recommendation
+
+Grafana Cloud. It is the cheapest option once staff time is counted, and it keeps our dashboards portable.
+
+! The Datadog quote expires on 2026-11-30. Self-hosted assumes we can hire the 1.5 engineers, which is not yet approved.

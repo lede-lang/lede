@@ -1,0 +1,53 @@
+{
+  "id": "116-millbrook-library-faq",
+  "category": "prose",
+  "title": "Millbrook library borrowing FAQ",
+  "brief": "The Millbrook Public Library needs an FAQ page about borrowing for its website, written by the circulation manager, Hye-jin Park, effective 2026-11-01 when the library stops charging late fines. Use these questions as headings, in this order: \"Who can join the library?\", \"How many items can I borrow?\", \"How long can I keep things?\", \"What if I return something late?\", \"How do I renew?\", \"How do I reserve an item?\". The facts: membership is free for anyone who lives, works or studies in Millbrook County, and children under 18 need a parent or guardian to sign up; a member can borrow up to 30 items at once, of which at most 5 can be DVDs and 2 can be Wi-Fi hotspots; books and audiobooks are lent for 21 days, DVDs for 7 days and hotspots for 14 days; there are no late fines from 2026-11-01, but an item that is 30 days overdue is treated as lost and its replacement cost is charged, capped at 25 dollars an item, and borrowing is paused while an account owes 10 dollars or more; renewals can be done online, in the app or at the desk, up to 3 times, unless another reader is waiting; reservations are free, up to 15 at once, and a reserved item waits at the desk for 7 days after we email you; questions go to help@millbrooklibrary.example or to the desk on weekdays from 09:00 to 18:00. Keep it friendly and plain, with short sentences.",
+  "checklist": {
+    "sections": [
+      "Who can join the library?",
+      "How many items can I borrow?",
+      "How long can I keep things?",
+      "What if I return something late?",
+      "How do I renew?",
+      "How do I reserve an item?"
+    ],
+    "visible": [
+      "Hye-jin Park",
+      "help@millbrooklibrary.example",
+      "DVDs",
+      "hotspots"
+    ],
+    "values": [
+      "2026-11-01",
+      "30 items",
+      "21 days",
+      "7 days",
+      "14 days",
+      "30 days",
+      "25 dollars",
+      "10 dollars",
+      "3 times",
+      "15",
+      "09:00",
+      "18:00"
+    ]
+  },
+  "needs": [
+    "list"
+  ],
+  "edit": {
+    "request": "Change the book loan period to 28 days instead of 21 and the renewal limit to 5 times instead of 3, and add the sentence \"Hotspots cannot be renewed.\"",
+    "expect_visible": [
+      "Hotspots cannot be renewed"
+    ],
+    "expect_values": [
+      "28 days",
+      "5 times"
+    ],
+    "expect_absent": [
+      "21 days",
+      "3 times"
+    ]
+  }
+}

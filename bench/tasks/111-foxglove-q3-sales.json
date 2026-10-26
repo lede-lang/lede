@@ -1,0 +1,60 @@
+{
+  "id": "111-foxglove-q3-sales",
+  "category": "data",
+  "title": "Foxglove Q3 sales summary",
+  "brief": "Foxglove Garden Centers' retail finance lead, Imani Okoro, needs a Q3 2026 (July to September) sales summary for the store managers, who will mostly read it on their phones. Revenue by category in thousands of dollars. Plants: Jul 820, Aug 760, Sep 910. Tools and supplies: 410, 390, 450. Furniture: 530, 480, 360. Seasonal and holiday: 90, 150, 520. Monthly totals are 1850, 1780 and 2240, which is 5870 for the quarter, up 8.3 percent on the 5420 of the same quarter last year. By category the quarter was: Plants 2490, Tools and supplies 1250, Furniture 1370, Seasonal and holiday 760. Average basket size by month: Jul 38.40 dollars, Aug 39.10, Sep 42.70. Points to draw out: September was the best month, helped by Seasonal and holiday, which reached 23.2 percent of September revenue once autumn displays went up on 2026-09-08; Furniture fell 32.1 percent from July to September as patio season ended, and is the one category that needs a clearance decision; Plants is still the biggest category at 42.4 percent of the quarter. Open with \"Q3 at a glance\", then \"Revenue by category\" showing how the mix shifted month by month together with the figures and totals, and \"Watch items\" with the Furniture clearance decision flagged.",
+  "checklist": {
+    "sections": [
+      "Q3 at a glance",
+      "Revenue by category",
+      "Watch items"
+    ],
+    "visible": [
+      "Plants",
+      "Tools and supplies",
+      "Furniture",
+      "Seasonal and holiday",
+      "Imani Okoro",
+      "clearance"
+    ],
+    "values": [
+      "5870",
+      "8.3",
+      "5420",
+      "1850",
+      "1780",
+      "2240",
+      "2490",
+      "1250",
+      "1370",
+      "760",
+      "38.40",
+      "39.10",
+      "42.70",
+      "23.2",
+      "32.1",
+      "42.4",
+      "2026-09-08"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "The September Furniture figure was restated from 360 to 385, which makes September 2265 and the quarter total 5895.",
+    "expect_visible": [],
+    "expect_values": [
+      "385",
+      "2265",
+      "5895"
+    ],
+    "expect_absent": [
+      "2240",
+      "5870"
+    ]
+  }
+}

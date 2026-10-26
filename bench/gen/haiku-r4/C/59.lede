@@ -1,0 +1,31 @@
+@title Login platform: build or buy
+@subtitle For the architecture council, decision on 2026-11-04
+
+Meadowbrook Learning has 250,000 monthly active learners, growing about 40 percent a year, and our home-grown login system is a maintenance burden. Three options are on the table: keep building on the open-source Keycloak, self-hosted, buy Authly, or buy Gatepost.
+
+## Cost
+
+Annual cost at three levels of monthly active users. The Keycloak figure is infrastructure plus 1.5 engineers. Gatepost's price steps up sharply above 400,000 users.
+
+data cost = monthly active users,Keycloak (self-hosted),Authly,Gatepost; 100k,210000,66000,54000; 250k,240000,151000,108000; 500k,330000,288000,192000
+
+table cost title="Annual cost in dollars"
+
+chart bar cost unit=$ title="Annual cost by monthly active users"
+
+## Capabilities
+
+- **SSO for schools.** All three support SAML and OIDC.
+- **Bot protection.** Keycloak has no managed bot protection, so we would add it ourselves. Authly includes it. Gatepost charges $18,000 a year extra for it.
+- **Adaptive MFA.** Authly includes it, and Gatepost has it too.
+- **EU data residency.** All three can keep EU learner data in Frankfurt. Gatepost only does so on its highest plan.
+
+## Risks
+
+- **Keycloak.** We would own the operation and the bot protection. Cost rises to $330,000 a year at 500,000 users.
+- **Authly.** Cost rises from $151,000 a year at 250,000 users to $288,000 at 500,000.
+- **Gatepost.** Cheapest at every level, even with bot protection added. But its price steps up sharply above 400,000 users, and EU residency needs its highest plan.
+
+## Recommendation
+
+We recommend Authly. It is the middle option on cost, at $151,000 a year at 250,000 users. It is also the only option that covers bot protection, adaptive MFA and EU residency without add-ons. We would revisit the choice at 500,000 users, when its cost reaches $288,000 a year.

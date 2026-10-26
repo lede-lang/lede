@@ -1,0 +1,22 @@
+@title Sales Kickoff City
+@subtitle Harlow Devices sales kickoff, 220 attendees, 2027-03-16 to 2027-03-18. Leadership decides on 2026-11-03.
+@date 2026-11-03
+
+kpi Recommendation | Prague | €119,480 total | good
+
+## Shortlist
+Two event days plus three hotel nights for 220 attendees. Flight time is the average from our hub.
+data cities = city,venue per day,flight h,hotel per night,largest room,total cost; Lisbon,18500,3.5,165,300,145900; Prague,14200,2.0,138,260,119480; Vienna,21800,1.8,189,320,168340; Krakow,11900,2.5,112,190,97720; Seville,16400,3.8,149,280,131140; Athens,15100,3.6,131,250,116660; Dublin,23900,2.2,204,340,182440
+table cities cols=city,venue per day,hotel per night,flight h,largest room sort=city title="Shortlist (venue and hotel in €)"
+
+!! Krakow's largest room seats only 190, fewer than the 220 attendees, so Krakow is out.
+
+## Total cost
+Two venue days plus 660 hotel room nights (220 rooms for 3 nights), in euros.
+chart hbar cities x=city y=total cost unit=€ focus="Prague" title="Total cost for 220 people"
+
+## Trade-offs
+table = City,Total cost,Flight,Verdict; Krakow,"€97,720",2.5 h,Out: room seats 190; Athens,"€116,660",3.6 h,Cheapest that fits; **Prague**,"**€119,480**",**2.0 h**,**Recommended**; Seville,"€131,140",3.8 h,Longer flight; Lisbon,"€145,900",3.5 h,Longer flight; Vienna,"€168,340",1.8 h,Shortest flight; Dublin,"€182,440",2.2 h,Most expensive
+
+## Recommendation
+We recommend **Prague**. It costs only €2,820 more than Athens, with a flight 1.6 h shorter, and its largest room seats 260.

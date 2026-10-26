@@ -1,0 +1,32 @@
+@title INC-2291 Billing API Outage
+@subtitle Postmortem, Brightwave Telecom
+@author Billing Platform
+@date 2026-09-03
+
+kpi Duration | 47 min
+kpi Peak error rate | 38.5% | | bad
+kpi Failed requests | 182,400 | | bad
+kpi Customers affected | 13,150 | | bad
+
+## Summary
+
+A configuration change lowered the Billing API's database connection pool from 200 connections to 20. Under normal load, requests queued waiting for a connection and timed out, driving the error rate to a peak of 38.5%. The change was rolled back and errors returned to baseline 47 minutes after deployment.
+
+## Timeline
+
+table = Time (UTC),Event; 14:02,Config change merged and deployed; 14:06,Error rate alert fires; 14:09,On-call acknowledges; 14:21,Incident declared Sev2; 14:33,Connection pool exhaustion identified; 14:41,Rollback started; 14:49,Errors return to baseline; 14:53,Incident resolved
+
+## Error rate
+
+data errors = time,error rate; 14:00,0.2; 14:05,4.1; 14:10,17.8; 14:15,29.6; 14:20,38.5; 14:25,36.9; 14:30,37.2; 14:35,35.0; 14:40,33.4; 14:45,12.7; 14:50,0.6; 14:55,0.3
+chart line errors x=time unit=% title="Error rate, 5-minute intervals (UTC)"
+
+## Root cause
+
+The pool size was edited in a shared configuration file and deployed to every pod at once. Twenty connections could not serve peak Billing API traffic, so request threads blocked waiting for a free connection until they hit their timeout. Nothing in the review or deploy path flagged that the new value was an order of magnitude below the previous one.
+
+! The config linter did not validate pool size bounds, so the out-of-range value passed every check.
+
+## Action items
+
+table = Action,Owner,Due; Add bounds validation for pool settings,Marta Kowalski,2026-09-24; Canary config changes to 5% of pods first,Ravi Shah,2026-10-08; Alert on pool saturation above 80%,Billing on-call,2026-09-17; Write a runbook for connection pool exhaustion,Lena Fischer,2026-10-15

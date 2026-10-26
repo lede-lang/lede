@@ -1,0 +1,3 @@
+Nothing the format could not express. Substitutions: no PR-style checklist or links (no checkbox needed beyond what Lede offers, and no URLs were given for the ticket or commits), so FIN-2210 and commit hashes are plain text.
+Per the instructions I did not read the checked-out code, so "what changed" comes only from commit messages and diff stats; I could not show a real before/after rounding example and pointed to the docs worked example instead.
+I added two open questions from the brief itself rather than resolving them: how invoices finalized Oct 1-9 are treated, and what the replay compares against given the $0.24 average error versus only 28 one-cent differences.

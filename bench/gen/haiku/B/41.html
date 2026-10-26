@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ashgrove Weekly Ops</title>
+<style>
+:root{--bg:#f4f5f7;--card:#ffffff;--fg:#1b1f26;--muted:#5b6370;--line:#d9dee6;--accent:#2a56c6;--good:#17794a;--goodbg:#e2f4ea;--warn:#8a5200;--warnbg:#fcf0d9;--bad:#b3261e;--badbg:#fbe3e0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0f1115;--card:#181b21;--fg:#e6e9ef;--muted:#9aa3b0;--line:#2b313b;--accent:#8fb0ff;--good:#62d39b;--goodbg:#15301f;--warn:#f0b35c;--warnbg:#36290f;--bad:#ff8b82;--badbg:#3b1a18}}
+:root[data-theme="dark"]{--bg:#0f1115;--card:#181b21;--fg:#e6e9ef;--muted:#9aa3b0;--line:#2b313b;--accent:#8fb0ff;--good:#62d39b;--goodbg:#15301f;--warn:#f0b35c;--warnbg:#36290f;--bad:#ff8b82;--badbg:#3b1a18}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:1.6rem;line-height:1.2;margin:0 0 6px}
+h2{font-size:1.15rem;margin:34px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+p.sub{color:var(--muted);margin:0 0 18px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.kpi .v{font-size:1.5rem;font-weight:650;font-variant-numeric:tabular-nums}
+.kpi .l{color:var(--muted);font-size:.85rem;margin-top:2px}
+.kpi .t{font-size:.85rem;margin-top:6px}
+.good{color:var(--good)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.callout{border-left:4px solid var(--warn);background:var(--warnbg);padding:12px 14px;border-radius:8px;margin:14px 0}
+.callout.bad{border-color:var(--bad);background:var(--badbg)}
+.tbl{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tbl th,.tbl td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top;font-size:.94rem}
+.tbl th{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.tbl tr:last-child td{border-bottom:0}
+.tbl tr.hi td{background:var(--badbg)}
+.tbl tr.watch td{background:var(--warnbg)}
+.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tag{display:inline-block;font-size:.78rem;font-weight:650;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.tag.g{background:var(--goodbg);color:var(--good)} .tag.a{background:var(--warnbg);color:var(--warn)} .tag.r{background:var(--badbg);color:var(--bad)}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;min-width:90px}
+.bar i{display:block;height:100%;background:var(--accent)}
+.bar i.g{background:var(--good)} .bar i.a{background:var(--warn)} .bar i.r{background:var(--bad)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+pre{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow-x:auto;font-size:.88rem;white-space:pre-wrap;word-break:break-word}
+code{font-size:.9em}
+svg{display:block;width:100%;height:auto}
+svg .box{fill:var(--card);stroke:var(--muted);stroke-width:1.2}
+svg .dec{stroke:var(--accent);stroke-width:1.8}
+svg .zone{fill:none;stroke:var(--line);stroke-width:1.2;stroke-dasharray:5 4}
+svg text{fill:var(--fg);font-size:12px}
+svg .sm{fill:var(--muted);font-size:11px}
+svg .t11{font-size:11px}
+svg .lbl{font-size:11px;paint-order:stroke;stroke:var(--bg);stroke-width:4px;stroke-linejoin:round}
+svg .ln{stroke:var(--muted);stroke-width:1.4;fill:none}
+svg .ln.d{stroke-dasharray:5 4}
+svg .arr{fill:var(--muted)}
+.scroll{overflow-x:auto}
+.scroll svg{min-width:620px}
+ul.tl{list-style:none;padding:0;margin:0}
+ul.tl li{position:relative;padding:0 0 14px 22px;border-left:2px solid var(--line);margin-left:6px}
+ul.tl li::before{content:"";position:absolute;left:-6px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--accent)}
+ul.tl li:last-child{border-left-color:transparent}
+.time{font-weight:650;font-variant-numeric:tabular-nums;margin-right:6px}
+@media (max-width:560px){.tbl th,.tbl td{padding:7px 6px;font-size:.88rem}.wrap{padding:18px 14px 40px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Ashgrove Logistics: weekly operations status</h1>
+<p class="sub">Four U.S. fulfillment sites &middot; week ending 2026-10-16</p>
+
+<h2>Headlines</h2>
+<div class="kpis">
+  <div class="kpi"><div class="v">48,210</div><div class="l">Orders shipped</div></div>
+  <div class="kpi"><div class="v bad">96.4%</div><div class="l">On-time dispatch</div><div class="t bad">Target 97.0%, 0.6 points short</div></div>
+  <div class="kpi"><div class="v">3.8 h</div><div class="l">Avg dock-to-stock time</div></div>
+  <div class="kpi"><div class="v warn">7</div><div class="l">Open safety observations</div></div>
+</div>
+
+<h2>On-time trend</h2>
+<div class="card">
+<svg viewBox="0 0 600 230" role="img" aria-label="Line chart of weekly on-time dispatch, W34 to W41, with the 97.0 percent target">
+  <g stroke="var(--line)" stroke-width="1">
+    <line x1="34" y1="20" x2="585" y2="20"/>
+    <line x1="34" y1="200" x2="585" y2="200"/>
+  </g>
+  <line x1="34" y1="110" x2="585" y2="110" stroke="var(--accent)" stroke-width="1.2" stroke-dasharray="6 4"/>
+  <text class="sm" x="0" y="24">98%</text>
+  <text class="sm" x="0" y="114">97%</text>
+  <text class="sm" x="0" y="204">96%</text>
+  <polyline points="40,105.5 114.3,75.5 188.6,119 262.9,92 337.1,110 411.4,128 485.7,119 560,164" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round"/>
+  <g fill="var(--accent)">
+    <circle cx="40" cy="105.5" r="4"/><circle cx="114.3" cy="75.5" r="4"/><circle cx="188.6" cy="119" r="4"/><circle cx="262.9" cy="92" r="4"/><circle cx="337.1" cy="110" r="4"/><circle cx="411.4" cy="128" r="4"/><circle cx="485.7" cy="119" r="4"/>
+  </g>
+  <circle cx="560" cy="164" r="5" fill="var(--bad)"/>
+  <g text-anchor="middle">
+    <text class="lbl" x="40" y="95.5">97.1</text>
+    <text class="lbl" x="114.3" y="65.5">97.4</text>
+    <text class="lbl" x="188.6" y="109">96.9</text>
+    <text class="lbl" x="262.9" y="82">97.2</text>
+    <text class="lbl" x="337.1" y="100">97.0</text>
+    <text class="lbl" x="411.4" y="118">96.8</text>
+    <text class="lbl" x="485.7" y="109">96.9</text>
+    <text class="lbl bad" x="560" y="152" style="fill:var(--bad)">96.4</text>
+    <text class="sm" x="40" y="222">W34</text>
+    <text class="sm" x="114.3" y="222">W35</text>
+    <text class="sm" x="188.6" y="222">W36</text>
+    <text class="sm" x="262.9" y="222">W37</text>
+    <text class="sm" x="337.1" y="222">W38</text>
+    <text class="sm" x="411.4" y="222">W39</text>
+    <text class="sm" x="485.7" y="222">W40</text>
+    <text class="sm" x="560" y="222">W41</text>
+  </g>
+</svg>
+<p class="sub" style="margin:8px 0 0">On-time dispatch, percent. The dashed line is the 97.0% target.</p>
+</div>
+
+<h2>Sites</h2>
+<div class="scroll">
+<table class="tbl">
+  <thead><tr><th>Site</th><th>Manager</th><th class="num">Orders shipped</th><th class="num">On-time</th></tr></thead>
+  <tbody>
+    <tr><td>Reno, NV</td><td>Alicia Tran</td><td class="num">11,940</td><td class="num">97.8%</td></tr>
+    <tr><td>Columbus, OH</td><td>Marcus Bell</td><td class="num">14,380</td><td class="num">97.2%</td></tr>
+    <tr class="watch"><td>Dallas, TX <span class="tag a">Watch</span></td><td>Priyanka Rao</td><td class="num">12,115</td><td class="num warn"><strong>96.5%</strong></td></tr>
+    <tr class="hi"><td><strong>Savannah, GA</strong> <span class="tag r">Off target</span></td><td>Joel Okafor</td><td class="num">9,775</td><td class="num bad"><strong>93.6%</strong></td></tr>
+    <tr><td colspan="2"><strong>All four sites</strong></td><td class="num"><strong>48,210</strong></td><td class="num"><strong>96.4%</strong></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Needs attention</h2>
+<div class="callout bad">
+  <strong>Savannah, GA: crane outage and backlog.</strong> The container crane was out of service from 2026-10-12 to 2026-10-15. That left a backlog of 1,150 orders, which should be cleared by 2026-10-19 with approved overtime.
+</div>
+<div class="callout">
+  <strong>Dallas, TX is worth watching.</strong> On-time dispatch is 96.5%, below the 97.0% target.
+</div>
+
+<h2>Next week</h2>
+<ul class="tl">
+  <li><span class="time">2026-10-18</span>Crane inspection sign-off at Savannah.</li>
+  <li><span class="time">2026-11-02</span>220 seasonal associates start.</li>
+</ul>
+</div>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>911 Call Receipt and Dispatch Architecture</title>
+<style>
+:root{--bg:#f4f6f9;--card:#fff;--ink:#16202b;--mut:#55616e;--line:#d3dae2;--acc:#1d5fbf;--acc-s:#e5eefb;--warn:#b0360a;--warn-s:#fdece3;--ok:#13703e;--ok-s:#e2f3ea;--gold:#7a5200;--gold-s:#fcf1d2}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--card:#171f28;--ink:#e7ecf1;--mut:#9ba8b5;--line:#2c3844;--acc:#7db1ff;--acc-s:#16273d;--warn:#ff9d73;--warn-s:#34201a;--ok:#62d796;--ok-s:#12291c;--gold:#f0c35c;--gold-s:#30260f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:920px;margin:0 auto;padding:0 16px 56px}
+header{padding:32px 0 14px;border-bottom:1px solid var(--line)}
+.eyebrow{margin:0 0 6px;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:var(--acc);font-weight:700}
+h1{margin:0 0 8px;font-size:clamp(1.6rem,5.5vw,2.4rem);line-height:1.15;letter-spacing:-.01em}
+.meta{margin:0;color:var(--mut);font-size:.92rem}
+h2{margin:40px 0 12px;font-size:1.4rem;line-height:1.25}
+p{margin:0 0 12px}
+.callout{border-left:5px solid var(--warn);background:var(--warn-s);border-radius:10px;padding:14px 16px;margin:20px 0}
+.callout strong{color:var(--warn)}
+.diagram{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;overflow-x:auto}
+.diagram svg{display:block;margin:0 auto;width:100%;min-width:440px;max-width:600px;height:auto}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:.94rem}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.76rem;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.stat{font-size:2rem;font-weight:800;line-height:1.1;color:var(--acc);letter-spacing:-.01em}
+.card p{margin:6px 0 0;font-size:.95rem}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin:10px 2px 0;font-size:.85rem;color:var(--mut)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend svg{width:34px;height:10px}
+.note{font-size:.88rem;color:var(--mut);margin-top:10px}
+/* svg */
+svg text{font-family:inherit;fill:var(--ink)}
+.n{fill:var(--acc-s);stroke:var(--acc);stroke-width:1.5}
+.n.out{fill:var(--card);stroke:var(--ink)}
+.n.wn{fill:var(--warn-s);stroke:var(--warn);stroke-width:1.5}
+.ctr{fill:none;stroke:var(--acc);stroke-width:1.8}
+.ctr.bk{stroke-dasharray:7 5}
+.e{fill:none;stroke:var(--ink);stroke-width:1.6}
+.e.d{stroke-dasharray:5 4}
+.ah{fill:var(--ink)}
+.t{font-size:13.5px;font-weight:700;text-anchor:middle}
+.t2{font-size:12.5px;font-weight:700;text-anchor:middle}
+.s{font-size:11.5px;text-anchor:middle;fill:var(--mut)}
+.l{font-size:12px;fill:var(--mut);paint-order:stroke;stroke:var(--card);stroke-width:4px;stroke-linejoin:round}
+.lc{text-anchor:middle}
+.le{text-anchor:end}
+.ct{font-size:12.5px;font-weight:700;fill:var(--acc)}
+.wt{font-size:11.5px;fill:var(--ink)}
+.wh{font-size:12.5px;font-weight:700;fill:var(--warn)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Marrow County Emergency Communications District</p>
+  <h1>How a 911 call is received and dispatched</h1>
+  <p class="meta">Owner: Public Safety Systems team &middot; Reviewed <time datetime="2026-09-30">2026-09-30</time></p>
+</header>
+
+<main>
+<section id="overview">
+  <h2>Overview</h2>
+  <p>Calls arrive from the telephone carriers into the primary dispatch center. A backup dispatch center across the county can take over if the primary is lost.</p>
+</section>
+
+<aside class="callout" role="note">
+  <strong>The backup center is never activated automatically.</strong> It is activated only when the shift supervisor declares the primary dispatch center unavailable.
+</aside>
+
+<section id="call-path">
+  <h2>Call path</h2>
+  <div class="diagram">
+  <svg viewBox="0 0 530 560" role="img" aria-labelledby="dt dd">
+    <title id="dt">Call path through the primary and backup dispatch centers</title>
+    <desc id="dd">Callers reach Telecom Carriers, which connect by SIP trunks to the Call Router in the Primary Dispatch Center. The Call Router sends call records to CAD Server A, which syncs state to CAD Server B, looks up addresses in the State GIS Service, sends dispatch messages to the Radio Gateway and replicates asynchronously to the CAD Replica in the Backup Dispatch Center. The Radio Gateway reaches Field Units over P25 radio. The Call Router sends a heartbeat to the Standby Call Router.</desc>
+    <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah"/></marker></defs>
+
+    <rect class="ctr" x="8" y="132" width="272" height="356" rx="12"/>
+    <rect class="ctr bk" x="358" y="132" width="164" height="170" rx="12"/>
+    <text class="ct" x="20" y="478">Primary Dispatch Center</text>
+    <text class="ct" x="368" y="292">Backup Dispatch Center</text>
+
+    <rect class="n out" x="116" y="8" width="160" height="32" rx="8"/><text class="t" x="196" y="29">Callers</text>
+    <rect class="n out" x="116" y="72" width="160" height="32" rx="8"/><text class="t" x="196" y="93">Telecom Carriers</text>
+    <rect class="n out" x="8" y="66" width="100" height="44" rx="8"/><text class="t2" x="58" y="85">State GIS</text><text class="t2" x="58" y="101">Service</text>
+    <rect class="n out" x="116" y="516" width="160" height="32" rx="8"/><text class="t" x="196" y="537">Field Units</text>
+
+    <rect class="n" x="116" y="160" width="160" height="36" rx="8"/><text class="t" x="196" y="183">Call Router</text>
+    <rect class="n" x="116" y="240" width="160" height="52" rx="8"/><text class="t" x="196" y="263">CAD Server A</text><text class="s" x="196" y="281">active</text>
+    <rect class="n" x="116" y="340" width="160" height="52" rx="8"/><text class="t" x="196" y="363">CAD Server B</text><text class="s" x="196" y="381">hot standby</text>
+    <rect class="n" x="116" y="428" width="160" height="36" rx="8"/><text class="t" x="196" y="451">Radio Gateway</text>
+
+    <rect class="n" x="368" y="160" width="144" height="36" rx="8"/><text class="t2" x="440" y="183">Standby Call Router</text>
+    <rect class="n" x="368" y="236" width="144" height="40" rx="8"/><text class="t2" x="440" y="260">CAD Replica</text>
+
+    <path class="e" d="M196 40V71" marker-end="url(#ar)"/>
+    <path class="e" d="M196 104V159" marker-end="url(#ar)"/>
+    <path class="e" d="M196 196V239" marker-end="url(#ar)"/>
+    <path class="e" d="M196 292V339" marker-end="url(#ar)"/>
+    <path class="e" d="M116 282H92V446H115" marker-end="url(#ar)"/>
+    <path class="e" d="M196 464V515" marker-end="url(#ar)"/>
+    <path class="e" d="M116 252H58V111" marker-end="url(#ar)"/>
+    <path class="e d" d="M276 178H367" marker-end="url(#ar)"/>
+    <path class="e d" d="M276 256H367" marker-end="url(#ar)"/>
+
+    <text class="l" x="204" y="61">voice and caller location</text>
+    <text class="l" x="204" y="126">SIP trunks</text>
+    <text class="l" x="204" y="222">call record</text>
+    <text class="l" x="204" y="320">state sync</text>
+    <text class="l le" x="86" y="360">dispatch</text><text class="l le" x="86" y="374">message</text>
+    <text class="l" x="204" y="508">P25 radio</text>
+    <text class="l" x="64" y="204">address</text><text class="l" x="64" y="217">lookup</text>
+    <text class="l lc" x="319" y="172">heartbeat</text>
+    <text class="l lc" x="319" y="236">asynchronous</text><text class="l lc" x="319" y="248">replication</text>
+
+    <rect class="n wn" x="358" y="316" width="164" height="118" rx="10"/>
+    <text class="wh" x="368" y="337">Manual activation only</text>
+    <text class="wt" x="368" y="357">Opens only when the</text>
+    <text class="wt" x="368" y="372">shift supervisor</text>
+    <text class="wt" x="368" y="387">declares the primary</text>
+    <text class="wt" x="368" y="402">unavailable. Never</text>
+    <text class="wt" x="368" y="417">automatic.</text>
+  </svg>
+  </div>
+  <div class="legend">
+    <span><svg viewBox="0 0 34 10" aria-hidden="true"><path d="M0 5H34" stroke="currentColor" stroke-width="2" fill="none"/></svg>live call or dispatch flow</span>
+    <span><svg viewBox="0 0 34 10" aria-hidden="true"><path d="M0 5H34" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4" fill="none"/></svg>link to the backup center</span>
+  </div>
+  <p class="note">CAD is the computer-aided dispatch system. Server A is active, Server B is its hot standby, and the CAD Replica in the backup center is fed asynchronously.</p>
+
+  <h3 style="margin:24px 0 10px;font-size:1.05rem">Every flow</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>From</th><th>To</th><th>Carries</th></tr></thead>
+    <tbody>
+      <tr><td>Callers</td><td>Telecom Carriers</td><td>voice and caller location</td></tr>
+      <tr><td>Telecom Carriers</td><td>Call Router</td><td>SIP trunks</td></tr>
+      <tr><td>Call Router</td><td>CAD Server A</td><td>call record</td></tr>
+      <tr><td>CAD Server A</td><td>CAD Server B</td><td>state sync</td></tr>
+      <tr><td>CAD Server A</td><td>CAD Replica</td><td>asynchronous replication</td></tr>
+      <tr><td>Call Router</td><td>Standby Call Router</td><td>heartbeat</td></tr>
+      <tr><td>CAD Server A</td><td>State GIS Service</td><td>address lookup</td></tr>
+      <tr><td>CAD Server A</td><td>Radio Gateway</td><td>dispatch message</td></tr>
+      <tr><td>Radio Gateway</td><td>Field Units</td><td>P25 radio</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="failover">
+  <h2>Failover targets</h2>
+  <div class="grid">
+    <div class="card"><div class="stat">30 sec</div><p><strong>Call routing</strong> switches to the Standby Call Router within 30 seconds.</p></div>
+    <div class="card"><div class="stat">2 min</div><p><strong>CAD Server B</strong> takes over within 2 minutes.</p></div>
+    <div class="card"><div class="stat">&lt; 5 sec</div><p><strong>CAD Replica</strong> lags the active server by under 5 seconds.</p></div>
+    <div class="card"><div class="stat">10 min</div><p><strong>Backup center</strong> is fully staffed and taking calls within 10 minutes.</p></div>
+  </div>
+  <div class="callout">
+    <strong>Reminder:</strong> the first two targets cover failures inside the primary center. The 10-minute target applies only after the shift supervisor declares the primary unavailable; the backup center never starts on its own.
+  </div>
+</section>
+</main>
+</div>
+</body>
+</html>

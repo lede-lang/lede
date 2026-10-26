@@ -1,0 +1,4 @@
+data runs = week,deploys; W1,14; W2,19; W3,9
+table runs
+table runs cols=deploys sort=-deploys limit=2 title="Top"
+table title="Inline" = a,b; 1,2; 3,4

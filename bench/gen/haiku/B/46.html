@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Landing Zone Network</title>
+<style>
+:root{--bg:#f4f5f7;--card:#ffffff;--fg:#1b1f26;--muted:#5b6370;--line:#d9dee6;--accent:#2a56c6;--good:#17794a;--goodbg:#e2f4ea;--warn:#8a5200;--warnbg:#fcf0d9;--bad:#b3261e;--badbg:#fbe3e0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0f1115;--card:#181b21;--fg:#e6e9ef;--muted:#9aa3b0;--line:#2b313b;--accent:#8fb0ff;--good:#62d39b;--goodbg:#15301f;--warn:#f0b35c;--warnbg:#36290f;--bad:#ff8b82;--badbg:#3b1a18}}
+:root[data-theme="dark"]{--bg:#0f1115;--card:#181b21;--fg:#e6e9ef;--muted:#9aa3b0;--line:#2b313b;--accent:#8fb0ff;--good:#62d39b;--goodbg:#15301f;--warn:#f0b35c;--warnbg:#36290f;--bad:#ff8b82;--badbg:#3b1a18}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:1.6rem;line-height:1.2;margin:0 0 6px}
+h2{font-size:1.15rem;margin:34px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+p.sub{color:var(--muted);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.callout{border-left:4px solid var(--warn);background:var(--warnbg);padding:12px 14px;border-radius:8px;margin:14px 0}
+.callout.bad{border-color:var(--bad);background:var(--badbg)}
+.tbl{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tbl th,.tbl td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top;font-size:.94rem}
+.tbl th{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.tbl tr:last-child td{border-bottom:0}
+.scroll{overflow-x:auto}
+.scroll .tbl{min-width:520px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em}
+svg{display:block;width:100%;height:auto}
+svg .box{fill:var(--card);stroke:var(--muted);stroke-width:1.2}
+svg .zone{fill:none;stroke:var(--line);stroke-width:1.4;stroke-dasharray:5 4}
+svg text{fill:var(--fg);font-size:12px}
+svg .sm{fill:var(--muted);font-size:11px}
+svg .lbl{font-size:11px;paint-order:stroke;stroke:var(--bg);stroke-width:4px;stroke-linejoin:round}
+svg .ln{stroke:var(--muted);stroke-width:1.4;fill:none}
+svg .arr{fill:var(--muted)}
+ul{padding-left:20px}
+li{margin:6px 0}
+@media (max-width:560px){.tbl th,.tbl td{padding:7px 6px;font-size:.88rem}.wrap{padding:18px 14px 40px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Landing zone network: us-east-2</h1>
+<p class="sub">Alderwood Health Analytics cloud team &middot; last reviewed 2026-10-09</p>
+
+<h2>Overview</h2>
+<p>Three accounts are joined by a transit gateway. All internet-bound traffic is inspected before it leaves. A Direct Connect link runs back to our Columbus data center.</p>
+
+<h2>Network diagram</h2>
+<div class="card">
+<svg viewBox="0 0 760 520" role="img" aria-label="Network diagram: Network, Prod and Staging accounts joined by a transit gateway, with inspection, Direct Connect and internet egress">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arr"/></marker></defs>
+
+  <text class="sm" x="20" y="24">Outside AWS</text>
+  <rect class="box" x="20" y="70" width="170" height="60" rx="8"/>
+  <text x="105" y="105" text-anchor="middle">Columbus Data Center</text>
+  <rect class="box" x="20" y="330" width="170" height="60" rx="8"/>
+  <text x="105" y="365" text-anchor="middle">Internet</text>
+
+  <rect class="zone" x="230" y="20" width="250" height="250" rx="10"/>
+  <text class="sm" x="242" y="40">Network account</text>
+  <rect class="box" x="250" y="56" width="210" height="40" rx="6"/>
+  <text x="355" y="81" text-anchor="middle">Transit Gateway</text>
+  <rect class="zone" x="250" y="120" width="210" height="140" rx="8"/>
+  <text class="sm" x="262" y="138">Inspection VPC 10.0.0.0/16</text>
+  <rect class="box" x="262" y="150" width="90" height="50" rx="6"/>
+  <text x="307" y="172" text-anchor="middle">Network</text>
+  <text x="307" y="188" text-anchor="middle">Firewall</text>
+  <rect class="box" x="368" y="150" width="80" height="50" rx="6"/>
+  <text x="408" y="172" text-anchor="middle">NAT</text>
+  <text x="408" y="188" text-anchor="middle">Gateway</text>
+
+  <rect class="zone" x="530" y="20" width="210" height="200" rx="10"/>
+  <text class="sm" x="542" y="40">Prod account</text>
+  <rect class="zone" x="545" y="52" width="185" height="160" rx="8"/>
+  <text class="sm" x="555" y="68">Claims VPC 10.10.0.0/16</text>
+  <rect class="box" x="560" y="80" width="155" height="40" rx="6"/>
+  <text x="637" y="105" text-anchor="middle">Claims API (ECS)</text>
+  <rect class="box" x="560" y="160" width="155" height="40" rx="6"/>
+  <text x="637" y="185" text-anchor="middle">Claims DB (Aurora)</text>
+
+  <rect class="zone" x="530" y="380" width="210" height="120" rx="10"/>
+  <text class="sm" x="542" y="400">Staging account</text>
+  <rect class="zone" x="545" y="412" width="185" height="80" rx="8"/>
+  <text class="sm" x="555" y="428">Staging VPC 10.20.0.0/16</text>
+  <rect class="box" x="560" y="436" width="155" height="40" rx="6"/>
+  <text x="637" y="461" text-anchor="middle">Claims API Staging</text>
+
+  <path class="ln" d="M545,96 L460,76" marker-end="url(#ah)"/>
+  <text class="lbl" x="496" y="100">attachment</text>
+  <path class="ln" d="M545,420 L505,420 L505,64 L460,64" marker-end="url(#ah)"/>
+  <text class="lbl" x="512" y="300">attachment</text>
+  <line class="ln" x1="355" y1="96" x2="355" y2="120" marker-end="url(#ah)"/>
+  <text class="lbl" x="362" y="112">egress inspection</text>
+  <path class="ln" d="M250,240 L190,350" marker-end="url(#ah)"/>
+  <text class="lbl" x="150" y="290">via NAT</text>
+  <path class="ln" d="M190,100 L250,76" marker-end="url(#ah)"/>
+  <text class="lbl" x="20" y="150">Direct Connect, 2 x 1 Gbps</text>
+  <line class="ln" x1="637" y1="120" x2="637" y2="160" marker-end="url(#ah)"/>
+  <text class="lbl" x="644" y="146">port 5432</text>
+</svg>
+</div>
+
+<h2>Address plan</h2>
+<div class="scroll">
+<table class="tbl">
+  <thead><tr><th>VPC</th><th>Account</th><th>CIDR</th><th>Subnet layout</th></tr></thead>
+  <tbody>
+    <tr><td>Inspection VPC</td><td>Network</td><td>10.0.0.0/16</td><td>2 firewall subnets, 2 NAT subnets</td></tr>
+    <tr><td>Claims VPC</td><td>Prod</td><td>10.10.0.0/16</td><td>3 private app subnets, 3 data subnets</td></tr>
+    <tr><td>Staging VPC</td><td>Staging</td><td>10.20.0.0/16</td><td>2 private app subnets, 2 data subnets</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Routing rules</h2>
+<div class="callout bad">
+  <strong>Staging must never route to prod.</strong> Auditors ask about this rule specifically. Staging may never route to prod, in either direction through the transit gateway.
+</div>
+<ul>
+  <li>No internet gateways in workload VPCs.</li>
+  <li>The Direct Connect link reaches prod only.</li>
+</ul>
+</div>
+</body>
+</html>

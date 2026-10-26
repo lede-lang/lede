@@ -1,0 +1,20 @@
+@title Rotating load balancer TLS certificates by hand
+@subtitle Edge team · Sycamore Travel
+
+# Certificates
+
+table = Domain,Expires,Days left; www.sycamoretravel.example,2026-11-14,29; api.sycamoretravel.example,2026-11-02,17; partners.sycamoretravel.example,2027-01-20,96
+
+# Steps
+
+1. Request the new certificate in the certificate manager.
+2. Validate it through the DNS record.
+3. Wait for the status Issued.
+
+!! Never remove the old certificate first. Clients will get handshake errors until the new one is attached.
+
+4. Attach the new certificate to the listener on edge-alb-prod.
+5. Test with an external checker.
+6. Remove the old certificate after 24 hours.
+
+! The automated renewal job is broken until ticket EDGE-812 is fixed. That is why this is manual for now.

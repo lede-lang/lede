@@ -1,0 +1,8 @@
+@title Latency against the SLO
+# Latency against the SLO
+
+data lat = day,p50,p99; Mon,82,310; Tue,85,325; Wed,80,340; Thu,91,298; Fri,88,276; Sat,79,255; Sun,76,241
+
+chart line lat y=p99 target="300 SLO 300 ms" unit=ms labels title="p99 latency" mark="Wed autoscaler change that took far too long to roll out" mark=Thu mark="Thu cache flush" mark="Sat rollback" mark="Sun freeze"
+
+chart line lat y=p50,p99 labels title="p50 and p99 together" mark="Tue canary" mark="Sat rollback"

@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Tides of Trade Press Release</title>
+<style>
+:root{
+  --bg:#f5f2ec;--surface:#fffdf9;--text:#1a2230;--muted:#5b6474;--line:#e2dccf;
+  --navy:#1d3557;--accent:#a8642a;--accent-soft:#f3e7da;--wave:#c9d6e3;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e131b;--surface:#151c27;--text:#e9edf3;--muted:#a3adbd;--line:#283244;
+    --navy:#9fbbe0;--accent:#e2a56b;--accent-soft:#2c2219;--wave:#2a3a52;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:17px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.serif{font-family:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Times New Roman",serif}
+.wrap{max-width:760px;margin:0 auto;padding:22px 16px 56px}
+.crumb{font-size:.82rem;color:var(--muted);margin:0 0 18px;letter-spacing:.02em}
+.crumb a{color:inherit}
+article{background:var(--surface);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.masthead{background:var(--navy);color:#fdfaf4;padding:28px 20px 0;position:relative}
+@media (prefers-color-scheme:dark){.masthead{background:#1a2a42;color:#f1ece3}}
+.tag{display:inline-block;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;border:1px solid currentColor;padding:3px 9px;border-radius:2px;opacity:.9}
+.masthead h1{font-family:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,serif;font-weight:400;font-size:clamp(1.9rem,7vw,3rem);line-height:1.1;margin:16px 0 10px;letter-spacing:-.01em}
+.masthead h1 em{font-style:italic;color:#f2c48f}
+@media (prefers-color-scheme:dark){.masthead h1 em{color:#f0b77e}}
+.masthead .dek{margin:0;font-size:1.05rem;opacity:.9;max-width:52ch}
+.masthead svg{display:block;width:100%;height:42px;margin-top:22px}
+.waves path{fill:none;stroke:#fdfaf4;stroke-width:1.4;opacity:.35}
+.body{padding:24px 20px 30px}
+.release{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 10px}
+.lede{font-size:1.08rem;margin:0 0 6px}
+h2{font-family:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,serif;font-weight:400;font-size:1.55rem;color:var(--navy);margin:34px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+p{margin:0 0 14px}
+.glance{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:4px;overflow:hidden;margin:0}
+.glance div{background:var(--surface);padding:14px}
+.glance dt{font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.glance dd{margin:4px 0 0;font-family:Georgia,"Iowan Old Style",Palatino,serif;font-size:1.2rem;line-height:1.3}
+.glance dd small{display:block;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:.8rem;color:var(--muted)}
+.feature{background:var(--accent-soft);border-left:3px solid var(--accent);padding:14px 16px;margin:18px 0;border-radius:0 4px 4px 0}
+.feature p{margin:0}
+.feature .lbl{display:block;font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:4px}
+.routes{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 16px;padding:0;list-style:none}
+.routes li{border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:.88rem;color:var(--muted)}
+table{width:100%;border-collapse:collapse;margin:0 0 18px;font-size:.96rem}
+th,td{text-align:left;padding:10px 4px;border-bottom:1px solid var(--line)}
+td.price{text-align:right;font-weight:650;font-variant-numeric:tabular-nums;white-space:nowrap}
+caption{text-align:left;font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;padding-bottom:6px}
+.hours{list-style:none;margin:0 0 14px;padding:0}
+.hours li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px dotted var(--line)}
+.hours li span:last-child{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.access{display:flex;gap:10px;align-items:center;font-size:.95rem;margin-top:12px}
+.access svg{flex:none}
+.prog{list-style:none;margin:0;padding:0}
+.prog li{padding:14px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr;gap:2px}
+.prog li:last-child{border-bottom:0}
+.prog .when{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.prog .what{font-family:Georgia,"Iowan Old Style",Palatino,serif;font-size:1.15rem}
+.prog .det{font-size:.94rem;color:var(--muted)}
+a{color:var(--navy);text-underline-offset:2px}
+.contact{border:1px solid var(--line);border-radius:4px;padding:16px;display:grid;gap:4px}
+.contact .name{font-family:Georgia,"Iowan Old Style",Palatino,serif;font-size:1.2rem}
+.contact .role{color:var(--muted);font-size:.9rem;margin-bottom:6px}
+.end{text-align:center;color:var(--muted);letter-spacing:.4em;margin:28px 0 0}
+footer{color:var(--muted);font-size:.82rem;text-align:center;margin-top:18px}
+@media (min-width:640px){
+  .masthead{padding:40px 40px 0}
+  .body{padding:32px 40px 40px}
+  .glance{grid-template-columns:repeat(4,1fr)}
+  .prog li{grid-template-columns:170px 1fr;column-gap:18px}
+  .prog .when{grid-row:span 2;padding-top:4px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb"><a href="#">Press room</a> &rsaquo; Exhibitions</p>
+  <article>
+    <div class="masthead">
+      <span class="tag">Press release</span>
+      <h1>Brightwater Maritime Museum presents <em>Tides of Trade</em></h1>
+      <p class="dek">A new exhibition on the spice, tea and cotton routes of 1600 to 1850, opening 14 November 2026.</p>
+      <svg class="waves" viewBox="0 0 600 42" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 14 C 50 4, 100 24, 150 14 S 250 4, 300 14 S 400 24, 450 14 S 550 4, 600 14"/>
+        <path d="M0 26 C 50 16, 100 36, 150 26 S 250 16, 300 26 S 400 36, 450 26 S 550 16, 600 26"/>
+        <path d="M0 38 C 50 28, 100 48, 150 38 S 250 28, 300 38 S 400 48, 450 38 S 550 28, 600 38"/>
+      </svg>
+    </div>
+
+    <div class="body">
+      <p class="release">For immediate release</p>
+      <p class="lede">The Brightwater Maritime Museum invites the public to <i>Tides of Trade</i>, an exhibition of 140 objects from 12 countries that traces how spice, tea and cotton crossed the oceans between 1600 and 1850. Its centerpiece, the 1783 log of the brig <i>Hesper</i>, goes on public display for the first time.</p>
+
+      <h2 id="glance">At a glance</h2>
+      <dl class="glance">
+        <div><dt>Opens</dt><dd>14 Nov 2026<small>to the public</small></dd></div>
+        <div><dt>Closes</dt><dd>9 May 2027<small>final day</small></dd></div>
+        <div><dt>Collection</dt><dd>140 objects<small>from 12 countries</small></dd></div>
+        <div><dt>Curator</dt><dd>Dr. Rasmus Lindholm<small>exhibition curator</small></dd></div>
+      </dl>
+
+      <h2 id="about">About the exhibition</h2>
+      <p><i>Tides of Trade</i> follows three of the great commodity routes of the early modern world &mdash; spice, tea and cotton &mdash; across two and a half centuries, from 1600 to 1850.</p>
+      <ul class="routes" aria-label="Routes covered"><li>Spice</li><li>Tea</li><li>Cotton</li><li>1600&ndash;1850</li></ul>
+      <p>Visitors meet the trade through the records and tools of the people who carried it: original ship ledgers, navigation instruments, and a full-size reconstruction of a cargo hold that lets visitors step inside the space where these goods crossed the sea.</p>
+      <div class="feature">
+        <span class="lbl">Centerpiece</span>
+        <p>The 1783 log of the brig <i>Hesper</i>, shown publicly for the first time.</p>
+      </div>
+
+      <h2 id="visiting">Visiting</h2>
+      <table>
+        <caption>Admission</caption>
+        <tbody>
+          <tr><td>Adults</td><td class="price">$18</td></tr>
+          <tr><td>Seniors</td><td class="price">$14</td></tr>
+          <tr><td>Children under 12</td><td class="price">Free</td></tr>
+          <tr><td>Museum members</td><td class="price">Free</td></tr>
+        </tbody>
+      </table>
+      <ul class="hours" aria-label="Opening hours">
+        <li><span>Tuesday to Sunday</span><span>10:00&ndash;17:00</span></li>
+        <li><span>Thursday late opening</span><span>10:00&ndash;20:00</span></li>
+        <li><span>Monday</span><span>Closed</span></li>
+      </ul>
+      <p class="access">
+        <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="12" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="13" cy="7" r="2" fill="currentColor"/><path d="M13 10v6h5l2 4M9 12h8M10 15a5 5 0 1 0 6 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span>The exhibition is fully step-free.</span>
+      </p>
+
+      <h2 id="programs">Programs</h2>
+      <ul class="prog">
+        <li><span class="when">13 Nov 2026 &middot; 18:30</span><span class="what">Opening gala</span><span class="det">An evening celebration on the eve of public opening. Tickets $120.</span></li>
+        <li><span class="when">First Saturdays &middot; 14:00</span><span class="what">Curator talk</span><span class="det">Every first Saturday of the month during the exhibition.</span></li>
+        <li><span class="when">By booking</span><span class="what">School visits</span><span class="det">Free for groups of up to 40 students. Book at <a href="mailto:schools@brightwatermuseum.example">schools@brightwatermuseum.example</a>.</span></li>
+      </ul>
+
+      <h2 id="press">Press contact</h2>
+      <div class="contact">
+        <span class="name">Yvette Marchand</span>
+        <span class="role">Brightwater Maritime Museum</span>
+        <span>Email: <a href="mailto:press@brightwatermuseum.example">press@brightwatermuseum.example</a></span>
+        <span>Phone: <a href="tel:5550178">555-0178</a></span>
+      </div>
+
+      <p class="end">###</p>
+    </div>
+  </article>
+  <footer>Brightwater Maritime Museum &middot; Press room</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clickstream Data Platform</title>
+<style>
+:root{--page:#f7f6f3;--card:#fff;--ink:#1f2328;--mute:#5a606b;--edge:#d9d7d0;--blue:#2f5fa7;--blue-soft:#e6eef9;--warn-bg:#fdf0e3;--warn-bd:#cf7a2a;--warn-ink:#5a3212;}
+@media (prefers-color-scheme: dark){
+:root:not([data-theme="light"]){--page:#0f1113;--card:#171a1e;--ink:#e6e8eb;--mute:#9aa1ab;--edge:#2b3037;--blue:#8db6ef;--blue-soft:#1a2535;--warn-bg:#3a2611;--warn-bd:#e0954b;--warn-ink:#ffdcb8;}
+}
+:root[data-theme="dark"]{--page:#0f1113;--card:#171a1e;--ink:#e6e8eb;--mute:#9aa1ab;--edge:#2b3037;--blue:#8db6ef;--blue-soft:#1a2535;--warn-bg:#3a2611;--warn-bd:#e0954b;--warn-ink:#ffdcb8;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+.doc{max-width:920px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:1.6rem;margin:0 0 4px}
+.meta{color:var(--mute);font-size:.92rem;margin:0 0 4px}
+h2{font-size:1.12rem;margin:30px 0 10px;padding-bottom:4px;border-bottom:1px solid var(--edge)}
+.frame{background:var(--card);border:1px solid var(--edge);border-radius:10px;padding:8px;overflow-x:auto}
+svg{display:block;width:100%;min-width:600px;height:auto}
+svg text{font-size:12px;fill:var(--ink)}
+svg .m{fill:var(--mute);font-size:11px}
+svg .hd{font-weight:700;fill:var(--blue);font-size:12.5px}
+svg .grp{fill:none;stroke:var(--mute);stroke-width:1.2;stroke-dasharray:5 4}
+svg .acct{fill:var(--blue-soft);stroke:var(--blue);stroke-width:1}
+svg .node{fill:var(--card);stroke:var(--blue);stroke-width:1.4}
+svg .store{fill:var(--card);stroke:var(--blue);stroke-width:1.4;stroke-dasharray:0}
+svg .ext{fill:var(--page);stroke:var(--mute);stroke-width:1.2}
+svg .edge{fill:none;stroke:var(--mute);stroke-width:1.5}
+svg .ah{fill:var(--mute)}
+table{width:100%;border-collapse:collapse;font-size:.94rem;min-width:460px}
+th,td{padding:9px 8px;border-bottom:1px solid var(--edge);text-align:left}
+th{color:var(--mute);font-weight:600;font-size:.84rem}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.card{background:var(--card);border:1px solid var(--edge);border-radius:10px;padding:8px;overflow-x:auto}
+ul{padding-left:20px}
+li{margin:6px 0}
+.limits{background:var(--warn-bg);border-left:4px solid var(--warn-bd);color:var(--warn-ink);padding:12px 16px 8px;border-radius:8px;margin-top:6px}
+</style>
+</head>
+<body>
+<main class="doc">
+  <h1>Clickstream Data Platform</h1>
+  <p class="meta">Data Engineering · Harbor Media · As of 2026-09-30</p>
+
+  <h2>Overview</h2>
+  <p>We collect about 1,800 million events per day from our web and mobile apps. Events land in a data lake that analysts query through Redshift and Superset. Ingestion is batched through Firehose, and the nightly ETL on EMR turns raw events into curated tables.</p>
+
+  <h2>Architecture diagram</h2>
+  <div class="frame">
+  <svg viewBox="0 0 880 520" role="img" aria-label="Architecture diagram. Web and Mobile Apps send events to a Clickstream Stream in the Ingest account. The stream feeds Firehose, which writes parquet to the Raw Bucket in the Analytics account. An EMR Cluster in the Lake VPC runs the nightly ETL from Raw to the Curated Bucket, with Glue Catalog providing schemas. Curated data is copied into the Redshift Cluster, which Superset queries. A Feature Store in the Lake VPC is fed by the EMR Cluster.">
+    <defs>
+      <marker id="arrB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path class="ah" d="M0,0 L10,5 L0,10 z"/>
+      </marker>
+    </defs>
+
+    <!-- account and VPC groups -->
+    <rect class="acct" x="180" y="40" width="190" height="180" rx="10" style="fill:none;stroke-dasharray:5 4"/>
+    <text class="hd" x="192" y="60">Ingest account</text>
+    <rect class="acct" x="400" y="30" width="360" height="450" rx="10" style="fill:none;stroke-dasharray:5 4"/>
+    <text class="hd" x="412" y="52">Analytics account</text>
+    <rect class="grp" x="412" y="140" width="336" height="230" rx="8"/>
+    <text class="m" x="748" y="160" text-anchor="end">Lake VPC · 10.40.0.0/16</text>
+
+    <!-- outside nodes -->
+    <rect class="ext" x="16" y="230" width="140" height="50" rx="6"/>
+    <text x="86" y="252" text-anchor="middle">Web and Mobile</text>
+    <text x="86" y="268" text-anchor="middle">Apps</text>
+    <rect class="ext" x="790" y="190" width="74" height="50" rx="6"/>
+    <text x="827" y="220" text-anchor="middle">Superset</text>
+
+    <!-- ingest -->
+    <rect class="node" x="196" y="80" width="150" height="44" rx="6"/>
+    <text x="271" y="100" text-anchor="middle">Clickstream Stream</text>
+    <text class="m" x="271" y="115" text-anchor="middle">Kinesis</text>
+    <rect class="node" x="196" y="160" width="150" height="44" rx="6"/>
+    <text x="271" y="186" text-anchor="middle">Firehose</text>
+
+    <!-- analytics -->
+    <rect class="store" x="426" y="70" width="130" height="40" rx="6"/>
+    <text x="491" y="94" text-anchor="middle">Raw Bucket</text>
+    <rect class="node" x="426" y="190" width="130" height="50" rx="6"/>
+    <text x="491" y="219" text-anchor="middle">EMR Cluster</text>
+    <rect class="node" x="596" y="190" width="140" height="50" rx="6"/>
+    <text x="666" y="219" text-anchor="middle">Redshift Cluster</text>
+    <rect class="store" x="596" y="410" width="140" height="44" rx="6"/>
+    <text x="666" y="436" text-anchor="middle">Curated Bucket</text>
+    <rect class="store" x="426" y="410" width="130" height="44" rx="6"/>
+    <text x="491" y="436" text-anchor="middle">Glue Catalog</text>
+
+    <!-- connections -->
+    <path class="edge" d="M 156 255 H 170 V 102 H 196" marker-end="url(#arrB)"/>
+    <text class="m" x="164" y="170" text-anchor="end">events</text>
+
+    <line class="edge" x1="271" y1="124" x2="271" y2="160" marker-end="url(#arrB)"/>
+    <text class="m" x="278" y="146">batch</text>
+
+    <path class="edge" d="M 346 182 H 386 V 94 H 426" marker-end="url(#arrB)"/>
+    <text class="m" x="196" y="244">parquet every 5 min</text>
+
+    <line class="edge" x1="491" y1="110" x2="491" y2="190" marker-end="url(#arrB)"/>
+    <text class="m" x="498" y="158">nightly ETL</text>
+
+    <path class="edge" d="M 556 215 H 576 V 432 H 596" marker-end="url(#arrB)"/>
+    <text class="m" x="570" y="300" text-anchor="end">cleaned tables</text>
+
+    <path class="edge" d="M 426 432 H 418 V 215 H 426" marker-end="url(#arrB)"/>
+    <text class="m" x="424" y="362">schemas</text>
+
+    <rect class="node" x="426" y="278" width="130" height="44" rx="6"/>
+    <text x="491" y="304" text-anchor="middle">Feature Store</text>
+    <line class="edge" x1="491" y1="240" x2="491" y2="278" marker-end="url(#arrB)"/>
+    <text class="m" x="498" y="262">features</text>
+
+    <line class="edge" x1="666" y1="410" x2="666" y2="240" marker-end="url(#arrB)"/>
+    <text class="m" x="672" y="330">COPY</text>
+
+    <line class="edge" x1="736" y1="215" x2="790" y2="215" marker-end="url(#arrB)"/>
+    <text class="m" x="763" y="208" text-anchor="middle">SQL</text>
+  </svg>
+  </div>
+
+  <h2>Datasets</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>Dataset</th><th class="n">Daily volume (GB)</th><th class="n">Retention (days)</th><th>Owner</th></tr></thead>
+      <tbody>
+        <tr><td>raw_events</td><td class="n">940</td><td class="n">30</td><td>Ingest squad</td></tr>
+        <tr><td>sessions</td><td class="n">120</td><td class="n">400</td><td>Analytics Eng</td></tr>
+        <tr><td>page_views</td><td class="n">310</td><td class="n">400</td><td>Analytics Eng</td></tr>
+        <tr><td>ad_impressions</td><td class="n">260</td><td class="n">90</td><td>Ad Tech</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Known limits</h2>
+  <div class="limits">
+    <ul>
+      <li>Firehose buffering means data arrives up to 5 minutes late.</li>
+      <li>The nightly ETL finishes around 03:40 UTC.</li>
+      <li>Redshift is a 4-node ra3.4xlarge cluster that queues queries above 50 concurrent users.</li>
+    </ul>
+  </div>
+</main>
+</body>
+</html>

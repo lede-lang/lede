@@ -1,0 +1,50 @@
+{
+  "id": "58-grocery-app-approach",
+  "category": "comparison",
+  "title": "Grocery app: native, cross-platform or web",
+  "brief": "Tamarind Grocery wants to relaunch its delivery app and the engineering manager, Wanjiru Kamau, needs a decision page for the product council meeting on 2026-10-27. We have 4 mobile developers and want the first release before the holiday season, which means by 2027-01-15 at the latest. Three approaches: fully native (separate iOS and Android apps), Flutter, and a progressive web app. Estimates: months to first release 11 for native, 7 for Flutter, 4 for the web app; estimated build cost 1.45 million dollars, 0.92 million and 0.48 million; offline basket and saved lists works fully on native and Flutter but only partly on the web app; push notifications are full on native and Flutter, and limited on iOS for the web app; app store presence yes, yes, no; scanning barcodes with the camera is smooth on native, good on Flutter and unreliable on the web app. Use the sections \"Comparison\", \"Time to first release\", \"Pros and cons\" and \"Recommendation\". We lean toward Flutter, but want the page to say plainly that 7 months misses the January date unless we cut scope, and show the two scope cuts we would make: drop the in-app chat support and postpone the recipe feature.",
+  "checklist": {
+    "sections": [
+      "Comparison",
+      "Time to first release",
+      "Pros and cons",
+      "Recommendation"
+    ],
+    "visible": [
+      "Native",
+      "Flutter",
+      "progressive web app",
+      "Offline",
+      "Push notifications",
+      "App store",
+      "barcode",
+      "in-app chat",
+      "recipe"
+    ],
+    "values": [
+      "4",
+      "7",
+      "11",
+      "1.45 million",
+      "0.92 million",
+      "0.48 million",
+      "2027-01-15",
+      "2026-10-27",
+      "Wanjiru Kamau"
+    ]
+  },
+  "needs": [
+    "table",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "The council chose a different direction: recommend the progressive web app as phase one, with Flutter as phase two in 2027, and flag that barcode scanning will be unreliable in phase one.",
+    "expect_visible": [
+      "phase two"
+    ],
+    "expect_values": [],
+    "expect_absent": []
+  }
+}

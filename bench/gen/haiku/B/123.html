@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Walk-in Cooler Alarm Runbook</title>
+<style>
+:root {
+  --bg: #f6f5f1;
+  --card: #ffffff;
+  --text: #22201c;
+  --muted: #625d54;
+  --accent: #1f6b47;
+  --accent-soft: #e6f2eb;
+  --warn: #b42318;
+  --warn-soft: #fdeceb;
+  --border: #dcd8ce;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121311;
+    --card: #1c1d1a;
+    --text: #efeee8;
+    --muted: #aaa69a;
+    --accent: #7cd1a0;
+    --accent-soft: #1d2e24;
+    --warn: #ff9a90;
+    --warn-soft: #3a1d1b;
+    --border: #35342e;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121311;
+  --card: #1c1d1a;
+  --text: #efeee8;
+  --muted: #aaa69a;
+  --accent: #7cd1a0;
+  --accent-soft: #1d2e24;
+  --warn: #ff9a90;
+  --warn-soft: #3a1d1b;
+  --border: #35342e;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 17px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+.wrap { max-width: 720px; margin: 0 auto; padding: 20px 16px 48px; }
+header { border-bottom: 3px solid var(--accent); padding-bottom: 12px; margin-bottom: 18px; }
+.org { color: var(--muted); font-size: 14px; text-transform: uppercase; letter-spacing: .06em; }
+h1 { font-size: 26px; line-height: 1.2; margin: 6px 0 6px; }
+.meta { color: var(--muted); font-size: 14px; }
+h2 { font-size: 21px; color: var(--accent); margin: 26px 0 10px; }
+section, .card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+.first { background: var(--accent-soft); border-radius: 12px; padding: 16px 18px; }
+.alarm-check { list-style: none; padding: 0; margin: 0; }
+.alarm-check li { padding: 8px 0 8px 36px; position: relative; border-bottom: 1px solid var(--border); }
+.alarm-check li:last-child { border-bottom: 0; }
+.alarm-check li::before {
+  content: "";
+  position: absolute; left: 4px; top: 13px;
+  width: 20px; height: 20px; border: 2px solid var(--accent); border-radius: 5px;
+}
+.rule-box { border-left: 5px solid var(--accent); background: var(--accent-soft); padding: 12px 14px; border-radius: 8px; margin: 10px 0; }
+.throw { border-left: 5px solid var(--warn); background: var(--warn-soft); padding: 12px 14px; border-radius: 8px; margin: 10px 0; }
+.never { border: 2px solid var(--warn); color: var(--text); background: var(--card); padding: 12px 14px; border-radius: 10px; font-weight: 700; margin: 14px 0; }
+ol.steps { padding-left: 0; list-style: none; counter-reset: s; margin: 0; }
+ol.steps > li {
+  counter-increment: s;
+  position: relative;
+  padding: 12px 14px 12px 52px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+ol.steps > li::before {
+  content: counter(s);
+  position: absolute; left: 14px; top: 13px;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--accent); color: var(--card);
+  text-align: center; line-height: 28px; font-weight: 700;
+}
+table { width: 100%; border-collapse: collapse; font-size: 16px; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--border); }
+td:first-child { font-weight: 600; width: 50%; }
+.big { font-size: 18px; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="org">Sunset Valley Food Share &middot; Warehouse</div>
+  <h1>Walk-in Refrigerator Alarm or Temperature Above 41&deg;F</h1>
+  <div class="meta">Owner: Operations Manager &middot; Effective 2026-11-01 &middot; Read on your phone in the warehouse</div>
+</header>
+
+<section class="first">
+  <h2 style="margin-top:0">First two minutes</h2>
+  <ul class="alarm-check">
+    <li>Silence the alarm.</li>
+    <li>Check the door is fully closed.</li>
+    <li>Read the display and the backup thermometer inside.</li>
+    <li>Write the time on the log sheet.</li>
+  </ul>
+</section>
+
+<h2>Decide what to do</h2>
+
+<div class="rule-box">
+  <p><strong>Above 41 and up to 45&deg;F, for less than 2 hours:</strong></p>
+  <ul>
+    <li>Move dairy, eggs, meat and prepared meals into the backup chest freezers right away.</li>
+    <li>Keep produce in place.</li>
+    <li>Call the refrigeration technician.</li>
+  </ul>
+</div>
+
+<div class="throw">
+  <p><strong>Above 45&deg;F, or above 41&deg;F for 2 hours or more, or if nobody knows how long:</strong></p>
+  <p style="margin-bottom:0">Dairy, eggs, meat and prepared meals must be thrown away, with a second volunteer present to confirm. Produce, canned and packaged goods can stay.</p>
+</div>
+
+<div class="never">Never taste or sniff food to decide whether it is safe.</div>
+
+<h2>Steps in order</h2>
+<ol class="steps">
+  <li>Call <strong>ChillRight</strong>, the refrigeration vendor, on <strong>555-0134</strong> (open 24 hours). Ask for a 4-hour response.</li>
+  <li>Message the Operations Manager.</li>
+  <li>Move or discard items as above.</li>
+  <li>Record each item thrown away on the waste log with its weight in pounds.</li>
+  <li>After the repair, run the refrigerator for 4 hours below 38&deg;F before restocking.</li>
+</ol>
+
+<h2>Contacts</h2>
+<section>
+<table>
+  <tbody>
+    <tr><td>Operations Manager</td><td>Delphine Okonkwo</td></tr>
+    <tr><td>ChillRight on-call line</td><td class="big">555-0134</td></tr>
+    <tr><td>Food safety lead</td><td>Bram Verhoeven</td></tr>
+  </tbody>
+</table>
+</section>
+</div>
+</body>
+</html>

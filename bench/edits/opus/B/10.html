@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Member Portal Login — Pinecrest Credit Union</title>
+<style>
+:root {
+  --bg: #f5f7f6;
+  --paper: #ffffff;
+  --ink: #17221d;
+  --ink-2: #586861;
+  --rule: #dce3df;
+  --brand: #1f6f4a;
+  --head-fill: #e4f2ea;
+  --head-edge: #2f8a5c;
+  --life: #b6c3bc;
+  --msg: #2a3530;
+  --draft-bg: #eef2f0;
+  --warn-bg: #fdecea;
+  --warn-edge: #d64235;
+  --warn-ink: #5e150f;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1311;
+    --paper: #161d1a;
+    --ink: #e4ece8;
+    --ink-2: #97a69f;
+    --rule: #26302c;
+    --brand: #5fd09a;
+    --head-fill: #183126;
+    --head-edge: #4fbf88;
+    --life: #3a4842;
+    --msg: #cfd9d4;
+    --draft-bg: #1f2925;
+    --warn-bg: #351614;
+    --warn-edge: #ff6b5e;
+    --warn-ink: #ffd4cf;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.page { max-width: 960px; margin: 0 auto; padding: 28px 16px 60px; }
+.badge { display: inline-block; background: var(--draft-bg); color: var(--ink-2); font-size: 0.78rem; font-weight: 600; padding: 2px 10px; border-radius: 999px; letter-spacing: 0.04em; text-transform: uppercase; }
+h1 { margin: 8px 0 2px; font-size: 1.6rem; }
+.sub { margin: 0; color: var(--ink-2); font-size: 0.92rem; }
+section { background: var(--paper); border: 1px solid var(--rule); border-radius: 12px; padding: 18px 20px; margin-top: 16px; }
+h2 { margin: 0 0 10px; font-size: 1.12rem; }
+.seq { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.seq svg { display: block; width: 100%; min-width: 680px; height: auto; }
+svg text { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.p rect { fill: var(--head-fill); stroke: var(--head-edge); stroke-width: 1.5; }
+.p text { fill: var(--ink); font-size: 14px; font-weight: 700; text-anchor: middle; }
+.lifeline { stroke: var(--life); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.m { stroke: var(--msg); stroke-width: 1.6; fill: none; }
+.m.r { stroke-dasharray: 6 4; }
+.ml { fill: var(--ink); font-size: 12px; text-anchor: middle; paint-order: stroke; stroke: var(--paper); stroke-width: 5px; stroke-linejoin: round; }
+.ml .n { font-weight: 700; fill: var(--brand); }
+.key { display: flex; gap: 18px; flex-wrap: wrap; font-size: 0.85rem; color: var(--ink-2); margin-top: 8px; }
+.key span::before { content: ""; display: inline-block; width: 22px; border-top: 2px solid var(--msg); margin-right: 6px; vertical-align: middle; }
+.key .resp::before { border-top-style: dashed; }
+details { margin-top: 10px; font-size: 0.92rem; }
+summary { cursor: pointer; color: var(--brand); font-weight: 600; }
+details ol { margin: 8px 0 0; padding-left: 1.4em; }
+details li { margin: 3px 0; }
+.scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 440px; }
+th, td { text-align: left; padding: 10px; border-bottom: 1px solid var(--rule); }
+th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-2); }
+tbody tr:last-child td { border-bottom: 0; }
+td:first-child { font-weight: 600; }
+ul { margin: 0; padding-left: 1.2em; }
+li { margin: 5px 0; }
+.warn { margin-top: 14px; background: var(--warn-bg); border: 1px solid var(--warn-edge); border-left-width: 6px; border-radius: 10px; padding: 14px 16px; color: var(--warn-ink); }
+.warn strong { display: block; margin-bottom: 2px; }
+@media (max-width: 720px) {
+  section { padding: 16px 14px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <span class="badge">Draft · 2026-10-08</span>
+  <h1>How member portal login works</h1>
+  <p class="sub">Pinecrest Credit Union · Identity team</p>
+
+  <section>
+    <h2>Login flow</h2>
+    <div class="seq">
+      <svg viewBox="0 0 840 826" role="img" aria-labelledby="st sd">
+        <title id="st">Login sequence diagram</title>
+        <desc id="sd">Authorization code flow with PKCE between User, Browser, Web App, Auth Server and Profile API, followed by a token refresh, in fifteen steps listed below the diagram.</desc>
+        <defs>
+          <marker id="tip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--msg)"/>
+          </marker>
+        </defs>
+
+        <line class="lifeline" x1="80" y1="60" x2="80" y2="811"/>
+        <line class="lifeline" x1="250" y1="60" x2="250" y2="811"/>
+        <line class="lifeline" x1="420" y1="60" x2="420" y2="811"/>
+        <line class="lifeline" x1="590" y1="60" x2="590" y2="811"/>
+        <line class="lifeline" x1="760" y1="60" x2="760" y2="811"/>
+
+        <g class="p"><rect x="20" y="20" width="120" height="40" rx="8"/><text x="80" y="45">User</text></g>
+        <g class="p"><rect x="190" y="20" width="120" height="40" rx="8"/><text x="250" y="45">Browser</text></g>
+        <g class="p"><rect x="360" y="20" width="120" height="40" rx="8"/><text x="420" y="45">Web App</text></g>
+        <g class="p"><rect x="530" y="20" width="120" height="40" rx="8"/><text x="590" y="45">Auth Server</text></g>
+        <g class="p"><rect x="700" y="20" width="120" height="40" rx="8"/><text x="760" y="45">Profile API</text></g>
+
+        <!-- 1 -->
+        <line class="m" x1="80" y1="110" x2="248" y2="110" marker-end="url(#tip)"/>
+        <text class="ml" x="165" y="103"><tspan class="n">1</tspan> click Sign in</text>
+        <!-- 2 -->
+        <line class="m" x1="250" y1="158" x2="418" y2="158" marker-end="url(#tip)"/>
+        <text class="ml" x="335" y="151"><tspan class="n">2</tspan> GET /login</text>
+        <!-- 3 -->
+        <line class="m r" x1="420" y1="206" x2="252" y2="206" marker-end="url(#tip)"/>
+        <text class="ml" x="335" y="185"><tspan class="n">3</tspan> 302 to /authorize</text>
+        <text class="ml" x="335" y="199">with PKCE challenge</text>
+        <!-- 4 -->
+        <line class="m" x1="250" y1="254" x2="588" y2="254" marker-end="url(#tip)"/>
+        <text class="ml" x="420" y="247"><tspan class="n">4</tspan> GET /authorize</text>
+        <!-- 5 -->
+        <line class="m" x1="590" y1="302" x2="82" y2="302" marker-end="url(#tip)"/>
+        <text class="ml" x="335" y="295"><tspan class="n">5</tspan> show login and MFA prompt</text>
+        <!-- 6 -->
+        <line class="m" x1="80" y1="350" x2="588" y2="350" marker-end="url(#tip)"/>
+        <text class="ml" x="335" y="343"><tspan class="n">6</tspan> credentials + MFA code</text>
+        <!-- 7 -->
+        <line class="m r" x1="590" y1="398" x2="252" y2="398" marker-end="url(#tip)"/>
+        <text class="ml" x="420" y="391"><tspan class="n">7</tspan> 302 to /callback with code</text>
+        <!-- 8 -->
+        <line class="m" x1="250" y1="446" x2="418" y2="446" marker-end="url(#tip)"/>
+        <text class="ml" x="335" y="439"><tspan class="n">8</tspan> GET /callback with code</text>
+        <!-- 9 -->
+        <line class="m" x1="420" y1="494" x2="588" y2="494" marker-end="url(#tip)"/>
+        <text class="ml" x="505" y="473"><tspan class="n">9</tspan> POST /token</text>
+        <text class="ml" x="505" y="487">with code verifier</text>
+        <!-- 10 -->
+        <line class="m r" x1="590" y1="542" x2="422" y2="542" marker-end="url(#tip)"/>
+        <text class="ml" x="505" y="521"><tspan class="n">10</tspan> access token + ID token</text>
+        <text class="ml" x="505" y="535">+ refresh token</text>
+        <!-- 11 -->
+        <line class="m" x1="420" y1="590" x2="758" y2="590" marker-end="url(#tip)"/>
+        <text class="ml" x="590" y="583"><tspan class="n">11</tspan> GET /me with bearer token</text>
+        <!-- 12 -->
+        <line class="m r" x1="760" y1="638" x2="422" y2="638" marker-end="url(#tip)"/>
+        <text class="ml" x="590" y="631"><tspan class="n">12</tspan> profile JSON</text>
+        <!-- 13 -->
+        <line class="m r" x1="420" y1="686" x2="252" y2="686" marker-end="url(#tip)"/>
+        <text class="ml" x="335" y="665"><tspan class="n">13</tspan> set session cookie,</text>
+        <text class="ml" x="335" y="679">render dashboard</text>
+        <!-- 14 -->
+        <line class="m" x1="420" y1="734" x2="588" y2="734" marker-end="url(#tip)"/>
+        <text class="ml" x="505" y="727"><tspan class="n">14</tspan> refresh_token grant</text>
+        <!-- 15 -->
+        <line class="m r" x1="590" y1="782" x2="422" y2="782" marker-end="url(#tip)"/>
+        <text class="ml" x="505" y="775"><tspan class="n">15</tspan> new access token</text>
+      </svg>
+    </div>
+    <div class="key"><span>Request or action</span><span class="resp">Response or redirect</span></div>
+    <details>
+      <summary>Read the steps as text</summary>
+      <ol>
+        <li>User → Browser: click Sign in</li>
+        <li>Browser → Web App: GET /login</li>
+        <li>Web App → Browser: 302 to /authorize with PKCE challenge</li>
+        <li>Browser → Auth Server: GET /authorize</li>
+        <li>Auth Server → User: show login and MFA prompt</li>
+        <li>User → Auth Server: credentials + MFA code</li>
+        <li>Auth Server → Browser: 302 to /callback with code</li>
+        <li>Browser → Web App: GET /callback with code</li>
+        <li>Web App → Auth Server: POST /token with code verifier</li>
+        <li>Auth Server → Web App: access token + ID token + refresh token</li>
+        <li>Web App → Profile API: GET /me with bearer token</li>
+        <li>Profile API → Web App: profile JSON</li>
+        <li>Web App → Browser: set session cookie, render dashboard</li>
+        <li>Web App → Auth Server: refresh_token grant</li>
+        <li>Auth Server → Web App: new access token</li>
+      </ol>
+    </details>
+  </section>
+
+  <section>
+    <h2>Tokens</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Token</th><th>Lifetime</th><th>Stored where</th></tr></thead>
+        <tbody>
+          <tr><td>Access token</td><td>15 minutes</td><td>Server-side session</td></tr>
+          <tr><td>ID token</td><td>15 minutes</td><td>Server-side session</td></tr>
+          <tr><td>Refresh token</td><td>30 days</td><td>Encrypted session store</td></tr>
+          <tr><td>Session cookie</td><td>12 hours</td><td>Browser (HttpOnly, Secure)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Security notes</h2>
+    <ul>
+      <li>PKCE is mandatory on every authorization request.</li>
+      <li>MFA is required for every member.</li>
+      <li>Failed logins lock the account after 5 attempts.</li>
+    </ul>
+    <div class="warn" role="alert">
+      <strong>Never expose tokens to the browser</strong>
+      Access, ID and refresh tokens must never be exposed to browser JavaScript or kept in browser storage (localStorage, sessionStorage or IndexedDB). The browser holds only the HttpOnly session cookie.
+    </div>
+  </section>
+</div>
+</body>
+</html>

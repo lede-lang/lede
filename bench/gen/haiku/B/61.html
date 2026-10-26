@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Signup Cohort Retention</title>
+<style>
+:root{--bg:#f6f5f1;--surface:#ffffff;--ink:#1c1e22;--muted:#5d6370;--line:#dcd9d1;--accent:#2f6b5c;--warm:#b8642e;--blue:#3f6396;--grey:#8a7f6a}
+@media (prefers-color-scheme:dark){:root{--bg:#14161a;--surface:#1d2026;--ink:#eceae4;--muted:#a4a9b4;--line:#353a44;--accent:#6cbba3;--warm:#e39a66;--blue:#8db2e3;--grey:#b5a98f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif}
+main{max-width:920px;margin:0 auto;padding:32px 16px 64px}
+.kicker{color:var(--accent);font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;margin:0 0 6px}
+h1{font-size:clamp(26px,5vw,36px);line-height:1.15;margin:0 0 12px}
+h2{font-size:21px;margin:40px 0 14px;padding-top:16px;border-top:1px solid var(--line)}
+p{margin:0 0 14px}
+.lede{color:var(--muted);font-size:17px}
+.note{color:var(--muted);font-size:14px}
+.headline{background:var(--surface);border-left:4px solid var(--accent);padding:14px 18px;border-radius:8px;font-size:18px}
+.table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.total td{font-weight:600;background:var(--bg)}
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px}
+svg{display:block;width:100%;height:auto}
+.grid{stroke:var(--line);stroke-width:1}
+.axis{stroke:var(--line);stroke-width:1}
+.lbl{font-size:14px;fill:var(--muted)}
+.ln1{fill:none;stroke:var(--accent);stroke-width:2.5} .dt1{fill:var(--accent)}
+.ln2{fill:none;stroke:var(--warm);stroke-width:2.5} .dt2{fill:var(--warm)}
+.ln3{fill:none;stroke:var(--blue);stroke-width:2.5} .dt3{fill:var(--blue)}
+.ln4{fill:none;stroke:var(--grey);stroke-width:2.5} .dt4{fill:var(--grey)}
+.key{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:14px;color:var(--muted);margin:10px 0 0}
+.key span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:12px;height:12px;border-radius:2px;display:inline-block}
+ol{padding-left:20px;margin:0 0 14px} li{margin:0 0 10px}
+</style>
+</head>
+<body>
+<main>
+<p class="kicker">Growth team, signup cohorts June to September 2026</p>
+<h1>How well recent signup cohorts keep coming back</h1>
+<p class="lede">A one-page summary of retention for the four cohorts from June to September 2026, covering 95,200 signups.</p>
+<p class="headline">Month-1 retention is up 7 points, from 46 percent for the June cohort to 53 percent for September.</p>
+
+<h2>Cohort table</h2>
+<p>Share of each cohort still active N months after signup. Cohorts are down the side, months since signup across the top.</p>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>Cohort</th><th class="num">Signups</th><th class="num">Month 0</th><th class="num">Month 1</th><th class="num">Month 2</th><th class="num">Month 3</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>June 2026</td><td class="num">18,400</td><td class="num">100%</td><td class="num">46%</td><td class="num">38%</td><td class="num">33%</td></tr>
+    <tr><td>July 2026</td><td class="num">21,700</td><td class="num">100%</td><td class="num">48%</td><td class="num">40%</td><td class="num">35%</td></tr>
+    <tr><td>August 2026</td><td class="num">25,300</td><td class="num">100%</td><td class="num">51%</td><td class="num">43%</td><td class="num"></td></tr>
+    <tr><td>September 2026</td><td class="num">29,800</td><td class="num">100%</td><td class="num">53%</td><td class="num"></td><td class="num"></td></tr>
+    <tr class="total"><td>Weighted across cohorts</td><td class="num">95,200</td><td class="num">100%</td><td class="num">50.0%</td><td class="num">40.6%</td><td class="num">34.1%</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="note">Months not reached yet are left blank, not zero. The weighted row uses only the cohorts that have reached each month: June to August for month 2, and June and July for month 3.</p>
+
+<h2>Retention by month</h2>
+<p>Each line is one cohort. A line stops where that cohort has not yet reached the next month. Every cohort loses the most between month 0 and month 1. The June cohort then loses 8 points from month 1 to month 2, and 5 points from month 2 to month 3, so the decline flattens.</p>
+<div class="chart">
+  <svg id="ret-chart" role="img" aria-label="Line chart of retention by month for the June, July, August and September 2026 cohorts"></svg>
+  <div class="key">
+    <span><i class="sw" style="background:var(--accent)"></i>June 2026</span>
+    <span><i class="sw" style="background:var(--warm)"></i>July 2026</span>
+    <span><i class="sw" style="background:var(--blue)"></i>August 2026</span>
+    <span><i class="sw" style="background:var(--grey)"></i>September 2026</span>
+  </div>
+</div>
+
+<h2>Takeaways</h2>
+<ol>
+  <li>Onboarding changes shipped on 20 July 2026 line up with the step from 48 percent at month 1 (July cohort) to 51 percent (August cohort).</li>
+  <li>The biggest drop is always between month 0 and month 1. Every cohort loses between 47 and 54 points there.</li>
+  <li>September's cohort is the largest, at 29,800 signups, and it is also the best retaining so far, at 53 percent at month 1.</li>
+</ol>
+</main>
+<script>
+(function(){
+  var svg=document.getElementById('ret-chart');
+  var W=560,H=300,L=50,R=530,T=20,B=260;
+  var x=function(m){return L+m*(R-L)/3;};
+  var y=function(p){return B-(p/100)*(B-T);};
+  var cohorts=[[[100,46,38,33],"1"],[[100,48,40,35],"2"],[[100,51,43],"3"],[[100,53],"4"]];
+  var out='';
+  [0,25,50,75,100].forEach(function(p){
+    out+='<line class="grid" x1="'+L+'" x2="'+R+'" y1="'+y(p)+'" y2="'+y(p)+'"/>';
+    out+='<text class="lbl" x="'+(L-8)+'" y="'+(y(p)+5)+'" text-anchor="end">'+p+'%</text>';
+  });
+  [0,1,2,3].forEach(function(m){
+    out+='<text class="lbl" x="'+x(m)+'" y="'+(B+24)+'" text-anchor="middle">Month '+m+'</text>';
+  });
+  cohorts.forEach(function(c){
+    var vals=c[0], k=c[1];
+    var pts=vals.map(function(v,m){return x(m).toFixed(1)+','+y(v).toFixed(1);}).join(' ');
+    out+='<polyline class="ln'+k+'" points="'+pts+'"/>';
+    vals.forEach(function(v,m){
+      out+='<circle class="dt'+k+'" cx="'+x(m).toFixed(1)+'" cy="'+y(v).toFixed(1)+'" r="4"/>';
+    });
+  });
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  svg.innerHTML=out;
+})();
+</script>
+</body>
+</html>

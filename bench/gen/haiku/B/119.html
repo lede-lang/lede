@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cedar Hollow October Newsletter</title>
+<style>
+:root {
+  --bg: #f7f5ef; --card: #ffffff; --ink: #24262b; --muted: #5f6470; --rule: #e0dccf;
+  --accent: #2f6b4f; --soft: #e6f0e9; --gold: #b8862b; --track: #e7e3d6;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14171a; --card: #1c2024; --ink: #e9ebee; --muted: #a2a8b2; --rule: #323840;
+    --accent: #8fd1ad; --soft: #1d2b23; --gold: #e3b964; --track: #2c3138;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14171a; --card: #1c2024; --ink: #e9ebee; --muted: #a2a8b2; --rule: #323840;
+  --accent: #8fd1ad; --soft: #1d2b23; --gold: #e3b964; --track: #2c3138;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.6; }
+main { max-width: 680px; margin: 0 auto; padding: 22px 16px 48px; }
+header { text-align: center; padding: 12px 0 8px; }
+header .school { font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin: 0; }
+h1 { font-size: 1.8rem; margin: 4px 0 4px; }
+header p { color: var(--muted); margin: 0; }
+section { background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 18px 20px; margin-top: 16px; }
+h2 { font-size: 1.2rem; color: var(--accent); margin: 0 0 10px; }
+p { margin: 0 0 10px; }
+ul { padding-left: 20px; margin: 0 0 10px; }
+li { margin-bottom: 6px; }
+.dates { list-style: none; padding: 0; margin: 0; }
+.dates li { display: grid; grid-template-columns: 110px 1fr; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+.dates li:last-child { border-bottom: 0; }
+.dates .d { font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+.dates .none { color: var(--muted); }
+.progress { margin: 12px 0 6px; }
+.progress .label { display: flex; justify-content: space-between; font-size: 0.95rem; }
+.track { height: 16px; background: var(--track); border-radius: 999px; overflow: hidden; margin-top: 6px; }
+.fill { height: 100%; width: 35.7%; background: var(--accent); border-radius: 999px; }
+.big { font-size: 1.6rem; font-weight: 700; color: var(--accent); }
+.leader { background: var(--soft); border-radius: 10px; padding: 10px 14px; margin-top: 10px; }
+.sign { font-style: italic; margin-top: 12px; }
+@media (max-width: 420px) { .dates li { grid-template-columns: 1fr; gap: 2px; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="school">Cedar Hollow Elementary</p>
+    <h1>October family newsletter</h1>
+    <p>From Dr. Lucia Hernandez, principal</p>
+  </header>
+
+  <section>
+    <h2>Dates to remember</h2>
+    <ul class="dates">
+      <li><span class="d">Oct 26</span><span>Online booking opens for parent-teacher conferences.</span></li>
+      <li><span class="d">Nov 5 and 6</span><span>Parent-teacher conferences, 15:30 to 19:00 each day.</span></li>
+      <li><span class="d">Nov 9 to 13</span><span>Book Fair in the library.</span></li>
+      <li><span class="d">Nov 11</span><span class="none">No school (Veterans Day).</span></li>
+      <li><span class="d">Nov 25 to 27</span><span class="none">No school (Thanksgiving break).</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Reading challenge</h2>
+    <p>The whole school has set a goal of <strong>60,000 minutes read</strong> by 18 December 2026.</p>
+    <div class="progress">
+      <div class="label"><span><span class="big">21,400</span> minutes so far</span><span>36% of goal</span></div>
+      <div class="track"><div class="fill"></div></div>
+    </div>
+    <div class="leader">
+      <strong>Room 12</strong> (Ms. Okafor's class) is in the lead with 3,150 minutes.
+    </div>
+    <p style="margin-top:12px">Reading logs go in the red folder every Friday.</p>
+  </section>
+
+  <section>
+    <h2>Drop-off and pick-up</h2>
+    <ul>
+      <li>The drop-off lane opens at 07:45. The bell rings at 08:15.</li>
+      <li>No left turns out of the lot onto Alder Street.</li>
+      <li>Please use the east lot for pick-up.</li>
+      <li>Students must be picked up by 15:45. After that they go to the after-school office, which charges $5 per 15 minutes.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Thank you</h2>
+    <p>To the 38 volunteers who ran the Fall Fair: thank you. The fair raised $9,640 for the library.</p>
+    <p>To the families who sent in 412 cans of food for the neighborhood pantry: thank you for your generosity.</p>
+    <p class="sign">With warm thanks, Dr. Lucia Hernandez</p>
+  </section>
+</main>
+</body>
+</html>

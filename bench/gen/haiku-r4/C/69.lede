@@ -1,0 +1,46 @@
+@title Why We Replaced Our Standup With a Written Update
+@author Odile Marchetti
+
+Our team has eleven engineers spread across five time zones. For a long time we ran a 15-minute daily standup, and for a long time I defended it. It was the one time each day when the whole team was supposed to be in the same conversation, and it felt like the spine of how we worked. I want to be honest about the trade, because the trade is real. This is the story of how I stopped defending the standup, what we replaced it with, what the numbers said after six months, and what it cost us to change.
+
+## The standup nobody liked
+
+The standup was held at 14:00 UTC. For one engineer that was 06:00, and for two others it was 22:00. Those three people were routinely half asleep, or absent. The rest of the team was quietly annoyed, not with them but with the meeting itself. Most of what got said was status that everyone could have read in a thread. Fifteen minutes multiplied by eleven people is nearly three engineer-hours a day, spent largely on information nobody needed to hear out loud.
+
+The real problem was not the time zones alone. The meeting asked the people furthest from its hour to show up at the worst time for them. Nobody said that out loud, and the meeting carried on.
+
+In principle a standup does three jobs. It shares status, it surfaces blockers, and it builds a sense of the team. We were reasonably good at the first, weak at the second, and not really getting the third, even though the third was the reason I wanted to keep it.
+
+## What we tried
+
+On 2026-03-02 we replaced the standup with a written update. Each engineer posts an update in a shared thread by 10:00 in their local time. The update answers three prompts: what I finished, what I am doing next, and what is blocking me. We chose those prompts on purpose. The first two tell the team what to plan around, and the third is the only one that asks for help. Nobody reads anyone else's update aloud, and nobody has to be awake at a particular hour to take part.
+
+We ran the new format for six months, until 2026-09-25. Then we looked at what had changed.
+
+## What we measured
+
+The first measure was the quarterly survey. The share of engineers who said they felt informed about the team's work rose from 61 percent to 84 percent. That mattered most to me, because feeling informed was the job the standup was supposed to do, and mostly did not.
+
+The second was blockers. The median time to resolve a blocker fell from 26 hours to 11 hours. I had not expected that much, and the reason is simple once you see it. A blocker posted at the end of one person's day is visible overnight to someone in another zone, who can often unblock it before the first person starts again. A blocker mentioned at 14:00 UTC had to wait for the next day's conversation in most of the other zones.
+
+The third was time. Meeting time dropped by 55 minutes per engineer per week. That is nearly an hour a week for every person on the team, which is worth having.
+
+Six months is short, and eleven people is a small group. The survey moved by 23 points, which is large enough to take seriously, but I would not present any single number as proof. What convinced me was that all three measures moved in the same direction at once.
+
+## What it cost
+
+The change was not free. The team lost spontaneous conversation. The standup, for all its faults, was a place where people who rarely talked ended up talking to each other, and a thread does not do that on its own. One new hire told us, kindly, that they felt isolated in their first few weeks. The written updates made the team look like a set of people posting into a void.
+
+We responded with two changes. First, we added a 30-minute optional video social on Fridays. Second, every new starter now has a buddy, a named person who is there to talk to them in real time. Neither change fully restores what the standup gave us, and I would not claim they do.
+
+There is also a paragraph I owe to people who would not have made this change. A written update does not suit a team in one office on one schedule. There, the standup is cheap, informal conversation happens anyway, and a written thread adds a step without adding visibility. It also fails when nobody reads the thread. A written update is only as good as the attention paid to it, and if people post into a thread they never open, you have swapped a bad meeting for a bad document.
+
+## Should you do this?
+
+Maybe. If your team spans several time zones and your standup is mostly status read aloud, it is worth trying. If you do, I would suggest three things.
+
+1. Run it for eight weeks before you judge it. The first weeks are awkward, and people are still learning what a useful update looks like.
+2. In your retrospective, ask people what they miss, not whether they like it. Then act on the answer, as we did with the Friday social and the buddies.
+3. Be willing to bring the meeting back. If the numbers do not move, or the team stops feeling connected, return to the standup. Nothing about this change is worth defending for its own sake.
+
+The standup was a practice we had never tested. The written update is one we have tested, and that difference is the thing I would most want other managers to take away.

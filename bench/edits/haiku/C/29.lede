@@ -1,0 +1,23 @@
+@title Search API Latency, Weeks W30 to W42
+@subtitle Search team report for Fieldnote Maps, 2026
+
+kpi p50 latency (W42) | 37 ms | -1 ms | good
+kpi p95 latency (W42) | 158 ms | -3 ms | good
+kpi p99 latency (W42) | 352 ms | -17 ms | good
+kpi SLO compliance | 12 of 13 weeks | p99 under 600 ms
+
+# Latency trend
+
+data latency = week,p50,p95,p99,SLO; W30,42,180,410,600; W31,41,176,402,600; W32,44,191,437,600; W33,43,188,428,600; W34,47,214,506,600; W35,52,263,688,600; W36,49,231,574,600; W37,45,198,455,600; W38,44,187,431,600; W39,40,172,398,600; W40,39,168,384,600; W41,38,161,369,600; W42,37,158,352,600
+
+chart line latency x=week y=p50,p95,p99,SLO focus=SLO unit=ms title="Search API latency in milliseconds, with the 600 ms p99 SLO"
+
+# Weekly data
+
+table latency cols=week,p50,p95,p99 title="Weekly latency in milliseconds"
+
+# What changed
+
+W35 spiked after the index migration to the new cluster. Latency recovered once query caching shipped in W37.
+
+! W35 is the only week that breached the SLO, with p99 at 688 ms against a 600 ms target.

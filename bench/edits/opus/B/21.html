@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DR Drill: Scheduling Restore</title>
+<style>
+:root{--bg:#f7f8fa;--surface:#fff;--text:#1b2230;--muted:#5b6578;--border:#dde2ea;--accent:#2f6fd6;--bar:#2f6fd6;--good:#1d7a46;--good-bg:#e5f4ea;--bad:#a8321f;--bad-bg:#fbe9e5;--warn-bg:#fff6e0;--warn-border:#d99a1b;--warn-text:#6b4a00}
+@media (prefers-color-scheme:dark){:root{--bg:#11151c;--surface:#1a2029;--text:#e6e9ef;--muted:#9aa4b5;--border:#2c3440;--accent:#6ea0f0;--bar:#6ea0f0;--good:#6fcf97;--good-bg:#173023;--bad:#f08a76;--bad-bg:#3a1e19;--warn-bg:#2f2610;--warn-border:#c7921f;--warn-text:#f2d38a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:860px;margin:0 auto;padding:32px 16px 64px}
+header{margin-bottom:28px}
+.eyebrow{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+h1{font-size:clamp(26px,5vw,34px);line-height:1.2;margin:0 0 10px}
+.meta{color:var(--muted);margin:0}
+section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px 22px 18px;margin-bottom:20px}
+h2{font-size:20px;margin:0 0 12px}
+ol.steps{padding-left:0;list-style:none;counter-reset:s;margin:0}
+ol.steps>li{counter-increment:s;position:relative;padding:8px 0 8px 42px;border-top:1px solid var(--border)}
+ol.steps>li:first-child{border-top:0}
+ol.steps>li::before{content:counter(s);position:absolute;left:0;top:8px;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--surface);font-weight:600;font-size:14px;display:grid;place-items:center}
+ol.steps>li.callout-row{padding-left:0;counter-increment:none}
+ol.steps>li.callout-row::before{display:none}
+.callout{background:var(--warn-bg);border:1px solid var(--warn-border);border-left-width:5px;border-radius:8px;padding:12px 14px;color:var(--warn-text)}
+.callout strong{display:block;margin-bottom:2px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92em;background:var(--bg);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border)}
+th{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:14px;font-weight:600}
+.pill.ok{background:var(--good-bg);color:var(--good)}
+.pill.miss{background:var(--bad-bg);color:var(--bad)}
+h3{font-size:16px;margin:24px 0 8px}
+svg{display:block;width:100%;height:auto}
+.chart-note{color:var(--muted);font-size:14px;margin:6px 0 0}
+ul.follow{margin:0;padding-left:20px}
+ul.follow li{margin:6px 0}
+</style>
+</head>
+<body>
+<main>
+<header>
+<p class="eyebrow">Platform Resilience · Bramble Health</p>
+<h1>Quarterly disaster recovery drill</h1>
+<p class="meta">Runbook and results · Drill held 2026-10-07</p>
+</header>
+
+<section>
+<h2>Scope</h2>
+<p style="margin:0">Restore the patient-scheduling service in <strong>us-east-2</strong> from backups after simulating the loss of <strong>us-west-2</strong>.</p>
+</section>
+
+<section>
+<h2>Restore procedure</h2>
+<ol class="steps">
+<li>Freeze writes in us-west-2.</li>
+<li>Restore the latest RDS snapshot in us-east-2.</li>
+<li>Restore the S3 attachments bucket from the replica.</li>
+<li>Deploy the service stack from the release tag.</li>
+<li class="callout-row"><div class="callout" role="note"><strong>Warning: confirm the snapshot timestamp first.</strong>Promoting an old snapshot silently loses appointments. Check the restored snapshot's timestamp before switching DNS.</div></li>
+<li>Switch DNS for <code>scheduling.bramble.example</code> to us-east-2.</li>
+<li>Run the smoke test suite.</li>
+<li>Reopen writes.</li>
+</ol>
+</section>
+
+<section>
+<h2>Results</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Metric</th><th>Target</th><th>Achieved</th></tr></thead>
+<tbody>
+<tr><td>RTO</td><td>60 minutes</td><td><span class="pill miss">74 minutes</span></td></tr>
+<tr><td>RPO</td><td>15 minutes</td><td><span class="pill ok">9 minutes</span></td></tr>
+<tr><td>Smoke tests passed</td><td>48 of 48</td><td><span class="pill miss">46 of 48</span></td></tr>
+<tr><td>Data verified</td><td>100 percent</td><td><span class="pill ok">100 percent</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>Minutes spent per phase</h3>
+<svg viewBox="0 0 600 250" role="img" aria-label="Bar chart of minutes per phase: Snapshot restore 31, S3 restore 12, Stack deploy 18, DNS switch 6, Smoke tests 7">
+<g font-size="13" fill="currentColor" style="color:var(--text)">
+<g stroke="var(--border)" stroke-width="1">
+<line x1="140" y1="10" x2="140" y2="220"/><line x1="220" y1="10" x2="220" y2="220"/><line x1="300" y1="10" x2="300" y2="220"/><line x1="380" y1="10" x2="380" y2="220"/><line x1="460" y1="10" x2="460" y2="220"/><line x1="540" y1="10" x2="540" y2="220"/>
+</g>
+<g fill="var(--muted)" font-size="12" text-anchor="middle">
+<text x="140" y="238">0</text><text x="220" y="238">5</text><text x="300" y="238">10</text><text x="380" y="238">15</text><text x="460" y="238">20</text><text x="540" y="238">25</text>
+</g>
+<g fill="var(--bar)">
+<rect x="140" y="18" width="496" height="28" rx="3"/>
+<rect x="140" y="60" width="192" height="28" rx="3"/>
+<rect x="140" y="102" width="288" height="28" rx="3"/>
+<rect x="140" y="144" width="96" height="28" rx="3"/>
+<rect x="140" y="186" width="112" height="28" rx="3"/>
+</g>
+<g fill="var(--text)" text-anchor="end">
+<text x="130" y="37">Snapshot restore</text><text x="130" y="79">S3 restore</text><text x="130" y="121">Stack deploy</text><text x="130" y="163">DNS switch</text><text x="130" y="205">Smoke tests</text>
+</g>
+<g font-weight="600">
+<text x="628" y="37" text-anchor="end" fill="var(--surface)">31</text>
+<text x="340" y="79" fill="var(--text)">12</text>
+<text x="436" y="121" fill="var(--text)">18</text>
+<text x="244" y="163" fill="var(--text)">6</text>
+<text x="260" y="205" fill="var(--text)">7</text>
+</g>
+</g>
+</svg>
+<p class="chart-note">Total across phases: 74 minutes. Snapshot restore was the longest phase at 31 minutes.</p>
+</section>
+
+<section>
+<h2>Follow-ups</h2>
+<ul class="follow">
+<li>Pre-provision the database subnet group in us-east-2 to cut restore time.</li>
+<li>Fix the 2 smoke tests that depend on a us-west-2-only endpoint.</li>
+<li>Automate the DNS switch with a health-checked failover record.</li>
+<li>Next drill on 2027-01-20.</li>
+</ul>
+</section>
+</main>
+</body>
+</html>

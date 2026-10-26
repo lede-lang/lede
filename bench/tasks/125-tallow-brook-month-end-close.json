@@ -1,0 +1,53 @@
+{
+  "id": "125-tallow-brook-month-end-close",
+  "category": "runbook",
+  "title": "Tallow & Brook month-end close runbook",
+  "brief": "Tallow & Brook Distribution's finance operations team needs a month-end close runbook that the accounting staff can follow, owned by the Controller, version dated 2026-10-01, with a goal of closing the books within 5 working days. Section \"Calendar\": working day 1, cut off sales and purchasing at 17:00 and finish bank reconciliations; day 2, post accruals and depreciation and reconcile inventory to the warehouse count; day 3, eliminate intercompany balances between the three legal entities and reconcile payroll; day 4, review variances; day 5, the Controller signs off and the books lock at 12:00. Section \"Before sign-off\", a short checklist: every balance sheet account is reconciled; any reconciling difference is under 50 dollars or explained; variances over 5 percent and over 10000 dollars each have a written explanation; intercompany balances net to zero; the trial balance debits equal credits. Section \"If a deadline slips\", steps in order: 1 tell the Controller the same day; 2 decide whether the slip delays sign-off, and if day 5 will be missed by more than 1 working day, notify the CFO, Valentina Sokolov; 3 do not post late entries after the lock without a reopen request signed by the Controller; 4 record the cause in the close log. Make sure everyone sees that the books lock at 12:00 on day 5 and nothing is posted after that without an approved reopen request. Finish with \"Contacts\": Controller, Marcus Eldridge; Accounts payable lead, Noor Haddad; CFO, Valentina Sokolov.",
+  "checklist": {
+    "sections": [
+      "Calendar",
+      "Before sign-off",
+      "If a deadline slips",
+      "Contacts"
+    ],
+    "visible": [
+      "Controller",
+      "Valentina Sokolov",
+      "Marcus Eldridge",
+      "Noor Haddad",
+      "close log",
+      "reopen request",
+      "trial balance"
+    ],
+    "values": [
+      "2026-10-01",
+      "5 working days",
+      "17:00",
+      "50 dollars",
+      "5 percent",
+      "10000 dollars",
+      "12:00",
+      "1 working day"
+    ]
+  },
+  "needs": [
+    "list",
+    "callout",
+    "table"
+  ],
+  "edit": {
+    "request": "Change the lock time to 15:00 and the variance thresholds to 3 percent and 5000 dollars, and add an item to the Before sign-off checklist: \"Bank balances agree to statements\".",
+    "expect_visible": [
+      "Bank balances agree to statements"
+    ],
+    "expect_values": [
+      "15:00",
+      "3 percent",
+      "5000 dollars"
+    ],
+    "expect_absent": [
+      "12:00",
+      "10000 dollars"
+    ]
+  }
+}

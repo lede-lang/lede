@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data Subject Access Request Runbook</title>
+<style>
+:root{
+  --bg:#f6f6fa;--surface:#ffffff;--ink:#1b1c26;--muted:#5a5d70;--line:#dfe0ea;
+  --accent:#5b3fc4;--accent-soft:#eeeafb;--code-bg:#eeeef5;
+  --danger:#a61b1b;--danger-bg:#fdecec;--danger-line:#e8a3a3;
+  --amber:#8a5a00;--amber-bg:#fff4d6;
+  --bar:#7c63dc;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#101018;--surface:#181924;--ink:#e9eaf3;--muted:#9fa2b8;--line:#2b2d3d;
+    --accent:#a996f2;--accent-soft:#222040;--code-bg:#242636;
+    --danger:#ff9494;--danger-bg:#301517;--danger-line:#7c2e33;
+    --amber:#f2c25b;--amber-bg:#2c2410;
+    --bar:#9884ec;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:780px;margin:0 auto;padding:20px 16px 56px}
+.eyebrow{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:12px 0 6px}
+h1{font-size:1.75rem;line-height:1.2;margin:0 0 8px}
+.sub{color:var(--muted);margin:0 0 16px;font-size:.95rem}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;padding:4px 0 8px;font-size:.9rem}
+nav a{color:var(--accent);text-decoration:none;font-weight:600}
+section{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 18px 8px;margin:16px 0}
+h2{font-size:1.25rem;margin:0 0 12px;line-height:1.3}
+p{margin:0 0 12px}
+code{font:.88em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--code-bg);padding:1px 6px;border-radius:5px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 14px}
+.stats div{background:var(--accent-soft);border-radius:10px;padding:10px 14px}
+.stats strong{display:block;font-size:1.6rem;line-height:1.2;color:var(--accent)}
+.stats span{font-size:.85rem;color:var(--muted)}
+@media (max-width:560px){.stats{grid-template-columns:1fr}.stats div{display:flex;align-items:baseline;gap:12px}.stats strong{min-width:5.5ch}}
+.tl{margin:4px 0 14px}
+.tl svg{width:100%;height:auto;display:block}
+.tl text{fill:var(--ink);font:12px system-ui,sans-serif}
+.tl .m{fill:var(--muted)}
+.cap{font-size:.85rem;color:var(--muted);margin:0 0 12px}
+ol.steps{list-style:none;counter-reset:s;padding:0;margin:0 0 8px}
+ol.steps>li{counter-increment:s;position:relative;padding:0 0 14px 46px;margin:0}
+ol.steps>li::before{content:counter(s);position:absolute;left:0;top:0;width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:grid;place-items:center}
+@media (prefers-color-scheme:dark){ol.steps>li::before{color:#101018}}
+ol.steps>li:not(:last-child)::after{content:"";position:absolute;left:15px;top:36px;bottom:2px;width:2px;background:var(--line)}
+ol.steps h3{font-size:1.02rem;margin:3px 0 4px;line-height:1.4}
+.when{display:inline-block;font-size:.75rem;font-weight:700;border-radius:6px;padding:1px 8px;background:var(--accent-soft);color:var(--accent);margin-left:4px;vertical-align:middle;white-space:nowrap}
+ol.sub{list-style:lower-alpha;margin:0;padding-left:22px}
+ol.sub li::marker{color:var(--accent);font-weight:700}
+.sys{list-style:none;margin:0 0 12px;padding:0}
+.sys li{display:grid;grid-template-columns:9.5rem 1fr 3.2rem;gap:4px 12px;align-items:center;padding:9px 0;border-top:1px solid var(--line)}
+.sys li:first-child{border-top:0}
+.sys .n{font-weight:600}
+.sys .o{display:block;font-weight:400;font-size:.85rem;color:var(--muted)}
+.sys .b{height:14px;border-radius:7px;background:var(--accent-soft);position:relative;overflow:hidden}
+.sys .b i{position:absolute;left:0;top:0;bottom:0;background:var(--bar);border-radius:7px}
+.sys .d{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+@media (max-width:480px){
+  .sys li{grid-template-columns:1fr 3.2rem}
+  .sys .b{grid-column:1 / -1;order:3}
+}
+.callout{background:var(--amber-bg);border-radius:10px;padding:10px 14px;margin:0 0 14px;font-size:.95rem}
+.dont{background:var(--danger-bg);border:2px solid var(--danger-line);border-left:6px solid var(--danger);border-radius:10px;padding:12px 14px 4px;margin:0 0 14px}
+.dont ul{list-style:none;padding:0;margin:0}
+.dont li{padding:6px 0 6px 30px;position:relative}
+.dont li::before{content:"\00d7";position:absolute;left:0;top:2px;color:var(--danger);font-weight:700;font-size:1.5rem;line-height:1.3}
+.dont b{color:var(--danger)}
+table{width:100%;border-collapse:collapse;margin-bottom:12px}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+td a{color:var(--accent);overflow-wrap:anywhere}
+@media (max-width:480px){
+  table,thead,tbody,tr,td{display:block}
+  thead{position:absolute;left:-9999px}
+  tr{border-bottom:1px solid var(--line);padding:8px 0}
+  td{border:0;padding:1px 0}
+  td:first-child{font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Runbook &middot; Quillfeather Software</p>
+  <h1>Handling a data subject access request</h1>
+  <p class="sub">Owner: Privacy Officer</p>
+
+  <nav aria-label="Sections">
+    <a href="#deadlines">Deadlines</a>
+    <a href="#steps">Handling steps</a>
+    <a href="#systems">Systems to search</a>
+    <a href="#donot">Do not</a>
+    <a href="#contacts">Contacts</a>
+  </nav>
+
+  <section id="deadlines">
+    <h2>Deadlines</h2>
+    <div class="stats">
+      <div><strong>Day 25</strong><span>our internal delivery target</span></div>
+      <div><strong>Day 30</strong><span>legal response deadline from receipt of a valid request</span></div>
+      <div><strong>+60 days</strong><span>maximum extension, complex requests only</span></div>
+    </div>
+    <div class="tl">
+      <svg viewBox="0 0 640 96" role="img" aria-label="Timeline: day 0 request received, day 25 internal target, day 30 deadline, extension up to day 90">
+        <rect x="20" y="40" width="600" height="14" rx="7" fill="var(--accent-soft)"/>
+        <rect x="20" y="40" width="400" height="14" rx="7" fill="var(--bar)"/>
+        <rect x="420" y="40" width="200" height="14" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="5 4"/>
+        <line x1="20" y1="30" x2="20" y2="64" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="420" y1="30" x2="420" y2="64" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="20" y1="30" x2="20" y2="64" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="620" y1="30" x2="620" y2="64" stroke="var(--ink)" stroke-width="2"/>
+        <!-- scale: 600px = 90 days, 6.667px/day. day 25 = 186.7, day 30 = 220 -->
+        <line x1="186.7" y1="30" x2="186.7" y2="64" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="220" y1="26" x2="220" y2="68" stroke="var(--danger)" stroke-width="3"/>
+        <rect x="20" y="40" width="166.7" height="14" rx="7" fill="var(--accent)"/>
+        <rect x="186.7" y="40" width="33.3" height="14" fill="var(--amber)" opacity=".9"/>
+        <text x="20" y="20" text-anchor="start">Day 0</text>
+        <text x="20" y="84" text-anchor="start" class="m">request received</text>
+        <text x="186.7" y="20" text-anchor="end">Day 25</text>
+        <text x="186.7" y="84" text-anchor="end" class="m">target</text>
+        <text x="228" y="20" text-anchor="start" style="fill:var(--danger);font-weight:700">Day 30</text>
+        <text x="228" y="84" text-anchor="start" class="m">deadline</text>
+        <text x="620" y="20" text-anchor="end">Day 90</text>
+        <text x="620" y="84" text-anchor="end" class="m">latest, if extended</text>
+      </svg>
+    </div>
+    <p class="cap">Dashed zone: extension, up to 60 more days.</p>
+    <p>We must respond within <strong>30 days</strong> of receiving a valid request.</p>
+    <p>The deadline can be extended by up to <strong>60 more days</strong>, but only for complex requests, and only if we tell the requester within the first 30 days.</p>
+    <p>Our internal target is to deliver by <strong>day 25</strong>.</p>
+  </section>
+
+  <section id="steps">
+    <h2>Handling steps</h2>
+    <ol class="steps">
+      <li>
+        <h3>Log the request in the privacy tracker <span class="when">within 1 business day</span></h3>
+      </li>
+      <li>
+        <h3>Verify identity <span class="when">within 5 business days</span></h3>
+        <ol class="sub">
+          <li>Ask for two documents.</li>
+          <li>Never accept a photo of a card showing a full number.</li>
+        </ol>
+      </li>
+      <li>
+        <h3>Confirm the scope with the requester by email</h3>
+      </li>
+      <li>
+        <h3>Collect data from the six systems below</h3>
+      </li>
+      <li>
+        <h3>Legal reviews the export and redacts other people's data</h3>
+      </li>
+      <li>
+        <h3>Package</h3>
+        <ol class="sub">
+          <li>Use an encrypted ZIP.</li>
+          <li>Send the password by SMS, never in the same email.</li>
+        </ol>
+      </li>
+      <li>
+        <h3>Deliver <span class="when">by day 25</span></h3>
+        <p style="margin:0">Record the delivery date.</p>
+      </li>
+      <li>
+        <h3>Close the ticket</h3>
+        <p style="margin:0">Keep the log for 3 years.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section id="systems">
+    <h2>Systems to search</h2>
+    <ul class="sys">
+      <li><span class="n">CRM<span class="o">Sales Ops</span></span><span class="b"><i style="width:50%"></i></span><span class="d">3 d</span></li>
+      <li><span class="n">Billing<span class="o">Finance Systems</span></span><span class="b"><i style="width:66.7%"></i></span><span class="d">4 d</span></li>
+      <li><span class="n">Support desk<span class="o">Support Ops</span></span><span class="b"><i style="width:50%"></i></span><span class="d">3 d</span></li>
+      <li><span class="n">Product database<span class="o">Data Platform</span></span><span class="b"><i style="width:100%"></i></span><span class="d">6 d</span></li>
+      <li><span class="n">Marketing email<span class="o">Growth</span></span><span class="b"><i style="width:33.3%"></i></span><span class="d">2 d</span></li>
+      <li><span class="n">Analytics events<span class="o">Data Platform</span></span><span class="b"><i style="width:100%"></i></span><span class="d">6 d</span></li>
+    </ul>
+    <p class="cap">Days each system owner needs. Bar length is proportional to days.</p>
+    <div class="callout"><strong>Backups are not searched.</strong> Note the date of the last backup instead.</div>
+  </section>
+
+  <section id="donot">
+    <h2>Do not</h2>
+    <div class="dont">
+      <ul>
+        <li><b>Do not</b> delete data in response to an access request.</li>
+        <li><b>Do not</b> send the export to an address that was not verified.</li>
+        <li><b>Do not</b> discuss the request in public channels.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="contacts">
+    <h2>Contacts</h2>
+    <table>
+      <thead><tr><th>Role</th><th>Name</th><th>Reach</th></tr></thead>
+      <tbody>
+        <tr><td>Privacy Officer</td><td>Anneliese Vogt</td><td><a href="mailto:privacy@quillfeather.example">privacy@quillfeather.example</a></td></tr>
+        <tr><td>Legal reviewer</td><td>Marcus Teo</td><td>&mdash;</td></tr>
+        <tr><td>Escalation channel</td><td>&mdash;</td><td><code>#privacy-requests</code></td></tr>
+      </tbody>
+    </table>
+  </section>
+</div>
+</body>
+</html>

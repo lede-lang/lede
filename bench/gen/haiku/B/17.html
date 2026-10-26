@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Runbook: Rotating Load Balancer TLS Certificates</title>
+<style>
+:root{--page:#f4f6f5;--card:#fff;--ink:#1e2623;--mute:#5b6661;--edge:#d5dcd8;--sea:#1b6b5a;--sea-soft:#e4f1ed;--red:#a8321f;--warn-bg:#fdeceb;--warn-bd:#b8402e;--warn-ink:#5a170d;--note-bg:#eef3fb;--note-bd:#4a6fb0;--note-ink:#20365e;--soon:#b35c00;}
+@media (prefers-color-scheme: dark){
+:root:not([data-theme="light"]){--page:#0d1311;--card:#151d1a;--ink:#e0e9e5;--mute:#98a8a1;--edge:#26332e;--sea:#5ccab2;--sea-soft:#152924;--red:#ff8b76;--warn-bg:#3b1b16;--warn-bd:#e0634e;--warn-ink:#ffd2c9;--note-bg:#162236;--note-bd:#7fa3e0;--note-ink:#d6e4ff;--soon:#f0a040;}
+}
+:root[data-theme="dark"]{--page:#0d1311;--card:#151d1a;--ink:#e0e9e5;--mute:#98a8a1;--edge:#26332e;--sea:#5ccab2;--sea-soft:#152924;--red:#ff8b76;--warn-bg:#3b1b16;--warn-bd:#e0634e;--warn-ink:#ffd2c9;--note-bg:#162236;--note-bd:#7fa3e0;--note-ink:#d6e4ff;--soon:#f0a040;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:800px;margin:0 auto;padding:24px 16px 56px}
+.tag{display:inline-block;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--sea);background:var(--sea-soft);padding:3px 9px;border-radius:999px}
+h1{font-size:1.6rem;line-height:1.25;margin:10px 0 4px}
+.meta{color:var(--mute);font-size:.92rem;margin:0}
+h2{font-size:1.12rem;margin:30px 0 10px;padding-bottom:4px;border-bottom:1px solid var(--edge)}
+.card{background:var(--card);border:1px solid var(--edge);border-radius:10px;padding:12px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.95rem;min-width:400px}
+th,td{padding:9px 8px;text-align:left;border-bottom:1px solid var(--edge)}
+th{color:var(--mute);font-weight:600;font-size:.84rem}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.soon{color:var(--soon);font-weight:700}
+.urgent{color:var(--red);font-weight:700}
+ol{padding-left:24px}
+li{margin:8px 0}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--sea-soft);padding:1px 5px;border-radius:4px}
+.warn{margin:16px 0 16px 0;padding:14px 16px;background:var(--warn-bg);border-left:5px solid var(--warn-bd);color:var(--warn-ink);border-radius:8px}
+.warn strong{display:block;margin-bottom:2px}
+.note{margin:24px 0 0;padding:14px 16px;background:var(--note-bg);border-left:4px solid var(--note-bd);color:var(--note-ink);border-radius:8px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <span class="tag">Runbook · Edge team</span>
+  <h1>Rotating public TLS certificates on load balancers</h1>
+  <p class="meta">Sycamore Travel · Manual rotation procedure</p>
+
+  <h2>Certificates</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>Domain</th><th>Expires</th><th class="n">Days left</th></tr></thead>
+      <tbody>
+        <tr><td>www.sycamoretravel.example</td><td>2026-11-14</td><td class="n soon">29</td></tr>
+        <tr><td>api.sycamoretravel.example</td><td>2026-11-02</td><td class="n urgent">17</td></tr>
+        <tr><td>partners.sycamoretravel.example</td><td>2027-01-20</td><td class="n">96</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Steps</h2>
+  <ol>
+    <li>Request the new certificate in the certificate manager.</li>
+    <li>Validate it using the DNS record.</li>
+    <li>Wait for the status to show <code>Issued</code>.</li>
+  </ol>
+
+  <div class="warn" role="alert">
+    <strong>Attach the new certificate before removing anything</strong>
+    Never remove the old certificate first. Clients will get handshake errors until the new one is attached.
+  </div>
+
+  <ol start="4">
+    <li>Attach the new certificate to the listener on <code>edge-alb-prod</code>.</li>
+    <li>Test with an external checker.</li>
+    <li>Remove the old certificate after 24 hours.</li>
+  </ol>
+
+  <aside class="note" role="note">
+    <strong>Why this is manual</strong>
+    The automated renewal job is broken until ticket EDGE-812 is fixed. Until then, every rotation follows these steps by hand.
+  </aside>
+</main>
+</body>
+</html>

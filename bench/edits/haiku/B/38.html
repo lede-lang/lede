@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Product Design Principles</title>
+<style>
+:root{--bg:#f7f8fa;--fg:#17191d;--muted:#5a606b;--accent:#2452a8;--card:#ffffff;--border:#dfe3ea;--do:#2e7040;--avoid:#a33a2b;--note:#e8eef9}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#101216;--fg:#e8eaf0;--muted:#9aa1ae;--accent:#8fb2ff;--card:#171a20;--border:#2a2f39;--do:#7cd19a;--avoid:#ff9a88;--note:#152034}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:760px;margin:0 auto;padding:32px 16px 56px}
+h1{font-size:clamp(1.6rem,4.5vw,2.2rem);line-height:1.2;margin:.2em 0 .4em}
+.intro{font-size:1.05rem;color:var(--muted);margin:0 0 1.2em}
+h2{font-size:1.2rem;margin:2.2em 0 .4em;padding-top:.6em;border-top:1px solid var(--border)}
+p{margin:.6em 0}
+.pairs{list-style:none;padding:0;margin:.8em 0 0;display:grid;gap:8px}
+.pairs li{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.pairs b{font-size:.84rem;letter-spacing:.03em;text-transform:uppercase}
+.do b{color:var(--do)}
+.avoid b{color:var(--avoid)}
+blockquote{margin:2em 0;padding:.2em 0 .2em 1.1em;border-left:3px solid var(--accent);font-size:1.2rem;font-style:italic}
+.callout{border-left:4px solid var(--accent);background:var(--note);padding:12px 16px;border-radius:6px;margin:1.6em 0}
+.callout strong{display:block;margin-bottom:.15em}
+@media (max-width:480px){body{font-size:15px}.wrap{padding:24px 16px 48px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>Product design principles</h1>
+<p class="intro">These principles were agreed in a workshop with 26 designers and engineers on 2026-09-17. They apply to all customer-facing apps. Link to this page from every design review template.</p>
+
+<h2>Clarity over cleverness</h2>
+<p>A customer should understand what a control does before they touch it. Clever labels, unfamiliar icons and novel patterns cost attention, and attention is scarce when money is involved. Choose the plain option, and test it with someone who has never seen the screen.</p>
+<ul class="pairs">
+<li class="do"><b>Do</b> label buttons with the action, such as &ldquo;Send payment&rdquo;.</li>
+<li class="avoid"><b>Avoid</b> icons without text for money movement.</li>
+</ul>
+
+<h2>Show the money</h2>
+<p>Customers should see every fee and cost before they confirm an action. A fee that appears only on the last screen feels like a trap, even when it is disclosed. Put the full cost where the decision is made.</p>
+<ul class="pairs">
+<li class="do"><b>Do</b> show fees before confirmation.</li>
+<li class="avoid"><b>Avoid</b> revealing fees on the final screen.</li>
+</ul>
+
+<h2>Forgive mistakes</h2>
+<p>People make mistakes, especially under time pressure. Every irreversible-looking action should have a way back, and the way back should be simple enough to use without help.</p>
+<ul class="pairs">
+<li class="do"><b>Do</b> allow undo for 10 seconds after a transfer is scheduled.</li>
+<li class="avoid"><b>Avoid</b> making cancellation a phone call.</li>
+</ul>
+
+<h2>Accessible by default</h2>
+<p>Accessibility is part of the first design, not a later fix. Contrast, labels and non-colour cues help every customer, not only those who use assistive technology.</p>
+<ul class="pairs">
+<li class="do"><b>Do</b> meet a contrast ratio of 4.5 to 1.</li>
+<li class="avoid"><b>Avoid</b> relying on colour alone for status.</li>
+</ul>
+
+<h2>Calm, not urgent</h2>
+<p>Banking decisions are rarely better when rushed. We state deadlines plainly and let customers decide at their own pace. Pressure tactics erode trust, and they do not belong in our products.</p>
+<ul class="pairs">
+<li class="do"><b>Do</b> state plain deadlines.</li>
+<li class="avoid"><b>Avoid</b> countdown timers that push decisions.</li>
+</ul>
+
+<h2>Explain the why</h2>
+<p>When we hold or delay something a customer expects, they need to know the reason. A vague status leaves them guessing and calling support. A clear reason lets them act, or simply stop worrying.</p>
+<ul class="pairs">
+<li class="do"><b>Do</b> tell customers why a payment is on hold and what they can do next.</li>
+<li class="avoid"><b>Avoid</b> showing &ldquo;Payment pending&rdquo; with no reason.</li>
+</ul>
+
+<blockquote>&ldquo;If a customer has to read it twice, we wrote it wrong.&rdquo;
+<br><span style="font-size:.95rem;font-style:normal;color:var(--muted)">&mdash; Ines Albrecht, Head of Design</span>
+</blockquote>
+
+<div class="callout">
+<strong>Disagreeing with a principle</strong>
+Disagreements with a principle go to the monthly design council, not to individual design reviews.
+</div>
+</main>
+</body>
+</html>

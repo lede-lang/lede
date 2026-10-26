@@ -1,0 +1,45 @@
+@title AWS landing zone
+@subtitle Cloud Foundations · Meridian Logistics · as of 2026-10-05
+
+# Account structure
+
+diagram lz title="Account structure"
+lz: orgs "AWS Organizations" svc
+lz: idc "IAM Identity Center" svc
+lz: gd "GuardDuty" svc
+lz: hub "Security Hub" svc
+lz: logs "Log Archive Bucket" store
+lz: tgw "Transit Gateway" svc
+lz: nat "NAT Gateway" svc
+lz: papp "Prod App Subnets" net
+lz: pdata "Prod Data Subnets" net
+lz: dapp "Dev App Subnets" net
+lz: group egress "Egress VPC" nat
+lz: group net "Network account" tgw, egress
+lz: group prodvpc "Prod VPC" papp, pdata
+lz: group prod "Prod workload account" prodvpc
+lz: group devvpc "Dev VPC" dapp
+lz: group dev "Dev workload account" devvpc
+lz: group mgmt "Management account" orgs, idc
+lz: group sec "Security account" gd, hub
+lz: group logacct "Log Archive account" logs
+lz: prodvpc -> tgw : attachment
+lz: devvpc -> tgw : attachment
+lz: tgw -> nat : 0.0.0.0/0
+lz: gd -> hub : findings
+lz: orgs -> logs : CloudTrail logs
+
+# Network ranges
+
+table = VPC,Account,CIDR,Region; Egress VPC,Network,10.0.0.0/20,us-west-2; Prod VPC,Prod workload,10.10.0.0/16,us-west-2; Dev VPC,Dev workload,10.20.0.0/16,us-west-2
+
+# Guardrails
+
+Service control policies in force:
+
+- Deny leaving the organization.
+- Deny disabling CloudTrail.
+- Deny regions other than us-west-2 and us-east-1.
+- Deny root user access keys.
+
+! Prod and Dev VPCs cannot route to each other. The Transit Gateway uses separate route tables, rt-prod and rt-dev.

@@ -1,0 +1,14 @@
+data runs = week,deploys; W1,1; W2,3
+chart line runs
+chart hbar runs x=week y=deploys
+diagram flow
+flow: end "Done" store
+flow: alt "Fallback"
+flow: start -> end
+flow: alt -> end
+diagram sess sequence
+sess: alt -> end : edges from participants with these names still parse
+sess: end -> alt
+> a quote
+> -- Someone
+---

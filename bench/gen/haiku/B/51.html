@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>INC-3017 Postmortem</title>
+<style>
+:root{--bg:#f4f5f7;--card:#ffffff;--fg:#1b1f26;--muted:#5b6370;--line:#d9dee6;--accent:#2a56c6;--good:#17794a;--goodbg:#e2f4ea;--warn:#8a5200;--warnbg:#fcf0d9;--bad:#b3261e;--badbg:#fbe3e0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0f1115;--card:#181b21;--fg:#e6e9ef;--muted:#9aa3b0;--line:#2b313b;--accent:#8fb0ff;--good:#62d39b;--goodbg:#15301f;--warn:#f0b35c;--warnbg:#36290f;--bad:#ff8b82;--badbg:#3b1a18}}
+:root[data-theme="dark"]{--bg:#0f1115;--card:#181b21;--fg:#e6e9ef;--muted:#9aa3b0;--line:#2b313b;--accent:#8fb0ff;--good:#62d39b;--goodbg:#15301f;--warn:#f0b35c;--warnbg:#36290f;--bad:#ff8b82;--badbg:#3b1a18}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:1.6rem;line-height:1.2;margin:0 0 6px}
+h2{font-size:1.15rem;margin:34px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+p.sub{color:var(--muted);margin:0 0 18px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.kpi .v{font-size:1.5rem;font-weight:650;font-variant-numeric:tabular-nums}
+.kpi .l{color:var(--muted);font-size:.85rem;margin-top:2px}
+.bad{color:var(--bad)} .warn{color:var(--warn)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.tbl{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tbl th,.tbl td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top;font-size:.94rem}
+.tbl th{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.tbl tr:last-child td{border-bottom:0}
+.scroll{overflow-x:auto}
+.scroll .tbl{min-width:460px}
+.time{font-weight:650;font-variant-numeric:tabular-nums;margin-right:8px}
+.note{color:var(--muted);font-size:.92rem}
+ul.tl{list-style:none;padding:0;margin:0}
+ul.tl li{position:relative;padding:0 0 14px 22px;border-left:2px solid var(--line);margin-left:6px}
+ul.tl li::before{content:"";position:absolute;left:-6px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--accent)}
+ul.tl li:last-child{border-left-color:transparent}
+ul.tl li.key::before{background:var(--bad)}
+ul{padding-left:20px}
+li{margin:6px 0}
+@media (max-width:560px){.tbl th,.tbl td{padding:7px 6px;font-size:.88rem}.wrap{padding:18px 14px 40px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>INC-3017: listing photo upload outage</h1>
+<p class="sub">Stonebridge Realty &middot; 2026-08-27 &middot; owner: Listings Platform &middot; blameless postmortem</p>
+
+<div class="kpis">
+  <div class="kpi"><div class="v">112 min</div><div class="l">Duration, 10:15 to 12:07 UTC</div></div>
+  <div class="kpi"><div class="v bad">100%</div><div class="l">Peak upload failure rate</div></div>
+  <div class="kpi"><div class="v">8,340</div><div class="l">Listings left with missing photos</div></div>
+  <div class="kpi"><div class="v">412</div><div class="l">Support tickets</div></div>
+</div>
+
+<h2>Summary</h2>
+<p>A storage policy change was meant to restrict bucket access to our VPC endpoint. It also blocked uploads made with pre-signed URLs from agents' phones. Every mobile upload returned 403 until the deny statement was removed.</p>
+
+<h2>Timeline</h2>
+<p class="note">All times UTC.</p>
+<ul class="tl">
+  <li><span class="time">10:15</span>Policy change applied through Terraform. Uploads are not yet failing.</li>
+  <li><span class="time">10:22</span>Uploads begin failing with 403, seven minutes after the change.</li>
+  <li><span class="time">10:31</span>First customer ticket reaches support.</li>
+  <li class="key"><span class="time">10:48</span>Incident declared Sev2.</li>
+  <li><span class="time">11:20</span>The policy diff is identified as the cause.</li>
+  <li class="key"><span class="time">11:58</span>Hotfix applied, removing the deny statement.</li>
+  <li><span class="time">12:07</span>Uploads recover.</li>
+</ul>
+
+<h2>Why it was not caught</h2>
+<ul>
+  <li>The change was tested only from the office network.</li>
+  <li>Staging has no mobile upload test.</li>
+  <li>The policy linter does not model pre-signed URLs.</li>
+</ul>
+
+<h2>What went well</h2>
+<ul>
+  <li>The declared incident had a clear commander within 17 minutes.</li>
+  <li>The rollback itself took under 10 minutes once the cause was known.</li>
+</ul>
+
+<h2>Action items</h2>
+<div class="scroll">
+<table class="tbl">
+  <thead><tr><th>Action</th><th>Owner</th><th>Due</th></tr></thead>
+  <tbody>
+    <tr><td>Add a pre-signed URL upload test to staging</td><td>Greta Lindqvist</td><td>2026-09-18</td></tr>
+    <tr><td>Require policy changes to be applied to staging first</td><td>Omar Haddad</td><td>2026-09-25</td></tr>
+    <tr><td>Alert when upload 403s exceed 2% for 5 minutes</td><td>Listings on-call</td><td>2026-09-11</td></tr>
+  </tbody>
+</table>
+</div>
+</div>
+</body>
+</html>

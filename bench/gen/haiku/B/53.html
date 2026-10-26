@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ledger Point-in-Time Restore</title>
+<style>
+:root{--bg:#f4f5f7;--card:#ffffff;--fg:#1b1f26;--muted:#5b6370;--line:#d9dee6;--accent:#2a56c6;--good:#17794a;--goodbg:#e2f4ea;--warn:#8a5200;--warnbg:#fcf0d9;--bad:#b3261e;--badbg:#fbe3e0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0f1115;--card:#181b21;--fg:#e6e9ef;--muted:#9aa3b0;--line:#2b313b;--accent:#8fb0ff;--good:#62d39b;--goodbg:#15301f;--warn:#f0b35c;--warnbg:#36290f;--bad:#ff8b82;--badbg:#3b1a18}}
+:root[data-theme="dark"]{--bg:#0f1115;--card:#181b21;--fg:#e6e9ef;--muted:#9aa3b0;--line:#2b313b;--accent:#8fb0ff;--good:#62d39b;--goodbg:#15301f;--warn:#f0b35c;--warnbg:#36290f;--bad:#ff8b82;--badbg:#3b1a18}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:1.6rem;line-height:1.2;margin:0 0 6px}
+h2{font-size:1.15rem;margin:34px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+h3{font-size:1rem;margin:18px 0 6px}
+p.sub{color:var(--muted);margin:0 0 18px}
+.callout{border-left:4px solid var(--warn);background:var(--warnbg);padding:12px 14px;border-radius:8px;margin:14px 0}
+.callout.bad{border-color:var(--bad);background:var(--badbg)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.check{list-style:none;padding-left:0}
+.check li{padding-left:26px;position:relative;margin:8px 0}
+.check li::before{content:"";position:absolute;left:2px;top:6px;width:14px;height:14px;border:1.5px solid var(--muted);border-radius:3px}
+ol{padding-left:22px}
+li{margin:6px 0}
+ol ol{list-style-type:lower-alpha;margin-top:6px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em}
+dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0}
+dt{color:var(--muted)}
+dd{margin:0}
+@media (max-width:560px){.wrap{padding:18px 14px 40px}dl{grid-template-columns:1fr}dd{margin-bottom:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Runbook: restore ledger-prod to a point in time</h1>
+<p class="sub">Core Systems team &middot; database <code>ledger-prod</code> (PostgreSQL on RDS, 1.8 TB) &middot; a restore takes roughly 65 minutes plus validation</p>
+
+<h2>When to use</h2>
+<ul>
+  <li>Data corruption, or a bad batch job.</li>
+  <li>Never for a simple instance failover.</li>
+  <li>Only with written approval from both the data owner and the on-call lead.</li>
+</ul>
+
+<div class="callout bad">
+  <strong>Do not restore over ledger-prod.</strong> Restoring over <code>ledger-prod</code> destroys every transaction since the target time. Always restore to a new instance.
+</div>
+
+<h2>Before you start</h2>
+<ul class="check">
+  <li>Confirm the exact target timestamp in UTC.</li>
+  <li>Confirm that automated backups cover it. Retention is 14 days.</li>
+  <li>Freeze the nightly posting job.</li>
+  <li>Open a change record.</li>
+</ul>
+
+<h2>Restore steps</h2>
+<ol>
+  <li><strong>Restore to a NEW instance named <code>ledger-restore-YYYYMMDD</code>. Never restore over production.</strong>
+    <ol type="a">
+      <li>Choose the target time.</li>
+      <li>Use the same parameter group, <code>ledger-pg15-prod</code>.</li>
+      <li>Place the instance in the isolated recovery subnet group.</li>
+    </ol>
+  </li>
+  <li>Wait until the instance is available. This takes about 65 minutes.</li>
+  <li>Validate the restored copy.
+    <ol type="a">
+      <li>Row counts of postings and accounts match the expected figures within 0.01 percent.</li>
+      <li>The sum of ledger debits equals the sum of credits.</li>
+      <li>Two senior engineers sign off in the change record.</li>
+    </ol>
+  </li>
+  <li>Repair production.
+    <ol type="a">
+      <li>Export the affected rows from the restored copy.</li>
+      <li>Apply them to production in a transaction reviewed by a second engineer.</li>
+    </ol>
+  </li>
+  <li>Clean up.
+    <ol type="a">
+      <li>Keep the restored instance for 7 days.</li>
+      <li>Then delete it and record the deletion.</li>
+    </ol>
+  </li>
+</ol>
+
+<h2>Contacts</h2>
+<div class="card">
+<dl>
+  <dt>Data owner</dt><dd>Beatrix Oyelaran</dd>
+  <dt>Core Systems on-call lead</dt><dd>Henrik Dahl</dd>
+  <dt>Compliance</dt><dd>Mina Sato</dd>
+</dl>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Q4 2026 Mid-Market Pipeline — Northwind Analytics</title>
+<style>
+:root {
+  --bg: #f7f7f5;
+  --card: #ffffff;
+  --fg: #1b1d22;
+  --dim: #626873;
+  --rule: #e4e4e0;
+  --grid: #ececea;
+  --brand: #4f46e5;
+  --brand-soft: #eef0ff;
+  --note-bg: #fff6e0;
+  --note-edge: #d99a0b;
+  --note-fg: #5a3e00;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111215;
+    --card: #1a1c21;
+    --fg: #eceef2;
+    --dim: #9da3ad;
+    --rule: #2c2f36;
+    --grid: #262930;
+    --brand: #8b85ff;
+    --brand-soft: #24224a;
+    --note-bg: #2d2412;
+    --note-edge: #d9a12b;
+    --note-fg: #f5dfaa;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+.page { max-width: 940px; margin: 0 auto; padding: 30px 16px 64px; }
+.eyebrow { text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.75rem; color: var(--brand); font-weight: 700; }
+h1 { font-size: 1.65rem; margin: 4px 0 2px; }
+.asof { color: var(--dim); margin: 0; }
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 22px 0 6px; }
+.kpi { background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 14px 16px; }
+.kpi .lbl { font-size: 0.82rem; color: var(--dim); }
+.kpi .num { font-size: 1.8rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+section { background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 20px; margin-top: 16px; }
+h2 { margin: 0 0 14px; font-size: 1.15rem; }
+svg { display: block; width: 100%; height: auto; }
+.tick { fill: var(--dim); font-size: 12px; }
+.cat { fill: var(--fg); font-size: 13px; }
+.valtxt { fill: var(--fg); font-size: 12px; font-weight: 600; }
+.scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; margin-top: 8px; }
+th, td { padding: 10px 10px; border-bottom: 1px solid var(--rule); text-align: left; }
+th { font-size: 0.78rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--dim); font-weight: 600; white-space: nowrap; }
+td.n, th.n { text-align: right; }
+td.d { white-space: nowrap; }
+tbody tr:last-child td { border-bottom: 0; }
+tfoot td { font-weight: 700; border-top: 2px solid var(--rule); border-bottom: 0; }
+.stage { display: inline-block; padding: 2px 9px; border-radius: 999px; background: var(--brand-soft); color: var(--brand); font-size: 0.82rem; font-weight: 600; white-space: nowrap; }
+.callout { margin-top: 14px; background: var(--note-bg); border-left: 5px solid var(--note-edge); border-radius: 8px; padding: 14px 16px; color: var(--note-fg); }
+.callout b { display: block; margin-bottom: 2px; }
+p { margin: 0; }
+@media (max-width: 640px) {
+  .kpis { grid-template-columns: repeat(2, 1fr); }
+  .kpi .num { font-size: 1.5rem; }
+  section { padding: 16px 14px; }
+  th, td { padding: 8px 6px; font-size: 0.9rem; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="eyebrow">Northwind Analytics · Mid-Market</div>
+  <h1>Q4 2026 Pipeline</h1>
+  <p class="asof">As of 2026-10-14</p>
+
+  <div class="kpis">
+    <div class="kpi"><div class="lbl">Total pipeline</div><div class="num">$4,820K</div></div>
+    <div class="kpi"><div class="lbl">Weighted pipeline</div><div class="num">$1,930K</div></div>
+    <div class="kpi"><div class="lbl">Quota</div><div class="num">$2,400K</div></div>
+    <div class="kpi"><div class="lbl">Win rate</div><div class="num">27%</div></div>
+  </div>
+
+  <section>
+    <h2>Pipeline by stage</h2>
+    <svg viewBox="0 0 600 260" role="img" aria-label="Open pipeline value by stage in thousands of dollars: Prospecting 1640, Discovery 1210, Demo 880, Proposal 640, Negotiation 330, Verbal commit 120.">
+      <g stroke="var(--grid)">
+        <line x1="120" y1="8" x2="120" y2="230"/>
+        <line x1="242.2" y1="8" x2="242.2" y2="230"/>
+        <line x1="364.4" y1="8" x2="364.4" y2="230"/>
+        <line x1="486.7" y1="8" x2="486.7" y2="230"/>
+      </g>
+      <g class="tick" text-anchor="middle">
+        <text x="120" y="250">$0</text>
+        <text x="242.2" y="250">$500K</text>
+        <text x="364.4" y="250">$1,000K</text>
+        <text x="486.7" y="250">$1,500K</text>
+      </g>
+      <g class="cat" text-anchor="end">
+        <text x="112" y="33">Prospecting</text>
+        <text x="112" y="70">Discovery</text>
+        <text x="112" y="107">Demo</text>
+        <text x="112" y="144">Proposal</text>
+        <text x="112" y="181">Negotiation</text>
+        <text x="112" y="218">Verbal commit</text>
+      </g>
+      <g fill="var(--brand)">
+        <rect x="120" y="14" width="400.9" height="26" rx="3"/>
+        <rect x="120" y="51" width="295.8" height="26" rx="3"/>
+        <rect x="120" y="88" width="215.1" height="26" rx="3"/>
+        <rect x="120" y="125" width="156.4" height="26" rx="3"/>
+        <rect x="120" y="162" width="80.7" height="26" rx="3"/>
+        <rect x="120" y="199" width="29.3" height="26" rx="3"/>
+      </g>
+      <g class="valtxt">
+        <text x="527" y="32">$1,640K</text>
+        <text x="422" y="69">$1,210K</text>
+        <text x="341" y="106">$880K</text>
+        <text x="282" y="143">$640K</text>
+        <text x="207" y="180">$330K</text>
+        <text x="155" y="217">$120K</text>
+      </g>
+    </svg>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Stage</th><th class="n">Deals</th><th class="n">Value ($K)</th></tr></thead>
+        <tbody>
+          <tr><td>Prospecting</td><td class="n">82</td><td class="n">1,640</td></tr>
+          <tr><td>Discovery</td><td class="n">51</td><td class="n">1,210</td></tr>
+          <tr><td>Demo</td><td class="n">34</td><td class="n">880</td></tr>
+          <tr><td>Proposal</td><td class="n">19</td><td class="n">640</td></tr>
+          <tr><td>Negotiation</td><td class="n">9</td><td class="n">330</td></tr>
+          <tr><td>Verbal commit</td><td class="n">4</td><td class="n">120</td></tr>
+        </tbody>
+        <tfoot><tr><td>Total</td><td class="n">199</td><td class="n">4,820</td></tr></tfoot>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Top deals</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Account</th><th>Owner</th><th>Stage</th><th class="n">Value ($K)</th><th>Close date</th></tr></thead>
+        <tbody>
+          <tr><td>Halvorsen Freight</td><td>Jamie Okafor</td><td><span class="stage">Negotiation</span></td><td class="n">210</td><td class="d">2026-11-21</td></tr>
+          <tr><td>Brightline Clinics</td><td>Sara Lindqvist</td><td><span class="stage">Proposal</span></td><td class="n">185</td><td class="d">2026-12-05</td></tr>
+          <tr><td>Quarry Hill Hotels</td><td>Sara Lindqvist</td><td><span class="stage">Proposal</span></td><td class="n">150</td><td class="d">2026-12-18</td></tr>
+          <tr><td>Cobalt Mining Co</td><td>Jamie Okafor</td><td><span class="stage">Verbal commit</span></td><td class="n">120</td><td class="d">2026-10-31</td></tr>
+          <tr><td>Fernwood Schools</td><td>Luis Ortega</td><td><span class="stage">Demo</span></td><td class="n">96</td><td class="d">2026-12-12</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Forecast notes</h2>
+    <p>Weighted pipeline of $1,930K covers 80% of the $2,400K quota. Total pipeline is healthy at roughly 2x quota, but too much of it sits in early stages to count on. To be safe, the team needs to add new weighted pipeline before mid-November.</p>
+    <div class="callout" role="note">
+      <b>Coverage gap: about $470K</b>
+      Add roughly $470K of new weighted pipeline before 2026-11-15 to close the gap to quota.
+    </div>
+  </section>
+</div>
+</body>
+</html>

@@ -1,0 +1,26 @@
+@title 40 MW solar farm: construction status
+@subtitle Prairie Sun Energy. As of 2026-10-16
+@author Ingrid Valdez, Construction Manager. For the lenders and the owner
+
+Overall status: Red.
+
+kpi Panels installed | 60,480 of 96,000 | 63.0% | neutral
+kpi Inverters | 14 of 20 | | neutral
+kpi Budget spent | $27.8M of $41.5M | 67.0% | neutral
+
+## Project at a glance
+To finish all panels by 2026-12-04, 7 weeks away, the crew has to average 5,074 panels a week. At the current pace, panels would finish about 2027-01-02.
+
+## Installation pace
+data pace = week,panels; Week 1,3300; Week 2,3050; Week 3,3200; Week 4,3150
+chart bar pace y=panels labels title="Panels installed per week, last four weeks" target="5074 needed"
+
+The average over the last four weeks is 3,175 panels a week.
+
+## Milestones
+table = Milestone,Date,Status; Site grading,2026-05-22,Done; Foundations and trackers,2026-09-04,Done; Panels installed,2026-12-04 planned (forecast 2027-01-02),At risk; Substation witness test,2026-11-19,Planned; Energization,2027-01-15,At risk; Commercial operation,2027-02-01,Planned
+
+## Needs attention
+A second crew starting 2026-10-26 would add about 2,200 panels a week, taking the rate to about 5,375 a week. That is enough only if no more than 2 weather days are lost.
+
+!! The owner must approve $380,000 for the second crew by 2026-10-21.

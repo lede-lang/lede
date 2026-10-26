@@ -1,0 +1,54 @@
+{
+  "id": "102-halsted-stock-sync",
+  "category": "architecture",
+  "title": "Halsted store-to-storefront stock sync",
+  "brief": "Halsted Home Goods needs a page explaining how a sale at a store register reaches the online stock count, written by the Retail Platform team and dated 2026-10-08, for new engineers. Section \"Sale-to-stock sequence\" with five participants, named exactly: Store POS, Edge Sync Agent, Inventory API, Stock Ledger, Storefront. In order: Store POS tells Edge Sync Agent \"sale recorded, 2 units of SKU 48113\"; Edge Sync Agent calls Inventory API \"POST /adjustments, batched every 5 seconds\"; Inventory API tells Stock Ledger \"append decrement\"; Stock Ledger answers Inventory API \"new on-hand count\"; Inventory API answers Edge Sync Agent \"202 Accepted\"; Inventory API tells Storefront \"publish stock change\". Then show the offline case: when the store loses its connection, Store POS keeps selling and Edge Sync Agent keeps the adjustments in a local queue, then sends them in order when the link returns, as \"replay queued adjustments\" to Inventory API. Section \"Timing budget\" listing each hop and its limit: register to agent under 1 second; agent batch interval 5 seconds; API to ledger under 200 milliseconds; ledger to storefront under 10 seconds; end to end target under 20 seconds for 99 percent of sales. Section \"Good to know\" with three points: the local queue holds up to 4 hours of sales, which is about 3000 adjustments at a busy store; adjustments carry an idempotency key so replays never double count; and online orders reserve stock for 15 minutes at checkout. Make sure readers do not miss that the Stock Ledger is the only source of truth, and the Storefront count may lag by up to 20 seconds.",
+  "checklist": {
+    "sections": [
+      "Sale-to-stock sequence",
+      "Timing budget",
+      "Good to know"
+    ],
+    "visible": [
+      "Store POS",
+      "Edge Sync Agent",
+      "Inventory API",
+      "Stock Ledger",
+      "Storefront",
+      "202 Accepted",
+      "replay queued adjustments",
+      "idempotency key",
+      "source of truth"
+    ],
+    "values": [
+      "2026-10-08",
+      "48113",
+      "5 seconds",
+      "200 milliseconds",
+      "10 seconds",
+      "20 seconds",
+      "99 percent",
+      "4 hours",
+      "3000",
+      "15 minutes"
+    ]
+  },
+  "needs": [
+    "sequence",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the batch interval from 5 seconds to 2 seconds, and add a fourth point under Good to know: \"Returns increment stock only after the item is scanned back in\".",
+    "expect_visible": [
+      "Returns increment stock only after the item is scanned back in"
+    ],
+    "expect_values": [
+      "2 seconds"
+    ],
+    "expect_absent": [
+      "batched every 5 seconds"
+    ]
+  }
+}

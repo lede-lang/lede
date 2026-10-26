@@ -1,0 +1,11 @@
+@title Quarterly goals, week 9
+
+kpi Goals on track | 72% | +6 pts | bar
+kpi Hiring plan | 58% | +2 this month | bar
+kpi Budget used | 41% | | neutral | bar
+
+data goals = team,done,goal; Platform,64,80; Payments,91,85; Growth,38,70; Support,77,75
+
+table goals bar=done target=goal title="Percent done against each team's goal"
+
+Payments and Support are past their goal; Growth needs help before week 12.

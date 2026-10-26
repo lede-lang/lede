@@ -1,0 +1,52 @@
+@title Choosing Ardent Bio's next home
+@subtitle Three buildings for 96 people, about 24,000 sq ft with roughly a third wet lab. Leadership decides on 2026-11-13.
+@date 2026-10-17
+
+Our current lease ends on 2027-03-31. All three buildings can take us before then. The choice is between paying more for a lab-ready building, paying up front to finish a cheaper one, or splitting the team across two sites.
+
+## Options
+
+table = ,Harbor Point,Mill District,Northgate Park; Base rent per sq ft per year,$58,$46,$38; Lease term,10 years,7 years,10 years; Lab space,Lab-ready now,Partly lab-ready,None; Extra cost to us,None,"About $1.1M fit-out",Separate lab lease nearby; Median employee commute,24 min,31 min,42 min; Move-in date,2027-02-01,2027-03-01,2027-01-15
+
+## Annual rent
+
+data rent = building,annual base rent; Harbor Point,1392000; Mill District,1104000; Northgate Park,912000
+chart bar rent unit=$ labels title="Annual base rent at 24,000 sq ft"
+
+Harbor Point costs $288,000 a year more in base rent than Mill District. Mill District saves that money every year, but the $1.1M fit-out uses up the first four years or so of those savings.
+
+! These are base rent only. Mill District's figure leaves out the $1.1M fit-out, and Northgate Park's leaves out the separate lab lease we would need.
+
+## Pros and cons
+
+### Harbor Point
+- Pro: lab-ready now, so no fit-out project and no fit-out risk.
+- Pro: shortest commute for most of the team, at 24 minutes.
+- Pro: move-in on 2027-02-01 leaves two months of slack before the lease ends.
+- Con: the most expensive base rent by far, $1,392,000 a year.
+- Con: a 10-year commitment at the highest price.
+
+### Mill District
+- Pro: $288,000 a year less in base rent than Harbor Point.
+- Pro: one site for the whole team, with a 31-minute median commute.
+- Con: we pay about $1.1M to finish the lab space, and fit-outs can run late or over budget.
+- Con: move-in on 2027-03-01 leaves only one month before the current lease ends.
+- Con: the 7-year term means we spend that $1.1M on a building we may have to leave or renegotiate sooner.
+
+### Northgate Park
+- Pro: the cheapest base rent, $912,000 a year.
+- Pro: the earliest move-in, 2027-01-15.
+- Con: no lab space, so lab staff work in a second building and the team is split across two sites.
+- Con: a second lab lease adds cost that is not in the figure above.
+- Con: the longest commute, at 42 minutes.
+
+## Recommendation
+
+**We lean toward Mill District.** It keeps the whole team in one place with lab space, and costs $288,000 a year less in base rent than Harbor Point. Northgate Park is cheaper on paper, but splitting the team across two sites works against how we do science.
+
+The downsides are real and the leadership team should weigh them openly:
+- The $1.1M fit-out is money we spend before we save anything, and it has to finish on time.
+- A one-month gap between move-in and lease end gives us little room if the fit-out slips.
+- A 7-year term is shorter than the other two, so we may face a move or a rent renegotiation sooner.
+
+!! If the fit-out cannot be firmly scheduled to finish by 2027-03-01, Harbor Point becomes the safer choice despite the higher rent.

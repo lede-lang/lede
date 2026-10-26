@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loan Portfolio Quality, Q3 2026</title>
+<style>
+:root {
+  --bg: #f4f6f8; --card: #ffffff; --ink: #18202a; --muted: #5a6573; --rule: #d5dbe2;
+  --q2: #a9b8c9; --q3: #1f4e79; --up: #b5472f; --flat: #5a6573; --accent: #1f4e79;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e141b; --card: #17202a; --ink: #e7edf3; --muted: #95a3b2; --rule: #2a3643;
+    --q2: #4c5f74; --q3: #8fbce6; --up: #f08a70; --flat: #95a3b2; --accent: #8fbce6;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e141b; --card: #17202a; --ink: #e7edf3; --muted: #95a3b2; --rule: #2a3643;
+  --q2: #4c5f74; --q3: #8fbce6; --up: #f08a70; --flat: #95a3b2; --accent: #8fbce6;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.5; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; }
+h1 { font-size: 1.7rem; margin: 0 0 4px; }
+.sub { color: var(--muted); margin: 0; }
+section { background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 20px; margin-top: 18px; }
+h2 { font-size: 1.2rem; margin: 0 0 12px; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.stat { background: var(--bg); border-radius: 10px; padding: 12px; }
+.stat .v { font-size: 1.35rem; font-weight: 700; color: var(--accent); }
+.stat .l { font-size: 0.82rem; color: var(--muted); }
+.chart text { fill: var(--muted); font-size: 12px; }
+.chart .val { fill: var(--ink); font-weight: 600; font-size: 12px; }
+.legend { display: flex; gap: 16px; font-size: 0.9rem; color: var(--muted); margin: 6px 0 0; }
+.legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; background: var(--k); }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+th, td { padding: 8px 6px; border-bottom: 1px solid var(--rule); text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+tfoot td { font-weight: 700; }
+.up { color: var(--up); font-weight: 600; }
+.flat { color: var(--flat); }
+ul { padding-left: 20px; margin: 8px 0; }
+li { margin-bottom: 8px; }
+@media (max-width: 480px) { .stats { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Loan portfolio quality, Q3 2026</h1>
+  <p class="sub">Bluefin Credit Union. Prepared by Anselm Wachira, chief risk officer, for the board meeting on 2026-10-29.</p>
+
+  <section>
+    <h2>Portfolio at a glance</h2>
+    <div class="stats">
+      <div class="stat"><div class="v">$1,639M</div><div class="l">Total loan balances</div></div>
+      <div class="stat"><div class="v">1.4%</div><div class="l">Weighted delinquency, Q3 (Q2: 1.3%)</div></div>
+      <div class="stat"><div class="v">$3.9M</div><div class="l">Charge-offs in Q3 (Q2: $3.1M)</div></div>
+      <div class="stat"><div class="v">$21.3M</div><div class="l">Allowance, 1.3% of loans</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Delinquency by loan type</h2>
+    <p class="sub">Share of loans 30 or more days delinquent. Q2 is shown beside Q3 for each loan type.</p>
+    <svg class="chart" viewBox="0 0 560 290" width="100%" role="img" aria-label="Delinquency by loan type, Q2 and Q3: Auto 1.9 and 2.2; Mortgage 0.6 and 0.6; Personal 3.4 and 4.1 percent">
+      <line x1="50" y1="240" x2="545" y2="240" stroke="var(--rule)"/>
+      <line x1="50" y1="30" x2="50" y2="240" stroke="var(--rule)"/>
+      <!-- scale: 50 px per percentage point; baseline y=240 -->
+      <text x="44" y="244" text-anchor="end">0</text>
+      <text x="44" y="194" text-anchor="end">1%</text>
+      <text x="44" y="144" text-anchor="end">2%</text>
+      <text x="44" y="94" text-anchor="end">3%</text>
+      <text x="44" y="44" text-anchor="end">4%</text>
+      <line x1="50" y1="190" x2="545" y2="190" stroke="var(--rule)" stroke-dasharray="3 4"/>
+      <line x1="50" y1="140" x2="545" y2="140" stroke="var(--rule)" stroke-dasharray="3 4"/>
+      <line x1="50" y1="90" x2="545" y2="90" stroke="var(--rule)" stroke-dasharray="3 4"/>
+      <line x1="50" y1="40" x2="545" y2="40" stroke="var(--rule)" stroke-dasharray="3 4"/>
+
+      <rect x="80" y="145" width="45" height="95" rx="3" fill="var(--q2)"/>
+      <rect x="130" y="130" width="45" height="110" rx="3" fill="var(--q3)"/>
+      <text class="val" x="102" y="139" text-anchor="middle">1.9</text>
+      <text class="val" x="152" y="124" text-anchor="middle">2.2</text>
+      <text x="127" y="262" text-anchor="middle">Auto ($412M)</text>
+
+      <rect x="225" y="210" width="45" height="30" rx="3" fill="var(--q2)"/>
+      <rect x="275" y="210" width="45" height="30" rx="3" fill="var(--q3)"/>
+      <text class="val" x="247" y="204" text-anchor="middle">0.6</text>
+      <text class="val" x="297" y="204" text-anchor="middle">0.6</text>
+      <text x="272" y="262" text-anchor="middle">Mortgage ($988M)</text>
+
+      <rect x="370" y="70" width="45" height="170" rx="3" fill="var(--q2)"/>
+      <rect x="420" y="35" width="45" height="205" rx="3" fill="var(--q3)"/>
+      <text class="val" x="392" y="64" text-anchor="middle">3.4</text>
+      <text class="val" x="442" y="29" text-anchor="middle">4.1</text>
+      <text x="417" y="262" text-anchor="middle">Personal ($143M)</text>
+    </svg>
+    <p class="sub" style="margin-top:4px">Revolving credit ($96M) is shown in the table below.</p>
+    <div class="legend"><span style="--k:var(--q2)">Q2 2026</span><span style="--k:var(--q3)">Q3 2026</span></div>
+
+    <div class="table-wrap" style="margin-top:14px">
+      <table>
+        <thead><tr><th>Loan type</th><th>Balance</th><th>Share of balances</th><th>Q2</th><th>Q3</th><th>Change</th></tr></thead>
+        <tbody>
+          <tr><td>Auto</td><td>$412M</td><td>25.1%</td><td>1.9%</td><td>2.2%</td><td class="up">+0.3 pts</td></tr>
+          <tr><td>Mortgage</td><td>$988M</td><td>60.3%</td><td>0.6%</td><td>0.6%</td><td class="flat">Flat</td></tr>
+          <tr><td>Personal</td><td>$143M</td><td>8.7%</td><td>3.4%</td><td>4.1%</td><td class="up">+0.7 pts</td></tr>
+          <tr><td>Revolving credit</td><td>$96M</td><td>5.9%</td><td>2.8%</td><td>3.0%</td><td class="up">+0.2 pts</td></tr>
+        </tbody>
+        <tfoot>
+          <tr><td>Portfolio</td><td>$1,639M</td><td>100%</td><td>1.3%</td><td>1.4%</td><td class="up">+0.1 pts</td></tr>
+        </tfoot>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>What changed</h2>
+    <ul>
+      <li><strong>Personal loans</strong> have the highest delinquency at 4.1 percent and the largest rise, up 0.7 points.</li>
+      <li><strong>Auto loans</strong> are rising more slowly, up 0.3 points, but they matter more in dollars because the balance is $412 million.</li>
+      <li><strong>Mortgages</strong> are 60.3 percent of balances and were flat at 0.6 percent.</li>
+      <li>Charge-offs rose to $3.9 million in Q3 from $3.1 million in Q2.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Actions</h2>
+    <ul>
+      <li>Tighten personal loan underwriting for credit scores below 640, starting 2026-11-15.</li>
+      <li>Add early outreach for auto loans at 15 days past due.</li>
+      <li>Review reserve adequacy at the January meeting.</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>

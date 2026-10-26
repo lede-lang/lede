@@ -1,0 +1,31 @@
+@title New shelter campaign
+@subtitle Campaign status for the board and major donors
+@author Henrietta Voss, Executive Director
+@date 2026-10-16
+
+# Campaign at a glance
+kpi Raised toward $5.0M goal | $3.42M | 68.4% of goal | good
+
+kpi Goal progress | 68.4% | $1.58M to go | bar
+kpi Donors | 1,860 | to date | neutral
+kpi Matching challenge | $96,000 | of $250,000 matched | neutral
+kpi Match deadline | 2026-12-31
+
+! An anonymous donor will match up to $250,000 of new gifts through 2026-12-31. $154,000 of the match is still available.
+
+# Gifts by level
+data levels = level,gifts,amount; Lead (over $100K),6,2.10; "Major ($10K to $100K)",74,0.93; Community (under $10K),1780,0.39
+chart hbar levels y=amount unit=$M labels title="Amount raised by gift level ($M)"
+table = level,gifts,amount; Lead (over $100,000),6,$2.10M; "Major ($10,000 to $100,000)",74,$0.93M; Community (under $10,000),"1,780",$0.39M; **Total**,"**1,860**",**$3.42M**
+
+# Construction milestones
+table = milestone,date,status; Land purchase,2026-03-14,Done; Permits approved,2026-07-22,Done; Groundbreaking,2026-11-08,Upcoming; Framing complete,2027-03-19,Planned; Opening day,2027-09-15,Planned
+
+# Needs attention
+!! Construction starts only when $4.0M is in hand or pledged. The campaign is $0.58M short of that.
+
+kpi Short of construction threshold | $0.58M | of $4.0M needed | bad
+kpi Pending lead gift proposals | $0.5M | 2 proposals | neutral
+kpi Decision due | 2026-10-30
+
+The groundbreaking on 2026-11-08 depends on two pending lead gift proposals worth $0.5M together, due for decision by 2026-10-30.

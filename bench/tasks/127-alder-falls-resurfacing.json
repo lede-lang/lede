@@ -1,0 +1,70 @@
+{
+  "id": "127-alder-falls-resurfacing",
+  "category": "status",
+  "title": "Alder Falls resurfacing status",
+  "brief": "The City of Alder Falls Public Works department needs a status page on the 2026 road resurfacing program as of 2026-10-16, for the city manager and the council, to be read on phones. Headlines: 74 of 120 planned lane-miles are done, 61.7 percent; 9.1 million dollars of the 14.2 million dollar budget is spent, 64.1 percent; paving season ends on 2026-11-30 when the asphalt plants close. By district, with lane-miles planned and done, and a red, amber or green status: North, 28 planned, 22 done, green; Central, 24, 21, green; East, 26, 15, amber; South, 22, 11, amber; West, 20, 5, red. At the current pace of 6 lane-miles a week, the program reaches about 110 lane-miles by 2026-11-30, leaving about 10 for spring 2027. West is red because a water main replacement blocks 8 lane-miles until 2026-11-02, and the contractor's second paving crew is committed elsewhere until 2026-11-09; the choice for the council is to pay 180000 dollars for an extra crew in the West district, or carry the leftover miles into spring. Under \"Next two weeks\": the Central district finishes on 2026-10-23, the paving of the Maple Avenue bridge approach in the East district is on 2026-10-27, and public notices for the West district closures go out on 2026-10-26. Sections: \"Program at a glance\", \"Districts\", \"Decision needed\" and \"Next two weeks\".",
+  "checklist": {
+    "sections": [
+      "Program at a glance",
+      "Districts",
+      "Decision needed",
+      "Next two weeks"
+    ],
+    "visible": [
+      "North",
+      "Central",
+      "East",
+      "South",
+      "West",
+      "Maple Avenue",
+      "Public Works",
+      "water main"
+    ],
+    "values": [
+      "74",
+      "120",
+      "61.7",
+      "9.1 million",
+      "14.2 million",
+      "64.1",
+      "2026-11-30",
+      "28",
+      "22",
+      "24",
+      "21",
+      "26",
+      "15",
+      "11",
+      "20",
+      "6 lane-miles",
+      "110",
+      "8 lane-miles",
+      "2026-11-02",
+      "2026-11-09",
+      "180000",
+      "2026-10-23",
+      "2026-10-27",
+      "2026-10-26"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Update the program to 80 lane-miles done, which is 66.7 percent, with 9.8 million dollars spent; West now has 9 done and moves from red to amber, and East has 17 done.",
+    "expect_visible": [],
+    "expect_values": [
+      "80",
+      "66.7",
+      "9.8 million"
+    ],
+    "expect_absent": [
+      "61.7",
+      "9.1 million"
+    ]
+  }
+}

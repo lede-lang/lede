@@ -1,0 +1,104 @@
+@title Catalogue sync: delta pulls and batched writes for branch kiosks
+@subtitle 10 commits, +2,033 / -292 lines. 1,204 of the added lines are test golden files.
+@width wide
+
+kpi Full resync (staging) | 9 min | was 41 min | good
+kpi Reviewable change | +829 / -292 | excludes the 1,204 golden-file lines | neutral
+kpi CI | 1 failure | known flake, also fails on main | bad
+
+## What you are looking at
+
+Kiosks used to re-fetch the catalogue. Now they pull only what changed since a saved `updated_since` cursor, and write it in batches of 500. That is commit `7be03d1` and it is the main thing. Everything else supports it: a refactor that splits fetch from apply, retry on 503, two bug fixes, a kiosk-client bump, test fixtures, a runbook, and one small feature (the "updated 3 min ago" banner) that product asked for and was not in the original scope.
+
+Read in this order: `7be03d1`, then the batch size (`b26e9d4` and `0f7c3a1`), then the rest. The "Check first" section below lists what to verify.
+
+## Why
+
+- A full resync took 41 min on staging. It is 9 min with batched writes, and delta pulls mean most syncs never need a full one.
+- The old parser broke on apostrophes and commas in titles. The golden files in `18cf6ab` cover this, including "Don't Look Now, and Other Stories".
+- Records with MARC leader status `n` were being dropped (LIB-2214), found while testing this work.
+- 503s from the catalogue needed a retry with backoff (`d813b42`).
+- Product wanted kiosks to show how fresh the data is (`e5a7714`).
+
+## What changed
+
+### Sync pipeline (read carefully)
+- `a41f9c2` **Split fetch from apply** (6 files, +212 / -188). Author says no behaviour change. Read it as moves, not edits. It is what keeps the next commit small.
+- `7be03d1` **Delta pulls via `updated_since` cursor** (4 files, +341 / -52). The main change. Kiosks ask for records updated since a stored cursor instead of the whole catalogue.
+- `c90e5aa` **Do not drop records with MARC leader `n` status** (2 files, +18 / -3). Found while testing. Ticket LIB-2214.
+- `d813b42` **Retry with backoff on 503** (2 files, +37 / -6).
+
+### Write batching (read carefully)
+- `b26e9d4` **Batch writes in groups of 500** (2 files, +64 / -29). Full resync 41 min to 9 min on staging.
+- `0f7c3a1` **Revert: batch size 2,000** (1 file, +1 / -1). 2,000 ran out of memory on the 1 GB kiosks at Eastgate and Pell Lane.
+
+### Kiosk
+- `3d2b8f0` **Bump kiosk-client to 4.12.1** (1 file, +2 / -2).
+- `e5a7714` **Show "updated 3 min ago" banner** (3 files, +96 / -11). Product asked for this. Not in the original scope, and it can be split into its own PR if you prefer.
+
+### Tests and docs (skim)
+- `18cf6ab` **Golden files for 40 titles** (9 files, +1,204 / -0). Includes "Don't Look Now, and Other Stories". Apostrophes and commas broke the old parser.
+- `9ad0e57` **Runbook for a stuck cursor** (1 file, +58 / -0).
+
+data groups = group,commits,files,added,removed,review; Sync pipeline,4,14,608,249,Read carefully; Write batching,2,3,65,30,Read carefully; Kiosk,2,4,98,13,Read the banner; Golden files and docs,2,10,1262,0,Skim
+
+table groups bar=added title="Where the lines are"
+
+File counts are per commit, so a file touched by several commits is counted more than once.
+
+## Check first
+
+1. **The cursor in `7be03d1`.** Does it advance only after a batch has been applied? A cursor that moves before the apply completes would silently skip records. There is a runbook for a stuck cursor (`9ad0e57`), so this is a known way to go wrong.
+2. **The batch size in `b26e9d4` and `0f7c3a1`.** The log lists the revert of 2,000 after the commit that sets 500. Please confirm the value in the tree is 500.
+3. **Eastgate memory.** Eastgate is the pilot and is one of the 1 GB kiosks that ran out of memory at 2,000. The 41 to 9 min figure is from staging. Please confirm 500 has run on a 1 GB device.
+4. **`d813b42` retry.** What are the backoff ceiling and the retry count, and does a retry resume from the cursor or restart the apply?
+5. **`a41f9c2` refactor.** Diff it with move detection on. If it really is no behaviour change, the diff should be mostly relocated lines.
+6. **`c90e5aa`.** Leader status `n` is "new" in MARC. Are other statuses (for example `d` for deleted) handled by delta pulls, and does a record deleted at the source disappear from kiosks?
+7. **Golden files.** Spot-check three of the 40 titles, one of them the "Don't Look Now, and Other Stories" case.
+
+Reviewer checklist:
+
+- [ ] Cursor advances only after apply succeeds
+- [ ] Batch size in the tree is 500
+- [ ] 500 has run on a 1 GB kiosk
+- [ ] Deleted and corrected records handled in delta pulls
+- [ ] Retry resumes cleanly
+- [ ] Banner reviewed or split out
+
+## Risks
+
+!! **The pilot is a small kiosk.** Eastgate is one of the 1 GB kiosks that ran out of memory at a batch size of 2,000. The 9 min resync was measured on staging, not on these kiosks.
+
+!! **The failing integration test is in the code this PR changes.** `test_resume_after_partial_apply` fails about 1 run in 10 on main as well, so it is not new. But it covers resume after a partial apply, and this PR splits fetch from apply and adds batching. Run it many times before and after to be sure the failure rate has not moved.
+
+! **Cursor and deletions.** A cursor-based pull gets changes, and whether it also gets removals depends on how the catalogue marks them. See check 6.
+
+! **Rollback is slow, not hard.** Set the cursor back to null and run a full resync: about 9 min per kiosk, again from staging.
+
+## Tests and CI
+
+data ci = suite,passed,failed,skipped,duration; unit,"1,482",0,12,2m 14s; integration,214,1,3,9m 40s; kiosk-e2e,58,0,0,14m 02s
+
+table ci
+
+1,754 passed, 1 failed and 15 skipped across the three suites. The single failure is `test_resume_after_partial_apply`, which fails about 1 run in 10 on main as well.
+
+## Rollout and rollback
+
+step Pilot at Eastgate | Day 0
+step Watch Eastgate: cursor movement, memory, resync time | Day 0 to 7
+step Roll out to the other 11 branches | Day 7
+step Rollback if needed: set the cursor to null, then full resync (about 9 min per kiosk) | Any time
+
+## Deliberately left out
+
+- **The flaky test.** `test_resume_after_partial_apply` is not fixed here. It fails on main already.
+- **A bigger batch size.** 2,000 was tried and reverted, so nothing above 500 for small kiosks.
+- **A wider rollout.** One branch first, the other 11 a week later.
+
+## Full commit log
+
+data commits = hash,message,files,lines (+/-),notes; a41f9c2,refactor(sync): split fetch from apply,6,+212 / -188,"no behaviour change, honest"; 7be03d1,feat(sync): delta pulls via updated_since cursor,4,+341 / -52,the main thing; c90e5aa,fix: don't drop records with MARC leader 'n' status,2,+18 / -3,"found while testing; see ticket LIB-2214"; 3d2b8f0,chore: bump kiosk-client to 4.12.1,1,+2 / -2,; e5a7714,feat(kiosk): show “updated 3 min ago” banner,3,+96 / -11,"product asked for this, not in original scope"
+data commits += 18cf6ab,"test: golden files for 40 titles (incl. “Don't Look Now, and Other Stories”)",9,"+1,204 / -0","apostrophes and commas broke the old parser"; b26e9d4,perf: batch writes in groups of 500,2,+64 / -29,full resync 41 min to 9 min on staging; 0f7c3a1,"revert: batch size 2,000 (OOM on small kiosks)",1,+1 / -1,the 1 GB kiosks at Eastgate and Pell Lane; 9ad0e57,docs: runbook for stuck cursor,1,+58 / -0,; d813b42,fix(sync): retry with backoff on 503,2,+37 / -6,
+
+table commits

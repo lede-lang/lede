@@ -1,0 +1,1876 @@
+{
+ "about": "Security corpus for the HTML renderer (D49). `strings` are injected into every `contexts` template ({T} raw text, {Q} inside a quoted option, {C} a quoted CSV cell; a context skips the strings its `skip` regex matches, because a diagram line with an arrow anywhere is read as an edge); each of `cases` is one document. Run by packages/render-html/test/security-corpus.test.ts. Remote payloads use the reserved host xss.example.",
+ "strings": [
+  "<script>alert(1)</script>",
+  "<SCRIPT SRC=//xss.example/x.js></SCRIPT>",
+  "<ScRiPt>alert(1)</sCrIpT>",
+  "<scr<script>ipt>alert(1)</scr</script>ipt>",
+  "<script/xss src=//xss.example/x.js></script>",
+  "<script\f>alert(1)</script>",
+  "</script><script>alert(1)</script>",
+  "</title><script>alert(1)</script>",
+  "</style><script>alert(1)</script>",
+  "</textarea><script>alert(1)</script>",
+  "</desc></svg><script>alert(1)</script>",
+  "</text><script>alert(1)</script>",
+  "</tspan></text><foreignObject><iframe src=//xss.example></iframe></foreignObject>",
+  "]]><script>alert(1)</script>",
+  "<![CDATA[<script>alert(1)</script>]]>",
+  "<!--<script>alert(1)</script>-->",
+  "--><script>alert(1)</script>",
+  "<!--><img src=x onerror=alert(1)>-->",
+  "<img src=x onerror=alert(1)>",
+  "<img src=\"x\" onerror=\"alert(1)\">",
+  "<IMG SRC=JaVaScRiPt:alert(1)>",
+  "<img src=//xss.example/a.png>",
+  "<img src=\"/\\xss.example/a.png\">",
+  "<img srcset=\"//xss.example/a.png 1x\">",
+  "<img/src/onerror=alert(1)>",
+  "<img \"\"\"><script>alert(1)</script>\">",
+  "<svg onload=alert(1)>",
+  "<svg/onload=alert(1)>",
+  "<svg><script>alert(1)</script></svg>",
+  "<svg><foreignObject><iframe src=//xss.example></iframe></foreignObject></svg>",
+  "<svg><animate attributeName=href values=javascript:alert(1) /><a><text>x</text></a></svg>",
+  "<svg><set attributeName=onmouseover to=alert(1) /></svg>",
+  "<svg><use href=\"//xss.example/s.svg#x\"/></svg>",
+  "<svg><image href=\"//xss.example/a.png\"/></svg>",
+  "<math><mi xlink:href=\"javascript:alert(1)\">x</mi></math>",
+  "<iframe src=\"javascript:alert(1)\"></iframe>",
+  "<iframe srcdoc=\"<script>alert(1)</script>\"></iframe>",
+  "<object data=\"//xss.example/x.swf\"></object>",
+  "<object type=\"text/x-scriptlet\" data=\"//xss.example/x\"></object>",
+  "<embed src=\"//xss.example/x.swf\">",
+  "<applet code=\"x\"></applet>",
+  "<form action=\"//xss.example\"><input name=q><button>go</button></form>",
+  "<button formaction=\"javascript:alert(1)\">x</button>",
+  "<input autofocus onfocus=alert(1)>",
+  "<isindex action=javascript:alert(1) type=image>",
+  "<details open ontoggle=alert(1)>",
+  "<body onload=alert(1)>",
+  "<frameset onload=alert(1)>",
+  "<video><source onerror=alert(1)></video>",
+  "<video poster=//xss.example/a.png></video>",
+  "<audio src=x onerror=alert(1)>",
+  "<marquee onstart=alert(1)>x</marquee>",
+  "<base href=\"//xss.example/\">",
+  "<meta http-equiv=\"refresh\" content=\"0;url=//xss.example\">",
+  "<link rel=\"stylesheet\" href=\"//xss.example/a.css\">",
+  "<style>@import \"//xss.example/a.css\";</style>",
+  "<style>body{background:url(//xss.example/a.png)}</style>",
+  "<div style=\"background:url(//xss.example/a.png)\">x</div>",
+  "<div style=\"width:expression(alert(1))\">x</div>",
+  "<p style=\"behavior:url(x.htc)\">x</p>",
+  "<table background=\"//xss.example/a.png\"><tr><td>x</td></tr></table>",
+  "<a href=\"javascript:alert(1)\">x</a>",
+  "<a href=\"JaVaScRiPt:alert(1)\">x</a>",
+  "<a href=\"&#106;avascript:alert(1)\">x</a>",
+  "<a href=\"&#x6A;&#x61;vascript:alert(1)\">x</a>",
+  "<a href=\"java&#x09;script:alert(1)\">x</a>",
+  "<a href=\"java\tscript:alert(1)\">x</a>",
+  "<a href=\"\u0001javascript:alert(1)\">x</a>",
+  "<a href=\"  javascript:alert(1)\">x</a>",
+  "<a href=\"vbscript:msgbox(1)\">x</a>",
+  "<a href=\"data:text/html,<script>alert(1)</script>\">x</a>",
+  "<a href=//xss.example>x</a>",
+  "<noscript><p title=\"</noscript><img src=x onerror=alert(1)>\"></noscript>",
+  "<template><script>alert(1)</script></template>",
+  "<xmp><script>alert(1)</script></xmp>",
+  "<plaintext><script>alert(1)",
+  "<x onclick=alert(1)>x</x>",
+  "<p title=\"x\" onclick=\"alert(1)\">x</p>",
+  "<<script>alert(1);//<</script>",
+  "\"><script>alert(1)</script>",
+  "'><script>alert(1)</script>",
+  "\" onmouseover=\"alert(1)",
+  "' onmouseover='alert(1)",
+  "\" autofocus onfocus=\"alert(1)\" x=\"",
+  "\"/><img src=x onerror=alert(1)>",
+  "\" style=\"background:url(//xss.example/a.png)",
+  "x\" class=\"y",
+  "&quot; onmouseover=&quot;alert(1)",
+  "&lt;script&gt;alert(1)&lt;/script&gt;",
+  "&#60;script&#62;alert(1)&#60;/script&#62;",
+  "&#x3C;img src=x onerror=alert(1)&#x3E;",
+  "&amp;lt;script&amp;gt;",
+  "%3Cscript%3Ealert(1)%3C/script%3E",
+  "\\u003cscript\\u003ealert(1)\\u003c/script\\u003e",
+  "\uff1cscript\uff1ealert(1)\uff1c/script\uff1e",
+  "<\u0000script>alert(1)</script>",
+  "<scr\u0000ipt>alert(1)</scr\u0000ipt>",
+  "\u202e<script>alert(1)</script>",
+  "\u2028<script>alert(1)</script>\u2029",
+  "\ue0000\ue001<script>alert(1)</script>",
+  "\ue0011\ue000 <img src=x onerror=alert(1)>",
+  "[x](javascript:alert(1))",
+  "[x](JaVaScRiPt:alert(1))",
+  "[x](vbscript:msgbox(1))",
+  "[x](data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==)",
+  "[x](&#106;avascript:alert(1))",
+  "[x](https://a.example/\"onmouseover=\"alert(1))",
+  "[x](https://a.example/'><script>alert(1)</script>)",
+  "[<img src=x onerror=alert(1)>](https://a.example)",
+  "[**x**](javascript:alert(1))",
+  "**<script>alert(1)</script>**",
+  "*<img src=x onerror=alert(1)>*",
+  "_\" onmouseover=\"alert(1)_",
+  "`<script>alert(1)</script>`",
+  "\\<script>alert(1)</script>",
+  "{{constructor.constructor('alert(1)')()}}",
+  "${alert(1)}",
+  "#fff;}body{background:url(//xss.example/a.png)}",
+  "red;background:url(javascript:alert(1))",
+  "expression(alert(1))",
+  "@import url(//xss.example/a.css);",
+  "</style><style>*{background:url(//xss.example/a.png)}</style>",
+  "javascript:alert(1)",
+  "//xss.example/a.png",
+  "https://xss.example/a.png",
+  "data:text/html,<script>alert(1)</script>",
+  "<img src=\"data:image/svg+xml,<svg onload=alert(1)>\">"
+ ],
+ "contexts": [
+  {
+   "name": "meta title",
+   "lede": "@title Mk01 {T}"
+  },
+  {
+   "name": "meta subtitle",
+   "lede": "@subtitle Mk02 {T}"
+  },
+  {
+   "name": "meta description",
+   "lede": "@description Mk03 {T}"
+  },
+  {
+   "name": "meta author",
+   "lede": "@author Mk04 {T}, Role {T}"
+  },
+  {
+   "name": "meta date",
+   "lede": "@date Mk05 {T}"
+  },
+  {
+   "name": "meta lang, theme, accent, width, fonts",
+   "lede": "@lang {T}\n@theme {T}\n@accent {T}\n@width {T}\n@fonts {T}"
+  },
+  {
+   "name": "heading 1",
+   "lede": "# Mk06 {T}"
+  },
+  {
+   "name": "paragraph and link text",
+   "lede": "Mk07 {T} and [link Mk08 {T}](https://a.example/p)."
+  },
+  {
+   "name": "heading 2",
+   "lede": "## Mk09 {T}"
+  },
+  {
+   "name": "heading 3",
+   "lede": "### Mk10 {T}"
+  },
+  {
+   "name": "bullets and sub-bullets",
+   "lede": "- Mk11 {T}\n-- Mk12 {T}"
+  },
+  {
+   "name": "task list",
+   "lede": "- [x] Mk13 {T}\n- [ ] {T}"
+  },
+  {
+   "name": "numbered list",
+   "lede": "1. Mk14 {T}\n2. {T}"
+  },
+  {
+   "name": "quote and attribution",
+   "lede": "> Mk15 {T}\n> \u2014 Mk16 {T}"
+  },
+  {
+   "name": "notes",
+   "lede": "! Mk17 {T}\n!! **Mk18.** {T}\n!!! Mk19 {T}"
+  },
+  {
+   "name": "code fence",
+   "lede": "```ts\nMk20 {T}\n```"
+  },
+  {
+   "name": "inline code",
+   "lede": "Mk21 `{T}`"
+  },
+  {
+   "name": "html line",
+   "lede": "html: <p title=\"t\">Mk22 {T}</p>"
+  },
+  {
+   "name": "html fence",
+   "lede": "```=html\n<div>Mk23 {T}</div>\n```"
+  },
+  {
+   "name": "chart categories, title, mark, target",
+   "lede": "data d = x,v; {C},1; Mk24,2; z,3\nchart bar d title=\"Mk25 {Q}\" mark=\"Mk24 {Q}\" target=\"1.5 {Q}\""
+  },
+  {
+   "name": "hbar unit and labels",
+   "lede": "chart hbar d unit=\"{Q}\" labels title=\"Mk26\""
+  },
+  {
+   "name": "line series names",
+   "lede": "data d2 = x,{C},Mk27; a,1,2; b,2,3; c,3,1\nchart line d2 title=\"Mk28\" labels=all"
+  },
+  {
+   "name": "table title, headers and heat",
+   "lede": "table d2 title=\"Mk29 {Q}\" heat\ntable d bar=v"
+  },
+  {
+   "name": "chart range",
+   "lede": "data r = task,start,end; {C},1,5; Mk30,2,6\nchart range r from=start to=end title=\"Mk31 {Q}\" target=\"3 {Q}\""
+  },
+  {
+   "name": "inline table",
+   "lede": "table = h,Mk32; {C},{C}; Done,{C}"
+  },
+  {
+   "name": "kpi row",
+   "lede": "kpi Mk33 {T} | 5 ms | +1 {T} | good\nkpi Mk34 | {T} | {T}"
+  },
+  {
+   "name": "steps",
+   "lede": "step Mk35 {T} | 2026-01-02 | {T}\nstep {T} | {T}"
+  },
+  {
+   "name": "cards",
+   "lede": "cards\n### Mk36 {T}\n- {T}\nPros:\n- {T}\n### Two\nCons:\n- {T}\n## Mk37"
+  },
+  {
+   "name": "image alt and caption",
+   "lede": "image ./a.png \"Mk38 {Q}\" caption=\"Mk39 {Q}\""
+  },
+  {
+   "name": "flow diagram",
+   "skip": "<?-x?-{1,2}>|-x-",
+   "lede": "diagram f title=\"Mk40 {Q}\"\nf: n1 \"Mk41 {Q}\" svc \"{Q}\" focus\nf: n2 \"x\" kind=\"{Q}\"\nf: n1 -> n2 : Mk42 {T}\nf: n2 -x-> n3 : {T}\nf: group g1 \"Mk43 {Q}\" n1, n2\nf: legend"
+  },
+  {
+   "name": "sequence diagram",
+   "skip": "<?-x?-{1,2}>|-x-",
+   "lede": "diagram s sequence title=\"Mk44 {Q}\"\ns: a \"Mk45 {Q}\" user\ns: b \"x\" kind=\"{Q}\"\ns: a -> b : Mk46 {T}\ns: note b : Mk47 {T}\ns: alt \"Mk48 {Q}\"\ns: b --> a : ok\ns: else \"{Q}\"\ns: b --> a : no\ns: end"
+  }
+ ],
+ "cases": [
+  {
+   "id": "link-01",
+   "src": "Text [a](javascript:alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-02",
+   "src": "Text [a](JAVASCRIPT:alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-03",
+   "src": "Text [a](JaVaScRiPt:alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-04",
+   "src": "Text [a](javascript&colon;alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-05",
+   "src": "Text [a](&#106;avascript:alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-06",
+   "src": "Text [a](&#x6a;avascript:alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-07",
+   "src": "Text [a](&#0000106;avascript:alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-08",
+   "src": "Text [a](java&#x09;script:alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-09",
+   "src": "Text [a](java%0ascript:alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-10",
+   "src": "Text [a](%6Aavascript:alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-11",
+   "src": "Text [a](vbscript:msgbox(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-12",
+   "src": "Text [a](VBScript:msgbox(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-13",
+   "src": "Text [a](livescript:alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-14",
+   "src": "Text [a](data:text/html,<script>alert(1)</script>) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-15",
+   "src": "Text [a](data:text/html;base64,PHNjcmlwdD4=) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-16",
+   "src": "Text [a](DATA:image/png;base64,AAAA) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-17",
+   "src": "Text [a](\u0001javascript:alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-18",
+   "src": "Text [a](\u0000javascript:alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-19",
+   "src": "Text [a](\u000bjavascript:alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-20",
+   "src": "Text [a](\u00a0javascript:alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-21",
+   "src": "Text [a](\u3000javascript:alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-22",
+   "src": "Text [a](\u200bjavascript:alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-23",
+   "src": "Text [a](\ufeffjavascript:alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-24",
+   "src": "Text [a](java\u0000script:alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-25",
+   "src": "Text [a](java\u0001script:alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-26",
+   "src": "Text [a](javascript:/**/alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-27",
+   "src": "Text [a](x:alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-28",
+   "src": "Text [a](javascript.:alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-29",
+   "src": "Text [a](https://a.example/\"onmouseover=\"alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-30",
+   "src": "Text [a](https://a.example/'onmouseover='alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-31",
+   "src": "Text [a](https://a.example/><script>alert(1)</script>) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-32",
+   "src": "Text [a](https://a.example/?q=<img/src/onerror=alert(1)>) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-33",
+   "src": "Text [a](mailto:x@a.example?body=<script>) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-34",
+   "src": "Text [a](#\"onmouseover=\"alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-35",
+   "src": "Text [a](./x\"onmouseover=\"alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-36",
+   "src": "Text [a](//xss.example/x) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-37",
+   "src": "Text [a](/\\xss.example/x) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-38",
+   "src": "Text [a](\\\\xss.example/x) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-39",
+   "src": "[[a](javascript:alert(1))](https://a.example) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-40",
+   "src": "[a](https://a.example)[b](javascript:alert(1)) end.",
+   "has": [
+    "<a href=\"https://a.example\">a</a>"
+   ]
+  },
+  {
+   "id": "link-41",
+   "src": "**[a](javascript:alert(1))** end.",
+   "has": [
+    "<strong>"
+   ]
+  },
+  {
+   "id": "link-42",
+   "src": "Code `[a](javascript:alert(1))` end.",
+   "has": [
+    "<code>[a](javascript:alert(1))</code>"
+   ]
+  },
+  {
+   "id": "link-43",
+   "src": "Escaped \\[a](javascript:alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-44",
+   "src": "Open [a](javascript:alert(1) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-45",
+   "src": "Under [a](https://a.example/_x_*y*) end.",
+   "has": [
+    "href=\"https://a.example/_x_*y*\""
+   ]
+  },
+  {
+   "id": "link-46",
+   "src": "[_a_](https://a.example/**b**) end.",
+   "has": [
+    "href=\"https://a.example/**b**\""
+   ]
+  },
+  {
+   "id": "link-47",
+   "src": "Held [a](https://a.example/\ue0000\ue001) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-48",
+   "src": "Held \ue0000\ue001 [a](javascript:alert(1)) end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-49",
+   "src": "table = h; \"[a](javascript:alert(1)) [b](vbscript:x)\"",
+   "has": [
+    "<td"
+   ]
+  },
+  {
+   "id": "link-50",
+   "src": "Line \u2028separator <script>alert(1)</script> \u2029 end.",
+   "has": [
+    "end."
+   ]
+  },
+  {
+   "id": "link-51",
+   "src": "data t = a,b; \"\u2028<script>alert(1)</script>\",1\ntable t",
+   "errors": [
+    "data-syntax",
+    "unknown-data"
+   ]
+  },
+  {
+   "id": "image-01",
+   "src": "image https://xss.example/a.png \"alt\"",
+   "has": [
+    "Image not loaded"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-02",
+   "src": "image https://xss.example/a.png \"alt\"",
+   "allowRemote": true,
+   "has": [
+    "<img src=\"https://xss.example/a.png\""
+   ]
+  },
+  {
+   "id": "image-03",
+   "src": "image http://xss.example/a.png \"alt\"",
+   "has": [
+    "Image not loaded"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-04",
+   "src": "image HTTPS://xss.example/a.png \"alt\"",
+   "has": [
+    "Image not loaded"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-05",
+   "src": "image https:xss.example/a.png \"alt\"",
+   "has": [
+    "Image not loaded"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-06",
+   "src": "image https:\\\\xss.example\\a.png \"alt\"",
+   "has": [
+    "Image not loaded"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-07",
+   "src": "image \u0001https://xss.example/a.png \"alt\"",
+   "has": [
+    "Image not loaded"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-08",
+   "src": "image \u0001https://xss.example/a.png \"alt\"",
+   "allowRemote": true,
+   "has": [
+    "<img src=\"https://xss.example/a.png\""
+   ]
+  },
+  {
+   "id": "image-09",
+   "src": "image //xss.example/a.png \"alt\"",
+   "errors": [
+    "image-src"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-10",
+   "src": "image /\\xss.example/a.png \"alt\"",
+   "errors": [
+    "image-src"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-11",
+   "src": "image \\xss.example/a.png \"alt\"",
+   "errors": [
+    "image-src"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-12",
+   "src": "image \\\\xss.example/a.png \"alt\"",
+   "errors": [
+    "image-src"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-13",
+   "src": "image \u0001//xss.example/a.png \"alt\"",
+   "errors": [
+    "image-src"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-14",
+   "src": "image \u001f/\\xss.example/a.png \"alt\"",
+   "errors": [
+    "image-src"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-15",
+   "src": "image javascript:alert(1) \"alt\"",
+   "errors": [
+    "image-src"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-16",
+   "src": "image JaVaScRiPt:alert(1) \"alt\"",
+   "errors": [
+    "image-src"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-17",
+   "src": "image \u0001javascript:alert(1) \"alt\"",
+   "errors": [
+    "image-src"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-18",
+   "src": "image \bjavascript:alert(1) \"alt\"",
+   "errors": [
+    "image-src"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-19",
+   "src": "image vbscript:msgbox(1) \"alt\"",
+   "errors": [
+    "image-src"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-20",
+   "src": "image data:text/html,<script>alert(1)</script> \"alt\"",
+   "errors": [
+    "image-src"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-21",
+   "src": "image data:application/xhtml+xml,x \"alt\"",
+   "errors": [
+    "image-src"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-22",
+   "src": "image file:///etc/passwd \"alt\"",
+   "errors": [
+    "image-src"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-23",
+   "src": "image ftp://xss.example/a.png \"alt\"",
+   "errors": [
+    "image-src"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-24",
+   "src": "image blob:https://xss.example/x \"alt\"",
+   "errors": [
+    "image-src"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-25",
+   "src": "image filesystem:x \"alt\"",
+   "errors": [
+    "image-src"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-26",
+   "src": "image about:blank \"alt\"",
+   "errors": [
+    "image-src"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-27",
+   "src": "image data:image/png;base64,iVBORw0KGgo= \"alt\"",
+   "has": [
+    "<img src=\"data:image/png;base64,iVBORw0KGgo=\""
+   ]
+  },
+  {
+   "id": "image-28",
+   "src": "image data:image/svg+xml,<svg><text>a\\b</text></svg> \"alt\"",
+   "has": [
+    "src=\"data:image/svg+xml,&lt;svg&gt;&lt;text&gt;a\\b&lt;/text&gt;"
+   ]
+  },
+  {
+   "id": "image-29",
+   "src": "image data:image/svg+xml,<svg/onload=alert(1)> \"alt\"",
+   "has": [
+    "<img src=\"data:image/svg+xml,&lt;svg/onload=alert(1)&gt;\""
+   ]
+  },
+  {
+   "id": "image-30",
+   "src": "image ./a.png \"x\"\" onerror=\"\"alert(1)\"",
+   "has": [
+    "alt=\"x&quot; onerror=&quot;alert(1)\""
+   ]
+  },
+  {
+   "id": "image-31",
+   "src": "image ./a.png \"x\\\" onerror=\\\"alert(1)\"",
+   "has": [
+    "<img src=\"./a.png\""
+   ]
+  },
+  {
+   "id": "image-32",
+   "src": "image ./a.png \"alt\" caption=\"<script>alert(1)</script> [x](javascript:alert(1))\"",
+   "has": [
+    "<figcaption>&lt;script&gt;"
+   ]
+  },
+  {
+   "id": "image-33",
+   "src": "image ./a\"onerror=\"alert(1).png \"alt\"",
+   "has": [
+    "src=\"./a&quot;onerror=&quot;alert(1).png\""
+   ]
+  },
+  {
+   "id": "image-34",
+   "src": "image ./a.png\"/onerror=alert(1)// \"alt\"",
+   "has": [
+    "<img"
+   ]
+  },
+  {
+   "id": "image-35",
+   "src": "image a.png?x=1&y=<script> \"alt\"",
+   "has": [
+    "src=\"a.png?x=1&amp;y=&lt;script&gt;\""
+   ]
+  },
+  {
+   "id": "image-36",
+   "src": "image ./a.png \"<img src=x onerror=alert(1)>\"",
+   "has": [
+    "alt=\"&lt;img"
+   ]
+  },
+  {
+   "id": "image-37",
+   "src": "image data:image\\svg+xml,x \"alt\"",
+   "errors": [
+    "image-src"
+   ],
+   "hasNot": [
+    "<img"
+   ]
+  },
+  {
+   "id": "html-01",
+   "src": "html: <p>ok <b>bold</b></p>",
+   "has": [
+    "<p>ok <b>bold</b></p>"
+   ]
+  },
+  {
+   "id": "html-02",
+   "src": "html: <img src=\"data:image/png;base64,AA==\" alt=\"d\">",
+   "has": [
+    "data:image/png"
+   ]
+  },
+  {
+   "id": "html-03",
+   "src": "html: <img src=\"https://xss.example/a.png\" alt=\"r\">",
+   "hasNot": [
+    "xss.example"
+   ]
+  },
+  {
+   "id": "html-04",
+   "src": "html: <img src=\"https://xss.example/a.png\" alt=\"r\">",
+   "allowRemote": true,
+   "has": [
+    "src=\"https://xss.example/a.png\""
+   ]
+  },
+  {
+   "id": "html-05",
+   "src": "html: <img src=\"//xss.example/a.png\">",
+   "allowRemote": true,
+   "hasNot": [
+    "xss.example"
+   ]
+  },
+  {
+   "id": "html-06",
+   "src": "html: <img src=\"/\\xss.example/a.png\">",
+   "allowRemote": true,
+   "hasNot": [
+    "xss.example"
+   ]
+  },
+  {
+   "id": "html-07",
+   "src": "html: <img src=\"\u0001//xss.example/a.png\">",
+   "allowRemote": true,
+   "hasNot": [
+    "xss.example"
+   ]
+  },
+  {
+   "id": "html-08",
+   "src": "html: <img src=\" https://xss.example/a.png\">",
+   "hasNot": [
+    "xss.example"
+   ]
+  },
+  {
+   "id": "html-09",
+   "src": "html: <img src=\"HTTPS://xss.example/a.png\">",
+   "hasNot": [
+    "xss.example"
+   ]
+  },
+  {
+   "id": "html-10",
+   "src": "html: <img src=\"https:xss.example/a.png\">",
+   "hasNot": [
+    "xss.example"
+   ]
+  },
+  {
+   "id": "html-11",
+   "src": "html: <img srcset=\"https://xss.example/a.png 1x\">",
+   "hasNot": [
+    "xss.example"
+   ]
+  },
+  {
+   "id": "html-12",
+   "src": "html: <img src=\"x.png\" onerror=\"alert(1)\">",
+   "has": [
+    "<img src=\"x.png\" />"
+   ]
+  },
+  {
+   "id": "html-13",
+   "src": "html: <a href=\"https://a.example\" onclick=\"alert(1)\">x</a>",
+   "has": [
+    "<a href=\"https://a.example\">x</a>"
+   ]
+  },
+  {
+   "id": "html-14",
+   "src": "html: <a href=\"//xss.example\">x</a>",
+   "hasNot": [
+    "xss.example"
+   ]
+  },
+  {
+   "id": "html-15",
+   "src": "html: <a href=\"/\\xss.example\">x</a>",
+   "hasNot": [
+    "xss.example"
+   ]
+  },
+  {
+   "id": "html-16",
+   "src": "html: <a href=\"mailto:a@b.example\">m</a>",
+   "has": [
+    "href=\"mailto:a@b.example\""
+   ]
+  },
+  {
+   "id": "html-17",
+   "src": "html: <a href=\"javascript:alert(1)\">x</a>",
+   "has": [
+    "<a>x</a>"
+   ]
+  },
+  {
+   "id": "html-18",
+   "src": "html: <a href=\"jav&#x09;ascript:alert(1)\">x</a>",
+   "has": [
+    "<a>x</a>"
+   ]
+  },
+  {
+   "id": "html-19",
+   "src": "html: <a href=\"jav&#x0A;ascript:alert(1)\">x</a>",
+   "has": [
+    "<a>x</a>"
+   ]
+  },
+  {
+   "id": "html-20",
+   "src": "html: <a href=\"jav&#x0D;ascript:alert(1)\">x</a>",
+   "has": [
+    "<a>x</a>"
+   ]
+  },
+  {
+   "id": "html-21",
+   "src": "html: <a href=\"&#x6A;&#x61;&#x76;&#x61;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;:alert(1)\">x</a>",
+   "has": [
+    "<a>x</a>"
+   ]
+  },
+  {
+   "id": "html-22",
+   "src": "html: <a href=\"&#106&#97&#118&#97&#115&#99&#114&#105&#112&#116&#58alert(1)\">x</a>",
+   "has": [
+    "<a>x</a>"
+   ]
+  },
+  {
+   "id": "html-23",
+   "src": "html: <a href=\"javascript&colon;alert(1)\">x</a>",
+   "has": [
+    "<a>x</a>"
+   ]
+  },
+  {
+   "id": "html-24",
+   "src": "html: <a href=\" &#14; javascript:alert(1)\">x</a>",
+   "has": [
+    "<a>x</a>"
+   ]
+  },
+  {
+   "id": "html-25",
+   "src": "html: <a href=\"vbscript:msgbox(1)\">x</a>",
+   "has": [
+    "<a>x</a>"
+   ]
+  },
+  {
+   "id": "html-26",
+   "src": "html: <a href=\"data:text/html;base64,PHNjcmlwdD4=\">x</a>",
+   "has": [
+    "<a>x</a>"
+   ]
+  },
+  {
+   "id": "html-27",
+   "src": "html: <a href=\"JaVaScRiPt:alert(1)\">x</a>",
+   "has": [
+    "<a>x</a>"
+   ]
+  },
+  {
+   "id": "html-28",
+   "src": "html: <a href=\"\u0001javascript:alert(1)\">x</a>",
+   "has": [
+    "<a>x</a>"
+   ]
+  },
+  {
+   "id": "html-29",
+   "src": "html: <a href=\"java&NewLine;script:alert(1)\">x</a>",
+   "has": [
+    "<a>x</a>"
+   ]
+  },
+  {
+   "id": "html-30",
+   "src": "html: <a href=\"&Tab;javascript:alert(1)\">x</a>",
+   "has": [
+    "<a>x</a>"
+   ]
+  },
+  {
+   "id": "html-31",
+   "src": "html: <a xlink:href=\"javascript:alert(1)\">x</a>",
+   "has": [
+    "<a>x</a>"
+   ]
+  },
+  {
+   "id": "html-32",
+   "src": "html: <script>alert(1)</script><p>after</p>",
+   "has": [
+    "<p>after</p>"
+   ]
+  },
+  {
+   "id": "html-33",
+   "src": "html: <script src=\"//xss.example/x.js\"></script>"
+  },
+  {
+   "id": "html-34",
+   "src": "html: <iframe src=\"//xss.example\"></iframe>"
+  },
+  {
+   "id": "html-35",
+   "src": "html: <iframe srcdoc=\"&lt;script&gt;alert(1)&lt;/script&gt;\"></iframe>"
+  },
+  {
+   "id": "html-36",
+   "src": "html: <object data=\"//xss.example/x\"></object>"
+  },
+  {
+   "id": "html-37",
+   "src": "html: <embed src=\"//xss.example/x\">"
+  },
+  {
+   "id": "html-38",
+   "src": "html: <form action=\"//xss.example\"><input name=\"q\"><button formaction=\"javascript:alert(1)\">go</button></form>"
+  },
+  {
+   "id": "html-39",
+   "src": "html: <textarea autofocus onfocus=\"alert(1)\"></textarea>"
+  },
+  {
+   "id": "html-40",
+   "src": "html: <select onchange=\"alert(1)\"><option>x</option></select>"
+  },
+  {
+   "id": "html-41",
+   "src": "html: <details ontoggle=\"alert(1)\" open><summary>s</summary>x</details>"
+  },
+  {
+   "id": "html-42",
+   "src": "html: <div style=\"background:url(//xss.example/a.png)\">x</div>",
+   "has": [
+    "<div>x</div>"
+   ]
+  },
+  {
+   "id": "html-43",
+   "src": "html: <div style=\"width:expression(alert(1))\">x</div>",
+   "has": [
+    "<div>x</div>"
+   ]
+  },
+  {
+   "id": "html-44",
+   "src": "html: <p style=\"color:red\">x</p>",
+   "has": [
+    "<p>x</p>"
+   ]
+  },
+  {
+   "id": "html-45",
+   "src": "html: <style>@import url(//xss.example/a.css);</style>"
+  },
+  {
+   "id": "html-46",
+   "src": "html: <style>*{background:url(//xss.example/a.png)}</style>"
+  },
+  {
+   "id": "html-47",
+   "src": "html: <svg onload=\"alert(1)\"><circle r=\"5\"/></svg>"
+  },
+  {
+   "id": "html-48",
+   "src": "html: <svg><script>alert(1)</script></svg>"
+  },
+  {
+   "id": "html-49",
+   "src": "html: <svg><foreignObject><body onload=\"alert(1)\"></body></foreignObject></svg>"
+  },
+  {
+   "id": "html-50",
+   "src": "html: <svg><a xlink:href=\"javascript:alert(1)\"><text x=\"0\" y=\"10\">x</text></a></svg>"
+  },
+  {
+   "id": "html-51",
+   "src": "html: <svg><animate attributeName=\"href\" to=\"javascript:alert(1)\"/></svg>"
+  },
+  {
+   "id": "html-52",
+   "src": "html: <svg><use href=\"data:image/svg+xml;base64,PHN2Zz48L3N2Zz4=#x\"/></svg>"
+  },
+  {
+   "id": "html-53",
+   "src": "html: <math><maction actiontype=\"statusline\" xlink:href=\"javascript:alert(1)\">x</maction></math>"
+  },
+  {
+   "id": "html-54",
+   "src": "html: <meta http-equiv=\"refresh\" content=\"0;url=//xss.example\">"
+  },
+  {
+   "id": "html-55",
+   "src": "html: <base href=\"//xss.example/\">"
+  },
+  {
+   "id": "html-56",
+   "src": "html: <link rel=\"stylesheet\" href=\"//xss.example/a.css\">"
+  },
+  {
+   "id": "html-57",
+   "src": "html: <body onload=\"alert(1)\">x</body>"
+  },
+  {
+   "id": "html-58",
+   "src": "html: <img src=x onerror=alert(1)//"
+  },
+  {
+   "id": "html-59",
+   "src": "html: <img \"\"\"><script>alert(1)</script>\">"
+  },
+  {
+   "id": "html-60",
+   "src": "html: <scr<script>ipt>alert(1)</scr</script>ipt>"
+  },
+  {
+   "id": "html-61",
+   "src": "html: <!--<img src=\"--><img src=x onerror=alert(1)//\">"
+  },
+  {
+   "id": "html-62",
+   "src": "html: <![CDATA[><img src=x onerror=alert(1)>]]>"
+  },
+  {
+   "id": "html-63",
+   "src": "html: <noscript><p title=\"</noscript><img src=x onerror=alert(1)>\"></noscript>"
+  },
+  {
+   "id": "html-64",
+   "src": "html: <template><img src=x onerror=alert(1)></template>"
+  },
+  {
+   "id": "html-65",
+   "src": "html: <p title=\"</p><script>alert(1)</script>\">x</p>",
+   "has": [
+    "title=\"&lt;/p&gt;&lt;script&gt;alert(1)&lt;/script&gt;\""
+   ]
+  },
+  {
+   "id": "html-66",
+   "src": "html: <p id=\"x\" class=\"a\" lang=\"en\" title=\"t\">ok</p>",
+   "has": [
+    "<p id=\"x\" class=\"a\" lang=\"en\" title=\"t\">ok</p>"
+   ]
+  },
+  {
+   "id": "html-67",
+   "src": "html: <table background=\"//xss.example/a.png\"><tr><td>x</td></tr></table>",
+   "has": [
+    "<td>x</td>"
+   ]
+  },
+  {
+   "id": "html-68",
+   "src": "html: <video poster=\"//xss.example/a.png\"></video>"
+  },
+  {
+   "id": "html-69",
+   "src": "html: <audio src=\"//xss.example/a.mp3\"></audio>"
+  },
+  {
+   "id": "html-70",
+   "src": "html: <frameset onload=alert(1)></frameset>"
+  },
+  {
+   "id": "html-71",
+   "src": "html: <applet code=\"x\"></applet>"
+  },
+  {
+   "id": "html-72",
+   "src": "html: <x-foo onclick=\"alert(1)\">x</x-foo>"
+  },
+  {
+   "id": "html-73",
+   "src": "html: <input type=\"image\" src=\"//xss.example/a.png\">"
+  },
+  {
+   "id": "html-74",
+   "src": "html: <isindex action=\"javascript:alert(1)\">"
+  },
+  {
+   "id": "html-75",
+   "src": "html: <keygen autofocus onfocus=alert(1)>"
+  },
+  {
+   "id": "html-76",
+   "src": "html: <marquee onstart=alert(1)>x</marquee>"
+  },
+  {
+   "id": "html-77",
+   "src": "html: <a href=\"https://a.example\" target=\"_blank\" ping=\"//xss.example\">x</a>",
+   "has": [
+    "<a href=\"https://a.example\">x</a>"
+   ]
+  },
+  {
+   "id": "html-78",
+   "src": "html: <img src=\"data:text/html,<script>alert(1)</script>\">"
+  },
+  {
+   "id": "html-79",
+   "src": "html: <img src=\"data:image/svg+xml,&lt;svg onload=alert(1)&gt;\">"
+  },
+  {
+   "id": "html-80",
+   "src": "html: <progress value=\"1\" max=\"2\" onclick=\"alert(1)\"></progress>",
+   "has": [
+    "<progress value=\"1\" max=\"2\"></progress>"
+   ]
+  },
+  {
+   "id": "html-81",
+   "src": "html: <time datetime=\"&quot;onmouseover=&quot;alert(1)\">x</time>"
+  },
+  {
+   "id": "html-82",
+   "src": "html: <table><tr><td colspan=\"2\" onclick=\"alert(1)\">x</td></tr></table>",
+   "has": [
+    "<td colspan=\"2\">x</td>"
+   ]
+  },
+  {
+   "id": "html-83",
+   "src": "html: <a href=\"https://a.example/&quot;onmouseover=&quot;alert(1)\">x</a>"
+  },
+  {
+   "id": "html-84",
+   "src": "html: </main></body></html><script>alert(1)</script>"
+  },
+  {
+   "id": "html-85",
+   "src": "```=html\n<script>\nalert(1)\n</script>\n<p>after</p>\n```",
+   "has": [
+    "<p>after</p>"
+   ]
+  },
+  {
+   "id": "html-86",
+   "src": "```=html\n<div\nonclick=\"alert(1)\">x</div>\n```",
+   "has": [
+    "<div>x</div>"
+   ]
+  },
+  {
+   "id": "html-87",
+   "src": "```=html\n<style>\nbody{background:url(//xss.example/a.png)}\n</style>\n```"
+  },
+  {
+   "id": "html-88",
+   "src": "```=html\n<svg><script>\nalert(1)\n</script></svg>\n```"
+  },
+  {
+   "id": "html-89",
+   "src": "```=html\n</main><script>alert(1)</script>\n```"
+  },
+  {
+   "id": "html-90",
+   "src": "```=html\n<a href=\"java\nscript:alert(1)\">x</a>\n```"
+  },
+  {
+   "id": "html-91",
+   "src": "```=html\n<img src=x onerror=alert(1)>",
+   "warnings": [
+    "unclosed-fence"
+   ]
+  },
+  {
+   "id": "html-92",
+   "src": "html: <img src=\"data:image\\svg+xml,x\" alt=\"a\">",
+   "has": [
+    "<img alt=\"a\" />"
+   ]
+  },
+  {
+   "id": "meta-01",
+   "src": "@accent #fff;}body{background:url(//xss.example/a.png)}\n# Page",
+   "hasNot": [
+    "xss.example"
+   ],
+   "warnings": [
+    "accent-value"
+   ]
+  },
+  {
+   "id": "meta-02",
+   "src": "@accent #fff}</style><script>alert(1)</script>\n# Page",
+   "warnings": [
+    "accent-value"
+   ]
+  },
+  {
+   "id": "meta-03",
+   "src": "@accent red;background:url(javascript:alert(1))\n# Page",
+   "warnings": [
+    "accent-value"
+   ]
+  },
+  {
+   "id": "meta-04",
+   "src": "@accent expression(alert(1))\n# Page",
+   "warnings": [
+    "accent-value"
+   ]
+  },
+  {
+   "id": "meta-05",
+   "src": "@accent #12345\n# Page",
+   "hasNot": [
+    "--accent:#12345"
+   ],
+   "warnings": [
+    "accent-value"
+   ]
+  },
+  {
+   "id": "meta-06",
+   "src": "@accent #ffffff;--x:url(//xss.example)\n# Page",
+   "hasNot": [
+    "xss.example"
+   ],
+   "warnings": [
+    "accent-value"
+   ]
+  },
+  {
+   "id": "meta-07",
+   "src": "@accent #fff /*\n# Page",
+   "warnings": [
+    "accent-value"
+   ]
+  },
+  {
+   "id": "meta-08",
+   "src": "@accent url(//xss.example/a.png)\n# Page",
+   "hasNot": [
+    "xss.example"
+   ],
+   "warnings": [
+    "accent-value"
+   ]
+  },
+  {
+   "id": "meta-09",
+   "src": "@accent #2357c6\n# Page",
+   "has": [
+    "--accent:#2357c6;--accent-ink:#2357c6;"
+   ]
+  },
+  {
+   "id": "meta-10",
+   "src": "@theme dark;}body{background:url(//xss.example/a.png)}\n# Page",
+   "hasNot": [
+    "xss.example"
+   ]
+  },
+  {
+   "id": "meta-11",
+   "src": "@theme </style><script>alert(1)</script>\n# Page"
+  },
+  {
+   "id": "meta-12",
+   "src": "@width wide\"><script>alert(1)</script>\n# Page"
+  },
+  {
+   "id": "meta-13",
+   "src": "@lang en\"><script>alert(1)</script>\n# Page",
+   "has": [
+    "<html lang=\"en\">"
+   ]
+  },
+  {
+   "id": "meta-14",
+   "src": "@lang en\" onload=\"alert(1)\n# Page",
+   "has": [
+    "<html lang=\"en\">"
+   ]
+  },
+  {
+   "id": "meta-15",
+   "src": "@lang en-<script>\n# Page",
+   "has": [
+    "<html lang=\"en\">"
+   ]
+  },
+  {
+   "id": "meta-16",
+   "src": "@fonts https://xss.example/font.css\n# Page",
+   "hasNot": [
+    "xss.example"
+   ]
+  },
+  {
+   "id": "meta-17",
+   "src": "@title </title><script>alert(1)</script>\n# Page",
+   "has": [
+    "<title>&lt;/title&gt;&lt;script&gt;"
+   ]
+  },
+  {
+   "id": "meta-18",
+   "src": "@description \"><meta http-equiv=\"refresh\" content=\"0;url=//xss.example\">\n# Page",
+   "has": [
+    "<meta name=\"description\" content=\"&quot;&gt;&lt;meta"
+   ]
+  },
+  {
+   "id": "meta-19",
+   "src": "@date 2026-01-01\"><script>alert(1)</script>\n# Page"
+  },
+  {
+   "id": "meta-20",
+   "src": "@author A\"><script>alert(1)</script>, B<img src=x onerror=alert(1)>\n# Page"
+  },
+  {
+   "id": "code-01",
+   "src": "```\n</code></pre><script>alert(1)</script>\n```",
+   "has": [
+    "&lt;/code&gt;&lt;/pre&gt;&lt;script&gt;"
+   ]
+  },
+  {
+   "id": "code-02",
+   "src": "```js\" onmouseover=\"alert(1)\n</code>\n```"
+  },
+  {
+   "id": "code-03",
+   "src": "```html\n<script>alert(1)</script>\n<img src=x onerror=alert(1)>\n```",
+   "has": [
+    "data-lang=\"html\""
+   ]
+  },
+  {
+   "id": "code-04",
+   "src": "Inline `</code><script>alert(1)</script>` end.",
+   "has": [
+    "<code>&lt;/code&gt;"
+   ]
+  },
+  {
+   "id": "code-05",
+   "src": "```=html\n<p>open fence <script>alert(1)</script>",
+   "warnings": [
+    "unclosed-fence"
+   ]
+  },
+  {
+   "id": "code-06",
+   "src": "````\n```\n<script>alert(1)</script>\n````"
+  },
+  {
+   "id": "table-01",
+   "src": "data t = a,b; \"<script>alert(1)</script>\",\"<img src=x onerror=alert(1)>\"\ntable t",
+   "has": [
+    "&lt;script&gt;"
+   ]
+  },
+  {
+   "id": "table-02",
+   "src": "data t = \"<b onclick=x>h</b>\",v; x,1\ntable t title=\"<script>alert(1)</script>\""
+  },
+  {
+   "id": "table-03",
+   "src": "table = h,v; \"[x](javascript:alert(1))\",\"**<svg onload=alert(1)>**\"",
+   "has": [
+    "<strong>&lt;svg"
+   ]
+  },
+  {
+   "id": "table-04",
+   "src": "data t = name,score; \"\"\"><script>alert(1)</script>\",5; b,3\ntable t heat bar=score sort=-score"
+  },
+  {
+   "id": "table-05",
+   "src": "data t = s,v,tg; \"a\"\" onmouseover=\"\"x\",5,4; \"b\",3,6\ntable t bar=v target=tg"
+  },
+  {
+   "id": "table-06",
+   "src": "table = h; \"Done <script>alert(1)</script>\"; Done"
+  },
+  {
+   "id": "table-07",
+   "src": "data t = a,b; x,1\ndata t += \"<script>alert(1)</script>\",2\ntable t",
+   "has": [
+    "&lt;script&gt;"
+   ]
+  },
+  {
+   "id": "table-08",
+   "src": "data t = \"h\"\" onclick=\"\"alert(1)\",b,c,d,e,f,g; 1,2,3,4,5,6,7; 8,9,10,11,12,13,14\ntable t"
+  },
+  {
+   "id": "table-09",
+   "src": "data t = a,b; x,1\ntable t cols=\"<script>\"",
+   "errors": [
+    "unknown-column"
+   ]
+  },
+  {
+   "id": "chart-01",
+   "src": "data c = x,\"<script>alert(1)</script>\"; \"</text><script>alert(1)</script>\",1; b,2\nchart line c title=\"</title><script>alert(1)</script>\""
+  },
+  {
+   "id": "chart-02",
+   "src": "data c = x,v; a,1; \"b\"\" onmouseover=\"\"alert(1)\",2\nchart bar c focus=\"b\"\" onmouseover=\"\"alert(1)\" labels"
+  },
+  {
+   "id": "chart-03",
+   "src": "data c = x,v; a,1; b,2; c,3\nchart bar c mark=\"a </text><script>alert(1)</script>\" target=\"1 <svg onload=alert(1)>\""
+  },
+  {
+   "id": "chart-04",
+   "src": "data c = x,v; a,1; b,2; c,3\nchart hbar c unit=\"</tspan><script>alert(1)</script>\""
+  },
+  {
+   "id": "chart-05",
+   "src": "data r = t,s,e,a; \"<x onclick=1>\",1,4,2; b,2,5,3\nchart range r from=s to=e at=a bands=2,3 title=\"<desc>\""
+  },
+  {
+   "id": "chart-06",
+   "src": "data r = t,s,e; a,2026-01-01,2026-02-01; b,2026-01-15,2026-03-01\nchart range r from=s to=e target=\"2026-02-10 <script>alert(1)</script>\""
+  },
+  {
+   "id": "chart-07",
+   "src": "data c = x,a,b; p,1,2; q,2,3\nchart area c stack title=\"]]><script>alert(1)</script>\""
+  },
+  {
+   "id": "chart-08",
+   "src": "data c = x,good,bad; a,1,2; b,2,1\nchart bar c title=\"<img src=x onerror=alert(1)>\""
+  },
+  {
+   "id": "chart-09",
+   "src": "data c = x,v; a,1; b,2; c,3\nchart bar c hatch=\"<script>\"",
+   "warnings": [
+    "chart-option"
+   ]
+  },
+  {
+   "id": "chart-10",
+   "src": "data c = x,v; a,1; b,2; c,3\nchart line c x=x y=v title=\"&lt;script&gt;\" mark=\"b &quot;onclick=x\""
+  },
+  {
+   "id": "diagram-01",
+   "src": "diagram f\nf: a \"A\" kind=x\"/onmouseover=\"alert(1)\nf: a -> b",
+   "has": [
+    "<g class=\"node k-x-onmouseover-alert-1-\">"
+   ]
+  },
+  {
+   "id": "diagram-02",
+   "src": "diagram f\nf: a \"A\" kind=\"x\"\" onclick=\"\"alert(1)\"\nf: a -> b",
+   "has": [
+    "<g class=\"node k-x-onclick-alert-1-\">"
+   ]
+  },
+  {
+   "id": "diagram-03",
+   "src": "diagram s sequence\ns: a \"A\" kind=\"x\\\" onclick=\\\"alert(1)\"\ns: a -> b : hi",
+   "has": [
+    "<g class=\"node k-x-onclick-alert-1-\">"
+   ]
+  },
+  {
+   "id": "diagram-04",
+   "src": "diagram f\nf: a \"A\" kind=\"decision\"\" onclick=\"\"alert(1)\"\nf: a -> b"
+  },
+  {
+   "id": "diagram-05",
+   "src": "diagram f\nf: a \"A\" kind=\"x\"\" onclick=\"\"alert(1)\"\nf: a -> b\nf: legend"
+  },
+  {
+   "id": "diagram-06",
+   "src": "diagram f title=\"</title><script>alert(1)</script>\"\nf: a \"<script>alert(1)</script>\" svc \"<img src=x onerror=alert(1)>\"\nf: a -> b : </text><script>alert(1)</script>"
+  },
+  {
+   "id": "diagram-07",
+   "src": "diagram f\nf: group g \"<svg onload=alert(1)>\" a, b\nf: a -> b"
+  },
+  {
+   "id": "diagram-08",
+   "src": "diagram f\nf: a \"A\" sub=\"\"><script>alert(1)</script>\"\nf: a -> b"
+  },
+  {
+   "id": "diagram-09",
+   "src": "diagram f\nf: a -> b : \" onmouseover=\"alert(1)"
+  },
+  {
+   "id": "diagram-10",
+   "src": "diagram s sequence title=\"<script>\"\ns: a \"<b onclick=x>\" user\ns: a -> b : <script>alert(1)</script>\ns: note b : </text><script>\ns: alt \"\"\"><script>alert(1)</script>\"\ns: b --> a : x\ns: else \"<img src=x onerror=alert(1)>\"\ns: b --> a : y\ns: end"
+  },
+  {
+   "id": "diagram-11",
+   "src": "diagram f\"x\nf: a -> b",
+   "errors": [
+    "diagram-name",
+    "undeclared-diagram"
+   ]
+  },
+  {
+   "id": "diagram-12",
+   "src": "diagram f\nf: a \"<!--<script>alert(1)</script>-->\" svc\nf: a -> b",
+   "errors": [
+    "diagram-syntax"
+   ]
+  },
+  {
+   "id": "diagram-13",
+   "src": "diagram f\nf: a\"onclick=x -> b",
+   "errors": [
+    "diagram-syntax"
+   ]
+  },
+  {
+   "id": "diagram-14",
+   "src": "diagram f\nf: a -x-> b : <script>alert(1)</script>"
+  },
+  {
+   "id": "diagram-15",
+   "src": "diagram f\nf: a \"A\" kind=\"</text><script>alert(1)</script>\"\nf: a -> b"
+  },
+  {
+   "id": "diagram-16",
+   "src": "diagram f dir=\"LR\"\" onload=\"\"x\"\nf: a -> b",
+   "warnings": [
+    "diagram-option"
+   ]
+  },
+  {
+   "id": "diagram-17",
+   "src": "diagram f dir=LR\nf: a \"A\" kind=svc\nf: b \"B\" kind=db focus\nf: a -> b, c : \"><img src=x onerror=alert(1)>\nf: group g \"G\" a, b\nf: g -> c"
+  },
+  {
+   "id": "diagram-18",
+   "src": "diagram f\nf: a \"A\" kind=\"x sr\"\nf: b \"B\" kind=\"x focus\"\nf: a -> b",
+   "has": [
+    "<g class=\"node k-x-sr\">",
+    "<g class=\"node k-x-focus\">"
+   ]
+  },
+  {
+   "id": "blocks-01",
+   "src": "kpi <script>alert(1)</script> | <img src=x onerror=alert(1)> | +1 <svg onload=alert(1)> | good\nkpi B | 2 | -1 | bad"
+  },
+  {
+   "id": "blocks-02",
+   "src": "kpi A | 50% | x | bar\nkpi B | \"><script>alert(1)</script> | y | bad"
+  },
+  {
+   "id": "blocks-03",
+   "src": "kpi Lone | <script>alert(1)</script> | +5 \" onclick=\"x"
+  },
+  {
+   "id": "blocks-04",
+   "src": "data k = v; 1; 2\nkpi Ref <script> | =k.v"
+  },
+  {
+   "id": "blocks-05",
+   "src": "step <script>alert(1)</script> | 2026-01-01\"><script> | <img src=x onerror=alert(1)>\nstep Two | soon"
+  },
+  {
+   "id": "blocks-06",
+   "src": "cards\n### <script>alert(1)</script>\nPros:\n- <img src=x onerror=alert(1)>\n### B\nCons:\n- \" onclick=\"x\n## After"
+  },
+  {
+   "id": "blocks-07",
+   "src": "! **<script>alert(1)</script>.** body <svg onload=alert(1)>"
+  },
+  {
+   "id": "blocks-08",
+   "src": "! Done <script>alert(1)</script>\n! 2026-01-01\"><script>"
+  },
+  {
+   "id": "blocks-09",
+   "src": "grid 2\nhtml: <script>alert(1)</script><p>a</p>\nhtml: <img src=x onerror=alert(1)><p>b</p>",
+   "has": [
+    "<p>a</p>",
+    "<p>b</p>"
+   ]
+  },
+  {
+   "id": "blocks-10",
+   "src": "- [x] <script>alert(1)</script>\n-- <img src=x onerror=alert(1)>\n1. \" onclick=\"x\n-- 1. </li><script>"
+  },
+  {
+   "id": "blocks-11",
+   "src": "> <script>alert(1)</script>\n> \u2014 <img src=x onerror=alert(1)>"
+  }
+ ]
+}

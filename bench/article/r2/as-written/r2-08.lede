@@ -1,0 +1,43 @@
+@title Thermostat Firmware 3.2.1 Rollout Incident
+@subtitle Wednesday's rollout: impact, cause and actions, for leadership and utility partners
+
+Firmware 3.2.1 stopped 2,140 hardware rev B thermostats from booting. A remote rollback recovered 1,980 of them. 160 still need a manual reset, and phone support is calling those customers.
+
+!! 160 thermostats still need a manual reset, and Thursday night's forecast low is 3 C. Until reset, they sit in safe mode, which holds the heating at 16 C frost protection.
+
+kpi Devices affected | 2,140 | rev B only | bad
+kpi Recovered by rollback | 1,980 | 92.5% of affected | good
+kpi Need manual reset | 160 | phone support calling | bad
+kpi Rollout reached | 31% | about 14,900 of 48,000 devices | neutral
+
+## Customer impact
+- Rev B thermostats that took the update failed to boot and fell back to safe mode, where heating holds at 16 C instead of following the customer's settings.
+- The first tickets (10:25 UTC) described thermostats stuck on Updating with the heating off. We had 312 tickets by 11:05.
+- Rev A and rev C units were not affected.
+- 1,980 units recovered with the remote rollback pushed 12:30 to 14:10 UTC.
+- 160 units cannot be fixed remotely. Each needs a manual reset, which is why the phone calls matter most for them.
+
+## Timeline (UTC)
+table = Time,Event; 09:00,3.2.1 starts rolling out to 5% of 48000 devices; 09:40,Rollout raised to 25%; 10:25,"First tickets: thermostats stuck on Updating, heating off"; 11:05,"312 tickets. Rollout paused at 31% (about 14,900 devices)"; 12:30,Remote rollback begins; 14:10,"Rollback done. 1,980 of 2,140 recovered, 160 need a manual reset"
+
+The first ticket arrived 85 minutes after the rollout began, by which time it had already reached 25%. We paused 40 minutes after that ticket.
+
+## Cause
+The new bootloader checks a flash checksum at one fixed offset. Hardware rev B units store that partition at a different offset, so the check failed and 2,140 rev B units could not boot.
+
+diagram cause dir=LR title="Why rev B units failed"
+cause: fw "3.2.1 bootloader" svc "Checks flash at one offset" focus
+cause: ab "Rev A and C units" svc "Partition at the expected offset"
+cause: b "Rev B units" svc "Partition at a different offset"
+cause: ok "Boot normally" ext
+cause: safe "Safe mode" ext "Heating holds at 16 C" focus
+cause: fw -> ab : checksum matches
+cause: fw -> b : checksum fails
+cause: ab -> ok
+cause: b --> safe : boot fails
+
+## Why we missed it
+There were no rev B units in our staging environment, so no test ever exercised that partition offset.
+
+## Actions
+table = Action,Owner,Due; Add rev B units to staging,Priya,Oct 24; 1% canary for 24 hours before any larger rollout step,Marcus,Done; Credit partners for 2 days of billing events,Jo,Oct 28

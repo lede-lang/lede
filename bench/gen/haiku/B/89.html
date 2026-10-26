@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to Read Your Water Bill</title>
+<style>
+:root{--bg:#f6f4ef;--card:#ffffff;--ink:#1c1f24;--muted:#5d6470;--line:#dcd7cc;--accent:#1d6a84;--warm:#b8741a;--neutral:#b9b4a8}
+@media (prefers-color-scheme: dark){:root{--bg:#121417;--card:#1b1f24;--ink:#eceef1;--muted:#a4abb5;--line:#2d333b;--accent:#6cb6cf;--warm:#e6b15a;--neutral:#5d6470}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:780px;margin:0 auto;padding:28px 16px 56px}
+.kicker{color:var(--accent);font-size:.85rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin:0 0 .3rem}
+h1{font-size:clamp(1.6rem,5vw,2.3rem);line-height:1.15;margin:0 0 .5rem}
+.dek{color:var(--muted);margin:0 0 1.2rem;font-size:1.05rem}
+h2{font-size:1.25rem;margin:2.2rem 0 .7rem;padding-top:1rem;border-top:1px solid var(--line)}
+p{margin:.6rem 0}
+.chart{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin:1rem 0}
+.chart svg{width:100%;height:auto;display:block}
+svg text{fill:var(--muted);font-size:15px}
+svg .amt{fill:var(--ink);font-weight:600}
+svg .bar{fill:var(--accent)}
+svg .bar-w{fill:var(--warm)}
+svg .bar-n{fill:var(--neutral)}
+.tw{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow-x:auto;margin:1rem 0;padding:4px 12px}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.85rem;color:var(--muted);font-weight:600}
+tr:last-child td{border-bottom:0}
+.n{text-align:right;font-variant-numeric:tabular-nums}
+.note{color:var(--muted);font-size:.9rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:1rem 0}
+ul{padding-left:1.2rem;margin:.5rem 0}
+li{margin:.4rem 0}
+a{color:var(--accent)}
+@media (max-width:560px){
+  thead{display:none}
+  table,tbody,tr,td{display:block;width:100%}
+  .tw{overflow:visible;padding:4px 0;background:none;border:0}
+  tr{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 12px;margin:0 0 10px}
+  td{border:0;display:flex;justify-content:space-between;gap:14px;padding:6px 0;text-align:right}
+  td::before{content:attr(data-label);color:var(--muted);font-weight:600;text-align:left}
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+<p class="kicker">Tarn Valley Water · Customer guide</p>
+<h1>How to read your water bill</h1>
+<p class="dek">Your bill comes every three months. It can look busy at first, so this page walks through each line, with a worked example you can check against your own.</p>
+
+<h2>Your bill at a glance</h2>
+<p>Every bill has three parts: the charge for the water you used, a sewer charge, and a fixed service charge. The example below is for a household that used 72 cubic meters (m3) in the quarter.</p>
+<div class="chart">
+<svg viewBox="0 0 600 110" role="img" aria-label="Stacked bar of the example bill: usage 180.30 dollars, sewer 144.24 dollars, service 38.40 dollars, total 362.94 dollars">
+  <rect class="bar" x="0" y="8" width="298" height="50"/>
+  <rect class="bar-w" x="298" y="8" width="238" height="50"/>
+  <rect class="bar-n" x="536" y="8" width="64" height="50"/>
+  <text x="149" y="84" text-anchor="middle">Usage</text>
+  <text class="amt" x="149" y="104" text-anchor="middle">$180.30</text>
+  <text x="417" y="84" text-anchor="middle">Sewer</text>
+  <text class="amt" x="417" y="104" text-anchor="middle">$144.24</text>
+  <text x="568" y="84" text-anchor="middle">Service</text>
+  <text class="amt" x="568" y="104" text-anchor="middle">$38.40</text>
+</svg>
+</div>
+<p class="note">Total for the quarter in this example: $362.94.</p>
+
+<h2>Usage charges</h2>
+<p>Water is metered in cubic meters (m3) and charged in three tiers. The more you use, the higher the rate for the extra water.</p>
+<div class="tw">
+<table>
+  <thead>
+    <tr><th>Tier</th><th>Amount used</th><th class="n">Rate per m3</th></tr>
+  </thead>
+  <tbody>
+    <tr><td data-label="Tier">First tier</td><td data-label="Amount used">The first 30 m3</td><td class="n" data-label="Rate per m3">$1.85</td></tr>
+    <tr><td data-label="Tier">Second tier</td><td data-label="Amount used">The next 30 m3</td><td class="n" data-label="Rate per m3">$2.60</td></tr>
+    <tr><td data-label="Tier">Third tier</td><td data-label="Amount used">Anything above 60 m3</td><td class="n" data-label="Rate per m3">$3.90</td></tr>
+  </tbody>
+</table>
+</div>
+<p>In the example, 72 m3 breaks down like this:</p>
+<div class="tw">
+<table>
+  <thead>
+    <tr><th>Part of the usage</th><th class="n">Calculation</th><th class="n">Amount</th></tr>
+  </thead>
+  <tbody>
+    <tr><td data-label="Part">First 30 m3</td><td class="n" data-label="Calculation">30 m3 at $1.85</td><td class="n" data-label="Amount">$55.50</td></tr>
+    <tr><td data-label="Part">Next 30 m3</td><td class="n" data-label="Calculation">30 m3 at $2.60</td><td class="n" data-label="Amount">$78.00</td></tr>
+    <tr><td data-label="Part">Above 60 m3</td><td class="n" data-label="Calculation">12 m3 at $3.90</td><td class="n" data-label="Amount">$46.80</td></tr>
+    <tr><td data-label="Part"><b>Usage charge</b></td><td class="n" data-label="Calculation">$55.50 + $78.00 + $46.80</td><td class="n" data-label="Amount"><b>$180.30</b></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Fixed charges</h2>
+<div class="card">
+  <p><strong>Sewer charge:</strong> 80 percent of your usage charge. In the example, 80 percent of $180.30 is $144.24.</p>
+  <p><strong>Service charge:</strong> a fixed $38.40 per quarter, whatever you use.</p>
+</div>
+<p>Add the usage charge, the sewer charge and the service charge together to get your total. In the example: $180.30 + $144.24 + $38.40 = $362.94.</p>
+
+<h2>Ways to pay</h2>
+<ul>
+  <li>Online at tarnvalleywater.example/pay</li>
+  <li>By phone on 555-0121</li>
+  <li>In person at the Main Street office, on weekdays from 8:30 to 16:30</li>
+</ul>
+<p>Payment is due 21 days after the issue date. If you sign up for autopay, we take $2 off each bill.</p>
+
+<h2>If you cannot pay on time</h2>
+<p>Please call us before the due date on 555-0133, and we will help you set up a payment plan. If a bill is not paid, a late fee of 5 percent is added after 30 days. Calling early is the best way to avoid it.</p>
+</main>
+</body>
+</html>

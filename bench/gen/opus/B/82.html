@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Two-Week Ride Demand</title>
+<style>
+:root{
+  --bg:#f3f5f8;--surface:#ffffff;--text:#18202a;--muted:#5b6573;--line:#e1e6ec;--grid:#e7ebf0;
+  --weekday:#2f6fb3;--weekend:#e0673a;--soft:#eaf1f9;--soft-2:#fcebe3;--rain:#5b6573;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0f1318;--surface:#181e25;--text:#e8edf3;--muted:#9aa6b4;--line:#28313b;--grid:#26303a;
+    --weekday:#6aa8ec;--weekend:#f08a5d;--soft:#18283a;--soft-2:#3a2219;--rain:#9aa6b4;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:24px 16px 56px}
+.kicker{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--weekday);font-weight:700;margin:0 0 6px}
+h1{font-size:clamp(1.6rem,5.5vw,2.3rem);line-height:1.15;margin:0 0 10px}
+.dek{color:var(--muted);margin:0 0 24px}
+section{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 16px;margin:0 0 16px}
+h2{font-size:1.2rem;margin:0 0 4px}
+.sub{color:var(--muted);font-size:.9rem;margin:0 0 16px}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.kpi{background:var(--bg);border-radius:10px;padding:12px}
+.kpi .n{display:block;font-size:1.5rem;font-weight:750;line-height:1.15;font-variant-numeric:tabular-nums}
+.kpi .l{display:block;color:var(--muted);font-size:.84rem;margin-top:2px}
+.kpi .d{display:block;font-size:.84rem;margin-top:4px}
+.up{color:#1f8a4c;font-weight:700}
+@media (prefers-color-scheme:dark){.up{color:#5fd08f}}
+.callouts{display:grid;gap:10px;margin-top:12px}
+.callout{border-radius:10px;padding:12px 14px;font-size:.94rem}
+.callout b{font-variant-numeric:tabular-nums}
+.callout.hi{background:var(--soft-2)}
+.callout.lo{background:var(--soft)}
+.chart{max-width:620px;margin:0 auto}
+svg{display:block;overflow:visible}
+.gl{stroke:var(--grid);stroke-width:1}
+.base{stroke:var(--muted);stroke-width:1}
+.ax{fill:var(--muted);font-size:10.5px;font-family:inherit}
+.axb{fill:var(--text);font-size:11px;font-weight:600;font-family:inherit}
+.wd{fill:var(--weekday)}
+.we{fill:var(--weekend)}
+.avg{stroke:var(--text);stroke-width:1.2;stroke-dasharray:4 3;opacity:.7}
+.avgt{fill:var(--text);font-size:10.5px;font-weight:600}
+.sep{stroke:var(--muted);stroke-width:1;stroke-dasharray:2 3;opacity:.6}
+.val{fill:var(--text);font-size:11px;font-weight:700}
+.ann{fill:var(--rain);font-size:10px;font-style:italic}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.86rem;color:var(--muted);margin:0 0 10px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+.sw.wd{background:var(--weekday)}.sw.we{background:var(--weekend)}
+.sw.av{width:16px;height:0;border-top:2px dashed var(--text);border-radius:0;opacity:.7}
+details{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
+summary{cursor:pointer;font-weight:600;font-size:.92rem;color:var(--weekday)}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:.9rem;font-variant-numeric:tabular-nums}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left}
+td.num,th.num{text-align:right}
+tr.wk td{color:var(--weekend)}
+.rows{display:flex;flex-direction:column;gap:14px}
+.row-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:5px;font-size:.95rem}
+.row-head .v{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.takeaway{margin:16px 0 0;padding:12px 14px;border-left:4px solid var(--weekend);background:var(--bg);border-radius:0 10px 10px 0;font-size:.95rem}
+.takeaway p{margin:0 0 6px}.takeaway p:last-child{margin:0}
+h3{font-size:1rem;margin:20px 0 10px}
+footer{color:var(--muted);font-size:.82rem;text-align:center;margin-top:20px}
+@media (min-width:640px){
+  section{padding:26px 26px}
+  .kpis{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .callouts{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="kicker">Portside Bike Share &middot; Operations</p>
+  <h1>Ride demand, 5 to 18 October 2026</h1>
+  <p class="dek">Two full weeks, Monday to Sunday twice, to help decide where extra rebalancing crews go. System size: 86 stations and 1,100 bikes.</p>
+</header>
+
+<section aria-labelledby="glance">
+  <h2 id="glance">Two weeks at a glance</h2>
+  <p class="sub">Monday 5 October to Sunday 18 October 2026</p>
+  <div class="kpis">
+    <div class="kpi"><span class="n">54,410</span><span class="l">rides in 14 days</span></div>
+    <div class="kpi"><span class="n">3,886</span><span class="l">average rides a day</span></div>
+    <div class="kpi"><span class="n">26,040</span><span class="l">week 1 rides</span></div>
+    <div class="kpi"><span class="n">28,370</span><span class="l">week 2 rides</span><span class="d"><span class="up">&#9650; 8.9%</span> on week 1</span></div>
+  </div>
+  <div class="callouts">
+    <div class="callout hi"><b>Busiest: 5,340 rides</b><br>Saturday 17 October</div>
+    <div class="callout lo"><b>Quietest: 2,280 rides</b><br>Thursday 8 October, a rainy day with 31&nbsp;mm of rain</div>
+  </div>
+</section>
+
+<section aria-labelledby="daily">
+  <h2 id="daily">Daily rides</h2>
+  <p class="sub">Rides per day; dashed line marks the 14-day average of 3,886</p>
+  <div class="legend" aria-hidden="true">
+    <span><i class="sw wd"></i>Weekday</span>
+    <span><i class="sw we"></i>Weekend</span>
+    <span><i class="sw av"></i>Average</span>
+  </div>
+  <div class="chart">
+  <svg viewBox="0 0 420 272" width="100%" role="img" aria-label="Column chart of daily rides from 5 to 18 October 2026. Weekend days are the four tallest columns, peaking at 5,340 on Saturday 17 October. The lowest day is Thursday 8 October with 2,280 rides, a rainy day.">
+    <line class="gl" x1="36" y1="20" x2="412" y2="20"/>
+    <line class="gl" x1="36" y1="86.67" x2="412" y2="86.67"/>
+    <line class="gl" x1="36" y1="153.33" x2="412" y2="153.33"/>
+    <text class="ax" x="30" y="24" text-anchor="end">6,000</text>
+    <text class="ax" x="30" y="90.67" text-anchor="end">4,000</text>
+    <text class="ax" x="30" y="157.33" text-anchor="end">2,000</text>
+    <text class="ax" x="30" y="224" text-anchor="end">0</text>
+    <line class="sep" x1="224" y1="14" x2="224" y2="252"/>
+    <!-- week 1 -->
+    <rect class="wd" x="40.43" y="116" width="18" height="104" rx="2"/>
+    <rect class="wd" x="67.29" y="108.67" width="18" height="111.33" rx="2"/>
+    <rect class="wd" x="94.14" y="103" width="18" height="117" rx="2"/>
+    <rect class="wd" x="121" y="144" width="18" height="76" rx="2"/>
+    <rect class="wd" x="147.86" y="97" width="18" height="123" rx="2"/>
+    <rect class="we" x="174.71" y="49.33" width="18" height="170.67" rx="2"/>
+    <rect class="we" x="201.57" y="54" width="18" height="166" rx="2"/>
+    <!-- week 2 -->
+    <rect class="wd" x="228.43" y="111.67" width="18" height="108.33" rx="2"/>
+    <rect class="wd" x="255.29" y="104.67" width="18" height="115.33" rx="2"/>
+    <rect class="wd" x="282.14" y="100.67" width="18" height="119.33" rx="2"/>
+    <rect class="wd" x="309" y="96" width="18" height="124" rx="2"/>
+    <rect class="wd" x="335.86" y="93" width="18" height="127" rx="2"/>
+    <rect class="we" x="362.71" y="42" width="18" height="178" rx="2"/>
+    <rect class="we" x="389.57" y="46.33" width="18" height="173.67" rx="2"/>
+    <line class="base" x1="36" y1="220" x2="412" y2="220"/>
+    <line class="avg" x1="36" y1="90.47" x2="412" y2="90.47"/>
+    <text class="avgt" x="40" y="84">Avg 3,886</text>
+    <text class="val" x="371.71" y="36" text-anchor="middle">5,340</text>
+    <text class="val" x="130" y="138" text-anchor="middle">2,280</text>
+    <text class="ann" x="130" y="125" text-anchor="middle">31 mm rain</text>
+    <!-- day letters -->
+    <g class="ax" text-anchor="middle">
+      <text x="49.43" y="234">M</text><text x="76.29" y="234">T</text><text x="103.14" y="234">W</text><text x="130" y="234">T</text><text x="156.86" y="234">F</text><text x="183.71" y="234">S</text><text x="210.57" y="234">S</text>
+      <text x="237.43" y="234">M</text><text x="264.29" y="234">T</text><text x="291.14" y="234">W</text><text x="318" y="234">T</text><text x="344.86" y="234">F</text><text x="371.71" y="234">S</text><text x="398.57" y="234">S</text>
+      <text x="49.43" y="247">5</text><text x="76.29" y="247">6</text><text x="103.14" y="247">7</text><text x="130" y="247">8</text><text x="156.86" y="247">9</text><text x="183.71" y="247">10</text><text x="210.57" y="247">11</text>
+      <text x="237.43" y="247">12</text><text x="264.29" y="247">13</text><text x="291.14" y="247">14</text><text x="318" y="247">15</text><text x="344.86" y="247">16</text><text x="371.71" y="247">17</text><text x="398.57" y="247">18</text>
+    </g>
+    <text class="axb" x="130" y="266" text-anchor="middle">Week 1 &middot; 26,040</text>
+    <text class="axb" x="318" y="266" text-anchor="middle">Week 2 &middot; 28,370</text>
+  </svg>
+  </div>
+  <details>
+    <summary>Show the daily numbers</summary>
+    <table>
+      <thead><tr><th>Date</th><th>Day</th><th class="num">Rides</th></tr></thead>
+      <tbody>
+        <tr><td>5 Oct</td><td>Mon</td><td class="num">3,120</td></tr>
+        <tr><td>6 Oct</td><td>Tue</td><td class="num">3,340</td></tr>
+        <tr><td>7 Oct</td><td>Wed</td><td class="num">3,510</td></tr>
+        <tr><td>8 Oct</td><td>Thu (rain, 31 mm)</td><td class="num">2,280</td></tr>
+        <tr><td>9 Oct</td><td>Fri</td><td class="num">3,690</td></tr>
+        <tr class="wk"><td>10 Oct</td><td>Sat</td><td class="num">5,120</td></tr>
+        <tr class="wk"><td>11 Oct</td><td>Sun</td><td class="num">4,980</td></tr>
+        <tr><td>12 Oct</td><td>Mon</td><td class="num">3,250</td></tr>
+        <tr><td>13 Oct</td><td>Tue</td><td class="num">3,460</td></tr>
+        <tr><td>14 Oct</td><td>Wed</td><td class="num">3,580</td></tr>
+        <tr><td>15 Oct</td><td>Thu</td><td class="num">3,720</td></tr>
+        <tr><td>16 Oct</td><td>Fri</td><td class="num">3,810</td></tr>
+        <tr class="wk"><td>17 Oct</td><td>Sat</td><td class="num">5,340</td></tr>
+        <tr class="wk"><td>18 Oct</td><td>Sun</td><td class="num">5,210</td></tr>
+      </tbody>
+    </table>
+  </details>
+</section>
+
+<section aria-labelledby="split">
+  <h2 id="split">Weekdays and weekends</h2>
+  <p class="sub">Average rides per day</p>
+  <div class="rows">
+    <div>
+      <div class="row-head"><span>Weekend days (4)</span><span class="v">5,162.5</span></div>
+      <svg width="100%" height="16" role="img" aria-label="Weekend average: 5,162.5 rides a day"><rect class="we" x="0" y="0" width="100%" height="16" rx="4"/></svg>
+    </div>
+    <div>
+      <div class="row-head"><span>Weekdays (10)</span><span class="v">3,376</span></div>
+      <svg width="100%" height="16" role="img" aria-label="Weekday average: 3,376 rides a day"><rect class="wd" x="0" y="0" width="65.4%" height="16" rx="4"/></svg>
+    </div>
+  </div>
+  <div class="takeaway">
+    <p><b>A weekend day carries about 53% more rides than a weekday.</b> The four busiest days of the fortnight were all Saturdays and Sundays; the busiest weekday, Friday 16 October, had 3,810.</p>
+    <p>Weekday demand in week 2 rose every day, from 3,250 on Monday to 3,810 on Friday.</p>
+  </div>
+</section>
+
+<footer>Portside Bike Share &middot; 86 stations &middot; 1,100 bikes &middot; data for 5&ndash;18 October 2026</footer>
+</div>
+</body>
+</html>

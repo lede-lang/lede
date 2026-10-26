@@ -1,0 +1,32 @@
+@title Harvest 2026 Summary
+@subtitle Marlow Valley Extension Service, survey of 214 farms completed 2026-10-10
+@author Marlow Valley Extension Service
+
+## Harvest at a glance
+
+kpi Farms surveyed | 214
+kpi Avg rainfall | 601 mm
+kpi Avg wheat | 7.2 t/ha
+kpi Avg corn | 10.0 t/ha
+
+! Calder, the wettest county, had the best yield in every crop. Dunmore, the driest, had the lowest in every crop. Dunmore's wheat yield of 5.9 t/ha is 2.2 below Calder's.
+
+## Yields by county
+
+Yields in tonnes per hectare.
+
+data yields = county,wheat,corn,soybeans,barley; Alder,7.4,10.2,3.4,6.1; Brennan,6.8,9.1,3.1,5.7; Calder,8.1,11.4,3.7,6.6; Dunmore,5.9,8.3,2.8,4.9; Elmstead,7.7,10.8,3.5,6.3; **Region average**,7.2,10.0,3.3,5.9
+table yields heat title="Yield by crop (t/ha)"
+
+data wheat = county,wheat; Alder,7.4; Brennan,6.8; Calder,8.1; Dunmore,5.9; Elmstead,7.7
+chart hbar wheat unit=t/ha target="7.2 region average" labels title="Wheat yield by county"
+
+## Rainfall and yield
+
+data rain = county,rainfall,wheat,corn; Calder,701,8.1,11.4; Elmstead,655,7.7,10.8; Alder,612,7.4,10.2; Brennan,548,6.8,9.1; Dunmore,489,5.9,8.3
+table rain bar=rainfall title="Counties from wettest to driest"
+
+data rainfall = county,rainfall; Calder,701; Elmstead,655; Alder,612; Brennan,548; Dunmore,489
+chart hbar rainfall unit=mm target="601 region average" labels title="Season rainfall (mm)"
+
+The wetter the county, the higher the yield. The ranking by rainfall matches the ranking by wheat and corn yield in all five counties.

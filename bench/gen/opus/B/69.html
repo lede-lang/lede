@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why We Replaced Our Standup With a Written Update</title>
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#fbfaf7; --text:#22201c; --muted:#6c675f; --border:#e6e2da; --accent:#9c3d2a; --quote:#f3efe7;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#141311; --text:#e9e5de; --muted:#a39d93; --border:#302d29; --accent:#f0957f; --quote:#1e1c19;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:19px/1.7 Charter,"Bitstream Charter","Sitka Text",Cambria,Georgia,"Times New Roman",serif}
+.masthead{border-bottom:1px solid var(--border)}
+.masthead .in{max-width:700px;margin:0 auto;padding:16px 24px;font:600 .8rem/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.masthead span{color:var(--accent)}
+article{max-width:700px;margin:0 auto;padding:48px 24px 72px}
+h1{font-size:clamp(2rem,6vw,2.9rem);line-height:1.12;letter-spacing:-.02em;margin:0 0 .5em;font-weight:700}
+.byline{font:.95rem/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--muted);margin:0 0 2.2em;padding-bottom:1.4em;border-bottom:1px solid var(--border)}
+.byline strong{color:var(--text);font-weight:600}
+h2{font-size:1.35rem;line-height:1.3;margin:2em 0 .6em;letter-spacing:-.01em}
+p{margin:0 0 1.1em}
+.intro::first-letter{float:left;font-size:3.4em;line-height:.9;padding:6px 10px 0 0;color:var(--accent);font-weight:700}
+.prompts{list-style:none;margin:0 0 1.2em;padding:16px 22px;background:var(--quote);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;font-style:italic}
+.prompts li{margin:4px 0}
+.advice{margin:0 0 1.2em;padding-left:1.3em}
+.advice li{margin-bottom:.9em;padding-left:.2em}
+.advice li::marker{color:var(--accent);font-weight:700}
+.end{color:var(--muted);text-align:center;letter-spacing:.6em;margin:2.4em 0 0}
+footer{max-width:700px;margin:0 auto;padding:0 24px 48px;font:.85rem/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--muted)}
+@media (max-width:480px){
+  body{font-size:17.5px}
+  article{padding:32px 16px 56px}
+  .masthead .in,footer{padding-left:16px;padding-right:16px}
+}
+</style>
+</head>
+<body>
+<div class="masthead"><div class="in"><span>Cresswell Systems</span> &middot; Engineering blog</div></div>
+<article>
+<h1>Why We Replaced Our Standup With a Written Update</h1>
+<p class="byline">By <strong>Odile Marchetti</strong>, Engineering Manager &middot; about a 5-minute read</p>
+
+<p class="intro">For six months this year, my team did not have a daily standup. Nothing caught fire, and by most of the measures we cared about, we worked better. I want to describe what we did, what we measured and what it cost, because the cost was real and posts like this one rarely dwell on it. I also want to be clear up front: I don't think this is right for every team. It was right for ours.</p>
+
+<h2>The standup nobody liked</h2>
+<p>My team has 11 engineers spread across 5 time zones. For years we held a 15-minute daily standup at 14:00 UTC. On paper it was a compromise. In practice it was 06:00 for one person and 22:00 for two others.</p>
+<p>Those three people were routinely half asleep or absent, and I don't blame them. Nobody does their best thinking at six in the morning, and nobody should be asked to stay sharp for a status meeting at ten at night. When they did join, they were there in body more than in mind.</p>
+<p>The rest of the team had a quieter problem. Most updates were status read aloud: I worked on the ticket yesterday, I will keep working on it today. Nobody complained in the meeting, but people were annoyed, and I could feel it. Fifteen minutes a day is not much. Fifteen minutes of hearing things you could have read in thirty seconds adds up, in resentment as much as in time.</p>
+
+<h2>What we tried</h2>
+<p>On 2 March 2026 we replaced the meeting with a written update. Everyone posts in a shared thread by 10:00 their local time, answering three prompts:</p>
+<ul class="prompts">
+  <li>What I finished.</li>
+  <li>What I am doing next.</li>
+  <li>What is blocking me.</li>
+</ul>
+<p>That was the whole change, and I kept it deliberately small. The 10:00 local deadline mattered more than I expected. Updates arrived in a rolling wave around the world instead of all at once, so whoever started their day next always found fresh news from the people who had just finished theirs.</p>
+<p>I committed to tracking it for six months, until 25 September, and told the team I would bring the standup back if the results said I should.</p>
+
+<h2>What we measured</h2>
+<p>We watched three things.</p>
+<p>First, how informed people felt. Our quarterly survey asks whether you feel informed about the team's work. Before the change, 61 percent of the team said yes. By the end, 84 percent did.</p>
+<p>Second, how long blockers took to clear. The median time to resolve a blocker fell from 26 hours to 11. This is the result I least expected and now value most. Under the old meeting, a blocker raised at standup often waited for someone in the right time zone to wake up and notice it in chat. In the thread, a blocker was visible overnight to a colleague in another zone whose day was just starting, and it was often cleared before the person who raised it was back at their desk.</p>
+<p>Third, meeting time. Each engineer got back 55 minutes a week. That is not dramatic, but for three people it came out of the worst-placed hour of their day, so it was worth more than it sounds.</p>
+<p>I try to be careful with these numbers. Eleven people is a small team, and a survey is a survey. But all three measures moved in the same direction, and that is hard to dismiss.</p>
+
+<h2>What it cost</h2>
+<p>We lost the banter. A standup, even a bad one, gives people a few minutes to see each other's faces, notice who looks tired and joke about the build. The thread did not replace that, and I was naive to think it might.</p>
+<p>The clearest sign came from a new hire, who told me they felt isolated in their first weeks. They could read what everyone was doing, but had little sense of who these people were. That was a fair criticism, and it was on me, not on them.</p>
+<p>So we added two things. There is now a 30-minute optional video social on Fridays, with no agenda. And every new starter gets a buddy: one person whose job, for those first weeks, is to be the one you can ask anything. Neither fully replaces the small daily contact we gave up, and I think it is only honest to say so.</p>
+
+<h2>Should you do this?</h2>
+<p>Maybe not. If your team sits in one office on one schedule, a short standup is probably cheap, and the human contact may be worth more than the minutes you would save. A written update solves a time-zone problem. If you don't have that problem, you might simply be trading a meeting for homework.</p>
+<p>It will also fail if nobody reads the thread. Written updates only work when people read each other's, and read them in time to act. A thread nobody reads is worse than a meeting nobody likes, because the meeting at least pushes the information past people's ears.</p>
+<p>If you are a manager weighing the same change, here is what I would tell you.</p>
+<ol class="advice">
+  <li><strong>Run it for 8 weeks.</strong> The first couple of weeks feel strange, and the benefits, especially on blockers, take time to show. Judge it too early and you are judging the awkwardness, not the change.</li>
+  <li><strong>Ask people in the retrospective what they miss.</strong> Not whether they like it: what they miss. That question surfaces the quiet costs, like the isolation our new hire felt, which people are least likely to raise on their own.</li>
+  <li><strong>Be willing to bring the meeting back.</strong> Say so at the start, and mean it. People accept a change more easily when they know it is an experiment rather than a verdict, and you will judge it more fairly if you have not already decided.</li>
+</ol>
+<p>We have not brought ours back. But the option is still open, and I suspect the team trusts the thread more because of it.</p>
+<p class="end" aria-hidden="true">&middot; &middot; &middot;</p>
+</article>
+<footer>Odile Marchetti is an engineering manager at Cresswell Systems.</footer>
+</body>
+</html>

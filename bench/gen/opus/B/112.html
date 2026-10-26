@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Electric Reliability, January to September 2026 · Northwind Utilities</title>
+<style>
+:root{color-scheme:light dark;--bg:#f5f6f8;--card:#ffffff;--ink:#1a1f27;--muted:#5a6270;--line:#dfe3e9;--accent:#1f5fa8;--ok:#2d7d5a;--bad:#c2410c;--bad-bg:#fdf0e8;--c1:#1f5fa8;--c2:#4f8fd1;--c3:#8cb8e6;--c4:#b8c2cf}
+@media (prefers-color-scheme:dark){:root{--bg:#10141a;--card:#181e26;--ink:#e8ecf1;--muted:#9aa4b2;--line:#2a323d;--accent:#7fb2ee;--ok:#6cc59a;--bad:#f59a63;--bad-bg:#33231a;--c1:#7fb2ee;--c2:#5a8cc8;--c3:#3d6596;--c4:#5c6676}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:780px;margin:0 auto;padding:28px 16px 56px}
+.eyebrow{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 6px}
+h1{font-size:clamp(26px,6vw,34px);line-height:1.15;margin:0 0 8px}
+.byline{color:var(--muted);font-size:14px;margin:0 0 24px}
+h2{font-size:20px;margin:36px 0 12px;padding-top:20px;border-top:1px solid var(--line)}
+p{margin:0 0 12px}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:16px 0}
+@media (min-width:640px){.kpis{grid-template-columns:repeat(4,1fr)}}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.kpi .v{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.2}
+.kpi .l{font-size:13px;color:var(--muted)}
+.kpi .ok{color:var(--ok);font-size:13px;font-weight:600}
+.kpi .bad{color:var(--bad);font-size:13px;font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+svg{display:block;width:100%;height:auto}
+.ax{fill:var(--muted);font-size:11px}
+.nm{fill:var(--ink);font-size:13px;font-weight:600}
+.sub{fill:var(--muted);font-size:10.5px}
+.val{fill:var(--ink);font-size:12px;font-weight:700}
+.grid{stroke:var(--line)}
+.tgt{stroke:var(--ink);stroke-width:1.5;stroke-dasharray:4 3}
+.tgtl{fill:var(--ink);font-size:11px;font-weight:600}
+.b-ok{fill:var(--ok)}.b-bad{fill:var(--bad)}
+.s1{fill:var(--c1)}.s2{fill:var(--c2)}.s3{fill:var(--c3)}.s4{fill:var(--c4)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);margin:10px 0 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+.tbl{overflow-x:auto;margin-top:14px}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{padding:8px 6px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+tfoot td{font-weight:700;border-bottom:none;border-top:2px solid var(--ink)}
+.pill{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:1px 8px}
+.pill.over{background:var(--bad-bg);color:var(--bad)}
+.pill.under{color:var(--ok);border:1px solid var(--ok)}
+.cbar{display:inline-block;height:8px;border-radius:4px;background:var(--c2);vertical-align:middle;margin-right:6px}
+.note{font-size:13px;color:var(--muted);margin-top:8px}
+ol.steps{padding-left:20px}
+ol.steps li{margin-bottom:10px}
+footer{margin-top:40px;font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main class="wrap">
+<p class="eyebrow">Northwind Utilities · Reliability report</p>
+<h1>Electric Reliability, January to September 2026</h1>
+<p class="byline">For the state regulator and the Board · Prepared by Sven Lindqvist, Reliability Engineering</p>
+
+<h2>Reliability at a glance</h2>
+<div class="kpis">
+  <div class="kpi"><div class="l">Avg outage minutes per customer</div><div class="v">99.6</div><div class="ok">Meets target of 105</div></div>
+  <div class="kpi"><div class="l">Customers served</div><div class="v">412,000</div></div>
+  <div class="kpi"><div class="l">Outage events</div><div class="v">177</div></div>
+  <div class="kpi"><div class="l">Districts above target</div><div class="v">3 of 5</div><div class="bad">Hills, Plains, Coastal</div></div>
+</div>
+<p>The system as a whole meets the regulator's target of 105 minutes for the period, at 99.6 minutes per customer. Three districts are above 105: <strong>Hills (176)</strong>, Plains (131) and Coastal (112). Hills is the worst by a wide margin, 71 minutes over target.</p>
+
+<h2>By district</h2>
+<p>Average outage minutes per customer, worst first. The dashed line is the 105-minute target; orange bars are above it.</p>
+<div class="card">
+<svg viewBox="0 0 360 232" role="img" aria-labelledby="t1 d1">
+  <title id="t1">Average outage minutes per customer by district</title>
+  <desc id="d1">Hills 176, Plains 131, Coastal 112, Valley 84, Metro 49. Target 105. Hills, Plains and Coastal are above target.</desc>
+  <line class="grid" x1="96" x2="96" y1="24" y2="206"/>
+  <line class="grid" x1="157" x2="157" y1="24" y2="206"/>
+  <line class="grid" x1="218" x2="218" y1="24" y2="206"/>
+  <line class="grid" x1="279" x2="279" y1="24" y2="206"/>
+  <line class="grid" x1="340" x2="340" y1="24" y2="206"/>
+  <text class="ax" x="96" y="222" text-anchor="middle">0</text>
+  <text class="ax" x="157" y="222" text-anchor="middle">50</text>
+  <text class="ax" x="218" y="222" text-anchor="middle">100</text>
+  <text class="ax" x="279" y="222" text-anchor="middle">150</text>
+  <text class="ax" x="340" y="222" text-anchor="middle">200</text>
+
+  <text class="nm" x="0" y="42">Hills</text><text class="sub" x="0" y="55">61,000 cust.</text>
+  <rect class="b-bad" x="96" y="32" width="214.7" height="22" rx="2"/>
+  <text class="val" x="314" y="47">176</text>
+
+  <text class="nm" x="0" y="78">Plains</text><text class="sub" x="0" y="91">24,000 cust.</text>
+  <rect class="b-bad" x="96" y="68" width="159.8" height="22" rx="2"/>
+  <text class="val" x="260" y="83">131</text>
+
+  <text class="nm" x="0" y="114">Coastal</text><text class="sub" x="0" y="127">98,000 cust.</text>
+  <rect class="b-bad" x="96" y="104" width="136.6" height="22" rx="2"/>
+  <text class="val" x="237" y="119">112</text>
+
+  <text class="nm" x="0" y="150">Valley</text><text class="sub" x="0" y="163">142,000 cust.</text>
+  <rect class="b-ok" x="96" y="140" width="102.5" height="22" rx="2"/>
+  <text class="val" x="203" y="155">84</text>
+
+  <text class="nm" x="0" y="186">Metro</text><text class="sub" x="0" y="199">87,000 cust.</text>
+  <rect class="b-ok" x="96" y="176" width="59.8" height="22" rx="2"/>
+  <text class="val" x="160" y="191">49</text>
+
+  <line class="tgt" x1="224.1" x2="224.1" y1="20" y2="206"/>
+  <text class="tgtl" x="224.1" y="14" text-anchor="middle">Target 105</text>
+</svg>
+</div>
+
+<p style="margin-top:16px">Ranked by size instead, the two largest districts, Valley and Coastal, hold 58% of customers. Valley is well inside the target; Coastal is 7 minutes over.</p>
+<div class="tbl">
+<table>
+  <thead><tr><th>District</th><th>Customers</th><th>Events</th><th>Avg min</th><th>vs 105</th></tr></thead>
+  <tbody>
+    <tr><td>Valley</td><td><span class="cbar" style="width:56px"></span>142,000</td><td>58</td><td>84</td><td><span class="pill under">−21</span></td></tr>
+    <tr><td>Coastal</td><td><span class="cbar" style="width:38.6px"></span>98,000</td><td>41</td><td>112</td><td><span class="pill over">+7</span></td></tr>
+    <tr><td>Metro</td><td><span class="cbar" style="width:34.3px"></span>87,000</td><td>22</td><td>49</td><td><span class="pill under">−56</span></td></tr>
+    <tr><td>Hills</td><td><span class="cbar" style="width:24px"></span>61,000</td><td>37</td><td>176</td><td><span class="pill over">+71</span></td></tr>
+    <tr><td>Plains</td><td><span class="cbar" style="width:9.5px"></span>24,000</td><td>19</td><td>131</td><td><span class="pill over">+26</span></td></tr>
+  </tbody>
+  <tfoot><tr><td>System</td><td>412,000</td><td>177</td><td>99.6</td><td><span class="pill under">−5.4</span></td></tr></tfoot>
+</table>
+</div>
+<p class="note">Sorted by number of customers. Avg min is the average outage time per customer, January to September 2026. Metro's low figure reflects its underground cables.</p>
+
+<h2>Causes</h2>
+<p>Share of total outage minutes by cause. Storms account for almost half.</p>
+<div class="card">
+<svg viewBox="0 0 360 64" role="img" aria-labelledby="t2 d2">
+  <title id="t2">Causes of outage minutes</title>
+  <desc id="d2">Storms 46 percent, equipment failure 27 percent, vegetation 15 percent, other 12 percent.</desc>
+  <rect class="s1" x="0" y="8" width="165.6" height="32"/>
+  <rect class="s2" x="165.6" y="8" width="97.2" height="32"/>
+  <rect class="s3" x="262.8" y="8" width="54" height="32"/>
+  <rect class="s4" x="316.8" y="8" width="43.2" height="32"/>
+  <text class="ax" x="82.8" y="58" text-anchor="middle">46%</text>
+  <text class="ax" x="214.2" y="58" text-anchor="middle">27%</text>
+  <text class="ax" x="289.8" y="58" text-anchor="middle">15%</text>
+  <text class="ax" x="338.4" y="58" text-anchor="middle">12%</text>
+</svg>
+<div class="legend">
+  <span><i class="sw" style="background:var(--c1)"></i>Storms 46%</span>
+  <span><i class="sw" style="background:var(--c2)"></i>Equipment failure 27%</span>
+  <span><i class="sw" style="background:var(--c3)"></i>Vegetation 15%</span>
+  <span><i class="sw" style="background:var(--c4)"></i>Other 12%</span>
+</div>
+</div>
+
+<h2>Next steps</h2>
+<ol class="steps">
+  <li><strong>Hills tree-trimming program.</strong> Approved to start on 2026-11-02, with a budget of $1.8 million covering 210 line miles. Hills has the highest outage minutes of any district, at 176.</li>
+  <li><strong>Plains and Coastal.</strong> Both are above the 105-minute target (131 and 112) and should be monitored through the end of the year.</li>
+  <li><strong>Metro.</strong> Its 49 minutes reflects underground cables, which are largely protected from storms and vegetation.</li>
+</ol>
+
+<footer>Northwind Utilities · Reliability Engineering · Contact: Sven Lindqvist</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,112 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "data",
+      "name": "plan",
+      "line": 1
+    },
+    {
+      "type": "chart",
+      "kind": "range",
+      "data": "plan",
+      "x": "item",
+      "y": [],
+      "title": "Plan",
+      "stack": false,
+      "labels": false,
+      "unit": null,
+      "min": null,
+      "max": null,
+      "focus": null,
+      "target": {
+        "value": 1777593600000,
+        "label": "freeze"
+      },
+      "from": "start",
+      "to": "end",
+      "line": 2,
+      "at": "mid"
+    },
+    {
+      "type": "data",
+      "name": "lat",
+      "line": 3
+    },
+    {
+      "type": "chart",
+      "kind": "range",
+      "data": "lat",
+      "x": "hop",
+      "y": [],
+      "title": null,
+      "stack": false,
+      "labels": false,
+      "unit": "ms",
+      "min": null,
+      "max": null,
+      "focus": null,
+      "target": {
+        "value": 100,
+        "label": "budget"
+      },
+      "from": "low",
+      "to": "high",
+      "line": 4,
+      "bands": [
+        "50",
+        "100",
+        "150",
+        "200"
+      ]
+    }
+  ],
+  "data": {
+    "plan": {
+      "name": "plan",
+      "columns": [
+        "item",
+        "start",
+        "end",
+        "mid"
+      ],
+      "rows": [
+        [
+          "A",
+          "2026-03-01",
+          "2026-04-15",
+          "2026-03-20"
+        ],
+        [
+          "B",
+          "2026-04-01",
+          "2026-06-30",
+          ""
+        ]
+      ],
+      "line": 1
+    },
+    "lat": {
+      "name": "lat",
+      "columns": [
+        "hop",
+        "low",
+        "high"
+      ],
+      "rows": [
+        [
+          "Edge",
+          "12",
+          "40"
+        ],
+        [
+          "API",
+          "30",
+          "120"
+        ]
+      ],
+      "line": 3
+    }
+  },
+  "diagnostics": []
+}

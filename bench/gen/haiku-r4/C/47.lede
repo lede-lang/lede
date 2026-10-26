@@ -1,0 +1,37 @@
+@title Booking web tier architecture
+@subtitle eu-west-1, owner Booking Platform, reviewed 2026-09-28
+
+## Overview
+Customers reach us through CloudFront with a WAF in front. The tier is spread over two Availability Zones so that it survives losing one.
+
+## Diagram
+diagram booking dir=LR title="Booking web tier, eu-west-1"
+booking: trav "Travelers" user
+booking: cf "CloudFront and WAF" ext
+booking: alb "Application Load Balancer" lb focus
+booking: nata "NAT Gateway A" svc
+booking: natb "NAT Gateway B" svc
+booking: wa "Web Fleet A" svc "Auto Scaling group"
+booking: wb "Web Fleet B" svc "Auto Scaling group"
+booking: dbp "Bookings DB Primary" db focus
+booking: dbs "Bookings DB Standby" db
+booking: s3 "S3 Gateway Endpoint" svc
+booking: inv "Partner Inventory API" ext
+booking: group psub "Public subnets 10.40.0.0/23" alb, nata, natb
+booking: group asub "App subnets 10.40.10.0/23" wa, wb
+booking: group dsub "Data subnets 10.40.20.0/23" dbp, dbs
+booking: group vpc "Booking VPC 10.40.0.0/16" psub, asub, dsub, s3
+booking: group acct "Booking account" vpc
+booking: trav -> cf : HTTPS
+booking: cf -> alb : origin request
+booking: alb -> wa : port 8080
+booking: alb -> wb : port 8080
+booking: wa -> dbp : SQL
+booking: wb -> dbp : SQL
+booking: dbp -> dbs : synchronous replication
+booking: wa -> nata : outbound
+booking: nata -> inv : HTTPS
+booking: wb -> s3 : receipts
+
+## Capacity
+table = component,size,scaling; Web fleets,m6i.large,3 to 12 instances per AZ on CPU above 55%; Bookings DB,db.r6g.2xlarge Multi-AZ,storage autoscaling to 4 TB; NAT gateways,one per AZ,5 Gbps each

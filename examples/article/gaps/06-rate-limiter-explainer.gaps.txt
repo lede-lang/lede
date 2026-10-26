@@ -1,0 +1,4 @@
+Inline annotation on code (callouts pointing at lines): not expressible; replaced by a numbered list directly under each snippet that refers to line numbers or concepts.
+Diagram of the token-bucket flow: expressed with a diagram (decision node, dashed fail-open path, legend); no animation or click-through.
+Bucket behaviour over time: no animated demo; replaced by a line chart with capacity target and two burst marks.
+Optimized for read-once: no table of contents or collapsibles, so I put a one-paragraph summary and KPI row at the top and gotchas last as callouts plus bullets.

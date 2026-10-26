@@ -1,0 +1,53 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Note: this is prose, not a diagram line.",
+      "line": 1
+    },
+    {
+      "type": "diagram",
+      "name": "flow",
+      "kind": "flow",
+      "dir": "TB",
+      "title": null,
+      "nodes": [
+        {
+          "id": "a",
+          "label": "a",
+          "kind": null,
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "b",
+          "label": "b",
+          "kind": null,
+          "sub": null,
+          "focus": false
+        }
+      ],
+      "edges": [
+        {
+          "from": "a",
+          "to": "b",
+          "label": "",
+          "style": "solid",
+          "both": false,
+          "line": 3
+        }
+      ],
+      "groups": [],
+      "notes": [],
+      "line": 2
+    },
+    {
+      "type": "paragraph",
+      "text": "Flow: capitalized names are not the diagram.",
+      "line": 4
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

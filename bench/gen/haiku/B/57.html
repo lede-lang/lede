@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hartwell CRM Selection</title>
+<style>
+:root{--bg:#f6f5f1;--surface:#ffffff;--ink:#1c1e22;--muted:#5d6370;--line:#dcd9d1;--accent:#2f6b5c;--warm:#b8642e;--blue:#3f6396}
+@media (prefers-color-scheme:dark){:root{--bg:#14161a;--surface:#1d2026;--ink:#eceae4;--muted:#a4a9b4;--line:#353a44;--accent:#6cbba3;--warm:#e39a66;--blue:#8db2e3}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif}
+main{max-width:920px;margin:0 auto;padding:32px 16px 64px}
+.kicker{color:var(--accent);font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;margin:0 0 6px}
+h1{font-size:clamp(26px,5vw,36px);line-height:1.15;margin:0 0 12px}
+h2{font-size:21px;margin:40px 0 14px;padding-top:16px;border-top:1px solid var(--line)}
+h3{font-size:17px;margin:0 0 8px}
+p{margin:0 0 14px}
+.lede{color:var(--muted);font-size:17px}
+.note{color:var(--muted);font-size:14px}
+.table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+tr:last-child td{border-bottom:0}
+.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px}
+svg{display:block;width:100%;height:auto}
+.axis{stroke:var(--line);stroke-width:1}
+.lbl{font-size:14px;fill:var(--muted)}
+.lbl-strong{font-size:14px;fill:var(--ink);font-weight:600}
+.bar{fill:var(--accent)} .bar2{fill:var(--warm)} .bar3{fill:var(--blue)} .bar4{fill:#8a7f6a}
+ul,ol{padding-left:20px;margin:0 0 14px} li{margin:0 0 8px}
+.risk{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:0 0 12px}
+.rec{background:var(--surface);border-left:4px solid var(--accent);padding:16px 18px;border-radius:8px}
+</style>
+</head>
+<body>
+<main>
+<p class="kicker">Sales operations, CRM selection</p>
+<h1>Choosing a CRM for 140 sales and account seats</h1>
+<p class="lede">Three vendors made the shortlist: Pipeboard, Cardinal CRM and Thistle. Each was scored from 1 to 5 against five weighted criteria.</p>
+
+<h2>Scorecard</h2>
+<p>Scores are on a 1 to 5 scale, multiplied by each criterion's weight.</p>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>Criterion</th><th class="num">Weight</th><th class="num">Pipeboard</th><th class="num">Cardinal CRM</th><th class="num">Thistle</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Fit to our workflow</td><td class="num">30%</td><td class="num">4</td><td class="num">5</td><td class="num">3</td></tr>
+    <tr><td>Integration with our ERP</td><td class="num">25%</td><td class="num">5</td><td class="num">3</td><td class="num">4</td></tr>
+    <tr><td>Cost</td><td class="num">20%</td><td class="num">3</td><td class="num">2</td><td class="num">5</td></tr>
+    <tr><td>Admin effort</td><td class="num">15%</td><td class="num">4</td><td class="num">3</td><td class="num">3</td></tr>
+    <tr><td>Support quality</td><td class="num">10%</td><td class="num">4</td><td class="num">5</td><td class="num">3</td></tr>
+    <tr><td><strong>Weighted total</strong></td><td class="num">100%</td><td class="num"><strong>4.05</strong></td><td class="num"><strong>3.60</strong></td><td class="num"><strong>3.65</strong></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Annual license cost</h2>
+<p>List price per seat per month, for 140 seats over twelve months.</p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Vendor</th><th class="num">Per seat per month</th><th class="num">Annual cost, 140 seats</th><th class="num">Compared with Pipeboard</th></tr></thead>
+  <tbody>
+    <tr><td>Pipeboard</td><td class="num">$65</td><td class="num">$109,200</td><td class="num">base</td></tr>
+    <tr><td>Cardinal CRM</td><td class="num">$89</td><td class="num">$149,520</td><td class="num">+$40,320</td></tr>
+    <tr><td>Thistle</td><td class="num">$42</td><td class="num">$70,560</td><td class="num">&minus;$38,640</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="chart" style="margin-top:16px">
+  <svg id="cost-chart" role="img" aria-label="Bar chart of annual license cost: Pipeboard $109,200, Cardinal CRM $149,520, Thistle $70,560"></svg>
+</div>
+
+<h2>Risks</h2>
+<div class="risk">
+  <h3>Pipeboard</h3>
+  <p>The ERP connector is certified, but the vendor is a 2019 startup.</p>
+</div>
+<div class="risk">
+  <h3>Cardinal CRM</h3>
+  <p>It is the best fit for our workflow, but it needs a 12-week implementation and a partner.</p>
+</div>
+<div class="risk">
+  <h3>Thistle</h3>
+  <p>It is the cheapest, but its reporting is weak, and two of our dashboards would have to be rebuilt elsewhere.</p>
+</div>
+
+<h2>Recommendation</h2>
+<div class="rec">
+<p>We go with Pipeboard. It has the highest weighted total, at 4.05, and it is certified for our ERP. Its list price is $40,320 a year less than Cardinal CRM.</p>
+<p>This is pending a reference call with another industrial distributor, scheduled for 28 October 2026.</p>
+</div>
+</main>
+<script>
+(function(){
+  var svg=document.getElementById('cost-chart');
+  var rows=[["Pipeboard",109200,"bar"],["Cardinal CRM",149520,"bar2"],["Thistle",70560,"bar3"]];
+  var W=560,L=130,R=130,T=8,RH=44,max=149520,out='';
+  rows.forEach(function(r,i){
+    var y=T+i*RH, w=(W-L-R)*r[1]/max;
+    out+='<text class="lbl" x="'+(L-10)+'" y="'+(y+19)+'" text-anchor="end">'+r[0]+'</text>';
+    out+='<rect class="'+r[2]+'" x="'+L+'" y="'+y+'" width="'+w.toFixed(1)+'" height="26" rx="4"/>';
+    out+='<text class="lbl-strong" x="'+(L+w+8).toFixed(1)+'" y="'+(y+18)+'">$'+r[1].toLocaleString('en-US')+'</text>';
+  });
+  svg.setAttribute('viewBox','0 0 '+W+' '+(T+rows.length*RH));
+  svg.innerHTML=out;
+})();
+</script>
+</body>
+</html>

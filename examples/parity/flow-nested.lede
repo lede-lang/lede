@@ -1,0 +1,21 @@
+@title Nested flow
+# Nested flow
+
+diagram net dir=LR title="Nested network"
+net: users "Shoppers" user
+net: cdn "Edge cache" ext
+net: lb "Load balancer" lb
+net: web "Web tier" svc "3 tasks" focus
+net: jobs "Job runner" fn
+net: db "Primary store" db
+net: queue "Work queue" queue
+net: group pub "Public subnet" lb
+net: group priv "Private subnet" web, jobs, queue, db
+net: group vpc "Network 10.4.0.0/16" pub, priv
+net: group acct "Production account" vpc
+net: users -> cdn -> lb : https
+net: lb -> web : forward
+net: web -> db : query
+net: web -> queue : enqueue
+net: queue --> jobs : poll
+net: jobs -> db : write results

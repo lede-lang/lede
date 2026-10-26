@@ -1,0 +1,48 @@
+@title Rebuilding the Tamarind delivery app
+@subtitle Native, Flutter or a progressive web app: a decision for the product council on 2026-10-27
+@author Wanjiru Kamau, Engineering Manager
+@date 2026-10-17
+
+We are relaunching the delivery app with a team of 4 mobile developers. We want the first release before the holiday season, which means by 2027-01-15 at the latest. Three approaches are on the table.
+
+## Comparison
+
+table = Factor,Native (iOS and Android),Flutter,Progressive web app; Months to first release,11,7,4; Estimated build cost,$1.45M,$0.92M,$0.48M; Offline basket and saved lists,Full,Full,Partial; Push notifications,Full,Full,Limited on iOS; App store presence,Yes,Yes,No; Barcode scanning with the camera,Smooth,Good,Unreliable
+
+## Time to first release
+
+data time = approach,months; Native,11; Flutter,7; Web app,4
+chart hbar time unit=" months" labels title="Months to first release"
+
+data cost = approach,build cost; Native,1450000; Flutter,920000; Web app,480000
+chart hbar cost unit=$ labels title="Estimated build cost"
+
+!! At 7 months, Flutter misses the 2027-01-15 date unless we cut scope.
+
+## Pros and cons
+
+### Fully native
+- Pro: the best experience, with smooth barcode scanning and full offline and push support.
+- Con: two separate apps for 4 developers to build and maintain.
+- Con: the slowest and most expensive option, at 11 months and $1.45M.
+
+### Flutter
+- Pro: one codebase for iOS and Android, with full offline baskets, push notifications and app store presence.
+- Pro: good barcode scanning, close to native.
+- Con: 7 months to first release, which misses January at full scope.
+
+### Progressive web app
+- Pro: the fastest and cheapest, at 4 months and $0.48M.
+- Con: offline baskets only partly work and push notifications are limited on iOS.
+- Con: no app store presence, and barcode scanning is unreliable.
+
+## Recommendation
+
+**We recommend Flutter**, with two scope cuts for the first release:
+
+1. Drop in-app chat support from the first release.
+2. Postpone the recipe feature to a later release.
+
+Flutter gives customers nearly everything native offers at about two thirds of the cost, from one codebase our team of 4 can manage. The web app is cheaper and faster, but weak offline support, limited iOS notifications and unreliable scanning would hurt a grocery app where people build baskets and scan products.
+
+! To be plain: Flutter at full scope does not make the January date. The recommendation depends on the council agreeing to both scope cuts.

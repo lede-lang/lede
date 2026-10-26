@@ -1,0 +1,76 @@
+{
+  "id": "85-cafe-group-quarters",
+  "category": "data",
+  "title": "Copperline Cafe quarterly results",
+  "brief": "Copperline Cafe, a 14-location franchise group, needs a quarterly results page for its franchise owners covering Q4 2025 through Q3 2026. All figures in dollars. Q4 2025: revenue 1842000, cost of goods 589000, labor 612000, rent and other 398000, operating profit 243000, margin 13.2 percent. Q1 2026: 1756000, 561000, 598000, 405000, 192000, 10.9 percent. Q2 2026: 1968000, 618000, 631000, 412000, 307000, 15.6 percent. Q3 2026: 2134000, 662000, 676000, 421000, 375000, 17.6 percent. Trailing four quarters: revenue 7700000, operating profit 1117000, margin 14.5 percent. Q3 revenue is up 8.4 percent on Q2 and 15.9 percent on Q4 2025. Sections: \"Headline\", \"Quarterly results\", \"Margin trend\" and \"Notes\". Notes: Q1 is the seasonal low; two new locations opened on 2026-05-18, which explains part of the Q2 and Q3 growth; the Q3 figures are unaudited.",
+  "checklist": {
+    "sections": [
+      "Headline",
+      "Quarterly results",
+      "Margin trend",
+      "Notes"
+    ],
+    "visible": [
+      "Revenue",
+      "Cost of goods",
+      "Labor",
+      "Operating profit",
+      "Margin",
+      "unaudited"
+    ],
+    "values": [
+      "1842000",
+      "1756000",
+      "1968000",
+      "2134000",
+      "589000",
+      "561000",
+      "618000",
+      "662000",
+      "612000",
+      "598000",
+      "631000",
+      "676000",
+      "398000",
+      "405000",
+      "412000",
+      "421000",
+      "243000",
+      "192000",
+      "307000",
+      "375000",
+      "13.2",
+      "10.9",
+      "15.6",
+      "17.6",
+      "7700000",
+      "1117000",
+      "14.5",
+      "8.4",
+      "15.9",
+      "2026-05-18"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "table",
+    "chart",
+    "list"
+  ],
+  "edit": {
+    "request": "Q3 labor was corrected to 690000. Update Q3 operating profit to 361000 and margin to 16.9 percent, and the trailing four quarters to 1103000 and 14.3 percent.",
+    "expect_visible": [],
+    "expect_values": [
+      "690000",
+      "361000",
+      "16.9",
+      "1103000",
+      "14.3"
+    ],
+    "expect_absent": [
+      "375000",
+      "1117000",
+      "676000"
+    ]
+  }
+}

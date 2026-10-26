@@ -1,0 +1,10 @@
+{"pair":"P001","winner":"RIGHT","reason":"The right page's diagram is legible and well proportioned on both widths, while the left's desktop diagram is tiny with large empty gaps and cramped phone labels."}
+{"pair":"P002","winner":"RIGHT","reason":"The right page puts the key warning first and gives a clean, readable numbered sequence, whereas the left's sequence diagram is small and cramped, especially at phone width."}
+{"pair":"P003","winner":"LEFT","reason":"The left page's stacked flow and 'Other paths' box read cleanly on both widths, while the right's flowchart has long crossing edges, floating labels and a mostly empty desktop canvas."}
+{"pair":"P004","winner":"RIGHT","reason":"The right page's nested boxes and tables are clear and compact on both widths, while the left diagram has long stretched connectors and wasted space."}
+{"pair":"P005","winner":"LEFT","reason":"The left page shows a real sequence diagram on desktop with a tidy lifetimes table and a warning, and falls back to a reasonable list on phone."}
+{"pair":"P006","winner":"LEFT","reason":"The right page's bar-chart value labels are clipped (349,60 and 367,2) on desktop and phone with oversized mismatched type, while the left is clean and consistent."}
+{"pair":"P007","winner":"LEFT","reason":"The left page's tables fit the phone width, while the right page's shortlist and trade-offs tables are cut off at 400px despite its nice desktop bar chart."}
+{"pair":"P008","winner":"RIGHT","reason":"The right page has a proper bar chart and phone-friendly plan cards, while the left's plans table is clipped at the right edge on phone."}
+{"pair":"P009","winner":"RIGHT","reason":"The right page has a chart with axis and reflows the comparison into cards on phone, while the left's comparison table is cut off at phone width."}
+{"pair":"P010","winner":"LEFT","reason":"The left page has a well-scaled chart and card layout on phone with nothing cut off, while the right's bids table is clipped on phone and its desktop chart labels are oversized."}

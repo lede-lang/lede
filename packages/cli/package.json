@@ -1,0 +1,41 @@
+{
+  "name": "@lede-lang/cli",
+  "version": "0.1.0",
+  "description": "The lede command: build, check, watch and inspect Lede documents",
+  "keywords": [
+    "lede",
+    "cli",
+    "html",
+    "document-format"
+  ],
+  "license": "Apache-2.0",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lede-lang/lede.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/lede-lang/lede#readme",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "files": [
+    "dist",
+    "!dist/.tsbuildinfo",
+    "src"
+  ],
+  "bin": {
+    "lede": "./src/cli.ts"
+  },
+  "dependencies": {
+    "@lede-lang/core": "workspace:*",
+    "@lede-lang/html": "workspace:*"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true,
+    "bin": {
+      "lede": "./dist/cli.js"
+    }
+  }
+}

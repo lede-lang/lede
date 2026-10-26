@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spring 2027 Fundraising Event</title>
+<style>
+:root{--bg:#f6f5f1;--card:#ffffff;--fg:#1c1f24;--muted:#5d6470;--line:#d8dbe0;--accent:#2a5d9f;--goal:#b42318}
+@media (prefers-color-scheme: dark){:root{--bg:#101215;--card:#181b20;--fg:#e7e9ee;--muted:#9aa2ad;--line:#2d333b;--accent:#8db6ef;--goal:#ff8a80}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+main{max-width:900px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:1.75rem;line-height:1.2;margin:0 0 6px}
+h2{font-size:1.25rem;margin:34px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+p{margin:0 0 12px}
+.meta{color:var(--muted);font-size:.9rem;margin:0 0 20px}
+.lead{font-size:1.05rem;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:640px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.card h3{margin:0 0 8px;font-size:1.05rem}
+.card dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:.95rem}
+.card dt{color:var(--muted)}
+.card dd{margin:0;font-weight:600}
+.card p{margin:10px 0 0;font-size:.93rem}
+.chart{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0}
+.chart svg{display:block;width:100%;height:auto}
+svg text{fill:var(--fg);font-size:14px}
+svg .lab{fill:var(--muted);font-size:12px}
+.rec{border:2px solid var(--accent);background:var(--card);border-radius:12px;padding:16px}
+.note{border-left:4px solid var(--accent);padding:10px 14px;background:var(--card);border-radius:8px;margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{text-align:left;vertical-align:top;padding:8px 6px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:600;font-size:.82rem;text-transform:uppercase;letter-spacing:.04em}
+.tw{overflow-x:auto}
+</style>
+</head>
+<body>
+<main>
+<h1>Spring 2027 Fundraising Event</h1>
+<p class="meta">Summit Youth Mentoring &middot; Board meeting 2026-11-17 &middot; From Priya Venkataraman, Development Director</p>
+
+<p class="lead">We need to choose our main fundraising event for spring 2027. The goal is to net at least <strong>$100,000</strong>. Our recommendation is the spring gala, with the online campaign as a low-cost add-on.</p>
+
+<h2>Options</h2>
+<div class="grid">
+<div class="card">
+<h3>Spring gala</h3>
+<dl>
+<dt>Net revenue</dt><dd>$120,000 to $180,000</dd>
+<dt>Up-front cost</dt><dd>$60,000</dd>
+<dt>Effort</dt><dd>about 400 hours</dd>
+</dl>
+<p>Risk: depends on a few large sponsors.</p>
+</div>
+<div class="card">
+<h3>Family walkathon</h3>
+<dl>
+<dt>Net revenue</dt><dd>$70,000 to $110,000</dd>
+<dt>Up-front cost</dt><dd>$25,000</dd>
+<dt>Effort</dt><dd>about 250 hours</dd>
+</dl>
+<p>Risk: weather on the day.</p>
+</div>
+<div class="card">
+<h3>Online giving campaign</h3>
+<dl>
+<dt>Net revenue</dt><dd>$40,000 to $95,000</dd>
+<dt>Up-front cost</dt><dd>$8,000</dd>
+<dt>Effort</dt><dd>about 120 hours</dd>
+</dl>
+<p>Risk: results depend on social media reach.</p>
+</div>
+</div>
+
+<h2>Net revenue range</h2>
+<p>Each bar runs from the low to the high estimate. The dashed line is the $100,000 goal.</p>
+<div class="chart">
+<svg viewBox="0 0 600 210" role="img" aria-label="Range chart of net revenue. Spring gala 120,000 to 180,000 dollars, entirely above the 100,000 goal. Family walkathon 70,000 to 110,000, reaching the goal only at the top. Online campaign 40,000 to 95,000, never reaching the goal.">
+<line x1="370" y1="22" x2="370" y2="180" stroke="var(--goal)" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="370" y="14" text-anchor="middle" style="fill:var(--goal);font-weight:600;font-size:13px">goal $100,000</text>
+
+<text x="0" y="50" style="font-weight:600">Spring gala</text>
+<rect x="410" y="32" width="120" height="34" rx="4" style="fill:var(--accent)"/>
+<text x="538" y="54" class="lab">$120k to $180k</text>
+
+<text x="0" y="110" style="font-weight:600">Family walkathon</text>
+<rect x="310" y="92" width="80" height="34" rx="4" style="fill:var(--accent);opacity:.75"/>
+<text x="398" y="114" class="lab">$70k to $110k</text>
+
+<text x="0" y="170" style="font-weight:600">Online campaign</text>
+<rect x="250" y="152" width="110" height="34" rx="4" style="fill:var(--accent);opacity:.55"/>
+<text x="368" y="174" class="lab">$40k to $95k</text>
+
+<line x1="170" y1="190" x2="570" y2="190" stroke="var(--line)"/>
+<text x="170" y="206" class="lab" text-anchor="middle">0</text>
+<text x="270" y="206" class="lab" text-anchor="middle">50k</text>
+<text x="370" y="206" class="lab" text-anchor="middle">100k</text>
+<text x="470" y="206" class="lab" text-anchor="middle">150k</text>
+<text x="570" y="206" class="lab" text-anchor="middle">200k</text>
+</svg>
+</div>
+
+<h2>Risks</h2>
+<div class="note">
+<p><strong>Gala:</strong> the whole range stays above the goal, but it depends on a few large sponsors and needs the most money up front.</p>
+<p><strong>Walkathon:</strong> reaches the goal only at the top of its range, and is exposed to weather on the day.</p>
+<p><strong>Online campaign:</strong> never reaches the goal on its own, and depends on social media reach.</p>
+</div>
+
+<h2>Recommendation</h2>
+<div class="rec">
+<p><strong>We recommend the spring gala, with the online campaign as a low-cost add-on.</strong></p>
+<p>The gala is the only option whose full range stays above the goal. It also needs the most money up front and the most effort.</p>
+<p>The board needs to approve the <strong>$60,000 gala budget on 2026-11-17</strong>, for a gala date of <strong>2027-04-24</strong>.</p>
+</div>
+</main>
+</body>
+</html>

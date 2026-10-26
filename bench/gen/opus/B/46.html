@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Landing Zone Network Layout</title>
+<style>
+:root{
+  --bg:#f4f6f8;--surface:#ffffff;--surface-2:#eef1f5;--text:#141b26;--muted:#5a6476;--border:#d9dee6;--line:#4a5568;
+  --accent:#1f5fae;--vpc:#eaf2fc;--vpc-stroke:#5d8fd0;--res:#ffffff;
+  --bad:#b42318;--bad-soft:#fdeceb;--good:#18794e;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0d1117;--surface:#151a22;--surface-2:#1d232d;--text:#e6eaf0;--muted:#9aa4b5;--border:#2c3340;--line:#a9b4c5;
+  --accent:#7fb0f0;--vpc:#152438;--vpc-stroke:#4f7fbf;--res:#1b212b;
+  --bad:#ff7d73;--bad-soft:#3a1715;--good:#4cc38a;
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:28px 16px 56px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 6px}
+h1{font-size:1.7rem;line-height:1.2;margin:0 0 10px;letter-spacing:-.01em}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--muted);font-size:.9rem;margin:0;padding:0;list-style:none}
+.meta b{color:var(--text);font-weight:600}
+section{margin-top:34px}
+h2{font-size:1.2rem;margin:0 0 12px}
+p{margin:0 0 10px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+.overview{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.overview .card{padding:14px 16px}
+.overview h3{font-size:.95rem;margin:0 0 4px}
+.overview p{font-size:.9rem;color:var(--muted);margin:0}
+code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em}
+.diagram{padding:16px 12px}
+.diagram svg{display:block;width:100%;max-width:560px;height:auto;margin:0 auto}
+svg text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+svg .acct{fill:none;stroke:var(--muted);stroke-width:1.5;stroke-dasharray:6 4}
+svg .vpcbox{fill:var(--vpc);stroke:var(--vpc-stroke);stroke-width:1.5}
+svg .res{fill:var(--res);stroke:var(--line);stroke-width:1.3}
+svg .tgw{fill:var(--accent);stroke:var(--accent)}
+svg .ext{fill:var(--surface-2);stroke:var(--muted);stroke-width:1.3}
+svg .t{fill:var(--text);font-size:13px;font-weight:600}
+svg .t.inv{fill:var(--surface)}
+svg .s{fill:var(--muted);font-size:11px}
+svg .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;fill:var(--muted)}
+svg .acctl{fill:var(--muted);font-size:12px;font-weight:700}
+svg .cap{fill:var(--muted);font-size:10.5px;font-weight:700;letter-spacing:.08em}
+svg .conn{stroke:var(--line);stroke-width:1.8;fill:none}
+svg .dx{stroke:var(--accent);stroke-width:3;fill:none}
+svg .cl{fill:var(--text);font-size:11.5px;font-style:italic;paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+svg .cl.onvpc{stroke:var(--vpc)}
+svg .arrowhead{fill:var(--line)}
+svg .block{fill:var(--bad)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.82rem;color:var(--muted);margin:12px 4px 0;padding:0;list-style:none}
+.legend li{display:flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:18px;height:12px;border-radius:3px}
+.sw.acct{border:1.5px dashed var(--muted)}
+.sw.vpc{background:var(--vpc);border:1.5px solid var(--vpc-stroke)}
+.sw.res{background:var(--res);border:1.3px solid var(--line)}
+.sw.ext{background:var(--surface-2);border:1.3px solid var(--muted)}
+.diagram-note{margin:12px 4px 0;font-size:.9rem;padding:10px 12px;border-radius:8px;background:var(--bad-soft);border-left:4px solid var(--bad)}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:11px 8px;border-bottom:1px solid var(--border);vertical-align:top}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+tbody tr:last-child td{border-bottom:0}
+.table-card{padding:4px 10px}
+td .sub{display:block;font-size:.85rem;color:var(--muted)}
+.rules{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.rule{display:flex;gap:14px;align-items:flex-start}
+.rule .ic{flex:0 0 28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;background:var(--surface-2);color:var(--text);font-size:.9rem}
+.rule h3{margin:0 0 2px;font-size:1rem}
+.rule p{margin:0;font-size:.93rem;color:var(--muted)}
+.rule.key{border:2px solid var(--bad);background:var(--bad-soft)}
+.rule.key .ic{background:var(--bad);color:var(--surface)}
+.rule.key h3{color:var(--bad)}
+.rule.key p{color:var(--text)}
+.tag{display:inline-block;font-size:.7rem;font-weight:800;letter-spacing:.06em;color:var(--surface);background:var(--bad);border-radius:999px;padding:1px 8px;margin-left:6px;vertical-align:2px}
+footer{margin-top:40px;color:var(--muted);font-size:.82rem}
+@media (max-width:700px){.overview{grid-template-columns:1fr}}
+@media (max-width:480px){body{font-size:15px}h1{font-size:1.4rem}th,td{padding:10px 5px}.diagram{padding:12px 6px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <p class="eyebrow">Alderwood Health Analytics &middot; Cloud architecture</p>
+    <h1>AWS landing zone: network layout</h1>
+    <ul class="meta">
+      <li>Region <b>us-east-2</b></li>
+      <li>Last reviewed <b>2026-10-09</b></li>
+      <li>Owner <b>Cloud team</b></li>
+    </ul>
+  </header>
+
+  <section>
+    <h2>Overview</h2>
+    <p>Three AWS accounts (Network, Prod and Staging) are joined by a transit gateway. All internet-bound traffic is inspected before it leaves, and a Direct Connect link runs back to our Columbus data center.</p>
+    <div class="overview">
+      <div class="card"><h3>Three accounts, one hub</h3><p>Prod and Staging VPCs attach to the Transit Gateway in the Network account.</p></div>
+      <div class="card"><h3>Inspected egress</h3><p>Internet-bound traffic passes the Network Firewall, then leaves via NAT.</p></div>
+      <div class="card"><h3>Private link home</h3><p>Direct Connect, 2 x 1 Gbps, to the Columbus Data Center.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Network diagram</h2>
+    <div class="card diagram">
+      <svg viewBox="0 0 420 636" role="img" aria-labelledby="dgt dgd">
+        <title id="dgt">Landing zone network diagram</title>
+        <desc id="dgd">Network account holds the Transit Gateway and the Inspection VPC 10.0.0.0/16 with a Network Firewall and NAT Gateway. Prod account holds the Claims VPC 10.10.0.0/16 with Claims API on ECS and Claims DB on Aurora, connected on port 5432. Staging account holds the Staging VPC 10.20.0.0/16 with Claims API Staging. Claims VPC and Staging VPC each connect to the Transit Gateway by attachment. The Transit Gateway sends traffic to the Inspection VPC for egress inspection, and the Inspection VPC reaches the Internet via NAT. Columbus Data Center connects to the Transit Gateway by Direct Connect, 2 x 1 Gbps. Staging has no route to Prod.</desc>
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path class="arrowhead" d="M0,0 L10,5 L0,10 z"/>
+          </marker>
+        </defs>
+
+        <!-- Outside AWS -->
+        <text class="cap" x="16" y="18">OUTSIDE AWS</text>
+        <rect class="ext" x="16" y="28" width="180" height="44" rx="8"/>
+        <text class="t" x="106" y="55" text-anchor="middle">Internet</text>
+        <rect class="ext" x="224" y="28" width="180" height="44" rx="8"/>
+        <text class="t" x="314" y="47" text-anchor="middle">Columbus Data Center</text>
+        <text class="s" x="314" y="63" text-anchor="middle">on-premises</text>
+
+        <!-- Network account -->
+        <rect class="acct" x="8" y="130" width="404" height="200" rx="12"/>
+        <text class="acctl" x="20" y="150">Network account</text>
+        <rect class="vpcbox" x="20" y="162" width="170" height="156" rx="10"/>
+        <text class="t" x="32" y="182">Inspection VPC</text>
+        <text class="mono" x="32" y="198">10.0.0.0/16</text>
+        <rect class="res" x="30" y="210" width="150" height="40" rx="7"/>
+        <text class="t" x="105" y="235" text-anchor="middle">Network Firewall</text>
+        <rect class="res" x="30" y="264" width="150" height="40" rx="7"/>
+        <text class="t" x="105" y="289" text-anchor="middle">NAT Gateway</text>
+        <rect class="tgw" x="280" y="200" width="120" height="64" rx="10"/>
+        <text class="t inv" x="340" y="228" text-anchor="middle">Transit</text>
+        <text class="t inv" x="340" y="245" text-anchor="middle">Gateway</text>
+
+        <!-- Prod account -->
+        <rect class="acct" x="8" y="400" width="240" height="224" rx="12"/>
+        <text class="acctl" x="20" y="420">Prod account</text>
+        <rect class="vpcbox" x="20" y="432" width="216" height="180" rx="10"/>
+        <text class="t" x="32" y="452">Claims VPC</text>
+        <text class="mono" x="32" y="468">10.10.0.0/16</text>
+        <rect class="res" x="32" y="480" width="192" height="44" rx="7"/>
+        <text class="t" x="128" y="499" text-anchor="middle">Claims API</text>
+        <text class="s" x="128" y="515" text-anchor="middle">runs on ECS</text>
+        <rect class="res" x="32" y="556" width="192" height="44" rx="7"/>
+        <text class="t" x="128" y="575" text-anchor="middle">Claims DB</text>
+        <text class="s" x="128" y="591" text-anchor="middle">Aurora</text>
+
+        <!-- Staging account -->
+        <rect class="acct" x="260" y="400" width="152" height="224" rx="12"/>
+        <text class="acctl" x="272" y="420">Staging account</text>
+        <rect class="vpcbox" x="270" y="432" width="132" height="180" rx="10"/>
+        <text class="t" x="280" y="452">Staging VPC</text>
+        <text class="mono" x="280" y="468">10.20.0.0/16</text>
+        <rect class="res" x="280" y="480" width="112" height="56" rx="7"/>
+        <text class="t" x="336" y="503" text-anchor="middle">Claims API</text>
+        <text class="t" x="336" y="520" text-anchor="middle">Staging</text>
+
+        <!-- Connections -->
+        <line class="conn" x1="150" y1="162" x2="150" y2="73" marker-end="url(#ah)"/>
+        <text class="cl" x="158" y="108">via NAT</text>
+
+        <line class="dx" x1="340" y1="72" x2="340" y2="200"/>
+        <text class="cl" x="332" y="98" text-anchor="end">Direct Connect,</text>
+        <text class="cl" x="332" y="113" text-anchor="end">2 x 1 Gbps</text>
+
+        <line class="conn" x1="280" y1="232" x2="191" y2="232" marker-end="url(#ah)"/>
+        <text class="cl" x="235" y="211" text-anchor="middle">egress</text>
+        <text class="cl" x="235" y="225" text-anchor="middle">inspection</text>
+
+        <polyline class="conn" points="180,432 180,364 300,364 300,264"/>
+        <text class="cl" x="240" y="356" text-anchor="middle">attachment</text>
+
+        <line class="conn" x1="350" y1="432" x2="350" y2="264"/>
+        <text class="cl" x="356" y="356">attachment</text>
+
+        <line class="conn" x1="128" y1="524" x2="128" y2="556"/>
+        <text class="cl onvpc" x="136" y="544">port 5432</text>
+
+        <!-- Staging may never route to Prod -->
+        <g aria-hidden="true">
+          <circle class="block" cx="254" cy="560" r="11"/>
+          <path d="M249,555 L259,565 M259,555 L249,565" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
+        </g>
+      </svg>
+      <ul class="legend">
+        <li><span class="sw acct"></span>AWS account</li>
+        <li><span class="sw vpc"></span>VPC</li>
+        <li><span class="sw res"></span>Resource</li>
+        <li><span class="sw ext"></span>Outside AWS</li>
+        <li><span class="sw" style="background:var(--accent);height:4px"></span>Direct Connect</li>
+      </ul>
+      <p class="diagram-note"><strong>&#10005; between Prod and Staging:</strong> staging may never route to prod. Both VPCs attach to the same Transit Gateway, but there is no path between them. See Routing rules.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Address plan</h2>
+    <div class="card table-card">
+      <table>
+        <thead><tr><th>VPC</th><th>Account</th><th>CIDR</th><th>Subnet layout</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Inspection VPC</strong></td><td>Network</td><td class="mono">10.0.0.0/16</td><td>2 firewall subnets<span class="sub">2 NAT subnets</span></td></tr>
+          <tr><td><strong>Claims VPC</strong></td><td>Prod</td><td class="mono">10.10.0.0/16</td><td>3 private app subnets<span class="sub">3 data subnets</span></td></tr>
+          <tr><td><strong>Staging VPC</strong></td><td>Staging</td><td class="mono">10.20.0.0/16</td><td>2 private app subnets<span class="sub">2 data subnets</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Routing rules</h2>
+    <ul class="rules">
+      <li class="card rule key">
+        <span class="ic">!</span>
+        <div>
+          <h3>Staging may never route to prod <span class="tag">AUDITORS ASK</span></h3>
+          <p>No route may exist from the Staging VPC (10.20.0.0/16) to the Claims VPC (10.10.0.0/16). This is the rule auditors check first.</p>
+        </div>
+      </li>
+      <li class="card rule">
+        <span class="ic">2</span>
+        <div>
+          <h3>No internet gateways in workload VPCs</h3>
+          <p>The Claims and Staging VPCs reach the internet only through the Transit Gateway, the Network Firewall and the NAT Gateway in the Inspection VPC.</p>
+        </div>
+      </li>
+      <li class="card rule">
+        <span class="ic">3</span>
+        <div>
+          <h3>Direct Connect reaches prod only</h3>
+          <p>Traffic from the Columbus Data Center over Direct Connect may reach the Prod account, not Staging.</p>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <footer>Alderwood Health Analytics &middot; Landing zone network, us-east-2 &middot; Last reviewed 2026-10-09</footer>
+</main>
+</body>
+</html>

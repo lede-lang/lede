@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lakewood University Energy Summary FY2026</title>
+<style>
+:root{--bg:#f6f5f1;--surface:#ffffff;--ink:#1c1e22;--muted:#5d6370;--line:#dcd9d1;--accent:#2f6b5c;--warm:#b8642e;--blue:#3f6396}
+@media (prefers-color-scheme:dark){:root{--bg:#14161a;--surface:#1d2026;--ink:#eceae4;--muted:#a4a9b4;--line:#353a44;--accent:#6cbba3;--warm:#e39a66;--blue:#8db2e3}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif}
+main{max-width:920px;margin:0 auto;padding:32px 16px 64px}
+.kicker{color:var(--accent);font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;margin:0 0 6px}
+h1{font-size:clamp(26px,5vw,36px);line-height:1.15;margin:0 0 12px}
+h2{font-size:21px;margin:40px 0 14px;padding-top:16px;border-top:1px solid var(--line)}
+h3{font-size:16px;margin:20px 0 8px}
+p{margin:0 0 14px}
+.lede{color:var(--muted);font-size:17px}
+.note{color:var(--muted);font-size:14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+.card .big{font-size:26px;font-weight:650;line-height:1.2}
+.card .small{color:var(--muted);font-size:14px;margin-top:6px}
+.table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+tr:last-child td{border-bottom:0}
+.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px}
+svg{display:block;width:100%;height:auto}
+.lbl{font-size:14px;fill:var(--muted)}
+.lbl-strong{font-size:14px;fill:var(--ink);font-weight:600}
+.bar{fill:var(--accent)} .bar2{fill:var(--warm)}
+ul{padding-left:20px;margin:0 0 14px} li{margin:0 0 8px}
+</style>
+</head>
+<body>
+<main>
+<p class="kicker">Sustainability committee, fiscal year 2026</p>
+<h1>Energy use at Lakewood University, FY2026</h1>
+<p class="lede">Fiscal year 2026 ran from 1 July 2025 to 30 June 2026. Electricity use fell 5.7 percent from the year before.</p>
+
+<h2>Summary</h2>
+<div class="cards">
+  <div class="card">
+    <div class="big">12,050 MWh</div>
+    <div class="small">Electricity used, down from 12,780 MWh the year before (5.7 percent lower).</div>
+  </div>
+  <div class="card">
+    <div class="big">$1,349,600</div>
+    <div class="small">Electricity cost, at an average of $0.112 per kWh.</div>
+  </div>
+  <div class="card">
+    <div class="big">19.1 kWh</div>
+    <div class="small">Campus-wide intensity, per square foot, across 630,000 sq ft in the five buildings below.</div>
+  </div>
+</div>
+
+<h2>By building</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Building</th><th class="num">Floor area (sq ft)</th><th class="num">Annual electricity (MWh)</th><th class="num">Intensity (kWh per sq ft)</th></tr></thead>
+  <tbody>
+    <tr><td>Science Hall</td><td class="num">182,000</td><td class="num">4,210</td><td class="num">23.1</td></tr>
+    <tr><td>Library</td><td class="num">96,000</td><td class="num">1,520</td><td class="num">15.8</td></tr>
+    <tr><td>Student Center</td><td class="num">128,000</td><td class="num">2,380</td><td class="num">18.6</td></tr>
+    <tr><td>Engineering Annex</td><td class="num">74,000</td><td class="num">2,050</td><td class="num">27.7</td></tr>
+    <tr><td>Residence Hall North</td><td class="num">150,000</td><td class="num">1,890</td><td class="num">12.6</td></tr>
+    <tr><td><strong>Campus total</strong></td><td class="num"><strong>630,000</strong></td><td class="num"><strong>12,050</strong></td><td class="num"><strong>19.1</strong></td></tr>
+  </tbody>
+</table>
+</div>
+<p style="margin-top:16px">Science Hall uses the most electricity in absolute terms. The Engineering Annex is the least efficient per square foot. The two are not the same building, and the charts below show why both measures matter.</p>
+
+<h3>Annual use, MWh</h3>
+<div class="chart"><svg id="mwh-chart" role="img" aria-label="Bar chart of annual electricity use by building, in MWh"></svg></div>
+
+<h3>Intensity, kWh per square foot</h3>
+<div class="chart"><svg id="int-chart" role="img" aria-label="Bar chart of electricity intensity by building, in kWh per square foot"></svg></div>
+
+<h2>What is changing</h2>
+<ul>
+  <li>The Library completed an LED retrofit in October 2025.</li>
+  <li>An HVAC controls upgrade is planned for Science Hall and the Engineering Annex. It is budgeted at $640,000 for FY2027 and is expected to save about 9 percent in those two buildings. On FY2026 use, that is roughly 560 MWh a year, based on their combined 6,260 MWh.</li>
+</ul>
+</main>
+<script>
+function hbars(id,rows,cls,fmt){
+  var svg=document.getElementById(id);
+  var W=560,L=170,R=110,T=6,RH=40;
+  var max=Math.max.apply(null,rows.map(function(r){return r[1];}));
+  var out='';
+  rows.forEach(function(r,i){
+    var y=T+i*RH, w=(W-L-R)*r[1]/max;
+    out+='<text class="lbl" x="'+(L-10)+'" y="'+(y+18)+'" text-anchor="end">'+r[0]+'</text>';
+    out+='<rect class="'+cls+'" x="'+L+'" y="'+y+'" width="'+w.toFixed(1)+'" height="24" rx="4"/>';
+    out+='<text class="lbl-strong" x="'+(L+w+8).toFixed(1)+'" y="'+(y+17)+'">'+fmt(r[1])+'</text>';
+  });
+  svg.setAttribute('viewBox','0 0 '+W+' '+(T+rows.length*RH));
+  svg.innerHTML=out;
+}
+hbars('mwh-chart',[["Science Hall",4210],["Student Center",2380],["Engineering Annex",2050],["Residence Hall North",1890],["Library",1520]],'bar',function(n){return n.toLocaleString('en-US')+' MWh';});
+hbars('int-chart',[["Engineering Annex",27.7],["Science Hall",23.1],["Student Center",18.6],["Library",15.8],["Residence Hall North",12.6]],'bar2',function(n){return n.toFixed(1)+' kWh';});
+</script>
+</body>
+</html>

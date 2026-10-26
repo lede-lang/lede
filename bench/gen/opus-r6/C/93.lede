@@ -1,0 +1,35 @@
+@title Cold Room B temperature alarm
+@subtitle Runbook for Marlowe Vaccine Depot
+@author Depot Operations, Owner
+
+kpi Safe range | 2–8 °C | 12,400 doses
+kpi Night supervisor | Gabriela Nunez | 555-0187
+kpi Quality Manager | Peter Aldous | 555-0152
+kpi Polar Service | 555-0190 | responds within 4 h
+
+!!! Never discard any doses. Only the Quality Manager decides what happens to stock that has been out of range.
+
+# Alarm levels
+table = Level,Trigger,What to do; **Warning**,Above 8 °C for 10 min,Start the first 15 minutes; **Critical**,Above 12 °C or below 0 °C,Start the first 15 minutes and prepare to move stock
+
+# First 15 minutes
+step Acknowledge the alarm on the monitoring panel | within 5 min | On-shift staff
+step Check the door is fully shut and the seal is intact | by min 15 | On-shift staff
+step Check the compressor has power; note the data logger temperature | by min 15 | On-shift staff
+step Call Polar Service on 555-0190 (they respond within 4 h) | by min 15 | On-shift staff
+
+# Moving stock
+If the temperature is still above 8 °C after 15 min, move the stock.
+kpi Cold Room C | 9,000 doses | backup room
+kpi Transport boxes | 3,400 doses | 6 validated boxes with ice packs
+1. Move 9,000 doses to backup Cold Room C.
+2. Pack the remaining 3,400 doses into the 6 validated transport boxes with ice packs.
+3. Log every box on the transfer sheet.
+
+# Quarantine and escalation
+!!! Do not discard anything. Quarantine it and tell the Quality Manager. Only the Quality Manager decides.
+- Any lot out of range for more than 30 min in total is quarantined, and the Quality Manager is told immediately.
+- If the alarm is not resolved within 2 h, call the Operations Director.
+
+# Contacts
+table = Role,Name,Phone; Night supervisor,Gabriela Nunez,555-0187; Quality Manager,Peter Aldous,555-0152; Refrigeration contractor,Polar Service,555-0190

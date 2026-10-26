@@ -1,0 +1,24 @@
+@title Courier Android App Stability
+@subtitle Mobile Platform report for Sprocket Delivery, releases 5.10 to 5.17
+
+kpi Current version | 5.17 | released 2026-09-28
+kpi Crash-free sessions | 99.66% | above target, good
+kpi Target | 99.5% | crash-free sessions
+kpi ANR rate | 0.21% | current version
+
+# Crash-free trend
+
+data stab = version,Crash-free sessions,Target; 5.10,99.21,99.5; 5.11,99.34,99.5; 5.12,99.08,99.5; 5.13,99.52,99.5; 5.14,99.61,99.5; 5.15,98.87,99.5; 5.16,99.58,99.5; 5.17,99.66,99.5
+
+chart line stab x=version y=Crash-free sessions,Target min=98 max=100 unit=% title="Crash-free sessions by version, with the 99.5% target"
+
+# Release table
+
+table = Version,Released,Crash-free sessions,Top crash; 5.10,2026-05-04,99.21%,none above 0.1 percent; 5.11,2026-05-25,99.34%,none above 0.1 percent; 5.12,2026-06-15,99.08%,Camera permission crash on the proof-of-delivery screen; 5.13,2026-07-06,99.52%,none above 0.1 percent; 5.14,2026-07-27,99.61%,none above 0.1 percent; 5.15,2026-08-17,98.87%,Offline map tile cache overflow; 5.16,2026-09-07,99.58%,none above 0.1 percent; 5.17,2026-09-28,99.66%,none above 0.1 percent
+
+# Top issues
+
+- Version 5.12: camera permission crash on the proof-of-delivery screen.
+- Version 5.15: offline map tile cache overflow.
+
+! Version 5.15 was halted at 20 percent rollout and replaced by 5.16 three weeks later.

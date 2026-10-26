@@ -1,0 +1,59 @@
+{
+  "id": "71-wind-telemetry-pipeline",
+  "category": "architecture",
+  "title": "Skerry Wind telemetry pipeline",
+  "brief": "Skerry Wind Power needs an architecture page for the telemetry pipeline that serves its 6 offshore wind farms, owner Asset Data team, region eu-north-1, reviewed 2026-10-02. Under \"Overview\", two sentences: turbine readings flow from each farm into one central stream and are processed once, then split into a fast store for dashboards and a cheap archive for audits. Under \"Pipeline diagram\" show these nodes: Turbine Controllers and Edge Gateway (both on site at each farm, outside the cloud account), then in the cloud Telemetry Stream, Stream Processor, Timeseries Store, Raw Archive, Alerting Service and Operations Dashboard. Flows: Turbine Controllers to Edge Gateway \"OPC UA, 1 Hz\"; Edge Gateway to Telemetry Stream \"MQTT over TLS, batched every 5 s\"; Telemetry Stream to Stream Processor \"consumer\"; Stream Processor to Timeseries Store \"10 s aggregates\"; Stream Processor to Raw Archive \"Parquet every 15 minutes\"; Stream Processor to Alerting Service \"threshold breach\"; Timeseries Store to Operations Dashboard \"queries\". Under \"Capacity and retention\", for each component its size and retention: Telemetry Stream, 24 shards, 18000 messages per second at peak; Timeseries Store, 7 days in memory and 3 years on magnetic storage; Raw Archive, 10 years, moved to cold storage after 90 days. Under \"If the uplink fails\": the Edge Gateway buffers up to 6 hours of readings on disk and replays them in order when the link returns; after that the oldest readings are dropped, and readers must not miss that limit. On-call engineers will read this on their phones.",
+  "checklist": {
+    "sections": [
+      "Overview",
+      "Pipeline diagram",
+      "Capacity and retention",
+      "If the uplink fails"
+    ],
+    "visible": [
+      "Turbine Controllers",
+      "Edge Gateway",
+      "Telemetry Stream",
+      "Stream Processor",
+      "Timeseries Store",
+      "Raw Archive",
+      "Alerting Service",
+      "Operations Dashboard",
+      "OPC UA",
+      "Parquet"
+    ],
+    "values": [
+      "eu-north-1",
+      "2026-10-02",
+      "1 Hz",
+      "5 s",
+      "15 minutes",
+      "24 shards",
+      "18000",
+      "7 days",
+      "3 years",
+      "10 years",
+      "90 days",
+      "6 hours"
+    ]
+  },
+  "needs": [
+    "diagram",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the stream to 32 shards instead of 24, and add a node called \"Anomaly Model\" that receives from the Stream Processor with an arrow labeled \"scoring\".",
+    "expect_visible": [
+      "Anomaly Model",
+      "scoring"
+    ],
+    "expect_values": [
+      "32 shards"
+    ],
+    "expect_absent": [
+      "24 shards"
+    ]
+  }
+}

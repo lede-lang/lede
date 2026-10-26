@@ -1,0 +1,42 @@
+{
+  "id": "37-onboarding-welcome",
+  "category": "prose",
+  "title": "Welcome to Customer Success",
+  "brief": "Write a welcome letter page for new hires joining the Customer Success team at Larkspur Software in the November 2026 cohort, signed by Nadia Farouk, VP of Customer Success. Warm but practical tone. Open with a greeting and a short paragraph about the team: 42 people across Denver, Dublin and Singapore. Section titled \"Your first week\" as a list by day: Monday: laptop pickup at 09:00 and a welcome breakfast; Tuesday: product deep dive with the Solutions team; Wednesday: shadow two customer calls; Thursday: support tooling training; Friday: lunch with your onboarding buddy. Section titled \"Your first 90 days\": three short paragraphs for 30, 60 and 90 days (learn the product, own five accounts alongside your buddy, then run quarterly business reviews on your own). Section titled \"People to know\": a list with Nadia Farouk (VP of Customer Success), Owen Achterberg (Head of Support), and Priyanka Rao (Enablement lead). Add a highlighted tip: the #cs-newbies channel is the best place to ask anything, and no question is too small. Close with a sign-off from Nadia. Prose and lists only, no tables.",
+  "checklist": {
+    "sections": [
+      "Your first week",
+      "Your first 90 days",
+      "People to know"
+    ],
+    "visible": [
+      "Nadia Farouk",
+      "Owen Achterberg",
+      "Priyanka Rao",
+      "#cs-newbies",
+      "onboarding buddy",
+      "Monday",
+      "Friday",
+      "Denver"
+    ],
+    "values": [
+      "42",
+      "09:00",
+      "90"
+    ]
+  },
+  "needs": [
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Move Monday's laptop pickup to 10:00, and add Jonas Weber (IT help desk lead) to People to know.",
+    "expect_visible": [
+      "Jonas Weber"
+    ],
+    "expect_values": [
+      "10:00"
+    ],
+    "expect_absent": []
+  }
+}

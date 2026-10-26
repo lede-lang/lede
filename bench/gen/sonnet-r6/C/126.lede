@@ -1,0 +1,32 @@
+@title New shelter campaign status
+@subtitle Riverside Animal Rescue, for the board and major donors
+@author Henrietta Voss, Executive Director
+@date 2026-10-16
+
+## Campaign at a glance
+
+kpi Raised | $3.42M | of $5.0M goal | neutral
+kpi Progress | 68.4% | $1.58M to go | bar
+kpi Donors | 1,860
+
+## Gifts by level
+
+data levels = level,gifts,amount; "Lead gifts, over $100,000",6,2.10; "Major gifts, $10,000 to $100,000",74,0.93; "Community gifts, under $10,000",1780,0.39
+
+chart hbar levels y=amount unit=$M labels title="Amount raised by gift level ($M)"
+
+table levels bar=amount
+
+### Matching challenge
+
+An anonymous donor will match up to $250,000 of new gifts through 2026-12-31.
+
+kpi Matched so far | $96,000 | of $250,000 | bar
+
+## Construction milestones
+
+table = milestone,date,status; Land purchase,2026-03-14,Done; Permits approved,2026-07-22,Done; Groundbreaking,2026-11-08,Upcoming; Framing complete,2027-03-19,Planned; Opening day,2027-09-15,Planned
+
+## Needs attention
+
+!! Construction starts only when $4.0M is in hand or pledged. The campaign is $0.58M short of that, so the groundbreaking on 2026-11-08 depends on two pending lead gift proposals worth $0.5M together, due for decision by 2026-10-30.

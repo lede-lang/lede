@@ -1,0 +1,46 @@
+{
+  "id": "118-st-anselm-mri-instructions",
+  "category": "prose",
+  "title": "St. Anselm MRI patient instructions",
+  "brief": "St. Anselm Imaging needs a patient instruction page for people booked for an MRI scan, which they will often read on their phones the night before. Plain language, reassuring, short sentences, speaking to the patient as \"you\". Headings: \"Before the day\", \"On the day\", \"During the scan\", \"After the scan\". Before the day: call the imaging desk on extension 2210 at least 2 weeks ahead if you have a pacemaker, a cochlear implant, an aneurysm clip or any other metal implant, because some devices need special planning; tell us if you might be pregnant or have kidney disease; if you are uncomfortable in small spaces, ask your doctor about a mild sedative and arrange a driver; if your scan uses contrast dye, do not eat for 4 hours before, but you can drink water. On the day: arrive 30 minutes early at the Imaging Department on level 2; bring a photo ID, your insurance details and the referral if you were given a paper one; leave jewelry, watches, hearing aids and wallets in the locker, and wear clothes without metal zippers or underwire. During the scan: it takes 30 to 60 minutes; you lie on a padded bed that slides into a tube open at both ends; the machine is loud, so we give you earplugs or headphones; you must keep very still, and you hold a squeeze ball that calls the technologist at any moment. After the scan: you can eat, drive and go back to work straight away unless you took a sedative; your doctor receives the results within 3 business days, and they appear in the patient portal after your doctor has seen them; drink extra water if you had contrast. Emphasize that anyone with a pacemaker or other metal implant must call before the day, because it can mean rescheduling.",
+  "checklist": {
+    "sections": [
+      "Before the day",
+      "On the day",
+      "During the scan",
+      "After the scan"
+    ],
+    "visible": [
+      "extension 2210",
+      "pacemaker",
+      "Imaging Department",
+      "level 2",
+      "squeeze ball"
+    ],
+    "values": [
+      "2 weeks",
+      "4 hours",
+      "30 minutes early",
+      "30 to 60 minutes",
+      "3 business days"
+    ]
+  },
+  "needs": [
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the arrival time to 45 minutes early and the results time to 5 business days, and add a sentence telling patients to bring a list of the medicines they take.",
+    "expect_visible": [
+      "medicines"
+    ],
+    "expect_values": [
+      "45 minutes",
+      "5 business days"
+    ],
+    "expect_absent": [
+      "3 business days",
+      "30 minutes early"
+    ]
+  }
+}

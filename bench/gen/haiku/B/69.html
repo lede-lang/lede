@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why We Replaced Our Standup</title>
+<style>
+:root{--bg:#f8f7f4;--surface:#ffffff;--ink:#22201c;--muted:#66615a;--line:#e3ded4;--accent:#a4482e}
+@media (prefers-color-scheme:dark){:root{--bg:#17150f;--surface:#1f1d17;--ink:#ece8df;--muted:#aca596;--line:#3a362c;--accent:#e49a7f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.7 Georgia,"Iowan Old Style","Times New Roman",serif}
+main{max-width:660px;margin:0 auto;padding:36px 18px 72px}
+.kicker{color:var(--accent);font:600 13px/1.4 system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;margin:0 0 8px}
+h1{font-size:clamp(30px,6vw,40px);line-height:1.15;margin:0 0 12px}
+.byline{color:var(--muted);font-size:16px;font-style:italic;margin:0 0 28px;padding-bottom:20px;border-bottom:1px solid var(--line)}
+h2{font-size:23px;line-height:1.25;margin:40px 0 12px}
+p{margin:0 0 18px}
+ol{padding-left:24px;margin:0 0 18px} li{margin:0 0 12px}
+</style>
+</head>
+<body>
+<main>
+<p class="kicker">Engineering blog</p>
+<h1>Why We Replaced Our Standup With a Written Update</h1>
+<p class="byline">Odile Marchetti, Engineering Manager, Cresswell Systems</p>
+
+<p>For a long time, my team of eleven engineers met every weekday at 14:00 UTC for a fifteen-minute standup. On a calendar, the time looked fair. In practice it worked for some of us and not for others. The meeting was a little after lunch in one place, a very early start for one of us, and the middle of the night for two more. Those three were routinely half asleep, or absent. The rest of us sat through updates that were mostly status read aloud, each of us waiting for the one sentence that mattered to us.</p>
+
+<h2>The standup nobody liked</h2>
+<p>Nobody complained loudly, which was part of the problem. People were polite about a meeting they found mildly painful. The people who were most affected were the ones least likely to say so in a room where everyone else was waiting for their turn to talk. I had been treating attendance as a proxy for engagement, and it was a poor proxy. Half the team was present in the sense that they had logged in. Only some of them were really there.</p>
+<p>The team was not unhappy with each other. They were unhappy with the format, and the format was mine.</p>
+
+<h2>What we tried</h2>
+<p>On 2 March 2026, we stopped the daily call. In its place, each engineer posts a written update in a shared thread by 10:00 in their local time. Every update answers the same three prompts: what I finished, what I am doing next, and what is blocking me. Nobody is asked to attend anything. The thread is the standup.</p>
+<p>The rule was deliberately small. We did not add a dashboard or a new tool, and we did not ask for essays. We asked for three short answers, and a reply from anyone who could help with a blocker. We kept the experiment running until 25 September 2026, which is roughly six months.</p>
+
+<h2>What we measured</h2>
+<p>We looked at three things. The first was how informed people felt. In our quarterly survey, the share of engineers who said they felt informed about the team's work rose from 61 percent to 84 percent.</p>
+<p>The second was how long blockers stayed open. The median time to resolve a blocker fell from 26 hours to 11 hours. The reason was simple. A blocker posted at the end of one person's day was now visible to someone in another time zone, who could often act on it before the first person woke up. In the old standup, a blocker raised at 14:00 UTC could wait a full day if the one person who could fix it was already offline.</p>
+<p>The third was time. Meeting time dropped by 55 minutes per engineer per week.</p>
+<p>I want to be careful about these numbers. Eleven people is a small group, and six months is not a long time. But the direction was clear, and the blocker figure in particular was one I had not expected to move so much.</p>
+
+<h2>What it cost</h2>
+<p>Not everything came back. The standup had been the one place where the team talked without an agenda. Once it became a thread, the easy banter went with it. People stopped overhearing each other laugh about things that had nothing to do with the sprint, and I missed that more than I expected.</p>
+<p>One new hire told me, in their first weeks, that they felt isolated. They were not wrong. A written update is good at telling you what happened, and much worse at telling you who the people are. We made two changes. We added a thirty-minute optional video social on Fridays, and we gave every new starter a buddy who messages them directly during their first weeks.</p>
+<p>Neither change is free. The social takes time from people who are already busy, and the buddy system depends on people being willing to be buddies. We have not solved either problem. We have made them visible.</p>
+<p>The approach also has a clear limit. It would not work well for a team that sits in one office on one schedule, where a standup costs little and face-to-face contact is worth having anyway. It also fails in any team where nobody reads the thread. A written update with no readers is worse than a bad meeting, because it looks like communication and is not. The thread only works if people actually read it, and we have to keep checking that they do.</p>
+
+<h2>Should you do this?</h2>
+<p>Maybe. If you are a manager thinking about the same change, here is what I would tell you.</p>
+<ol>
+  <li><strong>Run it for eight weeks, not one.</strong> The first two weeks feel strange. The people who miss the meeting most are often the loudest about it. Judge the change after the habit has formed.</li>
+  <li><strong>In your retrospective, ask people what they miss.</strong> Do not just ask whether they like the new way. Ask what they miss, and listen to the answer. Ours was banter and belonging, and none of our metrics would have shown that.</li>
+  <li><strong>Be willing to bring the meeting back.</strong> If the numbers fall or the team is unhappy, return to the standup without treating it as a failure. The point was never the format. The point was getting the right information to the right people, at a time when they could act on it.</li>
+</ol>
+<p>We are still using the thread. We also still have the Friday social, which is the one part of the old standup that nobody wanted to lose.</p>
+</main>
+</body>
+</html>

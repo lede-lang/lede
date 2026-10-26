@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monorepo Deployment Pipeline</title>
+<style>
+:root{--page:#f5f6fa;--card:#ffffff;--ink:#1b2033;--mute:#5c6378;--edge:#d7dbe7;--indigo:#4450b8;--indigo-soft:#eceefb;--rose:#b5395b;--rose-soft:#fbe9ee;--warn-bg:#fff5e6;--warn-bd:#d8871c;--warn-ink:#573300;}
+@media (prefers-color-scheme: dark){
+:root:not([data-theme="light"]){--page:#0c0e17;--card:#14182a;--ink:#e3e6f4;--mute:#979db6;--edge:#29304a;--indigo:#9ca8ff;--indigo-soft:#1c2140;--rose:#ff8aa6;--rose-soft:#3a1a25;--warn-bg:#352408;--warn-bd:#e39a3c;--warn-ink:#ffdba6;}
+}
+:root[data-theme="dark"]{--page:#0c0e17;--card:#14182a;--ink:#e3e6f4;--mute:#979db6;--edge:#29304a;--indigo:#9ca8ff;--indigo-soft:#1c2140;--rose:#ff8aa6;--rose-soft:#3a1a25;--warn-bg:#352408;--warn-bd:#e39a3c;--warn-ink:#ffdba6;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:1.6rem;margin:0 0 4px}
+.meta{color:var(--mute);margin:0;font-size:.92rem}
+h2{font-size:1.12rem;margin:32px 0 10px;padding-bottom:4px;border-bottom:1px solid var(--edge)}
+.card{background:var(--card);border:1px solid var(--edge);border-radius:10px;padding:10px;overflow-x:auto}
+svg{display:block;width:100%;height:auto}
+svg.flow{min-width:900px}
+svg text{font-size:12px;fill:var(--ink)}
+svg .mute{fill:var(--mute);font-size:11px}
+svg .node{fill:var(--indigo-soft);stroke:var(--indigo);stroke-width:1.3}
+svg .stop{fill:var(--rose-soft);stroke:var(--rose);stroke-width:1.3}
+svg .ln{fill:none;stroke:var(--mute);stroke-width:1.5}
+svg .ah{fill:var(--mute)}
+svg .bars{fill:var(--indigo)}
+svg .gl{stroke:var(--edge)}
+svg .ax{stroke:var(--mute)}
+table{width:100%;border-collapse:collapse;font-size:.94rem;min-width:360px}
+th,td{padding:9px 8px;border-bottom:1px solid var(--edge);text-align:left}
+th{color:var(--mute);font-weight:600;font-size:.84rem}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+ul{padding-left:20px}
+li{margin:6px 0}
+.rules{margin-top:6px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Monorepo Deployment Pipeline</h1>
+  <p class="meta">Developer Productivity · Quillstone Software · As of 2026-10-10</p>
+
+  <h2>Pipeline diagram</h2>
+  <div class="card">
+  <svg class="flow" viewBox="0 0 1256 300" role="img" aria-label="Left-to-right pipeline: Pull Request, Lint and Unit Tests, Build Image, Security Scan, Deploy to Staging, Integration Tests, Smoke Tests, Manual Approval, Canary 10 percent, Full Rollout. Canary 10 percent also flows down to Auto Rollback when the error rate is above 1 percent.">
+    <defs>
+      <marker id="pipeArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path class="ah" d="M0,0 L10,5 L0,10 z"/>
+      </marker>
+    </defs>
+
+    <!-- edge labels sit in a band above the node row -->
+    <text class="mute" x="249" y="104" text-anchor="middle">pass</text>
+    <text class="mute" x="501" y="104" text-anchor="middle">no critical CVEs</text>
+    <text class="mute" x="879" y="104" text-anchor="middle">pass</text>
+    <text class="mute" x="1005" y="104" text-anchor="middle">approved</text>
+    <text class="mute" x="1131" y="104" text-anchor="middle">healthy 30 min</text>
+
+    <!-- nodes -->
+    <rect class="node" x="10" y="120" width="100" height="56" rx="8"/>
+    <text x="60" y="152" text-anchor="middle">Pull Request</text>
+
+    <rect class="node" x="136" y="120" width="100" height="56" rx="8"/>
+    <text x="186" y="146" text-anchor="middle">Lint and</text>
+    <text x="186" y="162" text-anchor="middle">Unit Tests</text>
+
+    <rect class="node" x="262" y="120" width="100" height="56" rx="8"/>
+    <text x="312" y="152" text-anchor="middle">Build Image</text>
+
+    <rect class="node" x="388" y="120" width="100" height="56" rx="8"/>
+    <text x="438" y="146" text-anchor="middle">Security</text>
+    <text x="438" y="162" text-anchor="middle">Scan</text>
+
+    <rect class="node" x="514" y="120" width="100" height="56" rx="8"/>
+    <text x="564" y="146" text-anchor="middle">Deploy to</text>
+    <text x="564" y="162" text-anchor="middle">Staging</text>
+
+    <rect class="node" x="640" y="120" width="100" height="56" rx="8"/>
+    <text x="690" y="146" text-anchor="middle">Integration</text>
+    <text x="690" y="162" text-anchor="middle">Tests</text>
+
+    <rect class="node" x="766" y="120" width="100" height="56" rx="8"/>
+    <text x="816" y="152" text-anchor="middle">Smoke Tests</text>
+
+    <rect class="node" x="892" y="120" width="100" height="56" rx="8"/>
+    <text x="942" y="146" text-anchor="middle">Manual</text>
+    <text x="942" y="162" text-anchor="middle">Approval</text>
+
+    <rect class="node" x="1018" y="120" width="100" height="56" rx="8"/>
+    <text x="1068" y="152" text-anchor="middle">Canary 10%</text>
+
+    <rect class="node" x="1144" y="120" width="100" height="56" rx="8"/>
+    <text x="1194" y="152" text-anchor="middle">Full Rollout</text>
+
+    <rect class="stop" x="1018" y="226" width="100" height="56" rx="8"/>
+    <text x="1068" y="252" text-anchor="middle">Auto Rollback</text>
+
+    <!-- forward edges -->
+    <line class="ln" x1="110" y1="148" x2="136" y2="148" marker-end="url(#pipeArrow)"/>
+    <line class="ln" x1="236" y1="148" x2="262" y2="148" marker-end="url(#pipeArrow)"/>
+    <line class="ln" x1="362" y1="148" x2="388" y2="148" marker-end="url(#pipeArrow)"/>
+    <line class="ln" x1="488" y1="148" x2="514" y2="148" marker-end="url(#pipeArrow)"/>
+    <line class="ln" x1="614" y1="148" x2="640" y2="148" marker-end="url(#pipeArrow)"/>
+    <line class="ln" x1="740" y1="148" x2="766" y2="148" marker-end="url(#pipeArrow)"/>
+    <line class="ln" x1="866" y1="148" x2="892" y2="148" marker-end="url(#pipeArrow)"/>
+    <line class="ln" x1="992" y1="148" x2="1018" y2="148" marker-end="url(#pipeArrow)"/>
+    <line class="ln" x1="1118" y1="148" x2="1144" y2="148" marker-end="url(#pipeArrow)"/>
+
+    <!-- rollback edge -->
+    <line class="ln" x1="1068" y1="176" x2="1068" y2="226" marker-end="url(#pipeArrow)"/>
+    <text class="mute" x="1078" y="204">error rate above 1%</text>
+  </svg>
+  </div>
+
+  <h2>Stage durations</h2>
+  <div class="card">
+    <svg viewBox="0 0 600 250" role="img" aria-label="Horizontal bar chart of median minutes per stage: Lint and Unit Tests 7.5, Build Image 4.2, Security Scan 2.8, Deploy to Staging 3.1, Integration Tests 8.3, Smoke Tests 5.6, Canary 10 percent 30, Full Rollout 12.">
+      <line class="ax" x1="160" y1="6" x2="160" y2="242"/>
+      <rect class="bars" x="160" y="10" width="75" height="20" rx="3"/>
+      <rect class="bars" x="160" y="40" width="42" height="20" rx="3"/>
+      <rect class="bars" x="160" y="70" width="28" height="20" rx="3"/>
+      <rect class="bars" x="160" y="100" width="31" height="20" rx="3"/>
+      <rect class="bars" x="160" y="130" width="83" height="20" rx="3"/>
+      <rect class="bars" x="160" y="160" width="56" height="20" rx="3"/>
+      <rect class="bars" x="160" y="190" width="300" height="20" rx="3"/>
+      <rect class="bars" x="160" y="220" width="120" height="20" rx="3"/>
+      <text x="150" y="24" text-anchor="end">Lint and Unit Tests</text>
+      <text x="150" y="54" text-anchor="end">Build Image</text>
+      <text x="150" y="84" text-anchor="end">Security Scan</text>
+      <text x="150" y="114" text-anchor="end">Deploy to Staging</text>
+      <text x="150" y="144" text-anchor="end">Integration Tests</text>
+      <text x="150" y="174" text-anchor="end">Smoke Tests</text>
+      <text x="150" y="204" text-anchor="end">Canary 10%</text>
+      <text x="150" y="234" text-anchor="end">Full Rollout</text>
+      <text x="241" y="24">7.5</text>
+      <text x="208" y="54">4.2</text>
+      <text x="194" y="84">2.8</text>
+      <text x="197" y="114">3.1</text>
+      <text x="249" y="144">8.3</text>
+      <text x="222" y="174">5.6</text>
+      <text x="466" y="204">30</text>
+      <text x="286" y="234">12</text>
+    </svg>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <table>
+      <thead><tr><th>Stage</th><th class="n">Median (min)</th><th class="n">p90 (min)</th></tr></thead>
+      <tbody>
+        <tr><td>Lint and Unit Tests</td><td class="n">7.5</td><td class="n">13.4</td></tr>
+        <tr><td>Build Image</td><td class="n">4.2</td><td class="n">6.9</td></tr>
+        <tr><td>Security Scan</td><td class="n">2.8</td><td class="n">4.1</td></tr>
+        <tr><td>Deploy to Staging</td><td class="n">3.1</td><td class="n">5.0</td></tr>
+        <tr><td>Integration Tests</td><td class="n">8.3</td><td class="n">14.7</td></tr>
+        <tr><td>Smoke Tests</td><td class="n">5.6</td><td class="n">9.8</td></tr>
+        <tr><td>Canary 10%</td><td class="n">30</td><td class="n">30</td></tr>
+        <tr><td>Full Rollout</td><td class="n">12</td><td class="n">18</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Rules</h2>
+  <div class="card rules">
+    <ul>
+      <li>Manual Approval is required only for services tagged tier-1.</li>
+      <li>Friday deploys after 15:00 local time are blocked.</li>
+      <li>Auto Rollback pages the owning team.</li>
+    </ul>
+  </div>
+</main>
+</body>
+</html>

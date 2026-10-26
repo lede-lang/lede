@@ -1,0 +1,27 @@
+@title Postmortem: INC-3107 DNS misconfiguration
+@subtitle Network team · Alder Cloud Games · 2026-08-19
+
+kpi Duration | 1 h 52 min
+kpi Lowest success rate | 61.3%
+kpi Matches failed | 48,200
+kpi Region | EU-West
+
+# What happened
+
+A Terraform change replaced the weighted DNS records for match.eu with a single record. That record pointed at a decommissioned load balancer. Negative caching, with a TTL of 3600 seconds, kept the failures going after the fix.
+
+# Timeline
+
+table = Time (UTC),Event; 09:12,Terraform apply; 09:15,success rate drops; 09:31,player reports spike on social media; 09:40,incident declared; 10:05,bad record identified; 10:11,record restored; 11:04,success rate back above 99 percent and incident resolved
+
+# Request success rate
+
+data succ = time,success rate; 09:00,99.6; 09:15,84.2; 09:30,63.0; 09:45,61.3; 10:00,62.8; 10:15,70.4; 10:30,81.9; 10:45,93.5; 11:00,98.7; 11:15,99.5; 11:30,99.7
+chart line succ x=time y=success rate unit=% min=60 max=100 title="Matchmaking success rate, every 15 minutes"
+
+# Action items
+
+- Require a plan review for DNS changes.
+- Lower the negative cache TTL to 300 seconds.
+- Add synthetic matchmaking checks from three EU cities.
+- Alert when weighted record count drops to one.

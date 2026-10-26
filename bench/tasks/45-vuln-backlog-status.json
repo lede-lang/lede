@@ -1,0 +1,63 @@
+{
+  "id": "45-vuln-backlog-status",
+  "category": "status",
+  "title": "Halvorsen vulnerability backlog",
+  "brief": "Halvorsen Retail's security team wants a short weekly page on the vulnerability backlog, week 42 (ending 2026-10-16). Right now there are 3 open critical findings, 41 open highs and 188 open mediums. Patch SLA compliance is 91.5 percent against a 95 percent target, and the median age of an open critical is 6 days. Open highs over the last six weeks: W37 63, W38 58, W39 52, W40 49, W41 44, W42 41. Under \"Critical findings\", the three criticals with owner and due date: VULN-8812, remote code execution in the image-resize library, Tobias Lind, due 2026-10-18; VULN-8830, exposed admin console on a staging server, Nadia Haddad, due 2026-10-17; VULN-8841, outdated TLS on the POS gateway, Reggie Okoye, due 2026-10-23. VULN-8841 is the risky one because it touches store payment terminals and needs a change window, so say so clearly. Keep it brief.",
+  "checklist": {
+    "sections": [
+      "Critical findings"
+    ],
+    "visible": [
+      "Critical",
+      "High",
+      "Medium",
+      "Patch SLA compliance",
+      "VULN-8812",
+      "VULN-8830",
+      "VULN-8841",
+      "Tobias Lind",
+      "Nadia Haddad",
+      "Reggie Okoye",
+      "POS gateway"
+    ],
+    "values": [
+      "3",
+      "41",
+      "188",
+      "91.5",
+      "95",
+      "6",
+      "63",
+      "58",
+      "52",
+      "49",
+      "44",
+      "W37",
+      "W42",
+      "2026-10-18",
+      "2026-10-17",
+      "2026-10-23"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "callout"
+  ],
+  "edit": {
+    "request": "VULN-8830 was fixed this morning, so drop it from the page entirely, but a new critical was found: VULN-8850, expired certificate on the loyalty API, owner Mei-Lin Zhao, due 2026-10-21. The open critical count stays at 3, and the median age of an open critical is now 7 days.",
+    "expect_visible": [
+      "VULN-8850",
+      "Mei-Lin Zhao"
+    ],
+    "expect_values": [
+      "2026-10-21",
+      "7 days"
+    ],
+    "expect_absent": [
+      "VULN-8830",
+      "Nadia Haddad"
+    ]
+  }
+}

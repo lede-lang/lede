@@ -1,0 +1,1 @@
+Change the Critical threshold to 150000 messages, and add a node "Check downstream DB" between Scale out consumers and Lag recovering.

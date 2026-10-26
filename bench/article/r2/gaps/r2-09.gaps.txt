@@ -1,0 +1,4 @@
+The brief does not say whether a missing address affects Gift Aid or where in the sequence the address check happens, so I placed it after the size decision and before delivery and the Gift Aid decision. A reviewer should confirm that order.
+Lede has no loop construct; the return from the chase list to the address check is a dashed edge labelled "address found".
+Lede diagrams cannot show the two parallel outcomes (receipt and Gift Aid) as a true fork; both leave the address check as separate yes edges.
+Examples and the "always enter the gift type" note are my illustrations, not from the brief (the £40 example uses the 25% rate). Average gift is computed (about £50).

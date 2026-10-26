@@ -1,0 +1,51 @@
+@title Heat-wave demand emergency runbook
+@subtitle For the on-duty system operator. Version 2026-10-10
+@author Northgrid Electric, System Operations
+
+kpi Available supply | 5200 MW | the ceiling | neutral
+kpi Stage 1 | 4784 MW | 92% of supply | neutral
+kpi Stage 2 | 5044 MW | 97% of supply | bad
+kpi Stage 3 | 5200 MW | 100% of supply | bad
+
+## When to use
+Use this runbook when the day-ahead forecast or live demand reaches 92% of available supply (4784 MW of 5200 MW).
+
+!! A stage is declared by the Duty Director, never by a single operator.
+
+## Stages
+### Stage 1: 92% of supply (4784 MW)
+- Send a conservation alert by text and app to 380,000 customers.
+- Ask large industrial customers on interruptible contracts to be ready to reduce load on 30 minutes of notice.
+- Confirm that standby generation at 3 peaking plants can start within 20 minutes.
+
+### Stage 2: 97% of supply (5044 MW)
+- Call the demand response program, which delivers about 210 MW.
+- Start buying emergency imports from the neighboring utility.
+- Brief the regulator by phone.
+
+### Stage 3: 100% of supply (5200 MW)
+- Begin rotating outages in blocks A to L, in order. Each block is off for at most 60 minutes.
+- Never repeat a block before all twelve have been used.
+
+## Steps for rotating outages
+1. Get approval.
+-- a) The Duty Director approves in the log.
+-- b) The regulator is told within 30 minutes.
+2. Protect critical sites.
+-- a) Confirm that hospitals, the 911 center and water pumping stations are excluded.
+-- b) Check that the exclusion list was updated this month.
+3. Run the blocks.
+-- a) Open the first block's feeders.
+-- b) Restore it after 60 minutes at most, and open the next block.
+-- c) Update the public outage map every 15 minutes.
+4. Stand down.
+-- a) End rotating outages when demand stays below 95% for 60 minutes.
+-- b) Restore all blocks.
+-- c) File the event report within 24 hours.
+
+!!! Hospitals, the 911 center and water pumping stations must never be switched off.
+
+## Contacts
+- Duty Director: Lorenzo Baptiste
+- Regulator liaison: Dagny Holt
+- Communications on call: Femi Adeyemi

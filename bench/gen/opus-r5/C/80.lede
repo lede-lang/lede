@@ -1,0 +1,29 @@
+@title Rooftop Solar Bids
+@subtitle Comparison of five bids for solar on six Ridgeway schools
+@author Beatrice Ng, Facilities Director
+@date Board vote 2026-11-17
+
+kpi Recommendation | Copperfield Solar | $5,025,000 net 25-year benefit | good
+
+We recommend **Copperfield Solar**: the highest net benefit, $265,000 above SunHarvest, and the earliest completion. It also has the **highest upfront price, $2,875,000**, which the district must finance.
+
+# Bids
+table = Bidder,Size,Price,25-year savings,Warranty,Complete by; SunHarvest,"1,200 kW","$2,640,000","$7,400,000",25 years,2027-08-15; Brightline Energy,"1,150 kW","$2,415,000","$7,050,000",20 years,2027-09-30; **Copperfield Solar**,"**1,250 kW**","**$2,875,000**","**$7,900,000**",**25 years**,**2027-07-31**; Halcyon Power,"1,100 kW","$2,640,000","$6,800,000",30 years,2027-10-31; Meridian Renewables,"1,200 kW","$2,400,000","$7,150,000",15 years,2027-08-31
+
+# Net benefit
+25-year savings minus price.
+
+data net = bidder,usd; Copperfield Solar,5025000; SunHarvest,4760000; Meridian Renewables,4750000; Brightline Energy,4635000; Halcyon Power,4160000
+chart hbar net unit=$ title="Net 25-year benefit" focus="Copperfield Solar"
+
+# Schedule fit
+Panels must be generating before the school year starts on 2027-09-01.
+
+table = Bidder,Complete by,Margin,Fits schedule; Copperfield Solar,2027-07-31,32 days early,Go; SunHarvest,2027-08-15,17 days early,Go; Meridian Renewables,2027-08-31,1 day early,Go; Brightline Energy,2027-09-30,29 days late,No-go; Halcyon Power,2027-10-31,60 days late,No-go
+
+!! Brightline Energy and Halcyon Power would finish after the school year starts.
+
+# Recommendation
+! Award the contract to Copperfield Solar. It has the highest net 25-year benefit ($5,025,000, which is $265,000 above SunHarvest) and the earliest completion, 32 days before school starts.
+
+!! Copperfield also has the highest upfront price: $2,875,000, which is $235,000 more than SunHarvest and $475,000 more than Meridian. The district must finance it.

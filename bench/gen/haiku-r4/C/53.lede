@@ -1,0 +1,37 @@
+@title Ledger point-in-time restore
+@subtitle Ironbridge Credit Union, Core Systems runbook. Database ledger-prod, PostgreSQL on RDS, 1.8 TB.
+
+!!! Restoring over ledger-prod destroys every transaction since the target time. Always restore to a new instance.
+
+## When to use
+- Data corruption or a bad batch job.
+- Never for a simple instance failover.
+- Only with written approval from both the data owner and the on-call lead.
+
+## Before you start
+- Confirm the exact target timestamp in UTC.
+- Confirm that automated backups cover it. Retention is 14 days.
+- Freeze the nightly posting job.
+- Open a change record.
+
+## Restore steps
+1. Restore to a NEW instance named `ledger-restore-YYYYMMDD`, never over production.
+-- Choose the target time.
+-- Use the same parameter group, `ledger-pg15-prod`.
+-- Place it in the isolated recovery subnet group.
+2. Wait until the instance is available. This takes about 65 minutes.
+3. Validate the restored copy.
+-- Row counts of postings and accounts match the expected figures within 0.01 percent.
+-- The sum of ledger debits equals the sum of credits.
+-- Two senior engineers sign off in the change record.
+4. Repair production.
+-- Export the affected rows from the restored copy.
+-- Apply them to production in a transaction reviewed by a second engineer.
+5. Clean up.
+-- Keep the restored instance for 7 days.
+-- Then delete it and record the deletion.
+
+## Contacts
+- Data owner: Beatrix Oyelaran
+- Core Systems on-call lead: Henrik Dahl
+- Compliance: Mina Sato

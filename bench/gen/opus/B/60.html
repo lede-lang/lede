@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sunrise Bakery van replacement</title>
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#f7f5f0; --surface:#ffffff; --surface-2:#f3efe6; --text:#1f1c16; --muted:#635c50; --border:#e3ddd0;
+  --accent:#c2620f; --accent-soft:#fcecdc;
+  --good:#1d7a4a; --good-soft:#e3f3ea; --warn:#8f5600; --warn-soft:#fbf0dc; --bad:#b42318;
+  --p:#4a5a72; --ch:#9a7bd1; --f:#d9893a; --m:#7fa35a;
+  --d:#7c7468; --h:#3f8fb0; --e:#2f9b6a; --x:#c2620f;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#12110e; --surface:#1b1915; --surface-2:#23201b; --text:#ece7de; --muted:#a69e90; --border:#332f28;
+    --accent:#f5a25a; --accent-soft:#3a2614;
+    --good:#5fd09a; --good-soft:#15301f; --warn:#f2b155; --warn-soft:#33270f; --bad:#ff8a7e;
+    --p:#8ea2c2; --ch:#b9a0ec; --f:#f0a862; --m:#a5c97f;
+    --d:#b0a797; --h:#73c0e0; --e:#5fd09a; --x:#f5a25a;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:940px;margin:0 auto;padding:44px 24px 64px}
+.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;color:var(--accent);font-weight:700;margin:0}
+h1{font-size:clamp(1.7rem,4.5vw,2.35rem);line-height:1.15;margin:.3em 0 .35em;letter-spacing:-.015em}
+h2{font-size:1.3rem;margin:0 0 .8rem}
+h3{font-size:1.05rem;margin:0 0 .45rem}
+p{margin:0 0 .9rem}
+.lede{color:var(--muted);font-size:1.08rem;max-width:68ch}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0;padding:0;list-style:none}
+.facts li{background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:5px 12px;font-size:.88rem;color:var(--muted)}
+.facts strong{color:var(--text)}
+section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:26px;margin:20px 0}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{border:1px solid var(--border);border-radius:12px;padding:18px;background:var(--surface-2)}
+.card dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:.93rem}
+.card dt{color:var(--muted)}
+.card dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+.card dd.tot,.card dt.tot{font-weight:700;color:var(--text);border-top:1px solid var(--border);padding-top:6px;margin-top:4px}
+.card p{font-size:.92rem;color:var(--muted);margin:12px 0 0}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left}
+thead th{font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-bottom:2px solid var(--border)}
+tfoot td,tfoot th{font-weight:700;border-bottom:0}
+.r{text-align:right;font-variant-numeric:tabular-nums}
+.hl{background:var(--accent-soft)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.86rem;margin:0 0 8px;padding:0;list-style:none}
+.legend li{display:flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:3px}
+.chart{width:100%;max-width:640px;height:auto;display:block}
+.chart .lbl{fill:var(--text);font-size:15px;font-weight:600}
+.chart .val{fill:var(--text);font-size:15px;font-variant-numeric:tabular-nums}
+.chart .val.b{font-weight:700}
+.sp{fill:var(--p)} .sch{fill:var(--ch)} .sf{fill:var(--f)} .sm{fill:var(--m)}
+.bd{fill:var(--d)} .bh{fill:var(--h)} .be{fill:var(--e)} .bx{fill:var(--x)}
+.subhead{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin:24px 0 8px}
+.note{font-size:.92rem;color:var(--muted)}
+.risks{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.risks li{border-left:4px solid var(--warn);background:var(--warn-soft);border-radius:0 10px 10px 0;padding:12px 16px}
+.risks b{display:block;margin-bottom:2px}
+.rec{border:2px solid var(--accent)}
+.rec .big{font-size:1.25rem;font-weight:700;margin-bottom:.6rem}
+.mix{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0}
+.mix div{background:var(--surface-2);border-radius:10px;padding:12px 14px}
+.mix .k{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.mix .v{font-size:1.3rem;font-weight:700;font-variant-numeric:tabular-nums}
+.mix .s{font-size:.85rem;color:var(--muted)}
+.mix .total{background:var(--accent-soft)}
+.save{font-size:1.05rem}
+.save strong{color:var(--good)}
+footer{color:var(--muted);font-size:.85rem;margin-top:28px}
+@media (max-width:760px){.cards,.mix{grid-template-columns:1fr}}
+@media (max-width:480px){
+  .wrap{padding:28px 16px 48px}
+  section{padding:18px 14px;border-radius:12px}
+  th,td{padding:8px 5px}
+  table{font-size:.86rem}
+  thead th{font-size:.7rem;letter-spacing:.02em}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Sunrise Bakery Co. &middot; Budget meeting, November 10, 2026</p>
+  <h1>Replacing our 18 delivery vans</h1>
+  <p class="lede">Over the next two years we replace the whole delivery fleet. This page compares diesel, hybrid and electric on five-year cost and on how well each fits our routes, and recommends a mixed fleet: electric for the 12 shorter routes, hybrid for the 6 longest.</p>
+  <ul class="facts">
+    <li><strong>18</strong> vans</li>
+    <li>Longest route: <strong>140 miles</strong> a day</li>
+    <li><strong>6</strong> overnight chargers possible at the depot</li>
+    <li>Prepared by <strong>Tomasz Wieczorek</strong>, Operations Director</li>
+  </ul>
+</header>
+
+<section id="options">
+  <h2>Options</h2>
+  <div class="cards">
+    <div class="card">
+      <h3>Diesel</h3>
+      <dl>
+        <dt>Purchase</dt><dd>$41,000</dd>
+        <dt>Fuel</dt><dd>$9,800 / yr</dd>
+        <dt>Maintenance</dt><dd>$3,400 / yr</dd>
+        <dt class="tot">5-year cost per van</dt><dd class="tot">$107,000</dd>
+      </dl>
+      <p>No range limits. Subject to the city low-emission zone fee of $12.50 a day from January 1, 2028.</p>
+    </div>
+    <div class="card">
+      <h3>Hybrid</h3>
+      <dl>
+        <dt>Purchase</dt><dd>$46,500</dd>
+        <dt>Fuel</dt><dd>$6,900 / yr</dd>
+        <dt>Maintenance</dt><dd>$2,900 / yr</dd>
+        <dt class="tot">5-year cost per van</dt><dd class="tot">$95,500</dd>
+      </dl>
+      <p>No range worries, but still produces tailpipe emissions.</p>
+    </div>
+    <div class="card">
+      <h3>Electric</h3>
+      <dl>
+        <dt>Purchase (after $7,500 incentive)</dt><dd>$58,200</dd>
+        <dt>Charger installation</dt><dd>$4,200</dd>
+        <dt>Electricity</dt><dd>$3,100 / yr</dd>
+        <dt>Maintenance</dt><dd>$1,700 / yr</dd>
+        <dt class="tot">5-year cost per van</dt><dd class="tot">$86,400</dd>
+      </dl>
+      <p>Real-world range about 180 miles in summer and 150 in winter. Charges overnight at the depot.</p>
+    </div>
+  </div>
+</section>
+
+<section id="five-year-cost">
+  <h2>Five-year cost</h2>
+  <p class="subhead" style="margin-top:0">Per van, by cost type</p>
+  <ul class="legend" aria-hidden="true">
+    <li><i style="background:var(--p)"></i>Purchase</li>
+    <li><i style="background:var(--ch)"></i>Charger install</li>
+    <li><i style="background:var(--f)"></i>Fuel or electricity (5 yrs)</li>
+    <li><i style="background:var(--m)"></i>Maintenance (5 yrs)</li>
+  </ul>
+  <svg class="chart" viewBox="0 0 480 196" role="img" aria-labelledby="pvTitle pvDesc">
+    <title id="pvTitle">Five-year cost per van by cost type</title>
+    <desc id="pvDesc">Diesel: purchase $41,000, fuel $49,000, maintenance $17,000, total $107,000. Hybrid: purchase $46,500, fuel $34,500, maintenance $14,500, total $95,500. Electric: purchase $58,200, charger $4,200, electricity $15,500, maintenance $8,500, total $86,400.</desc>
+    <text class="lbl" x="0" y="22">Diesel</text>
+    <rect class="sp" x="0" y="30" width="116.17" height="28"/>
+    <rect class="sf" x="116.17" y="30" width="138.83" height="28"/>
+    <rect class="sm" x="255" y="30" width="48.17" height="28"/>
+    <text class="val b" x="311" y="49">$107,000</text>
+    <text class="lbl" x="0" y="86">Hybrid</text>
+    <rect class="sp" x="0" y="94" width="131.75" height="28"/>
+    <rect class="sf" x="131.75" y="94" width="97.75" height="28"/>
+    <rect class="sm" x="229.5" y="94" width="41.08" height="28"/>
+    <text class="val b" x="279" y="113">$95,500</text>
+    <text class="lbl" x="0" y="150">Electric</text>
+    <rect class="sp" x="0" y="158" width="164.9" height="28"/>
+    <rect class="sch" x="164.9" y="158" width="11.9" height="28"/>
+    <rect class="sf" x="176.8" y="158" width="43.92" height="28"/>
+    <rect class="sm" x="220.72" y="158" width="24.08" height="28"/>
+    <text class="val b" x="253" y="177">$86,400</text>
+  </svg>
+  <p class="note">Electric costs the most to buy but the least to run: fuel and maintenance over five years are $66,000 for diesel, $49,000 for hybrid and $24,000 for electric.</p>
+
+  <p class="subhead">Whole fleet of 18, five years</p>
+  <svg class="chart" viewBox="0 0 480 260" role="img" aria-labelledby="flTitle flDesc">
+    <title id="flTitle">Five-year cost for the fleet of 18 vans</title>
+    <desc id="flDesc">All diesel $1,926,000; all hybrid $1,719,000; all electric $1,555,200; recommended mix of 12 electric and 6 hybrid $1,609,800.</desc>
+    <text class="lbl" x="0" y="22">All diesel</text>
+    <rect class="bd" x="0" y="30" width="327.4" height="28" rx="3"/>
+    <text class="val" x="336" y="49">$1,926,000</text>
+    <text class="lbl" x="0" y="86">All hybrid</text>
+    <rect class="bh" x="0" y="94" width="292.2" height="28" rx="3"/>
+    <text class="val" x="301" y="113">$1,719,000</text>
+    <text class="lbl" x="0" y="150">All electric</text>
+    <rect class="be" x="0" y="158" width="264.4" height="28" rx="3"/>
+    <text class="val" x="273" y="177">$1,555,200</text>
+    <text class="lbl" x="0" y="214">Recommended: 12 electric + 6 hybrid</text>
+    <rect class="bx" x="0" y="222" width="273.7" height="28" rx="3"/>
+    <text class="val b" x="282" y="241">$1,609,800</text>
+  </svg>
+
+  <table style="margin-top:16px">
+    <thead><tr><th scope="col">Option</th><th scope="col" class="r">Per van, 5 yrs</th><th scope="col" class="r">18 vans, 5 yrs</th></tr></thead>
+    <tbody>
+      <tr><td>All diesel</td><td class="r">$107,000</td><td class="r">$1,926,000</td></tr>
+      <tr><td>All hybrid</td><td class="r">$95,500</td><td class="r">$1,719,000</td></tr>
+      <tr><td>All electric</td><td class="r">$86,400</td><td class="r">$1,555,200</td></tr>
+      <tr class="hl"><td><strong>12 electric + 6 hybrid</strong></td><td class="r">mixed</td><td class="r"><strong>$1,609,800</strong></td></tr>
+    </tbody>
+  </table>
+  <p class="note" style="margin-top:12px">Totals do not include the low-emission zone fee, which would add to the diesel cost from 2028.</p>
+</section>
+
+<section id="risks">
+  <h2>Risks</h2>
+  <ul class="risks">
+    <li><b>Winter range is tight for electric on the longest routes.</b>The longest route is 140 miles a day. Electric range drops to about 150 miles in winter, so the two longest routes would be tight in January, with little margin for detours or delays.</li>
+    <li><b>Charging capacity at the depot.</b>We can charge overnight with 6 chargers. With 12 electric vans, that is two vans per charger, so overnight charging has to be scheduled and confirmed before we commit.</li>
+    <li><b>Hybrids still emit.</b>They remove range worries but produce tailpipe emissions, so they are a partial step, not a full one.</li>
+    <li><b>Diesel gets more expensive from 2028.</b>The city low-emission zone fee of $12.50 a day per diesel van starts January 1, 2028, which is inside the life of any van we buy now.</li>
+    <li><b>The electric cost depends on the incentive.</b>The $58,200 purchase price assumes the $7,500 incentive.</li>
+  </ul>
+</section>
+
+<section id="recommendation" class="rec">
+  <h2>Recommendation</h2>
+  <p class="big">Buy electric for the 12 shorter routes and hybrid for the 6 longest.</p>
+  <p>Electric is cheapest over five years. Putting hybrids on the six longest routes takes the winter range risk off the table where it matters most.</p>
+  <div class="mix">
+    <div><span class="k">12 electric</span><div class="v">$1,036,800</div><span class="s">12 &times; $86,400</span></div>
+    <div><span class="k">6 hybrid</span><div class="v">$573,000</div><span class="s">6 &times; $95,500</span></div>
+    <div class="total"><span class="k">Mixed fleet of 18</span><div class="v">$1,609,800</div><span class="s">five-year cost</span></div>
+  </div>
+  <p class="save">That is <strong>about $316,200 less</strong> than staying with diesel ($1,926,000), before the low-emission zone fee.</p>
+  <p class="note">It costs $54,600 more than an all-electric fleet. That is the price of not relying on electric range on the longest routes in winter.</p>
+</section>
+
+<footer>Prepared by Tomasz Wieczorek for the Sunrise Bakery Co. budget meeting, November 10, 2026. Five-year costs per van as given; electric purchase price is after the $7,500 incentive.</footer>
+</div>
+</body>
+</html>

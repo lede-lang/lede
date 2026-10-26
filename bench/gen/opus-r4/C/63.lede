@@ -1,0 +1,40 @@
+@title Eastside Food Bank, Q3 2026
+@subtitle What we distributed from July to September, for our board and donors
+@author Camille Ferreira, Director
+@date 2026-10-17
+
+## Q3 at a glance
+
+kpi Food distributed | 357,800 lbs | July to September
+kpi Households served in September | 7,925 | +15.9% on July | good
+kpi Pounds per household | 16.3 | steady since July | neutral
+kpi Volunteer hours | 4,180 | this quarter
+
+September distribution was up 16.6 percent on July, while the number of households we served grew 15.9 percent. The amount each household received held steady at about 16 pounds.
+
+## By category
+
+data food = month,Produce,Dairy,Shelf-stable,Protein; Jul,41200,12400,38600,18900; Aug,46800,13100,36900,20400; Sep,52300,14900,40200,22100
+chart bar food stack unit=" lbs" title="Pounds distributed by category"
+
+- **Produce grew fastest**, up 26.9 percent from July to September, thanks to our new partnership with three local farms that started on 2026-08-15.
+- **Shelf-stable dipped in August** because a shipment from the regional network was delayed. It recovered in September.
+- Dairy and protein grew steadily each month.
+
+table = Category,Jul,Aug,Sep,Q3 total; Produce,"41,200","46,800","52,300","140,300"; Dairy,"12,400","13,100","14,900","40,400"; Shelf-stable,"38,600","36,900","40,200","115,700"; Protein,"18,900","20,400","22,100","61,400"; **Total**,"**111,100**","**117,200**","**129,500**","**357,800**"
+
+table = Month,Households served,Pounds distributed,Pounds per household; Jul,"6,840","111,100",16.2; Aug,"7,310","117,200",16.0; Sep,"7,925","129,500",16.3
+
+## What we heard
+
+> The fresh vegetables made it possible to cook for the whole week.
+> — Tuesday client, Eastside pantry
+
+> Pickup was faster than last time.
+> — Saturday client, Eastside pantry
+
+---
+
+## Thank you
+
+To our volunteers: you gave **4,180 hours** this quarter. Every pound on this page was sorted, packed and handed over by you. Thank you.

@@ -1,0 +1,39 @@
+@title Search latency review
+@subtitle What changed after the October index rebuild
+@author Search Infrastructure
+@date 2026-10-17
+
+The rebuild cut tail latency by a third, but one region regressed and the cache hit rate is still below target.
+
+kpi p95 latency | 214 ms | -31% | good
+kpi Cache hit rate | 71% | -4 pts | bad
+kpi Index size | 1.8 TB | +6% | neutral
+
+data region = region,before,after; us-east,312,198; us-west,298,201; eu-west,341,226; ap-south,287,305
+chart bar region x=region y=before,after unit=ms title="p95 latency by region, before and after"
+
+## By region
+
+table region title="p95 latency, ms"
+
+## What we learned
+
+- Shard count matters more than shard size
+-- Going from 24 to 40 shards removed the hot spots
+-- Shards above 60 GB still need a split
+- Warm the cache before shifting traffic
+- The ap-south regression is a network issue, not an index issue
+
+### Do
+- Rebuild one region at a time
+- Keep the old index for 48 hours
+
+### Avoid
+- Rebuilding during the weekly batch window
+- Shifting more than 20% of traffic per step
+
+## Next steps
+
+1. Add ap-south to the cross-region peering review.
+2. Raise the cache warm-up budget from 10 to 25 minutes.
+3. Re-run this review after the November rebuild.

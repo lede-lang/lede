@@ -1,0 +1,53 @@
+{
+  "id": "08-orders-platform-aws",
+  "category": "architecture",
+  "title": "Orders platform architecture",
+  "brief": "We need an architecture page for the Orders platform at Kestrel Outfitters, owned by the Commerce Platform team and last reviewed on 2026-10-01. Start with a section titled \"Overview\": two or three sentences saying the platform takes web orders, reserves stock and charges cards, handling about 3200 orders per hour at peak. The centerpiece is a section titled \"Architecture diagram\" with nested groupings. An outer group labeled \"Prod account\" contains a group labeled \"Orders VPC\" (CIDR 10.20.0.0/16). Inside the Orders VPC put four nodes: \"Application Load Balancer\", \"Orders Service\", \"Inventory Service\" and \"Orders DB\". Inside the Prod account but outside the VPC put \"Order Events\" (an SQS queue). A separate group labeled \"Shared services account\" contains one node, \"ECR Registry\". Outside every account put \"Customers\" and \"Stripe\". Connections, with these labels: Customers to Application Load Balancer \"HTTPS\"; Application Load Balancer to Orders Service \"/orders\"; Application Load Balancer to Inventory Service \"/inventory\"; Orders Service to Orders DB \"SQL\"; Orders Service to Order Events \"publish\"; Order Events to Inventory Service \"poll\"; Orders Service to Stripe \"charge\"; ECR Registry to Orders Service \"image pull\". Then a section titled \"Components\" with a table of columns Component, Runtime, Purpose: Orders Service runs on ECS Fargate with 6 tasks; Inventory Service runs on ECS Fargate with 4 tasks; Orders DB is RDS PostgreSQL 16 on db.r6g.xlarge, Multi-AZ; Order Events is a standard SQS queue with 14 day retention. Finish with a section titled \"Failure modes\" containing a warning note: an Orders DB Multi-AZ failover takes about 60 seconds, during which order writes fail and the storefront shows a retry banner.",
+  "checklist": {
+    "sections": [
+      "Overview",
+      "Architecture diagram",
+      "Components",
+      "Failure modes"
+    ],
+    "visible": [
+      "Prod account",
+      "Orders VPC",
+      "Shared services account",
+      "Application Load Balancer",
+      "Orders Service",
+      "Inventory Service",
+      "Orders DB",
+      "Order Events",
+      "ECR Registry",
+      "Stripe",
+      "Customers",
+      "image pull",
+      "publish"
+    ],
+    "values": [
+      "10.20.0.0/16",
+      "3200",
+      "60",
+      "db.r6g.xlarge",
+      "14"
+    ]
+  },
+  "needs": [
+    "diagram",
+    "table",
+    "callout"
+  ],
+  "edit": {
+    "request": "Rename \"Inventory Service\" to \"Stock Service\" everywhere on the page, and add a \"Notification Service\" node inside the Orders VPC that receives from Order Events with an arrow labeled \"subscribe\".",
+    "expect_visible": [
+      "Stock Service",
+      "Notification Service",
+      "subscribe"
+    ],
+    "expect_values": [],
+    "expect_absent": [
+      "Inventory Service"
+    ]
+  }
+}

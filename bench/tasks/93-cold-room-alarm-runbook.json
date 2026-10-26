@@ -1,0 +1,57 @@
+{
+  "id": "93-cold-room-alarm-runbook",
+  "category": "runbook",
+  "title": "Marlowe cold room alarm runbook",
+  "brief": "Marlowe Vaccine Depot needs a runbook for when the temperature alarm goes off in Cold Room B, which holds 12400 doses and must stay between 2 and 8 degrees Celsius. Owner: Depot Operations. Sections: \"Alarm levels\", \"First 15 minutes\", \"Moving stock\", \"Quarantine and escalation\" and \"Contacts\". Alarm levels: warning when the temperature is above 8 degrees for 10 minutes; critical when it is above 12 degrees or below 0 degrees. First 15 minutes, in order: 1 acknowledge the alarm on the monitoring panel within 5 minutes; 2 check that the door is fully shut and the seal is intact; 3 check that the compressor has power and note the temperature shown on the data logger; 4 call the refrigeration contractor Polar Service on 555-0190, who respond within 4 hours. Moving stock: if the temperature is still above 8 degrees after 15 minutes, move the doses to backup Cold Room C, which holds 9000 doses; the remaining 3400 go into the 6 validated transport boxes with ice packs; log every box on the transfer sheet. Quarantine and escalation: any lot out of range for more than 30 minutes in total is quarantined and the Quality Manager is told immediately; nobody discards anything, only the Quality Manager decides. If the alarm is not resolved within 2 hours, call the Operations Director. Contacts: Night supervisor, Gabriela Nunez, 555-0187; Quality Manager, Peter Aldous, 555-0152; Polar Service, 555-0190. Make the no-discard rule impossible to miss.",
+  "checklist": {
+    "sections": [
+      "Alarm levels",
+      "First 15 minutes",
+      "Moving stock",
+      "Quarantine and escalation",
+      "Contacts"
+    ],
+    "visible": [
+      "Cold Room B",
+      "Cold Room C",
+      "Polar Service",
+      "Quality Manager",
+      "Gabriela Nunez",
+      "Peter Aldous",
+      "transfer sheet"
+    ],
+    "values": [
+      "12400",
+      "2 and 8 degrees",
+      "10 minutes",
+      "12 degrees",
+      "5 minutes",
+      "4 hours",
+      "9000",
+      "3400",
+      "30 minutes",
+      "2 hours",
+      "555-0190",
+      "555-0187",
+      "555-0152"
+    ]
+  },
+  "needs": [
+    "list",
+    "table",
+    "callout"
+  ],
+  "edit": {
+    "request": "Shorten the quarantine threshold from 30 minutes to 20 minutes, and replace Peter Aldous with Hye-jin Park as the Quality Manager.",
+    "expect_visible": [
+      "Hye-jin Park"
+    ],
+    "expect_values": [
+      "20 minutes"
+    ],
+    "expect_absent": [
+      "30 minutes",
+      "Peter Aldous"
+    ]
+  }
+}

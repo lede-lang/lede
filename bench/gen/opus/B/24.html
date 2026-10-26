@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scheduling Admin Framework</title>
+<style>
+:root{--bg:#faf9f7;--surface:#fff;--text:#22201c;--muted:#6a655c;--border:#e4e0d8;--accent:#3d5ccc;--accent-soft:#eaeefc;--bar:#3d5ccc;--quote:#8a5a1f}
+@media (prefers-color-scheme:dark){:root{--bg:#141310;--surface:#1d1c18;--text:#ece9e2;--muted:#a49e92;--border:#33302a;--accent:#8ea4f5;--accent-soft:#1d2440;--bar:#8ea4f5;--quote:#e0ae6b}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:820px;margin:0 auto;padding:36px 16px 64px}
+.eyebrow{font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 0 6px}
+h1{font-size:clamp(26px,5vw,34px);line-height:1.2;margin:0 0 10px}
+.lede{color:var(--muted);margin:0 0 32px}
+section{margin-bottom:34px}
+h2{font-size:20px;margin:0 0 12px}
+ul.crit{margin:0;padding-left:22px}
+ul.crit li{margin:4px 0}
+.table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--border);border-radius:12px}
+table{width:100%;border-collapse:collapse;min-width:560px}
+th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--border);vertical-align:middle}
+thead th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+tbody tr:last-child>*{border-bottom:0}
+.kb{display:flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums}
+.kb .track{flex:1;min-width:60px;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.kb .fill{height:100%;background:var(--bar);border-radius:4px}
+.kb span{width:2.6em;text-align:right}
+.pc{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.card h3{margin:0 0 6px;font-size:17px}
+.card h4{margin:10px 0 2px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.card ul{margin:0;padding-left:20px}
+.callout{background:var(--accent-soft);border:1px solid var(--accent);border-radius:12px;padding:16px 18px}
+.callout .label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent)}
+.callout p{margin:4px 0 0}
+blockquote{margin:22px 0 0;padding:4px 0 4px 20px;border-left:4px solid var(--quote)}
+blockquote p{margin:0;font-size:19px;font-style:italic;line-height:1.5}
+blockquote footer{margin-top:6px;color:var(--muted);font-size:14px}
+.endnote{border-top:1px solid var(--border);padding-top:16px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+<p class="eyebrow">Wrenfield University IT · Internal Tools guild</p>
+<h1>Frontend framework for the course-scheduling admin rewrite</h1>
+<p class="lede">About 60 screens, 5 developers, mostly forms and tables. Options considered: React, Vue and Svelte.</p>
+
+<section>
+<h2>Criteria</h2>
+<ul class="crit">
+<li>Team familiarity</li>
+<li>Form and table libraries</li>
+<li>Hiring pool</li>
+<li>Bundle size</li>
+<li>Long-term support</li>
+</ul>
+</section>
+
+<section>
+<h2>Comparison</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Framework</th><th>Team familiarity</th><th>Form/table ecosystem</th><th>Bundle size (KB)</th><th>Hiring pool</th></tr></thead>
+<tbody>
+<tr><th scope="row">React</th><td>4 of 5 developers</td><td>Excellent</td><td><div class="kb"><span>142</span><div class="track"><div class="fill" style="width:100%"></div></div></div></td><td>Large</td></tr>
+<tr><th scope="row">Vue</th><td>1 of 5 developers</td><td>Good</td><td><div class="kb"><span>98</span><div class="track"><div class="fill" style="width:69%"></div></div></div></td><td>Medium</td></tr>
+<tr><th scope="row">Svelte</th><td>0 of 5 developers</td><td>Fair</td><td><div class="kb"><span>41</span><div class="track"><div class="fill" style="width:28.9%"></div></div></div></td><td>Small</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section>
+<h2>Pros and cons</h2>
+<div class="pc">
+<div class="card"><h3>React</h3>
+<h4>Pros</h4><ul><li>4 of 5 developers know it</li><li>Excellent form and table libraries</li><li>Large hiring pool</li></ul>
+<h4>Cons</h4><ul><li>Largest bundle at 142 KB</li></ul></div>
+<div class="card"><h3>Vue</h3>
+<h4>Pros</h4><ul><li>Good ecosystem</li><li>Smaller bundle at 98 KB</li></ul>
+<h4>Cons</h4><ul><li>Only 1 of 5 developers knows it</li><li>Medium hiring pool</li></ul></div>
+<div class="card"><h3>Svelte</h3>
+<h4>Pros</h4><ul><li>Smallest bundle at 41 KB</li><li>Favorite in the prototype spike</li></ul>
+<h4>Cons</h4><ul><li>No one on the team knows it yet</li><li>Fair form/table ecosystem</li><li>Small hiring pool</li></ul></div>
+</div>
+</section>
+
+<section>
+<h2>Recommendation</h2>
+<div class="callout">
+<div class="label">Recommendation</div>
+<p><strong>React.</strong> Mainly because four of the five developers already know it, and the data grid we need exists today.</p>
+</div>
+<blockquote>
+<p>"We are optimizing for the next five years of maintenance, not the first five weeks of building."</p>
+<footer>Hannah Osei, guild lead</footer>
+</blockquote>
+</section>
+
+<p class="endnote"><strong>Note:</strong> Svelte was the favorite in the prototype spike, and we will revisit it for smaller tools.</p>
+</main>
+</body>
+</html>

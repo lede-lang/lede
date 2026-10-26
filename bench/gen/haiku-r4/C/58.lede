@@ -1,0 +1,34 @@
+@title Tamarind delivery app: native, Flutter or web
+@subtitle Decision page for the product council, 2026-10-27
+
+Wanjiru Kamau, engineering manager, needs a decision on how to relaunch the Tamarind Grocery delivery app. We have 4 mobile developers, and the first release must be out by 2027-01-15 at the latest. Three approaches are on the table: fully native apps for iOS and Android, Flutter, and a progressive web app.
+
+## Comparison
+
+data compare = approach,months to first release,build cost,offline basket and lists,push notifications,app store,camera barcode scanning; Native,11,$1.45 million,Full,Full,Yes,Smooth; Flutter,7,$0.92 million,Full,Full,Yes,Good; Progressive web app,4,$0.48 million,Partial,Limited on iOS,No,Unreliable
+
+table compare title="Three approaches"
+
+## Time to first release
+
+data months = approach,months; Native,11; Flutter,7; Progressive web app,4
+
+chart hbar months unit=months labels title="Months to first release"
+
+The January deadline is 2027-01-15. Flutter takes 7 months, which misses that date unless we cut scope.
+
+## Pros and cons
+
+- **Native**
+-- Full offline support, full push notifications and smooth barcode scanning.
+-- Highest cost, at $1.45 million, and the longest time to release, at 11 months.
+- **Flutter**
+-- Full offline basket and saved lists, full push notifications, good barcode scanning, and an app store presence.
+-- Costs $0.92 million, and at 7 months it misses 2027-01-15 unless we cut scope.
+- **Progressive web app**
+-- Cheapest at $0.48 million, and fastest at 4 months.
+-- Only partial offline support, limited push on iOS, no app store presence, and unreliable barcode scanning.
+
+## Recommendation
+
+We lean toward Flutter, but we want to be plain about the date. At 7 months it misses 2027-01-15 unless we cut scope. The two cuts we would make are to drop in-app chat support and to postpone the recipe feature. We ask the product council to decide whether those cuts are acceptable.

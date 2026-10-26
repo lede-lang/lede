@@ -1,0 +1,8 @@
+@title Checkout reliability
+# Checkout reliability
+
+Three releases landed inside four weeks. The error rate fell after each fix, and the second incident came right after the v2.4 deploy.
+
+data err = week,errors,p99; W1,42,310; W2,38,305; W3,61,420; W4,57,390; W5,33,300; W6,29,288; W7,31,292; W8,24,270; W9,22,262; W10,19,255; W11,18,251; W12,17,248
+
+chart line err y=errors title="Checkout errors per day" mark="W3 deploy v2.4" mark="W4 rollback" mark="W5 retry fix"

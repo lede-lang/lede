@@ -1,0 +1,37 @@
+@title Building Permit Routing
+@subtitle How the Whitcombe City planning office routes a permit application
+@author Whitcombe City Planning Office
+@date Current as of 2026-10-01
+
+# Routing flow
+diagram route dir=TB title="Permit application routing"
+route: recv "Application received" user
+route: complete "Submission complete?" decision
+route: ret "Return to applicant" user
+route: value "Project value over $50,000?" decision
+route: fast "Fast-track review" svc
+route: hist "In a historic district?" decision
+route: heritage "Heritage Board review" team
+route: plan "Plan review" team
+route: issued "Permit issued" svc focus
+route: recv -> complete
+route: complete -> ret : no
+route: complete -> value : yes
+route: value -> fast : no
+route: value -> hist : yes
+route: hist -> heritage : yes
+route: hist -> plan : no
+route: heritage -> plan : cleared
+route: fast -> issued : approved
+route: plan -> issued : approved
+
+# Review times
+table = Stage,Target; Completeness check,within 2 business days; Fast-track review,within 3 business days; Plan review,within 15 business days; Heritage Board review,"within 30 days, on top of plan review"
+
+! Heritage Board review is added to plan review, not instead of it. A project in a historic district waits up to 30 days for the Heritage Board and then up to 15 business days for plan review.
+
+# Fees
+kpi Base fee | $180 | every application | neutral
+kpi Value fee | 0.8% | of project value above $50,000 | neutral
+
+Example: a $150,000 project pays $180 plus 0.8% of $100,000 ($800), so $980 in total. A project of $50,000 or less pays only the $180 base fee.

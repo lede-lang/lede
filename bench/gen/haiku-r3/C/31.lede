@@ -1,0 +1,30 @@
+@title Experiment EXP-418: Checkout Button Copy
+@subtitle Marigold Home growth analytics, test run 2026-09-08 to 2026-09-28
+@author Growth Analytics
+
+kpi Total visitors | 144,607 | 2026-09-08 to 2026-09-28 | neutral
+kpi Winner | Variant C | Pay securely now | good
+kpi Lift | +12.6% | vs control | good
+kpi Confidence | 99.7% | p-value 0.003 | neutral
+
+## Results
+
+table = Variant,Visitors,Conversions,Conversion rate,Lift vs control,p-value; Control (Place order),48210,1832,3.80%,none,none; Variant B (Complete purchase),48095,1919,3.99%,+5.0%,0.14; Variant C (Pay securely now),48302,2068,4.28%,+12.6%,0.003
+
+## Conversion rate
+
+data conv = Variant,Conversion rate; Control,3.80; Variant B,3.99; Variant C,4.28
+
+chart bar conv y=Conversion rate unit=% labels title="Conversion rate by variant"
+
+## Daily trend
+
+data daily = Day,Control,Variant C; Sep 22,3.71,4.19; Sep 23,3.85,4.33; Sep 24,3.79,4.24; Sep 25,3.92,4.40; Sep 26,3.68,4.17; Sep 27,3.83,4.31; Sep 28,3.81,4.29
+
+chart line daily y=Control,Variant C unit=% title="Daily conversion rate, final week"
+
+## Decision
+
+! Ship Variant C to 100% of traffic.
+
+Variant B was not significant, with a p-value of 0.14. Average order value did not change either, at $87.40 against $87.15.

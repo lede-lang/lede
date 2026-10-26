@@ -1,0 +1,19 @@
+# Checkout
+diagram co sequence title="Checkout with optional gift wrap"
+co: shopper "Shopper" user
+co: cart "Cart service" svc
+co: pay "Payments" svc
+co: shopper -> cart : place order
+co: opt "gift wrap requested"
+co: cart -> cart : add wrap SKU
+co: note cart : wrap adds $4.50 and one day
+co: cart --> shopper : updated total
+co: end
+co: cart -> pay : authorize
+co: alt "card approved"
+co: pay --> cart : auth ok
+co: else "declined"
+co: pay --> cart : declined
+co: cart --> shopper : try another card
+co: end
+co: cart --> shopper : order confirmed

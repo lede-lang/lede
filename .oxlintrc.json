@@ -1,0 +1,61 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "eslint",
+    "typescript",
+    "unicorn",
+    "import",
+    "oxc",
+    "promise",
+    "node"
+  ],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn"
+  },
+  "options": {
+    "typeAware": true,
+    "reportUnusedDisableDirectives": "warn"
+  },
+  "ignorePatterns": [
+    "node_modules/**",
+    "packages/*/dist/**",
+    "bench/gen/**",
+    "bench/out/**",
+    "bench/results/**",
+    "bench/briefs/**",
+    "examples/**",
+    ".claude/**"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "**/test/**",
+        "conformance/*.test.ts"
+      ],
+      "rules": {
+        "typescript/no-floating-promises": "off",
+        "typescript/no-unsafe-type-assertion": "off",
+        "eslint/no-await-in-loop": "off",
+        "unicorn/consistent-function-scoping": "off",
+        "eslint/no-underscore-dangle": "off"
+      }
+    },
+    {
+      "files": [
+        "bench/src/**"
+      ],
+      "rules": {
+        "typescript/no-unsafe-type-assertion": "off",
+        "eslint/no-await-in-loop": "off",
+        "unicorn/no-array-sort": "off",
+        "unicorn/no-array-reverse": "off"
+      }
+    }
+  ],
+  "rules": {
+    "typescript/no-unsafe-type-assertion": "off",
+    "unicorn/consistent-function-scoping": "off"
+  }
+}

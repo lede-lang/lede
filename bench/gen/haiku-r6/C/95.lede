@@ -1,0 +1,34 @@
+@title Dispatch queue backlog
+@subtitle On-call runbook, Dispatch Engineering
+@author Dispatch Engineering
+
+kpi Alert | above 5000 for 10 min | QUEUE_DEPTH_HIGH | bad
+kpi Normal depth | under 400 | | good
+kpi DB connection cap | 200 | connections | neutral
+kpi Max consumers | 40 | database pool limit | neutral
+
+# Symptoms
+- The QUEUE_DEPTH_HIGH alert fires when depth stays above 5000 for 10 minutes.
+- Normal depth is under 400.
+- Drivers see new jobs arrive late in the app.
+
+# Diagnose
+- Check the queue depth and consumer count with `kubectl -n dispatch get hpa dispatch-consumer`.
+- Look at the oldest message age on the queue dashboard.
+- Check the database connection pool, which is capped at 200 connections.
+
+# Fix steps
+!!! Never purge dispatch-jobs. Every message is a real customer delivery.
+
+1. Scale the consumers.
+-- a) Run `kubectl -n dispatch scale deploy dispatch-consumer --replicas=24`.
+-- b) Wait 5 minutes and re-check.
+-- c) If depth is still rising, scale to 40. That is the maximum the database pool supports.
+2. Check for poison messages.
+-- a) If one message has been retried more than 10 times, go on to b).
+-- b) Move it to dispatch-dlq with the dlq-move tool.
+3. Pause the bulk import scheduler in the admin console. Bulk imports add up to 3000 jobs at a time.
+4. When depth drops under 400, re-enable the scheduler gradually.
+
+# Escalation
+If depth is still above 5000 after 20 minutes, page the Dispatch Engineering lead and open an incident in #incidents.

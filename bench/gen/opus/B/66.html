@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lantern Notes 3.8.0 release notes</title>
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#faf8f4; --surface:#ffffff; --text:#1f1d1a; --muted:#6a645b; --border:#e8e3da;
+  --accent:#d97706; --accent-soft:#fdf0dc;
+  --new:#7c3aed; --new-soft:#efe7fd; --imp:#0f766e; --imp-soft:#ddf3ef; --fix:#2563eb; --fix-soft:#e3ebfd;
+  --known:#b45309; --known-soft:#fdf0dc; --dep:#b91c1c; --dep-soft:#fde7e7;
+  --bar-old:#c9c2b6;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#13120f; --surface:#1c1a17; --text:#ece8e1; --muted:#a59e92; --border:#2f2c27;
+    --accent:#fbbf24; --accent-soft:#33280f;
+    --new:#c4a5ff; --new-soft:#2a1f45; --imp:#5eead4; --imp-soft:#123330; --fix:#93b4ff; --fix-soft:#1b2747;
+    --known:#fbbf24; --known-soft:#33280f; --dep:#fca5a5; --dep-soft:#3b1a1a;
+    --bar-old:#4d4840;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:48px 24px 64px}
+.top{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.9rem;margin:0}
+.logo{width:28px;height:28px}
+h1{font-size:clamp(1.8rem,5vw,2.5rem);line-height:1.15;margin:.35em 0 .2em;letter-spacing:-.02em}
+.date{color:var(--muted);margin:0 0 6px}
+.lede{font-size:1.08rem;margin:14px 0 0}
+section{margin:34px 0 0}
+h2{display:flex;align-items:center;gap:10px;font-size:1.25rem;margin:0 0 12px}
+.badge{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 9px;border-radius:999px}
+.b-new{background:var(--new-soft);color:var(--new)}
+.b-imp{background:var(--imp-soft);color:var(--imp)}
+.b-fix{background:var(--fix-soft);color:var(--fix)}
+.b-known{background:var(--known-soft);color:var(--known)}
+.b-dep{background:var(--dep-soft);color:var(--dep)}
+.items{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--border);border-radius:14px}
+.items li{padding:14px 18px;border-bottom:1px solid var(--border)}
+.items li:last-child{border-bottom:0}
+.items b{display:block;margin-bottom:2px}
+.items span{color:var(--muted)}
+.compact li{padding:10px 18px}
+.speed{margin-top:10px;max-width:420px}
+.chart{width:100%;height:auto;display:block}
+.chart .lbl{fill:var(--muted);font-size:13px}
+.chart .val{fill:var(--text);font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.chart .old{fill:var(--bar-old)} .chart .nw{fill:var(--imp)}
+footer{color:var(--muted);font-size:.88rem;margin-top:40px;border-top:1px solid var(--border);padding-top:16px}
+@media (max-width:480px){
+  .wrap{padding:32px 16px 48px}
+  .items li{padding:12px 14px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="top"><svg class="logo" viewBox="0 0 28 28" aria-hidden="true"><rect x="2" y="2" width="24" height="24" rx="7" fill="var(--accent)"/><path d="M11 7h6l-1 3h-4zM10 11h8l-1.2 9.5a1.5 1.5 0 0 1-1.5 1.3h-2.6a1.5 1.5 0 0 1-1.5-1.3z" fill="#fff"/></svg>Lantern Notes changelog</p>
+  <h1>Lantern Notes 3.8.0</h1>
+  <p class="date">Released <time datetime="2026-10-14">October 14, 2026</time></p>
+  <p class="lede">Shared folders, scheduled dark mode, Evernote import, and much faster search. Here is what's in this release.</p>
+</header>
+
+<section id="new">
+  <h2>New <span class="badge b-new">3 features</span></h2>
+  <ul class="items">
+    <li><b>Shared folders</b><span>Invite up to 25 collaborators to a folder, and choose view or edit access for each person.</span></li>
+    <li><b>Scheduled dark mode</b><span>Switch to dark mode automatically at sunset, or on a time range you set.</span></li>
+    <li><b>Import from Evernote</b><span>Bring in your ENEX files, including attachments up to 50 MB each.</span></li>
+  </ul>
+</section>
+
+<section id="improved">
+  <h2>Improved <span class="badge b-imp">Faster</span></h2>
+  <ul class="items">
+    <li><b>Search is about twice as fast</b><span>On a library of 10,000 notes, the median query now takes 190 ms instead of 410 ms.</span>
+      <div class="speed">
+        <svg class="chart" viewBox="0 0 400 74" role="img" aria-labelledby="sTitle">
+          <title id="sTitle">Median search time on 10,000 notes: 410 ms before, 190 ms in 3.8.0</title>
+          <text class="lbl" x="0" y="22">3.7</text>
+          <rect class="old" x="40" y="8" width="273.3" height="20" rx="3"/>
+          <text class="val" x="320" y="23">410 ms</text>
+          <text class="lbl" x="0" y="58">3.8</text>
+          <rect class="nw" x="40" y="44" width="126.7" height="20" rx="3"/>
+          <text class="val" x="174" y="59">190 ms</text>
+        </svg>
+      </div>
+    </li>
+    <li><b>Better battery life on Android</b><span>Background sync uses about 18% less battery.</span></li>
+  </ul>
+</section>
+
+<section id="fixed">
+  <h2>Fixed <span class="badge b-fix">6 fixes</span></h2>
+  <ul class="items compact">
+    <li>Tables keep their column widths when exported to PDF.</li>
+    <li>The app no longer freezes when opening a note with more than 200 images.</li>
+    <li>Reminders fire at the right time after a daylight saving change.</li>
+    <li>Pasted web links keep their titles.</li>
+    <li>Dragging a note onto a sidebar folder now works with a trackpad on Windows.</li>
+    <li>Word count now includes text inside tables.</li>
+  </ul>
+</section>
+
+<section id="known-issues">
+  <h2>Known issues</h2>
+  <ul class="items compact">
+    <li>Shared folders can't be used with end-to-end encrypted notebooks yet. This is planned for 3.9.</li>
+    <li>ENEX import drops nested tags beyond three levels.</li>
+  </ul>
+</section>
+
+<section id="deprecations">
+  <h2>Deprecations</h2>
+  <ul class="items compact">
+    <li><b>Windows 8.1</b><span>Support ends on <time datetime="2027-01-31">January 31, 2027</time>.</span></li>
+    <li><b>Android</b><span>From version 3.9, Lantern Notes will require Android 10 or later.</span></li>
+  </ul>
+</section>
+
+<footer>Lantern Notes 3.8.0 &middot; October 14, 2026</footer>
+</div>
+</body>
+</html>

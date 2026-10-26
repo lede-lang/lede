@@ -1,0 +1,30 @@
+@title How We Cut Our Checkout Page Weight by Half
+@author Sam Whitlock, Kiln Coffee Roasters
+
+# Where we started
+
+Our checkout page had grown the way most pages do. Every feature added a little weight, and nobody was watching the total. By the time we measured it, the page weighed 1.9 MB. On a mid-range phone it took 4.8 seconds to become interactive, which is long enough for a customer to wonder whether the button works.
+
+We set a goal of getting the page under 1 MB and interactive in a little over two seconds. We were not sure we could hit it without removing features, and we did not want to remove any.
+
+# The three big wins
+
+Most of the savings came from three changes.
+
+1. We replaced a 310 KB date picker with the browser's native one. Customers already know how it works, and we stopped shipping code to reimplement it.
+2. We lazy-loaded the reviews widget. It now loads when someone scrolls near it, so it no longer competes with the rest of the page on the way in.
+3. We served product photos at the size they are displayed. Our photos were far larger than any phone screen needed, and resizing them on the server was the cheapest change we made.
+
+After all three, the page weighed 0.95 MB and became interactive in 2.1 seconds on the same phone.
+
+# What did not work
+
+We tried inlining all of our styles into the page to avoid a separate request. It sounded right on paper. In practice, repeat visits got slower, because the browser could no longer reuse a cached stylesheet across pages. We reverted it within a week.
+
+# What is next
+
+We are looking at the cart page next, since customers pass through it before checkout. We will measure it the same way and write up what we learn.
+
+Mobile conversion rose from 2.6 percent to 3.1 percent in the four weeks after we launched on 2026-08-04. We are glad about that number, but we cannot prove the speedup caused all of it. Other things changed during those weeks, and we are not claiming more than the data shows.
+
+If you want to help us keep the page fast, come and work with us. See the Kiln careers page to find open roles.

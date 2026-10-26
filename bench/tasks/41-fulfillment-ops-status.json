@@ -1,0 +1,74 @@
+{
+  "id": "41-fulfillment-ops-status",
+  "category": "status",
+  "title": "Ashgrove fulfillment weekly status",
+  "brief": "Can you build the weekly operations status page for Ashgrove Logistics' four U.S. fulfillment sites, week ending 2026-10-16? Leadership wants the headline numbers first: 48210 orders shipped, 96.4 percent on-time dispatch (target is 97.0), average dock-to-stock time of 3.8 hours, and 7 open safety observations. Then show how on-time dispatch has moved over the last eight weeks under a heading \"On-time trend\": W34 97.1, W35 97.4, W36 96.9, W37 97.2, W38 97.0, W39 96.8, W40 96.9, W41 96.4. Under \"Sites\", give each site's manager, orders shipped and on-time percentage: Reno NV, Alicia Tran, 11940, 97.8; Columbus OH, Marcus Bell, 14380, 97.2; Dallas TX, Priyanka Rao, 12115, 96.5; Savannah GA, Joel Okafor, 9775, 93.6. Savannah is the one people will look for, and Dallas is worth watching. Under \"Needs attention\": Savannah's container crane was out of service from 2026-10-12 to 2026-10-15, which left a backlog of 1150 orders that should be cleared by 2026-10-19 with approved overtime. Under \"Next week\": the crane inspection sign-off on 2026-10-18 and 220 seasonal associates starting on 2026-11-02. People will read this on their phones between meetings.",
+  "checklist": {
+    "sections": [
+      "On-time trend",
+      "Sites",
+      "Needs attention",
+      "Next week"
+    ],
+    "visible": [
+      "Orders shipped",
+      "On-time dispatch",
+      "Dock-to-stock",
+      "Open safety observations",
+      "Reno NV",
+      "Columbus OH",
+      "Dallas TX",
+      "Savannah GA",
+      "Alicia Tran",
+      "Marcus Bell",
+      "Priyanka Rao",
+      "Joel Okafor",
+      "crane"
+    ],
+    "values": [
+      "48210",
+      "96.4",
+      "97.0",
+      "3.8",
+      "7",
+      "97.1",
+      "97.4",
+      "96.9",
+      "97.2",
+      "96.8",
+      "W34",
+      "W41",
+      "11940",
+      "14380",
+      "12115",
+      "9775",
+      "97.8",
+      "93.6",
+      "1150",
+      "2026-10-19",
+      "2026-10-18",
+      "220",
+      "2026-11-02"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add W42 at 97.3 percent to the trend, change the headline on-time dispatch to 97.3, and replace Joel Okafor with Beatriz Navarro as the Savannah manager.",
+    "expect_visible": [
+      "Beatriz Navarro"
+    ],
+    "expect_values": [
+      "97.3",
+      "W42"
+    ],
+    "expect_absent": [
+      "Joel Okafor"
+    ]
+  }
+}

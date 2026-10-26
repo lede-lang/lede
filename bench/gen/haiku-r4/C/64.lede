@@ -1,0 +1,32 @@
+@title Lakeshore Marathon 2026 results
+@subtitle Held Sunday 2026-10-11
+
+## Race at a glance
+
+kpi Finishers | 3,412 | 97.5% of 3,499 starters | good
+kpi Median finish | 4:21:08 | all finishers
+kpi Did not finish | 87 | 2.5% of starters
+
+The temperature at the start was 14 degrees Celsius, with a light headwind on the lakefront stretch.
+
+## Finish times
+
+data bands = finish time,finishers; Under 3:00,118; 3:00 to 3:29,304; 3:30 to 3:59,612; 4:00 to 4:29,891; 4:30 to 4:59,703; 5:00 to 5:29,489; 5:30 and over,295
+
+chart bar bands y=finishers labels title="Finishers by finish-time band"
+
+The largest band was 4:00 to 4:29, with 891 finishers.
+
+## Winners
+
+data winners = group,men,women; Overall,Daniel Kiprop 2:19:44,Elena Moretti 2:38:12; 18 to 29,Mateus Oliveira 2:31:55,Hannah Berg 2:54:30; 30 to 39,Samuel Adeyemi 2:28:02,Ines Duarte 2:49:18; 40 to 49,Rolf Jansen 2:41:37,Corinne Leclerc 3:01:44; 50 and over,Tadashi Mori 2:58:09,Margaret O'Hara 3:12:51
+
+table winners title="Overall and age-group winners"
+
+## Highlights
+
+- 41 percent of finishers were running their first marathon.
+- 23 countries were represented.
+- A record 1,180 volunteers staffed 14 aid stations.
+
+! Official chip times are final. Results may still change if a protest is upheld before 2026-10-25.

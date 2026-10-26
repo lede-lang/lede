@@ -1,0 +1,31 @@
+@title How We Cut Our Checkout Page Weight in Half
+@subtitle Kiln Coffee Roasters engineering blog
+@author Sam Whitlock
+
+## Where we started
+
+Our checkout page had gotten heavy. It weighed 1.9 MB, and on a mid-range phone it took 4.8 seconds to become interactive. That is a long time to ask someone to wait while they pay for a bag of coffee. We had added features one at a time over two years, and nobody had looked at the page as a whole.
+
+So we did. We set out to make the page feel instant on the same test phone we had been using all along, and we started by measuring every request the page made, from the largest down.
+
+## The three big wins
+
+Three changes did most of the work.
+
+1. We replaced a 310 KB date picker with the native one. The custom widget was nice to look at, but the browser already had a good one, and the savings showed up immediately.
+2. We lazy-loaded the reviews widget, so it loads only when someone scrolls near it. Most visitors never reach it before they decide.
+3. We served product photos at the size they are displayed. The originals had been sent at full resolution and then scaled down by the browser, which is a lot of wasted bytes on a phone.
+
+After the work, the page weighed 0.9 MB and became interactive in 2.1 seconds on the same phone.
+
+## What did not work
+
+Not everything helped. We tried inlining all of our styles into the page to avoid a round trip. First visits got a little faster, but repeat visits got slower, because the browser could no longer reuse a cached stylesheet that many pages shared. We reverted it within a day and kept the shared file.
+
+## What is next
+
+We are looking at the cart page next, since it shares most of the same components. We will write up what we find, including the parts that do not work.
+
+Mobile conversion rose from 2.6 percent to 3.1 percent in the four weeks after the launch on 2026-08-04. We are careful with that number. Other things changed in the same period, and we cannot prove the speedup caused all of the lift. What we can say is that the page is much lighter and that people using it on phones seem to finish more often.
+
+If this kind of work sounds like fun, see what we are hiring for on the Kiln careers page.

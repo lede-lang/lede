@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>search-prod Red Runbook</title>
+<style>
+:root{--bg:#f4f5f7;--card:#ffffff;--fg:#1b1f26;--muted:#5b6370;--line:#d9dee6;--accent:#2a56c6;--good:#17794a;--goodbg:#e2f4ea;--warn:#8a5200;--warnbg:#fcf0d9;--bad:#b3261e;--badbg:#fbe3e0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0f1115;--card:#181b21;--fg:#e6e9ef;--muted:#9aa3b0;--line:#2b313b;--accent:#8fb0ff;--good:#62d39b;--goodbg:#15301f;--warn:#f0b35c;--warnbg:#36290f;--bad:#ff8b82;--badbg:#3b1a18}}
+:root[data-theme="dark"]{--bg:#0f1115;--card:#181b21;--fg:#e6e9ef;--muted:#9aa3b0;--line:#2b313b;--accent:#8fb0ff;--good:#62d39b;--goodbg:#15301f;--warn:#f0b35c;--warnbg:#36290f;--bad:#ff8b82;--badbg:#3b1a18}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:1.6rem;line-height:1.2;margin:0 0 6px}
+h2{font-size:1.15rem;margin:34px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+h3{font-size:1rem;margin:20px 0 8px}
+p.sub{color:var(--muted);margin:0 0 18px}
+.callout{border-left:4px solid var(--warn);background:var(--warnbg);padding:12px 14px;border-radius:8px;margin:14px 0}
+.callout.bad{border-color:var(--bad);background:var(--badbg)}
+pre{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow-x:auto;font:.88rem/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;word-break:break-word;margin:8px 0}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em}
+ol{padding-left:22px}
+li{margin:6px 0}
+ol ol{list-style-type:lower-alpha;margin-top:6px}
+@media (max-width:560px){.wrap{padding:18px 14px 40px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Runbook: search-prod cluster is red</h1>
+<p class="sub">Quarry Press &middot; OpenSearch cluster <code>search-prod</code> (nine nodes) &middot; serves article search and the subscriber archive</p>
+
+<h2>Symptoms</h2>
+<ul>
+  <li>The CLUSTER_RED alert fires.</li>
+  <li>Search returns partial or empty results.</li>
+  <li>Editors report that new articles do not appear.</li>
+</ul>
+
+<h2>Triage</h2>
+<ol>
+  <li>Check cluster health and note the number of unassigned shards.
+<pre>GET _cluster/health</pre></li>
+  <li>Ask the cluster why shards are not assigned.
+<pre>GET _cluster/allocation/explain</pre></li>
+</ol>
+<p>The usual causes are:</p>
+<ul>
+  <li>Disk watermarks: low 85 percent, high 90 percent, flood stage 95 percent.</li>
+  <li>A lost data node.</li>
+  <li>A bad index template after a deploy.</li>
+</ul>
+
+<h2>Fix by cause</h2>
+<div class="callout bad">
+  <strong>Before any deletion: never delete an index without a snapshot taken in the last 24 hours.</strong> The archive cannot be rebuilt. Never touch <code>articles-*</code> or <code>archive-*</code> indices.
+</div>
+
+<h3>1. Disk watermark</h3>
+<ol type="a">
+  <li>Find the fullest nodes.
+<pre>GET _cat/allocation?v</pre></li>
+  <li>Delete indices older than 90 days from the <code>logs-*</code> family only. Never delete from <code>articles-*</code> or <code>archive-*</code>.</li>
+  <li>Once disk is under 80 percent, clear the read-only block.
+<pre>PUT _all/_settings
+{"index.blocks.read_only_allow_delete": null}</pre></li>
+  <li>Wait for the shards to relocate.</li>
+</ol>
+
+<h3>2. Lost data node</h3>
+<ol type="a">
+  <li>Check the instance in the AWS console.</li>
+  <li>If it is gone, let the autoscaling group replace it. This usually takes 6 to 8 minutes.</li>
+  <li>Shard recovery then takes about 20 minutes for the 1.2 TB per node.</li>
+</ol>
+
+<h3>3. Bad index template</h3>
+<ol type="a">
+  <li>Find the last deploy in #deploys.</li>
+  <li>Roll the template back using the saved copy in the search-config repository.</li>
+  <li>Reindex the affected index.</li>
+</ol>
+
+<h2>Escalation</h2>
+<ul>
+  <li>Page the Search Infrastructure lead if the cluster is still red after 30 minutes.</li>
+  <li>Open an incident in #incidents.</li>
+</ul>
+</div>
+</body>
+</html>

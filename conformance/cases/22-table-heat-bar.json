@@ -1,0 +1,101 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "data",
+      "name": "v",
+      "line": 1
+    },
+    {
+      "type": "table",
+      "data": "v",
+      "cols": null,
+      "sort": null,
+      "limit": null,
+      "title": null,
+      "line": 2,
+      "heat": true
+    },
+    {
+      "type": "table",
+      "data": "v",
+      "cols": null,
+      "sort": null,
+      "limit": null,
+      "title": null,
+      "line": 3,
+      "heat": [
+        "a",
+        "b"
+      ]
+    },
+    {
+      "type": "table",
+      "data": "v",
+      "cols": null,
+      "sort": null,
+      "limit": null,
+      "title": null,
+      "line": 4,
+      "bars": [
+        "a",
+        "b"
+      ]
+    },
+    {
+      "type": "table",
+      "data": "_table1",
+      "cols": null,
+      "sort": null,
+      "limit": null,
+      "title": null,
+      "line": 5,
+      "heat": true,
+      "bars": [
+        "a"
+      ]
+    }
+  ],
+  "data": {
+    "v": {
+      "name": "v",
+      "columns": [
+        "name",
+        "a",
+        "b"
+      ],
+      "rows": [
+        [
+          "X",
+          "1",
+          "2"
+        ],
+        [
+          "Y",
+          "3",
+          "4"
+        ]
+      ],
+      "line": 1
+    },
+    "_table1": {
+      "name": "_table1",
+      "columns": [
+        "n",
+        "a"
+      ],
+      "rows": [
+        [
+          "P",
+          "1"
+        ],
+        [
+          "Q",
+          "2"
+        ]
+      ],
+      "line": 5
+    }
+  },
+  "diagnostics": []
+}

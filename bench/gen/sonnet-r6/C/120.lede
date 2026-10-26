@@ -1,0 +1,39 @@
+@title How to Read Your Electricity Bill
+@subtitle Residential rates effective 2026-11-01
+@author Customer Education, Eastgrove Power
+
+# Your bill at a glance
+
+Your bill has three charges, plus tax.
+
+1. A fixed service charge of $14.50 a month.
+2. A delivery charge of $0.045 per kilowatt-hour (kWh).
+3. A supply charge that depends on when you use power.
+
+Sales tax of 5.2% applies to the total. Your bill is due 21 days after the bill date.
+
+# What each charge means
+
+table = charge,what it is,rate; Service charge,Fixed fee every month,$14.50 a month; Delivery charge,Moving power to your home,$0.045 per kWh; Supply charge,The power you use,$0.08 to $0.31 per kWh; Sales tax,Applied to the total,5.2%; Late payment fee,Added to unpaid balances after the due date,1.5%
+
+Budget billing spreads your year into 12 equal payments. We review them every 6 months.
+
+Income-qualified households can get a 20% discount through the CARE program. Enrolling takes about 10 minutes online.
+
+# Time-of-use hours
+
+The supply charge depends on the hour. Peak power costs more than 2.5 times as much as off-peak power.
+
+data supply = period,rate; Peak,0.31; Off-peak,0.12; Super off-peak,0.08
+
+chart hbar supply x=period y=rate unit="$ per kWh" labels title="Supply charge per kWh"
+
+table = period,hours,supply per kWh; Peak,"16:00 to 21:00, weekdays",$0.31; Super off-peak,"00:00 to 06:00, every day",$0.08; Off-peak,Everything else,$0.12
+
+# Ways to lower your bill
+
+- Run the dishwasher and laundry after 21:00.
+- Precool the house before 16:00, then set the thermostat 2 degrees higher during peak.
+- Charge electric vehicles after midnight.
+
+! Questions? Call 800-555-0166 or use the online account page.

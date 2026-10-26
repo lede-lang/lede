@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tidebreakers Launch Week</title>
+<style>
+:root{--bg:#f4f5f7;--card:#ffffff;--fg:#1b1f26;--muted:#5b6370;--line:#d9dee6;--accent:#2a56c6;--good:#17794a;--goodbg:#e2f4ea;--warn:#8a5200;--warnbg:#fcf0d9;--bad:#b3261e;--badbg:#fbe3e0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0f1115;--card:#181b21;--fg:#e6e9ef;--muted:#9aa3b0;--line:#2b313b;--accent:#8fb0ff;--good:#62d39b;--goodbg:#15301f;--warn:#f0b35c;--warnbg:#36290f;--bad:#ff8b82;--badbg:#3b1a18}}
+:root[data-theme="dark"]{--bg:#0f1115;--card:#181b21;--fg:#e6e9ef;--muted:#9aa3b0;--line:#2b313b;--accent:#8fb0ff;--good:#62d39b;--goodbg:#15301f;--warn:#f0b35c;--warnbg:#36290f;--bad:#ff8b82;--badbg:#3b1a18}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:1.6rem;line-height:1.2;margin:0 0 6px}
+h2{font-size:1.15rem;margin:34px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+p.sub{color:var(--muted);margin:0 0 18px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.kpi .v{font-size:1.5rem;font-weight:650;font-variant-numeric:tabular-nums}
+.kpi .l{color:var(--muted);font-size:.85rem;margin-top:2px}
+.kpi .t{font-size:.85rem;margin-top:6px}
+.good{color:var(--good)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.callout{border-left:4px solid var(--warn);background:var(--warnbg);padding:12px 14px;border-radius:8px;margin:14px 0}
+.callout.bad{border-color:var(--bad);background:var(--badbg)}
+.tbl{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tbl th,.tbl td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top;font-size:.94rem}
+.tbl th{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.tbl tr:last-child td{border-bottom:0}
+.tbl tr.hi td{background:var(--badbg)}
+.tbl tr.watch td{background:var(--warnbg)}
+.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tag{display:inline-block;font-size:.78rem;font-weight:650;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.tag.g{background:var(--goodbg);color:var(--good)} .tag.a{background:var(--warnbg);color:var(--warn)} .tag.r{background:var(--badbg);color:var(--bad)}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;min-width:90px}
+.bar i{display:block;height:100%;background:var(--accent)}
+.bar i.g{background:var(--good)} .bar i.a{background:var(--warn)} .bar i.r{background:var(--bad)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+pre{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow-x:auto;font-size:.88rem;white-space:pre-wrap;word-break:break-word}
+code{font-size:.9em}
+svg{display:block;width:100%;height:auto}
+svg .box{fill:var(--card);stroke:var(--muted);stroke-width:1.2}
+svg .dec{stroke:var(--accent);stroke-width:1.8}
+svg .zone{fill:none;stroke:var(--line);stroke-width:1.2;stroke-dasharray:5 4}
+svg text{fill:var(--fg);font-size:12px}
+svg .sm{fill:var(--muted);font-size:11px}
+svg .t11{font-size:11px}
+svg .lbl{font-size:11px;paint-order:stroke;stroke:var(--bg);stroke-width:4px;stroke-linejoin:round}
+svg .ln{stroke:var(--muted);stroke-width:1.4;fill:none}
+svg .ln.d{stroke-dasharray:5 4}
+svg .arr{fill:var(--muted)}
+.scroll{overflow-x:auto}
+.scroll svg{min-width:620px}
+ul.tl{list-style:none;padding:0;margin:0}
+ul.tl li{position:relative;padding:0 0 14px 22px;border-left:2px solid var(--line);margin-left:6px}
+ul.tl li::before{content:"";position:absolute;left:-6px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--accent)}
+ul.tl li:last-child{border-left-color:transparent}
+.time{font-weight:650;font-variant-numeric:tabular-nums;margin-right:6px}
+@media (max-width:560px){.tbl th,.tbl td{padding:7px 6px;font-size:.88rem}.wrap{padding:18px 14px 40px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Tidebreakers: launch week status</h1>
+<p class="sub">Starlark Games &middot; launched Monday 2026-10-12, 09:00 Pacific, in 38 countries &middot; numbers through Friday 2026-10-16</p>
+
+<h2>Headlines</h2>
+<div class="kpis">
+  <div class="kpi"><div class="v">1.38M</div><div class="l">Installs</div></div>
+  <div class="kpi"><div class="v">412,000</div><div class="l">Peak daily active users</div></div>
+  <div class="kpi"><div class="v">41.3%</div><div class="l">Day-1 retention</div></div>
+  <div class="kpi"><div class="v good">99.2%</div><div class="l">Crash-free sessions</div></div>
+  <div class="kpi"><div class="v">4.4</div><div class="l">Store rating</div></div>
+</div>
+
+<h2>Daily active users</h2>
+<div class="card">
+<svg viewBox="0 0 600 220" role="img" aria-label="Bar chart of daily active users, Monday to Friday, peaking Thursday at 412,000">
+  <line x1="40" y1="180" x2="580" y2="180" stroke="var(--line)" stroke-width="1"/>
+  <g fill="var(--accent)" opacity=".55">
+    <rect x="50" y="86.2" width="56" height="93.8" rx="3"/>
+    <rect x="140" y="64.15" width="56" height="115.85" rx="3"/>
+    <rect x="230" y="50.85" width="56" height="129.15" rx="3"/>
+    <rect x="320" y="owl" width="0" height="0"/>
+  </g>
+</svg>
+</div>
+</div>
+</body>
+</html>

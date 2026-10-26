@@ -1,0 +1,63 @@
+{
+  "id": "54-push-storm-postmortem",
+  "category": "runbook",
+  "title": "Peakform duplicate push notification postmortem",
+  "brief": "Write the postmortem for the duplicate push notification incident on 2026-09-21 at Peakform Fitness, tracked as INC-2874 and owned by the Messaging team. A weekly workout reminder campaign was meant to go out once to 1240000 users. A retry bug in the queue consumer re-sent each message six extra times, so users got the same notification seven times, 7440000 duplicates in total, over 38 minutes. Opt-outs from push jumped to 3.4 percent of recipients (42160 users) against a normal 0.2 percent, and the app store rating dropped from 4.6 to 4.3 over the following week. Give it a \"Summary\", then an annotated \"Timeline\" in Pacific time: 16:00 campaign released; 16:04 the first consumer timeouts begin and retries start; 16:09 social media complaints appear; 16:15 support pages the Messaging on-call; 16:22 on-call pauses the campaign sender; 16:38 queue purged and duplicates stop. A \"Contributing factors\" section in prose, saying the consumer treated a slow downstream acknowledgement as a failure and had no idempotency key, the campaign tool allows sends to the entire user base without a staged ramp, and the pause switch took 7 minutes to find because it was undocumented. A \"Customer impact\" paragraph. Then \"Action items\", each with an owner and due date: add idempotency keys to the push consumer, Daniel Okonkwo-Reyes, 2026-10-09; require staged ramps of 1, 10 and 100 percent for sends over 100000 users, Priya Venkatesan, 2026-10-23; document the sender pause switch in the on-call guide, Messaging on-call, 2026-09-28; send an apology notice and in-app note to affected users, Customer Care, 2026-09-24. Plain and honest, no blame on the engineer who merged the change.",
+  "checklist": {
+    "sections": [
+      "Summary",
+      "Timeline",
+      "Contributing factors",
+      "Customer impact",
+      "Action items"
+    ],
+    "visible": [
+      "INC-2874",
+      "Messaging",
+      "idempotency",
+      "Daniel Okonkwo-Reyes",
+      "Priya Venkatesan",
+      "Customer Care",
+      "staged ramp"
+    ],
+    "values": [
+      "1240000",
+      "7440000",
+      "38",
+      "3.4",
+      "42160",
+      "0.2",
+      "4.6",
+      "4.3",
+      "16:04",
+      "16:09",
+      "16:15",
+      "16:22",
+      "16:38",
+      "7",
+      "2026-10-09",
+      "2026-10-23",
+      "2026-09-28",
+      "2026-09-24"
+    ]
+  },
+  "needs": [
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Correct the number of affected users to 1260000 and the total duplicates to 7560000, and mark the sender pause switch documentation action as done.",
+    "expect_visible": [
+      "done"
+    ],
+    "expect_values": [
+      "1260000",
+      "7560000"
+    ],
+    "expect_absent": [
+      "1240000",
+      "7440000"
+    ]
+  }
+}

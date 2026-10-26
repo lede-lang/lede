@@ -1,0 +1,5 @@
+Lede has no way to run a replay or a what-if model, so I simulated the four options by hand and wrote the results in as static data. The replay rests on a handling time (20 min per truck) that the log does not contain; I calibrated it so first come, first served matches the log, and said so on the page.
+Cannot express an interactive comparison (drag a slider for handling time or operator count). Substituted a small sensitivity table and chart for handling time.
+Cannot show the queue as a timeline of trucks waiting (range chart needs dates or numbers per truck and would be hard to read for 16 trucks x 5 scenarios). Substituted a line chart of waits by arrival and a heat table.
+Numbers with thousands separators (loads like 1,240) cannot sit in chartable columns, so the log table quotes them as text and the chart datasets are separate and plain.
+Costs for appointments, pre-registration and the gate screen were not in the brief; I wrote "Not priced" rather than invent figures. The log has no date, so the Tuesday to Thursday rush could not be isolated; flagged on the page.

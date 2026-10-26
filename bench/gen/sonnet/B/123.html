@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Walk-In Refrigerator Alarm Runbook - Sunset Valley Food Share</title>
+<style>
+:root{color-scheme:light dark;--bg:#f6f5f1;--surface:#fff;--text:#1c2320;--muted:#58635d;--border:#dfe2dc;--accent:#176b4d;--on-accent:#fff;--accent-soft:#e2f2ea;--red:#b42318;--red-soft:#fdecea;--amber:#9a5200;--amber-soft:#fff1d6}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1512;--surface:#18201c;--text:#e8eeea;--muted:#9aa8a0;--border:#2a3630;--accent:#5fcf9d;--on-accent:#0f1512;--accent-soft:#143024;--red:#ff8b80;--red-soft:#3a1a1a;--amber:#f3a84b;--amber-soft:#35260f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:17px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:680px;margin:0 auto;padding:16px 14px 48px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+h1{font-size:1.6rem;line-height:1.2;margin:.25rem 0 .5rem}
+.meta{display:flex;flex-wrap:wrap;gap:4px 14px;color:var(--muted);font-size:.9rem;margin:0 0 12px;padding:0;list-style:none}
+h2{font-size:1.25rem;margin:1.8rem 0 .7rem;padding-bottom:.3rem;border-bottom:2px solid var(--border)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.callout{border-radius:12px;padding:14px 16px;margin:12px 0;border:3px solid var(--red);background:var(--red-soft)}
+.callout b.t{display:block;color:var(--red);text-transform:uppercase;letter-spacing:.05em;font-size:.82rem}
+.callout p{margin:.2rem 0 0;font-weight:700;font-size:1.1rem}
+.trig{display:flex;align-items:center;gap:12px}
+.temp{font-size:2rem;font-weight:800;color:var(--red);line-height:1}
+ol.steps{list-style:none;counter-reset:s;padding:0;margin:0}
+ol.steps>li{counter-increment:s;position:relative;padding:14px 14px 14px 56px;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;min-height:58px}
+ol.steps>li::before{content:counter(s);position:absolute;left:12px;top:12px;width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--on-accent);font-weight:800;display:flex;align-items:center;justify-content:center}
+.dec{border-radius:12px;padding:14px 16px;margin-bottom:12px;border:2px solid var(--border);background:var(--surface)}
+.dec.keep{border-color:var(--amber);background:var(--amber-soft)}
+.dec.toss{border-color:var(--red);background:var(--red-soft)}
+.dec h3{margin:0 0 .3rem;font-size:1.1rem}
+.dec .when{font-weight:700;margin:0 0 .5rem}
+.dec ul{margin:.3rem 0 0;padding-left:1.2rem}
+.dec li{margin:.3rem 0}
+.tag{display:inline-block;font-size:.75rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:99px;margin-bottom:.4rem}
+.keep .tag{background:var(--amber);color:#fff}
+.toss .tag{background:var(--red);color:#fff}
+@media (prefers-color-scheme:dark){.keep .tag,.toss .tag{color:#0f1512}}
+a.call{display:inline-block;background:var(--accent);color:var(--on-accent);font-weight:800;padding:8px 14px;border-radius:10px;text-decoration:none;margin-top:6px}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:10px 6px;border-bottom:1px solid var(--border);vertical-align:top}
+th{color:var(--muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.05em}
+tr:last-child td{border-bottom:0}
+footer{margin-top:2rem;color:var(--muted);font-size:.85rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="eyebrow">Sunset Valley Food Share &middot; Volunteers</div>
+<h1>Walk-In Refrigerator Alarm</h1>
+<ul class="meta">
+  <li>Owner: Operations Manager</li>
+  <li>Effective 2026-11-01</li>
+</ul>
+
+<div class="card trig">
+  <div class="temp">41&deg;F</div>
+  <div>Use this page when the <b>alarm sounds</b> or the display reads <b>above 41 degrees Fahrenheit</b>.</div>
+</div>
+
+<div class="callout" role="alert">
+  <b class="t">Never</b>
+  <p>Never taste or sniff food to decide whether it is safe.</p>
+</div>
+
+<h2>First two minutes</h2>
+<ol class="steps">
+  <li>Silence the alarm.</li>
+  <li>Check that the door is fully closed.</li>
+  <li>Read the display and the backup thermometer inside.</li>
+  <li>Write the time on the log sheet.</li>
+</ol>
+
+<h2>Decide what to do</h2>
+<div class="dec keep">
+  <span class="tag">Move and call</span>
+  <h3>41 to 45 degrees, for less than 2 hours</h3>
+  <p class="when">Above 41 for less than 2 hours, and 45 or below.</p>
+  <ul>
+    <li>Move <b>dairy, eggs, meat and prepared meals</b> into the backup chest freezers right away.</li>
+    <li>Keep produce in place.</li>
+    <li>Call the refrigeration technician.</li>
+  </ul>
+</div>
+<div class="dec toss">
+  <span class="tag">Throw away</span>
+  <h3>Above 45 degrees, or 2 hours or more, or unknown</h3>
+  <p class="when">Any one of these: above 45 degrees; above 41 for 2 hours or more; nobody knows how long.</p>
+  <ul>
+    <li><b>Throw away</b> dairy, eggs, meat and prepared meals, with a <b>second volunteer present to confirm</b>.</li>
+    <li>Produce, canned and packaged goods can stay.</li>
+  </ul>
+</div>
+
+<h2>Steps in order</h2>
+<ol class="steps">
+  <li>Call <b>ChillRight</b>, the refrigeration vendor, on <a href="tel:5550134">555-0134</a> (open 24 hours) and ask for a <b>4-hour response</b>.</li>
+  <li>Message the Operations Manager.</li>
+  <li>Move or discard items as above.</li>
+  <li>Record each item thrown away on the waste log, with its weight in pounds.</li>
+  <li>After the repair, run the refrigerator for <b>4 hours below 38 degrees</b> before restocking.</li>
+</ol>
+
+<h2>Contacts</h2>
+<div class="card" style="padding:4px 8px">
+  <table>
+    <thead><tr><th>Role</th><th>Name or line</th></tr></thead>
+    <tbody>
+      <tr><td>Operations Manager</td><td><b>Delphine Okonkwo</b></td></tr>
+      <tr><td>ChillRight on-call line</td><td><a href="tel:5550134"><b>555-0134</b></a></td></tr>
+      <tr><td>Food safety lead</td><td><b>Bram Verhoeven</b></td></tr>
+    </tbody>
+  </table>
+</div>
+<footer>Sunset Valley Food Share &middot; Refrigerator alarm runbook, effective 2026-11-01</footer>
+</div>
+</body>
+</html>

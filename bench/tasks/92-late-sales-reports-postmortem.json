@@ -1,0 +1,64 @@
+{
+  "id": "92-late-sales-reports-postmortem",
+  "category": "runbook",
+  "title": "Marrow Retail late sales reports postmortem",
+  "brief": "Please write the postmortem for INC-3302 at Marrow Retail, the late nightly sales reports on 2026-10-06, owned by the Data Platform team. Numbers first: the reports were due at 03:00 UTC and went out at 11:40, 8 hours 40 minutes late; 214 store managers received empty or stale reports; the backfill took 95 minutes. What happened, for a \"Summary\" section: the point-of-sale vendor added a column named tender_subtype to the sales feed without notice, the ingestion job failed on it, and because the failure alert went to a retired channel, nobody knew until a store manager asked why the report was empty. Then \"Timeline\" in UTC: 01:15 vendor deploys the schema change; 02:10 ingestion job fails for the first time; 02:40 retries exhausted; 03:00 reports miss their deadline, no alert; 07:25 a store manager asks in #retail-ops why the report is empty; 07:50 support pages the Data Platform on-call; 08:35 cause identified; 09:20 schema mapping patched; 10:05 backfill starts; 11:40 reports published. A \"Contributing factors\" section: the alert still routed to the retired channel #data-alerts-old, there was no schema contract check on vendor feeds, and the backfill ran serially. A \"What went well\" section: once paged, the on-call found the cause in 45 minutes, and no wrong numbers were published. Finish with \"Action items\", each with an owner and due date: route pipeline alerts to the on-call pager, Samuel Achterberg, 2026-10-16; add a schema contract check on vendor feeds, Lucia Fontaine, 2026-11-06; parallelize the backfill by partition, Data Platform on-call, 2026-11-20; require 14 days' notice of feed changes in the vendor contract, Vendor Management, 2026-10-30. Blameless tone.",
+  "checklist": {
+    "sections": [
+      "Summary",
+      "Timeline",
+      "Contributing factors",
+      "What went well",
+      "Action items"
+    ],
+    "visible": [
+      "INC-3302",
+      "Data Platform",
+      "tender_subtype",
+      "#data-alerts-old",
+      "#retail-ops",
+      "Samuel Achterberg",
+      "Lucia Fontaine",
+      "Vendor Management"
+    ],
+    "values": [
+      "03:00",
+      "11:40",
+      "214",
+      "95 minutes",
+      "01:15",
+      "02:10",
+      "02:40",
+      "07:25",
+      "07:50",
+      "08:35",
+      "09:20",
+      "10:05",
+      "45 minutes",
+      "14 days",
+      "2026-10-16",
+      "2026-11-06",
+      "2026-11-20",
+      "2026-10-30"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add an action item \"Review alert routing every quarter\", owner Wen Zhao, due 2026-12-11, and correct the number of store managers to 231.",
+    "expect_visible": [
+      "Wen Zhao"
+    ],
+    "expect_values": [
+      "231",
+      "2026-12-11"
+    ],
+    "expect_absent": [
+      "214"
+    ]
+  }
+}

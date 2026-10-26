@@ -1,0 +1,4 @@
+data q = quarter,spend; Q1,1.8; Q2,2.1; Q3 est,2.4
+chart line q labels=end
+chart bar q labels=all hatch="Q3 est" hatch=Q2
+chart bar q labels

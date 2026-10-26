@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Cedarwood Open House</title>
+<style>
+:root{
+  --bg:#fbf6ef;--surface:#ffffff;--text:#2a221c;--muted:#6e6259;--line:#efe4d6;
+  --accent:#c4562b;--accent-soft:#fbe7dc;--green:#3f7d4e;--green-soft:#e5f2e8;--sun:#f0b23b;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#17130f;--surface:#211b16;--text:#f3ece4;--muted:#b9aca1;--line:#352c24;
+    --accent:#f08a5e;--accent-soft:#3a2418;--green:#7cc78f;--green-soft:#1c2e21;--sun:#f3c25f;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:700px;margin:0 auto;padding:22px 16px 56px}
+.hero{background:var(--accent);color:#fff;border-radius:20px;padding:26px 20px 24px;position:relative;overflow:hidden;margin-bottom:18px}
+@media (prefers-color-scheme:dark){.hero{background:#7a3218}}
+.hero svg.deco{position:absolute;right:-18px;top:-18px;width:150px;height:150px;opacity:.22}
+.hero .kicker{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin:0 0 8px;opacity:.95}
+.hero h1{font-size:clamp(1.9rem,7vw,2.7rem);line-height:1.1;margin:0 0 12px;max-width:16ch}
+.hero .when{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+.hero .pill{background:rgba(255,255,255,.18);border-radius:999px;padding:5px 12px;font-weight:650;font-size:.92rem}
+.letter{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 18px;margin:0 0 16px}
+.letter p{margin:0 0 10px}
+.letter .sig{margin:14px 0 0;font-weight:700}
+.letter .sig span{display:block;font-weight:400;color:var(--muted);font-size:.92rem}
+section{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 18px;margin:0 0 16px}
+h2{font-size:1.3rem;margin:0 0 12px;display:flex;align-items:center;gap:10px}
+h2 svg{flex:none;width:28px;height:28px}
+h2 svg *{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+p{margin:0 0 10px}
+section p:last-child{margin-bottom:0}
+.info{display:grid;gap:10px;grid-template-columns:1fr}
+.info div{background:var(--bg);border-radius:12px;padding:12px 14px}
+.info b{display:block;font-size:1.08rem}
+.info span{color:var(--muted);font-size:.9rem}
+.sched{list-style:none;margin:0;padding:0}
+.sched li{display:grid;grid-template-columns:64px 1fr;gap:12px;position:relative;padding:0 0 18px}
+.sched li:last-child{padding-bottom:0}
+.sched .t{font-weight:800;font-variant-numeric:tabular-nums;color:var(--accent);padding-top:1px;position:relative}
+.sched .t::after{content:"";position:absolute;right:-9px;top:8px;width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.sched li::before{content:"";position:absolute;left:68px;top:20px;bottom:0;width:2px;background:var(--line)}
+.sched li:last-child::before{display:none}
+.sched .e{padding-left:10px}
+.sched .e b{display:block}
+.sched .e span{color:var(--muted);font-size:.93rem}
+.sched .where{display:inline-block;margin-top:4px;background:var(--green-soft);color:var(--green);font-size:.8rem;font-weight:700;border-radius:999px;padding:1px 9px}
+.checklist{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-direction:column;gap:10px}
+.checklist li{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-weight:600}
+.box{flex:none;width:22px;height:22px;border:2px solid var(--green);border-radius:6px}
+.note{background:var(--green-soft);border-radius:12px;padding:12px 14px;font-size:.95rem}
+.note b{color:var(--green)}
+.ways{display:grid;gap:10px;grid-template-columns:1fr}
+.way{display:flex;gap:12px;align-items:flex-start;background:var(--bg);border-radius:12px;padding:12px 14px}
+.way svg{flex:none;width:30px;height:30px}
+.way svg *{fill:none;stroke:var(--accent);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.way b{display:block}
+.way span{color:var(--muted);font-size:.93rem}
+.contact{display:grid;gap:10px;grid-template-columns:1fr}
+.contact a{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:14px;font-weight:650}
+.contact a:hover{border-color:var(--accent)}
+.contact a span{display:block;font-weight:400;font-size:.85rem;color:var(--muted)}
+.contact svg{flex:none;width:26px;height:26px}
+.contact svg *{fill:none;stroke:var(--accent);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+footer{color:var(--muted);font-size:.85rem;text-align:center;margin-top:22px}
+@media (min-width:600px){
+  .hero{padding:36px 34px 32px}
+  section,.letter{padding:24px 26px}
+  .info{grid-template-columns:repeat(3,1fr)}
+  .ways{grid-template-columns:repeat(3,1fr)}
+  .way{flex-direction:column}
+  .contact{grid-template-columns:1fr 1fr}
+  .sched li{grid-template-columns:70px 1fr}
+  .sched li::before{left:74px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+  <svg class="deco" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="18" fill="#fff"/><g stroke="#fff" stroke-width="5" stroke-linecap="round"><line x1="50" y1="8" x2="50" y2="22"/><line x1="50" y1="78" x2="50" y2="92"/><line x1="8" y1="50" x2="22" y2="50"/><line x1="78" y1="50" x2="92" y2="50"/><line x1="20" y1="20" x2="30" y2="30"/><line x1="70" y1="70" x2="80" y2="80"/><line x1="20" y1="80" x2="30" y2="70"/><line x1="70" y1="30" x2="80" y2="20"/></g></svg>
+  <p class="kicker">Cedarwood Elementary</p>
+  <h1>Family Open House</h1>
+  <p class="when"><span class="pill">Thursday 12 November 2026</span><span class="pill">17:30&ndash;19:30</span></p>
+</header>
+
+<div class="letter">
+  <p>Dear families,</p>
+  <p>We would love to meet you. Come and see our classrooms. Meet our teachers. Ask us anything.</p>
+  <p>Thinking about kindergarten for 2027&ndash;28? This evening is a great place to start.</p>
+  <p class="sig">Dr. Leonie Osei<span>Principal, Cedarwood Elementary</span></p>
+</div>
+
+<section aria-labelledby="h-when">
+  <h2 id="h-when"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="4" y="6" width="20" height="18" rx="2"/><path d="M4 11h20M9 3v5M19 3v5"/></svg>When and where</h2>
+  <div class="info">
+    <div><b>Thursday</b><span>12 November 2026</span></div>
+    <div><b>17:30 to 19:30</b><span>Two hours with your school community</span></div>
+    <div><b>Main building</b><span>410 Elm Street</span></div>
+  </div>
+</section>
+
+<section aria-labelledby="h-sched">
+  <h2 id="h-sched"><svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="10"/><path d="M14 8v6l4 3"/></svg>Schedule</h2>
+  <ol class="sched">
+    <li><span class="t">17:30</span><span class="e"><b>Welcome from the principal</b><span class="where">Gym</span></span></li>
+    <li><span class="t">17:50</span><span class="e"><b>Classroom tours</b><span>Groups of 8 families. Each tour takes about 30 minutes.</span><br><span class="where">Classrooms</span></span></li>
+    <li><span class="t">18:30</span><span class="e"><b>Kindergarten information session</b><span class="where">Library</span></span></li>
+    <li><span class="t">18:45</span><span class="e"><b>After-school program table</b><span class="where">Cafeteria</span></span></li>
+    <li><span class="t">19:15</span><span class="e"><b>Closing words</b></span></li>
+  </ol>
+</section>
+
+<section aria-labelledby="h-bring">
+  <h2 id="h-bring"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M6 9h16l-1.5 15h-13zM10 9V7a4 4 0 0 1 8 0v2"/></svg>What to bring</h2>
+  <p>Planning to register for kindergarten in 2027&ndash;28? Please bring:</p>
+  <ul class="checklist">
+    <li><span class="box" aria-hidden="true"></span>Birth certificate</li>
+    <li><span class="box" aria-hidden="true"></span>Proof of address</li>
+    <li><span class="box" aria-hidden="true"></span>Immunization records</li>
+  </ul>
+  <p class="note"><b>Registration opens on 12 January 2027.</b> Not registering? Just bring yourselves.</p>
+</section>
+
+<section aria-labelledby="h-here">
+  <h2 id="h-here"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M14 25s-8-7.5-8-13a8 8 0 0 1 16 0c0 5.5-8 13-8 13z"/><circle cx="14" cy="12" r="3"/></svg>Getting here</h2>
+  <div class="ways">
+    <div class="way">
+      <svg viewBox="0 0 30 30" aria-hidden="true"><rect x="4" y="4" width="22" height="22" rx="4"/><path d="M12 22V9h5a4 4 0 0 1 0 8h-5"/></svg>
+      <p style="margin:0"><b>Free parking</b><span>Elm Street lot, 60 spaces.</span></p>
+    </div>
+    <div class="way">
+      <svg viewBox="0 0 30 30" aria-hidden="true"><rect x="5" y="4" width="20" height="18" rx="3"/><path d="M5 13h20M9 26v-4M21 26v-4"/><circle cx="10" cy="17.5" r="1"/><circle cx="20" cy="17.5" r="1"/></svg>
+      <p style="margin:0"><b>Free shuttle</b><span>Every 10 minutes from the Pine Street church lot.</span></p>
+    </div>
+    <div class="way">
+      <svg viewBox="0 0 30 30" aria-hidden="true"><circle cx="11" cy="8" r="3"/><circle cx="20" cy="11" r="2.5"/><path d="M5 25v-6a6 6 0 0 1 12 0v6M16 25v-4a4 4 0 0 1 8 0v4"/></svg>
+      <p style="margin:0"><b>Childcare for siblings</b><span>In the music room.</span></p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="h-q">
+  <h2 id="h-q"><svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="10"/><path d="M11 11a3 3 0 1 1 4 2.8c-.7.3-1 .9-1 1.6V16M14 20v.5"/></svg>Questions</h2>
+  <p>We are happy to help. Get in touch any time.</p>
+  <div class="contact">
+    <a href="tel:5550166"><svg viewBox="0 0 26 26" aria-hidden="true"><path d="M7 3h4l2 5-2.5 1.5a12 12 0 0 0 6 6L18 13l5 2v4a2 2 0 0 1-2 2A18 18 0 0 1 5 5a2 2 0 0 1 2-2z"/></svg><span style="color:var(--text);font-weight:650;font-size:1rem">555-0166<span>Call the office</span></span></a>
+    <a href="mailto:office@cedarwood.example"><svg viewBox="0 0 26 26" aria-hidden="true"><rect x="3" y="6" width="20" height="14" rx="2"/><path d="M3 8l10 7 10-7"/></svg><span style="color:var(--text);font-weight:650;font-size:1rem">office@cedarwood.example<span>Write to us</span></span></a>
+  </div>
+</section>
+
+<footer>See you on 12 November! &middot; Cedarwood Elementary, 410 Elm Street</footer>
+</div>
+</body>
+</html>

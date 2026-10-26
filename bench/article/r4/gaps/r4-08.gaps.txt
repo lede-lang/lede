@@ -1,0 +1,6 @@
+Mostly expressible. Substitutions and limits:
+- Cohort "Harbor-2" is written with curly quotes inside quoted data fields because the reference does not say how straight quotes inside a quoted field are escaped.
+- The temperature chart is a line chart over categorical x values, so the irregular reading times are evenly spaced; I noted that in the title. There is no time-scaled axis for clock times, so the response-gap chart uses hours since the 01:52 warning instead of clock times (range accepts only numbers or ISO dates).
+- No way to mark a timeline row as a gap or a derived figure; I put the gap and the derived rates in a "what it shows" column and in prose.
+- The change list has no owner/due fields beyond a table, so owners and dates read "To assign" / "To set"; the brief gave none.
+- Names from the alarm log are kept verbatim in the timeline table (as data) while the narrative uses roles; there is no way to redact within a table row.

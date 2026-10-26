@@ -1,0 +1,33 @@
+@title Write It Down Before You Build It
+@author Daniel Reyes, Staff Engineer, Thornbury Labs
+
+Last spring our team spent ninety minutes in a room arguing about a service that nobody had described on paper. Two people wanted the queue to preserve order. Two wanted it not to. Nobody had written down which guarantee the downstream team actually relied on, so the meeting ended with a vote and a plan that we later had to unwind. That meeting did not need six people and a whiteboard. It needed a page.
+
+# The meeting that should have been a page
+
+The page would have said what we intended to build, what we assumed was true, and what we had already ruled out. One person could have written it in an afternoon. Everyone else could have read it on their own time, in the margins, where disagreement is cheap. The argument would have happened anyway. It would simply have happened before we spent three weeks writing code on top of an answer nobody had checked.
+
+# What a design note is
+
+A design note is one to two pages, written before any code exists, and read asynchronously. Readers take an hour to think instead of replying in the moment. A typical note at Thornbury has three parts: the problem, stated so that a new engineer could follow it; the proposal, with its main trade-offs; and a short list of open questions. The open questions matter most. A note that admits what it does not know brings in the right reviewers. A note that sounds certain mostly collects approval.
+
+# What it is not
+
+A design note is not a specification. A spec tries to describe everything the system will do. A note tries to say what we believe is true and what we plan to try first. It is also not a permission slip. Nobody needs to sign off before work starts, and a note that reads like a request for approval will attract the wrong comments, mostly polite ones. The goal is to surface disagreement early, while changing direction still costs a sentence rather than a quarter.
+
+# The cost
+
+At Thornbury, the median design note took about three hours to write. We do not pretend that is free. The cost also arrives early: it lands on the day you write the note, and the benefit arrives weeks later, when nobody remembers why the project went the way it did. That gap is easy to resent when a deadline is close, and writing a note can feel like delay. It is only delay if the note goes unread, which is why we ask reviewers to respond within two working days.
+
+Over 2026 the team counted eleven projects where a note caught a wrong assumption before any code was written. In each case the assumption was small and cheap to check on paper, and expensive to discover after a month of building. Three hours per note is a good trade for that. We have not measured the savings precisely, and I would not trust anyone who claims to, but the pattern was consistent enough that we stopped arguing about it.
+
+> The page is where you find out what you do not know.
+
+# Start small
+
+You do not need a template, a review board, or a new tool. Pick the next project that will take more than a week. Write one page before the first commit, share it with the people who will be affected, and see what they say. After a few of these, you will notice which questions your team keeps forgetting to answer, and you can add those to the template. Every note should answer four questions:
+
+- What problem are we solving?
+- Why now?
+- What else did we consider?
+- How will we know it worked?

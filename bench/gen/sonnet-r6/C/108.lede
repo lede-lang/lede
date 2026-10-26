@@ -1,0 +1,30 @@
+@title Fraud-Screening Vendor Comparison
+@subtitle Fennimore Payments, decision due 2026-11-20
+@author Gideon Ashworth, Risk Lead
+@date 2026-11-20
+
+For the payments steering group. Fennimore processes about 6 million customer payment transactions a month.
+
+## Side by side
+
+table vendors = Vendor,Fraud caught (%),Good transactions wrongly blocked (%),Fee per 1000 transactions ($),Integration (weeks); Tollgate,91.2,1.9,4.10,6; Vantage Shield,94.8,3.1,6.80,10; Kestrel Risk,89.5,1.2,2.90,4
+
+## Annual fees
+
+At 6 million transactions a month:
+
+data fees = vendor,annual fee; Tollgate,295200; Vantage Shield,489600; Kestrel Risk,208800
+
+chart bar fees unit=$ labels title="Annual fees"
+
+## What the trade-off means
+
+Each wrongly blocked transaction is a customer declined at checkout.
+
+Vantage Shield catches 3.6 points more fraud than Tollgate. That comes with 1.2 points more wrongly blocked transactions and $194400 more in fees a year.
+
+## Recommendation
+
+We lean toward **Tollgate** as the balanced choice. **Kestrel Risk** is the budget fallback if the steering group wants to cut fees by about $86400 a year.
+
+!! If the contract is signed by 2026-12-15, Tollgate and Kestrel Risk would be live before the change freeze on 2027-02-01. Vantage Shield, at 10 weeks, would not.

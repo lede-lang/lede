@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Q4 sales status, week 42</title>
+<style>
+:root{color-scheme:light dark;--bg:#f5f6f8;--card:#ffffff;--text:#1c2230;--muted:#5d6779;--line:#dde2ea;--accent:#2d5fd1;--ok:#1d7a4b;--okbg:#e4f4ea;--crit:#b3261e;--critbg:#fde8e6;--track:#e3e7ee;--warnbg:#fff4dc}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1117;--card:#171c26;--text:#e6e9ef;--muted:#9ba5b6;--line:#2a3242;--accent:#7fa6ff;--ok:#6fd49a;--okbg:#18301f;--crit:#ff8d84;--critbg:#3d1816;--track:#262d3b;--warnbg:#3a2e12}}
+:root[data-theme="dark"]{--bg:#0e1117;--card:#171c26;--text:#e6e9ef;--muted:#9ba5b6;--line:#2a3242;--accent:#7fa6ff;--ok:#6fd49a;--okbg:#18301f;--crit:#ff8d84;--critbg:#3d1816;--track:#262d3b;--warnbg:#3a2e12}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:1.7rem;line-height:1.2;margin:0 0 4px}
+h2{font-size:1.2rem;margin:28px 0 10px;padding-top:14px;border-top:1px solid var(--line)}
+.meta{color:var(--muted);font-size:.92rem}
+.kpis{display:grid;gap:8px;grid-template-columns:1fr 1fr;margin:14px 0}
+@media (min-width:600px){.kpis{grid-template-columns:repeat(4,1fr)}}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.kpi b{display:block;font-size:1.35rem;font-variant-numeric:tabular-nums;color:var(--accent)}
+.kpi span{color:var(--muted);font-size:.85rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.track{height:14px;background:var(--track);border-radius:999px;overflow:hidden;margin:8px 0 2px}
+.fill{height:100%;background:var(--accent);border-radius:999px}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{text-align:left;padding:9px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{color:var(--muted);font-weight:600}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.behind td{background:var(--critbg)}
+tr.behind td:first-child{box-shadow:inset 4px 0 0 var(--crit)}
+.flag{display:inline-block;font-size:.78rem;font-weight:700;color:#fff;background:var(--crit);border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:middle}
+.deal{padding:10px 0;border-bottom:1px solid var(--line)}
+.deal:last-child{border-bottom:0}
+.deal b{font-size:1.02rem}
+.deal .sub{color:var(--muted);font-size:.9rem}
+ul{padding-left:1.2em}
+li{margin:6px 0}
+svg text{fill:var(--muted);font-size:12px;font-family:system-ui,sans-serif}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>Q4 sales status</h1>
+<p class="meta">Corvina Software · Sales Operations · Fiscal Q4, week 42 (ending 2026-10-16) · For the CRO's Monday meeting</p>
+
+<div class="kpis">
+  <div class="kpi"><b>$6.9M</b><span>Bookings to date</span></div>
+  <div class="kpi"><b>$11.5M</b><span>Q4 target (60% reached)</span></div>
+  <div class="kpi"><b>$14.8M</b><span>Open pipeline</span></div>
+  <div class="kpi"><b>27%</b><span>Win rate</span></div>
+</div>
+<div class="card">
+  <div style="display:flex;justify-content:space-between;font-weight:600"><span>Q4 target progress</span><span>60%</span></div>
+  <div class="track"><div class="fill" style="width:60%"></div></div>
+  <p class="meta" style="margin:8px 0 0">Average deal: $84,000</p>
+</div>
+
+<h2 id="weekly">Weekly bookings</h2>
+<div class="card">
+  <svg viewBox="0 0 520 190" width="100%" role="img" aria-label="Weekly bookings in millions of dollars: W36 0.5, W37 0.7, W38 0.6, W39 1.1, W40 0.9, W41 1.4, W42 1.7">
+    <line x1="0" y1="150" x2="520" y2="150" stroke="var(--line)" stroke-width="1"/>
+    <rect x="20" y="114.7" width="40" height="35.3" rx="4" fill="var(--accent)" opacity=".55"/>
+    <rect x="90" y="100.6" width="40" height="49.4" rx="4" fill="var(--accent)" opacity=".6"/>
+    <rect x="160" y="107.6" width="40" height="42.4" rx="4" fill="var(--accent)" opacity=".6"/>
+    <rect x="230" y="72.4" width="40" height="77.6" rx="4" fill="var(--accent)" opacity=".7"/>
+    <rect x="300" y="86.5" width="40" height="63.5" rx="4" fill="var(--accent)" opacity=".75"/>
+    <rect x="370" y="51.2" width="40" height="98.8" rx="4" fill="var(--accent)" opacity=".85"/>
+    <rect x="440" y="30" width="40" height="120" rx="4" fill="var(--accent)"/>
+    <text x="40" y="108" text-anchor="middle">0.5</text>
+    <text x="110" y="94" text-anchor="middle">0.7</text>
+    <text x="180" y="101" text-anchor="middle">0.6</text>
+    <text x="250" y="66" text-anchor="middle">1.1</text>
+    <text x="320" y="80" text-anchor="middle">0.9</text>
+    <text x="390" y="45" text-anchor="middle">1.4</text>
+    <text x="460" y="24" text-anchor="middle">1.7</text>
+    <text x="40" y="170" text-anchor="middle">W36</text>
+    <text x="110" y="170" text-anchor="middle">W37</text>
+    <text x="180" y="170" text-anchor="middle">W38</text>
+    <text x="250" y="170" text-anchor="middle">W39</text>
+    <text x="320" y="170" text-anchor="middle">W40</text>
+    <text x="390" y="170" text-anchor="middle">W41</text>
+    <text x="460" y="170" text-anchor="middle">W42</text>
+  </svg>
+  <p class="meta" style="margin:4px 0 0">Millions of dollars booked per week. Bookings are rising: W42 was the best week of the quarter.</p>
+</div>
+
+<h2 id="regions">Regions</h2>
+<div class="scroll">
+<table>
+  <thead><tr><th>Region</th><th class="n">Target ($M)</th><th class="n">Booked ($M)</th><th class="n">% of target</th></tr></thead>
+  <tbody>
+    <tr><td>North America</td><td class="n">5.2</td><td class="n">3.4</td><td class="n">65%</td></tr>
+    <tr class="behind"><td>EMEA <span class="flag">BEHIND</span></td><td class="n">4.1</td><td class="n">2.3</td><td class="n"><strong>56%</strong></td></tr>
+    <tr class="behind"><td>APAC <span class="flag">BEHIND</span></td><td class="n">2.2</td><td class="n">1.2</td><td class="n"><strong>55%</strong></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="deals">Deals to watch</h2>
+<div class="card">
+  <div class="deal"><b>Hollis Rail</b> · $1.2M · EMEA<div class="sub">Close 2026-10-30 · Owner: Ravi Menon</div></div>
+  <div class="deal"><b>Pacific Grid</b> · $900K · APAC<div class="sub">Close 2026-11-13 · Owner: Aiko Fujimoto</div></div>
+  <div class="deal"><b>Northline Clinics</b> · $750K · North America<div class="sub">Close 2026-10-23 · Owner: Dana Whitfield</div></div>
+</div>
+
+<h2 id="next">Next week</h2>
+<div class="card">
+  <ul>
+    <li><strong>2026-10-19:</strong> forecast call.</li>
+    <li><strong>2026-10-21:</strong> APAC pipeline review.</li>
+  </ul>
+</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,24 @@
+@title Rooftop Solar Bid Comparison
+@subtitle Ridgeway School District, six schools. Board vote on 2026-11-17.
+@author Beatrice Ng, Facilities director
+@date 2026-11-17
+
+kpi Recommendation | Copperfield Solar | $5,025,000 net benefit | good
+
+Panels must be generating before the school year starts on 2027-09-01.
+
+## Bids
+data bids = bidder,kW,price,savings,net benefit,warranty years; SunHarvest,1200,2640000,7400000,4760000,25; Brightline Energy,1150,2415000,7050000,4635000,20; Copperfield Solar,1250,2875000,7900000,5025000,25; Halcyon Power,1100,2640000,6800000,4160000,30; Meridian Renewables,1200,2400000,7150000,4750000,15
+table = Bidder,Size,Price,25-year savings,Warranty,Complete by; SunHarvest,"1,200 kW","$2,640,000","$7,400,000",25 years,2027-08-15; Brightline Energy,"1,150 kW","$2,415,000","$7,050,000",20 years,2027-09-30; **Copperfield Solar**,"**1,250 kW**","**$2,875,000**","**$7,900,000**",**25 years**,**2027-07-31**; Halcyon Power,"1,100 kW","$2,640,000","$6,800,000",30 years,2027-10-31; Meridian Renewables,"1,200 kW","$2,400,000","$7,150,000",15 years,2027-08-31
+
+## Net benefit
+Net 25-year benefit is savings minus price.
+chart hbar bids x=bidder y=net benefit unit=$ focus="Copperfield Solar" title="Net 25-year benefit"
+
+## Schedule fit
+table = Bidder,Complete by,Fit; Copperfield Solar,2027-07-31,Ready; SunHarvest,2027-08-15,Ready; Meridian Renewables,2027-08-31,Ready; Brightline Energy,2027-09-30,Failed; Halcyon Power,2027-10-31,Failed
+!! Brightline Energy and Halcyon Power would finish after the school year starts on 2027-09-01.
+
+## Recommendation
+We recommend **Copperfield Solar**. It has the highest net benefit, $265,000 above SunHarvest, and the earliest completion, 2027-07-31.
+!! Copperfield also has the **highest upfront price, $2,875,000**, which the district must finance.

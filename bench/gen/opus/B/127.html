@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>2026 Road Resurfacing Status · City of Alder Falls</title>
+<style>
+:root{--bg:#f4f5f7;--surface:#ffffff;--ink:#1a1d22;--muted:#5a616c;--line:#e0e3e8;--track:#e8ebef;--accent:#3a4e6b;--proj:#9fb0c8;--red:#c0362c;--red-bg:#fdecea;--amber:#b06d00;--amber-bg:#fff3dc;--green:#1d7745;--green-bg:#e6f4ec;--blue:#2a5bd7}
+@media (prefers-color-scheme:dark){:root{--bg:#101215;--surface:#191c21;--ink:#e7e9ed;--muted:#9da4af;--line:#2c3139;--track:#262b33;--accent:#a9bedc;--proj:#4f607a;--red:#ff8f85;--red-bg:#3a1c1a;--amber:#f2b55c;--amber-bg:#35280f;--green:#72d39c;--green-bg:#15301f;--blue:#86a8ff}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:26px 16px 64px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:650}
+h1{font-size:clamp(1.6rem,5.5vw,2.25rem);line-height:1.15;margin:.35rem 0 .6rem}
+h2{font-size:1.2rem;margin:0 0 .9rem;line-height:1.3}
+p{margin:.2rem 0 .8rem}
+.meta{display:flex;flex-wrap:wrap;gap:4px 18px;color:var(--muted);font-size:.9rem;margin:0;padding:0;list-style:none}
+.meta b{color:var(--ink);font-weight:600}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:16px}
+.kpis{display:grid;gap:12px}
+.kpi{border:1px solid var(--line);border-radius:12px;padding:14px}
+.kpi .k{font-size:.82rem;color:var(--muted);font-weight:600}
+.kpi .v{font-size:1.9rem;font-weight:770;line-height:1.1;font-variant-numeric:tabular-nums;margin-top:2px}
+.kpi .v small{font-size:1rem;color:var(--muted);font-weight:500}
+.kpi .bar{position:relative;height:10px;background:var(--track);border-radius:5px;margin-top:10px}
+.kpi .bar .f{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:5px}
+.kpi .bar .p{position:absolute;left:0;top:0;bottom:0;background:var(--proj);border-radius:5px}
+.kpi .note{font-size:.82rem;color:var(--muted);margin-top:8px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.dist{display:grid;gap:16px}
+.d .top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.d .name{font-weight:650}
+.d .num{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.9rem}
+.d .num b{color:var(--ink)}
+.d .bar{position:relative;height:16px;margin-top:6px}
+.d .bar .pl{position:absolute;left:0;top:0;bottom:0;background:var(--track);border-radius:4px}
+.d .bar .dn{position:absolute;left:0;top:0;bottom:0;border-radius:4px}
+.rag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border-radius:999px;padding:1px 9px;margin-left:8px;vertical-align:1px}
+.rag.g{background:var(--green-bg);color:var(--green)}
+.rag.a{background:var(--amber-bg);color:var(--amber)}
+.rag.r{background:var(--red-bg);color:var(--red)}
+.axis{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin-top:10px;font-variant-numeric:tabular-nums;border-top:1px solid var(--line);padding-top:4px}
+.decision{border-left:6px solid var(--red)}
+.decision h2{color:var(--red)}
+.opts{display:grid;gap:10px;margin-top:12px}
+.opt{border:1px solid var(--line);border-radius:12px;padding:14px}
+.opt .tag{font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.opt h3{margin:2px 0 4px;font-size:1.05rem}
+.opt p{margin:0;font-size:.93rem}
+.why{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.why li{display:flex;gap:10px}
+.why li::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--red);margin-top:9px}
+.next{list-style:none;margin:0;padding:0}
+.next li{display:grid;grid-template-columns:78px 1fr;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.next li:first-child{border-top:0;padding-top:0}
+.next .date{background:var(--track);border-radius:10px;text-align:center;padding:6px 0;line-height:1.15;font-variant-numeric:tabular-nums}
+.next .date b{display:block;font-size:1.3rem}
+.next .date small{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:650}
+.next .what b{display:block}
+.next .what span{font-size:.88rem;color:var(--muted)}
+footer{margin-top:24px;color:var(--muted);font-size:.85rem;text-align:center}
+@media (min-width:640px){.kpis{grid-template-columns:repeat(3,1fr)}.opts{grid-template-columns:1fr 1fr}.card{padding:24px 26px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="eyebrow">City of Alder Falls · Public Works</div>
+  <h1>2026 road resurfacing program</h1>
+  <ul class="meta">
+    <li>Status as of <b>2026-10-16</b></li>
+    <li>For the City Manager and Council</li>
+  </ul>
+
+  <section class="card" id="glance">
+    <h2>Program at a glance</h2>
+    <div class="kpis">
+      <div class="kpi">
+        <div class="k">Lane-miles resurfaced</div>
+        <div class="v">74 <small>of 120</small></div>
+        <div class="bar" role="img" aria-label="74 of 120 lane-miles done, 61.7 percent; about 110 projected by 2026-11-30"><div class="p" style="width:91.7%"></div><div class="f" style="width:61.7%"></div></div>
+        <div class="note"><b>61.7%</b> done · about <b>110</b> projected by season end</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Budget spent</div>
+        <div class="v">$9.1M <small>of $14.2M</small></div>
+        <div class="bar" role="img" aria-label="9.1 of 14.2 million dollars spent, 64.1 percent"><div class="f" style="width:64.1%"></div></div>
+        <div class="note"><b>64.1%</b> spent</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Paving season ends</div>
+        <div class="v">Nov 30</div>
+        <div class="note" style="margin-top:12px">2026-11-30, when the asphalt plants close. At <b>6 lane-miles a week</b>, about <b>10 lane-miles</b> carry into spring 2027.</div>
+      </div>
+    </div>
+    <div class="legend"><span><i style="background:var(--accent)"></i>Done</span><span><i style="background:var(--proj)"></i>Projected by 2026-11-30 at current pace</span></div>
+  </section>
+
+  <section class="card" id="districts">
+    <h2>Districts</h2>
+    <div class="dist" role="img" aria-label="Lane-miles done versus planned by district">
+      <div class="d">
+        <div class="top"><div class="name">North <span class="rag g">Green</span></div><div class="num"><b>22</b> / 28 · 79%</div></div>
+        <div class="bar"><div class="pl" style="width:100%"></div><div class="dn" style="width:78.57%;background:var(--green)"></div></div>
+      </div>
+      <div class="d">
+        <div class="top"><div class="name">Central <span class="rag g">Green</span></div><div class="num"><b>21</b> / 24 · 88%</div></div>
+        <div class="bar"><div class="pl" style="width:85.71%"></div><div class="dn" style="width:75%;background:var(--green)"></div></div>
+      </div>
+      <div class="d">
+        <div class="top"><div class="name">East <span class="rag a">Amber</span></div><div class="num"><b>15</b> / 26 · 58%</div></div>
+        <div class="bar"><div class="pl" style="width:92.86%"></div><div class="dn" style="width:53.57%;background:var(--amber)"></div></div>
+      </div>
+      <div class="d">
+        <div class="top"><div class="name">South <span class="rag a">Amber</span></div><div class="num"><b>11</b> / 22 · 50%</div></div>
+        <div class="bar"><div class="pl" style="width:78.57%"></div><div class="dn" style="width:39.29%;background:var(--amber)"></div></div>
+      </div>
+      <div class="d">
+        <div class="top"><div class="name">West <span class="rag r">Red</span></div><div class="num"><b>5</b> / 20 · 25%</div></div>
+        <div class="bar"><div class="pl" style="width:71.43%"></div><div class="dn" style="width:17.86%;background:var(--red)"></div></div>
+      </div>
+      <div class="axis" aria-hidden="true"><span>0</span><span>28 lane-miles</span></div>
+    </div>
+    <p style="margin:12px 0 0;font-size:.85rem;color:var(--muted)">Grey bar = lane-miles planned; colored bar = lane-miles done. All districts on one scale.</p>
+  </section>
+
+  <section class="card decision" id="decision">
+    <h2>Decision needed</h2>
+    <p>West is red for two reasons:</p>
+    <ul class="why">
+      <li><span>A water main replacement blocks <b>8 lane-miles</b> until <b>2026-11-02</b>.</span></li>
+      <li><span>The contractor's second paving crew is committed elsewhere until <b>2026-11-09</b>.</span></li>
+    </ul>
+    <div class="opts">
+      <div class="opt"><div class="tag">Option A</div><h3>Pay $180,000 for an extra crew</h3><p>Dedicated crew for the West district before paving season ends on 2026-11-30.</p></div>
+      <div class="opt"><div class="tag">Option B</div><h3>Carry leftover miles into spring</h3><p>Leave the West district's unfinished lane-miles for spring 2027, after the asphalt plants reopen.</p></div>
+    </div>
+  </section>
+
+  <section class="card" id="next">
+    <h2>Next two weeks</h2>
+    <ol class="next">
+      <li><div class="date"><small>Oct</small><b>23</b></div><div class="what"><b>Central district finishes</b><span>2026-10-23</span></div></li>
+      <li><div class="date"><small>Oct</small><b>26</b></div><div class="what"><b>Public notices go out for West district closures</b><span>2026-10-26</span></div></li>
+      <li><div class="date"><small>Oct</small><b>27</b></div><div class="what"><b>Maple Avenue bridge approach paved</b><span>East district · 2026-10-27</span></div></li>
+    </ol>
+  </section>
+
+  <footer>City of Alder Falls Public Works · 2026 road resurfacing program · As of 2026-10-16</footer>
+</main>
+</body>
+</html>

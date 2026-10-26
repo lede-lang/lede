@@ -1,0 +1,42 @@
+@title Write It Down Before You Build It
+@subtitle Short written design notes save more time than they cost
+@author Daniel Reyes, Staff Engineer, Thornbury Labs
+
+# The meeting that should have been a page
+
+Most of us have sat through the same meeting. Six engineers gather to talk about a change one of them is about to make. For the first twenty minutes, the person proposing it explains what they want to do. For the next twenty, everyone else asks questions that the proposer has not thought about yet. The meeting ends with a promise to "sync again next week," and the code that was supposed to start on Monday starts on Thursday.
+
+None of that time was wasted because people were careless. It was wasted because the thinking happened out loud, in real time, with six people paying for it. The proposer discovered the gaps in their plan in front of an audience, one question at a time. Everything in that meeting could have been a page.
+
+# What a design note is
+
+A design note is one to two pages, written before any code, and read asynchronously. It describes the problem, the approach you intend to take, and the alternatives you set aside. It is short enough that a colleague can read it over coffee and leave a comment before lunch.
+
+The timing matters more than the length. A note written after the code exists is documentation. It records decisions that are already expensive to change. A note written before the code is a tool for thinking. It is the cheapest place to be wrong, because nothing has been built on top of the mistake yet.
+
+Reading it asynchronously matters too. Reviewers can take their time, check a detail, and answer in writing. The questions that ate the second half of the meeting arrive as comments, and the author can answer them once, in the note, for everyone.
+
+> The page is where you find out what you do not know.
+
+# What it is not
+
+A design note is not a specification. It does not enumerate every endpoint, field and error code. Those details are better settled in the code and its tests, where they can be checked. If your note runs to ten pages, you are writing something else, and nobody will read it before you start.
+
+It is also not a permission slip. The point is not to collect sign-offs from a committee before you are allowed to work. A note that waits two weeks for approval has turned a thinking tool into a gate, and people will rightly learn to avoid it. Share the note, give people a day or two, and then build. If someone raises a real problem, you will be glad you heard it now.
+
+# The cost
+
+The usual objection is time. Engineers want to build, and writing feels like a delay. So we measured it. At Thornbury, the median design note took 3 hours to write. That is less than one of those six-person meetings costs in total attention, and far less than a week of work pointed in the wrong direction.
+
+The return is harder to count, but we tried. In 2026, the team counted 11 projects where a note caught a wrong assumption before any code was written. In one, the service we planned to call did not expose the data we needed. In another, a reviewer pointed out that a batch job already did half of what we were about to build. Each catch saved days, sometimes weeks. Three hours against that is a good trade.
+
+# Start small
+
+You do not need a template, a review board or a new tool. Open a document, write a page, and send the link to the two people most likely to disagree with you. Keep it short enough that they actually read it. Over time your team will find the shape that suits it.
+
+Every note, however short, should answer four questions:
+
+- What problem are we solving?
+- Why now?
+- What did we consider?
+- How will we know it worked?

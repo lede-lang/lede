@@ -1,0 +1,40 @@
+@title How to Read Your Quarterly Water Bill
+@subtitle Tarn Valley Water
+@author Tarn Valley Water
+
+## Your bill at a glance
+
+Your bill arrives every 3 months. It has three parts: a usage charge for the water you used, a sewer charge, and a fixed service charge.
+
+kpi Bill issued | Every 3 months
+kpi Payment due | 21 days | after the issue date
+
+## Usage charges
+
+Water is metered in cubic meters (m3) and charged in three tiers. Each tier price applies only to the water used in that tier.
+
+table = tier,water used,price; Tier 1,First 30 m3,$1.85 per m3; Tier 2,Next 30 m3,$2.60 per m3; Tier 3,Above 60 m3,$3.90 per m3
+
+The sewer charge is 80% of your usage charge.
+
+### Example: a household that used 72 m3
+
+table = item,how it is worked out,amount; Tier 1,30 m3 at $1.85,$55.50; Tier 2,30 m3 at $2.60,$78.00; Tier 3,12 m3 at $3.90,$46.80; **Usage charge**,55.50 + 78.00 + 46.80,**$180.30**; Sewer charge,80% of $180.30,$144.24; Service charge,Fixed,$38.40; **Total**,,**$362.94**
+
+## Fixed charges
+
+The fixed service charge is $38.40 per quarter. It is the same no matter how much water you use.
+
+## Ways to pay
+
+- Online at tarnvalleywater.example/pay
+- By phone on 555-0121
+- In person at the Main Street office, weekdays from 8:30 to 16:30
+
+! Sign up for autopay and take $2 off each bill.
+
+## If you cannot pay on time
+
+Call 555-0133 before the due date and we will help you set up a payment plan.
+
+!! A late fee of 5% is added after 30 days.

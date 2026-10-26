@@ -1,0 +1,72 @@
+{
+  "id": "62-campus-energy-report",
+  "category": "data",
+  "title": "Lakewood campus energy report",
+  "brief": "Facilities at Lakewood University asked for an energy summary for fiscal year 2026 (ending 2026-06-30) to hand to the sustainability committee. Total electricity use was 12050 MWh, down from 12780 MWh the year before, which is 5.7 percent lower; at an average of 0.112 dollars per kWh that cost 1349600 dollars. Campus-wide intensity was 19.1 kWh per square foot. By building, with floor area in square feet, annual MWh and intensity in kWh per square foot: Science Hall 182000, 4210, 23.1; Library 96000, 1520, 15.8; Student Center 128000, 2380, 18.6; Engineering Annex 74000, 2050, 27.7; Residence Hall North 150000, 1890, 12.6. The committee will want to see which buildings use the most in absolute terms and which are the least efficient per square foot, and they will notice those are not the same buildings (Science Hall is the biggest user, the Engineering Annex is the least efficient). Mention the LED retrofit in the Library completed in October 2025 and the planned HVAC controls upgrade for Science Hall and the Annex, budgeted at 640000 dollars for FY2027 and expected to save about 9 percent in those two buildings. Sections: \"Summary\", \"By building\", \"What is changing\".",
+  "checklist": {
+    "sections": [
+      "Summary",
+      "By building",
+      "What is changing"
+    ],
+    "visible": [
+      "Science Hall",
+      "Library",
+      "Student Center",
+      "Engineering Annex",
+      "Residence Hall North",
+      "LED retrofit",
+      "HVAC controls",
+      "kWh per square foot"
+    ],
+    "values": [
+      "12050",
+      "12780",
+      "5.7",
+      "0.112",
+      "1349600",
+      "19.1",
+      "182000",
+      "96000",
+      "128000",
+      "74000",
+      "150000",
+      "4210",
+      "1520",
+      "2380",
+      "2050",
+      "1890",
+      "23.1",
+      "15.8",
+      "18.6",
+      "27.7",
+      "12.6",
+      "640000",
+      "9",
+      "2026-06-30"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list"
+  ],
+  "edit": {
+    "request": "The Library figure was wrong: it used 1610 MWh. Correct the Library to 1610 MWh and its intensity to 16.8, and update the campus total to 12140 MWh. Recompute the year-over-year change, the cost and the campus intensity.",
+    "expect_visible": [
+      "1610 MWh"
+    ],
+    "expect_values": [
+      "16.8",
+      "12140",
+      "5.0",
+      "1359680",
+      "19.3"
+    ],
+    "expect_absent": [
+      "12050",
+      "1349600"
+    ]
+  }
+}

@@ -1,0 +1,88 @@
+@title How Webhook Retries Work
+@subtitle What happens when your endpoint does not answer with a 2xx
+
+When an event such as order.paid fires, we deliver it to your endpoint with a POST. If that attempt fails, we keep trying on a growing schedule for about 36 hours before giving up.
+
+diagram retry dir=TB title="Webhook delivery and retry path"
+retry: evt "Event created" svc "for example order.paid"
+retry: q "Delivery queue" queue
+retry: send "Worker POSTs to your endpoint" fn "10 s timeout"
+retry: ok "2xx within 10 s?" decision
+retry: done "Delivered" svc focus
+retry: perm "410 Gone?" decision
+retry: off "Endpoint disabled" ext "owner emailed"
+retry: left "Attempts left?" decision
+retry: wait "Wait with backoff" fn "30 s up to 24 h"
+retry: dlq "Dead-letter queue" queue "kept 14 days"
+retry: replay "Manual replay" team "dashboard or API"
+retry: evt -> q : enqueue
+retry: q -> send : next attempt
+retry: send -> ok
+retry: ok -> done : yes
+retry: ok -> perm : no
+retry: perm -> off : yes
+retry: perm -> left : no
+retry: left -> wait : yes
+retry: left -> dlq : no
+retry: wait --> q : requeue
+retry: dlq --> replay : on request
+retry: group loop "Retry loop" q, send, ok, perm, left, wait
+retry: legend
+
+## In short
+
+Delivery is at least once. Any 2xx response within 10 seconds counts as success. A timeout, a connection error, a 5xx and every 4xx other than 410 all count as a failure and enter the retry loop.
+
+- **Up to 8 attempts.** The first is immediate, then 7 retries after waits of 30 s, 2 min, 10 min, 1 h, 3 h, 8 h and 24 h. Each wait gets up to 20% random jitter so a recovering server is not hit by every queued event at once.
+- **Retry-After is respected.** On a 429 or 503 with a Retry-After header we wait for the longer of that value and the scheduled delay.
+- **410 Gone stops everything.** We treat it as a deliberate removal, disable the endpoint and email its owner. Queued events wait for you to re-enable it.
+- **After the 8th failure** the event moves to the dead-letter queue. It is kept for 14 days and can be replayed from the dashboard or with `POST /v1/webhooks/deliveries/{id}/replay`.
+- **Circuit breaker.** An endpoint that fails 100 events in a row is paused and its owner is emailed, so a dead server does not accumulate a backlog.
+
+## The retry schedule
+
+data backoff = retry,wait
+data backoff += Retry 1,0.5
+data backoff += Retry 2,2
+data backoff += Retry 3,10
+data backoff += Retry 4,60
+data backoff += Retry 5,180
+data backoff += Retry 6,480
+data backoff += Retry 7,1440
+
+chart hbar backoff x=retry y=wait unit=min labels title="Wait before each retry"
+
+data plan = retry,wait before it,total since first try,jitter window
+data plan += 1,30 s,30 s,24 s to 36 s
+data plan += 2,2 min,2.5 min,96 s to 144 s
+data plan += 3,10 min,12.5 min,8 to 12 min
+data plan += 4,1 h,about 1 h 12 min,48 to 72 min
+data plan += 5,3 h,about 4 h 12 min,2.4 to 3.6 h
+data plan += 6,8 h,about 12 h 12 min,6.4 to 9.6 h
+data plan += 7,24 h,about 36 h 12 min,19.2 to 28.8 h
+
+table plan
+
+## What your endpoint should do
+
+Because delivery is at least once, the same event can arrive more than once, for example when your server processed it but its 200 was lost. Every retry carries the same event id, so deduplicate on it. Respond fast and do the slow work afterward.
+
+```http
+POST /hooks/payments HTTP/1.1
+Webhook-Id: evt_01JA7Q3M
+Webhook-Attempt: 3
+Webhook-Timestamp: 1760803200
+Content-Type: application/json
+```
+
+```python
+@app.post("/hooks/payments")
+def receive():
+    event = request.get_json()
+    if already_processed(event["id"]):   # retries reuse the same id
+        return "", 200
+    queue.put(event)                     # slow work happens later
+    return "", 200
+```
+
+! Return a 2xx only after you have safely stored the event. A 2xx tells us never to send it again.

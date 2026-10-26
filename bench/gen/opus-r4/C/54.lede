@@ -1,0 +1,31 @@
+@title INC-2874 postmortem: duplicate push notifications
+@subtitle Peakform Fitness, incident on 2026-09-21
+@author Messaging team
+@date 2026-09-21
+
+kpi Duplicate notifications | 7,440,000 | 6 extra per user
+kpi Duration | 38 min
+kpi Push opt-outs | 3.4% | normal 0.2% | bad
+kpi App store rating | 4.3 | -0.3 from 4.6 | bad
+
+## Summary
+
+A weekly workout reminder campaign was meant to go out once to 1,240,000 users. A retry bug in the queue consumer re-sent each message six extra times, so users got the same notification seven times: 7,440,000 duplicates over 38 minutes.
+
+## Timeline
+
+All times Pacific on 2026-09-21.
+
+table = time,event; 16:00,Campaign released; **16:04**,**First consumer timeouts begin and retries start**; 16:09,Complaints appear on social media; 16:15,Support pages the Messaging on-call; **16:22**,**On-call pauses the campaign sender**; **16:38**,**Queue purged and duplicates stop**
+
+## Contributing factors
+
+The queue consumer treated a slow downstream acknowledgement as a failure and retried, and it had no idempotency key to recognise a message it had already sent. The campaign tool allows a send to the entire user base without a staged ramp, so the bug reached every recipient at once. Once the problem was found, the pause switch took 7 minutes to find because it was undocumented.
+
+## Customer impact
+
+Every one of the 1,240,000 recipients got the same reminder seven times over 38 minutes. 42,160 users (3.4% of recipients) turned off push notifications, against a normal 0.2%, and they will no longer get reminders they may have wanted. The app store rating dropped from 4.6 to 4.3 over the following week.
+
+## Action items
+
+table = action,owner,due; Send an apology notice and in-app note to affected users,Customer Care,2026-09-24; Document the sender pause switch in the on-call guide,Messaging on-call,2026-09-28; Add idempotency keys to the push consumer,Daniel Okonkwo-Reyes,2026-10-09; "Require staged ramps of 1%, 10% and 100% for sends over 100,000 users",Priya Venkatesan,2026-10-23

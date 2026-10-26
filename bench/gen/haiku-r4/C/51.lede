@@ -1,0 +1,32 @@
+@title INC-3017: listing photo upload outage
+@subtitle Stonebridge Realty, Listings Platform team, 2026-08-27. Blameless postmortem.
+kpi Duration | 112 minutes | from 10:15 UTC | bad
+kpi Peak upload failures | 100% | at peak | bad
+kpi Listings with missing photos | 8,340 | left behind | bad
+kpi Support tickets | 412 | during the outage | neutral
+
+## Summary
+A storage policy change meant to restrict bucket access to our VPC endpoint also blocked uploads made with pre-signed URLs from agents' phones. Every mobile upload returned 403. The outage lasted 112 minutes.
+
+## Timeline (UTC)
+- **10:15** Policy change applied through Terraform.
+- **10:22** Uploads begin failing with 403. This is the first symptom.
+- **10:31** First customer ticket reaches support.
+- **10:48** Incident declared Sev2.
+- **11:20** The policy diff is identified as the cause. This is the turning point.
+- **11:58** Hotfix applied, removing the deny statement.
+- **12:07** Uploads recover.
+
+## Why it was not caught
+- The change was tested only from the office network.
+- Staging has no mobile upload test.
+- The policy linter does not model pre-signed URLs.
+
+## What went well
+- The declared incident had a clear commander within 17 minutes.
+- The rollback took under 10 minutes once the cause was known.
+
+## Action items
+- **Add a pre-signed URL upload test to staging.** Greta Lindqvist, due 2026-09-18.
+- **Require policy changes to be applied to staging first.** Omar Haddad, due 2026-09-25.
+- **Alert when upload 403s exceed 2 percent for 5 minutes.** Listings on-call, due 2026-09-11.

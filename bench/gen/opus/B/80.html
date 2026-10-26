@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rooftop Solar Bids</title>
+<style>
+:root{
+  --bg:#f7f6f2;--surface:#ffffff;--surface-2:#f0eee8;--ink:#181712;--ink-2:#3d3b33;--muted:#676357;--line:#e0ddd3;--line-2:#b6b1a3;
+  --accent:#b45309;--accent-soft:#fcf0e1;
+  --pick:#b45309;
+  --bar:#a8a497;
+  --late:#b3261e;--late-soft:#fdeceb;
+  --ok:#1f7a47;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#11100c;--surface:#1a1914;--surface-2:#23211b;--ink:#efede5;--ink-2:#cfcbbf;--muted:#a6a193;--line:#302e26;--line-2:#585346;
+    --accent:#f4b162;--accent-soft:#35240e;
+    --pick:#f4b162;
+    --bar:#5f5b50;
+    --late:#ff8f86;--late-soft:#361614;
+    --ok:#74d39e;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:28px 16px 72px}
+.eyebrow{margin:0;font-size:.78rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+h1{margin:.35rem 0 .5rem;font-size:clamp(1.65rem,5vw,2.35rem);line-height:1.15;letter-spacing:-.015em}
+.lede{margin:0 0 14px;color:var(--ink-2);font-size:1.05rem;max-width:62ch}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.meta li{font-size:.84rem;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 11px}
+.meta b{font-weight:600;color:var(--muted);margin-right:4px}
+section{margin-top:40px}
+h2{margin:0 0 14px;font-size:1.3rem;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+h2::before{content:"";flex:none;width:4px;height:1.1em;border-radius:2px;background:var(--accent)}
+p{margin:0 0 12px;max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+@media (max-width:520px){.card{padding:14px 12px}}
+svg{display:block;width:100%;height:auto}
+svg text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+
+.summary{margin-top:22px;padding:16px 18px;border-radius:14px;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--pick)}
+.summary .k{font-size:.76rem;font-weight:750;letter-spacing:.08em;text-transform:uppercase;color:var(--pick)}
+.summary p{margin:4px 0 0;font-size:1.06rem}
+
+table.bids{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.bids th,.bids td{padding:11px 10px;border-bottom:1px solid var(--line);text-align:right;vertical-align:middle}
+.bids th:first-child,.bids td:first-child{text-align:left}
+.bids thead th{font-size:.74rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);vertical-align:bottom;line-height:1.25}
+.bids tbody td:first-child{font-weight:700}
+.bids tbody tr:last-child td{border-bottom:0}
+.bids tr.pick td{background:var(--accent-soft)}
+.bids tr.pick td:first-child{box-shadow:inset 4px 0 0 var(--pick)}
+.bids td.late{color:var(--late);font-weight:750}
+.tag{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:.68rem;font-weight:800;letter-spacing:.04em;vertical-align:2px}
+.tag.p{background:var(--pick);color:#fff}
+.tag.l{background:var(--late-soft);color:var(--late);border:1px solid var(--late)}
+@media (prefers-color-scheme:dark){.tag.p{color:#1a1206}}
+@media (max-width:700px){
+  .bids thead{display:none}
+  .bids,.bids tbody,.bids tr,.bids td{display:block;width:100%}
+  .bids tr{border:1px solid var(--line);border-radius:12px;padding:6px 12px;margin-bottom:10px;background:var(--surface)}
+  .bids tr.pick{border:2px solid var(--pick)}
+  .bids tr.pick td{background:transparent}
+  .bids tr.pick td:first-child{box-shadow:none}
+  .bids td{display:flex;justify-content:space-between;gap:12px;padding:7px 0;text-align:right}
+  .bids td::before{content:attr(data-label);color:var(--muted);font-weight:500;text-align:left}
+  .bids td:first-child{font-size:1.08rem;padding:8px 0}
+  .bids td:first-child::before{content:none}
+  .bids tbody tr:last-child td{border-bottom:1px solid var(--line)}
+  .bids tr td:last-child{border-bottom:0!important}
+  .bids-card{padding:0;border:0;background:transparent}
+}
+
+.chart-title{margin:0 0 4px;font-weight:700}
+.chart-sub{margin:0 0 12px;font-size:.88rem;color:var(--muted)}
+.chart{max-width:620px}
+.g{stroke:var(--line);stroke-width:1}
+.gl{font-size:10.5px;fill:var(--muted)}
+.cl{font-size:12px;font-weight:650;fill:var(--ink)}
+.cm{font-size:10.5px;fill:var(--muted)}
+.cv{font-size:12px;font-weight:700;fill:var(--ink)}
+.b{fill:var(--bar)}
+.bp{fill:var(--pick)}
+.bl{fill:url(#hl)}
+.bl-o{fill:none;stroke:var(--late);stroke-width:1.2}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin:10px 2px 0;font-size:.84rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.legend i{display:inline-block;width:16px;height:12px;border-radius:2px}
+.legend i.p{background:var(--pick)}
+.legend i.b{background:var(--bar)}
+.legend i.l{background:repeating-linear-gradient(45deg,var(--late) 0 2px,transparent 2px 5px);border:1px solid var(--late)}
+
+.late-zone{fill:var(--late-soft)}
+.trk{stroke:var(--line);stroke-width:1.5}
+.dl{stroke:var(--late);stroke-width:2}
+.dlt{font-size:11px;font-weight:800;fill:var(--late)}
+.mo{font-size:10.5px;font-weight:600;fill:var(--muted)}
+.dot{fill:var(--ok);stroke:var(--surface);stroke-width:2}
+.dotp{fill:var(--pick);stroke:var(--surface);stroke-width:2}
+.dotl{fill:var(--late);stroke:var(--surface);stroke-width:2}
+.dt{font-size:11.5px;font-weight:700;fill:var(--ink)}
+.dtl{font-size:11.5px;font-weight:700;fill:var(--late)}
+.sched{display:grid;gap:12px}
+@media (min-width:800px){.sched{grid-template-columns:1.3fr 1fr;align-items:start}}
+.margins{margin:0;padding:0;list-style:none}
+.margins li{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:.94rem}
+.margins li:last-child{border-bottom:0}
+.margins b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.margins .ok b{color:var(--ok)}
+.margins .tight b{color:var(--accent)}
+.margins .no b{color:var(--late)}
+
+.rec{border:2px solid var(--pick);background:var(--accent-soft);border-radius:16px;padding:20px}
+.rec .verdict{margin:0 0 10px;font-size:1.5rem;font-weight:850;color:var(--pick);line-height:1.2}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:0 0 14px}
+@media (min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}
+.kpis div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.kpis .v{font-size:1.15rem;font-weight:800;font-variant-numeric:tabular-nums}
+.kpis .k{font-size:.8rem;color:var(--muted)}
+.rec ul{margin:0;padding-left:20px}
+.rec li{margin:5px 0}
+.rec .fin{margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--surface);border:2px solid var(--late)}
+.rec .fin b{color:var(--late)}
+footer{margin-top:48px;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <p class="eyebrow">Ridgeway School District · Facilities · Board decision</p>
+    <h1>Rooftop solar for six schools: comparing the five bids</h1>
+    <p class="lede">Panels must be generating before the school year starts on 2027-09-01. This page compares price, 25-year savings, warranty and schedule.</p>
+    <ul class="meta">
+      <li><b>Prepared by</b>Beatrice Ng, facilities director</li>
+      <li><b>Board vote</b>2026-11-17</li>
+      <li><b>Deadline</b>generating by 2027-09-01</li>
+    </ul>
+    <div class="summary">
+      <div class="k">Recommendation</div>
+      <p><b>Copperfield Solar.</b> Highest net benefit and earliest completion, but also the highest upfront price, which the district must finance.</p>
+    </div>
+  </header>
+
+  <section id="bids">
+    <h2>Bids</h2>
+    <div class="card bids-card">
+      <table class="bids">
+        <thead>
+          <tr><th>Bidder</th><th>Size</th><th>Price</th><th>25-year savings</th><th>Warranty</th><th>Complete by</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>SunHarvest</td><td data-label="Size">1,200 kW</td><td data-label="Price">$2,640,000</td><td data-label="25-year savings">$7,400,000</td><td data-label="Warranty">25 years</td><td data-label="Complete by">2027-08-15</td></tr>
+          <tr><td>Brightline Energy<span class="tag l">LATE</span></td><td data-label="Size">1,150 kW</td><td data-label="Price">$2,415,000</td><td data-label="25-year savings">$7,050,000</td><td data-label="Warranty">20 years</td><td data-label="Complete by" class="late">2027-09-30</td></tr>
+          <tr class="pick"><td>Copperfield Solar<span class="tag p">RECOMMENDED</span></td><td data-label="Size">1,250 kW</td><td data-label="Price">$2,875,000</td><td data-label="25-year savings">$7,900,000</td><td data-label="Warranty">25 years</td><td data-label="Complete by">2027-07-31</td></tr>
+          <tr><td>Halcyon Power<span class="tag l">LATE</span></td><td data-label="Size">1,100 kW</td><td data-label="Price">$2,640,000</td><td data-label="25-year savings">$6,800,000</td><td data-label="Warranty">30 years</td><td data-label="Complete by" class="late">2027-10-31</td></tr>
+          <tr><td>Meridian Renewables</td><td data-label="Size">1,200 kW</td><td data-label="Price">$2,400,000</td><td data-label="25-year savings">$7,150,000</td><td data-label="Warranty">15 years</td><td data-label="Complete by">2027-08-31</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="net">
+    <h2>Net benefit</h2>
+    <div class="card">
+      <p class="chart-title">Net 25-year benefit, highest first</p>
+      <p class="chart-sub">25-year savings minus price.</p>
+      <svg class="chart" viewBox="0 0 360 202" role="img" aria-label="Net 25-year benefit: Copperfield Solar 5,025,000 dollars; SunHarvest 4,760,000; Meridian Renewables 4,750,000; Brightline Energy 4,635,000, finishes late; Halcyon Power 4,160,000, finishes late.">
+        <defs>
+          <pattern id="hl" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--surface)"/><rect width="2" height="6" fill="var(--late)" opacity=".7"/></pattern>
+        </defs>
+        <line class="g" x1="100" y1="6" x2="100" y2="186"/>
+        <line class="g" x1="166.67" y1="6" x2="166.67" y2="186"/>
+        <line class="g" x1="233.33" y1="6" x2="233.33" y2="186"/>
+        <line class="g" x1="300" y1="6" x2="300" y2="186"/>
+        <text class="gl" x="100" y="198" text-anchor="middle">$0</text>
+        <text class="gl" x="166.67" y="198" text-anchor="middle">$2M</text>
+        <text class="gl" x="233.33" y="198" text-anchor="middle">$4M</text>
+        <text class="gl" x="300" y="198" text-anchor="middle">$6M</text>
+
+        <text class="cl" x="92" y="22" text-anchor="end" style="fill:var(--pick)">Copperfield</text>
+        <text class="cm" x="92" y="35" text-anchor="end">Solar</text>
+        <rect class="bp" x="100" y="12" width="167.5" height="24" rx="2"/>
+        <text class="cv" x="273.5" y="28.5" style="fill:var(--pick)">$5,025,000</text>
+
+        <text class="cl" x="92" y="64.5" text-anchor="end">SunHarvest</text>
+        <rect class="b" x="100" y="48" width="158.67" height="24" rx="2"/>
+        <text class="cv" x="264.7" y="64.5">$4,760,000</text>
+
+        <text class="cl" x="92" y="94" text-anchor="end">Meridian</text>
+        <text class="cm" x="92" y="107" text-anchor="end">Renewables</text>
+        <rect class="b" x="100" y="84" width="158.33" height="24" rx="2"/>
+        <text class="cv" x="264.3" y="100.5">$4,750,000</text>
+
+        <text class="cl" x="92" y="130" text-anchor="end">Brightline</text>
+        <text class="cm" x="92" y="143" text-anchor="end">Energy</text>
+        <rect class="bl" x="100" y="120" width="154.5" height="24"/>
+        <rect class="bl-o" x="100" y="120" width="154.5" height="24"/>
+        <text class="cv" x="260.5" y="136.5">$4,635,000</text>
+
+        <text class="cl" x="92" y="166" text-anchor="end">Halcyon</text>
+        <text class="cm" x="92" y="179" text-anchor="end">Power</text>
+        <rect class="bl" x="100" y="156" width="138.67" height="24"/>
+        <rect class="bl-o" x="100" y="156" width="138.67" height="24"/>
+        <text class="cv" x="244.7" y="172.5">$4,160,000</text>
+      </svg>
+      <div class="legend">
+        <span><i class="p"></i>Recommended</span>
+        <span><i class="b"></i>Finishes in time</span>
+        <span><i class="l"></i>Finishes after the school year starts</span>
+      </div>
+      <p class="chart-sub" style="margin-top:12px">Copperfield's net benefit is $265,000 above SunHarvest, the next highest.</p>
+    </div>
+  </section>
+
+  <section id="schedule">
+    <h2>Schedule fit</h2>
+    <div class="sched">
+      <div class="card">
+        <p class="chart-title">Completion dates against the school year</p>
+        <p class="chart-sub">Panels must be generating by 2027-09-01.</p>
+        <svg class="chart" viewBox="0 0 360 214" role="img" aria-label="Completion dates in 2027: Copperfield Solar July 31, SunHarvest August 15, Meridian Renewables August 31, all before the school year starts on September 1. Brightline Energy September 30 and Halcyon Power October 31, both after.">
+          <rect class="late-zone" x="224.68" y="24" width="120.32" height="160"/>
+          <line class="g" x1="115" y1="24" x2="115" y2="184"/>
+          <line class="g" x1="169.84" y1="24" x2="169.84" y2="184"/>
+          <line class="g" x1="277.75" y1="24" x2="277.75" y2="184"/>
+          <line class="g" x1="332.59" y1="24" x2="332.59" y2="184"/>
+          <text class="mo" x="118" y="18">Jul</text>
+          <text class="mo" x="172.8" y="18">Aug</text>
+          <text class="mo" x="227.7" y="18">Sep</text>
+          <text class="mo" x="280.8" y="18">Oct</text>
+          <text class="mo" x="335.6" y="18">Nov</text>
+
+          <line class="trk" x1="115" y1="44" x2="345" y2="44"/>
+          <line class="trk" x1="115" y1="76" x2="345" y2="76"/>
+          <line class="trk" x1="115" y1="108" x2="345" y2="108"/>
+          <line class="trk" x1="115" y1="140" x2="345" y2="140"/>
+          <line class="trk" x1="115" y1="172" x2="345" y2="172"/>
+
+          <line class="dl" x1="224.68" y1="24" x2="224.68" y2="190"/>
+          <text class="dlt" x="224.68" y="206" text-anchor="middle">School year starts 2027-09-01</text>
+
+          <text class="cl" x="107" y="42" text-anchor="end" style="fill:var(--pick)">Copperfield</text>
+          <text class="cm" x="107" y="55" text-anchor="end">Solar</text>
+          <circle class="dotp" cx="168.07" cy="44" r="6.5"/>
+          <text class="dt" x="158" y="40" text-anchor="end">Jul 31</text>
+
+          <text class="cl" x="107" y="80" text-anchor="end">SunHarvest</text>
+          <circle class="dot" cx="194.6" cy="76" r="6"/>
+          <text class="dt" x="185" y="72" text-anchor="end">Aug 15</text>
+
+          <text class="cl" x="107" y="106" text-anchor="end">Meridian</text>
+          <text class="cm" x="107" y="119" text-anchor="end">Renewables</text>
+          <circle class="dot" cx="222.9" cy="108" r="6"/>
+          <text class="dt" x="213" y="104" text-anchor="end">Aug 31</text>
+
+          <text class="cl" x="107" y="138" text-anchor="end">Brightline</text>
+          <text class="cm" x="107" y="151" text-anchor="end">Energy</text>
+          <circle class="dotl" cx="275.98" cy="140" r="6"/>
+          <text class="dtl" x="266" y="136" text-anchor="end">Sep 30</text>
+
+          <text class="cl" x="107" y="170" text-anchor="end">Halcyon</text>
+          <text class="cm" x="107" y="183" text-anchor="end">Power</text>
+          <circle class="dotl" cx="330.8" cy="172" r="6"/>
+          <text class="dtl" x="321" y="168" text-anchor="end">Oct 31</text>
+        </svg>
+      </div>
+      <div class="card">
+        <p class="chart-title">Margin before 2027-09-01</p>
+        <ul class="margins">
+          <li class="ok"><span>Copperfield Solar</span><b>32 days early</b></li>
+          <li class="ok"><span>SunHarvest</span><b>17 days early</b></li>
+          <li class="tight"><span>Meridian Renewables</span><b>1 day early</b></li>
+          <li class="no"><span>Brightline Energy</span><b>29 days late</b></li>
+          <li class="no"><span>Halcyon Power</span><b>60 days late</b></li>
+        </ul>
+        <p class="chart-sub" style="margin:12px 0 0">Brightline and Halcyon would finish after the school year starts. Meridian leaves no room for delay.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="recommendation">
+    <h2>Recommendation</h2>
+    <div class="rec">
+      <p class="verdict">We recommend Copperfield Solar.</p>
+      <div class="kpis">
+        <div><div class="v">$5,025,000</div><div class="k">net 25-year benefit, the highest</div></div>
+        <div><div class="v">+$265,000</div><div class="k">above SunHarvest</div></div>
+        <div><div class="v">2027-07-31</div><div class="k">completion, the earliest</div></div>
+        <div><div class="v">$2,875,000</div><div class="k">price, the highest</div></div>
+      </div>
+      <ul>
+        <li>It has the highest net benefit: $5,025,000 over 25 years, $265,000 above SunHarvest.</li>
+        <li>It finishes earliest, on 2027-07-31, a month before the school year starts.</li>
+        <li>It is the largest system (1,250 kW) and carries a 25-year warranty.</li>
+      </ul>
+      <div class="fin"><b>The trade-off:</b> Copperfield also has the highest upfront price, $2,875,000. That is $235,000 more than SunHarvest and $475,000 more than Meridian, and the district must finance it.</div>
+    </div>
+  </section>
+
+  <footer>Ridgeway School District · Rooftop solar bid comparison · prepared by Beatrice Ng for the board vote on 2026-11-17</footer>
+</main>
+</body>
+</html>

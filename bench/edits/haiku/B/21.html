@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DR Drill Runbook and Results</title>
+<style>
+:root{--bg:#fafaf7;--fg:#1c1e21;--muted:#5d636b;--accent:#1d6fa3;--card:#ffffff;--border:#e2e0d9;--warn:#9a4a00;--warn-bg:#fff3e0;--note:#e9f2f8;--c1:#1d6fa3;--c2:#d9822b;--c3:#6b5bb5;--good:#2e7d4f}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121316;--fg:#e9e9ec;--muted:#9ea4ad;--accent:#6cb8e6;--card:#1b1d22;--border:#2e3138;--warn:#f2b35e;--warn-bg:#2b2112;--note:#152731;--c1:#6cb8e6;--c2:#eba45a;--c3:#a996e8;--good:#6cc08f}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:820px;margin:0 auto;padding:32px 16px 56px}
+h1{font-size:clamp(1.55rem,4.5vw,2.1rem);line-height:1.2;margin:.2em 0 .3em}
+.dek{color:var(--muted);margin:0 0 1.5em}
+h2{font-size:1.25rem;margin:2.1em 0 .6em;padding-bottom:.3em;border-bottom:1px solid var(--border)}
+p,ul,ol{margin:.7em 0}
+li{margin:.25em 0}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.95rem;margin:1em 0}
+th,td{padding:.55em .65em;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+th{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.callout{border-left:4px solid var(--accent);background:var(--note);padding:12px 16px;border-radius:6px;margin:1.3em 0}
+.callout.warn{border-color:var(--warn);background:var(--warn-bg)}
+.callout strong{display:block;margin-bottom:.15em}
+figure{margin:1.6em 0}
+figcaption{font-size:.85rem;color:var(--muted);margin-top:.4em}
+svg{display:block;width:100%;height:auto}
+svg text{font-size:14px;fill:var(--muted)}
+.c1{fill:var(--c1)}.c2{fill:var(--c2)}.c3{fill:var(--c3)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.88rem;color:var(--muted);margin:.4em 0}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.axis{stroke:var(--muted);stroke-width:1}
+@media (max-width:480px){body{font-size:15px}.wrap{padding:24px 16px 48px}th,td{padding:.45em .4em;font-size:.88rem}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>Disaster recovery drill: patient scheduling</h1>
+<p class="dek">Platform Resilience, Bramble Health. Drill run on 2026-10-07. Runbook and results.</p>
+
+<h2>Scope</h2>
+<p>This drill restored the patient-scheduling service in <strong>us-east-2</strong> from backups, after simulating the complete loss of <strong>us-west-2</strong>. Nothing in us-west-2 was used during the restore. The goal was to measure recovery time and data loss against our targets and to confirm that the runbook below works as written.</p>
+
+<h2>Restore procedure</h2>
+<ol>
+<li>Freeze writes in us-west-2.</li>
+<li>Restore the latest RDS snapshot in us-east-2.</li>
+<li>Restore the S3 attachments bucket from the replica.</li>
+<li>Deploy the service stack from the release tag.</li>
+</ol>
+
+<div class="callout warn">
+<strong>Warning before the DNS switch</strong>
+Confirm the snapshot timestamp before you continue. Promoting an old snapshot silently loses appointments booked after that point. Compare the timestamp with the last confirmed write in us-west-2 and stop if the gap is larger than the RPO target.
+</div>
+
+<ol start="5">
+<li>Switch DNS for <code>scheduling.bramble.example</code> to us-east-2.</li>
+<li>Run the smoke test suite.</li>
+<li>Reopen writes.</li>
+</ol>
+
+<h2>Results</h2>
+<div class="scroll">
+<table>
+<thead><tr><th>Metric</th><th class="num">Target</th><th class="num">Achieved</th></tr></thead>
+<tbody>
+<tr><td>RTO</td><td class="num">60 minutes</td><td class="num">74 minutes</td></tr>
+<tr><td>RPO</td><td class="num">15 minutes</td><td class="num">9 minutes</td></tr>
+<tr><td>Smoke tests passed</td><td class="num">48 of 48</td><td class="num">46 of 48</td></tr>
+<tr><td>Data verified</td><td class="num">100 percent</td><td class="num">100 percent</td></tr>
+</tbody>
+</table>
+</div>
+
+<figure>
+<svg viewBox="0 0 600 230" role="img" aria-labelledby="t21 d21">
+<title id="t21">Minutes spent per restore phase</title>
+<desc id="d21">Horizontal bar chart. Snapshot restore 31 minutes, S3 restore 12, stack deploy 18, DNS switch 6, smoke tests 7. Total 74 minutes.</desc>
+<text x="140" y="37" text-anchor="end">Snapshot restore</text>
+<rect class="c1" x="150" y="20" width="363" height="26" rx="3"/>
+<text x="519" y="37">31</text>
+<text x="140" y="77" text-anchor="end">S3 restore</text>
+<rect class="c1" x="150" y="60" width="141" height="26" rx="3"/>
+<text x="297" y="77">12</text>
+<text x="140" y="117" text-anchor="end">Stack deploy</text>
+<rect class="c1" x="150" y="100" width="211" height="26" rx="3"/>
+<text x="367" y="117">18</text>
+<text x="140" y="157" text-anchor="end">DNS switch</text>
+<rect class="c1" x="150" y="140" width="70" height="26" rx="3"/>
+<text x="226" y="157">6</text>
+<text x="140" y="197" text-anchor="end">Smoke tests</text>
+<rect class="c1" x="150" y="180" width="82" height="26" rx="3"/>
+<text x="238" y="197">7</text>
+</svg>
+<figcaption>Minutes spent per phase, drill of 2026-10-07. The phases total 74 minutes.</figcaption>
+</figure>
+
+<h2>Follow-ups</h2>
+<ul>
+<li>Pre-provision the database subnet group in us-east-2 to cut restore time.</li>
+<li>Fix the 2 smoke tests that depend on a us-west-2-only endpoint.</li>
+<li>Automate the DNS switch with a health-checked failover record.</li>
+<li>Next drill: 2027-01-20.</li>
+</ul>
+</main>
+</body>
+</html>

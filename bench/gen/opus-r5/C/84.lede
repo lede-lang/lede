@@ -1,0 +1,40 @@
+@title 2026 Engagement Survey Results
+@subtitle Northwind Freight, for all staff
+@author HR team, Northwind Freight
+@date 2026
+
+Thank you to everyone who took part. Here is what you told us, how it compares with 2025, and what we will do next.
+
+## Response
+
+kpi Average favorable | 66.2% | +1.2 pts on 2025 | good
+
+kpi Responses | 842 | of 1,060 employees
+kpi Response rate | 79.4% | of all staff
+kpi Lowest score | 49% | growth, down 3 pts | bad
+
+## Results by statement
+
+Share of respondents who answered favorably, neutrally or unfavorably, in percent.
+
+data results = statement,favorable,neutral,unfavorable; I understand how my work supports company goals,78,15,7; My manager gives me useful feedback,64,22,14; I have the tools I need to do my job,71,18,11; I see a path to grow here,49,27,24; I would recommend this company as a place to work,69,20,11
+chart hbar results stack unit=% max=100 title="How you answered each statement"
+
+table results heat=favorable title="Results by statement (%)"
+
+## Change since 2025
+
+Favorable scores rose on four of five statements. Manager feedback and recommendation gained the most, 3 points each. The only decline was growth, down 3 points, which is also our lowest score.
+
+data change = statement,favorable 2025,favorable 2026,change pts; I understand how my work supports company goals,76,78,2; My manager gives me useful feedback,61,64,3; I have the tools I need to do my job,70,71,1; I see a path to grow here,52,49,-3; I would recommend this company as a place to work,66,69,3
+chart hbar change y=change pts unit=pts focus="I see a path to grow here" title="Change in favorable score since 2025"
+
+table change title="Favorable score, 2025 and 2026 (%)"
+
+## What we will do
+
+We heard you most clearly on growth and feedback. These are our commitments:
+
+1. Publish the career framework by 2027-02-28, so everyone can see how to grow here.
+2. Train 90 managers on giving useful feedback, starting 2026-12-01.
+3. Run a short pulse check in April 2027 to see whether things are moving.

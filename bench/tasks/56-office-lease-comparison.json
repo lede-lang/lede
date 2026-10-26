@@ -1,0 +1,60 @@
+{
+  "id": "56-office-lease-comparison",
+  "category": "comparison",
+  "title": "Ardent Bio office and lab move",
+  "brief": "Ardent Bio has to choose a new home for its 96-person team before the current lease ends on 2027-03-31, and the leadership team decides on 2026-11-13. We need about 24000 square feet, with wet-lab space for roughly a third of it. Three buildings are on the table. Harbor Point: 58 dollars per square foot per year, 10-year lease, lab-ready now, median employee commute 24 minutes, move-in 2027-02-01. Mill District: 46 dollars, 7-year lease, partially lab-ready (we pay about 1.1 million dollars of fit-out), median commute 31 minutes, move-in 2027-03-01. Northgate Park: 38 dollars, 10-year lease, no lab space (we would need a separate lab lease nearby), median commute 42 minutes, move-in 2027-01-15. Use the sections \"Options\" (side by side), \"Annual rent\" (the annual base rent for each at 24000 square feet), \"Pros and cons\" (the main ones for each, in plain language) and \"Recommendation\". Our leaning is Mill District, since Harbor Point costs 288000 dollars a year more in base rent than Mill District and Northgate Park splits the team across two sites, but we want the page to be honest that the fit-out cost and the 7-year term are real downsides.",
+  "checklist": {
+    "sections": [
+      "Options",
+      "Annual rent",
+      "Pros and cons",
+      "Recommendation"
+    ],
+    "visible": [
+      "Harbor Point",
+      "Mill District",
+      "Northgate Park",
+      "commute",
+      "fit-out",
+      "wet-lab"
+    ],
+    "values": [
+      "24000",
+      "96",
+      "58",
+      "46",
+      "38",
+      "1392000",
+      "1104000",
+      "912000",
+      "288000",
+      "1.1 million",
+      "24 minutes",
+      "31 minutes",
+      "42 minutes",
+      "2026-11-13",
+      "2027-03-31",
+      "2027-02-01",
+      "2027-03-01",
+      "2027-01-15"
+    ]
+  },
+  "needs": [
+    "table",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Mill District's landlord offered to cover half of the fit-out. Change the fit-out cost to about 550000 dollars everywhere, and add a note that the offer expires on 2026-11-06.",
+    "expect_visible": [
+      "2026-11-06"
+    ],
+    "expect_values": [
+      "550000"
+    ],
+    "expect_absent": [
+      "1.1 million"
+    ]
+  }
+}

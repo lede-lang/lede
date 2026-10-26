@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Signup cohort retention</title>
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#f5f6f9; --surface:#ffffff; --surface-2:#eff1f6; --text:#191d27; --muted:#596273; --border:#dde1ea; --grid:#e7eaf0;
+  --accent:#3b4fd6; --accent-soft:#e8ebfc; --heat:#3b4fd6; --hi-text:#ffffff;
+  --good:#1d7a4a;
+  --j1:#b3bccb; --j2:#7d8fb8; --j3:#4f6bd8; --j4:#1f2fa8;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0f1117; --surface:#171a22; --surface-2:#1e222c; --text:#e6e8ef; --muted:#9ba2b3; --border:#2a2f3b; --grid:#252a35;
+    --accent:#8c9bff; --accent-soft:#1f2448; --heat:#7f8fff; --hi-text:#0f1117;
+    --good:#5fd09a;
+    --j1:#5d6578; --j2:#7d8cc0; --j3:#9fb0ff; --j4:#dfe5ff;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:44px 24px 64px}
+.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;color:var(--accent);font-weight:700;margin:0}
+h1{font-size:clamp(1.7rem,4.5vw,2.35rem);line-height:1.15;margin:.3em 0 .35em;letter-spacing:-.015em}
+h2{font-size:1.3rem;margin:0 0 .8rem}
+p{margin:0 0 .9rem}
+.lede{color:var(--muted);font-size:1.08rem;max-width:66ch}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0 0}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.kpi .k{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;line-height:1.3}
+.kpi .v{font-size:1.6rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.3;margin-top:4px}
+.kpi .s{font-size:.82rem;color:var(--muted)}
+.kpi.head{border-color:var(--accent);background:var(--accent-soft)}
+.kpi.head .v{color:var(--accent)}
+section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:26px;margin:20px 0}
+table{width:100%;border-collapse:separate;border-spacing:3px;font-size:.95rem}
+th,td{padding:10px 8px;text-align:center;font-variant-numeric:tabular-nums}
+thead th{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:700}
+tbody th{text-align:left;font-weight:600;white-space:nowrap}
+tbody th span{display:block;font-weight:400;font-size:.8rem;color:var(--muted)}
+td.c{border-radius:6px;background:color-mix(in srgb, var(--heat) var(--p), transparent);font-weight:600}
+td.c.hi{color:var(--hi-text)}
+td.blank{border:1px dashed var(--border);border-radius:6px;color:transparent}
+tr.avg th,tr.avg td{border-top:2px solid var(--border);padding-top:12px;font-weight:700}
+tr.avg td{background:var(--surface-2);border-radius:6px}
+.note{font-size:.92rem;color:var(--muted);margin-top:12px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.9rem;margin:0 0 8px;padding:0;list-style:none}
+.legend li{display:flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:18px;height:4px;border-radius:2px}
+.chart{width:100%;max-width:640px;height:auto;display:block}
+.chart .grid{stroke:var(--grid);stroke-width:1}
+.chart .axis{fill:var(--muted);font-size:13px}
+.chart .xl{fill:var(--text);font-size:13px}
+.chart polyline{fill:none;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.l1{stroke:var(--j1)} .l2{stroke:var(--j2)} .l3{stroke:var(--j3)} .l4{stroke:var(--j4)}
+.d1{fill:var(--j1)} .d2{fill:var(--j2)} .d3{fill:var(--j3)} .d4{fill:var(--j4)}
+.chart circle{stroke:var(--surface);stroke-width:2}
+.takeaways{list-style:none;margin:0;padding:0;counter-reset:t;display:grid;gap:12px}
+.takeaways li{counter-increment:t;position:relative;padding:14px 16px 14px 54px;background:var(--surface-2);border-radius:10px}
+.takeaways li::before{content:counter(t);position:absolute;left:16px;top:13px;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--surface);font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center}
+footer{color:var(--muted);font-size:.85rem;margin-top:28px}
+@media (max-width:720px){.kpis{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:480px){
+  .wrap{padding:28px 16px 48px}
+  section{padding:18px 12px;border-radius:12px}
+  table{font-size:.86rem;border-spacing:2px}
+  th,td{padding:8px 3px}
+  thead th{font-size:.66rem;letter-spacing:0}
+  .kpi .v{font-size:1.35rem}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Mosaic Language Learning &middot; Growth team</p>
+  <h1>How well our signup cohorts keep coming back</h1>
+  <p class="lede">Retention for the June to September 2026 signup cohorts: 95,200 new users in total. <strong>Month-1 retention is up 7 points</strong>, from 46% for the June cohort to 53% for September.</p>
+  <div class="kpis">
+    <div class="kpi head"><div class="k">Month-1 change, Jun to Sep</div><div class="v">+7 pts</div><div class="s">46% &rarr; 53%</div></div>
+    <div class="kpi"><div class="k">Month-1 retention</div><div class="v">50.0%</div><div class="s">weighted, Jun&ndash;Sep</div></div>
+    <div class="kpi"><div class="k">Month-2 retention</div><div class="v">40.6%</div><div class="s">weighted, Jun&ndash;Aug</div></div>
+    <div class="kpi"><div class="k">Month-3 retention</div><div class="v">34.1%</div><div class="s">weighted, Jun&ndash;Jul</div></div>
+  </div>
+</header>
+
+<section id="cohort-table">
+  <h2>Cohort table</h2>
+  <p>Share of each cohort still active N months after signup. Darker means more users retained.</p>
+  <table>
+    <thead>
+      <tr><th scope="col" style="text-align:left">Cohort</th><th scope="col">Month 0</th><th scope="col">Month 1</th><th scope="col">Month 2</th><th scope="col">Month 3</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">Jun 2026<span>18,400 users</span></th><td class="c hi" style="--p:80%">100%</td><td class="c" style="--p:36.8%">46%</td><td class="c" style="--p:30.4%">38%</td><td class="c" style="--p:26.4%">33%</td></tr>
+      <tr><th scope="row">Jul 2026<span>21,700 users</span></th><td class="c hi" style="--p:80%">100%</td><td class="c" style="--p:38.4%">48%</td><td class="c" style="--p:32%">40%</td><td class="c" style="--p:28%">35%</td></tr>
+      <tr><th scope="row">Aug 2026<span>25,300 users</span></th><td class="c hi" style="--p:80%">100%</td><td class="c" style="--p:40.8%">51%</td><td class="c" style="--p:34.4%">43%</td><td class="blank" aria-label="Not reached yet">&nbsp;</td></tr>
+      <tr><th scope="row">Sep 2026<span>29,800 users</span></th><td class="c hi" style="--p:80%">100%</td><td class="c" style="--p:42.4%">53%</td><td class="blank" aria-label="Not reached yet">&nbsp;</td><td class="blank" aria-label="Not reached yet">&nbsp;</td></tr>
+      <tr class="avg"><th scope="row">Weighted<span>95,200 users</span></th><td>100%</td><td>50.0%</td><td>40.6%</td><td>34.1%</td></tr>
+    </tbody>
+  </table>
+  <p class="note"><strong>Note:</strong> months a cohort has not reached yet are left blank, not zero. The weighted month-2 figure covers June to August, and month 3 covers June and July only.</p>
+</section>
+
+<section id="retention-by-month">
+  <h2>Retention by month</h2>
+  <p>How retention decays for each cohort after signup.</p>
+  <ul class="legend" aria-hidden="true">
+    <li><i style="background:var(--j1)"></i>Jun</li>
+    <li><i style="background:var(--j2)"></i>Jul</li>
+    <li><i style="background:var(--j3)"></i>Aug</li>
+    <li><i style="background:var(--j4)"></i>Sep</li>
+  </ul>
+  <svg class="chart" viewBox="0 0 480 310" role="img" aria-labelledby="rTitle rDesc">
+    <title id="rTitle">Share of each cohort still active by months since signup</title>
+    <desc id="rDesc">All cohorts start at 100 percent. Month 1: June 46, July 48, August 51, September 53. Month 2: June 38, July 40, August 43. Month 3: June 33, July 35.</desc>
+    <line class="grid" x1="60" y1="20" x2="470" y2="20"/>
+    <line class="grid" x1="60" y1="106.67" x2="470" y2="106.67"/>
+    <line class="grid" x1="60" y1="193.33" x2="470" y2="193.33"/>
+    <line class="grid" x1="60" y1="280" x2="470" y2="280"/>
+    <g class="axis" text-anchor="end">
+      <text x="50" y="24">100%</text><text x="50" y="111">75%</text><text x="50" y="197">50%</text><text x="50" y="284">25%</text>
+    </g>
+    <g class="xl" text-anchor="middle">
+      <text x="60" y="302">Month 0</text><text x="193.3" y="302">Month 1</text><text x="326.7" y="302">Month 2</text><text x="460" y="302">Month 3</text>
+    </g>
+    <polyline class="l1" points="60,20 193.3,207.2 326.7,234.93 460,252.27"/>
+    <polyline class="l2" points="60,20 193.3,200.27 326.7,228 460,245.33"/>
+    <polyline class="l3" points="60,20 193.3,189.87 326.7,217.6"/>
+    <polyline class="l4" points="60,20 193.3,182.93"/>
+    <circle class="d1" cx="193.3" cy="207.2" r="4.5"/><circle class="d1" cx="326.7" cy="234.93" r="4.5"/><circle class="d1" cx="460" cy="252.27" r="4.5"/>
+    <circle class="d2" cx="193.3" cy="200.27" r="4.5"/><circle class="d2" cx="326.7" cy="228" r="4.5"/><circle class="d2" cx="460" cy="245.33" r="4.5"/>
+    <circle class="d3" cx="193.3" cy="189.87" r="4.5"/><circle class="d3" cx="326.7" cy="217.6" r="4.5"/>
+    <circle class="d4" cx="193.3" cy="182.93" r="4.5"/>
+    <circle class="d4" cx="60" cy="20" r="5"/>
+  </svg>
+  <p class="note">The vertical axis starts at 25% so the gaps between cohorts are visible. Each newer cohort sits above the one before it at every month it has reached.</p>
+</section>
+
+<section id="takeaways">
+  <h2>Takeaways</h2>
+  <ol class="takeaways">
+    <li>The onboarding changes shipped on <time datetime="2026-07-20">July 20, 2026</time> line up with the jump in month-1 retention from 48% (July cohort) to 51% (August cohort).</li>
+    <li>The biggest drop is always between month 0 and month 1: every cohort loses roughly half its users in the first month.</li>
+    <li>September's cohort is the largest so far (29,800 users) and also the best retaining, at 53% in month 1.</li>
+  </ol>
+</section>
+
+<footer>Mosaic Language Learning growth team. Cohort = new users who signed up in that month. Weighted figures are weighted by cohort size.</footer>
+</div>
+</body>
+</html>

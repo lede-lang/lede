@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Support Desk Status, Week 42</title>
+<style>
+:root{
+  --bg:#f5f6f9;--surface:#ffffff;--ink:#181c27;--muted:#5a6272;--line:#dde1ea;
+  --accent:#2750c7;--accent-soft:#e8edfb;--track:#e4e8ef;--bar:#3d63d9;
+  --slow:#b4400f;--slow-bg:#fdeadf;--warn:#8a5a00;--warn-bg:#fff1cc;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1118;--surface:#161a23;--ink:#e8ebf3;--muted:#9ba3b4;--line:#272c39;
+    --accent:#8fa8f5;--accent-soft:#1a2340;--track:#262c3a;--bar:#6c8af0;
+    --slow:#ffa070;--slow-bg:#33190d;--warn:#f2c25b;--warn-bg:#2c2410;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:18px 16px 48px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:8px 0 4px}
+h1{font-size:1.6rem;line-height:1.2;margin:0 0 4px}
+.asof{color:var(--muted);margin:0 0 16px;font-size:.92rem}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 14px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+.kpi .k{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700}
+.kpi .v{font-size:2rem;font-weight:800;line-height:1.15;font-variant-numeric:tabular-nums}
+.kpi .s{font-size:.85rem;color:var(--muted)}
+.kpi.late{border:2px solid var(--slow);background:var(--slow-bg)}
+.kpi.late .v{color:var(--slow)}
+h2{font-size:1.2rem;margin:26px 0 10px;line-height:1.3}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin:0 0 14px}
+.chart svg{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font:11px system-ui,sans-serif}
+.chart .val{fill:var(--ink);font-weight:700}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.cap{font-size:.85rem;color:var(--muted);margin:6px 0 0}
+.cat{list-style:none;margin:0;padding:0}
+.cat li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 10px}
+.cat li.slow{border:2px solid var(--slow);background:var(--slow-bg)}
+.cat .row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.cat .n{font-weight:700}
+.cat .h{font-weight:800;font-size:1.3rem;font-variant-numeric:tabular-nums}
+.cat li.slow .h{color:var(--slow)}
+.cat .t{position:relative;height:12px;background:var(--track);border-radius:6px;margin:8px 0 6px;overflow:visible}
+.cat .t i{display:block;height:100%;background:var(--bar);border-radius:6px}
+.cat li.slow .t i{background:var(--slow)}
+.cat .t u{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink);left:47.619%}
+.cat .d{font-size:.9rem;color:var(--muted)}
+.badge{display:inline-block;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;border-radius:6px;padding:1px 8px;margin-left:6px;vertical-align:middle;background:var(--slow);color:#fff}
+@media (prefers-color-scheme:dark){.badge{color:#1a0d05}}
+.legend{font-size:.85rem;color:var(--muted);margin:0 0 10px}
+.attn{list-style:none;padding:0;margin:0}
+.attn li{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--warn);border-radius:12px;padding:12px 14px;margin:0 0 10px}
+.next{list-style:none;padding:0;margin:0}
+.next li{display:flex;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 10px;align-items:center}
+.next .d{flex:none;text-align:center;min-width:3.6rem;background:var(--accent-soft);border-radius:8px;padding:4px 6px;color:var(--accent);font-weight:800;line-height:1.15}
+.next .d small{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.next .d span{font-size:1.4rem}
+.next p{margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Pinecrest Software &middot; Support desk</p>
+  <h1>Weekly status, week 42</h1>
+  <p class="asof">Week ending 2026-10-16. Support lead: Adaeze Nwosu.</p>
+
+  <div class="kpis">
+    <div class="kpi"><div class="k">Tickets received</div><div class="v">2,486</div></div>
+    <div class="kpi"><div class="k">Tickets solved</div><div class="v">2,391</div></div>
+    <div class="kpi"><div class="k">Open backlog</div><div class="v">612</div><div class="s">up from 598 in W41</div></div>
+    <div class="kpi"><div class="k">Customer satisfaction</div><div class="v">91.2%</div></div>
+    <div class="kpi late" style="grid-column:1 / -1">
+      <div class="k">Median first response</div>
+      <div class="v">2.7 hours</div>
+      <div class="s">Target is 2.0 hours, so we are 0.7 hours over.</div>
+    </div>
+  </div>
+
+  <h2>Open backlog, last ten weeks</h2>
+  <div class="card chart">
+    <svg viewBox="0 0 360 220" role="img" aria-label="Open backlog by week: W33 410, W34 425, W35 438, W36 470, W37 505, W38 531, W39 556, W40 579, W41 598, W42 612">
+      <!-- y: 0 at 180, 700 at 20 => 160/700 per unit = 0.22857 ; plot x 40..345, step 33.89 -->
+      <line class="grid" x1="40" y1="20" x2="345" y2="20"/>
+      <line class="grid" x1="40" y1="66" x2="345" y2="66"/>
+      <line class="grid" x1="40" y1="111" x2="345" y2="111"/>
+      <line class="grid" x1="40" y1="157" x2="345" y2="157"/>
+      <line class="grid" x1="40" y1="180" x2="345" y2="180" style="stroke:var(--muted)"/>
+      <text x="34" y="24" text-anchor="end">700</text>
+      <text x="34" y="70" text-anchor="end">500</text>
+      <text x="34" y="115" text-anchor="end">300</text>
+      <text x="34" y="161" text-anchor="end">100</text>
+      <text x="34" y="184" text-anchor="end">0</text>
+      <text x="40" y="12" text-anchor="start">Open tickets</text>
+      <!-- y = 180 - v*0.22857 -->
+      <polygon points="40,86.3 73.9,82.8 107.8,79.9 141.7,72.6 175.6,64.6 209.4,58.6 243.3,52.9 277.2,47.7 311.1,43.3 345,40.1 345,180 40,180" fill="var(--accent-soft)"/>
+      <polyline points="40,86.3 73.9,82.8 107.8,79.9 141.7,72.6 175.6,64.6 209.4,58.6 243.3,52.9 277.2,47.7 311.1,43.3 345,40.1" fill="none" stroke="var(--bar)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+      <g fill="var(--bar)">
+        <circle cx="40" cy="86.3" r="3.5"/><circle cx="73.9" cy="82.8" r="3.5"/><circle cx="107.8" cy="79.9" r="3.5"/>
+        <circle cx="141.7" cy="72.6" r="3.5"/><circle cx="175.6" cy="64.6" r="3.5"/><circle cx="209.4" cy="58.6" r="3.5"/>
+        <circle cx="243.3" cy="52.9" r="3.5"/><circle cx="277.2" cy="47.7" r="3.5"/><circle cx="311.1" cy="43.3" r="3.5"/>
+        <circle cx="345" cy="40.1" r="5" fill="var(--slow)"/>
+      </g>
+      <text class="val" x="40" y="76" text-anchor="start">410</text>
+      <text class="val" x="345" y="31" text-anchor="end">612</text>
+      <text x="40" y="198" text-anchor="middle">W33</text>
+      <text x="73.9" y="198" text-anchor="middle">W34</text>
+      <text x="107.8" y="198" text-anchor="middle">W35</text>
+      <text x="141.7" y="198" text-anchor="middle">W36</text>
+      <text x="175.6" y="198" text-anchor="middle">W37</text>
+      <text x="209.4" y="198" text-anchor="middle">W38</text>
+      <text x="243.3" y="198" text-anchor="middle">W39</text>
+      <text x="277.2" y="198" text-anchor="middle">W40</text>
+      <text x="311.1" y="198" text-anchor="middle">W41</text>
+      <text x="345" y="198" text-anchor="middle">W42</text>
+    </svg>
+    <p class="cap">W33 410, W34 425, W35 438, W36 470, W37 505, W38 531, W39 556, W40 579, W41 598, W42 612. It has grown every week.</p>
+  </div>
+
+  <h2>By category</h2>
+  <p class="legend">Tickets received and median first response in hours. The vertical mark on each bar is the 2.0 hour target; bars run to 4 hours.</p>
+  <ul class="cat">
+    <li class="slow">
+      <div class="row"><span class="n">Billing <span class="badge">Slow</span></span><span class="h">3.4 h</span></div>
+      <div class="t" role="img" aria-label="3.4 hours"><i style="width:85%"></i><u></u></div>
+      <div class="d">702 tickets received</div>
+    </li>
+    <li>
+      <div class="row"><span class="n">Login and access</span><span class="h">1.6 h</span></div>
+      <div class="t" role="img" aria-label="1.6 hours"><i style="width:40%"></i><u></u></div>
+      <div class="d">548 tickets received</div>
+    </li>
+    <li class="slow">
+      <div class="row"><span class="n">Bugs <span class="badge">Slow</span></span><span class="h">3.1 h</span></div>
+      <div class="t" role="img" aria-label="3.1 hours"><i style="width:77.5%"></i><u></u></div>
+      <div class="d">497 tickets received</div>
+    </li>
+    <li>
+      <div class="row"><span class="n">How-to</span><span class="h">2.2 h</span></div>
+      <div class="t" role="img" aria-label="2.2 hours"><i style="width:55%"></i><u></u></div>
+      <div class="d">421 tickets received</div>
+    </li>
+    <li>
+      <div class="row"><span class="n">Feature requests</span><span class="h">3.0 h</span></div>
+      <div class="t" role="img" aria-label="3.0 hours"><i style="width:75%"></i><u></u></div>
+      <div class="d">318 tickets received</div>
+    </li>
+  </ul>
+
+  <h2>Needs attention</h2>
+  <ul class="attn">
+    <li>The backlog has grown every week since W33.</li>
+    <li>3 agents are on leave until 2026-10-30.</li>
+    <li>The billing queue lost the most capacity.</li>
+  </ul>
+
+  <h2>Next week</h2>
+  <ul class="next">
+    <li>
+      <div class="d"><small>Oct</small><span>24</span></div>
+      <p><strong>Saturday coverage is added</strong><br><span style="color:var(--muted)">from 2026-10-24</span></p>
+    </li>
+    <li>
+      <div class="d"><small>Nov</small><span>2</span></div>
+      <p><strong>2 new agents start</strong><br><span style="color:var(--muted)">2026-11-02</span></p>
+    </li>
+  </ul>
+</div>
+</body>
+</html>

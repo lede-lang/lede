@@ -1,0 +1,217 @@
+<title>Lede Spot Check</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: one comparison at a time, a strip of 10 status chips on top; the screenshot is the hero. */
+:root {
+  --bg: #f4f5f7; --surface: #ffffff; --fg: #15181e; --muted: #5b6270; --line: #d8dbe1;
+  --accent: #2d55c4; --accent-fg: #ffffff; --done: #1d7a4c;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #121418; --surface: #1b1e24; --fg: #e9ebef; --muted: #9aa1ad; --line: #2e333c;
+  --accent: #7d9cff; --accent-fg: #0e1220; --done: #5cc48d; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #121418; --surface: #1b1e24; --fg: #e9ebef; --muted: #9aa1ad; --line: #2e333c;
+  --accent: #7d9cff; --accent-fg: #0e1220; --done: #5cc48d; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font: 15px/1.5 var(--sans);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+main { max-width: 1480px; margin: 0 auto; padding-block: 24px 64px; display: flex; flex-direction: column; gap: 16px; }
+h1 { font-size: 1.5rem; margin: 0; text-wrap: balance; }
+.lede { color: var(--muted); margin: 0; max-width: 70ch; }
+.strip { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: 600 12px var(--mono); padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; }
+.chip[aria-current="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.chip.done { color: var(--done); }
+.chip.done::after { content: " ✓"; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.card h2 { margin: 0; font-size: 1.1rem; }
+details summary { cursor: pointer; color: var(--muted); font-size: 14px; }
+details p { margin: 8px 0 0; max-width: 90ch; font-size: 14px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+.tabs { display: flex; gap: 4px; }
+.tab { font: 13px var(--sans); padding: 6px 12px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: var(--fg); cursor: pointer; }
+.tab[aria-selected="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.shot { overflow: auto; max-height: 75vh; border: 1px solid var(--line); border-radius: 6px; background: #808080; }
+.shot img { display: block; width: 100%; max-width: 100%; height: auto; }
+.shot.phone img { width: auto; max-width: none; }
+@media (max-width: 700px) { .shot img { width: 900px; max-width: none; } .shot.phone img { width: 640px; } }
+.vote { display: flex; flex-wrap: wrap; gap: 8px; }
+.vote button { font: 600 15px var(--sans); padding: 10px 18px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); cursor: pointer; min-width: 110px; }
+.vote button[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.status { font: 13px var(--mono); color: var(--muted); }
+.nav { display: flex; gap: 8px; }
+.nav button { font: 14px var(--sans); padding: 8px 14px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; }
+.nav button:disabled { opacity: .4; cursor: default; }
+h3 { margin: 0; font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
+.why { display: flex; flex-direction: column; gap: 14px; padding-top: 4px; border-top: 1px solid var(--line); }
+.why .group { display: flex; flex-direction: column; gap: 8px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.tog { font: 13px var(--sans); padding: 6px 11px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--fg); cursor: pointer; }
+.tog[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.why.off { opacity: .55; }
+.note { display: flex; flex-direction: column; gap: 6px; }
+.note label { font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
+.note textarea { font: 15px/1.5 var(--sans); min-height: 4.5em; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); resize: vertical; width: 100%; }
+.note textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: no-preference) { .vote button, .chip, .tog { transition: background .12s, color .12s; } }
+</style>
+<main>
+  <h1>Lede spot check</h1>
+  <p class="lede">Twelve blind comparisons from the vocabulary v0.4 round (fresh tasks, three writer models). Both pages in each pair were written from the same brief by the same model, one as raw HTML and one in Lede, with sides randomized. Pick the better finished page, look at the desktop view (light) and the phone view (dark), then say what made the difference. The two questions under the buttons and the note are optional. Everything saves as you go and is compared with the model judge afterwards.</p>
+  <div class="strip" id="strip" role="tablist" aria-label="Comparisons"></div>
+  <section class="card" id="card" aria-live="polite"></section>
+  <div class="row"><span class="status" id="status">Saving: checking storage…</span>
+    <div class="nav"><button id="prev" type="button">Previous</button><button id="next" type="button">Next</button></div></div>
+</main>
+<script>
+const ITEMS = /*ITEMS*/[];
+const ELEMENTS = ['Chart', 'Diagram', 'Table', 'Numbers', 'Headline or kpi', 'Callouts', 'Cards or tiles', 'Typography', 'Phone layout', 'Dark mode'];
+const recs = {}; // pair -> { pair, choice, good: [], bad: [], note, at }
+let cur = 0;
+let view = 'desktop';
+let db = null;
+const timers = {};
+const $ = id => document.getElementById(id);
+
+function loadLocal() {
+  try { Object.assign(recs, JSON.parse(localStorage.getItem('lede-spotcheck-v2') || '{}')); } catch (e) {}
+}
+function saveLocal() {
+  try { localStorage.setItem('lede-spotcheck-v2', JSON.stringify(recs)); } catch (e) {}
+}
+const rec = pair => (recs[pair] ??= { pair, choice: '', good: [], bad: [], note: '', at: '' });
+const answered = () => ITEMS.filter(x => recs[x.pair] && recs[x.pair].choice).length;
+
+async function persist(pair) {
+  const r = rec(pair);
+  r.at = new Date().toISOString();
+  saveLocal();
+  if (!db) { $('status').textContent = `Saved in this browser. ${answered()} of ${ITEMS.length} answered.`; return; }
+  try {
+    await db.doc(`spotcheck/${pair}`).set({ pair, choice: r.choice, good: r.good, bad: r.bad, note: r.note, at: r.at });
+    $('status').textContent = `Saved. ${answered()} of ${ITEMS.length} answered.`;
+  } catch (e) {
+    $('status').textContent = `Saved in this browser only (${e && e.code || 'error'}). ${answered()} of ${ITEMS.length} answered.`;
+  }
+}
+function persistSoon(pair) {
+  clearTimeout(timers[pair]);
+  $('status').textContent = 'Saving…';
+  timers[pair] = setTimeout(() => persist(pair), 700);
+}
+
+function renderStrip() {
+  $('strip').replaceChildren(...ITEMS.map((it, i) => {
+    const r = recs[it.pair];
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip' + (r && r.choice ? ' done' : '');
+    b.textContent = String(i + 1).padStart(2, '0');
+    b.setAttribute('role', 'tab');
+    b.setAttribute('aria-current', String(i === cur));
+    b.setAttribute('aria-label', `Comparison ${i + 1}${r && r.choice ? ', answered' : ''}`);
+    b.onclick = () => { cur = i; render(); };
+    return b;
+  }));
+}
+
+function chips(pair, field) {
+  const wrap = document.createElement('div'); wrap.className = 'chips';
+  for (const name of ELEMENTS) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'tog'; b.textContent = name;
+    b.setAttribute('aria-pressed', String(rec(pair)[field].includes(name)));
+    b.onclick = () => {
+      const r = rec(pair);
+      const on = !r[field].includes(name);
+      r[field] = on ? [...r[field], name] : r[field].filter(x => x !== name);
+      b.setAttribute('aria-pressed', String(on));
+      persist(pair);
+    };
+    wrap.append(b);
+  }
+  return wrap;
+}
+
+function render() {
+  const it = ITEMS[cur];
+  const r = rec(it.pair);
+  const card = $('card');
+  card.replaceChildren();
+  const h = document.createElement('h2');
+  h.textContent = `${cur + 1} of ${ITEMS.length}: ${it.title}`;
+  const d = document.createElement('details');
+  const s = document.createElement('summary'); s.textContent = 'Brief the models were given';
+  const p = document.createElement('p'); p.textContent = it.brief;
+  d.append(s, p);
+  const row = document.createElement('div'); row.className = 'row';
+  const tabs = document.createElement('div'); tabs.className = 'tabs'; tabs.setAttribute('role', 'tablist');
+  for (const [k, label] of [['desktop', 'Desktop · light'], ['phone', 'Phone · dark']]) {
+    const t = document.createElement('button');
+    t.type = 'button'; t.className = 'tab'; t.textContent = label;
+    t.setAttribute('role', 'tab'); t.setAttribute('aria-selected', String(view === k));
+    t.onclick = () => { view = k; render(); };
+    tabs.append(t);
+  }
+  const vote = document.createElement('div'); vote.className = 'vote';
+  for (const [k, label] of [['LEFT', 'Left is better'], ['TIE', 'Tie'], ['RIGHT', 'Right is better']]) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.textContent = label;
+    b.setAttribute('aria-pressed', String(r.choice === k));
+    b.onclick = () => { r.choice = k; persist(it.pair); render(); };
+    vote.append(b);
+  }
+  row.append(tabs, vote);
+  const shot = document.createElement('div'); shot.className = 'shot' + (view === 'phone' ? ' phone' : '');
+  shot.tabIndex = 0;
+  const img = document.createElement('img');
+  img.src = it[view];
+  img.alt = `Two pages side by side for "${it.title}", ${view === 'desktop' ? 'desktop width in light mode' : 'phone width in dark mode'}, labeled LEFT and RIGHT.`;
+  shot.append(img);
+
+  const why = document.createElement('div'); why.className = 'why' + (r.choice ? '' : ' off');
+  const tie = r.choice === 'TIE';
+  const g1 = document.createElement('div'); g1.className = 'group';
+  const h1 = document.createElement('h3'); h1.textContent = tie ? 'What was good on both pages' : 'What was better on the page you chose';
+  g1.append(h1, chips(it.pair, 'good'));
+  const g2 = document.createElement('div'); g2.className = 'group';
+  const h2 = document.createElement('h3'); h2.textContent = tie ? 'What was weak on both pages' : 'What was worse on the other';
+  g2.append(h2, chips(it.pair, 'bad'));
+  const note = document.createElement('div'); note.className = 'note';
+  const lab = document.createElement('label'); lab.htmlFor = 'note'; lab.textContent = 'Anything else';
+  const ta = document.createElement('textarea'); ta.id = 'note'; ta.value = r.note || '';
+  ta.oninput = () => { r.note = ta.value; persistSoon(it.pair); };
+  note.append(lab, ta);
+  why.append(g1, g2, note);
+
+  card.append(h, d, row, shot, why);
+  $('prev').disabled = cur === 0;
+  $('next').disabled = cur === ITEMS.length - 1;
+  renderStrip();
+}
+
+$('prev').onclick = () => { if (cur > 0) { cur--; view = 'desktop'; render(); window.scrollTo({ top: 0 }); } };
+$('next').onclick = () => { if (cur < ITEMS.length - 1) { cur++; view = 'desktop'; render(); window.scrollTo({ top: 0 }); } };
+loadLocal();
+render();
+$('status').textContent = `${answered()} of ${ITEMS.length} answered.`;
+
+(async () => {
+  try {
+    db = window.claude ? await window.claude.use('db') : null;
+  } catch (e) { db = null; }
+  if (!db) { $('status').textContent = `Saving in this browser. ${answered()} of ${ITEMS.length} answered.`; return; }
+  try {
+    const snap = await db.collection('spotcheck').get();
+    for (const doc of snap.docs) {
+      const v = doc.data();
+      if (v && v.pair && v.choice) recs[v.pair] = { pair: v.pair, choice: v.choice, good: v.good || [], bad: v.bad || [], note: v.note || '', at: v.at || '' };
+    }
+    saveLocal();
+    render();
+    $('status').textContent = `${answered()} of ${ITEMS.length} answered.`;
+  } catch (e) { /* reading back is optional */ }
+})();
+</script>

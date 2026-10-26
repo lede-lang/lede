@@ -1,0 +1,1473 @@
+[
+ {
+  "key": "opus-r3/C/01",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "01",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 959,
+  "tokens": 319,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 32158,
+  "ttfmrTokens": 70,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/02",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "02",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1234,
+  "tokens": 417,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 38185,
+  "ttfmrTokens": 90,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/03",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "03",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1053,
+  "tokens": 370,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 31723,
+  "ttfmrTokens": 95,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/04",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "04",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 571,
+  "tokens": 216,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 32626,
+  "ttfmrTokens": 149,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/05",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "05",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1079,
+  "tokens": 346,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 37353,
+  "ttfmrTokens": 79,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/06",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "06",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1065,
+  "tokens": 351,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 39179,
+  "ttfmrTokens": 73,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/07",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "07",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1238,
+  "tokens": 383,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 33417,
+  "ttfmrTokens": 139,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/08",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "08",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1662,
+  "tokens": 458,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 38120,
+  "ttfmrTokens": 67,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/09",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "09",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1590,
+  "tokens": 467,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 37626,
+  "ttfmrTokens": 71,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/10",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "10",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1436,
+  "tokens": 376,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 30371,
+  "ttfmrTokens": 56,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/11",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "11",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1641,
+  "tokens": 538,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 31898,
+  "ttfmrTokens": 61,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/12",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "12",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1767,
+  "tokens": 460,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 36378,
+  "ttfmrTokens": 54,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/13",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "13",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "chart",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1321,
+  "tokens": 413,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 36108,
+  "ttfmrTokens": 63,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/14",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "14",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1562,
+  "tokens": 424,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 30070,
+  "ttfmrTokens": 70,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/15",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "15",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1396,
+  "tokens": 379,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24500,
+  "ttfmrTokens": 88,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/16",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "16",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 1824,
+  "tokens": 540,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 33745,
+  "ttfmrTokens": 88,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/17",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "17",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 834,
+  "tokens": 230,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 23889,
+  "ttfmrTokens": 103,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/18",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "18",
+  "category": "runbook",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 2067,
+  "tokens": 559,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 31287,
+  "ttfmrTokens": 63,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/19",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "19",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "diagram",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1403,
+  "tokens": 377,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 34056,
+  "ttfmrTokens": 93,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9473684210526316,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1000000"
+   ]
+  }
+ },
+ {
+  "key": "opus-r3/C/20",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "20",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list"
+  ],
+  "srcBytes": 1389,
+  "tokens": 419,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 32477,
+  "ttfmrTokens": 87,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.96,
+   "missSections": [],
+   "missVisible": [
+    "negative caching"
+   ],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/21",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "21",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 1487,
+  "tokens": 433,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 30528,
+  "ttfmrTokens": 103,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/22",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "22",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1597,
+  "tokens": 440,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 30499,
+  "ttfmrTokens": 90,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/23",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "23",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1758,
+  "tokens": 544,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 34112,
+  "ttfmrTokens": 95,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/24",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "24",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1410,
+  "tokens": 377,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 26000,
+  "ttfmrTokens": 71,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/25",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "25",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1682,
+  "tokens": 463,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 32927,
+  "ttfmrTokens": 110,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/26",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "26",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1771,
+  "tokens": 515,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 33765,
+  "ttfmrTokens": 105,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/27",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "27",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 802,
+  "tokens": 228,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24749,
+  "ttfmrTokens": 82,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/28",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "28",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 956,
+  "tokens": 328,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 39816,
+  "ttfmrTokens": 92,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/29",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "29",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 899,
+  "tokens": 334,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 43625,
+  "ttfmrTokens": 92,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/30",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "30",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 993,
+  "tokens": 299,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 35474,
+  "ttfmrTokens": 71,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/31",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "31",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 1356,
+  "tokens": 472,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 39524,
+  "ttfmrTokens": 131,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/32",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "32",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1179,
+  "tokens": 381,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 37752,
+  "ttfmrTokens": 83,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/33",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "33",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1284,
+  "tokens": 466,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 38172,
+  "ttfmrTokens": 84,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/34",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "34",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1200,
+  "tokens": 452,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 33157,
+  "ttfmrTokens": 98,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/35",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "35",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 4174,
+  "tokens": 926,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 26871,
+  "ttfmrTokens": 129,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/36",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "36",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 969,
+  "tokens": 256,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 23653,
+  "ttfmrTokens": 60,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/37",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "37",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1718,
+  "tokens": 422,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24538,
+  "ttfmrTokens": 118,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/38",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "38",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1861,
+  "tokens": 447,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 25134,
+  "ttfmrTokens": 78,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/39",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "39",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 3172,
+  "tokens": 732,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 25834,
+  "ttfmrTokens": 118,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r3/C/40",
+  "model": "opus-r3",
+  "arm": "C",
+  "id": "40",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1286,
+  "tokens": 312,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24287,
+  "ttfmrTokens": 114,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ }
+]

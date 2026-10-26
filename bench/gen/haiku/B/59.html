@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Login System: Build or Buy</title>
+<style>
+:root{--bg:#f6f5f1;--surface:#ffffff;--ink:#1c1e22;--muted:#5d6370;--line:#dcd9d1;--accent:#2f6b5c;--warm:#b8642e;--blue:#3f6396}
+@media (prefers-color-scheme:dark){:root{--bg:#14161a;--surface:#1d2026;--ink:#eceae4;--muted:#a4a9b4;--line:#353a44;--accent:#6cbba3;--warm:#e39a66;--blue:#8db2e3}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif}
+main{max-width:920px;margin:0 auto;padding:32px 16px 64px}
+.kicker{color:var(--accent);font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;margin:0 0 6px}
+h1{font-size:clamp(26px,5vw,36px);line-height:1.15;margin:0 0 12px}
+h2{font-size:21px;margin:40px 0 14px;padding-top:16px;border-top:1px solid var(--line)}
+p{margin:0 0 14px}
+.lede{color:var(--muted);font-size:17px}
+.note{color:var(--muted);font-size:14px}
+.table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+tr:last-child td{border-bottom:0}
+.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px}
+svg{display:block;width:100%;height:auto}
+.axis{stroke:var(--line);stroke-width:1}
+.lbl{font-size:14px;fill:var(--muted)}
+.lbl-strong{font-size:14px;fill:var(--ink);font-weight:600}
+.bar{fill:var(--accent)} .bar2{fill:var(--warm)} .bar3{fill:var(--blue)}
+ul{padding-left:20px;margin:0 0 14px} li{margin:0 0 10px}
+.rec{background:var(--surface);border-left:4px solid var(--accent);padding:16px 18px;border-radius:8px}
+.key{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:14px;color:var(--muted);margin:10px 0 0}
+.key span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:12px;height:12px;border-radius:2px;display:inline-block}
+</style>
+</head>
+<body>
+<main>
+<p class="kicker">Architecture council, decision 4 November 2026</p>
+<h1>Login: build on Keycloak, or buy Authly or Gatepost</h1>
+<p class="lede">Meadowbrook has about 250,000 monthly active learners, growing roughly 40 percent a year. Our home-grown login system is a maintenance burden, and the platform lead asks the council to choose its replacement.</p>
+
+<h2>Cost</h2>
+<p>Annual cost at three user levels, in US dollars.</p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Option</th><th class="num">100,000 monthly users</th><th class="num">250,000 monthly users</th><th class="num">500,000 monthly users</th></tr></thead>
+  <tbody>
+    <tr><td>Keycloak, self-hosted</td><td class="num">$210,000</td><td class="num">$240,000</td><td class="num">$330,000</td></tr>
+    <tr><td>Authly</td><td class="num">$66,000</td><td class="num">$151,000</td><td class="num">$288,000</td></tr>
+    <tr><td>Gatepost</td><td class="num">$54,000</td><td class="num">$108,000</td><td class="num">$192,000</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="note">Keycloak includes infrastructure and 1.5 engineers. Gatepost's price steps up sharply above 400,000 monthly users. Gatepost's bot protection costs an extra $18,000 a year.</p>
+<div class="chart">
+  <svg id="cost-chart" role="img" aria-label="Grouped bar chart of annual cost at 100,000, 250,000 and 500,000 monthly users for Keycloak, Authly and Gatepost"></svg>
+  <div class="key">
+    <span><i class="sw" style="background:var(--accent)"></i>Keycloak, self-hosted</span>
+    <span><i class="sw" style="background:var(--warm)"></i>Authly</span>
+    <span><i class="sw" style="background:var(--blue)"></i>Gatepost</span>
+  </div>
+</div>
+
+<h2>Capabilities</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Capability</th><th>Keycloak, self-hosted</th><th>Authly</th><th>Gatepost</th></tr></thead>
+  <tbody>
+    <tr><td>SSO for schools (SAML and OIDC)</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+    <tr><td>Bot protection</td><td>Not managed; we would add it ourselves</td><td>Included</td><td>Extra, $18,000 a year</td></tr>
+    <tr><td>Adaptive MFA</td><td>Not stated in this comparison</td><td>Included</td><td>Yes</td></tr>
+    <tr><td>EU learner data kept in Frankfurt</td><td>Yes</td><td>Yes</td><td>Only on the highest plan</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Risks</h2>
+<ul>
+  <li><strong>Keycloak.</strong> We own bot protection and the upkeep of a self-hosted system. The cost rises to $330,000 a year at 500,000 users, and it depends on 1.5 engineers.</li>
+  <li><strong>Authly.</strong> The cost rises to $288,000 a year at 500,000 users, approaching the self-hosted figure. We would need to revisit the choice at that size.</li>
+  <li><strong>Gatepost.</strong> It is the cheapest option at every size we modelled. Its price rises sharply above 400,000 users, bot protection is extra, and EU residency is only on the highest plan. Even with bot protection added, Gatepost at 250,000 users would cost $126,000 a year, below Authly's $151,000. The case for Authly rests on what it includes without add-ons.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<div class="rec">
+<p>Buy Authly. It is the middle option on cost at 250,000 users, at $151,000 a year, and it is the only one that covers bot protection, adaptive MFA and EU residency without add-ons.</p>
+<p>Gatepost is cheaper, and a pure price comparison would favour it. We recommend Authly for what it includes. We would revisit this decision at 500,000 monthly users, when Authly's annual cost reaches $288,000.</p>
+<p class="note">Decision date: 4 November 2026.</p>
+</div>
+</main>
+<script>
+(function(){
+  var svg=document.getElementById('cost-chart');
+  var W=560,H=290,base=250,top=20,max=330000;
+  var groups=["100,000 users","250,000 users","500,000 users"];
+  var series=[{c:"bar",v:[210000,240000,330000]},{c:"bar2",v:[66000,151000,288000]},{c:"bar3",v:[54000,108000,192000]}];
+  var gw=(W-40)/groups.length, bw=40, out='';
+  out+='<line class="axis" x1="20" y1="'+base+'" x2="'+(W-20)+'" y2="'+base+'"/>';
+  groups.forEach(function(g,gi){
+    var x0=20+gi*gw+(gw-3*bw-2*6)/2;
+    series.forEach(function(s,si){
+      var h=(base-top)*s.v[gi]/max, x=x0+si*(bw+6);
+      out+='<rect class="'+s.c+'" x="'+x.toFixed(1)+'" y="'+(base-h).toFixed(1)+'" width="'+bw+'" height="'+h.toFixed(1)+'" rx="3"/>';
+    });
+    out+='<text class="lbl" x="'+(20+gi*gw+gw/2).toFixed(1)+'" y="'+(base+24)+'" text-anchor="middle">'+g+'</text>';
+  });
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  svg.innerHTML=out;
+})();
+</script>
+</body>
+</html>

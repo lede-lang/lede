@@ -1,0 +1,66 @@
+{
+  "id": "130-moonlit-harbor-alpha",
+  "category": "status",
+  "title": "Moonlit Harbor alpha status",
+  "brief": "Lanternfish Games is building Moonlit Harbor, and the producer, Zuri Okonkwo-Hale, needs a status page for the publisher ahead of the alpha review on 2026-11-20, as of week 42 (ending 2026-10-16). Overall the project is amber. Headlines: 31 of 40 planned features complete (77.5 percent), 14 of 18 levels playable, 212 open bugs of which 9 are priority 1, and an average of 58 frames per second on the minimum-spec console against a target of 60. Open bugs by week: W37 340, W38 318, W39 291, W40 264, W41 238, W42 212, falling by about 26 a week, which would leave about 80 open by 2026-11-20. Under \"Features\" give the 9 remaining ones by status: 4 in progress (fishing mini-game, ship customization, co-op invites, photo mode), 3 not started (harbor festival events, achievements, accessibility options), 2 cut candidates (weather-driven trading, pet companion). Under \"Risks\": performance is 2 frames per second below target in the busiest harbor scene and the optimization sprint is booked for 2026-11-02 to 2026-11-13; accessibility options have not started and are required for the console certification submission on 2027-02-08; the two cut candidates would save about 6 weeks of work if dropped, and the decision is needed by 2026-10-30. Sections: \"Alpha at a glance\", \"Bug trend\", \"Features\" and \"Risks\".",
+  "checklist": {
+    "sections": [
+      "Alpha at a glance",
+      "Bug trend",
+      "Features",
+      "Risks"
+    ],
+    "visible": [
+      "Zuri Okonkwo-Hale",
+      "fishing mini-game",
+      "ship customization",
+      "co-op invites",
+      "photo mode",
+      "harbor festival events",
+      "achievements",
+      "accessibility options",
+      "weather-driven trading",
+      "pet companion"
+    ],
+    "values": [
+      "2026-11-20",
+      "31 of 40",
+      "77.5",
+      "14 of 18",
+      "212",
+      "58",
+      "60",
+      "340",
+      "318",
+      "291",
+      "264",
+      "238",
+      "W37",
+      "W42",
+      "80",
+      "2026-11-02",
+      "2026-11-13",
+      "2027-02-08",
+      "6 weeks",
+      "2026-10-30"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add W43 at 190 open bugs and make the headline 190, and mark photo mode as complete, so 32 of 40 features are done.",
+    "expect_visible": [],
+    "expect_values": [
+      "W43",
+      "190",
+      "32 of 40"
+    ],
+    "expect_absent": [
+      "31 of 40"
+    ]
+  }
+}

@@ -1,0 +1,196 @@
+@title Feature flag review: flags.yaml, 14 flags
+@subtitle Proposed change set for the 2026-10-22 release, with the dependency check already run
+@author Claude, Platform
+@date 2026-10-19
+@width wide
+
+! This is a static review, not an editor. The proposed values are pre-filled in the tables. The diff to apply is the last block on the page.
+
+## Summary
+
+kpi Flags | 14 | 6 areas | neutral
+kpi Enabled today | 8 | of 14 | neutral
+kpi Enabled after | 12 | +4 flags | good
+kpi Dependency warnings | 0 | in this change set | good
+
+!! One flag you may be tempted to enable, ai_assistant, would fail its dependency check: platform_audit_log is off. The proposal leaves it off.
+
+## Flags by area
+
+data flags = area,flag,today,proposed,rollout today,rollout proposed,requires,owner; checkout,checkout_v2,On,On,100,100,payments_tokenization,Dana
+data flags += checkout,checkout_express_pay,Off,On,0,10,"checkout_v2 + payments_tokenization",Dana
+data flags += checkout,checkout_saved_cards,On,On,60,100,payments_tokenization,Dana
+data flags += payments,payments_tokenization,On,On,100,100,none,Ravi
+data flags += payments,payments_3ds2,On,On,100,100,payments_tokenization,Ravi
+data flags += search,search_typeahead,On,On,100,100,none,Mei
+data flags += search,search_embeddings,Off,On,0,100,platform_event_bus,Mei
+data flags += search,search_semantic,Off,On,0,25,search_embeddings,Mei
+data flags += billing,billing_invoices_v2,On,On,100,100,none,Omar
+data flags += billing,billing_tax_eu,On,On,100,100,billing_invoices_v2,Omar
+data flags += billing,billing_usage_metering,Off,On,0,5,"billing_invoices_v2 + platform_event_bus",Omar
+data flags += platform,platform_event_bus,On,On,100,100,none,Sofia
+data flags += platform,platform_audit_log,Off,Off,0,0,none,Sofia
+data flags += assistant,ai_assistant,Off,Off,0,0,"search_semantic + platform_audit_log",Jun
+
+table flags sort=area
+
+### Changed in this proposal
+
+table = flag,change,reason; checkout_express_pay,Off to On at 10%,Canary for the one-tap pay button and its prerequisites are already on; search_embeddings,Off to On at 100%,Index is backfilled and must be on before semantic search; search_semantic,Off to On at 25%,A quarter of traffic first and embeddings must go first; billing_usage_metering,Off to On at 5%,Pilot with the six metered customers; checkout_saved_cards,Rollout 60% to 100%,Error rate matched control for 7 days
+
+## Dependency check
+
+Each row is a flag in the proposed state that has prerequisites, checked against the prerequisite's proposed state.
+
+data deps = flag,prerequisite,prerequisite after change,result; checkout_v2,payments_tokenization,On,Go
+data deps += checkout_express_pay,checkout_v2,On,Go
+data deps += checkout_express_pay,payments_tokenization,On,Go
+data deps += checkout_saved_cards,payments_tokenization,On,Go
+data deps += payments_3ds2,payments_tokenization,On,Go
+data deps += search_embeddings,platform_event_bus,On,Go
+data deps += search_semantic,search_embeddings,On (enabled in this change),Go
+data deps += billing_tax_eu,billing_invoices_v2,On,Go
+data deps += billing_usage_metering,billing_invoices_v2,On,Go
+data deps += billing_usage_metering,platform_event_bus,On,Go
+
+table deps
+
+### What-if: enabling ai_assistant
+
+data whatif = flag,prerequisite,prerequisite after change,result; ai_assistant,search_semantic,On,Go
+data whatif += ai_assistant,platform_audit_log,Off,Blocked
+
+table whatif
+
+!! Enabling ai_assistant now would run it without an audit log. Enable platform_audit_log first (Sofia estimates 2 days), then ai_assistant.
+
+### Blast radius if a prerequisite is turned off
+
+data blast = prerequisite,dependents that break,count; payments_tokenization,"checkout_v2, checkout_express_pay, checkout_saved_cards, payments_3ds2",4
+data blast += platform_event_bus,"search_embeddings, billing_usage_metering",2
+data blast += billing_invoices_v2,"billing_tax_eu, billing_usage_metering",2
+data blast += search_embeddings,search_semantic,1
+data blast += checkout_v2,checkout_express_pay,1
+
+table blast sort=-count bar=count
+
+## Dependency graph
+
+An arrow points from a flag to the flag it requires. The blocked path is the one the dependency check rejects.
+
+diagram deps dir=LR title="Flag prerequisites after the proposed change"
+deps: payments_tokenization "payments_tokenization" svc "On" focus
+deps: checkout_v2 "checkout_v2" svc "On"
+deps: checkout_express_pay "checkout_express_pay" svc "Off to On 10%" focus
+deps: checkout_saved_cards "checkout_saved_cards" svc "60% to 100%"
+deps: payments_3ds2 "payments_3ds2" svc "On"
+deps: platform_event_bus "platform_event_bus" svc "On"
+deps: platform_audit_log "platform_audit_log" ext "Off"
+deps: search_embeddings "search_embeddings" svc "Off to On 100%" focus
+deps: search_semantic "search_semantic" svc "Off to On 25%" focus
+deps: billing_invoices_v2 "billing_invoices_v2" svc "On"
+deps: billing_tax_eu "billing_tax_eu" svc "On"
+deps: billing_usage_metering "billing_usage_metering" svc "Off to On 5%" focus
+deps: ai_assistant "ai_assistant" ext "Stays Off"
+deps: checkout_v2 -> payments_tokenization
+deps: checkout_express_pay -> checkout_v2, payments_tokenization
+deps: checkout_saved_cards -> payments_tokenization
+deps: payments_3ds2 -> payments_tokenization
+deps: search_embeddings -> platform_event_bus
+deps: search_semantic -> search_embeddings
+deps: billing_tax_eu -> billing_invoices_v2
+deps: billing_usage_metering -> billing_invoices_v2, platform_event_bus
+deps: ai_assistant -> search_semantic
+deps: ai_assistant -x- platform_audit_log : prereq off
+deps: group g_pay "Payments" payments_tokenization, payments_3ds2
+deps: group g_checkout "Checkout" checkout_v2, checkout_express_pay, checkout_saved_cards
+deps: group g_search "Search" search_embeddings, search_semantic
+deps: group g_billing "Billing" billing_invoices_v2, billing_tax_eu, billing_usage_metering
+deps: group g_platform "Platform" platform_event_bus, platform_audit_log
+deps: legend
+
+## Order of operations
+
+1. Deploy the config change with search_embeddings first, since search_semantic requires it.
+2. Raise checkout_saved_cards to 100%.
+3. Enable checkout_express_pay at 10% and watch the payment error rate for 24 hours.
+4. Enable billing_usage_metering at 5%.
+5. Move search_semantic to 25% once the embeddings index shows no lag.
+
+## Resulting flags.yaml
+
+```yaml
+# flags.yaml after the proposed change
+checkout_v2:
+  enabled: true
+  rollout: 100
+  requires: [payments_tokenization]
+checkout_express_pay:
+  enabled: true
+  rollout: 10
+  requires: [checkout_v2, payments_tokenization]
+checkout_saved_cards:
+  enabled: true
+  rollout: 100
+  requires: [payments_tokenization]
+payments_tokenization:
+  enabled: true
+  rollout: 100
+payments_3ds2:
+  enabled: true
+  rollout: 100
+  requires: [payments_tokenization]
+search_typeahead:
+  enabled: true
+  rollout: 100
+search_embeddings:
+  enabled: true
+  rollout: 100
+  requires: [platform_event_bus]
+search_semantic:
+  enabled: true
+  rollout: 25
+  requires: [search_embeddings]
+billing_invoices_v2:
+  enabled: true
+  rollout: 100
+billing_tax_eu:
+  enabled: true
+  rollout: 100
+  requires: [billing_invoices_v2]
+billing_usage_metering:
+  enabled: true
+  rollout: 5
+  requires: [billing_invoices_v2, platform_event_bus]
+platform_event_bus:
+  enabled: true
+  rollout: 100
+platform_audit_log:
+  enabled: false
+  rollout: 0
+ai_assistant:
+  enabled: false
+  rollout: 0
+  requires: [search_semantic, platform_audit_log]
+```
+
+## Copy diff: changed keys only
+
+Paste this over the matching keys. Five flags change and nine are untouched.
+
+```yaml
+checkout_express_pay:
+  enabled: true      # was false
+  rollout: 10        # was 0
+checkout_saved_cards:
+  rollout: 100       # was 60
+search_embeddings:
+  enabled: true      # was false
+  rollout: 100       # was 0
+search_semantic:
+  enabled: true      # was false
+  rollout: 25        # was 0
+billing_usage_metering:
+  enabled: true      # was false
+  rollout: 5         # was 0
+```

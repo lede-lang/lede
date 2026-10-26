@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Building permit routing</title>
+<style>
+:root{--bg:#f6f5f1;--fg:#1c1c1a;--muted:#5f5d57;--card:#ffffff;--line:#d8d5cb;--accent:#1d5c74;--accent-bg:#e4eff3;--warn:#8c2a1c;--warn-bg:#fbe9e5}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#131416;--fg:#ebeae6;--muted:#a4a29b;--card:#1d1f22;--line:#3a3c38;--accent:#86c3da;--accent-bg:#1c2d35;--warn:#f2a797;--warn-bg:#3b211c}}
+:root[data-theme="dark"]{--bg:#131416;--fg:#ebeae6;--muted:#a4a29b;--card:#1d1f22;--line:#3a3c38;--accent:#86c3da;--accent-bg:#1c2d35;--warn:#f2a797;--warn-bg:#3b211c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+main{max-width:820px;margin:0 auto;padding:24px 16px 56px}
+header{border-bottom:2px solid var(--fg);padding-bottom:14px;margin-bottom:6px}
+h1{font-size:1.65rem;line-height:1.2;margin:0 0 6px}
+h2{font-size:1.15rem;margin:34px 0 10px;padding-top:4px}
+p{margin:0 0 12px}
+.meta{color:var(--muted);font-size:.9rem;margin:0}
+.note{color:var(--muted);font-size:.9rem}
+.wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.8rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.flow{display:flex;flex-direction:column;align-items:stretch}
+.node{background:var(--card);border:1.5px solid var(--accent);border-radius:8px;padding:9px 12px;font-weight:600;text-align:center}
+.edge{color:var(--muted);font-size:.85rem;text-align:center;padding:6px 0}
+.edge::before{content:"\2193";display:block;color:var(--accent);font-size:1.1rem;line-height:1.1}
+.label{font-weight:700;color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:0 0 10px}
+.card h3{font-size:1rem;margin:0 0 6px}
+.card ul{margin:0;padding-left:18px}
+.card li{margin-bottom:4px}
+.total{font-weight:700}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>Building permit routing</h1>
+<p class="meta">Whitcombe City Planning Office &middot; Current as of 2026-10-01</p>
+</header>
+
+<p>This page shows how a building permit application moves through review, so front-counter staff and applicants can give the same answer.</p>
+
+<h2>Routing flow</h2>
+<div class="flow">
+  <div class="node">Application received</div>
+  <div class="edge"></div>
+  <div class="node">Submission complete?</div>
+  <div class="edge"><span class="label">Yes</span></div>
+  <div class="node">Project value over 50000 dollars?</div>
+  <div class="edge"><span class="label">Yes</span></div>
+  <div class="node">In a historic district?</div>
+  <div class="edge"><span class="label">Yes</span></div>
+  <div class="node">Heritage Board review</div>
+  <div class="edge"><span class="label">cleared</span></div>
+  <div class="node">Plan review</div>
+  <div class="edge"><span class="label">approved</span></div>
+  <div class="node">Permit issued</div>
+</div>
+
+<div class="card" style="margin-top:18px">
+  <h3>Other paths</h3>
+  <ul>
+    <li><strong>Submission not complete:</strong> Return to applicant.</li>
+    <li><strong>Project value 50000 dollars or less:</strong> Fast-track review, then Permit issued, labeled <em>approved</em>.</li>
+    <li><strong>Project value over 50000 dollars, not in a historic district:</strong> Plan review directly, then Permit issued, labeled <em>approved</em>.</li>
+  </ul>
+</div>
+
+<h2>Review times</h2>
+<div class="wrap">
+<table>
+  <thead><tr><th>Stage</th><th>Target</th></tr></thead>
+  <tbody>
+    <tr><td>Completeness check</td><td>2 business days</td></tr>
+    <tr><td>Fast-track review</td><td>3 business days</td></tr>
+    <tr><td>Plan review</td><td>15 business days</td></tr>
+    <tr><td>Heritage Board review</td><td>30 days, added on top of the plan review time</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Fees</h2>
+<p>Every application pays a base fee of 180 dollars. Projects valued above 50000 dollars also pay 0.8 percent of the project value above 50000 dollars.</p>
+<div class="card">
+  <p class="note" style="margin:0 0 4px">Example: a 250000-dollar project</p>
+  <p style="margin:0">180 base fee + 0.8% of 200000 (= 1600) = <span class="total">1780 dollars</span></p>
+</div>
+</main>
+</body>
+</html>

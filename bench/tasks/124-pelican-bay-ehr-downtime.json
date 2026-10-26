@@ -1,0 +1,48 @@
+{
+  "id": "124-pelican-bay-ehr-downtime",
+  "category": "runbook",
+  "title": "Pelican Bay EHR downtime runbook",
+  "brief": "Pelican Bay Clinic's operations team needs a runbook for when the electronic health record is unavailable, for charge nurses and front-desk staff, owned by Clinical Operations and effective 2026-11-15. Section \"Declare downtime\": downtime is declared when the record has been unavailable or unusably slow for 10 minutes; the charge nurse announces \"Paper procedures\" on the overhead page and calls the IT service desk on extension 5000. Section \"During downtime\" in order, with sub-steps. 1 Switch to paper: a) take the downtime binder from each station, it holds the printed schedule refreshed at 05:00 daily, an allergy list and a medication list for every patient booked that day, b) label every paper form with a patient label sheet. 2 Check in patients: a) confirm identity with two identifiers, name and date of birth, b) record the arrival time by hand. 3 Orders and medications: a) write down every verbal order and read it back, b) never give a high-risk medication without a second nurse's check, c) record every dose on the paper medication sheet. 4 Keep care moving: a) do not cancel visits solely because of downtime, b) tell patients about any delay beyond 20 minutes. Section \"Recovery\": a) when IT announces restoration, wait for the all-clear before entering anything, b) scan paper documents into the record within 4 hours, c) reconcile medication entries within 24 hours, d) report the event on the incident form. Make sure everyone knows the allergy list in the binder is the source of truth until the record is back. Finish with \"Contacts\": IT service desk, extension 5000; Charge nurse supervisor, Rowena Achterberg; Privacy officer, Idris Mbeki, who must be told if any paper forms are lost.",
+  "checklist": {
+    "sections": [
+      "Declare downtime",
+      "During downtime",
+      "Recovery",
+      "Contacts"
+    ],
+    "visible": [
+      "downtime binder",
+      "Paper procedures",
+      "allergy list",
+      "extension 5000",
+      "Rowena Achterberg",
+      "Idris Mbeki"
+    ],
+    "values": [
+      "2026-11-15",
+      "10 minutes",
+      "05:00",
+      "20 minutes",
+      "4 hours",
+      "24 hours"
+    ]
+  },
+  "needs": [
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the declaration threshold from 10 minutes to 15 minutes and the scanning deadline from 4 hours to 2 hours, and add a sub-step to Recovery: \"Shred the temporary paper labels\".",
+    "expect_visible": [
+      "Shred the temporary paper labels"
+    ],
+    "expect_values": [
+      "15 minutes",
+      "2 hours"
+    ],
+    "expect_absent": [
+      "10 minutes",
+      "within 4 hours"
+    ]
+  }
+}

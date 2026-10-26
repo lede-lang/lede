@@ -1,0 +1,37 @@
+@title Soil sensor provisioning
+@subtitle How a sensor gets provisioned at Brightleaf Greenhouses sites
+@author IoT platform team
+@date 2026-10-14
+
+Brightleaf is rolling out soil sensors to 31 sites. This page shows field engineers how a sensor gets from pairing to its first telemetry.
+
+!! **Never photograph the one-time token QR code.** Anyone holding the token can claim the device.
+
+## Provisioning sequence
+
+diagram prov sequence title="Sensor provisioning"
+prov: sensor "Sensor" svc
+prov: gateway "Gateway" svc
+prov: ps "Provisioning Service" svc
+prov: ca "Certificate Authority" ext
+prov: reg "Device Registry" db
+prov: sensor -> gateway : BLE pairing request with serial
+prov: gateway -> ps : claim device with one-time token
+prov: ps -> reg : look up serial and token
+prov: reg --> ps : record, status unclaimed
+prov: ps -> ca : certificate signing request
+prov: ca --> ps : signed certificate, valid 365 days
+prov: ps -> reg : mark device active
+prov: ps --> gateway : certificate and MQTT endpoint
+prov: gateway -> sensor : install certificate
+prov: sensor -> gateway : first telemetry over TLS
+
+## Limits and timeouts
+
+table = item,value; One-time token validity,24 hours; Pairing window on the sensor,90 seconds; Signing key type,ECDSA P-256; Claim attempts before the token is locked,3; Certificate lifetime,365 days
+
+## When provisioning fails
+
+table = problem,what to do; Token expired,Request a new token from the dashboard; Pairing window closed,Press and hold the sensor button for 5 seconds to reopen it; Token locked after 3 attempts,Contact IoT support at #iot-support
+
+!! **Reminder: never photograph the one-time token QR code.**

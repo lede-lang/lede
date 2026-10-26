@@ -1,0 +1,22 @@
+@title Bike Share Demand: Two Weeks in October
+@subtitle Portside Bike Share, 2026-10-05 to 2026-10-18
+
+# Two weeks at a glance
+kpi Rides | 54,410 | 14 days
+kpi Daily average | 3,886 | rides a day
+kpi Week 2 vs week 1 | +8.9% | neutral
+kpi Network | 86 stations | 1,100 bikes
+
+Week 1 had 26,040 rides and week 2 had 28,370, up 8.9 percent. The busiest day was Saturday 2026-10-17 with 5,340 rides. The quietest was Thursday 2026-10-08, with 2,280 rides on a rainy day with 31 mm of rain.
+
+# Daily rides
+data rides = day,rides; Mon 05,3120; Tue 06,3340; Wed 07,3510; Thu 08,2280; Fri 09,3690; Sat 10,5120; Sun 11,4980; Mon 12,3250; Tue 13,3460; Wed 14,3580; Thu 15,3720; Fri 16,3810; Sat 17,5340; Sun 18,5210
+chart line rides x=day y=rides title="Daily rides, October 2026"
+table rides bar=rides
+
+Saturdays and Sundays were the peaks of both weeks. Thursday 2026-10-08 was the only weekday below 3,000 rides.
+
+# Weekdays and weekends
+table = Day type,Days,Average rides a day; Weekdays,10,3376; Weekend days,4,5162.5
+
+Weekend days averaged 5,162.5 rides, against 3,376 on weekdays, about 53 percent more. Plan weekend rebalancing crews around that gap.

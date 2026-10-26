@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Welcome, Bayside volunteers</title>
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#f6f8f4; --surface:#ffffff; --surface-2:#eef3ea; --text:#1e241c; --muted:#5d6858; --border:#dde5d7;
+  --accent:#2f7d3a; --accent-soft:#e2f1e3; --sun:#d6801e; --sun-soft:#fcefdc;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#10130f; --surface:#181c16; --surface-2:#1f251d; --text:#e7ece4; --muted:#a0ab9a; --border:#2c3429;
+    --accent:#7fd18a; --accent-soft:#183019; --sun:#f5b25e; --sun-soft:#352611;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:17px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:48px 24px 64px}
+.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;color:var(--accent);font-weight:700;margin:0}
+h1{font-size:clamp(1.9rem,5.5vw,2.6rem);line-height:1.12;margin:.3em 0 .35em;letter-spacing:-.015em}
+.lede{font-size:1.1rem;margin:0 0 .5rem}
+.from{color:var(--muted);margin:0}
+section{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 24px;margin:18px 0}
+h2{font-size:1.25rem;margin:0 0 .7rem}
+p{margin:0 0 .8rem}
+section > :last-child{margin-bottom:0}
+.hours{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 14px;padding:0;list-style:none}
+.hours li{background:var(--surface-2);border-radius:12px;padding:14px 16px}
+.hours .d{font-weight:700;display:block}
+.hours .t{font-size:1.15rem;font-variant-numeric:tabular-nums}
+.orient{background:var(--sun-soft);border-radius:12px;padding:14px 16px}
+.orient strong{color:var(--sun)}
+.check{list-style:none;margin:0;padding:0}
+.check li{position:relative;padding:8px 0 8px 34px;border-bottom:1px solid var(--border)}
+.check li:last-child{border-bottom:0}
+.check li::before{content:"";position:absolute;left:0;top:11px;width:20px;height:20px;border-radius:50%;background:var(--accent-soft);border:2px solid var(--accent)}
+.check li::after{content:"";position:absolute;left:7px;top:15px;width:5px;height:9px;border:solid var(--accent);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.safety{border-left:4px solid var(--sun);padding:10px 14px;background:var(--sun-soft);border-radius:0 10px 10px 0;margin-top:12px}
+.roles{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;padding:0;list-style:none}
+.roles li{background:var(--accent-soft);color:var(--text);border-radius:999px;padding:6px 14px;font-size:.95rem}
+.respect{background:var(--surface-2);border-radius:12px;padding:14px 16px}
+.respect ul{margin:6px 0 0;padding-left:20px}
+.cant{background:var(--accent-soft);border-radius:12px;padding:14px 16px}
+.cant a{color:var(--accent);font-weight:700;white-space:nowrap}
+.thanks{text-align:center;background:var(--accent-soft);border:0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0}
+.stats div{background:var(--surface);border-radius:12px;padding:14px 8px}
+.stats .n{display:block;font-size:1.8rem;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums;line-height:1.15}
+.stats .l{font-size:.9rem;color:var(--muted)}
+.sign{font-style:italic;margin-top:10px}
+@media (max-width:600px){.hours{grid-template-columns:1fr}}
+@media (max-width:480px){
+  body{font-size:16px}
+  .wrap{padding:32px 16px 48px}
+  section{padding:18px 16px}
+  .stats{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Bayside Community Pantry</p>
+  <h1>Welcome, new volunteer!</h1>
+  <p class="lede">We're so glad you're here. This page has everything you need for your first shift.</p>
+  <p class="from">From Rosa Delgado, Volunteer Coordinator</p>
+</header>
+
+<section id="hours">
+  <h2>Hours</h2>
+  <p>We are open for distribution three times a week:</p>
+  <ul class="hours">
+    <li><span class="d">Tuesday</span><span class="t">9:00 &ndash; 12:00</span></li>
+    <li><span class="d">Thursday</span><span class="t">16:00 &ndash; 19:00</span></li>
+    <li><span class="d">Saturday</span><span class="t">8:00 &ndash; 12:00</span></li>
+  </ul>
+  <p>Come to as many shifts as you like.</p>
+</section>
+
+<section id="your-first-shift">
+  <h2>Your first shift</h2>
+  <p class="orient">Before your first shift, join our <strong>45-minute orientation</strong>. It runs at 8:00 on the first Saturday of each month. The next one is on <strong><time datetime="2026-11-07">Saturday, November 7, 2026</time></strong>.</p>
+  <p style="margin-top:14px">On the day:</p>
+  <ul class="check">
+    <li>Arrive 15 minutes early.</li>
+    <li>Check in with the shift lead. Look for the green apron.</li>
+    <li>Wear closed-toe shoes.</li>
+    <li>Leave your valuables in the locker.</li>
+  </ul>
+  <p class="safety"><strong>Please lift safely.</strong> Nobody lifts more than 25 pounds on their own. Ask for help. We are happy to give it.</p>
+</section>
+
+<section id="roles">
+  <h2>Roles</h2>
+  <p>You may be asked to help with:</p>
+  <ul class="roles">
+    <li>Sorting donations</li>
+    <li>Stocking shelves</li>
+    <li>Packing family boxes</li>
+    <li>Greeting clients at the door</li>
+    <li>Carrying boxes to cars</li>
+  </ul>
+  <div class="respect">
+    <strong>Our clients are our neighbors.</strong>
+    <ul>
+      <li>We do not ask about their income.</li>
+      <li>We do not take photos.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="getting-here">
+  <h2>Getting here</h2>
+  <p><strong>By car:</strong> park behind the building on Harbor Street.</p>
+  <p><strong>By bus:</strong> take route 14. The stop is across the road.</p>
+  <p class="cant"><strong>Can't make a shift?</strong> Please tell us at least 24 hours ahead. Text <a href="sms:555-0142">555-0142</a> so we can find cover.</p>
+</section>
+
+<section class="thanks" id="thank-you">
+  <h2>Thank you</h2>
+  <p>You are joining a big family. Last year:</p>
+  <div class="stats">
+    <div><span class="n">312</span><span class="l">volunteers</span></div>
+    <div><span class="n">9,400</span><span class="l">hours given</span></div>
+    <div><span class="n">41,000</span><span class="l">meals a month, on average</span></div>
+  </div>
+  <p>None of that happens without people like you. Thank you for giving your time.</p>
+  <p class="sign">See you soon,<br>Rosa Delgado</p>
+</section>
+</div>
+</body>
+</html>

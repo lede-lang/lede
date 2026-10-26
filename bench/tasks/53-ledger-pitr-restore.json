@@ -1,0 +1,48 @@
+{
+  "id": "53-ledger-pitr-restore",
+  "category": "runbook",
+  "title": "Ledger point-in-time restore runbook",
+  "brief": "Ironbridge Credit Union's Core Systems team needs a runbook for restoring the ledger database to a point in time, which we have to be able to do under audit. The database is ledger-prod, PostgreSQL on RDS, 1.8 TB, and a restore takes roughly 65 minutes plus validation. Section \"When to use\": data corruption or a bad batch job, never for a simple instance failover, and only with written approval from both the data owner and the on-call lead. Section \"Before you start\": a short checklist: confirm the exact target timestamp in UTC, confirm that automated backups cover it (retention is 14 days), freeze the nightly posting job, and open a change record. Section \"Restore steps\" in order, with sub-steps. 1 Restore to a NEW instance named ledger-restore-YYYYMMDD, never over production: a) choose the target time, b) use the same parameter group, ledger-pg15-prod, c) place it in the isolated recovery subnet group. 2 Wait until the instance is available, about 65 minutes. 3 Validate: a) row counts of postings and accounts match the expected figures within 0.01 percent, b) the sum of ledger debits equals the sum of credits, c) two senior engineers sign off in the change record. 4 Repair: a) export the affected rows from the restored copy, b) apply them to production in a transaction reviewed by a second engineer. 5 Clean up: a) keep the restored instance for 7 days, b) then delete it and record the deletion. Make sure nobody starts without knowing this: restoring over ledger-prod destroys every transaction since the target time. Add a final section \"Contacts\": Data owner, Beatrix Oyelaran; Core Systems on-call lead, Henrik Dahl; Compliance, Mina Sato.",
+  "checklist": {
+    "sections": [
+      "When to use",
+      "Before you start",
+      "Restore steps",
+      "Contacts"
+    ],
+    "visible": [
+      "ledger-prod",
+      "ledger-restore-YYYYMMDD",
+      "ledger-pg15-prod",
+      "Beatrix Oyelaran",
+      "Henrik Dahl",
+      "Mina Sato",
+      "change record",
+      "isolated recovery subnet group"
+    ],
+    "values": [
+      "1.8 TB",
+      "65",
+      "14 days",
+      "0.01",
+      "7 days"
+    ]
+  },
+  "needs": [
+    "list",
+    "callout",
+    "table"
+  ],
+  "edit": {
+    "request": "Change the retention figure from 14 days to 35 days, and add a sub-step to step 5: \"Revoke the temporary access granted for validation\".",
+    "expect_visible": [
+      "Revoke the temporary access"
+    ],
+    "expect_values": [
+      "35 days"
+    ],
+    "expect_absent": [
+      "14 days"
+    ]
+  }
+}

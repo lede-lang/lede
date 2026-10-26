@@ -1,0 +1,55 @@
+{
+  "id": "52-opensearch-red-runbook",
+  "category": "runbook",
+  "title": "OpenSearch red status runbook",
+  "brief": "Quarry Press runs a nine-node OpenSearch cluster called search-prod behind the article search and the subscriber archive. Can you write the on-call runbook for when the cluster goes red? Start with \"Symptoms\": the CLUSTER_RED alert fires, search returns partial or empty results, and the editors report that new articles do not appear. Then \"Triage\": check cluster health with GET _cluster/health and note the number of unassigned shards, then ask the cluster why with GET _cluster/allocation/explain. The usual causes are disk watermarks (low 85 percent, high 90 percent, flood stage 95 percent), a lost data node, or a bad index template after a deploy. Then \"Fix by cause\" with steps in order, each with sub-steps. 1 Disk watermark: a) find the fullest nodes with GET _cat/allocation?v, b) delete indices older than 90 from the logs-* family, but never touch articles-* or archive-*, c) once disk is under 80 percent clear the read-only block with PUT _all/_settings setting index.blocks.read_only_allow_delete to null, d) wait for the shards to relocate. 2 Lost data node: a) check the instance in the AWS console, b) if it is gone, let the autoscaling group replace it, usually 6 to 8 minutes, c) shard recovery then takes about 20 minutes for the 1.2 TB per node. 3 Bad index template: a) find the last deploy in #deploys, b) roll the template back using the saved copy in the search-config repository, c) reindex the affected index. Readers must be told firmly before any deletion: never delete an index without a snapshot taken in the last 24 hours, because the archive cannot be rebuilt. Finish with \"Escalation\": page the Search Infrastructure lead if the cluster is still red after 30 minutes, and open an incident in #incidents.",
+  "checklist": {
+    "sections": [
+      "Symptoms",
+      "Triage",
+      "Fix by cause",
+      "Escalation"
+    ],
+    "visible": [
+      "search-prod",
+      "CLUSTER_RED",
+      "GET _cluster/health",
+      "GET _cluster/allocation/explain",
+      "GET _cat/allocation?v",
+      "articles-*",
+      "archive-*",
+      "logs-*",
+      "#deploys",
+      "#incidents",
+      "Search Infrastructure"
+    ],
+    "values": [
+      "85",
+      "90",
+      "95",
+      "80",
+      "6 to 8",
+      "20",
+      "1.2 TB",
+      "24 hours",
+      "30 minutes",
+      "nine"
+    ]
+  },
+  "needs": [
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the cleanup retention from 90 days to 60 days, and add a new step under Lost data node: \"Confirm the replacement node has joined with GET _cat/nodes\".",
+    "expect_visible": [
+      "GET _cat/nodes"
+    ],
+    "expect_values": [
+      "60"
+    ],
+    "expect_absent": [
+      "older than 90"
+    ]
+  }
+}

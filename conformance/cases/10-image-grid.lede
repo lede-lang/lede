@@ -1,0 +1,8 @@
+image chart.png "A rising line" caption="Weekly"
+grid 2
+! left
+! right
+! after grid
+grid 3 count=2
+! a
+# Heading closes grid

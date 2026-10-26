@@ -1,0 +1,7 @@
+diagram login sequence
+login: browser "Browser" user
+login: app "App" svc
+login: browser -> app : POST /login
+login: note app : checks password
+login: app --> browser : 302
+login: app -> app : log

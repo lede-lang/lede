@@ -1,0 +1,42 @@
+@title Write It Down Before You Build It
+@author Daniel Reyes, Staff Engineer at Thornbury Labs
+
+# The meeting that should have been a page
+
+Most design meetings I have sat through had the same shape. Someone opens with a slide, three people argue about a detail nobody wrote down, and forty minutes later the group agrees on a direction that only two of them actually understood. The decision gets recorded as a sentence in a chat thread. Six weeks later, an engineer discovers that the sentence meant something different to each person who read it.
+
+Short written design notes fix most of this. They cost a few hours at the start of a project and save days later, and the time they save is easy to miss because it shows up as problems that never happened.
+
+# What a design note is
+
+A design note is one to two pages, written before any code exists. It describes the problem, the options we considered, the one we are leaning toward, and how we will tell whether it worked. Other people read it asynchronously, on their own schedule, and leave comments where they disagree.
+
+The point of writing before building is that a page is cheap to change. If a reviewer finds that we misread a requirement, the fix is a paragraph. If they find it after three weeks of implementation, the fix is a rewrite.
+
+# What it is not
+
+A design note is not a specification. Specs try to pin down every behavior before work starts, and they go stale the moment someone learns something. A design note records the reasoning behind the choice, which stays useful after the code has changed.
+
+It is also not a permission slip. A note does not need sign-off from a committee before work can start. Its job is to make the thinking visible so that the people who will live with the result can catch what the author missed.
+
+# The cost
+
+At Thornbury, the median design note took about 3 hours to write. That number includes the reading that happens before the first sentence, and it is the number people usually quote when they argue against the practice.
+
+The other number matters more. In 2026, we counted 11 projects where a note caught a wrong assumption before any code was written. Some of those assumptions would have cost weeks. One would have shipped a feature that only worked for accounts created after a migration nobody had told the team about.
+
+> The page is where you find out what you do not know.
+> — Daniel Reyes
+
+# Start small
+
+You do not need a template or a tool to begin. Pick the next piece of work that will take more than a week, write one page about it, and share it with two people who will have to live with the result. Ask them what you got wrong. Repeat the next time.
+
+Every note should answer four questions:
+
+- What problem are we solving?
+- Why now?
+- What did we consider, and why did we reject the alternatives?
+- How will we know it worked?
+
+If you can answer those four in a page, you are ready to start building. If you cannot, the page has already done its job.

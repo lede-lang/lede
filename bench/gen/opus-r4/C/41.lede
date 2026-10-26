@@ -1,0 +1,30 @@
+@title Ashgrove Logistics weekly operations
+@subtitle Four U.S. fulfillment sites, week ending 2026-10-16
+@date 2026-10-16
+
+kpi Orders shipped | 48,210
+kpi On-time dispatch | 96.4% | 0.6 pts below 97.0% target | bad
+kpi Dock-to-stock | 3.8 h | average
+kpi Open safety observations | 7
+
+## On-time trend
+
+data ontime = week,on-time; W34,97.1; W35,97.4; W36,96.9; W37,97.2; W38,97.0; W39,96.8; W40,96.9; W41,96.4
+chart line ontime x=week y=on-time unit=% min=95 max=98 target="97.0 Target" title="On-time dispatch, last eight weeks"
+
+On-time dispatch has been at or below target for three straight weeks, and this week's 96.4% is the lowest of the eight.
+
+## Sites
+
+table = site,manager,orders shipped,on-time,status; Reno NV,Alicia Tran,"11,940",97.8%,On track; Columbus OH,Marcus Bell,"14,380",97.2%,On track; Dallas TX,Priyanka Rao,"12,115",96.5%,At risk; **Savannah GA**,Joel Okafor,"9,775",**93.6%**,Off track
+
+!! **Savannah is well below target at 93.6%.** Dallas, at 96.5%, is also under the 97.0% target and worth watching.
+
+## Needs attention
+
+!! **Savannah crane outage.** The container crane was out of service from 2026-10-12 to 2026-10-15, leaving a backlog of 1,150 orders. With approved overtime, the backlog should be cleared by 2026-10-19.
+
+## Next week
+
+- **2026-10-18:** crane inspection sign-off at Savannah.
+- **2026-11-02:** 220 seasonal associates start.

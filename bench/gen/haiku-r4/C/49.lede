@@ -1,0 +1,32 @@
+@title Webhook delivery
+@subtitle Parcelwise integrations docs, version dated 2026-10-05
+
+## Delivery sequence
+!! A response slower than 10 seconds counts as a failure, and the event is retried.
+
+diagram hook sequence title="Webhook delivery"
+hook: order "Order Service" svc
+hook: bus "Event Bus" queue
+hook: worker "Delivery Worker" fn
+hook: merch "Merchant Endpoint" ext
+hook: dlq "Dead Letter Queue" queue
+hook: order -> bus : publish order.shipped
+hook: bus -> worker : deliver event
+hook: worker -> merch : POST /webhooks, signed, 10 s timeout
+hook: merch --> worker : 503 Service Unavailable
+hook: worker -> bus : requeue with 1 minute delay
+hook: bus -> worker : deliver event, attempt 2
+hook: worker -> merch : POST /webhooks
+hook: merch --> worker : 200 OK
+hook: worker -> bus : acknowledge
+hook: opt "merchant never recovers"
+hook: worker -> dlq : park after attempt 6
+hook: end
+
+## Retry schedule
+table = attempt,delay after previous failure; 1,immediate; 2,1 minute; 3,5 minutes; 4,30 minutes; 5,2 hours; 6,12 hours
+
+## Good to know
+- Every request carries an X-Parcelwise-Signature header, which is the HMAC-SHA256 of the body.
+- Events can arrive out of order, so merchants should compare the sequence number.
+- Parked events are kept for 14 days and can be replayed from the dashboard.

@@ -1,0 +1,10 @@
+{"pair":"P010","winner":"LEFT","reason":"Right has the clearer desktop sequence diagram, but at phone width its diagram and tokens table are both clipped, while left only clips the diagram and keeps the table readable."}
+{"pair":"P019","winner":"LEFT","reason":"Left's flowchart is large, clean and legible on desktop, whereas right's diagram is small with crossing connector lines and tiny labels."}
+{"pair":"P023","winner":"RIGHT","reason":"Both desktop pages are solid, but on phone left's comparison table is cut off and its chart is tiny and overlapping, while right reflows into readable cards."}
+{"pair":"P025","winner":"RIGHT","reason":"Left's value-labelled bar chart is nice on desktop, but its phone table is clipped and chart tiny, while right stays fully readable at phone width."}
+{"pair":"P026","winner":"RIGHT","reason":"Left has a well-labelled chart on desktop, but its phone table loses columns and the chart is microscopic; right's phone layout is complete and legible."}
+{"pair":"P028","winner":"LEFT","reason":"Right has a nicer desktop line chart, but on phone its revenue table is clipped and the chart is tiny, while left's table and layout fit cleanly."}
+{"pair":"P032","winner":"RIGHT","reason":"Left's desktop charts are well labelled, but on phone its charts are tiny and the CSAT table is cut off; right's charts and table remain legible."}
+{"pair":"P038","winner":"RIGHT","reason":"Both are clean, but right has stronger hierarchy with numbered principles, a wider layout and clearer do/avoid labels."}
+{"pair":"P039","winner":"LEFT","reason":"Left adds stat cards, a clear intro, and a tinted call-to-action for better polish, while right is a plainer text page; both read well in dark mode."}
+{"pair":"P040","winner":"RIGHT","reason":"Right has bolder sans headings, a clear red warning and emphasized extension number, giving slightly stronger hierarchy than left's otherwise similar FAQ."}

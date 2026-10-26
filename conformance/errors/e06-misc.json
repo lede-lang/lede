@@ -1,0 +1,32 @@
+[
+  {
+    "severity": "error",
+    "code": "kpi-syntax",
+    "line": 1,
+    "col": 5
+  },
+  {
+    "severity": "error",
+    "code": "image-alt",
+    "line": 2,
+    "col": 7
+  },
+  {
+    "severity": "error",
+    "code": "grid-columns",
+    "line": 3,
+    "col": 6
+  },
+  {
+    "severity": "error",
+    "code": "empty-heading",
+    "line": 4,
+    "col": 1
+  },
+  {
+    "severity": "warning",
+    "code": "unclosed-fence",
+    "line": 5,
+    "col": 1
+  }
+]

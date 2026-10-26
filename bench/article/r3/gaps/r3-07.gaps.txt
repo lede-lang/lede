@@ -1,0 +1,4 @@
+Could not express: the brief wants something where the components visibly move and the user can try different timings, easing curves and event orders "by feel". Lede has no animation, no live preview and no controls. Substituted: a written motion spec (range timelines per change type, tables of start/duration/easing/reduced-motion values, easing table, a Cards comparison for the hardware-limited insert case). The user can only override by editing the numbers in the source, not interactively.
+Also could not show color: brand colors appear only as hex text, no swatches or sample rows.
+Substituted proposed values for everything the spec did not give (Delay minutes duration 200 ms, all new durations, easing curves); marked as proposed in the text.
+Data cells: no documented way to put double quotes inside a field, so I used curly quotes for "Platform 4" and "+12 min" in notes.

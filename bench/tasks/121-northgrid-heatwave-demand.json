@@ -1,0 +1,58 @@
+{
+  "id": "121-northgrid-heatwave-demand",
+  "category": "runbook",
+  "title": "Northgrid heat-wave demand emergency runbook",
+  "brief": "Northgrid Electric's system operations team needs a runbook for heat-wave demand emergencies, to be followed by the on-duty system operator, version 2026-10-10. The grid has 5200 MW of available supply. Section \"When to use\": when the day-ahead forecast or live demand reaches 92 percent of available supply; a stage is declared by the Duty Director, never by a single operator. Section \"Stages\": Stage 1 at 92 percent of supply (4784 MW): issue a conservation alert by text and app to 380000 customers, ask large industrial customers on interruptible contracts to get ready to reduce load on 30 minutes of notice, and confirm that standby generation at 3 peaking plants can start within 20 minutes. Stage 2 at 97 percent (5044 MW): call the demand response program, which delivers about 210 MW, start buying emergency imports from the neighboring utility, and brief the regulator by phone. Stage 3 at 100 percent (5200 MW): begin rotating outages in blocks A to L, each block off for at most 60 minutes, in order, never repeating a block before all twelve have been used. Section \"Steps for rotating outages\" in order, with sub-steps. 1 Get approval: a) the Duty Director approves in the log, b) the regulator is told within 30 minutes. 2 Protect critical sites: a) confirm that hospitals, the 911 center and water pumping stations are excluded, b) check that the exclusion list was updated this month. 3 Run the blocks: a) open the first block's feeders, b) restore it after 60 minutes at most and open the next, c) update the public outage map every 15 minutes. 4 Stand down: a) end rotating outages when demand stays below 95 percent for 60 minutes, b) restore all blocks, c) file the event report within 24 hours. Make sure nobody misses that hospitals, the 911 center and water pumping stations must never be switched off. Finish with \"Contacts\": Duty Director, Lorenzo Baptiste; Regulator liaison, Dagny Holt; Communications on call, Femi Adeyemi.",
+  "checklist": {
+    "sections": [
+      "When to use",
+      "Stages",
+      "Steps for rotating outages",
+      "Contacts"
+    ],
+    "visible": [
+      "Duty Director",
+      "demand response",
+      "hospitals",
+      "Lorenzo Baptiste",
+      "Dagny Holt",
+      "Femi Adeyemi",
+      "exclusion list"
+    ],
+    "values": [
+      "2026-10-10",
+      "5200 MW",
+      "92 percent",
+      "4784 MW",
+      "380000",
+      "30 minutes",
+      "20 minutes",
+      "97 percent",
+      "5044 MW",
+      "210 MW",
+      "100 percent",
+      "60 minutes",
+      "15 minutes",
+      "95 percent",
+      "24 hours"
+    ]
+  },
+  "needs": [
+    "list",
+    "callout",
+    "table"
+  ],
+  "edit": {
+    "request": "Change the Stage 1 trigger to 90 percent of supply, which is 4680 MW, and add a sub-step under Stand down: \"Send an all-clear text to customers\".",
+    "expect_visible": [
+      "Send an all-clear text to customers"
+    ],
+    "expect_values": [
+      "90 percent",
+      "4680 MW"
+    ],
+    "expect_absent": [
+      "4784 MW"
+    ]
+  }
+}

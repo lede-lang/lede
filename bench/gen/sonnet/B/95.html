@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dispatch-jobs Queue Backlog Runbook</title>
+<style>
+:root{
+  --bg:#f5f7f6;--surface:#ffffff;--ink:#17201d;--muted:#55635d;--line:#dbe2df;
+  --accent:#0e7a5f;--accent-soft:#e1f3ed;--code-bg:#101d19;--code-ink:#d7f1e8;
+  --danger:#a61b1b;--danger-bg:#fdecec;--danger-line:#e8a3a3;
+  --inline:#e9eeec;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0d1311;--surface:#151c19;--ink:#e6eeea;--muted:#9aaba4;--line:#26312d;
+    --accent:#5fd1ac;--accent-soft:#12291f;--code-bg:#0a0f0d;--code-ink:#cdeee1;
+    --danger:#ff9494;--danger-bg:#301517;--danger-line:#7c2e33;
+    --inline:#222c28;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:780px;margin:0 auto;padding:20px 16px 56px}
+.eyebrow{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:12px 0 6px}
+h1{font-size:1.75rem;line-height:1.2;margin:0 0 8px}
+.sub{color:var(--muted);margin:0 0 16px;font-size:.95rem}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;padding:4px 0 8px;font-size:.9rem}
+nav a{color:var(--accent);text-decoration:none;font-weight:600}
+section{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 18px 8px;margin:16px 0}
+h2{font-size:1.25rem;margin:0 0 12px;line-height:1.3}
+p{margin:0 0 12px}
+code{font:.88em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--inline);padding:1px 6px;border-radius:5px;overflow-wrap:anywhere}
+pre{background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:10px 14px;margin:6px 0 8px;overflow-x:auto;font:.86rem/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;-webkit-overflow-scrolling:touch}
+.gauge{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 14px}
+.gauge div{background:var(--accent-soft);border-radius:10px;padding:10px 14px}
+.gauge strong{display:block;font-size:1.5rem;line-height:1.2;color:var(--accent)}
+.gauge span{font-size:.85rem;color:var(--muted)}
+.gauge .hi{background:var(--danger-bg)}
+.gauge .hi strong{color:var(--danger)}
+@media (max-width:560px){.gauge{grid-template-columns:1fr}.gauge div{display:flex;align-items:baseline;gap:12px}.gauge strong{min-width:5.5ch}}
+.danger{background:var(--danger-bg);border:2px solid var(--danger-line);border-left:6px solid var(--danger);border-radius:10px;padding:12px 14px;margin:0 0 16px}
+.danger strong.t{display:block;color:var(--danger);text-transform:uppercase;letter-spacing:.05em;font-size:.9rem;margin-bottom:2px}
+ul.plain{margin:0 0 12px;padding-left:20px}
+ul.plain li{margin-bottom:6px}
+ol.steps{list-style:none;counter-reset:s;padding:0;margin:0 0 8px}
+ol.steps>li{counter-increment:s;position:relative;padding:0 0 16px 46px;margin:0}
+ol.steps>li::before{content:counter(s);position:absolute;left:0;top:0;width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:grid;place-items:center}
+@media (prefers-color-scheme:dark){ol.steps>li::before{color:#0d1311}}
+ol.steps>li:not(:last-child)::after{content:"";position:absolute;left:15px;top:36px;bottom:4px;width:2px;background:var(--line)}
+ol.steps h3{font-size:1.02rem;margin:3px 0 6px;line-height:1.4}
+ol.sub{list-style:lower-alpha;margin:0;padding-left:22px}
+ol.sub li{padding:2px 0}
+ol.sub li::marker{color:var(--accent);font-weight:700}
+.scale{margin:0 0 12px}
+.scale svg{width:100%;height:auto;display:block}
+.scale text{fill:var(--ink);font:12px system-ui,sans-serif}
+.scale .m{fill:var(--muted)}
+.cap{font-size:.85rem;color:var(--muted);margin:0 0 12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">On-call runbook &middot; Quickpost Couriers</p>
+  <h1>The dispatch-jobs queue is backing up</h1>
+  <p class="sub">Owner: Dispatch Engineering</p>
+
+  <div class="danger" role="alert">
+    <strong class="t">Never purge dispatch-jobs</strong>
+    Every message in the queue is a real customer delivery. Purging it loses deliveries that cannot be recovered. Move a bad message to the dead letter queue instead (step 2).
+  </div>
+
+  <nav aria-label="Sections">
+    <a href="#symptoms">Symptoms</a>
+    <a href="#diagnose">Diagnose</a>
+    <a href="#fix">Fix steps</a>
+    <a href="#escalation">Escalation</a>
+  </nav>
+
+  <section id="symptoms">
+    <h2>Symptoms</h2>
+    <div class="gauge">
+      <div class="hi"><strong>&gt; 5000</strong><span>depth for 10 minutes fires <code>QUEUE_DEPTH_HIGH</code></span></div>
+      <div><strong>&lt; 400</strong><span>normal queue depth</span></div>
+      <div><strong>200</strong><span>database connection pool cap</span></div>
+    </div>
+    <ul class="plain">
+      <li>The <code>QUEUE_DEPTH_HIGH</code> alert fires when depth stays above 5000 for 10 minutes. Normal is under 400.</li>
+      <li>Drivers see new jobs arrive late in the app.</li>
+    </ul>
+  </section>
+
+  <section id="diagnose">
+    <h2>Diagnose</h2>
+    <ul class="plain">
+      <li>Check the queue depth and consumer count:
+        <pre>kubectl -n dispatch get hpa dispatch-consumer</pre>
+      </li>
+      <li>Look at the oldest message age on the queue dashboard.</li>
+      <li>Check the database connection pool. It is capped at 200 connections.</li>
+    </ul>
+  </section>
+
+  <section id="fix">
+    <h2>Fix steps</h2>
+    <ol class="steps">
+      <li>
+        <h3>Scale the consumers</h3>
+        <ol class="sub">
+          <li>Run:
+            <pre>kubectl -n dispatch scale deploy dispatch-consumer --replicas=24</pre>
+          </li>
+          <li>Wait 5 minutes and re-check.</li>
+          <li>If depth is still rising, scale to <strong>40</strong>. That is the maximum the database pool supports.
+            <pre>kubectl -n dispatch scale deploy dispatch-consumer --replicas=40</pre>
+          </li>
+        </ol>
+        <div class="scale">
+          <svg viewBox="0 0 600 70" role="img" aria-label="Consumer replicas: 24 first, 40 maximum">
+            <rect x="10" y="22" width="580" height="16" rx="8" fill="var(--accent-soft)"/>
+            <rect x="10" y="22" width="348" height="16" rx="8" fill="var(--accent)"/>
+            <line x1="358" y1="14" x2="358" y2="46" stroke="var(--ink)" stroke-width="2"/>
+            <line x1="590" y1="14" x2="590" y2="46" stroke="var(--danger)" stroke-width="3"/>
+            <text x="358" y="62" text-anchor="middle">24 first</text>
+            <text x="590" y="62" text-anchor="end" style="fill:var(--danger);font-weight:700">40 maximum</text>
+            <text x="10" y="62" class="m">0</text>
+          </svg>
+        </div>
+      </li>
+      <li>
+        <h3>Check for poison messages</h3>
+        <ol class="sub">
+          <li>Look for a message that has been retried more than 10 times.</li>
+          <li>If there is one, move it to <code>dispatch-dlq</code> with the <code>dlq-move</code> tool.</li>
+        </ol>
+      </li>
+      <li>
+        <h3>Pause the bulk import scheduler</h3>
+        <p style="margin:0">Do it in the admin console. Bulk imports add up to 3000 jobs at a time.</p>
+      </li>
+      <li>
+        <h3>Re-enable the scheduler gradually</h3>
+        <p style="margin:0">Wait until depth drops under 400.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section id="escalation">
+    <h2>Escalation</h2>
+    <p>If depth is still above 5000 after <strong>20 minutes</strong>, page the Dispatch Engineering lead and open an incident in <code>#incidents</code>.</p>
+  </section>
+</div>
+</body>
+</html>

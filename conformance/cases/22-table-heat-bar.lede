@@ -1,0 +1,5 @@
+data v = name,a,b; X,1,2; Y,3,4
+table v heat
+table v heat=a,b
+table v bar=a,b
+table heat bar=a = n,a; P,1; Q,2

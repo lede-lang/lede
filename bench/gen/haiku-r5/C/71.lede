@@ -1,0 +1,40 @@
+@title Telemetry Pipeline Architecture
+@subtitle Skerry Wind Power, 6 offshore wind farms. Region eu-north-1, reviewed 2026-10-02
+@author Asset Data team
+
+# Overview
+
+Turbine readings flow from each farm into one central stream and are processed once. The stream processor then splits them into a fast store for dashboards and a cheap archive for audits.
+
+# Pipeline diagram
+
+diagram pipe dir=LR title="Telemetry pipeline"
+pipe: tc "Turbine Controllers" ext
+pipe: eg "Edge Gateway" ext
+pipe: stream "Telemetry Stream" queue
+pipe: sp "Stream Processor" svc focus
+pipe: ts "Timeseries Store" db
+pipe: arch "Raw Archive" store
+pipe: alert "Alerting Service" svc
+pipe: dash "Operations Dashboard" user
+pipe: tc -> eg : OPC UA, 1 Hz
+pipe: eg -> stream : MQTT over TLS, batched every 5 s
+pipe: stream -> sp : consumer
+pipe: sp -> ts : 10 s aggregates
+pipe: sp -> arch : Parquet every 15 minutes
+pipe: sp -> alert : threshold breach
+pipe: ts -> dash : queries
+pipe: group site "On site at each farm, outside the cloud account" tc, eg
+pipe: group cloud "Cloud account" stream, sp, ts, arch, alert, dash
+
+# Capacity and retention
+
+- **Telemetry Stream:** 24 shards, 18000 messages per second at peak. Retention not recorded.
+- **Timeseries Store:** 7 days in memory and 3 years on magnetic storage.
+- **Raw Archive:** 10 years, moved to cold storage after 90 days.
+
+# If the uplink fails
+
+The Edge Gateway buffers up to 6 hours of readings on disk and replays them in order when the link returns.
+
+!! The buffer holds 6 hours only. After that the oldest readings are dropped and cannot be replayed.

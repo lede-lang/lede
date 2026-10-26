@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your MRI Scan: What to Expect</title>
+<style>
+:root {
+  --bg: #f2f6f7; --card: #ffffff; --ink: #1d2a2e; --muted: #56676c; --rule: #d3dfe2;
+  --accent: #1f6f7a; --soft: #e3f0f2; --warn: #9a5b12; --warn-bg: #fbf1e3;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1719; --card: #172125; --ink: #e5eff1; --muted: #9fb3b8; --rule: #2a3a3f;
+    --accent: #7cc7d1; --soft: #1b2d32; --warn: #f0b872; --warn-bg: #2b2115;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1719; --card: #172125; --ink: #e5eff1; --muted: #9fb3b8; --rule: #2a3a3f;
+  --accent: #7cc7d1; --soft: #1b2d32; --warn: #f0b872; --warn-bg: #2b2115;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.6; font-size: 17px; }
+main { max-width: 680px; margin: 0 auto; padding: 24px 16px 48px; }
+h1 { font-size: 1.7rem; line-height: 1.25; margin: 0 0 8px; }
+.intro { color: var(--muted); margin: 0 0 8px; }
+section { background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 20px; margin-top: 16px; }
+h2 { font-size: 1.25rem; color: var(--accent); margin: 0 0 10px; }
+p { margin: 0 0 12px; }
+ul { padding-left: 20px; margin: 0 0 12px; }
+li { margin-bottom: 8px; }
+.alert { background: var(--warn-bg); color: var(--warn); border-radius: 10px; padding: 14px 16px; margin-top: 16px; }
+.alert strong { color: var(--warn); }
+.phone { display: inline-block; font-weight: 700; background: var(--soft); color: var(--accent); padding: 2px 8px; border-radius: 6px; }
+.steps { counter-reset: s; list-style: none; padding: 0; }
+.steps li { counter-increment: s; position: relative; padding-left: 40px; }
+.steps li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--soft); color: var(--accent); font-weight: 700; text-align: center; line-height: 28px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Your MRI scan: what to expect</h1>
+  <p class="intro">St. Anselm Imaging. Read this before your scan. It explains what to do before the day, on the day, during the scan and after it.</p>
+
+  <div class="alert">
+    <p><strong>Pacemaker or any metal implant?</strong> Please call the imaging desk on <span class="phone">extension 2210</span> at least 2 weeks before your scan. Some devices need special planning, and this can mean rescheduling, so call early.</p>
+  </div>
+
+  <section>
+    <h2>Before the day</h2>
+    <ul>
+      <li>If you have a pacemaker, a cochlear implant, an aneurysm clip or any other metal implant, call the imaging desk on extension 2210 at least 2 weeks ahead.</li>
+      <li>Tell us if you might be pregnant or have kidney disease.</li>
+      <li>If you feel uncomfortable in small spaces, ask your doctor about a mild sedative. If you take one, arrange for someone to drive you.</li>
+      <li>If your scan uses contrast dye, do not eat for 4 hours before. You can still drink water.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>On the day</h2>
+    <ul>
+      <li>Arrive 30 minutes early at the Imaging Department on level 2.</li>
+      <li>Bring a photo ID, your insurance details, and your referral if you were given a paper one.</li>
+      <li>Leave jewelry, watches, hearing aids and wallets in the locker.</li>
+      <li>Wear clothes without metal zippers or underwire.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>During the scan</h2>
+    <p>The scan takes 30 to 60 minutes. You will lie on a padded bed that slides into a tube open at both ends.</p>
+    <p>The machine is loud, so we give you earplugs or headphones.</p>
+    <p>You will need to keep very still. You will hold a squeeze ball. Squeeze it at any moment to call the technologist.</p>
+  </section>
+
+  <section>
+    <h2>After the scan</h2>
+    <ul>
+      <li>You can eat, drive and go back to work straight away, unless you took a sedative.</li>
+      <li>If you had contrast dye, drink extra water.</li>
+      <li>Your doctor receives the results within 3 business days. They appear in the patient portal after your doctor has seen them.</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>

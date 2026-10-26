@@ -1,0 +1,42 @@
+@title How a 911 Call Is Received and Dispatched
+@subtitle Marrow County Emergency Communications District
+@author Public Safety Systems team
+@date 2026-09-30
+
+## Overview
+
+911 calls arrive from the telephone carriers into the primary dispatch center. A backup dispatch center across the county can take over if the primary is lost.
+
+!! The backup center is activated only when the shift supervisor declares the primary unavailable. It never activates automatically.
+
+## Call path
+
+diagram callpath dir=LR title="911 call path and failover"
+callpath: callers "Callers" user
+callpath: carriers "Telecom Carriers" ext
+callpath: gis "State GIS Service" ext
+callpath: field "Field Units" team
+callpath: router "Call Router" svc
+callpath: cada "CAD Server A" svc "Computer-aided dispatch, active" focus
+callpath: cadb "CAD Server B" svc "Hot standby"
+callpath: radio "Radio Gateway" svc
+callpath: srouter "Standby Call Router" svc
+callpath: replica "CAD Replica" db
+callpath: callers -> carriers : voice and caller location
+callpath: carriers -> router : SIP trunks
+callpath: router -> cada : call record
+callpath: cada -> cadb : state sync
+callpath: cada --> replica : asynchronous replication
+callpath: router --> srouter : heartbeat
+callpath: cada -> gis : address lookup
+callpath: cada -> radio : dispatch message
+callpath: radio -> field : P25 radio
+callpath: group primary "Primary Dispatch Center" router, cada, cadb, radio
+callpath: group backup "Backup Dispatch Center" srouter, replica
+callpath: legend
+
+## Failover targets
+
+table = Component,Target; Call routing,Switches to the Standby Call Router within **30 seconds**; CAD Server B,Takes over within **2 minutes**; CAD Replica,Lags the primary by under **5 seconds**; Backup center,Fully staffed and taking calls within **10 minutes**
+
+! Failover to the backup center is a human decision: the shift supervisor must declare the primary unavailable first.

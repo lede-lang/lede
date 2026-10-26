@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2027 Dental Plan Options</title>
+<style>
+:root{
+  --bg:#f6f6f4;--surface:#ffffff;--surface-2:#efefeb;--ink:#171816;--ink-2:#3b3e39;--muted:#646860;--line:#dfe0da;--line-2:#b0b3aa;
+  --accent:#2d6a4f;--accent-soft:#e3f1e9;
+  --pick:#2d6a4f;--pick-2:#8cc5a8;
+  --bar:#a3a89d;
+  --no:#9a3412;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0f100e;--surface:#181916;--surface-2:#20221e;--ink:#ebece7;--ink-2:#c9cbc3;--muted:#9fa398;--line:#2d2f2a;--line-2:#50534b;
+    --accent:#74d3a3;--accent-soft:#14301f;
+    --pick:#74d3a3;--pick-2:#2f6a4c;
+    --bar:#5e6359;
+    --no:#ff9e7a;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:940px;margin:0 auto;padding:28px 16px 72px}
+.eyebrow{margin:0;font-size:.78rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+h1{margin:.35rem 0 .5rem;font-size:clamp(1.65rem,5vw,2.35rem);line-height:1.15;letter-spacing:-.015em}
+.lede{margin:0 0 14px;color:var(--ink-2);font-size:1.05rem;max-width:62ch}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.meta li{font-size:.84rem;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 11px}
+.meta b{font-weight:600;color:var(--muted);margin-right:4px}
+section{margin-top:40px}
+h2{margin:0 0 14px;font-size:1.3rem;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+h2::before{content:"";flex:none;width:4px;height:1.1em;border-radius:2px;background:var(--accent)}
+p{margin:0 0 12px;max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+@media (max-width:520px){.card{padding:14px 12px}}
+svg{display:block;width:100%;height:auto}
+svg text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+
+.summary{margin-top:22px;padding:16px 18px;border-radius:14px;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--pick)}
+.summary .k{font-size:.76rem;font-weight:750;letter-spacing:.08em;text-transform:uppercase;color:var(--pick)}
+.summary p{margin:4px 0 0;font-size:1.06rem}
+
+.plans{display:grid;gap:12px;grid-template-columns:1fr}
+@media (min-width:440px){.plans{grid-template-columns:1fr 1fr}}
+@media (min-width:880px){.plans{grid-template-columns:repeat(4,1fr)}}
+.plan{position:relative;display:flex;flex-direction:column}
+.plan h3{margin:0;font-size:1.1rem}
+.plan .price{margin:6px 0 12px;font-size:1.9rem;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.plan .price small{font-size:.85rem;font-weight:600;color:var(--muted)}
+.plan dl{margin:0;display:grid;gap:0}
+.plan dl div{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:.9rem}
+.plan dt{color:var(--muted)}
+.plan dd{margin:0;font-weight:650;text-align:right;font-variant-numeric:tabular-nums}
+.plan dd.no{color:var(--no);font-weight:600}
+.plan dd.yes{color:var(--accent)}
+.plan.pick{border:2px solid var(--pick);box-shadow:0 0 0 4px var(--accent-soft)}
+.badge{position:absolute;top:-11px;left:14px;background:var(--pick);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.06em;padding:3px 9px;border-radius:999px}
+@media (prefers-color-scheme:dark){.badge{color:#0f100e}}
+.plans-note{margin:12px 2px 0;font-size:.86rem;color:var(--muted)}
+
+.chart-title{margin:0 0 4px;font-weight:700}
+.chart-sub{margin:0 0 12px;font-size:.88rem;color:var(--muted)}
+.chart{max-width:600px}
+.g{stroke:var(--line);stroke-width:1}
+.gl{font-size:10.5px;fill:var(--muted)}
+.cl{font-size:12px;font-weight:650;fill:var(--ink)}
+.cm{font-size:10.5px;fill:var(--muted)}
+.cv{font-size:12.5px;font-weight:700;fill:var(--ink)}
+.b{fill:var(--bar)}
+.bp{fill:var(--pick)}
+.bx{fill:var(--pick-2)}
+.bxt{font-size:11.5px;font-weight:800;fill:var(--ink)}
+.cn{stroke:var(--ink-2);stroke-width:1;stroke-dasharray:2 2}
+.stat{display:flex;gap:14px;align-items:center;margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--surface-2)}
+.stat .v{font-size:1.6rem;font-weight:850;color:var(--accent);font-variant-numeric:tabular-nums;line-height:1}
+.stat p{margin:0;font-size:.92rem;color:var(--ink-2)}
+
+.suits{display:grid;gap:10px}
+.suit{display:grid;grid-template-columns:110px 1fr;gap:6px 16px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+@media (max-width:520px){.suit{grid-template-columns:1fr}}
+.suit h3{margin:0;font-size:1.02rem}
+.suit h3 small{display:block;font-size:.8rem;font-weight:600;color:var(--muted)}
+.suit p{margin:0;font-size:.94rem}
+.suit.pick{border:2px solid var(--pick)}
+.suit.pick h3{color:var(--pick)}
+
+.rec{border:2px solid var(--pick);background:var(--accent-soft);border-radius:16px;padding:20px}
+.rec .verdict{margin:0 0 8px;font-size:1.5rem;font-weight:850;color:var(--pick);line-height:1.2}
+.rec ul{margin:0;padding-left:20px}
+.rec li{margin:5px 0}
+footer{margin-top:48px;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <p class="eyebrow">Fenwick Studios · HR · Benefits</p>
+    <h1>Choosing the 2027 dental plan</h1>
+    <p class="lede">Four plans for our 112 employees, compared on cost and cover, with a recommended default before open enrollment closes.</p>
+    <ul class="meta">
+      <li><b>Prepared by</b>Dalia Lund, HR lead</li>
+      <li><b>Enrollment closes</b>2026-11-20</li>
+      <li><b>Employees</b>112</li>
+    </ul>
+    <div class="summary">
+      <div class="k">Recommendation</div>
+      <p><b>Premier as the default plan.</b> It is the lowest-cost plan that covers orthodontia.</p>
+    </div>
+  </header>
+
+  <section id="plans">
+    <h2>Plans</h2>
+    <div class="plans">
+      <div class="card plan">
+        <h3>Basic</h3>
+        <div class="price">$14<small> /month</small></div>
+        <dl>
+          <div><dt>Annual maximum</dt><dd>$1,000</dd></div>
+          <div><dt>Deductible</dt><dd>$75</dd></div>
+          <div><dt>Orthodontia</dt><dd class="no">Not covered</dd></div>
+        </dl>
+      </div>
+      <div class="card plan">
+        <h3>Plus</h3>
+        <div class="price">$28<small> /month</small></div>
+        <dl>
+          <div><dt>Annual maximum</dt><dd>$1,500</dd></div>
+          <div><dt>Deductible</dt><dd>$50</dd></div>
+          <div><dt>Orthodontia</dt><dd class="no">Not covered</dd></div>
+        </dl>
+      </div>
+      <div class="card plan pick">
+        <span class="badge">RECOMMENDED DEFAULT</span>
+        <h3>Premier</h3>
+        <div class="price">$41<small> /month</small></div>
+        <dl>
+          <div><dt>Annual maximum</dt><dd>$2,500</dd></div>
+          <div><dt>Deductible</dt><dd>$25</dd></div>
+          <div><dt>Orthodontia</dt><dd class="yes">50%, up to $1,500 lifetime</dd></div>
+        </dl>
+      </div>
+      <div class="card plan">
+        <h3>Family Max</h3>
+        <div class="price">$63<small> /month</small></div>
+        <dl>
+          <div><dt>Annual maximum</dt><dd>$3,000</dd></div>
+          <div><dt>Deductible</dt><dd>None</dd></div>
+          <div><dt>Orthodontia</dt><dd class="yes">50%, up to $2,000 lifetime</dd></div>
+        </dl>
+      </div>
+    </div>
+    <p class="plans-note">Prices are the employee's monthly premium.</p>
+  </section>
+
+  <section id="premium">
+    <h2>Annual premium</h2>
+    <div class="card">
+      <p class="chart-title">What each plan costs an employee per year</p>
+      <p class="chart-sub">Monthly premium × 12.</p>
+      <svg class="chart" viewBox="0 0 360 178" role="img" aria-label="Annual employee premium: Basic 168 dollars, Plus 336, Premier 492, Family Max 756, which is 264 dollars more than Premier.">
+        <line class="g" x1="90" y1="6" x2="90" y2="160"/>
+        <line class="g" x1="145" y1="6" x2="145" y2="160"/>
+        <line class="g" x1="200" y1="6" x2="200" y2="160"/>
+        <line class="g" x1="255" y1="6" x2="255" y2="160"/>
+        <line class="g" x1="310" y1="6" x2="310" y2="160"/>
+        <text class="gl" x="90" y="174" text-anchor="middle">$0</text>
+        <text class="gl" x="145" y="174" text-anchor="middle">$200</text>
+        <text class="gl" x="200" y="174" text-anchor="middle">$400</text>
+        <text class="gl" x="255" y="174" text-anchor="middle">$600</text>
+        <text class="gl" x="310" y="174" text-anchor="middle">$800</text>
+
+        <text class="cl" x="82" y="23" text-anchor="end">Basic</text>
+        <text class="cm" x="82" y="36" text-anchor="end">$14/mo</text>
+        <rect class="b" x="90" y="12" width="46.2" height="24" rx="2"/>
+        <text class="cv" x="142.2" y="28.5">$168</text>
+
+        <text class="cl" x="82" y="63" text-anchor="end">Plus</text>
+        <text class="cm" x="82" y="76" text-anchor="end">$28/mo</text>
+        <rect class="b" x="90" y="52" width="92.4" height="24" rx="2"/>
+        <text class="cv" x="188.4" y="68.5">$336</text>
+
+        <text class="cl" x="82" y="103" text-anchor="end" style="fill:var(--pick)">Premier</text>
+        <text class="cm" x="82" y="116" text-anchor="end">$41/mo</text>
+        <rect class="bp" x="90" y="92" width="135.3" height="24" rx="2"/>
+        <text class="cv" x="231.3" y="108.5" style="fill:var(--pick)">$492</text>
+
+        <text class="cl" x="82" y="143" text-anchor="end">Family Max</text>
+        <text class="cm" x="82" y="156" text-anchor="end">$63/mo</text>
+        <rect class="b" x="90" y="132" width="135.3" height="24" rx="2"/>
+        <rect class="bx" x="225.3" y="132" width="72.6" height="24"/>
+        <text class="bxt" x="261.6" y="148.5" text-anchor="middle">+$264</text>
+        <line class="cn" x1="225.3" y1="116" x2="225.3" y2="132"/>
+        <text class="cv" x="303.9" y="148.5">$756</text>
+      </svg>
+      <div class="stat">
+        <div class="v">+$264</div>
+        <p>a year is what Family Max costs over Premier ($756 vs $492).</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="suits">
+    <h2>Who each plan suits</h2>
+    <div class="stat" style="margin:0 0 12px;background:var(--surface);border:1px solid var(--line)">
+      <div class="v">38</div>
+      <p>employees said in the pulse survey that they have children who will need braces soon. That is about a third of our 112 people, which is why orthodontia cover matters.</p>
+    </div>
+    <div class="suits">
+      <div class="suit"><h3>Basic<small>$168 a year</small></h3><p>People who want the lowest premium and expect only routine care. No orthodontia, the lowest annual maximum ($1,000) and the highest deductible ($75).</p></div>
+      <div class="suit"><h3>Plus<small>$336 a year</small></h3><p>People who want more cover than Basic, with a $1,500 annual maximum and a $50 deductible, but have no need for orthodontia.</p></div>
+      <div class="suit pick"><h3>Premier<small>$492 a year</small></h3><p>Most employees, and especially parents whose children will need braces: orthodontia at 50% up to $1,500 lifetime, a $2,500 annual maximum and a $25 deductible.</p></div>
+      <div class="suit"><h3>Family Max<small>$756 a year</small></h3><p>Families with ongoing orthodontia: a higher orthodontia lifetime maximum ($2,000), a $3,000 annual maximum and no deductible. It costs $264 a year more than Premier.</p></div>
+    </div>
+  </section>
+
+  <section id="recommendation">
+    <h2>Recommendation</h2>
+    <div class="rec">
+      <p class="verdict">Make Premier the default plan.</p>
+      <ul>
+        <li>It is the lowest-cost plan that covers orthodontia, which matters to the 38 employees whose children will need braces soon. Basic and Plus do not cover orthodontia at all.</li>
+        <li>Family Max costs $264 more a year and only pays off for families with ongoing orthodontia.</li>
+        <li>Premier costs an employee $41 a month, $492 a year.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>Fenwick Studios · 2027 dental plan options · prepared by Dalia Lund · open enrollment closes 2026-11-20</footer>
+</main>
+</body>
+</html>

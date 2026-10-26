@@ -1,0 +1,52 @@
+{
+  "id": "103-calder-lab-result-routing",
+  "category": "architecture",
+  "title": "Calder Valley lab result routing",
+  "brief": "Calder Valley Hospital's laboratory informatics team wants a one-page explanation of how a finished lab result is routed, current as of 2026-10-02, so new unit clerks and nurses know who gets told and when. Under \"Routing flow\", show the path a result takes. It starts at \"Result verified in lab system\", then asks \"Critical value?\". If yes, it goes to \"Phone the ordering clinician\", then asks \"Read back confirmed within 15 minutes?\"; yes goes to \"Log the read-back\" and no goes to \"Escalate to department head\", which also ends at \"Log the read-back\". If the value is not critical, ask \"Flagged abnormal?\"; yes goes to \"Add to clinician inbox\" and no goes to \"File without alert\". Both of those two end at \"Release to patient portal\". Then \"Time limits\", each step and its limit: phone call within 10 minutes of verification for critical values; read-back confirmation within 15 minutes of the call; abnormal results reviewed in the clinician inbox within 1 business day; routine results released to the patient portal after 24 hours; abnormal results held for 72 hours so the clinician can speak to the patient first. Finish with a short \"Who is called\" section: weekdays from 07:00 to 19:00 the ordering clinician; nights and weekends the covering physician through the hospital operator; the department head is Dr. Naomi Eze. Make it obvious which steps are urgent and which are routine.",
+  "checklist": {
+    "sections": [
+      "Routing flow",
+      "Time limits",
+      "Who is called"
+    ],
+    "visible": [
+      "Result verified in lab system",
+      "Critical value?",
+      "Phone the ordering clinician",
+      "Log the read-back",
+      "Escalate to department head",
+      "Flagged abnormal?",
+      "Add to clinician inbox",
+      "File without alert",
+      "Release to patient portal",
+      "Dr. Naomi Eze"
+    ],
+    "values": [
+      "2026-10-02",
+      "15 minutes",
+      "10 minutes",
+      "1 business day",
+      "24 hours",
+      "72 hours",
+      "07:00",
+      "19:00"
+    ]
+  },
+  "needs": [
+    "diagram",
+    "table",
+    "list"
+  ],
+  "edit": {
+    "request": "Change the abnormal-result hold from 72 hours to 48 hours, and add a step \"Notify patient by text message\" between Add to clinician inbox and Release to patient portal.",
+    "expect_visible": [
+      "Notify patient by text message"
+    ],
+    "expect_values": [
+      "48 hours"
+    ],
+    "expect_absent": [
+      "72 hours"
+    ]
+  }
+}

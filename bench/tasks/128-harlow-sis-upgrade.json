@@ -1,0 +1,60 @@
+{
+  "id": "128-harlow-sis-upgrade",
+  "category": "status",
+  "title": "Harlow student system upgrade status",
+  "brief": "Harlow University's IT office needs a status page for the student information system upgrade, as of 2026-10-16, for the steering committee, with go-live on 2027-01-11 ahead of spring registration. Overall the project is amber. Budget: 2.6 million dollars approved, 1.74 million spent (66.9 percent), forecast at completion 2.78 million, which is 0.18 million over. Under \"Milestones\", the five phases with percent complete and status: Data cleanup, 100, done; System configuration, 85, green; Integration testing, 40, amber; User training, 10, green; Cutover rehearsal, 0, planned for 2026-12-07. Under \"Risks\", three, with owner and severity: the financial aid integration is failing 14 of 60 test cases, Beatrice Lindgren, high; registrar staff have only 55 of the 120 planned training seats confirmed, Omar Faraj, medium; a freeze on course catalog changes must begin by 2026-11-20 and 3 departments have not agreed, Greta Nilsson, medium. Under \"Decision needed\": whether to approve 0.18 million dollars of extra vendor support through 2027-01-31, or move go-live to 2027-02-15, which would miss the first week of spring registration. Sections: \"At a glance\", \"Milestones\", \"Risks\" and \"Decision needed\".",
+  "checklist": {
+    "sections": [
+      "At a glance",
+      "Milestones",
+      "Risks",
+      "Decision needed"
+    ],
+    "visible": [
+      "Data cleanup",
+      "System configuration",
+      "Integration testing",
+      "User training",
+      "Cutover rehearsal",
+      "Beatrice Lindgren",
+      "Omar Faraj",
+      "Greta Nilsson"
+    ],
+    "values": [
+      "2026-10-16",
+      "2027-01-11",
+      "2.6 million",
+      "1.74 million",
+      "66.9",
+      "2.78 million",
+      "0.18 million",
+      "100",
+      "85",
+      "40",
+      "10",
+      "2026-12-07",
+      "14 of 60",
+      "55 of the 120",
+      "2026-11-20",
+      "2027-01-31",
+      "2027-02-15"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Integration testing is now 55 percent complete and the financial aid integration is failing only 6 of 60 test cases.",
+    "expect_visible": [],
+    "expect_values": [
+      "55 percent",
+      "6 of 60"
+    ],
+    "expect_absent": [
+      "14 of 60"
+    ]
+  }
+}

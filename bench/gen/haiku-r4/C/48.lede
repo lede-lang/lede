@@ -1,0 +1,36 @@
+@title How a return request is decided
+@subtitle Greenmoor Apparel customer care, current as of 2026-10-12
+
+## Decision flow
+diagram ret dir=TB title="Return decision flow"
+ret: req "Return requested" user
+ret: d30 "Within 30 days of delivery?" decision
+ret: fs "Final-sale item?" decision
+ret: decl "Decline return" svc
+ret: lbl "Issue prepaid label" svc
+ret: rec "Item received at warehouse" store
+ret: insp "Inspection passes?" decision
+ret: credit "Offer store credit at 50 percent" svc
+ret: val "Order value over 200 dollars?" decision
+ret: lead "Returns Lead review" team
+ret: refund "Refund to original payment" svc
+ret: req -> d30
+ret: d30 -> decl : no
+ret: d30 -> fs : yes
+ret: fs -> decl : yes
+ret: fs -> lbl : no
+ret: lbl -> rec
+ret: rec -> insp
+ret: insp -> credit : no
+ret: insp -> val : yes
+ret: val -> lead : yes
+ret: val -> refund : no
+ret: lead -> refund : approved
+
+## Service levels
+table = step,target; Label issued,within 1 business hour of request; Inspection,within 2 business days of arrival; Refund posted,within 3 business days of inspection; Returns Lead review,within 1 business day
+
+## Exceptions
+- Damaged-on-arrival items skip the 30-day and final-sale checks.
+- Gift returns always get store credit.
+- Customers with more than 4 returns in 90 days are routed to the Returns Lead.

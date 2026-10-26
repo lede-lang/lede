@@ -1,0 +1,131 @@
+@title Museum design tokens: audit
+@subtitle 25 tokens, grouped, with the clashes, near-duplicates and a dark gallery mode check
+@width wide
+
+kpi Tokens | 25
+kpi Colours | 11 | 7 flagged | bad
+kpi Collection search | 38,000 visits/mo | busiest page in the system | neutral
+kpi Dark mode | Not shipped | color.gallery-dark exists, nothing else does | neutral
+
+! Contrast figures below are my own hand calculations (WCAG relative luminance), good to about 0.1. Re-check anything you act on with a contrast tool. Token names are exactly as exported.
+
+## What needs attention first
+
+table = flag,tokens,what I see,suggested move; **Near-duplicate**,color.paper and color.paper-2,"`#FAF7F0` and `#F3EEE2` are both warm off-whites, and ink reads at about 16:1 and 15:1 on them. Neither does a contrast job, so the only reason for two is to separate cards from the page.","Keep both only if cards must visibly lift off the page. Otherwise merge."; **Clash**,color.accent and color.error,"`#B3412B` and `#B3261E` share the same red channel and have nearly the same luminance. A form error and a link or button read as the same red.","Pull error away from terracotta, or never rely on colour alone for errors (add an icon and text)."; **Clash**,color.gold and color.warning,"`#C79A2E` and `#D98E04` are both ochre. A closure or hours warning looks like the donor wall or membership colour.","Separate their hues. color.gold is used in only 3 places, so it is the one to move or retire."; **Check**,color.accent-hover,"The note says it fails on paper-2. By my calculation it is about 6.9:1 there, which passes. The tighter one is color.accent itself on paper-2 at about 4.9:1.","Verify with a tool. If it is as I calculate, the note is out of date."; **Too small**,size.label,"13px for gallery labels in font.label, and the access audit already says too small.","Raise it. Try 16px and see how it sits next to size.body at 18px."; **Scale gap**,space.6,"The scale runs 4, 8, 16, 32 px as space.1, .2, .4, .6. On a 4px ladder space.6 would be 24px, and 32px would be space.8. space.3 and space.5 do not exist.","Names stay as given, so just decide whether 24px is missing or space.6 is simply mislabelled."
+
+## Colour
+
+data colour = name,value,used for,notes
+data colour += color.ink,`#1B1A17`,body text,
+data colour += color.paper,`#FAF7F0`,page background,"warm; the director loves it"
+data colour += color.paper-2,`#F3EEE2`,"cards, banners",maybe same as paper?
+data colour += color.accent,`#B3412B`,"links, buttons","“Terracotta” per brand guide"
+data colour += color.accent-hover,`#8F3220`,button hover,fails contrast on paper-2? check
+data colour += color.gold,`#C79A2E`,"donor wall, membership",used in only 3 places
+data colour += color.gold-text,`#8A6A14`,gold text on paper,
+data colour += color.gallery-dark,`#11100E`,dark gallery mode,not yet shipped
+data colour += color.success,`#2F7D4F`,form confirmations,
+data colour += color.warning,`#D98E04`,"closures, hours changes","looks like gold, confusing"
+data colour += color.error,`#B3261E`,form errors,nearly the same as accent
+
+table colour
+
+I cannot paint swatches in this format, so the hex values stand in for them. Pairs that look alike are the ones flagged above.
+
+### Contrast on the light pages
+
+Contrast ratio of each colour against color.paper unless named otherwise. 4.5:1 is the AA minimum for body-size text.
+
+data lightc = pair,ratio,text AA
+data lightc += ink on paper,16.3,Passes
+data lightc += accent-hover on paper,7.4,Passes
+data lightc += accent-hover on paper-2,6.9,Passes
+data lightc += error on paper,6.1,Passes
+data lightc += accent on paper,5.3,Passes
+data lightc += accent on paper-2,4.9,Passes
+data lightc += success on paper,4.7,Passes
+data lightc += gold-text on paper,4.7,Passes
+data lightc += warning on paper,2.5,Fails
+data lightc += gold on paper,2.4,Fails
+
+chart hbar lightc y=ratio unit=:1 target="4.5 AA text" labels title="Contrast on the light page"
+
+color.gold-text exists because color.gold fails as text, which is consistent. color.warning also fails as text and has no text-safe twin, so any warning copy in that colour is unreadable on paper.
+
+## Type
+
+data fonts = name,value,used for,notes
+data fonts += font.display,"“Fraunces”, Georgia, serif",headings,"licensed, $1,400/yr"
+data fonts += font.body,"“Source Sans 3”, system-ui, sans-serif",body,
+data fonts += font.label,"“IBM Plex Mono”, monospace","object labels, accession numbers","e.g. “1987.34.2a (gift of J. O'Neill)”"
+
+table fonts
+
+The label face is monospace, so this is how an accession label sets in it, with its tricky apostrophe:
+
+`1987.34.2a (gift of J. O'Neill)`
+
+data sizes = name,px,used for,notes
+data sizes += size.body,18,body,
+data sizes += size.label,13,gallery labels,too small per the access audit
+data sizes += size.h1,44,page title,
+
+chart bar sizes x=name y=px unit=px labels title="Type sizes"
+
+table sizes
+
+## Spacing, shape, depth, motion
+
+data space = name,px,used for
+data space += space.1,4,gaps
+data space += space.2,8,gaps
+data space += space.4,16,card padding
+data space += space.6,32,section gap
+
+chart bar space x=name y=px unit=px labels title="Spacing scale"
+
+The names suggest a 4px ladder (space.1 is 4, space.2 is 8, space.4 is 16), which would put space.6 at 24px. It is 32px.
+
+table = name,value,used for,notes; radius.card,6px,cards,; radius.pill,999px,tags,; shadow.lift,"0 2px 8px rgba(0,0,0,0.12)",hover on cards,; motion.fade,240ms,page transitions,
+
+## The collection search page
+
+kpi Collection search | 38,000 visits/mo
+
+I cannot render the real page here, and I have not been given its layout. This diagram is an assumed layout for the page, showing which tokens each part would draw on.
+
+diagram search dir=TB title="Collection search page, assumed layout and tokens"
+search: page "Page" ext "color.paper, space.6 section gap"
+search: title "Page title" svc "font.display, size.h1, color.ink"
+search: btn "Search button" svc "color.accent, hover color.accent-hover, radius.card"
+search: card "Result card" svc "color.paper-2, radius.card, space.4 padding, shadow.lift on hover"
+search: lbl "Object label" svc "font.label, size.label"
+search: tag "Tag" svc "radius.pill"
+search: link "Result link" svc "color.accent, font.body, size.body"
+search: page -> title, btn, card
+search: card -> lbl, tag, link
+
+## Dark gallery mode
+
+color.gallery-dark (`#11100E`) is the only dark token today. These are the existing colours tested against it:
+
+data darkc = pair,ratio,text AA
+data darkc += paper on gallery-dark,17.8,Passes
+data darkc += gold on gallery-dark,7.3,Passes
+data darkc += accent on gallery-dark,3.4,Fails
+data darkc += ink on gallery-dark,1.1,Fails
+
+chart hbar darkc y=ratio unit=:1 target="4.5 AA text" labels title="Contrast on the dark gallery background"
+
+- Text: color.paper works as body text on dark, at about 17.8:1. color.ink cannot be used.
+- Links and buttons: color.accent is only about 3.4:1 on dark. That is fine for large buttons (3:1) but fails for link text, so dark mode needs a lighter terracotta. That is a new token, and its value should be picked with a checker.
+- Gold: color.gold passes on dark at about 7.3:1, so the donor wall may not need color.gold-text there.
+- Cards: color.paper-2 is a light card colour and has no dark equivalent. Dark mode needs its own raised surface.
+- Depth: shadow.lift is black at 12% opacity and will be invisible on `#11100E`. Dark mode needs a different way to show lift, such as a lighter surface or a border.
+- Status colours: color.success, color.warning and color.error have not been tested on dark.
+
+table = role,light,dark; Page background,color.paper,color.gallery-dark; Body text,color.ink,color.paper; Cards and banners,color.paper-2,"needs a new dark surface"; Links and buttons,color.accent,"needs a lighter accent"; Gold,color.gold and color.gold-text,color.gold; Hover shadow,shadow.lift,"needs a non-shadow cue"
+
+## Adjusting the tokens
+
+This page is a fixed audit. I cannot edit values here or hand back a changed set. The suggested moves above are the candidate edits, and the token names should be kept as exported when you make them in the repo.

@@ -1,0 +1,4 @@
+Six rendered mockups in a side-by-side HTML grid: could not draw real UI, so each card has an ASCII wireframe in a code fence inside a `cards` grid.
+Visually distinct treatment per option (color, type, imagery): the compiler owns styling, so differences in layout, tone and density are described in text bullets and the wireframes.
+A tradeoff label as a badge on each option: used a bold first line in each card, since a chip only renders for a lone status word or date.
+Interactive side-by-side comparison or filtering: used an inline comparison table, a heat table and charts instead.

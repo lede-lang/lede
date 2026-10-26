@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Whitcombe City: Building Permit Routing</title>
+<style>
+:root{
+  color-scheme:light dark;
+  --bg:#f5f4f1;--surface:#ffffff;--surface2:#eeece7;--fg:#1e2328;--muted:#5e6670;--line:#dcd8d0;
+  --accent:#264f8c;--accent-soft:#e3ebf8;
+  --good:#17754a;--good-soft:#e0f3e8;
+  --warn:#8f4f00;--warn-soft:#fff0d6;--warn-line:#d79a40;
+  --bad:#b3261e;--bad-soft:#fde8e6;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#111418;--surface:#1a1e24;--surface2:#232830;--fg:#e8eaed;--muted:#a0a8b3;--line:#303741;
+    --accent:#8db4f0;--accent-soft:#1a2a44;
+    --good:#5dd596;--good-soft:#112f20;
+    --warn:#ffb65e;--warn-soft:#352610;--warn-line:#8a5f22;
+    --bad:#ff8c82;--bad-soft:#3b1815;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:22px 16px 56px}
+.eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin:0}
+h1{font-size:clamp(1.55rem,5.5vw,2.1rem);line-height:1.18;margin:.3em 0 .5em}
+h2{font-size:1.25rem;line-height:1.3;margin:2.3rem 0 .7rem;padding-bottom:.4rem;border-bottom:2px solid var(--line)}
+p{margin:0 0 .8rem}
+.lede{font-size:1.05rem;color:var(--fg)}
+.meta{display:flex;flex-wrap:wrap;gap:6px 8px;list-style:none;padding:0;margin:14px 0 0}
+.meta li{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 11px;font-size:.84rem;color:var(--muted)}
+.meta b{color:var(--fg);font-weight:600}
+.diagram{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;justify-content:center}
+.diagram svg{width:100%;max-width:420px;height:auto;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.84rem;color:var(--muted);margin:10px 2px 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:14px;height:14px;border:1.6px solid var(--accent);background:var(--accent-soft);border-radius:4px}
+.sw.d{border-color:var(--warn);background:var(--warn-soft);transform:rotate(45deg) scale(.8);border-radius:2px}
+.sw.ok{border-color:var(--good);background:var(--good-soft);border-radius:8px}
+.sw.no{border-color:var(--bad);background:var(--bad-soft);border-radius:8px}
+table{border-collapse:collapse;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+th{font-size:.76rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--surface2)}
+td.num{font-weight:750;color:var(--accent);white-space:nowrap}
+td small{display:block;color:var(--muted);font-size:.85rem;font-weight:400}
+.callout{margin:12px 0 0;padding:11px 13px;border-radius:10px;background:var(--warn-soft);border-left:5px solid var(--warn-line)}
+.callout b{color:var(--warn)}
+h3{font-size:.95rem;margin:1.4rem 0 .5rem}
+.paths{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.paths li{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.paths strong{display:block}
+.paths span{color:var(--muted);font-size:.92rem}
+.formula{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;gap:6px}
+.formula .row{display:flex;gap:10px;align-items:baseline}
+.formula .big{font-size:1.7rem;font-weight:800;color:var(--accent);line-height:1.1;min-width:5.2rem}
+.formula .plus{font-weight:800;color:var(--muted);padding-left:.4rem}
+svg text{font-family:inherit}
+.nd{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.6}
+.nd.ok{fill:var(--good-soft);stroke:var(--good)}
+.nd.no{fill:var(--bad-soft);stroke:var(--bad)}
+.nd.dec{fill:var(--warn-soft);stroke:var(--warn)}
+.nt{font-size:13px;font-weight:650;fill:var(--fg);text-anchor:middle}
+.dt{font-size:12px;font-weight:650;fill:var(--fg);text-anchor:middle}
+.ln{stroke:var(--muted);stroke-width:1.7;fill:none}
+.ah{fill:var(--muted)}
+.fl{font-size:12px;font-weight:600;fill:var(--muted)}
+footer{margin-top:2.5rem;font-size:.85rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Whitcombe City Planning Office</p>
+  <h1>How a building permit application is routed</h1>
+  <p class="lede">Follow the path from the front counter to an issued permit, so nobody has to guess where an application is.</p>
+  <ul class="meta">
+    <li>Current as of <b>2026-10-01</b></li>
+    <li>For <b>front-counter staff and applicants</b></li>
+  </ul>
+</header>
+
+<h2>Routing flow</h2>
+<div class="diagram">
+<svg viewBox="0 0 360 736" role="img" aria-labelledby="ft fd">
+  <title id="ft">Building permit routing flowchart</title>
+  <desc id="fd">An application is received and checked for completeness. If incomplete it is returned to the applicant. If complete and the project value is not over 50000 dollars it goes to fast-track review, then to permit issued. If the value is over 50000 dollars and the project is in a historic district it goes to Heritage Board review, then to plan review. If over 50000 dollars and not in a historic district it goes straight to plan review. Plan review ends in permit issued.</desc>
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah"/></marker>
+  </defs>
+
+  <!-- connectors -->
+  <path class="ln" d="M115 50V89" marker-end="url(#ar)"/>
+  <path class="ln" d="M210 135H249" marker-end="url(#ar)"/>
+  <path class="ln" d="M115 180V224" marker-end="url(#ar)"/>
+  <path class="ln" d="M210 270H249" marker-end="url(#ar)"/>
+  <path class="ln" d="M115 315V359" marker-end="url(#ar)"/>
+  <path class="ln" d="M115 450V494" marker-end="url(#ar)"/>
+  <path class="ln" d="M210 405H262V607H201" marker-end="url(#ar)"/>
+  <path class="ln" d="M115 539V584" marker-end="url(#ar)"/>
+  <path class="ln" d="M115 629V674" marker-end="url(#ar)"/>
+  <path class="ln" d="M302 292V697H201" marker-end="url(#ar)"/>
+
+  <!-- start -->
+  <rect class="nd" x="30" y="10" width="170" height="40" rx="20"/>
+  <text class="nt" x="115" y="35">Application received</text>
+
+  <!-- decision 1 -->
+  <polygon class="nd dec" points="115,90 210,135 115,180 20,135"/>
+  <text class="dt" x="115" y="131"><tspan x="115">Submission </tspan><tspan x="115" dy="15">complete?</tspan></text>
+  <text class="fl" x="229" y="128" text-anchor="middle">no</text>
+  <text class="fl" x="123" y="207">yes</text>
+  <rect class="nd no" x="250" y="113" width="104" height="44" rx="8"/>
+  <text class="nt" x="302" y="132"><tspan x="302">Return to </tspan><tspan x="302" dy="15">applicant</tspan></text>
+
+  <!-- decision 2 -->
+  <polygon class="nd dec" points="115,225 210,270 115,315 20,270"/>
+  <text class="dt" x="115" y="266"><tspan x="115">Project value over </tspan><tspan x="115" dy="15">50000 dollars?</tspan></text>
+  <text class="fl" x="229" y="263" text-anchor="middle">no</text>
+  <text class="fl" x="123" y="342">yes</text>
+  <rect class="nd" x="250" y="248" width="104" height="44" rx="8"/>
+  <text class="nt" x="302" y="267"><tspan x="302">Fast-track </tspan><tspan x="302" dy="15">review</tspan></text>
+
+  <!-- decision 3 -->
+  <polygon class="nd dec" points="115,360 210,405 115,450 20,405"/>
+  <text class="dt" x="115" y="401"><tspan x="115">In a historic </tspan><tspan x="115" dy="15">district?</tspan></text>
+  <text class="fl" x="236" y="398" text-anchor="middle">no</text>
+  <text class="fl" x="123" y="477">yes</text>
+
+  <!-- heritage -->
+  <rect class="nd" x="30" y="495" width="170" height="44" rx="8"/>
+  <text class="nt" x="115" y="522">Heritage Board review</text>
+  <text class="fl" x="123" y="566">cleared</text>
+
+  <!-- plan review -->
+  <rect class="nd" x="30" y="585" width="170" height="44" rx="8"/>
+  <text class="nt" x="115" y="612">Plan review</text>
+  <text class="fl" x="123" y="656">approved</text>
+
+  <!-- permit -->
+  <rect class="nd ok" x="30" y="675" width="170" height="44" rx="22"/>
+  <text class="nt" x="115" y="702">Permit issued</text>
+  <text class="fl" x="252" y="690" text-anchor="middle">approved</text>
+</svg>
+</div>
+<div class="legend" aria-hidden="true">
+  <span><i class="sw d"></i>Question</span>
+  <span><i class="sw"></i>Stage</span>
+  <span><i class="sw no"></i>Sent back</span>
+  <span><i class="sw ok"></i>Done</span>
+</div>
+
+<h2>Review times</h2>
+<table>
+  <thead><tr><th scope="col">Stage</th><th scope="col">Target</th></tr></thead>
+  <tbody>
+    <tr><td>Completeness check</td><td class="num">within 2 business days</td></tr>
+    <tr><td>Fast-track review</td><td class="num">within 3 business days</td></tr>
+    <tr><td>Plan review</td><td class="num">within 15 business days</td></tr>
+    <tr><td>Heritage Board review<small>Applies only to projects in a historic district</small></td><td class="num">within 30 days</td></tr>
+  </tbody>
+</table>
+<p class="callout"><b>Historic districts take longer.</b> The 30 days for Heritage Board review are added on top of the plan review time.</p>
+
+<h3>What that means for your path</h3>
+<ul class="paths">
+  <li><strong>50000 dollars or less</strong><span>Completeness check, then fast-track review: 2 + 3 business days.</span></li>
+  <li><strong>Over 50000 dollars, not in a historic district</strong><span>Completeness check, then plan review: 2 + 15 business days.</span></li>
+  <li><strong>Over 50000 dollars, in a historic district</strong><span>Completeness check, Heritage Board review, then plan review: 2 + 15 business days, plus 30 days.</span></li>
+</ul>
+
+<h2>Fees</h2>
+<div class="formula">
+  <div class="row"><span class="big">180</span><span>dollars base fee, charged on every application</span></div>
+  <div class="row"><span class="big"><span class="plus">+</span>0.8%</span><span>of the project value above 50000 dollars</span></div>
+</div>
+<h3>Worked examples</h3>
+<table>
+  <thead><tr><th scope="col">Project value</th><th scope="col">Calculation</th><th scope="col">Fee</th></tr></thead>
+  <tbody>
+    <tr><td>40000 dollars</td><td>Base fee only</td><td class="num">180 dollars</td></tr>
+    <tr><td>150000 dollars</td><td>180 + 0.8% of 100000</td><td class="num">980 dollars</td></tr>
+    <tr><td>500000 dollars</td><td>180 + 0.8% of 450000</td><td class="num">3780 dollars</td></tr>
+  </tbody>
+</table>
+
+<footer>Whitcombe City planning office · current as of 2026-10-01</footer>
+</div>
+</body>
+</html>

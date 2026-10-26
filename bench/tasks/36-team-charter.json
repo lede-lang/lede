@@ -1,0 +1,42 @@
+{
+  "id": "36-team-charter",
+  "category": "prose",
+  "title": "Data Reliability team charter",
+  "brief": "Please draft the team charter page for the newly formed Data Reliability team at Osprey Freight, effective 2026-11-01, led by Grace Mbeki with 5 engineers. Use these headings exactly: \"Mission\", \"What we own\", \"What we do not own\", \"How we work\", \"How to reach us\". Mission, in one or two sentences: make every dataset the business relies on trustworthy, on time and explained. What we own, as a bulleted list: the freshness and quality checks on the 40 tier-1 tables; the data incident process; the lineage catalog. What we do not own, as a bulleted list: dashboards and their business logic (Analytics owns them), source application databases (owned by product teams), and ad-hoc data requests. How we work: two-week sprints, a rotating data on-call with a 30 minute response time for tier-1 incidents during business hours, and a written review for every incident within 5 business days. How to reach us: the #data-reliability channel, or a ticket in the DREL queue. Put a note callout at the end saying that requests sent by direct message will be redirected to the queue. Plain prose and lists only.",
+  "checklist": {
+    "sections": [
+      "Mission",
+      "What we own",
+      "What we do not own",
+      "How we work",
+      "How to reach us"
+    ],
+    "visible": [
+      "Data Reliability",
+      "Grace Mbeki",
+      "#data-reliability",
+      "DREL",
+      "lineage catalog",
+      "direct message"
+    ],
+    "values": [
+      "2026-11-01",
+      "40",
+      "30"
+    ]
+  },
+  "needs": [
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the on-call response time to 15 minutes, and add \"the data contracts registry\" to What we own.",
+    "expect_visible": [
+      "data contracts registry"
+    ],
+    "expect_values": [
+      "15"
+    ],
+    "expect_absent": []
+  }
+}

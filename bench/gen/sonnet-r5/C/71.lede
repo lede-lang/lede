@@ -1,0 +1,47 @@
+@title Telemetry pipeline architecture
+@subtitle Skerry Wind Power, 6 offshore wind farms
+@author Asset Data team
+@date 2026-10-02
+
+kpi Owner | Asset Data team
+kpi Region | eu-north-1
+kpi Last reviewed | 2026-10-02
+
+## Overview
+
+Turbine readings flow from each farm into one central stream and are processed once. The processed data is then split into a fast store for dashboards and a cheap archive for audits.
+
+## Pipeline diagram
+
+diagram pipe dir=TB title="Telemetry pipeline"
+pipe: tc "Turbine Controllers" ext "On site at each farm"
+pipe: edge "Edge Gateway" ext "On site at each farm"
+pipe: stream "Telemetry Stream" queue focus
+pipe: proc "Stream Processor" svc focus
+pipe: ts "Timeseries Store" db
+pipe: raw "Raw Archive" store
+pipe: alert "Alerting Service" svc
+pipe: dash "Operations Dashboard" ext
+pipe: tc -> edge : OPC UA, 1 Hz
+pipe: edge -> stream : MQTT over TLS, batched every 5 s
+pipe: stream -> proc : consumer
+pipe: proc -> ts : 10 s aggregates
+pipe: proc -> raw : Parquet every 15 minutes
+pipe: proc -> alert : threshold breach
+pipe: ts -> dash : queries
+pipe: group site "On site at each farm (outside the cloud account)" tc, edge
+pipe: group cloud "Cloud account, eu-north-1" stream, proc, ts, raw, alert, dash
+
+## Capacity and retention
+
+data cap = component,size,retention; Telemetry Stream,"24 shards, 18000 messages per second at peak",—; Timeseries Store,—,"7 days in memory, 3 years on magnetic storage"; Raw Archive,—,"10 years, moved to cold storage after 90 days"
+
+table cap
+
+## If the uplink fails
+
+!!! The Edge Gateway buffers only 6 hours of readings. After 6 hours without a link, the oldest readings are dropped for good.
+
+1. The Edge Gateway buffers up to 6 hours of readings on disk.
+2. When the link returns, it replays them in order.
+3. If the outage lasts longer than 6 hours, the oldest readings are dropped. Treat any outage past 6 hours as data loss.

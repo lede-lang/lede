@@ -1,0 +1,32 @@
+@title Moonlit Harbor status, week 42
+@subtitle Lanternfish Games, for the publisher ahead of the alpha review on 2026-11-20
+@author Zuri Okonkwo-Hale, Producer
+@date 2026-10-16
+
+## Alpha at a glance
+
+kpi Overall | Amber | alpha review 2026-11-20
+kpi Features complete | 31 of 40 | 77.5% | bar
+kpi Levels playable | 14 of 18
+kpi Open bugs | 212 | 9 are priority 1 | bad
+kpi Frame rate | 58 fps | target 60 fps | bad
+
+## Bug trend
+
+data bugs = week,open bugs; W37,340; W38,318; W39,291; W40,264; W41,238; W42,212
+
+chart line bugs x=week y=open bugs labels=all title="Open bugs by week"
+
+Open bugs are falling by about 26 a week, which would leave about 80 open by 2026-11-20.
+
+## Features
+
+The 9 remaining features by status.
+
+table = feature,status; Fishing mini-game,In progress; Ship customization,In progress; Co-op invites,In progress; Photo mode,In progress; Harbor festival events,Not started; Achievements,Not started; Accessibility options,Not started; Weather-driven trading,Cut candidate; Pet companion,Cut candidate
+
+## Risks
+
+- **Performance.** The busiest harbor scene runs 2 fps below target. The optimization sprint is booked for 2026-11-02 to 2026-11-13.
+- **Accessibility options have not started.** They are required for the console certification submission on 2027-02-08.
+- **Cut decision.** Dropping the two cut candidates would save about 6 weeks of work. The decision is needed by 2026-10-30.

@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Spring Inventory Shipping Modes</title>
+<style>
+:root{--bg:#f4f6f9;--card:#fff;--ink:#16202b;--mut:#55616e;--line:#d3dae2;--acc:#1d5fbf;--acc-s:#e5eefb;--warn:#b0360a;--warn-s:#fdece3;--ok:#13703e;--ok-s:#e2f3ea;--gold:#7a5200;--gold-s:#fcf1d2}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--card:#171f28;--ink:#e7ecf1;--mut:#9ba8b5;--line:#2c3844;--acc:#7db1ff;--acc-s:#16273d;--warn:#ff9d73;--warn-s:#34201a;--ok:#62d796;--ok-s:#12291c;--gold:#f0c35c;--gold-s:#30260f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:900px;margin:0 auto;padding:0 16px 56px}
+header{padding:32px 0 14px;border-bottom:1px solid var(--line)}
+.eyebrow{margin:0 0 6px;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:var(--acc);font-weight:700}
+h1{margin:0 0 8px;font-size:clamp(1.6rem,5.5vw,2.4rem);line-height:1.15;letter-spacing:-.01em}
+.meta{margin:0;color:var(--mut);font-size:.92rem}
+h2{margin:40px 0 12px;font-size:1.4rem;line-height:1.25}
+p{margin:0 0 12px}
+.decide{background:var(--ink);color:var(--bg);border-radius:14px;padding:16px 18px;margin:20px 0 0}
+.decide strong{display:block;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;opacity:.8;margin-bottom:4px}
+.decide span{font-size:1.08rem;font-weight:600}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.card.rec{border:2px solid var(--acc);box-shadow:0 0 0 3px var(--acc-s)}
+.card h3{margin:0 0 4px;font-size:1.2rem}
+.card .what{margin:0 0 12px;color:var(--mut);font-size:.94rem}
+.badge{display:inline-block;background:var(--acc);color:var(--card);font-size:.72rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;padding:2px 9px;border-radius:999px;margin-bottom:8px}
+dl{margin:0}
+.row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:.95rem}
+.row dt{color:var(--mut)}
+.row dd{margin:0;font-weight:700;text-align:right}
+.diagram{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.diagram svg{display:block;width:100%;height:auto;max-width:640px;margin:0 auto}
+.callout{border-left:5px solid var(--acc);background:var(--acc-s);border-radius:10px;padding:16px 18px;margin:16px 0}
+.callout.w{border-color:var(--warn);background:var(--warn-s)}
+.callout strong{color:var(--acc)}
+.callout.w strong{color:var(--warn)}
+.note{font-size:.88rem;color:var(--mut);margin-top:10px}
+.lg{display:flex;flex-wrap:wrap;gap:6px 18px;margin:10px 2px 0;font-size:.85rem;color:var(--mut)}
+.sw{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:6px}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);margin-top:12px}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.76rem;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+svg text{font-family:inherit;fill:var(--ink)}
+.bn{font-size:12.5px;font-weight:700}
+.bv{font-size:12.5px;fill:var(--mut)}
+.ax{font-size:11.5px;fill:var(--mut);text-anchor:middle}
+.s{fill:var(--mut)}
+.e{fill:var(--acc)}
+.a{fill:var(--ink)}
+.rng.s{fill:var(--mut)}
+.rng.e{fill:var(--acc)}
+.rng.a{fill:var(--warn)}
+.tr{fill:var(--acc)}
+.tr.s{fill:var(--mut)}
+.tr.a{fill:var(--warn)}
+.hd{fill:var(--card);stroke:var(--mut);stroke-width:1.5;stroke-dasharray:3 3}
+.grd{stroke:var(--line);stroke-width:1}
+.dl{stroke:var(--ink);stroke-width:2;stroke-dasharray:5 4}
+.gt{font-size:12px;font-weight:800}
+.in{font-size:11.5px;font-weight:700;fill:var(--card)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Fieldstone Outdoor &middot; Supply chain</p>
+  <h1>Shipping 400 pallets of spring inventory</h1>
+  <p class="meta">From Mateo Brandt, supply chain planner &middot; For the leadership meeting on <time datetime="2026-11-12">2026-11-12</time> &middot; Goods must be in stores by <time datetime="2027-03-01">2027-03-01</time></p>
+  <div class="decide"><strong>Our pick</strong><span>Standard ocean for the whole order, departing by 2027-01-18.</span></div>
+</header>
+
+<main>
+<section id="options">
+  <h2>Options</h2>
+  <p>Rates move, so cost and transit are ranges. We allow 7 days for handling after arrival.</p>
+  <div class="grid">
+    <article class="card rec">
+      <span class="badge">Recommended</span>
+      <h3>Standard ocean</h3>
+      <dl>
+        <div class="row"><dt>Transit</dt><dd>28 to 35 days</dd></div>
+        <div class="row"><dt>Per pallet</dt><dd>$180 to $240</dd></div>
+        <div class="row"><dt>400 pallets</dt><dd>$72,000 to $96,000</dd></div>
+        <div class="row"><dt>Latest departure</dt><dd>2027-01-18</dd></div>
+      </dl>
+    </article>
+    <article class="card">
+      <h3>Expedited ocean</h3>
+      <p class="what">Priority vessel service.</p>
+      <dl>
+        <div class="row"><dt>Transit</dt><dd>18 to 22 days</dd></div>
+        <div class="row"><dt>Per pallet</dt><dd>$310 to $380</dd></div>
+        <div class="row"><dt>400 pallets</dt><dd>$124,000 to $152,000</dd></div>
+        <div class="row"><dt>Latest departure</dt><dd>2027-01-31</dd></div>
+      </dl>
+    </article>
+    <article class="card">
+      <h3>Air freight</h3>
+      <dl>
+        <div class="row"><dt>Transit</dt><dd>2 to 3 days</dd></div>
+        <div class="row"><dt>Per pallet</dt><dd>$1,350 to $1,600</dd></div>
+        <div class="row"><dt>400 pallets</dt><dd>$540,000 to $640,000</dd></div>
+        <div class="row"><dt>Latest departure</dt><dd>2027-02-19</dd></div>
+      </dl>
+    </article>
+  </div>
+</section>
+
+<section id="total-cost">
+  <h2>Total cost for 400 pallets</h2>
+  <div class="diagram">
+  <svg viewBox="0 0 400 230" role="img" aria-labelledby="ct cd">
+    <title id="ct">Total cost range for 400 pallets by shipping mode</title>
+    <desc id="cd">Standard ocean 72,000 to 96,000 dollars, expedited ocean 124,000 to 152,000 dollars, air freight 540,000 to 640,000 dollars. One fifth of air's lowest estimate is 108,000 dollars, which is above standard ocean's highest price.</desc>
+    <!-- x = 10 + v/700000*370 -->
+    <g class="grd"><line x1="10" y1="30" x2="10" y2="176"/><line x1="115.7" y1="30" x2="115.7" y2="176"/><line x1="221.4" y1="30" x2="221.4" y2="176"/><line x1="327.1" y1="30" x2="327.1" y2="176"/></g>
+    <line class="dl" x1="67.1" y1="24" x2="67.1" y2="176"/>
+
+    <text class="bn" x="10" y="48">Standard ocean</text><text class="bv" x="390" y="48" text-anchor="end">$72,000 to $96,000</text>
+    <rect class="rng s" x="48.1" y="54" width="12.7" height="22" rx="2"/>
+
+    <text class="bn" x="10" y="100">Expedited ocean</text><text class="bv" x="390" y="100" text-anchor="end">$124,000 to $152,000</text>
+    <rect class="rng e" x="75.5" y="106" width="14.8" height="22" rx="2"/>
+
+    <text class="bn" x="10" y="152">Air freight</text><text class="bv" x="390" y="152" text-anchor="end">$540,000 to $640,000</text>
+    <rect class="rng a" x="295.4" y="158" width="52.9" height="22" rx="2"/>
+
+    <text class="ax" x="10" y="198">$0</text><text class="ax" x="115.7" y="198">$200k</text><text class="ax" x="221.4" y="198">$400k</text><text class="ax" x="327.1" y="198">$600k</text>
+    <text class="gt" x="73" y="18" text-anchor="start">One fifth of air's low end: $108,000</text>
+  </svg>
+  </div>
+  <div class="callout">
+    <strong>Standard ocean's top-of-range price is still less than one fifth of air's lowest estimate.</strong>
+    <p style="margin:6px 0 0">The most standard ocean could cost is $96,000. One fifth of the lowest air estimate ($540,000) is $108,000.</p>
+  </div>
+</section>
+
+<section id="timing">
+  <h2>Timing</h2>
+  <p>To be in stores by 2027-03-01, each mode must depart no later than the date below. It uses the longest transit time plus 7 days for handling.</p>
+  <div class="diagram">
+  <svg viewBox="0 0 400 230" role="img" aria-labelledby="tt td">
+    <title id="tt">Latest departure dates to be in stores by 2027-03-01</title>
+    <desc id="td">Standard ocean must depart by 2027-01-18, expedited ocean by 2027-01-31 and air freight by 2027-02-19. Every mode arrives by 2027-02-22 and then has 7 days of handling before 2027-03-01.</desc>
+    <!-- x = 10 + d*7.4, day 0 = 2027-01-10 -->
+    <g class="grd"><line x1="10" y1="28" x2="10" y2="176"/><line x1="165.4" y1="28" x2="165.4" y2="176"/><line x1="269" y1="28" x2="269" y2="176"/></g>
+    <line class="dl" x1="380" y1="20" x2="380" y2="176"/>
+    <text class="gt" x="380" y="14" text-anchor="end">In stores 2027-03-01</text>
+
+    <text class="bn" x="10" y="48">Standard ocean: depart by 2027-01-18</text>
+    <rect class="tr s" x="69.2" y="54" width="258.8" height="22" rx="2"/><text class="in" x="75" y="69">35 days at sea</text>
+    <rect class="hd" x="328" y="54" width="52" height="22" rx="2"/>
+
+    <text class="bn" x="10" y="100">Expedited ocean: depart by 2027-01-31</text>
+    <rect class="tr" x="165.4" y="106" width="162.6" height="22" rx="2"/><text class="in" x="171" y="121">22 days at sea</text>
+    <rect class="hd" x="328" y="106" width="52" height="22" rx="2"/>
+
+    <text class="bn" x="10" y="152">Air freight: depart by 2027-02-19</text>
+    <rect class="tr a" x="306" y="158" width="22" height="22" rx="2"/>
+    <rect class="hd" x="328" y="158" width="52" height="22" rx="2"/>
+
+    <text class="ax" x="10" y="200">Jan 10</text><text class="ax" x="165.4" y="200">Jan 31</text><text class="ax" x="269" y="200">Feb 14</text><text class="ax" x="380" y="200" style="text-anchor:end">Mar 1</text>
+    <text class="ax" x="390" y="218" style="font-size:11px;text-anchor:end">dashed boxes = 7 days handling</text>
+  </svg>
+  </div>
+  <div class="lg">
+    <span><span class="sw" style="background:var(--mut)"></span>standard ocean, longest transit</span>
+    <span><span class="sw" style="background:var(--acc)"></span>expedited ocean, longest transit</span>
+    <span><span class="sw" style="background:var(--warn)"></span>air freight, longest transit (3 days)</span>
+  </div>
+  <div class="tw">
+  <table>
+    <thead><tr><th>Mode</th><th>Longest transit</th><th>Handling</th><th>Latest departure</th></tr></thead>
+    <tbody>
+      <tr><td>Standard ocean</td><td>35 days</td><td>7 days</td><td><strong>2027-01-18</strong></td></tr>
+      <tr><td>Expedited ocean</td><td>22 days</td><td>7 days</td><td><strong>2027-01-31</strong></td></tr>
+      <tr><td>Air freight</td><td>3 days</td><td>7 days</td><td><strong>2027-02-19</strong></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="recommendation">
+  <h2>Recommendation</h2>
+  <div class="callout">
+    <strong>Ship the whole order by standard ocean, booked to depart by 2027-01-18.</strong>
+    <p style="margin:6px 0 0">It costs $72,000 to $96,000 for 400 pallets, far below the alternatives, and still lands the goods in stores by 2027-03-01 if it leaves on time.</p>
+  </div>
+  <div class="grid">
+    <div class="card"><h3>Fallback</h3><p>If departure slips, switch to <strong>expedited ocean</strong>, which can still leave as late as 2027-01-31.</p></div>
+    <div class="card"><h3>Emergency only</h3><p><strong>Air freight</strong>, which costs $540,000 to $640,000 for the order.</p></div>
+  </div>
+</section>
+</main>
+</div>
+</body>
+</html>

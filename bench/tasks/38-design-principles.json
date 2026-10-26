@@ -1,0 +1,39 @@
+{
+  "id": "38-design-principles",
+  "category": "prose",
+  "title": "Product design principles",
+  "brief": "The Design Systems team at Fathom Bank wants a page stating our product design principles, to be linked from every design review template. Start with a short intro paragraph saying these principles were agreed in a workshop with 26 designers and engineers on 2026-09-17 and apply to all customer-facing apps. Then five principles, each as its own heading with a one-paragraph explanation and a short list with one \"Do\" and one \"Avoid\" example: \"Clarity over cleverness\" (do: label buttons with the action; avoid: icons without text for money movement), \"Show the money\" (do: show fees before confirmation; avoid: revealing fees on the final screen), \"Forgive mistakes\" (do: allow undo for 10 seconds after a transfer is scheduled; avoid: making cancellation a phone call), \"Accessible by default\" (do: meet a contrast ratio of 4.5 to 1; avoid: relying on color alone for status), \"Calm, not urgent\" (do: state plain deadlines; avoid: countdown timers that push decisions). End with a quote from the head of design, Ines Albrecht: \"If a customer has to read it twice, we wrote it wrong.\" Add a note callout that disagreements with a principle go to the monthly design council, not to individual reviews.",
+  "checklist": {
+    "sections": [
+      "Clarity over cleverness",
+      "Show the money",
+      "Forgive mistakes",
+      "Accessible by default",
+      "Calm, not urgent"
+    ],
+    "visible": [
+      "Ines Albrecht",
+      "design council",
+      "countdown timers",
+      "If a customer has to read it twice, we wrote it wrong"
+    ],
+    "values": [
+      "26",
+      "2026-09-17",
+      "10",
+      "4.5"
+    ]
+  },
+  "needs": [
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add a sixth principle, \"Explain the why\", with a short paragraph and a Do and Avoid pair about telling customers why a payment is on hold.",
+    "expect_visible": [
+      "Explain the why"
+    ],
+    "expect_values": [],
+    "expect_absent": []
+  }
+}

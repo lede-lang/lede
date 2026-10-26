@@ -1,0 +1,43 @@
+@title Telemetry Pipeline
+@subtitle Turbine telemetry for 6 offshore wind farms, eu-north-1
+@author Asset Data team, Owner
+@date Reviewed 2026-10-02
+
+kpi Peak load | 18,000 msg/s | 24 shards | neutral
+kpi Uplink buffer | 6 hours | then oldest dropped | bad
+kpi Wind farms | 6 | one edge gateway each | neutral
+
+# Overview
+Turbine readings flow from each farm into one central stream and are processed once. The processed data then splits into a fast store for dashboards and a cheap archive for audits.
+
+# Pipeline diagram
+diagram pipe dir=TB title="Telemetry pipeline, farm to dashboard"
+pipe: ctrl "Turbine Controllers" svc
+pipe: gw "Edge Gateway" svc "buffers 6 h on disk" focus
+pipe: stream "Telemetry Stream" queue "24 shards"
+pipe: proc "Stream Processor" fn focus
+pipe: tsdb "Timeseries Store" db
+pipe: archive "Raw Archive" store
+pipe: alert "Alerting Service" svc
+pipe: dash "Operations Dashboard" user
+pipe: ctrl -> gw : OPC UA, 1 Hz
+pipe: gw -> stream : MQTT over TLS, 5 s batches
+pipe: stream -> proc : consumer
+pipe: proc -> tsdb : 10 s aggregates
+pipe: proc -> archive : Parquet every 15 min
+pipe: proc -> alert : threshold breach
+pipe: tsdb -> dash : queries
+pipe: group site "On site at each farm (outside cloud account)" ctrl, gw
+pipe: group cloud "Cloud account, eu-north-1" stream, proc, tsdb, archive, alert, dash
+
+The Edge Gateway sends readings to the Telemetry Stream over MQTT over TLS, batched every 5 seconds. The Stream Processor writes Parquet files to the Raw Archive every 15 minutes.
+
+# Capacity and retention
+table = Component,Size,Retention; **Telemetry Stream**,"24 shards, 18,000 messages/s at peak",—; **Timeseries Store**,—,"7 days in memory, 3 years on magnetic storage"; **Raw Archive**,—,"10 years, moved to cold storage after 90 days"
+
+# If the uplink fails
+!! The Edge Gateway buffers at most **6 hours** of readings on disk. If the uplink is down longer than that, the oldest readings are dropped and cannot be recovered.
+
+1. The Edge Gateway keeps collecting readings from the Turbine Controllers and writes them to its local disk buffer.
+2. When the link returns, it replays the buffered readings to the Telemetry Stream in order.
+3. Past 6 hours of outage, the gateway drops the oldest readings first to make room for new ones.

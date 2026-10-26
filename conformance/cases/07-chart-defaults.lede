@@ -1,0 +1,5 @@
+data runs = week,deploys,rollbacks,owner; W1,14,2,ana; W2,19,1,bo
+chart line runs
+chart bar runs y=deploys labels unit=ms title="Deploys"
+chart hbar runs x=owner y=deploys,rollbacks stack min=0 max=40 focus=deploys
+chart area runs stack

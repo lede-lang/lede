@@ -1,0 +1,36 @@
+@title Disaster Recovery Drill: Scheduling Service
+@subtitle Restore into us-east-2 after simulated loss of us-west-2, drill of 2026-10-07
+@author Platform Resilience, Bramble Health
+
+## Scope
+
+Restore the patient-scheduling service in us-east-2 from backups after simulating the loss of us-west-2.
+
+## Restore procedure
+
+1. Freeze writes in us-west-2.
+2. Restore the latest RDS snapshot in us-east-2.
+3. Restore the S3 attachments bucket from the replica.
+4. Deploy the service stack from the release tag.
+
+!! Confirm the snapshot timestamp first. Promoting an old snapshot silently loses appointments.
+
+5. Switch DNS for scheduling.bramble.example to us-east-2.
+6. Run the smoke test suite.
+7. Reopen writes.
+
+## Results
+
+table = Metric,Target,Achieved; RTO,60 minutes,74 minutes; RPO,15 minutes,9 minutes; Smoke tests passed,48 of 48,46 of 48; Data verified,100%,100%
+
+RTO missed its target by 14 minutes. RPO met its target, and every record was verified. Two smoke tests failed, both because they call a us-west-2-only endpoint.
+
+data phases = phase,minutes; Snapshot restore,31; S3 restore,12; Stack deploy,18; DNS switch,6; Smoke tests,7
+
+chart bar phases y=minutes labels unit=min title="Minutes spent per phase"
+
+## Follow-ups
+
+- Pre-provision the database subnet group in us-east-2 to cut restore time.
+- Fix the 2 smoke tests that depend on a us-west-2-only endpoint.
+- Next drill on 2027-01-13.

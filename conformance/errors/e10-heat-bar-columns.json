@@ -1,0 +1,20 @@
+[
+  {
+    "severity": "error",
+    "code": "unknown-column",
+    "line": 2,
+    "col": 7
+  },
+  {
+    "severity": "error",
+    "code": "unknown-column",
+    "line": 3,
+    "col": 7
+  },
+  {
+    "severity": "warning",
+    "code": "table-option",
+    "line": 4,
+    "col": 7
+  }
+]

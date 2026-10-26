@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Month-End Close Runbook - Tallow &amp; Brook Distribution</title>
+<style>
+:root{color-scheme:light dark;--bg:#f5f6f8;--surface:#fff;--text:#1a212b;--muted:#586373;--border:#dce1e8;--accent:#8a4b0f;--on-accent:#fff;--accent-soft:#fbeedd;--red:#b42318;--red-soft:#fdecea}
+@media (prefers-color-scheme:dark){:root{--bg:#10131a;--surface:#181c25;--text:#e8ebf1;--muted:#9aa3b2;--border:#2a303c;--accent:#f0b070;--on-accent:#10131a;--accent-soft:#33261a;--red:#ff8b80;--red-soft:#3a1a1a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:780px;margin:0 auto;padding:20px 16px 48px}
+.top{padding:4px 0 16px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+h1{font-size:1.75rem;line-height:1.2;margin:.25rem 0 .5rem}
+.meta{display:flex;flex-wrap:wrap;gap:6px 16px;color:var(--muted);font-size:.9rem;margin:0;padding:0;list-style:none}
+h2{font-size:1.25rem;margin:2rem 0 .75rem;padding-bottom:.35rem;border-bottom:2px solid var(--border)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.callout{border-radius:12px;padding:14px 16px;margin:12px 0;border:2px solid var(--red);background:var(--red-soft)}
+.callout strong.t{display:block;color:var(--red);text-transform:uppercase;letter-spacing:.05em;font-size:.82rem;margin-bottom:2px}
+.callout p{margin:0;font-weight:600}
+.cal{list-style:none;margin:0;padding:0;position:relative}
+.cal li{display:grid;grid-template-columns:64px 1fr;gap:12px;margin-bottom:10px}
+.cal .day{background:var(--accent);color:var(--on-accent);border-radius:12px;text-align:center;padding:8px 4px;align-self:start}
+.cal .day small{display:block;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+.cal .day b{font-size:1.5rem;line-height:1}
+.cal .body{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 14px}
+.cal .body ul{margin:0;padding-left:1.1rem}
+.cal li.last .day{background:var(--red);color:#fff}
+@media (prefers-color-scheme:dark){.cal li.last .day{color:#10131a}}
+.cal li.last .body{border-color:var(--red)}
+.lock{display:inline-block;background:var(--red-soft);color:var(--red);font-weight:800;font-size:.8rem;padding:1px 8px;border-radius:99px}
+.check{list-style:none;margin:0;padding:0}
+.check li{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:8px}
+.check li::before{content:"";flex:0 0 20px;height:20px;margin-top:2px;border:2px solid var(--accent);border-radius:5px}
+ol.steps{list-style:none;counter-reset:s;padding:0;margin:0}
+ol.steps>li{counter-increment:s;position:relative;padding:14px 14px 14px 58px;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:10px}
+ol.steps>li::before{content:counter(s);position:absolute;left:14px;top:14px;width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--on-accent);font-weight:700;display:flex;align-items:center;justify-content:center}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--border)}
+th{color:var(--muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.05em}
+tr:last-child td{border-bottom:0}
+footer{margin-top:2rem;color:var(--muted);font-size:.85rem}
+@media (max-width:480px){h1{font-size:1.45rem}.wrap{padding:16px 14px 40px}.cal li{grid-template-columns:52px 1fr;gap:10px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">Tallow &amp; Brook Distribution &middot; Finance Operations</div>
+  <h1>Month-End Close Runbook</h1>
+  <ul class="meta">
+    <li>For: accounting staff</li>
+    <li>Owner: Controller</li>
+    <li>Version 2026-10-01</li>
+    <li>Goal: books closed within 5 working days</li>
+  </ul>
+</header>
+
+<div class="callout" role="alert">
+  <strong class="t">Hard stop</strong>
+  <p>The books lock at 12:00 on day 5. Nothing is posted after that without an approved reopen request.</p>
+</div>
+
+<h2>Calendar</h2>
+<ol class="cal">
+  <li><div class="day"><small>Day</small><b>1</b></div><div class="body"><ul>
+    <li>Cut off sales and purchasing at <b>17:00</b>.</li>
+    <li>Finish bank reconciliations.</li></ul></div></li>
+  <li><div class="day"><small>Day</small><b>2</b></div><div class="body"><ul>
+    <li>Post accruals and depreciation.</li>
+    <li>Reconcile inventory to the warehouse count.</li></ul></div></li>
+  <li><div class="day"><small>Day</small><b>3</b></div><div class="body"><ul>
+    <li>Eliminate intercompany balances between the three legal entities.</li>
+    <li>Reconcile payroll.</li></ul></div></li>
+  <li><div class="day"><small>Day</small><b>4</b></div><div class="body"><ul>
+    <li>Review variances.</li></ul></div></li>
+  <li class="last"><div class="day"><small>Day</small><b>5</b></div><div class="body"><ul>
+    <li>The Controller signs off.</li>
+    <li>The books lock at <b>12:00</b>. <span class="lock">LOCKED</span></li></ul></div></li>
+</ol>
+
+<h2>Before sign-off</h2>
+<ul class="check">
+  <li>Every balance sheet account is reconciled.</li>
+  <li>Any reconciling difference is under 50 dollars or explained.</li>
+  <li>Variances over 5 percent <b>and</b> over 10000 dollars each have a written explanation.</li>
+  <li>Intercompany balances net to zero.</li>
+  <li>The trial balance debits equal credits.</li>
+</ul>
+
+<h2>If a deadline slips</h2>
+<ol class="steps">
+  <li><b>Tell the Controller the same day.</b></li>
+  <li>Decide whether the slip delays sign-off. If day 5 will be missed by <b>more than 1 working day</b>, notify the CFO, Valentina Sokolov.</li>
+  <li>Do not post late entries after the lock without a <b>reopen request signed by the Controller</b>.</li>
+  <li>Record the cause in the close log.</li>
+</ol>
+
+<h2>Contacts</h2>
+<div class="card" style="padding:4px 8px">
+  <table>
+    <thead><tr><th>Role</th><th>Name</th></tr></thead>
+    <tbody>
+      <tr><td>Controller</td><td><b>Marcus Eldridge</b></td></tr>
+      <tr><td>Accounts payable lead</td><td><b>Noor Haddad</b></td></tr>
+      <tr><td>CFO</td><td><b>Valentina Sokolov</b></td></tr>
+    </tbody>
+  </table>
+</div>
+<footer>Tallow &amp; Brook Distribution Finance Operations &middot; Month-end close runbook, version 2026-10-01</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,43 @@
+@title Spring Inventory Shipping Mode
+@subtitle Fieldstone Outdoor, 400 pallets, for the leadership meeting on 2026-11-12
+@author Mateo Brandt, Supply Chain Planner
+@date 2026-11-12
+
+!!! Recommendation: standard ocean for the whole order, booked to depart by 2027-01-18. Its top-of-range price is still less than one fifth of air's lowest estimate.
+
+kpi In stores by | 2027-03-01
+kpi Handling after arrival | 7 days
+kpi Order | 400 pallets
+
+# Options
+cards
+### Standard ocean (recommended)
+- Transit: 28 to 35 days
+- $180 to $240 per pallet
+- Depart by 2027-01-18
+### Expedited ocean (fallback)
+Priority vessel service.
+- Transit: 18 to 22 days
+- $310 to $380 per pallet
+- Depart by 2027-01-31
+### Air freight (emergency only)
+- Transit: 2 to 3 days
+- $1,350 to $1,600 per pallet
+- Depart by 2027-02-19
+
+# Total cost for 400 pallets
+data total = mode,low,high; Standard ocean,72000,96000; Expedited ocean,124000,152000; Air freight,540000,640000
+chart range total from=low to=high unit=$ title="Total cost range for 400 pallets"
+
+Standard ocean at its highest ($96,000) is less than one fifth of air freight at its lowest ($540,000).
+
+# Timing
+data timing = mode,depart,arrive; Standard ocean,2027-01-18,2027-03-01; Expedited ocean,2027-01-31,2027-03-01; Air freight,2027-02-19,2027-03-01
+chart range timing from=depart to=arrive target="2027-03-01 In stores" title="Latest departure to in-store date"
+
+Latest departure dates use the longest transit time plus 7 days of handling.
+
+table = mode,transit,latest departure; Standard ocean,28 to 35 days,2027-01-18; Expedited ocean,18 to 22 days,2027-01-31; Air freight,2 to 3 days,2027-02-19
+
+# Recommendation
+Ship the whole order by **standard ocean**, booked to depart by 2027-01-18. If departure slips, fall back to **expedited ocean** (depart by 2027-01-31). Use **air freight** only in an emergency.

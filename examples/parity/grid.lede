@@ -1,0 +1,20 @@
+@title Options at a glance
+# Options at a glance
+
+data cost = tier,usd; Basic,1200; Plus,2600; Pro,5400
+data seats = tier,seats; Basic,10; Plus,25; Pro,60
+
+grid 3
+Basic fits a small crew that wants one shared calendar, a single inbox and nothing else to maintain over the year.
+
+Plus adds route planning, driver handoffs and a weekly summary that goes to the owner without anyone building it.
+
+Pro covers several depots, custom reports, audit exports and a named contact who answers within one working hour.
+
+grid 2
+chart bar cost unit=$ title="Yearly cost"
+chart bar seats title="Seats included"
+
+grid 2
+table = size,price; Small,1200; Large,5400
+! Prices exclude tax and the setup fee that applies to the first year only.

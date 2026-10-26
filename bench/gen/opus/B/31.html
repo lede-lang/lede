@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EXP-418 Checkout Copy</title>
+<style>
+:root{--bg:#f7f6f2;--surface:#fff;--text:#1f1d18;--muted:#666052;--border:#e2ded3;--ctrl:#8c8677;--b:#c9a227;--c:#2d7d5a;--win-bg:#e6f3ec;--win:#2d7d5a;--grid:#ebe7de}
+@media (prefers-color-scheme:dark){:root{--bg:#13120f;--surface:#1d1b17;--text:#ebe8e0;--muted:#a59f90;--border:#34302a;--ctrl:#8f897b;--b:#e0bd4f;--c:#5ccb98;--win-bg:#17301f;--win:#5ccb98;--grid:#2b2823}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:920px;margin:0 auto;padding:32px 16px 64px}
+.eyebrow{font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 0 6px}
+h1{font-size:clamp(26px,5vw,34px);line-height:1.2;margin:0 0 6px}
+.lede{color:var(--muted);margin:0 0 14px}
+.variants{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:0 0 24px}
+.variants li{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:14px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:34px}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.tile .k{font-size:13px;color:var(--muted)}
+.tile .v{font-size:28px;font-weight:700;line-height:1.2;margin-top:4px;font-variant-numeric:tabular-nums}
+.tile.win .v{color:var(--win)}
+section{margin-bottom:34px}
+h2{font-size:21px;margin:0 0 12px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:640px;font-variant-numeric:tabular-nums}
+th,td{padding:10px 14px;border-bottom:1px solid var(--border);text-align:right}
+th:first-child,td:first-child{text-align:left}
+thead th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+tbody tr:last-child td{border-bottom:0}
+tr.win{background:var(--win-bg)}
+.copy{display:block;font-size:13px;color:var(--muted)}
+.chart{padding:18px}
+svg{display:block;width:100%;height:auto}
+.legend{display:flex;gap:16px;list-style:none;margin:0 0 8px;padding:0;font-size:14px}
+.legend i{display:inline-block;width:16px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.callout{background:var(--win-bg);border:1px solid var(--win);border-left-width:6px;border-radius:12px;padding:16px 18px}
+.callout .label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--win)}
+.callout p{margin:4px 0 0}
+.notes{margin:14px 0 0;padding-left:22px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+<p class="eyebrow">Marigold Home · Growth Analytics</p>
+<h1>EXP-418: checkout button copy</h1>
+<p class="lede">Ran 2026-09-08 to 2026-09-28.</p>
+<ul class="variants">
+<li><strong>Control:</strong> "Place order"</li>
+<li><strong>Variant B:</strong> "Complete purchase"</li>
+<li><strong>Variant C:</strong> "Pay securely now"</li>
+</ul>
+
+<div class="tiles">
+<div class="tile"><div class="k">Total visitors</div><div class="v">144,607</div></div>
+<div class="tile win"><div class="k">Winner</div><div class="v">Variant C</div></div>
+<div class="tile win"><div class="k">Lift vs control</div><div class="v">+12.6%</div></div>
+<div class="tile"><div class="k">Confidence</div><div class="v">99.7%</div></div>
+</div>
+
+<section>
+<h2>Results</h2>
+<div class="panel table-wrap">
+<table>
+<thead><tr><th>Variant</th><th>Visitors</th><th>Conversions</th><th>Conversion rate</th><th>Lift vs control</th><th>p-value</th></tr></thead>
+<tbody>
+<tr><td>Control<span class="copy">"Place order"</span></td><td>48,210</td><td>1,832</td><td>3.80%</td><td>—</td><td>—</td></tr>
+<tr><td>Variant B<span class="copy">"Complete purchase"</span></td><td>48,095</td><td>1,919</td><td>3.99%</td><td>+5.0%</td><td>0.14</td></tr>
+<tr class="win"><td><strong>Variant C</strong><span class="copy">"Pay securely now"</span></td><td>48,302</td><td>2,068</td><td><strong>4.28%</strong></td><td><strong>+12.6%</strong></td><td>0.003</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section>
+<h2>Conversion rate</h2>
+<div class="panel chart">
+<svg viewBox="0 0 600 290" role="img" aria-label="Bar chart of conversion rate: Control 3.80 percent, Variant B 3.99 percent, Variant C 4.28 percent.">
+<g stroke="var(--grid)" stroke-width="1">
+<line x1="60" y1="250" x2="580" y2="250"/><line x1="60" y1="206" x2="580" y2="206"/><line x1="60" y1="162" x2="580" y2="162"/><line x1="60" y1="118" x2="580" y2="118"/><line x1="60" y1="74" x2="580" y2="74"/><line x1="60" y1="30" x2="580" y2="30"/>
+</g>
+<g fill="var(--muted)" font-size="12" text-anchor="end">
+<text x="52" y="254">0%</text><text x="52" y="210">1%</text><text x="52" y="166">2%</text><text x="52" y="122">3%</text><text x="52" y="78">4%</text><text x="52" y="34">5%</text>
+</g>
+<rect x="110" y="82.8" width="110" height="167.2" rx="3" fill="var(--ctrl)"/>
+<rect x="275" y="74.44" width="110" height="175.56" rx="3" fill="var(--b)"/>
+<rect x="440" y="61.68" width="110" height="188.32" rx="3" fill="var(--c)"/>
+<g fill="var(--text)" font-size="14" font-weight="700" text-anchor="middle">
+<text x="165" y="75">3.80%</text><text x="330" y="67">3.99%</text><text x="495" y="54">4.28%</text>
+</g>
+<g fill="var(--text)" font-size="14" text-anchor="middle">
+<text x="165" y="272">Control</text><text x="330" y="272">Variant B</text><text x="495" y="272">Variant C</text>
+</g>
+</svg>
+</div>
+</section>
+
+<section>
+<h2>Daily trend</h2>
+<div class="panel chart">
+<ul class="legend">
+<li><i style="background:var(--c)"></i>Variant C</li>
+<li><i style="background:var(--ctrl)"></i>Control</li>
+</ul>
+<svg viewBox="0 0 600 300" role="img" aria-label="Line chart of daily conversion rate, Sep 22 to Sep 28. Variant C stays between 4.17 and 4.40 percent; Control stays between 3.68 and 3.92 percent.">
+<g stroke="var(--grid)" stroke-width="1">
+<line x1="60" y1="270" x2="520" y2="270"/><line x1="60" y1="216.67" x2="520" y2="216.67"/><line x1="60" y1="163.33" x2="520" y2="163.33"/><line x1="60" y1="110" x2="520" y2="110"/><line x1="60" y1="56.67" x2="520" y2="56.67"/>
+</g>
+<g fill="var(--muted)" font-size="12" text-anchor="end">
+<text x="52" y="274">3.6%</text><text x="52" y="220.67">3.8%</text><text x="52" y="167.33">4.0%</text><text x="52" y="114">4.2%</text><text x="52" y="60.67">4.4%</text>
+</g>
+<g fill="var(--muted)" font-size="12" text-anchor="middle">
+<text x="80" y="292">Sep 22</text><text x="150" y="292">Sep 23</text><text x="220" y="292">Sep 24</text><text x="290" y="292">Sep 25</text><text x="360" y="292">Sep 26</text><text x="430" y="292">Sep 27</text><text x="500" y="292">Sep 28</text>
+</g>
+<g fill="none" stroke-width="3" stroke-linejoin="round">
+<polyline stroke="var(--c)" points="80,112.67 150,75.33 220,99.33 290,56.67 360,118 430,80.67 500,86"/>
+<polyline stroke="var(--ctrl)" points="80,240.67 150,203.33 220,219.33 290,184.67 360,248.67 430,208.67 500,214"/>
+</g>
+<g stroke="var(--surface)" stroke-width="2">
+<circle cx="80" cy="112.67" r="4" fill="var(--c)"/><circle cx="150" cy="75.33" r="4" fill="var(--c)"/><circle cx="220" cy="99.33" r="4" fill="var(--c)"/><circle cx="290" cy="56.67" r="4" fill="var(--c)"/><circle cx="360" cy="118" r="4" fill="var(--c)"/><circle cx="430" cy="80.67" r="4" fill="var(--c)"/><circle cx="500" cy="86" r="4" fill="var(--c)"/>
+<circle cx="80" cy="240.67" r="4" fill="var(--ctrl)"/><circle cx="150" cy="203.33" r="4" fill="var(--ctrl)"/><circle cx="220" cy="219.33" r="4" fill="var(--ctrl)"/><circle cx="290" cy="184.67" r="4" fill="var(--ctrl)"/><circle cx="360" cy="248.67" r="4" fill="var(--ctrl)"/><circle cx="430" cy="208.67" r="4" fill="var(--ctrl)"/><circle cx="500" cy="214" r="4" fill="var(--ctrl)"/>
+</g>
+<g font-size="11" text-anchor="middle" fill="var(--text)">
+<text x="80" y="102">4.19</text><text x="150" y="65">4.33</text><text x="220" y="89">4.24</text><text x="290" y="47">4.40</text><text x="360" y="108">4.17</text><text x="430" y="70">4.31</text><text x="500" y="76">4.29</text>
+<text x="80" y="230">3.71</text><text x="150" y="193">3.85</text><text x="220" y="209">3.79</text><text x="290" y="175">3.92</text><text x="360" y="238">3.68</text><text x="430" y="198">3.83</text><text x="500" y="204">3.81</text>
+</g>
+<g font-size="12" font-weight="700">
+<text x="512" y="90" fill="var(--c)">Variant C</text>
+<text x="512" y="218" fill="var(--ctrl)">Control</text>
+</g>
+</svg>
+</div>
+</section>
+
+<section>
+<h2>Decision</h2>
+<div class="callout">
+<div class="label">Decision</div>
+<p><strong>Ship Variant C ("Pay securely now") to 100% of traffic.</strong> It lifted conversion by 12.6% over control (4.28% vs 3.80%, p = 0.003).</p>
+</div>
+<ul class="notes">
+<li>Variant B was not significant (p = 0.14).</li>
+<li>Average order value did not change: $87.40 vs $87.15.</li>
+</ul>
+</section>
+</main>
+</body>
+</html>

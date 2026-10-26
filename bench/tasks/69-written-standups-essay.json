@@ -1,0 +1,58 @@
+{
+  "id": "69-written-standups-essay",
+  "category": "prose",
+  "title": "Why we replaced standups with a written update",
+  "brief": "Write a long-form essay for the Cresswell Systems engineering blog by Odile Marchetti, an engineering manager, titled \"Why We Replaced Our Standup With a Written Update\". Aim for 900 to 1100 words, first person, thoughtful but not preachy, with the section headings \"The standup nobody liked\", \"What we tried\", \"What we measured\", \"What it cost\" and \"Should you do this?\", and no charts or tables. The story: her team has 11 engineers across 5 time zones. The 15-minute daily standup was held at 14:00 UTC, which was 06:00 for one person and 22:00 for two others, so those three were routinely half asleep or absent, and the rest of the team was being quietly annoyed by updates that were mostly status read aloud. On 2026-03-02 they replaced it with a written update posted in a shared thread by 10:00 local time, with three prompts: what I finished, what I am doing next, what is blocking me. They tracked it for six months until 2026-09-25. Results: the share of engineers who said they felt informed about the team's work rose from 61 to 84 percent in the quarterly survey; the median time to resolve a blocker fell from 26 hours to 11 hours because blockers were visible overnight to someone in another zone; and meeting time dropped by 55 minutes per engineer per week. What it cost: the team lost spontaneous banter, one new hire said they felt isolated in their first weeks, so they added a 30-minute optional video social on Fridays and a buddy for every new starter. A fair paragraph about what would not work: teams in one office on one schedule, or teams where nobody reads the thread. Close with advice for managers considering the same change, with three things: run it for 8 weeks, ask people in the retrospective what they miss, and be willing to bring the meeting back.",
+  "checklist": {
+    "sections": [
+      "The standup nobody liked",
+      "What we tried",
+      "What we measured",
+      "What it cost",
+      "Should you do this?"
+    ],
+    "visible": [
+      "Why We Replaced Our Standup With a Written Update",
+      "Odile Marchetti",
+      "Cresswell Systems",
+      "what I finished",
+      "what I am doing next",
+      "what is blocking me",
+      "buddy"
+    ],
+    "values": [
+      "11",
+      "5",
+      "15-minute",
+      "14:00",
+      "06:00",
+      "22:00",
+      "2026-03-02",
+      "10:00",
+      "2026-09-25",
+      "61",
+      "84",
+      "26 hours",
+      "11 hours",
+      "55 minutes",
+      "30-minute",
+      "8 weeks"
+    ]
+  },
+  "needs": [
+    "list"
+  ],
+  "edit": {
+    "request": "Change the survey result to 61 percent rising to 88 percent instead of 84, and change the minutes of meeting time saved from 55 to 65.",
+    "expect_visible": [
+      "88 percent"
+    ],
+    "expect_values": [
+      "65 minutes"
+    ],
+    "expect_absent": [
+      "84 percent",
+      "55 minutes"
+    ]
+  }
+}

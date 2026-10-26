@@ -1,0 +1,30 @@
+@title Sensor provisioning
+@subtitle Brightleaf Greenhouses field engineering, from the IoT platform team, dated 2026-10-14
+
+## Provisioning sequence
+diagram prov sequence title="Sensor provisioning"
+prov: sensor "Sensor" device
+prov: gw "Gateway" svc
+prov: ps "Provisioning Service" svc
+prov: ca "Certificate Authority" ext
+prov: reg "Device Registry" db
+prov: sensor -> gw : BLE pairing request with serial
+prov: gw -> ps : claim device with one-time token
+prov: ps -> reg : look up serial and token
+prov: reg --> ps : record, status unclaimed
+prov: ps -> ca : certificate signing request
+prov: ca --> ps : signed certificate, valid 365 days
+prov: ps -> reg : mark device active
+prov: ps --> gw : certificate and MQTT endpoint
+prov: gw -> sensor : install certificate
+prov: sensor -> gw : first telemetry over TLS
+
+## Limits and timeouts
+table = item,value; One-time token validity,24 hours; Pairing window on the sensor,90 seconds; Signing key type,ECDSA P-256; Claim attempts before the token is locked,3; Certificate lifetime,365 days
+
+## When provisioning fails
+- **Token expired:** request a new token from the dashboard.
+- **Pairing window closed:** press and hold the button for 5 seconds.
+- **Token locked after 3 attempts:** contact IoT support at #iot-support.
+
+!! Never photograph the one-time token QR code.

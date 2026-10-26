@@ -1,0 +1,38 @@
+@title Van fleet replacement: diesel, hybrid or electric
+@subtitle Sunrise Bakery Co., for the budget meeting on 2026-11-10
+
+Sunrise Bakery Co. replaces its 18 delivery vans over the next two years. This page compares the three options on five-year cost and operations.
+
+## Options
+
+grid 3
+
+**Diesel.** Lowest purchase price, at $41,000 a van. Highest fuel and maintenance costs.
+
+**Hybrid.** $46,500 a van, with lower fuel costs than diesel. No range worries, but it still produces tailpipe emissions.
+
+**Electric.** $58,200 after the $7,500 incentive, plus $4,200 for charger installation. Lowest running costs, but its range is tight on our longest routes in January.
+
+## Five-year cost
+
+Per van, in dollars. Each total is the purchase price plus five years of running costs.
+
+data five = cost item,diesel,hybrid,electric; Purchase,41000,46500,58200; Charger installation,-,-,4200; Fuel per year,9800,6900,-; Electricity per year,-,-,3100; Maintenance per year,3400,2900,1700; Five-year total,107000,95500,86400
+
+table five title="Five-year cost per van"
+
+For the whole 18-van fleet, all diesel comes to $1,926,000, all hybrid to $1,719,000 and all electric to $1,555,200.
+
+data fleet = plan,five-year cost; All diesel,1926000; All hybrid,1719000; Recommended mix,1609800; All electric,1555200
+
+chart hbar fleet y=five-year cost unit=$ labels title="Five-year cost for the 18-van fleet"
+
+## Risks
+
+- **Electric range.** Real-world range is about 180 miles in summer and 150 in winter. Our longest route is 140 miles a day, so the electric van is tight on the longest two routes in January. We can charge overnight at the depot with 6 chargers.
+- **Hybrid emissions.** Hybrids have no range worries, but they still produce tailpipe emissions.
+- **Diesel fee.** Diesel vans are subject to the city low-emission zone fee of $12.50 a day, starting 2028-01-01.
+
+## Recommendation
+
+Buy electric vans for the 12 shorter routes, and hybrids for the 6 longest. This mixed fleet comes to $1,609,800 for the 18 vans over five years, about $316,200 less than staying with diesel. All-electric is cheaper on paper, at $1,555,200, but its range is tight on the longest routes.

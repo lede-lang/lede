@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cloud Cost Dashboard — Halcyon Stores Retail Engineering</title>
+<style>
+:root {
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --text: #191c21;
+  --muted: #5f6672;
+  --border: #e0e3e8;
+  --grid: #eaedf1;
+  --primary: #7c3aed;
+  --bar: #2563eb;
+  --budget: #dc6803;
+  --up: #b42318;
+  --warn-bg: #fff4e5;
+  --warn-edge: #f79009;
+  --warn-text: #5c2e00;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1014;
+    --surface: #171a20;
+    --text: #e9ecf1;
+    --muted: #9ba2ae;
+    --border: #2a2e37;
+    --grid: #232730;
+    --primary: #b18cff;
+    --bar: #6ea0ff;
+    --budget: #fdb022;
+    --up: #ff8a80;
+    --warn-bg: #2e2110;
+    --warn-edge: #fdb022;
+    --warn-text: #fde3b4;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15.5px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.shell { max-width: 980px; margin: 0 auto; padding: 28px 16px 60px; }
+h1 { margin: 0; font-size: 1.6rem; }
+.sub { color: var(--muted); margin: 4px 0 0; }
+.grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 22px; }
+.metric { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+.metric .l { color: var(--muted); font-size: 0.82rem; }
+.metric .v { font-size: 1.75rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.3; }
+.metric .v.up { color: var(--up); }
+.metric .h { font-size: 0.8rem; color: var(--muted); }
+.box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-top: 16px; }
+.box h2 { margin: 0 0 12px; font-size: 1.12rem; }
+svg { display: block; width: 100%; height: auto; }
+.t { fill: var(--muted); font-size: 12px; }
+.lab { fill: var(--text); font-size: 12px; font-weight: 600; }
+.legend { display: flex; flex-wrap: wrap; gap: 16px; color: var(--muted); font-size: 0.85rem; margin-top: 6px; }
+.legend span::before { content: ""; display: inline-block; width: 18px; border-top: 3px solid; margin-right: 6px; vertical-align: middle; }
+.legend .a::before { border-color: var(--primary); }
+.legend .b::before { border-color: var(--budget); border-top-style: dashed; }
+.scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; min-width: 560px; }
+th, td { padding: 10px 10px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); white-space: nowrap; }
+td.num, th.num { text-align: right; }
+td.nowrap { white-space: nowrap; }
+tbody tr:last-child td { border-bottom: 0; }
+.warn { margin-top: 16px; background: var(--warn-bg); border: 1px solid var(--warn-edge); border-left-width: 6px; border-radius: 10px; padding: 14px 18px; color: var(--warn-text); }
+.warn strong { display: block; margin-bottom: 2px; }
+@media (max-width: 680px) {
+  .grid4 { grid-template-columns: 1fr 1fr; }
+  .metric .v { font-size: 1.4rem; }
+  .box { padding: 16px 14px; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <h1>Cloud Cost Dashboard</h1>
+  <p class="sub">Halcyon Stores · Retail Engineering · April–September 2026</p>
+
+  <div class="grid4">
+    <div class="metric"><div class="l">September spend</div><div class="v">$184,200</div><div class="h">97% of budget</div></div>
+    <div class="metric"><div class="l">Month-over-month</div><div class="v up">+6.4%</div><div class="h">vs. August $173,100</div></div>
+    <div class="metric"><div class="l">Budget</div><div class="v">$190,000</div><div class="h">per month</div></div>
+    <div class="metric"><div class="l">Savings Plan coverage</div><div class="v">71%</div><div class="h">of eligible compute</div></div>
+  </div>
+
+  <section class="box">
+    <h2>Monthly spend</h2>
+    <svg viewBox="0 0 620 260" role="img" aria-label="Line chart of monthly spend: Apr $151,300, May $158,900, Jun $162,400, Jul $169,800, Aug $173,100, Sep $184,200, against a $190,000 budget line.">
+      <g stroke="var(--grid)">
+        <line x1="50" y1="220" x2="600" y2="220"/>
+        <line x1="50" y1="153.3" x2="600" y2="153.3"/>
+        <line x1="50" y1="86.7" x2="600" y2="86.7"/>
+        <line x1="50" y1="20" x2="600" y2="20"/>
+      </g>
+      <g class="t" text-anchor="end">
+        <text x="44" y="224">$140K</text>
+        <text x="44" y="157">$160K</text>
+        <text x="44" y="91">$180K</text>
+        <text x="44" y="24">$200K</text>
+      </g>
+      <line x1="50" y1="53.3" x2="600" y2="53.3" stroke="var(--budget)" stroke-width="2" stroke-dasharray="7 5"/>
+      <text x="598" y="46" text-anchor="end" font-size="12" font-weight="600" fill="var(--budget)">Budget $190K</text>
+      <polyline fill="none" stroke="var(--primary)" stroke-width="3" stroke-linejoin="round" points="70,182.3 170,157 270,145.3 370,120.7 470,109.7 570,72.7"/>
+      <g fill="var(--surface)" stroke="var(--primary)" stroke-width="2.5">
+        <circle cx="70" cy="182.3" r="4.5"/>
+        <circle cx="170" cy="157" r="4.5"/>
+        <circle cx="270" cy="145.3" r="4.5"/>
+        <circle cx="370" cy="120.7" r="4.5"/>
+        <circle cx="470" cy="109.7" r="4.5"/>
+        <circle cx="570" cy="72.7" r="4.5"/>
+      </g>
+      <g class="lab" text-anchor="middle">
+        <text x="70" y="202">$151.3K</text>
+        <text x="170" y="177">$158.9K</text>
+        <text x="270" y="134">$162.4K</text>
+        <text x="370" y="109">$169.8K</text>
+        <text x="470" y="129">$173.1K</text>
+        <text x="570" y="92">$184.2K</text>
+      </g>
+      <g class="t" text-anchor="middle">
+        <text x="70" y="244">Apr</text>
+        <text x="170" y="244">May</text>
+        <text x="270" y="244">Jun</text>
+        <text x="370" y="244">Jul</text>
+        <text x="470" y="244">Aug</text>
+        <text x="570" y="244">Sep</text>
+      </g>
+    </svg>
+    <div class="legend"><span class="a">Total monthly spend</span><span class="b">Monthly budget</span></div>
+  </section>
+
+  <section class="box">
+    <h2>September by service</h2>
+    <svg viewBox="0 0 600 290" role="img" aria-label="Bar chart of September spend by service: EC2 $68,400, RDS $39,100, EKS $21,300, S3 $17,800, Data transfer $14,900, CloudFront $12,600, Other $10,100. Total $184,200.">
+      <g stroke="var(--grid)">
+        <line x1="120" y1="6" x2="120" y2="262"/>
+        <line x1="225" y1="6" x2="225" y2="262"/>
+        <line x1="330" y1="6" x2="330" y2="262"/>
+        <line x1="435" y1="6" x2="435" y2="262"/>
+        <line x1="540" y1="6" x2="540" y2="262"/>
+      </g>
+      <g class="t" text-anchor="middle">
+        <text x="120" y="280">$0</text>
+        <text x="225" y="280">$20K</text>
+        <text x="330" y="280">$40K</text>
+        <text x="435" y="280">$60K</text>
+        <text x="540" y="280">$80K</text>
+      </g>
+      <g fill="var(--text)" font-size="13" text-anchor="end">
+        <text x="112" y="29">EC2</text>
+        <text x="112" y="65">RDS</text>
+        <text x="112" y="101">EKS</text>
+        <text x="112" y="137">S3</text>
+        <text x="112" y="173">Data transfer</text>
+        <text x="112" y="209">CloudFront</text>
+        <text x="112" y="245">Other</text>
+      </g>
+      <g fill="var(--bar)">
+        <rect x="120" y="12" width="359.1" height="24" rx="3"/>
+        <rect x="120" y="48" width="205.3" height="24" rx="3"/>
+        <rect x="120" y="84" width="111.8" height="24" rx="3"/>
+        <rect x="120" y="120" width="93.5" height="24" rx="3"/>
+        <rect x="120" y="156" width="78.2" height="24" rx="3"/>
+        <rect x="120" y="192" width="66.2" height="24" rx="3"/>
+        <rect x="120" y="228" width="53" height="24" rx="3" opacity="0.6"/>
+      </g>
+      <g class="lab">
+        <text x="485" y="29">$68,400</text>
+        <text x="331" y="65">$39,100</text>
+        <text x="238" y="101">$21,300</text>
+        <text x="219" y="137">$17,800</text>
+        <text x="204" y="173">$14,900</text>
+        <text x="192" y="209">$12,600</text>
+        <text x="179" y="245">$10,100</text>
+      </g>
+    </svg>
+  </section>
+
+  <section class="box">
+    <h2>Cost anomalies</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Date</th><th>Service</th><th>Team</th><th class="num">Excess ($)</th><th>Cause</th></tr></thead>
+        <tbody>
+          <tr><td class="nowrap">2026-09-08</td><td>EC2</td><td>Search</td><td class="num">4,200</td><td>Forgotten load-test fleet</td></tr>
+          <tr><td class="nowrap">2026-09-17</td><td>Data transfer</td><td>Media</td><td class="num">2,900</td><td>Cross-region replication misconfigured</td></tr>
+          <tr><td class="nowrap">2026-09-25</td><td>RDS</td><td>Billing</td><td class="num">1,700</td><td>Oversized snapshot retention</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <aside class="warn" role="alert">
+    <strong>October is on track to exceed budget</strong>
+    At the current growth rate, October spend will go over the $190,000 budget. Teams should review the rightsizing report by 2026-10-24.
+  </aside>
+</div>
+</body>
+</html>

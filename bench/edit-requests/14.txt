@@ -1,0 +1,1 @@
+Add a "Shadow Endpoint" node inside the Inference VPC that receives traffic from Inference Lambda with an arrow labeled "mirrored traffic", and add it to the Capacity table at ml.c6i.xlarge with 2 instances.

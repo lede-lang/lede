@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Courier App Stability</title>
+<style>
+:root{--bg:#f4f6f5;--surface:#fff;--text:#18211d;--muted:#5a675f;--border:#d8e0db;--line:#1f7a5c;--target:#b8432c;--grid:#e8eeea;--bad-bg:#fbebe7;--bad:#b8432c;--good:#1f7a5c;--call-bg:#fff4e0;--call:#c98a12;--call-text:#614300}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1311;--surface:#18201b;--text:#e3eae6;--muted:#97a69d;--border:#29342e;--line:#5fd0a8;--target:#f07a62;--grid:#212b25;--bad-bg:#341c17;--bad:#f07a62;--good:#5fd0a8;--call-bg:#2e240c;--call:#d9a33a;--call-text:#f3d896}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:900px;margin:0 auto;padding:32px 16px 64px}
+.eyebrow{font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 0 6px}
+h1{font-size:clamp(26px,5vw,34px);line-height:1.2;margin:0 0 22px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:34px}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.tile .k{font-size:13px;color:var(--muted)}
+.tile .v{font-size:28px;font-weight:700;line-height:1.2;margin-top:4px;font-variant-numeric:tabular-nums}
+.tile .s{font-size:13px;color:var(--good);font-weight:600}
+section{margin-bottom:34px}
+h2{font-size:21px;margin:0 0 12px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px}
+.chart{padding:18px}
+svg{display:block;width:100%;height:auto}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:600px}
+th,td{padding:10px 14px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+th.num{text-align:right}
+thead th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+tbody tr:last-child td{border-bottom:0}
+tr.bad{background:var(--bad-bg)}
+tr.bad td.num{color:var(--bad);font-weight:700}
+.dim{color:var(--muted)}
+caption{caption-side:bottom;text-align:left;color:var(--muted);font-size:13px;padding:8px 14px}
+ul.issues{margin:0 0 14px;padding-left:22px}
+ul.issues li{margin:6px 0}
+.callout{background:var(--call-bg);border:1px solid var(--call);border-left-width:6px;border-radius:10px;padding:14px 16px;color:var(--call-text)}
+</style>
+</head>
+<body>
+<main>
+<p class="eyebrow">Sprocket Delivery · Mobile Platform</p>
+<h1>Courier Android app: stability by release</h1>
+
+<div class="tiles">
+<div class="tile"><div class="k">Current version</div><div class="v">5.17</div></div>
+<div class="tile"><div class="k">Crash-free sessions</div><div class="v">99.66%</div><div class="s">Above target</div></div>
+<div class="tile"><div class="k">Target</div><div class="v">99.5%</div></div>
+<div class="tile"><div class="k">ANR rate</div><div class="v">0.21%</div></div>
+</div>
+
+<section>
+<h2>Crash-free trend</h2>
+<div class="panel chart">
+<svg viewBox="0 0 600 300" role="img" aria-label="Line chart of crash-free sessions by version with a 99.5 percent target line. 5.10 99.21, 5.11 99.34, 5.12 99.08, 5.13 99.52, 5.14 99.61, 5.15 98.87, 5.16 99.58, 5.17 99.66.">
+<g stroke="var(--grid)" stroke-width="1">
+<line x1="60" y1="270" x2="560" y2="270"/><line x1="60" y1="210" x2="560" y2="210"/><line x1="60" y1="150" x2="560" y2="150"/><line x1="60" y1="30" x2="560" y2="30"/>
+</g>
+<g fill="var(--muted)" font-size="12" text-anchor="end">
+<text x="52" y="274">98.6%</text><text x="52" y="214">98.9%</text><text x="52" y="154">99.2%</text><text x="52" y="94">99.5%</text><text x="52" y="34">99.8%</text>
+</g>
+<g fill="var(--muted)" font-size="12" text-anchor="middle">
+<text x="80" y="292">5.10</text><text x="145" y="292">5.11</text><text x="210" y="292">5.12</text><text x="275" y="292">5.13</text><text x="340" y="292">5.14</text><text x="405" y="292">5.15</text><text x="470" y="292">5.16</text><text x="535" y="292">5.17</text>
+</g>
+<line x1="60" y1="90" x2="560" y2="90" stroke="var(--target)" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="556" y="104" font-size="12" font-weight="600" fill="var(--target)" text-anchor="end">Target 99.5%</text>
+<polyline fill="none" stroke="var(--line)" stroke-width="3" stroke-linejoin="round" points="80,148 145,122 210,174 275,86 340,68 405,216 470,74 535,58"/>
+<g stroke="var(--surface)" stroke-width="2">
+<circle cx="80" cy="148" r="5" fill="var(--target)"/><circle cx="145" cy="122" r="5" fill="var(--target)"/><circle cx="210" cy="174" r="5" fill="var(--target)"/><circle cx="275" cy="86" r="5" fill="var(--line)"/><circle cx="340" cy="68" r="5" fill="var(--line)"/><circle cx="405" cy="216" r="5" fill="var(--target)"/><circle cx="470" cy="74" r="5" fill="var(--line)"/><circle cx="535" cy="58" r="5" fill="var(--line)"/>
+</g>
+<g fill="var(--text)" font-size="11" text-anchor="middle" font-weight="600">
+<text x="80" y="137">99.21</text><text x="145" y="111">99.34</text><text x="210" y="193">99.08</text><text x="275" y="75">99.52</text><text x="340" y="57">99.61</text><text x="405" y="235">98.87</text><text x="470" y="63">99.58</text><text x="535" y="47">99.66</text>
+</g>
+</svg>
+</div>
+</section>
+
+<section>
+<h2>Release table</h2>
+<div class="panel table-wrap">
+<table>
+<caption>Highlighted rows had a top crash above 0.1 percent.</caption>
+<thead><tr><th>Version</th><th>Released</th><th class="num">Crash-free sessions</th><th>Top crash</th></tr></thead>
+<tbody>
+<tr><td>5.10</td><td>2026-05-04</td><td class="num">99.21%</td><td class="dim">None above 0.1 percent</td></tr>
+<tr><td>5.11</td><td>2026-05-25</td><td class="num">99.34%</td><td class="dim">None above 0.1 percent</td></tr>
+<tr class="bad"><td>5.12</td><td>2026-06-15</td><td class="num">99.08%</td><td>Camera permission crash on the proof-of-delivery screen</td></tr>
+<tr><td>5.13</td><td>2026-07-06</td><td class="num">99.52%</td><td class="dim">None above 0.1 percent</td></tr>
+<tr><td>5.14</td><td>2026-07-27</td><td class="num">99.61%</td><td class="dim">None above 0.1 percent</td></tr>
+<tr class="bad"><td>5.15</td><td>2026-08-17</td><td class="num">98.87%</td><td>Offline map tile cache overflow</td></tr>
+<tr><td>5.16</td><td>2026-09-07</td><td class="num">99.58%</td><td class="dim">None above 0.1 percent</td></tr>
+<tr><td>5.17</td><td>2026-09-28</td><td class="num">99.66%</td><td class="dim">None above 0.1 percent</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section>
+<h2>Top issues</h2>
+<ul class="issues">
+<li><strong>5.12:</strong> camera permission crash on the proof-of-delivery screen.</li>
+<li><strong>5.15:</strong> offline map tile cache overflow.</li>
+</ul>
+<div class="callout" role="note">5.15 was halted at 20 percent rollout and replaced by 5.16 three weeks later, on 2026-09-07.</div>
+</section>
+</main>
+</body>
+</html>

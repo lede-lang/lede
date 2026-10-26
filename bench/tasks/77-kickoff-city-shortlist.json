@@ -1,0 +1,76 @@
+{
+  "id": "77-kickoff-city-shortlist",
+  "category": "comparison",
+  "title": "Harlow Devices kickoff city shortlist",
+  "brief": "Harlow Devices is choosing the city for its annual sales kickoff for 220 attendees, 2 event days plus 3 hotel nights, from 2027-03-16 to 2027-03-18. Leadership decides on 2026-11-03. Seven cities are on the shortlist, with the venue price per day in euros, the average flight time from our hub in hours, the hotel rate per night in euros and the capacity of the largest venue room: Lisbon, 18500, 3.5, 165, 300; Prague, 14200, 2.0, 138, 260; Vienna, 21800, 1.8, 189, 320; Krakow, 11900, 2.5, 112, 190; Seville, 16400, 3.8, 149, 280; Athens, 15100, 3.6, 131, 250; Dublin, 23900, 2.2, 204, 340. Total cost for 220 people is two venue days plus 660 hotel room nights (220 rooms for 3 nights): Lisbon 145900, Prague 119480, Vienna 168340, Krakow 97720, Seville 131140, Athens 116660, Dublin 182440 euros. Use the sections \"Shortlist\", \"Total cost\", \"Trade-offs\" and \"Recommendation\". Krakow is the cheapest but its largest room seats only 190, fewer than the 220 attendees, so it is out. We recommend Prague: only 2820 euros more than Athens, with a flight 1.6 hours shorter. People will read this on their phones, and the seven-row table must stay usable.",
+  "checklist": {
+    "sections": [
+      "Shortlist",
+      "Total cost",
+      "Trade-offs",
+      "Recommendation"
+    ],
+    "visible": [
+      "Lisbon",
+      "Prague",
+      "Vienna",
+      "Krakow",
+      "Seville",
+      "Athens",
+      "Dublin"
+    ],
+    "values": [
+      "220",
+      "18500",
+      "14200",
+      "21800",
+      "11900",
+      "16400",
+      "15100",
+      "23900",
+      "3.5",
+      "1.8",
+      "3.8",
+      "165",
+      "138",
+      "189",
+      "112",
+      "149",
+      "131",
+      "204",
+      "190",
+      "145900",
+      "119480",
+      "168340",
+      "97720",
+      "131140",
+      "116660",
+      "182440",
+      "2820",
+      "1.6 hours",
+      "2026-11-03",
+      "2027-03-16",
+      "2027-03-18"
+    ]
+  },
+  "needs": [
+    "table",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Prague's venue quote went up to 15200 euros per day. Update the daily price and Prague's total cost (121480) everywhere, and the gap to Athens (4820 euros).",
+    "expect_visible": [],
+    "expect_values": [
+      "15200",
+      "121480",
+      "4820"
+    ],
+    "expect_absent": [
+      "14200",
+      "119480",
+      "2820"
+    ]
+  }
+}

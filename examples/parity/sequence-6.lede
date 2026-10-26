@@ -1,0 +1,20 @@
+@title Six lanes
+# Six lanes
+
+diagram sync sequence title="Nightly catalog sync"
+sync: sched "Scheduler" svc
+sync: api "Catalog API" svc
+sync: queue "Change queue" queue
+sync: worker "Index worker" fn
+sync: search "Search cluster" db
+sync: notify "Slack alerts" ext
+sync: sched -> api : GET /changes
+sync: api --> sched : 214 changes
+sync: sched -> queue : enqueue batch
+sync: queue -> worker : deliver batch
+sync: note worker : dedupes by sku
+sync: worker -> search : bulk upsert
+sync: search --> worker : ok
+sync: opt "more than 5 percent failed"
+sync: worker -> notify : post summary
+sync: end

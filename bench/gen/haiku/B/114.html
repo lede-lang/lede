@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peak Season Capacity Summary</title>
+<style>
+:root {
+  --bg: #f4f5f3; --card: #ffffff; --ink: #1b2320; --muted: #5d6763; --rule: #d6dcd8;
+  --track: #e5eae7; --ok: #2c7a63; --warn: #b7791f; --over: #b83a32; --accent: #245c4d;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1412; --card: #171e1b; --ink: #e6ece8; --muted: #9aa8a1; --rule: #2a3530;
+    --track: #223029; --ok: #66c3a6; --warn: #e8b35c; --over: #f08a80; --accent: #8fd3bd;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1412; --card: #171e1b; --ink: #e6ece8; --muted: #9aa8a1; --rule: #2a3530;
+  --track: #223029; --ok: #66c3a6; --warn: #e8b35c; --over: #f08a80; --accent: #8fd3bd;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.5; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; }
+h1 { font-size: 1.7rem; margin: 0 0 4px; }
+.sub { color: var(--muted); margin: 0; }
+section { background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 20px; margin-top: 18px; }
+h2 { font-size: 1.2rem; margin: 0 0 12px; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.stat { background: var(--bg); border-radius: 10px; padding: 12px; }
+.stat .v { font-size: 1.45rem; font-weight: 700; color: var(--accent); }
+.stat .l { font-size: 0.85rem; color: var(--muted); }
+.row { display: grid; grid-template-columns: 78px 1fr 62px; gap: 10px; align-items: center; margin: 9px 0; }
+.track { position: relative; height: 18px; background: var(--track); border-radius: 4px; }
+.fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: var(--ok); }
+.fill.over { background: var(--over); }
+.cap { position: absolute; top: -5px; bottom: -5px; width: 2px; left: 83.33%; background: var(--ink); }
+.val { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+th, td { padding: 8px 6px; border-bottom: 1px solid var(--rule); text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+tr.hot td { color: var(--over); font-weight: 600; }
+tfoot td { font-weight: 700; }
+.plan { border-left: 4px solid var(--accent); padding: 10px 14px; background: var(--bg); border-radius: 8px; }
+ul { padding-left: 20px; margin: 8px 0; }
+li { margin-bottom: 8px; }
+@media (max-width: 480px) {
+  .stats { grid-template-columns: 1fr; }
+  .row { grid-template-columns: 66px 1fr 54px; gap: 8px; }
+}
+</style>
+</head>
+<body>
+<main>
+  <h1>Peak season capacity, 2026-11-23 to 2026-12-23</h1>
+  <p class="sub">Cobalt Parcel network planning. Prepared by Rafael Ostrowski for the operations directors.</p>
+
+  <section>
+    <h2>Network at a glance</h2>
+    <div class="stats">
+      <div class="stat"><div class="v">91.8%</div><div class="l">Network utilization (166,100 of 181,000)</div></div>
+      <div class="stat"><div class="v">14,900</div><div class="l">Parcels a day of headroom</div></div>
+      <div class="stat"><div class="v">640</div><div class="l">Seasonal hires, 210 for Memphis</div></div>
+    </div>
+    <p style="margin-top:12px">The network has room overall, but Memphis is over capacity and Tulsa has little room to absorb the overflow.</p>
+  </section>
+
+  <section>
+    <h2>Depot capacity</h2>
+    <p class="sub" style="margin-bottom:8px">Forecast peak daily volume as a share of daily capacity. The black line marks 100 percent. Bars run to 120 percent.</p>
+
+    <div class="row"><div>Memphis</div><div class="track"><div class="fill over" style="width:86.67%"></div><div class="cap"></div></div><div class="val">104.0%</div></div>
+    <div class="row"><div>Tulsa</div><div class="track"><div class="fill" style="width:78.58%"></div><div class="cap"></div></div><div class="val">94.3%</div></div>
+    <div class="row"><div>Denver</div><div class="track"><div class="fill" style="width:72.5%"></div><div class="cap"></div></div><div class="val">87.0%</div></div>
+    <div class="row"><div>Omaha</div><div class="track"><div class="fill" style="width:66.67%"></div><div class="cap"></div></div><div class="val">80.0%</div></div>
+    <div class="row"><div>Boise</div><div class="track"><div class="fill" style="width:66.67%"></div><div class="cap"></div></div><div class="val">80.0%</div></div>
+
+    <div class="table-wrap" style="margin-top:16px">
+      <table>
+        <thead>
+          <tr><th>Depot</th><th>Capacity / day</th><th>Forecast peak / day</th><th>Utilization</th><th>Headroom / day</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Tulsa</td><td>42,000</td><td>39,600</td><td>94.3%</td><td>2,400</td></tr>
+          <tr><td>Omaha</td><td>36,000</td><td>28,800</td><td>80.0%</td><td>7,200</td></tr>
+          <tr class="hot"><td>Memphis</td><td>55,000</td><td>57,200</td><td>104.0%</td><td>-2,200</td></tr>
+          <tr><td>Denver</td><td>30,000</td><td>26,100</td><td>87.0%</td><td>3,900</td></tr>
+          <tr><td>Boise</td><td>18,000</td><td>14,400</td><td>80.0%</td><td>3,600</td></tr>
+        </tbody>
+        <tfoot>
+          <tr><td>Network</td><td>181,000</td><td>166,100</td><td>91.8%</td><td>14,900</td></tr>
+        </tfoot>
+      </table>
+    </div>
+    <p class="sub" style="margin-top:10px">Omaha could take up to 7,200 more parcels a day, but rerouting there adds a day of transit.</p>
+  </section>
+
+  <section>
+    <h2>Memphis and Tulsa plan</h2>
+    <div class="plan">
+      <p><strong>Reroute 2,200 Memphis parcels a day to Tulsa from 2026-11-23.</strong></p>
+      <p>Memphis then runs at exactly 100.0 percent of capacity (55,000 a day). Tulsa rises to 99.5 percent (41,800 of 42,000). Both depots would be at their limit with no slack.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Risks</h2>
+    <ul>
+      <li>An outage or weather delay at Memphis or Tulsa during the window has nowhere to go except Omaha, and rerouting there adds a day of transit.</li>
+      <li>The plan relies on all 640 seasonal workers starting by 2026-11-16, including the 210 for Memphis.</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>

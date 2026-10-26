@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Summer Reading Wrap-up</title>
+<style>
+:root{
+  --bg:#f8f5ef;--surface:#ffffff;--text:#1f2329;--muted:#5f6670;--line:#e6e0d5;
+  --accent:#2f6d5a;--accent-2:#d9822b;--soft:#e7f1ec;--soft-2:#fbeedf;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#13161a;--surface:#1c2025;--text:#eceef1;--muted:#a7aeb7;--line:#2e343b;
+    --accent:#6cc4a5;--accent-2:#f0a85c;--soft:#1d3029;--soft-2:#36291b;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:680px;margin:0 auto;padding:28px 16px 56px}
+header{margin-bottom:28px}
+.kicker{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 8px}
+h1{font-size:clamp(1.8rem,6vw,2.5rem);line-height:1.15;margin:0 0 12px;letter-spacing:-.01em}
+.dek{color:var(--muted);margin:0;font-size:1.05rem}
+section{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 18px;margin:0 0 18px}
+h2{font-size:1.25rem;margin:0 0 4px}
+.sub{color:var(--muted);font-size:.92rem;margin:0 0 18px}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.kpi{background:var(--bg);border-radius:12px;padding:14px}
+.kpi .n{display:block;font-size:1.7rem;font-weight:750;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi .l{display:block;color:var(--muted);font-size:.88rem;margin-top:4px}
+.kpi.wide{grid-column:1/-1}
+.done{margin-top:18px}
+.done p{margin:0 0 8px;font-size:.95rem}
+.done strong{color:var(--accent)}
+svg{display:block;overflow:visible}
+.track{fill:var(--line)}
+.fill{fill:var(--accent)}
+.fill-2{fill:var(--accent-2)}
+.fill-muted{fill:var(--muted);opacity:.55}
+.rows{display:flex;flex-direction:column;gap:16px}
+.row-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:6px;font-size:.98rem}
+.row-head .v{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.row-head .v small{font-weight:500;color:var(--muted)}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:var(--soft-2);color:var(--accent-2);border-radius:999px;padding:1px 8px;margin-left:6px;vertical-align:2px}
+.note{margin:18px 0 0;font-size:.92rem;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+.party{display:flex;gap:14px;align-items:center;background:var(--soft);border-radius:12px;padding:14px;margin-top:12px}
+.party .n{font-size:1.6rem;font-weight:750;color:var(--accent);line-height:1}
+.party p{margin:0;font-size:.94rem}
+footer{color:var(--muted);font-size:.85rem;text-align:center;margin-top:24px}
+@media (min-width:600px){
+  .wrap{padding-top:44px}
+  section{padding:28px 28px}
+  .kpis{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .kpi.wide{grid-column:auto}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="kicker">Hollis Public Library &middot; Town Newsletter</p>
+  <h1>Summer Reading 2026: the wrap-up</h1>
+  <p class="dek">From June to August, 1,248 children and teens signed up and read 8,325 books between them. Thank you to every reader, parent and volunteer who took part.</p>
+</header>
+
+<section aria-labelledby="glance">
+  <h2 id="glance">Summer at a glance</h2>
+  <p class="sub">June to August 2026</p>
+  <div class="kpis">
+    <div class="kpi"><span class="n">1,248</span><span class="l">children and teens registered</span></div>
+    <div class="kpi"><span class="n">683</span><span class="l">finished the program</span></div>
+    <div class="kpi"><span class="n">8,325</span><span class="l">books logged</span></div>
+    <div class="kpi"><span class="n">6.7</span><span class="l">books per registered reader</span></div>
+  </div>
+  <div class="done">
+    <p><strong>54.7%</strong> of registered readers finished the program &mdash; more than half.</p>
+    <svg width="100%" height="16" role="img" aria-label="Completion: 683 of 1,248 registered readers, 54.7 percent">
+      <rect class="track" x="0" y="0" width="100%" height="16" rx="8"/>
+      <rect class="fill" x="0" y="0" width="54.7%" height="16" rx="8"/>
+    </svg>
+  </div>
+  <div class="party">
+    <span class="n">310</span>
+    <p>people came to the closing party on Saturday, 12 September 2026.</p>
+  </div>
+</section>
+
+<section aria-labelledby="months">
+  <h2 id="months">Books logged by month</h2>
+  <p class="sub">8,325 books in total</p>
+  <div class="rows">
+    <div>
+      <div class="row-head"><span>June</span><span class="v">2,340</span></div>
+      <svg width="100%" height="14" role="img" aria-label="June: 2,340 books"><rect class="fill-muted" x="0" y="0" width="75.12%" height="14" rx="7"/></svg>
+    </div>
+    <div>
+      <div class="row-head"><span>July <span class="tag">Busiest</span></span><span class="v">3,115</span></div>
+      <svg width="100%" height="14" role="img" aria-label="July: 3,115 books, the busiest month"><rect class="fill" x="0" y="0" width="100%" height="14" rx="7"/></svg>
+    </div>
+    <div>
+      <div class="row-head"><span>August</span><span class="v">2,870</span></div>
+      <svg width="100%" height="14" role="img" aria-label="August: 2,870 books"><rect class="fill-muted" x="0" y="0" width="92.13%" height="14" rx="7"/></svg>
+    </div>
+  </div>
+  <p class="note">July was the busiest month of the summer, with 3,115 books logged.</p>
+</section>
+
+<section aria-labelledby="ages">
+  <h2 id="ages">Readers by age group</h2>
+  <p class="sub">1,248 registered readers</p>
+  <div class="rows">
+    <div>
+      <div class="row-head"><span>Under 8</span><span class="v">402 <small>&middot; 32.2%</small></span></div>
+      <svg width="100%" height="14" role="img" aria-label="Under 8: 402 readers, 32.2 percent"><rect class="fill-2" x="0" y="0" width="71.66%" height="14" rx="7"/></svg>
+    </div>
+    <div>
+      <div class="row-head"><span>8 to 12</span><span class="v">561 <small>&middot; 45.0%</small></span></div>
+      <svg width="100%" height="14" role="img" aria-label="Ages 8 to 12: 561 readers, 45.0 percent"><rect class="fill-2" x="0" y="0" width="100%" height="14" rx="7"/></svg>
+    </div>
+    <div>
+      <div class="row-head"><span>13 to 17</span><span class="v">285 <small>&middot; 22.8%</small></span></div>
+      <svg width="100%" height="14" role="img" aria-label="Ages 13 to 17: 285 readers, 22.8 percent"><rect class="fill-2" x="0" y="0" width="50.8%" height="14" rx="7"/></svg>
+    </div>
+  </div>
+  <p class="note">Readers aged 8 to 12 were the largest group, close to half of everyone who registered.</p>
+</section>
+
+<footer>Hollis Public Library &middot; Summer Reading Program, June to August 2026</footer>
+</div>
+</body>
+</html>

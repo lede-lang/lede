@@ -1,0 +1,34 @@
+@title INC-3302 postmortem
+@subtitle Late nightly sales reports, 2026-10-06
+@author Data Platform team, Marrow Retail
+
+kpi Reports late | 8 h 40 min | due 03:00 UTC, sent 11:40
+kpi Store managers affected | 214 | got empty or stale reports
+kpi Backfill | 95 min | ran serially
+
+# Summary
+
+The nightly sales reports were due at 03:00 UTC on 2026-10-06 and went out at 11:40, 8 hours 40 minutes late. 214 store managers received empty or stale reports.
+
+The point-of-sale vendor added a column named `tender_subtype` to the sales feed without notice. The ingestion job failed on it. The failure alert went to a retired channel, so nobody knew until a store manager asked why the report was empty.
+
+# Timeline
+
+All times are UTC.
+
+table = Time,Event; 01:15,Vendor deploys the schema change; 02:10,Ingestion job fails for the first time; 02:40,Retries exhausted; 03:00,Reports miss their deadline and no alert fires; 07:25,A store manager asks in #retail-ops why the report is empty; 07:50,Support pages the Data Platform on-call; 08:35,Cause identified; 09:20,Schema mapping patched; 10:05,Backfill starts; 11:40,Reports published
+
+# Contributing factors
+
+- The alert still routed to the retired channel #data-alerts-old.
+- There was no schema contract check on vendor feeds.
+- The backfill ran serially.
+
+# What went well
+
+- Once paged, the on-call found the cause in 45 minutes.
+- No wrong numbers were published.
+
+# Action items
+
+table = Action,Owner,Due; Route pipeline alerts to the on-call pager,Samuel Achterberg,2026-10-16; Add a schema contract check on vendor feeds,Lucia Fontaine,2026-11-06; Parallelize the backfill by partition,Data Platform on-call,2026-11-20; Require 14 days' notice of feed changes in the vendor contract,Vendor Management,2026-10-30

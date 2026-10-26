@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Heat-Wave Demand Emergency Runbook - Northgrid Electric</title>
+<style>
+:root{color-scheme:light dark;--bg:#f4f6f9;--surface:#fff;--text:#18212c;--muted:#566474;--border:#dbe1e8;--accent:#1d5fc4;--on-accent:#fff;--accent-soft:#e7effc;--red:#b42318;--red-soft:#fdecea;--amber:#a85a00;--amber-soft:#fff2dc;--track:#e3e8ee}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1319;--surface:#161d26;--text:#e7ecf2;--muted:#98a5b4;--border:#283240;--accent:#74a8ff;--on-accent:#0e1319;--accent-soft:#18283f;--red:#ff8b80;--red-soft:#3a1a1a;--amber:#f3a84b;--amber-soft:#35260f;--track:#263140}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:780px;margin:0 auto;padding:20px 16px 48px}
+.top{padding:4px 0 16px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+h1{font-size:1.75rem;line-height:1.2;margin:.25rem 0 .5rem}
+.meta{display:flex;flex-wrap:wrap;gap:6px 16px;color:var(--muted);font-size:.9rem;margin:0;padding:0;list-style:none}
+h2{font-size:1.25rem;margin:2rem 0 .75rem;padding-bottom:.35rem;border-bottom:2px solid var(--border)}
+h3{margin:0 0 .35rem;font-size:1.05rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.callout{border-radius:12px;padding:14px 16px;margin:12px 0;border:2px solid var(--red);background:var(--red-soft);color:var(--text)}
+.callout strong.t{display:block;color:var(--red);text-transform:uppercase;letter-spacing:.05em;font-size:.82rem;margin-bottom:2px}
+.callout p{margin:0;font-weight:600}
+.stage{border-left:6px solid var(--amber)}
+.stage.s3{border-left-color:var(--red)}
+.stage .trig{font-weight:700;color:var(--muted);font-size:.92rem;margin:0 0 .4rem}
+.card ul{margin:.3rem 0 0;padding-left:1.2rem}
+.card li{margin:.25rem 0}
+ol.steps{list-style:none;counter-reset:s;padding:0;margin:0}
+ol.steps>li{counter-increment:s;position:relative;padding:14px 14px 14px 58px;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:10px}
+ol.steps>li::before{content:counter(s);position:absolute;left:14px;top:14px;width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--on-accent);font-weight:700;display:flex;align-items:center;justify-content:center}
+ol.steps>li>b{display:block;margin-bottom:2px}
+ol.sub{list-style:lower-alpha;margin:.3rem 0 0;padding-left:1.3rem}
+ol.sub li{margin:.25rem 0}
+.gauge{width:100%;height:auto;display:block}
+.gauge text{fill:var(--text);font-family:inherit}
+.cap{color:var(--muted);font-size:.85rem;margin:.4rem 0 0}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--border)}
+th{color:var(--muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.05em}
+tr:last-child td{border-bottom:0}
+footer{margin-top:2rem;color:var(--muted);font-size:.85rem}
+@media (max-width:480px){h1{font-size:1.45rem}.wrap{padding:16px 14px 40px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">Northgrid Electric &middot; System Operations</div>
+  <h1>Heat-Wave Demand Emergency Runbook</h1>
+  <ul class="meta">
+    <li>For: on-duty system operator</li>
+    <li>Version 2026-10-10</li>
+    <li>Available supply: 5200 MW</li>
+  </ul>
+</header>
+
+<div class="callout" role="alert">
+  <strong class="t">Never switch these off</strong>
+  <p>Hospitals, the 911 center and water pumping stations must never be switched off, at any stage and in any outage block.</p>
+</div>
+
+<h2>When to use</h2>
+<div class="card">
+  <p style="margin:0 0 .5rem">Use this runbook when the <b>day-ahead forecast</b> or <b>live demand</b> reaches <b>92 percent of available supply</b> (4784 MW of 5200 MW).</p>
+  <p style="margin:0"><b>A stage is declared by the Duty Director, never by a single operator.</b></p>
+</div>
+
+<h2>Stages</h2>
+<div class="card">
+  <svg class="gauge" viewBox="0 0 420 108" role="img" aria-label="Demand scale from 85 to 103 percent of supply. Normal below 4784 MW, Stage 1 from 4784 MW, Stage 2 from 5044 MW, Stage 3 from 5200 MW.">
+    <g font-size="12" text-anchor="middle">
+      <text x="93.9" y="22">Normal</text>
+      <text x="220.6" y="22">Stage 1</text>
+      <text x="305.1" y="22">Stage 2</text>
+      <text x="368.4" y="22">Stage 3</text>
+    </g>
+    <rect x="20" y="30" width="147.8" height="30" fill="var(--track)"/>
+    <rect x="167.8" y="30" width="105.6" height="30" fill="var(--amber)" opacity=".4"/>
+    <rect x="273.4" y="30" width="63.4" height="30" fill="var(--amber)" opacity=".8"/>
+    <rect x="336.8" y="30" width="63.2" height="30" fill="var(--red)"/>
+    <g stroke="var(--text)" stroke-width="1.5">
+      <line x1="167.8" y1="26" x2="167.8" y2="66"/>
+      <line x1="273.4" y1="26" x2="273.4" y2="66"/>
+      <line x1="336.8" y1="26" x2="336.8" y2="66"/>
+    </g>
+    <g font-size="12" text-anchor="middle">
+      <text x="167.8" y="82" font-weight="700">92%</text><text x="167.8" y="97">4784 MW</text>
+      <text x="273.4" y="82" font-weight="700">97%</text><text x="273.4" y="97">5044 MW</text>
+      <text x="336.8" y="82" font-weight="700">100%</text><text x="336.8" y="97">5200 MW</text>
+    </g>
+  </svg>
+  <p class="cap">Scale shows 85 to 103 percent of available supply.</p>
+</div>
+
+<div class="card stage">
+  <h3>Stage 1 &mdash; Alert</h3>
+  <p class="trig">Trigger: 92 percent of supply (4784 MW)</p>
+  <ul>
+    <li>Issue a conservation alert by text and app to <b>380000 customers</b>.</li>
+    <li>Ask large industrial customers on interruptible contracts to get ready to reduce load on <b>30 minutes</b> of notice.</li>
+    <li>Confirm that standby generation at <b>3 peaking plants</b> can start within <b>20 minutes</b>.</li>
+  </ul>
+</div>
+<div class="card stage">
+  <h3>Stage 2 &mdash; Add supply and reduce demand</h3>
+  <p class="trig">Trigger: 97 percent of supply (5044 MW)</p>
+  <ul>
+    <li>Call the demand response program, which delivers about <b>210 MW</b>.</li>
+    <li>Start buying emergency imports from the neighboring utility.</li>
+    <li>Brief the regulator by phone.</li>
+  </ul>
+</div>
+<div class="card stage s3">
+  <h3>Stage 3 &mdash; Rotating outages</h3>
+  <p class="trig">Trigger: 100 percent of supply (5200 MW)</p>
+  <ul>
+    <li>Begin rotating outages in <b>blocks A to L</b>, in order.</li>
+    <li>Each block is off for <b>at most 60 minutes</b>.</li>
+    <li>Never repeat a block before all twelve have been used.</li>
+    <li>Follow the steps below.</li>
+  </ul>
+</div>
+
+<h2>Steps for rotating outages</h2>
+<ol class="steps">
+  <li><b>Get approval</b>
+    <ol class="sub">
+      <li>The Duty Director approves in the log.</li>
+      <li>The regulator is told within 30 minutes.</li>
+    </ol>
+  </li>
+  <li><b>Protect critical sites</b>
+    <ol class="sub">
+      <li>Confirm that hospitals, the 911 center and water pumping stations are excluded.</li>
+      <li>Check that the exclusion list was updated this month.</li>
+    </ol>
+  </li>
+  <li><b>Run the blocks</b>
+    <ol class="sub">
+      <li>Open the first block's feeders.</li>
+      <li>Restore it after 60 minutes at most and open the next.</li>
+      <li>Update the public outage map every 15 minutes.</li>
+    </ol>
+  </li>
+  <li><b>Stand down</b>
+    <ol class="sub">
+      <li>End rotating outages when demand stays below 95 percent for 60 minutes.</li>
+      <li>Restore all blocks.</li>
+      <li>File the event report within 24 hours.</li>
+    </ol>
+  </li>
+</ol>
+
+<h2>Contacts</h2>
+<div class="card" style="padding:4px 8px">
+  <table>
+    <thead><tr><th>Role</th><th>Name</th></tr></thead>
+    <tbody>
+      <tr><td>Duty Director</td><td><b>Lorenzo Baptiste</b></td></tr>
+      <tr><td>Regulator liaison</td><td><b>Dagny Holt</b></td></tr>
+      <tr><td>Communications on call</td><td><b>Femi Adeyemi</b></td></tr>
+    </tbody>
+  </table>
+</div>
+<footer>Northgrid Electric System Operations &middot; Heat-wave demand emergency runbook, version 2026-10-10</footer>
+</div>
+</body>
+</html>

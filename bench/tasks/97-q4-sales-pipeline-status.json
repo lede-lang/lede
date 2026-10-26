@@ -1,0 +1,74 @@
+{
+  "id": "97-q4-sales-pipeline-status",
+  "category": "status",
+  "title": "Corvina Q4 sales status",
+  "brief": "Corvina Software's sales operations wants a weekly status page for fiscal Q4 (which began on 2026-08-31, week 36), as of week 42 ending 2026-10-16, for the CRO's Monday meeting. Bookings to date are 6.9 million dollars against a Q4 target of 11.5 million (60 percent), open pipeline is 14.8 million, win rate is 27 percent and the average deal is 84000 dollars. Weekly bookings in millions: W36 0.5, W37 0.7, W38 0.6, W39 1.1, W40 0.9, W41 1.4, W42 1.7. Under \"Regions\", compare target, booked and percent of target, in millions: North America, 5.2, 3.4, 65; EMEA, 4.1, 2.3, 56; APAC, 2.2, 1.2, 55. APAC and EMEA are behind and must be easy to spot. Under \"Deals to watch\", three: Hollis Rail, 1.2 million, EMEA, close date 2026-10-30, Ravi Menon; Pacific Grid, 900000 dollars, APAC, close date 2026-11-13, Aiko Fujimoto; Northline Clinics, 750000 dollars, North America, close date 2026-10-23, Dana Whitfield. Under \"Next week\": the forecast call on 2026-10-19 and the APAC pipeline review on 2026-10-21. People will read this on their phones.",
+  "checklist": {
+    "sections": [
+      "Regions",
+      "Deals to watch",
+      "Next week"
+    ],
+    "visible": [
+      "Bookings",
+      "Pipeline",
+      "Win rate",
+      "North America",
+      "EMEA",
+      "APAC",
+      "Hollis Rail",
+      "Pacific Grid",
+      "Northline Clinics",
+      "Ravi Menon",
+      "Aiko Fujimoto",
+      "Dana Whitfield"
+    ],
+    "values": [
+      "6.9",
+      "11.5",
+      "14.8",
+      "27",
+      "84000",
+      "W36",
+      "W42",
+      "0.5",
+      "0.7",
+      "1.1",
+      "0.9",
+      "1.4",
+      "1.7",
+      "5.2",
+      "3.4",
+      "4.1",
+      "2.3",
+      "2.2",
+      "1.2",
+      "900000",
+      "750000",
+      "2026-10-30",
+      "2026-11-13",
+      "2026-10-23",
+      "2026-10-19",
+      "2026-10-21"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add W43 at 1.3 million, update bookings to date to 8.2 million (71 percent of target), and mark Northline Clinics as won.",
+    "expect_visible": [
+      "won"
+    ],
+    "expect_values": [
+      "W43",
+      "8.2",
+      "71"
+    ],
+    "expect_absent": []
+  }
+}

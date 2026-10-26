@@ -1,0 +1,492 @@
+{
+ "generated": "2026-10-16T08:15:57.895Z",
+ "models": [
+  "haiku",
+  "haiku-r2",
+  "haiku-r3",
+  "opus",
+  "opus-r2",
+  "opus-r3"
+ ],
+ "arms": {
+  "haiku/A": {
+   "n": 40,
+   "tokensMean": 471,
+   "tokensMedian": 451.5,
+   "pageKB": 4.3,
+   "validPct": 100,
+   "warnings": 0,
+   "ttfmrMean": 34,
+   "ttfmrMissing": 0,
+   "fidelityAll": 99.5,
+   "fidelityData": 100,
+   "fidelityDiagram": 99.4,
+   "fidelityProse": 97.4,
+   "overflowPct": 0,
+   "contrastPagesPct": 17.5,
+   "contrastDarkPct": 17.5,
+   "diagramCollisions": 0,
+   "diagrams": 0
+  },
+  "haiku/B": {
+   "n": 40,
+   "tokensMean": 2422,
+   "tokensMedian": 2671,
+   "pageKB": 6.1,
+   "validPct": 100,
+   "warnings": 0,
+   "ttfmrMean": 1063,
+   "ttfmrMissing": 0,
+   "fidelityAll": 96.8,
+   "fidelityData": 97.3,
+   "fidelityDiagram": 99.4,
+   "fidelityProse": 97.4,
+   "overflowPct": 0,
+   "contrastPagesPct": 7.5,
+   "contrastDarkPct": 0,
+   "diagramCollisions": 0,
+   "diagrams": 0
+  },
+  "haiku/C": {
+   "n": 40,
+   "tokensMean": 382,
+   "tokensMedian": 371.5,
+   "pageKB": 20.8,
+   "validPct": 97.5,
+   "warnings": 1,
+   "ttfmrMean": 77,
+   "ttfmrMissing": 0,
+   "fidelityAll": 99.7,
+   "fidelityData": 99.8,
+   "fidelityDiagram": 100,
+   "fidelityProse": 98.8,
+   "overflowPct": 0,
+   "contrastPagesPct": 0,
+   "contrastDarkPct": 0,
+   "diagramCollisions": 0,
+   "diagrams": 7
+  },
+  "haiku-r2/C": {
+   "n": 40,
+   "tokensMean": 392,
+   "tokensMedian": 395,
+   "pageKB": 20.9,
+   "validPct": 100,
+   "warnings": 0,
+   "ttfmrMean": 81,
+   "ttfmrMissing": 0,
+   "fidelityAll": 99.5,
+   "fidelityData": 100,
+   "fidelityDiagram": 99.4,
+   "fidelityProse": 97.4,
+   "overflowPct": 0,
+   "contrastPagesPct": 0,
+   "contrastDarkPct": 0,
+   "diagramCollisions": 0,
+   "diagrams": 7
+  },
+  "haiku-r3/C": {
+   "n": 40,
+   "tokensMean": 404,
+   "tokensMedian": 406,
+   "pageKB": 20.5,
+   "validPct": 100,
+   "warnings": 0,
+   "ttfmrMean": 80,
+   "ttfmrMissing": 0,
+   "fidelityAll": 99.6,
+   "fidelityData": 100,
+   "fidelityDiagram": 100,
+   "fidelityProse": 97.4,
+   "overflowPct": 0,
+   "contrastPagesPct": 0,
+   "contrastDarkPct": 0,
+   "diagramCollisions": 0,
+   "diagrams": 7
+  },
+  "opus/A": {
+   "n": 40,
+   "tokensMean": 524,
+   "tokensMedian": 502,
+   "pageKB": 4.6,
+   "validPct": 100,
+   "warnings": 0,
+   "ttfmrMean": 27,
+   "ttfmrMissing": 0,
+   "fidelityAll": 99.8,
+   "fidelityData": 99.8,
+   "fidelityDiagram": 99.4,
+   "fidelityProse": 100,
+   "overflowPct": 0,
+   "contrastPagesPct": 20,
+   "contrastDarkPct": 20,
+   "diagramCollisions": 0,
+   "diagrams": 0
+  },
+  "opus/B": {
+   "n": 40,
+   "tokensMean": 2869,
+   "tokensMedian": 3156,
+   "pageKB": 7.4,
+   "validPct": 100,
+   "warnings": 0,
+   "ttfmrMean": 1266,
+   "ttfmrMissing": 0,
+   "fidelityAll": 99.7,
+   "fidelityData": 99.6,
+   "fidelityDiagram": 99.4,
+   "fidelityProse": 100,
+   "overflowPct": 0,
+   "contrastPagesPct": 17.5,
+   "contrastDarkPct": 0,
+   "diagramCollisions": 0,
+   "diagrams": 0
+  },
+  "opus/C": {
+   "n": 40,
+   "tokensMean": 421,
+   "tokensMedian": 405,
+   "pageKB": 20.9,
+   "validPct": 100,
+   "warnings": 0,
+   "ttfmrMean": 91,
+   "ttfmrMissing": 0,
+   "fidelityAll": 99.5,
+   "fidelityData": 99.8,
+   "fidelityDiagram": 99.4,
+   "fidelityProse": 99,
+   "overflowPct": 0,
+   "contrastPagesPct": 0,
+   "contrastDarkPct": 0,
+   "diagramCollisions": 0,
+   "diagrams": 7
+  },
+  "opus-r2/C": {
+   "n": 40,
+   "tokensMean": 423,
+   "tokensMedian": 416.5,
+   "pageKB": 21,
+   "validPct": 100,
+   "warnings": 0,
+   "ttfmrMean": 89,
+   "ttfmrMissing": 0,
+   "fidelityAll": 99.8,
+   "fidelityData": 100,
+   "fidelityDiagram": 99.4,
+   "fidelityProse": 100,
+   "overflowPct": 0,
+   "contrastPagesPct": 0,
+   "contrastDarkPct": 0,
+   "diagramCollisions": 0,
+   "diagrams": 7
+  },
+  "opus-r3/C": {
+   "n": 40,
+   "tokensMean": 422,
+   "tokensMedian": 418,
+   "pageKB": 20.7,
+   "validPct": 100,
+   "warnings": 0,
+   "ttfmrMean": 90,
+   "ttfmrMissing": 0,
+   "fidelityAll": 99.8,
+   "fidelityData": 100,
+   "fidelityDiagram": 99.4,
+   "fidelityProse": 100,
+   "overflowPct": 0,
+   "contrastPagesPct": 0,
+   "contrastDarkPct": 0,
+   "diagramCollisions": 0,
+   "diagrams": 7
+  }
+ },
+ "draft": {
+  "haiku/C": {
+   "n": 40,
+   "tokensMean": 382,
+   "tokensMedian": 371.5,
+   "pageKB": 16.8,
+   "validPct": 65,
+   "warnings": 14,
+   "ttfmrMean": 77,
+   "ttfmrMissing": 0,
+   "fidelityAll": 99.4,
+   "fidelityData": 99.3,
+   "fidelityDiagram": 100,
+   "fidelityProse": 98.8,
+   "overflowPct": 0,
+   "contrastPagesPct": 0,
+   "contrastDarkPct": 0,
+   "diagramCollisions": 0,
+   "diagrams": 7
+  },
+  "opus/C": {
+   "n": 40,
+   "tokensMean": 421,
+   "tokensMedian": 405,
+   "pageKB": 18.4,
+   "validPct": 90,
+   "warnings": 4,
+   "ttfmrMean": 91,
+   "ttfmrMissing": 0,
+   "fidelityAll": 99.2,
+   "fidelityData": 99.8,
+   "fidelityDiagram": 99.4,
+   "fidelityProse": 99,
+   "overflowPct": 0,
+   "contrastPagesPct": 0,
+   "contrastDarkPct": 0,
+   "diagramCollisions": 0,
+   "diagrams": 7
+  }
+ },
+ "edits": {
+  "haiku/A": {
+   "n": 40,
+   "successPct": 100,
+   "checkOnlyPct": 100,
+   "validAfterPct": 100,
+   "addedTokensMean": 87,
+   "changedLinesMean": 8.5,
+   "untouched": 0,
+   "failures": []
+  },
+  "haiku/B": {
+   "n": 40,
+   "successPct": 100,
+   "checkOnlyPct": 100,
+   "validAfterPct": 100,
+   "addedTokensMean": 353,
+   "changedLinesMean": 19.9,
+   "untouched": 0,
+   "failures": []
+  },
+  "haiku/C": {
+   "n": 40,
+   "successPct": 97.5,
+   "checkOnlyPct": 100,
+   "validAfterPct": 97.5,
+   "addedTokensMean": 110,
+   "changedLinesMean": 5.7,
+   "untouched": 0,
+   "failures": [
+    {
+     "id": "08",
+     "why": [
+      "invalid after edit"
+     ]
+    }
+   ]
+  },
+  "opus/A": {
+   "n": 40,
+   "successPct": 100,
+   "checkOnlyPct": 100,
+   "validAfterPct": 100,
+   "addedTokensMean": 102,
+   "changedLinesMean": 7.9,
+   "untouched": 0,
+   "failures": []
+  },
+  "opus/B": {
+   "n": 40,
+   "successPct": 100,
+   "checkOnlyPct": 100,
+   "validAfterPct": 100,
+   "addedTokensMean": 413,
+   "changedLinesMean": 17.8,
+   "untouched": 0,
+   "failures": []
+  },
+  "opus/C": {
+   "n": 40,
+   "successPct": 100,
+   "checkOnlyPct": 100,
+   "validAfterPct": 100,
+   "addedTokensMean": 115,
+   "changedLinesMean": 5.8,
+   "untouched": 0,
+   "failures": []
+  }
+ },
+ "judge": {
+  "round1": {
+   "verdicts": 160,
+   "pairs": 160,
+   "bySlot": {
+    "haiku/C-B": {
+     "win": 15,
+     "tie": 1,
+     "loss": 24,
+     "n": 40,
+     "winOrTiePct": 40,
+     "byCategory": {
+      "status": "5/7",
+      "architecture": "3/7",
+      "runbook": "5/7",
+      "comparison": "1/6",
+      "data": "1/7",
+      "prose": "1/6"
+     }
+    },
+    "haiku/C-A": {
+     "win": 39,
+     "tie": 0,
+     "loss": 1,
+     "n": 40,
+     "winOrTiePct": 97.5,
+     "byCategory": {
+      "status": "7/7",
+      "architecture": "6/7",
+      "runbook": "7/7",
+      "comparison": "6/6",
+      "data": "7/7",
+      "prose": "6/6"
+     }
+    },
+    "opus/C-B": {
+     "win": 3,
+     "tie": 0,
+     "loss": 37,
+     "n": 40,
+     "winOrTiePct": 7.5,
+     "byCategory": {
+      "status": "1/7",
+      "architecture": "0/7",
+      "runbook": "1/7",
+      "comparison": "0/6",
+      "data": "1/7",
+      "prose": "0/6"
+     }
+    },
+    "opus/C-A": {
+     "win": 39,
+     "tie": 0,
+     "loss": 1,
+     "n": 40,
+     "winOrTiePct": 97.5,
+     "byCategory": {
+      "status": "7/7",
+      "architecture": "7/7",
+      "runbook": "7/7",
+      "comparison": "6/6",
+      "data": "6/7",
+      "prose": "6/6"
+     }
+    }
+   }
+  },
+  "round2": {
+   "verdicts": 160,
+   "pairs": 160,
+   "bySlot": {
+    "haiku/C-B": {
+     "win": 26,
+     "tie": 2,
+     "loss": 12,
+     "n": 40,
+     "winOrTiePct": 70,
+     "byCategory": {
+      "status": "7/7",
+      "architecture": "4/7",
+      "runbook": "6/7",
+      "comparison": "5/6",
+      "data": "3/7",
+      "prose": "3/6"
+     }
+    },
+    "opus/C-B": {
+     "win": 12,
+     "tie": 0,
+     "loss": 28,
+     "n": 40,
+     "winOrTiePct": 30,
+     "byCategory": {
+      "status": "3/7",
+      "architecture": "4/7",
+      "runbook": "2/7",
+      "comparison": "0/6",
+      "data": "3/7",
+      "prose": "0/6"
+     }
+    },
+    "haiku-r3/C-B": {
+     "win": 25,
+     "tie": 4,
+     "loss": 11,
+     "n": 40,
+     "winOrTiePct": 72.5,
+     "byCategory": {
+      "status": "7/7",
+      "architecture": "5/7",
+      "runbook": "7/7",
+      "comparison": "3/6",
+      "data": "3/7",
+      "prose": "4/6"
+     }
+    },
+    "opus-r3/C-B": {
+     "win": 17,
+     "tie": 0,
+     "loss": 23,
+     "n": 40,
+     "winOrTiePct": 42.5,
+     "byCategory": {
+      "status": "4/7",
+      "architecture": "5/7",
+      "runbook": "3/7",
+      "comparison": "2/6",
+      "data": "3/7",
+      "prose": "0/6"
+     }
+    }
+   }
+  }
+ },
+ "timing": {
+  "haiku/A": {
+   "msPerOutputToken": 8.8,
+   "batches": 2
+  },
+  "haiku/B": {
+   "msPerOutputToken": 8.2,
+   "batches": 2
+  },
+  "haiku/C": {
+   "msPerOutputToken": 17.4,
+   "batches": 2
+  },
+  "opus/A": {
+   "msPerOutputToken": 15.3,
+   "batches": 2
+  },
+  "opus/B": {
+   "msPerOutputToken": 12.4,
+   "batches": 2
+  },
+  "opus/C": {
+   "msPerOutputToken": 15.4,
+   "batches": 2
+  },
+  "haiku-r2/C": {
+   "msPerOutputToken": 17.9,
+   "batches": 2
+  },
+  "opus-r2/C": {
+   "msPerOutputToken": 15.6,
+   "batches": 2
+  }
+ },
+ "ratios": {
+  "haiku": {
+   "BoverC_mean": 6.3,
+   "BoverC_medianPerTask": 6.6,
+   "AoverC_mean": 1.2
+  },
+  "opus": {
+   "BoverC_mean": 6.8,
+   "BoverC_medianPerTask": 7.3,
+   "AoverC_mean": 1.2
+  }
+ }
+}

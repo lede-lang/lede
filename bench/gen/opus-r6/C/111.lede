@@ -1,0 +1,38 @@
+@title Q3 2026 Sales Summary
+@subtitle Foxglove Garden Centers, July to September 2026
+@author Imani Okoro, Retail Finance Lead
+@date 2026-10
+
+# Q3 at a glance
+
+kpi Q3 revenue | $5.87M | +8.3% vs Q3 2025 | good
+
+kpi Best month | September | $2.24M
+kpi Biggest category | Plants | 42.4% of Q3
+kpi Avg basket, Sep | $42.70 | +$4.30 vs Jul | good
+kpi Furniture, Jul to Sep | -32.1% | clearance decision | bad
+
+September was the best month of the quarter at $2.24M, lifted by Seasonal and holiday once autumn displays went up on 2026-09-08. Revenue for the quarter was $5.87M against $5.42M in Q3 last year.
+
+# Revenue by category
+
+data mix = month,Plants,Tools and supplies,Furniture,Seasonal and holiday; Jul,820,410,530,90; Aug,760,390,480,150; Sep,910,450,360,520
+
+chart bar mix x=month stack unit=$K title="Monthly revenue by category ($K)"
+
+table = Category,Jul,Aug,Sep,Q3 total,Share of Q3; Plants,$820K,$760K,$910K,**$2,490K**,42.4%; Tools and supplies,$410K,$390K,$450K,**$1,250K**,21.3%; Furniture,$530K,$480K,$360K,**$1,370K**,23.3%; Seasonal and holiday,$90K,$150K,$520K,**$760K**,12.9%; **Total**,**$1,850K**,**$1,780K**,**$2,240K**,**$5,870K**,100%
+
+- **Plants** stayed the largest category at $2.49M, 42.4% of the quarter.
+- **Seasonal and holiday** jumped from $150K in August to $520K in September, 23.2% of September revenue.
+- **Furniture** fell every month, from $530K to $360K (-32.1%) as patio season ended.
+
+data basket = month,basket; Jul,38.40; Aug,39.10; Sep,42.70
+
+chart line basket x=month unit=$ labels title="Average basket size"
+
+# Watch items
+
+!! **Decision needed: Furniture clearance.** Furniture fell 32.1% from July to September as patio season ended. It is the one category that needs a clearance decision before patio stock ages further.
+
+- **Seasonal and holiday** carried September; expect it to stay strong through the holiday season, and plan display space accordingly.
+- **Plants** remains the core of the business; protect its floor space as Furniture is cleared.

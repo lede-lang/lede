@@ -1,0 +1,4 @@
+data plan = item,start,end,mid; A,2026-03-01,2026-04-15,2026-03-20; B,2026-04-01,2026-06-30,
+chart range plan from=start to=end at=mid target="2026-05-01 freeze" title="Plan"
+data lat = hop,low,high; Edge,12,40; API,30,120
+chart range lat from=low to=high bands=50,100,150,200 unit=ms target="100 budget" labels stack

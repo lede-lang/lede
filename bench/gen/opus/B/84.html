@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>2026 Engagement Survey Results</title>
+<style>
+:root{
+  --bg:#f4f5f7;--surface:#ffffff;--text:#1b1f27;--muted:#5d6472;--line:#e2e5ea;
+  --accent:#3a5bc7;--fav:#2a8a6e;--neu:#c9ced6;--unf:#d4573f;--neu-text:#2b2f36;
+  --up:#2a8a6e;--down:#d4573f;--soft:#eef1fb;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#101318;--surface:#191d24;--text:#e8ebf0;--muted:#a0a8b5;--line:#2a303a;
+    --accent:#8aa4f5;--fav:#3fb08e;--neu:#4b525e;--unf:#e3735c;--neu-text:#eef0f3;
+    --up:#55c9a3;--down:#f08a74;--soft:#1c2336;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:26px 16px 56px}
+.kicker{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 6px}
+h1{font-size:clamp(1.7rem,5.5vw,2.4rem);line-height:1.15;margin:0 0 10px}
+.dek{color:var(--muted);margin:0 0 26px;max-width:60ch}
+section{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 16px;margin:0 0 16px}
+h2{font-size:1.25rem;margin:0 0 4px}
+.sub{color:var(--muted);font-size:.9rem;margin:0 0 16px}
+svg{display:block;overflow:visible}
+.resp{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.ring-bg{fill:none;stroke:var(--line);stroke-width:12}
+.ring{fill:none;stroke:var(--accent);stroke-width:12;stroke-linecap:round}
+.ring-t{fill:var(--text);font-size:19px;font-weight:750}
+.ring-s{fill:var(--muted);font-size:9px}
+.resp-text p{margin:0 0 6px}
+.resp-text .big{font-size:1.5rem;font-weight:750;font-variant-numeric:tabular-nums;line-height:1.2}
+.resp-text .big small{font-size:.95rem;font-weight:500;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.86rem;color:var(--muted);margin:0 0 16px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+.sw.f{background:var(--fav)}.sw.n{background:var(--neu)}.sw.u{background:var(--unf)}
+.stmts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:18px}
+.stmt-q{font-size:.97rem;margin:0 0 6px;font-weight:600}
+.f{fill:var(--fav)}.n{fill:var(--neu)}.u{fill:var(--unf)}
+.bt{font-size:12px;font-weight:700;fill:#fff}
+.bt.dark{fill:var(--neu-text)}
+.stmt-meta{font-size:.82rem;color:var(--muted);margin:5px 0 0}
+.avgbox{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 20px}
+.avgbox div{background:var(--bg);border-radius:10px;padding:12px}
+.avgbox .n2{display:block;font-size:1.4rem;font-weight:750;font-variant-numeric:tabular-nums;line-height:1.15}
+.avgbox .l{display:block;color:var(--muted);font-size:.8rem}
+.upc{color:var(--up)}.downc{color:var(--down)}
+.chg{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+.chg-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline;font-size:.93rem;margin-bottom:4px}
+.chg-head .v{white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--muted)}
+.pos{fill:var(--up)}.neg{fill:var(--down)}
+.zero{stroke:var(--muted);stroke-width:1.5}
+.ct{font-size:12px;font-weight:750}
+.ct.pos{fill:var(--up)}.ct.neg{fill:var(--down)}
+.scale{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin-top:6px}
+.note{margin:18px 0 0;padding:12px 14px;background:var(--soft);border-radius:10px;font-size:.94rem}
+.plan{list-style:none;margin:0;padding:0;position:relative}
+.plan li{position:relative;padding:0 0 22px 34px}
+.plan li:last-child{padding-bottom:0}
+.plan li::before{content:"";position:absolute;left:8px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--soft)}
+.plan li::after{content:"";position:absolute;left:13px;top:22px;bottom:2px;width:2px;background:var(--line)}
+.plan li:last-child::after{display:none}
+.when{display:block;font-size:.8rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--accent)}
+.what{display:block;font-weight:650;font-size:1.02rem;margin:2px 0}
+.why{display:block;font-size:.9rem;color:var(--muted)}
+footer{color:var(--muted);font-size:.82rem;text-align:center;margin-top:20px}
+@media (min-width:620px){section{padding:26px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="kicker">Northwind Freight &middot; People &amp; HR</p>
+  <h1>2026 engagement survey: what you told us</h1>
+  <p class="dek">Thank you to everyone who took part. Here are the results for all staff, how they compare with 2025, and what we are going to do about them.</p>
+</header>
+
+<section aria-labelledby="response">
+  <h2 id="response">Response</h2>
+  <p class="sub">Share of employees who completed the survey</p>
+  <div class="resp">
+    <svg width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="Response rate 79.4 percent: 842 of 1,060 employees">
+      <circle class="ring-bg" cx="60" cy="60" r="40"/>
+      <circle class="ring" cx="60" cy="60" r="40" stroke-dasharray="199.56 251.33" transform="rotate(-90 60 60)"/>
+      <text class="ring-t" x="60" y="64" text-anchor="middle">79.4%</text>
+      <text class="ring-s" x="60" y="78" text-anchor="middle">responded</text>
+    </svg>
+    <div class="resp-text">
+      <p class="big">842 <small>of 1,060 employees</small></p>
+      <p>Almost four in five of us responded, so these results speak for most of the company.</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="results">
+  <h2 id="results">Results by statement</h2>
+  <p class="sub">2026 responses, ordered from most to least favorable</p>
+  <div class="legend" aria-hidden="true">
+    <span><i class="sw f"></i>Favorable</span><span><i class="sw n"></i>Neutral</span><span><i class="sw u"></i>Unfavorable</span>
+  </div>
+  <ul class="stmts">
+    <li>
+      <p class="stmt-q">I understand how my work supports company goals</p>
+      <svg width="100%" height="30" role="img" aria-label="78 percent favorable, 15 percent neutral, 7 percent unfavorable">
+        <rect class="f" x="0" y="0" width="78%" height="30"/><rect class="n" x="78%" y="0" width="15%" height="30"/><rect class="u" x="93%" y="0" width="7%" height="30"/>
+        <text class="bt" x="39%" y="19.5" text-anchor="middle">78%</text><text class="bt dark" x="85.5%" y="19.5" text-anchor="middle">15%</text><text class="bt" x="96.5%" y="19.5" text-anchor="middle">7</text>
+      </svg>
+    </li>
+    <li>
+      <p class="stmt-q">I have the tools I need to do my job</p>
+      <svg width="100%" height="30" role="img" aria-label="71 percent favorable, 18 percent neutral, 11 percent unfavorable">
+        <rect class="f" x="0" y="0" width="71%" height="30"/><rect class="n" x="71%" y="0" width="18%" height="30"/><rect class="u" x="89%" y="0" width="11%" height="30"/>
+        <text class="bt" x="35.5%" y="19.5" text-anchor="middle">71%</text><text class="bt dark" x="80%" y="19.5" text-anchor="middle">18%</text><text class="bt" x="94.5%" y="19.5" text-anchor="middle">11</text>
+      </svg>
+    </li>
+    <li>
+      <p class="stmt-q">I would recommend this company as a place to work</p>
+      <svg width="100%" height="30" role="img" aria-label="69 percent favorable, 20 percent neutral, 11 percent unfavorable">
+        <rect class="f" x="0" y="0" width="69%" height="30"/><rect class="n" x="69%" y="0" width="20%" height="30"/><rect class="u" x="89%" y="0" width="11%" height="30"/>
+        <text class="bt" x="34.5%" y="19.5" text-anchor="middle">69%</text><text class="bt dark" x="79%" y="19.5" text-anchor="middle">20%</text><text class="bt" x="94.5%" y="19.5" text-anchor="middle">11</text>
+      </svg>
+    </li>
+    <li>
+      <p class="stmt-q">My manager gives me useful feedback</p>
+      <svg width="100%" height="30" role="img" aria-label="64 percent favorable, 22 percent neutral, 14 percent unfavorable">
+        <rect class="f" x="0" y="0" width="64%" height="30"/><rect class="n" x="64%" y="0" width="22%" height="30"/><rect class="u" x="86%" y="0" width="14%" height="30"/>
+        <text class="bt" x="32%" y="19.5" text-anchor="middle">64%</text><text class="bt dark" x="75%" y="19.5" text-anchor="middle">22%</text><text class="bt" x="93%" y="19.5" text-anchor="middle">14%</text>
+      </svg>
+    </li>
+    <li>
+      <p class="stmt-q">I see a path to grow here</p>
+      <svg width="100%" height="30" role="img" aria-label="49 percent favorable, 27 percent neutral, 24 percent unfavorable">
+        <rect class="f" x="0" y="0" width="49%" height="30"/><rect class="n" x="49%" y="0" width="27%" height="30"/><rect class="u" x="76%" y="0" width="24%" height="30"/>
+        <text class="bt" x="24.5%" y="19.5" text-anchor="middle">49%</text><text class="bt dark" x="62.5%" y="19.5" text-anchor="middle">27%</text><text class="bt" x="88%" y="19.5" text-anchor="middle">24%</text>
+      </svg>
+      <p class="stmt-meta">Lowest score this year</p>
+    </li>
+  </ul>
+</section>
+
+<section aria-labelledby="change">
+  <h2 id="change">Change since 2025</h2>
+  <p class="sub">Change in favorable percentage, in points</p>
+  <div class="avgbox">
+    <div><span class="n2">66.2%</span><span class="l">average favorable, 2026</span></div>
+    <div><span class="n2">65.0%</span><span class="l">average favorable, 2025</span></div>
+    <div><span class="n2 upc">+1.2</span><span class="l">points</span></div>
+  </div>
+  <ul class="chg">
+    <li>
+      <div class="chg-head"><span>Manager gives useful feedback</span><span class="v">61 &rarr; 64</span></div>
+      <svg width="100%" height="22" role="img" aria-label="Up 3 points, from 61 to 64 percent"><rect class="pos" x="50%" y="3" width="36%" height="16" rx="2"/><line class="zero" x1="50%" y1="0" x2="50%" y2="22"/><text class="ct pos" x="86%" dx="6" y="15.5">+3</text></svg>
+    </li>
+    <li>
+      <div class="chg-head"><span>Would recommend as a place to work</span><span class="v">66 &rarr; 69</span></div>
+      <svg width="100%" height="22" role="img" aria-label="Up 3 points, from 66 to 69 percent"><rect class="pos" x="50%" y="3" width="36%" height="16" rx="2"/><line class="zero" x1="50%" y1="0" x2="50%" y2="22"/><text class="ct pos" x="86%" dx="6" y="15.5">+3</text></svg>
+    </li>
+    <li>
+      <div class="chg-head"><span>Understand how work supports goals</span><span class="v">76 &rarr; 78</span></div>
+      <svg width="100%" height="22" role="img" aria-label="Up 2 points, from 76 to 78 percent"><rect class="pos" x="50%" y="3" width="24%" height="16" rx="2"/><line class="zero" x1="50%" y1="0" x2="50%" y2="22"/><text class="ct pos" x="74%" dx="6" y="15.5">+2</text></svg>
+    </li>
+    <li>
+      <div class="chg-head"><span>Have the tools to do my job</span><span class="v">70 &rarr; 71</span></div>
+      <svg width="100%" height="22" role="img" aria-label="Up 1 point, from 70 to 71 percent"><rect class="pos" x="50%" y="3" width="12%" height="16" rx="2"/><line class="zero" x1="50%" y1="0" x2="50%" y2="22"/><text class="ct pos" x="62%" dx="6" y="15.5">+1</text></svg>
+    </li>
+    <li>
+      <div class="chg-head"><span>See a path to grow here</span><span class="v">52 &rarr; 49</span></div>
+      <svg width="100%" height="22" role="img" aria-label="Down 3 points, from 52 to 49 percent"><rect class="neg" x="14%" y="3" width="36%" height="16" rx="2"/><line class="zero" x1="50%" y1="0" x2="50%" y2="22"/><text class="ct neg" x="14%" dx="-6" y="15.5" text-anchor="end">&minus;3</text></svg>
+    </li>
+  </ul>
+  <div class="scale" aria-hidden="true"><span>&larr; Declined</span><span>Improved &rarr;</span></div>
+  <p class="note"><b>Two clear messages.</b> Manager feedback and willingness to recommend Northwind each rose 3 points, the biggest gains. Growth is the only statement that fell, down 3 points, and at 49% it is now our lowest score.</p>
+</section>
+
+<section aria-labelledby="actions">
+  <h2 id="actions">What we will do</h2>
+  <p class="sub">Three commitments, in date order</p>
+  <ol class="plan">
+    <li>
+      <span class="when">Starting 1 December 2026</span>
+      <span class="what">Train 90 managers on giving feedback</span>
+      <span class="why">Building on this year&rsquo;s 3-point gain in useful feedback from managers.</span>
+    </li>
+    <li>
+      <span class="when">By 28 February 2027</span>
+      <span class="what">Publish the career framework</span>
+      <span class="why">So everyone can see how roles connect and what it takes to grow here &mdash; our lowest and only declining score.</span>
+    </li>
+    <li>
+      <span class="when">April 2027</span>
+      <span class="what">Run a short pulse check</span>
+      <span class="why">A quick survey to see whether these changes are making a difference.</span>
+    </li>
+  </ol>
+</section>
+
+<footer>Northwind Freight &middot; 2026 Engagement Survey &middot; 842 responses from 1,060 employees</footer>
+</div>
+</body>
+</html>

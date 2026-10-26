@@ -1,0 +1,10 @@
+data mix = item,a,b; X,2026-01-01,5; Y,1,2
+chart range mix from=a to=b
+data w = item,a,b; X,soon,5
+chart range w from=a to=b
+data n = item,a,b; X,1,5; Y,2,9
+chart range n from=a to=zzz
+chart range n from=a
+chart range n from=a to=b bands=1,2,3,4,5
+chart range n from=a to=b bands=1,later
+chart range n from=a to=b target="2026-01-01 x"

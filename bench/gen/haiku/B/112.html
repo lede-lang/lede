@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Electric Reliability Summary 2026</title>
+<style>
+:root {
+  --bg: #f3f5f7; --card: #ffffff; --ink: #172029; --muted: #5b6672; --rule: #d7dde3;
+  --track: #e6ebf0; --ok: #2d7a55; --bad: #b5472f; --target: #172029; --accent: #2d5f8a;
+  --c-storm: #2d5f8a; --c-equip: #b5472f; --c-veg: #3f8a5c; --c-other: #9aa5b1;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f151b; --card: #18212a; --ink: #e8edf2; --muted: #98a4b1; --rule: #2a3642;
+    --track: #223040; --ok: #6cc79a; --bad: #ef8b6e; --target: #e8edf2; --accent: #7fb2de;
+    --c-storm: #7fb2de; --c-equip: #ef8b6e; --c-veg: #6cc79a; --c-other: #5f6b78;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f151b; --card: #18212a; --ink: #e8edf2; --muted: #98a4b1; --rule: #2a3642;
+  --track: #223040; --ok: #6cc79a; --bad: #ef8b6e; --target: #e8edf2; --accent: #7fb2de;
+  --c-storm: #7fb2de; --c-equip: #ef8b6e; --c-veg: #6cc79a; --c-other: #5f6b78;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.5; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; }
+h1 { font-size: 1.7rem; margin: 0 0 4px; }
+.sub { color: var(--muted); margin: 0; }
+section { background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 20px; margin-top: 18px; }
+h2 { font-size: 1.2rem; margin: 0 0 12px; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.stat { background: var(--bg); border-radius: 10px; padding: 12px; }
+.stat .v { font-size: 1.45rem; font-weight: 700; }
+.stat .l { font-size: 0.85rem; color: var(--muted); }
+.row { display: grid; grid-template-columns: 84px 1fr 52px; align-items: center; gap: 10px; margin: 8px 0; }
+.row .name { font-size: 0.95rem; }
+.track { position: relative; height: 16px; background: var(--track); border-radius: 4px; }
+.fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: var(--ok); }
+.fill.over { background: var(--bad); }
+.tline { position: absolute; top: -5px; bottom: -5px; width: 2px; background: var(--target); left: 59.66%; }
+.val { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+.legend { font-size: 0.85rem; color: var(--muted); margin-top: 8px; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+th, td { padding: 8px 6px; border-bottom: 1px solid var(--rule); text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+tfoot td { font-weight: 700; }
+.tag { display: inline-block; font-size: 0.8rem; padding: 2px 8px; border-radius: 999px; }
+.tag.over { background: color-mix(in srgb, var(--bad) 18%, transparent); color: var(--bad); }
+.tag.under { background: color-mix(in srgb, var(--ok) 18%, transparent); color: var(--ok); }
+.stack { display: flex; height: 26px; border-radius: 6px; overflow: hidden; margin: 8px 0 6px; }
+.stack div { height: 100%; }
+.keys { display: flex; flex-wrap: wrap; gap: 12px; font-size: 0.9rem; color: var(--muted); }
+.keys span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: middle; background: var(--k); }
+ul { padding-left: 20px; margin: 8px 0; }
+li { margin-bottom: 6px; }
+@media (max-width: 480px) {
+  .stats { grid-template-columns: 1fr; }
+  .row { grid-template-columns: 70px 1fr 44px; gap: 8px; }
+}
+</style>
+</head>
+<body>
+<main>
+  <h1>Electric reliability, January to September 2026</h1>
+  <p class="sub">Northwind Utilities. Data summary prepared by Sven Lindqvist, reliability engineering, for the state regulator and the board.</p>
+
+  <section>
+    <h2>Reliability at a glance</h2>
+    <div class="stats">
+      <div class="stat"><div class="v">99.6</div><div class="l">Avg outage minutes per customer, year to date</div></div>
+      <div class="stat"><div class="v">105</div><div class="l">Regulator target for the period</div></div>
+      <div class="stat"><div class="v">412,000</div><div class="l">Customers served, 177 outage events</div></div>
+    </div>
+    <p style="margin-top:12px">The system as a whole meets the target. Three districts do not: Hills, Plains and Coastal are each above 105 minutes.</p>
+  </section>
+
+  <section>
+    <h2>By district</h2>
+    <p class="sub" style="margin-bottom:8px">Average outage minutes per customer. The vertical line marks the 105-minute target. Red bars are above target.</p>
+
+    <div class="row"><div class="name">Hills</div><div class="track"><div class="fill over" style="width:100%"></div><div class="tline"></div></div><div class="val">176</div></div>
+    <div class="row"><div class="name">Plains</div><div class="track"><div class="fill over" style="width:74.4%"></div><div class="tline"></div></div><div class="val">131</div></div>
+    <div class="row"><div class="name">Coastal</div><div class="track"><div class="fill over" style="width:63.6%"></div><div class="tline"></div></div><div class="val">112</div></div>
+    <div class="row"><div class="name">Valley</div><div class="track"><div class="fill" style="width:47.7%"></div><div class="tline"></div></div><div class="val">84</div></div>
+    <div class="row"><div class="name">Metro</div><div class="track"><div class="fill" style="width:27.8%"></div><div class="tline"></div></div><div class="val">49</div></div>
+    <p class="legend">Scale runs 0 to 176 minutes.</p>
+
+    <h3 style="font-size:1rem;margin:20px 0 8px">District detail, largest first</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>District</th><th>Customers</th><th>Share</th><th>Outage events</th><th>Avg minutes</th><th>Against 105</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Valley</td><td>142,000</td><td>34.5%</td><td>58</td><td>84</td><td><span class="tag under">Under target</span></td></tr>
+          <tr><td>Coastal</td><td>98,000</td><td>23.8%</td><td>41</td><td>112</td><td><span class="tag over">Above target</span></td></tr>
+          <tr><td>Metro</td><td>87,000</td><td>21.1%</td><td>22</td><td>49</td><td><span class="tag under">Under target</span></td></tr>
+          <tr><td>Hills</td><td>61,000</td><td>14.8%</td><td>37</td><td>176</td><td><span class="tag over">Above target</span></td></tr>
+          <tr><td>Plains</td><td>24,000</td><td>5.8%</td><td>19</td><td>131</td><td><span class="tag over">Above target</span></td></tr>
+        </tbody>
+        <tfoot>
+          <tr><td>System</td><td>412,000</td><td>100%</td><td>177</td><td>99.6</td><td><span class="tag under">Meets target</span></td></tr>
+        </tfoot>
+      </table>
+    </div>
+    <p class="sub" style="margin-top:10px">Hills is the worst performer by a wide margin: 176 minutes, 71 above target. Valley, the largest district with 142,000 customers, is well under target at 84 minutes.</p>
+  </section>
+
+  <section>
+    <h2>Causes</h2>
+    <p class="sub">Share of outage minutes by cause.</p>
+    <div class="stack" role="img" aria-label="Storms 46 percent, equipment failure 27, vegetation 15, other 12">
+      <div style="width:46%;background:var(--c-storm)"></div>
+      <div style="width:27%;background:var(--c-equip)"></div>
+      <div style="width:15%;background:var(--c-veg)"></div>
+      <div style="width:12%;background:var(--c-other)"></div>
+    </div>
+    <div class="keys">
+      <span style="--k:var(--c-storm)">Storms 46%</span>
+      <span style="--k:var(--c-equip)">Equipment failure 27%</span>
+      <span style="--k:var(--c-veg)">Vegetation 15%</span>
+      <span style="--k:var(--c-other)">Other 12%</span>
+    </div>
+    <p style="margin-top:12px">Storms account for almost half of all outage minutes. Equipment failure is the second largest cause at 27 percent.</p>
+    <p class="sub">Metro's low figure of 49 minutes reflects its underground cables.</p>
+  </section>
+
+  <section>
+    <h2>Next steps</h2>
+    <ul>
+      <li>A tree-trimming program in Hills was approved to start on 2026-11-02. It has a budget of $1.8 million and covers 210 line miles.</li>
+      <li>Continue monitoring Plains and Coastal, the other two districts above the 105-minute target.</li>
+      <li>Report the year-to-date figures to the state regulator and the board.</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>

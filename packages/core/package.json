@@ -1,0 +1,39 @@
+{
+  "name": "@lede-lang/core",
+  "version": "0.1.0",
+  "description": "Streaming parser for Lede, a line-oriented document format: lines in, typed AST and diagnostics out",
+  "keywords": [
+    "lede",
+    "parser",
+    "document-format",
+    "llm"
+  ],
+  "license": "Apache-2.0",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lede-lang/lede.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/lede-lang/lede#readme",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "files": [
+    "dist",
+    "!dist/.tsbuildinfo",
+    "src"
+  ],
+  "exports": "./src/index.ts",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true,
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "types": "./dist/index.d.ts"
+  }
+}

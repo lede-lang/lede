@@ -1,0 +1,40 @@
+{
+  "id": "04-incident-free-days",
+  "category": "status",
+  "title": "Days without a Sev1",
+  "brief": "Small one: the SRE team at Fernhill Labs wants a simple page for the office TV titled \"Days without a Sev1\". The headline should be a single huge number: 143 days since the last Sev1 incident, which was the search outage on 2026-05-26. Underneath, a bar chart of Sev1 and Sev2 incidents per month for 2026, with Sev1 and Sev2 as two series: Jan Sev1 1 and Sev2 4, Feb 0 and 3, Mar 1 and 5, Apr 0 and 2, May 1 and 4, Jun 0 and 1, Jul 0 and 3, Aug 0 and 2, Sep 0 and 1. Then a section titled \"Longest streaks\" with a short list: current streak 143 days, previous record 97 days (2025), runner-up 64 days (2024). Add a friendly note at the bottom in a callout: the streak counter resets only on a declared Sev1, not on Sev2s, and any engineer can declare one from the #incidents channel.",
+  "checklist": {
+    "sections": [
+      "Days without a Sev1",
+      "Longest streaks"
+    ],
+    "visible": [
+      "Sev1",
+      "Sev2",
+      "search outage",
+      "#incidents"
+    ],
+    "values": [
+      "143",
+      "97",
+      "64",
+      "2026-05-26"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "A Sev1 happened today: reset the headline to 0 days, change the last Sev1 to the billing outage on 2026-10-16, and add October to the chart with Sev1 1 and Sev2 2.",
+    "expect_visible": [
+      "billing outage"
+    ],
+    "expect_values": [
+      "2026-10-16"
+    ],
+    "expect_absent": []
+  }
+}

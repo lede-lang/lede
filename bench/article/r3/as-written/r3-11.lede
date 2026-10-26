@@ -1,0 +1,86 @@
+@title Autumn Grants Round: Funding Order Worksheet
+@subtitle $400,000 to give out, 14 requests, staff order by score as the starting point
+@width wide
+
+! This page is a fixed worksheet, not a live tool: it cannot be dragged or recalculated. It gives the staff order, the running total against $400,000, where the money runs out, every condition that must be settled first, and a decision sheet to fill in and send to the grants clerk.
+
+kpi Available | $400,000
+kpi Requested | $773,850 | 1.9 times the money | bad
+kpi Short by | $373,850 | requests over budget | bad
+kpi Conditional requests | $359,400 | 5 of 14 requests | bad
+
+# Staff order, with the running total
+
+Staff order is by score, highest first. The running total adds each request in full, in that order, against the $400,000.
+
+data run = ref,running total; G-102,62500; G-111,103500; G-106,158300; G-101,206300; G-110,228450; G-105,315750; G-112,410750; G-109,487150; G-114,537150; G-103,572350; G-108,602250; G-113,635850; G-104,755850; G-107,773850
+
+chart bar run y=running total target="400000 budget" unit=$ title="Running total of requests in staff order"
+
+!! In staff order the money runs out at **G-112** (Calloway Valley Fire Safe Council). After the first six requests, $315,750 is committed and $84,250 is left, but G-112 asks for $95,000: **$10,750 more than what remains**. The panel must either fund G-112 partly, defer it, or skip to a smaller request.
+
+## All 14 requests
+
+data staff = rank,ref,applicant,project,requested,score,running total,left of $400,000,flag,panel notes; 1,G-102,Riverside Seniors' Association,"Warm Meals, Warm Rooms (winter program)","$62,500",91,"$62,500","$337,500",,Matches last year's funded program
+data staff += 2,G-111,Northgate Food Pantry,Walk-in freezer replacement,"$41,000",90,"$103,500","$296,500",,"Urgent; current unit failing"
+data staff += 3,G-106,New Arrivals Collective,"Language; Law; Livelihood: legal clinic series","$54,800",88,"$158,300","$241,700",,Waitlist of 140 families
+data staff += 4,G-101,Eastside Youth Boxing Club,"“Gloves Off, Grades Up”: after-school tutoring + boxing","$48,000",86,"$206,300","$193,700",,"Strong outcomes; two panelists want a smaller ask"
+data staff += 5,G-110,Pine Street Tool Library,Tools for Tenants (repair workshops),"$22,150",85,"$228,450","$171,550",,"Tiny budget, big reach"
+data staff += 6,G-105,Lakeshore Literacy Project,Read-Aloud Vans (two vehicles),"$87,300",83,"$315,750","$84,250",,Vehicles are 70% of the cost
+data staff += 7,G-112,Calloway Valley Fire Safe Council,Defensible space for 60 low-income homes,"$95,000",82,"$410,750",**over by $10,750**,At risk,Conflicts with G-104? Same neighborhood
+data staff += 8,G-109,The Brightwater Theatre,“Open Doors”: accessible seating retrofit,"$76,400",80,"$487,150","over by $87,150",At risk,Building owner has not given written consent
+data staff += 9,G-114,Unity Credit Circle,Emergency micro-loans pool,"$50,000",79,"$537,150","over by $137,150",At risk,"Seeking match funding; confirmed: none yet"
+data staff += 10,G-103,O'Donnell Family Farm Trust,Soil to Table: school garden pilot,"$35,200",78,"$572,350","over by $172,350",,New applicant
+data staff += 11,G-108,Hillcrest Animal Rescue,Spay & neuter vouchers,"$29,900",74,"$602,250","over by $202,250",,
+data staff += 12,G-113,Youth Voices Radio,Teen newsroom: equipment and stipends,"$33,600",72,"$635,850","over by $235,850",,"Stipends are $11,200 of it"
+data staff += 13,G-104,Third Ward Neighborhood Council,"Safe Routes: crosswalk paint, lighting, signage","$120,000",69,"$755,850","over by $355,850",At risk,"City may fund part of this; check"
+data staff += 14,G-107,Marisol Vega (individual),Mural at the old depot,"$18,000",61,"$773,850","over by $373,850",At risk,"Not a registered charity; needs fiscal sponsor"
+
+table staff
+
+# Rules a choice can break
+
+Five requests are conditional. Whatever order the panel agrees, committing money to any of these before its condition is settled breaks a rule.
+
+table = ref,applicant,requested,condition to settle first; G-104,Third Ward Neighborhood Council,"$120,000","Find out what the city will fund, since it may fund part of this."; G-107,Marisol Vega (individual),"$18,000","Not a registered charity, so a fiscal sponsor is needed."; G-109,The Brightwater Theatre,"$76,400","Written consent from the building owner has not been given."; G-112,Calloway Valley Fire Safe Council,"$95,000","Decide whether it conflicts with G-104, which is in the same neighborhood."; G-114,Unity Credit Circle,"$50,000","Seeking match funding, and none is confirmed yet."
+
+!! G-112 is both the request that crosses the $400,000 line in staff order and a conditional one. G-104 and G-112 together ask for $215,000, more than half the budget.
+
+# Other things the panel will weigh
+
+- **G-101** ($48,000, score 86): two panelists want a smaller ask, so this is a likely partial grant.
+- **G-105** ($87,300, score 83): vehicles are 70% of the cost, about $61,100.
+- **G-113** ($33,600, score 72): stipends are $11,200 of the request, a third of it.
+- **G-103** ($35,200, score 78): a new applicant, so no track record with the foundation.
+- **G-111** ($41,000, score 90): urgent, because the current freezer is failing.
+
+# One alternative to compare
+
+If the panel funds in staff order but holds back all five conditional requests (G-104, G-107, G-109, G-112, G-114), the funded set is G-102, G-111, G-106, G-101, G-110, G-105, G-103 and G-108. That commits $380,850 and leaves $19,150. The next request in line, G-113 at $33,600, would be $14,450 over, so it would need a partial grant or a deferral.
+
+# Decision sheet for the grants clerk
+
+Fill in one line per request. Decision is one of: Funded in full, Funded partly (type the amount), Deferred, Declined. Add the reason for any change from the staff order.
+
+```
+Autumn grants round: panel decisions
+Budget: $400,000   Committed: $________   Left: $________
+
+Ref   | Applicant                          | Requested | Decision | Amount awarded | Reason / note
+G-101 | Eastside Youth Boxing Club         | $48,000   |          |                |
+G-102 | Riverside Seniors' Association     | $62,500   |          |                |
+G-103 | O'Donnell Family Farm Trust        | $35,200   |          |                |
+G-104 | Third Ward Neighborhood Council    | $120,000  |          |                |
+G-105 | Lakeshore Literacy Project         | $87,300   |          |                |
+G-106 | New Arrivals Collective            | $54,800   |          |                |
+G-107 | Marisol Vega (individual)          | $18,000   |          |                |
+G-108 | Hillcrest Animal Rescue            | $29,900   |          |                |
+G-109 | The Brightwater Theatre            | $76,400   |          |                |
+G-110 | Pine Street Tool Library           | $22,150   |          |                |
+G-111 | Northgate Food Pantry              | $41,000   |          |                |
+G-112 | Calloway Valley Fire Safe Council  | $95,000   |          |                |
+G-113 | Youth Voices Radio                 | $33,600   |          |                |
+G-114 | Unity Credit Circle                | $50,000   |          |                |
+
+Conditions outstanding (G-104, G-107, G-109, G-112, G-114):
+```

@@ -1,0 +1,34 @@
+@title Aurora Manual Failover Runbook
+@subtitle orders-aurora-prod (Aurora PostgreSQL)
+@author Database Reliability, Fenwick Bank
+
+## When to use this runbook
+
+Use this runbook when the writer instance has been unhealthy for more than 5 minutes and automatic failover has not happened, or for a planned failover during the Sunday maintenance window (02:00 to 04:00 UTC).
+
+## Prerequisites
+
+- The break-glass role `db-failover-operator`.
+- Access to the #db-incidents channel.
+- The replica lag dashboard open.
+
+## Failover steps
+
+1. Announce the failover in #db-incidents.
+2. Confirm replica lag on the target reader is under 30 seconds.
+3. Put the orders service into read-only mode with the feature flag `orders.readonly`.
+
+!!! **Never fail over to a reader whose lag exceeds 30 seconds.** Committed orders will be lost.
+
+4. Trigger the failover to reader instance `orders-aurora-prod-r2`.
+5. Wait for the cluster endpoint to point at the new writer (usually 30 to 60 seconds).
+6. Turn `orders.readonly` off.
+7. Watch the connection count recover to its normal level of about 400.
+
+## Verification
+
+table = Check,Expected; Writer instance,`orders-aurora-prod-r2`; Replica lag,under 1 second; Error rate on orders API,under 0.5%; Connections,about 400
+
+## Rollback
+
+If the new writer is unhealthy, fail back to `orders-aurora-prod-r1` using the same steps, and escalate to the on-call DBA lead.

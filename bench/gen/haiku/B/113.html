@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Course Completion Summary</title>
+<style>
+:root {
+  --bg: #f6f5f2; --card: #ffffff; --ink: #1f1d1a; --muted: #625d55; --rule: #dcd8d0;
+  --accent: #6b3fa0; --soft: #b9a5d6; --bar: #6b3fa0; --bar2: #c9bfd9;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161419; --card: #1f1c24; --ink: #ece9f0; --muted: #a79fb2; --rule: #3a3443;
+    --accent: #c4aee8; --soft: #5b4a78; --bar: #c4aee8; --bar2: #4a3f5c;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #161419; --card: #1f1c24; --ink: #ece9f0; --muted: #a79fb2; --rule: #3a3443;
+  --accent: #c4aee8; --soft: #5b4a78; --bar: #c4aee8; --bar2: #4a3f5c;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: Georgia, "Iowan Old Style", serif; line-height: 1.6; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; }
+h1 { font-size: 1.8rem; margin: 0 0 4px; line-height: 1.2; }
+.sub { color: var(--muted); margin: 0; font-family: system-ui, sans-serif; font-size: 0.95rem; }
+section { background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 20px; margin-top: 18px; }
+h2 { font-size: 1.25rem; margin: 0 0 10px; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-family: system-ui, sans-serif; }
+.stat { background: var(--bg); border-radius: 10px; padding: 12px; }
+.stat .v { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+.stat .l { font-size: 0.85rem; color: var(--muted); }
+.chart { font-family: system-ui, sans-serif; }
+.chart text { fill: var(--muted); font-size: 12px; }
+.chart .val { fill: var(--ink); font-weight: 600; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-family: system-ui, sans-serif; font-size: 0.95rem; }
+th, td { padding: 8px 6px; border-bottom: 1px solid var(--rule); text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+.notes p { font-size: 0.97rem; }
+.notes strong { color: var(--accent); }
+@media (max-width: 480px) { .stats { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Course completion summary</h1>
+  <p class="sub">Online and blended courses, Fall 2024 to Spring 2026. Whitfield College Institutional Research, led by Dr. Aaliyah Brandt. For the academic senate, 2026-11-10.</p>
+
+  <section>
+    <h2>Completion at a glance</h2>
+    <div class="stats">
+      <div class="stat"><div class="v">79.0%</div><div class="l">Completion, Spring 2026</div></div>
+      <div class="stat"><div class="v">+9 pts</div><div class="l">Up from 70.0% in Fall 2024</div></div>
+      <div class="stat"><div class="v">1,502</div><div class="l">Students enrolled, Spring 2026</div></div>
+    </div>
+    <p style="margin-top:12px">Completion has risen in every term, from 70.0 percent to 79.0 percent over four terms. The biggest single jump, 5 points, came in Fall 2025, when free tutoring for first-year students started on 2025-08-25.</p>
+  </section>
+
+  <section>
+    <h2>Term by term</h2>
+    <svg class="chart" viewBox="0 0 560 280" width="100%" role="img" aria-label="Completion rate by term: 70.0, 72.0, 77.0, 79.0 percent">
+      <line x1="50" y1="230" x2="545" y2="230" stroke="var(--rule)"/>
+      <line x1="50" y1="30" x2="50" y2="230" stroke="var(--rule)"/>
+      <line x1="50" y1="130" x2="545" y2="130" stroke="var(--rule)" stroke-dasharray="3 4"/>
+      <text x="44" y="234" text-anchor="end">0%</text>
+      <text x="44" y="134" text-anchor="end">50%</text>
+      <text x="44" y="34" text-anchor="end">100%</text>
+      <!-- scale: 2 px per percent; baseline 230 -->
+      <rect x="85" y="90" width="90" height="140" rx="4" fill="var(--bar2)"/>
+      <rect x="205" y="86" width="90" height="144" rx="4" fill="var(--bar2)"/>
+      <rect x="325" y="76" width="90" height="154" rx="4" fill="var(--bar2)"/>
+      <rect x="445" y="72" width="90" height="158" rx="4" fill="var(--bar)"/>
+      <text class="val" x="130" y="80" text-anchor="middle">70.0%</text>
+      <text class="val" x="250" y="76" text-anchor="middle">72.0%</text>
+      <text class="val" x="370" y="66" text-anchor="middle">77.0%</text>
+      <text class="val" x="490" y="62" text-anchor="middle">79.0%</text>
+      <text x="130" y="252" text-anchor="middle">Fall 2024</text>
+      <text x="250" y="252" text-anchor="middle">Spring 2025</text>
+      <text x="370" y="252" text-anchor="middle">Fall 2025</text>
+      <text x="490" y="252" text-anchor="middle">Spring 2026</text>
+    </svg>
+
+    <div class="table-wrap" style="margin-top:12px">
+      <table>
+        <thead><tr><th>Term</th><th>Enrolled</th><th>Completed</th><th>Completion</th></tr></thead>
+        <tbody>
+          <tr><td>Fall 2024</td><td>1,240</td><td>868</td><td>70.0%</td></tr>
+          <tr><td>Spring 2025</td><td>1,315</td><td>947</td><td>72.0%</td></tr>
+          <tr><td>Fall 2025</td><td>1,410</td><td>1,086</td><td>77.0%</td></tr>
+          <tr><td>Spring 2026</td><td>1,502</td><td>1,187</td><td>79.0%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>By format, Spring 2026</h2>
+    <svg class="chart" viewBox="0 0 560 220" width="100%" role="img" aria-label="Spring 2026 completion by format: in person 86.0, hybrid 80.0, online 68.1 percent">
+      <line x1="120" y1="20" x2="120" y2="190" stroke="var(--rule)"/>
+      <!-- scale: 4 px per percent, 0 at x=120; 100% = 400px -->
+      <text x="112" y="46" text-anchor="end">In person</text>
+      <rect x="120" y="30" width="344" height="24" rx="4" fill="var(--bar)"/>
+      <text class="val" x="472" y="47">86.0%</text>
+      <text x="112" y="106" text-anchor="end">Hybrid</text>
+      <rect x="120" y="90" width="320" height="24" rx="4" fill="var(--bar2)"/>
+      <text class="val" x="448" y="107">80.0%</text>
+      <text x="112" y="166" text-anchor="end">Online</text>
+      <rect x="120" y="150" width="272.4" height="24" rx="4" fill="var(--soft)"/>
+      <text class="val" x="400" y="167">68.1%</text>
+      <text x="120" y="204" text-anchor="start">0%</text>
+    </svg>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Format</th><th>Enrolled</th><th>Completed</th><th>Completion</th></tr></thead>
+        <tbody>
+          <tr><td>In person</td><td>520</td><td>447</td><td>86.0%</td></tr>
+          <tr><td>Hybrid</td><td>600</td><td>480</td><td>80.0%</td></tr>
+          <tr><td>Online</td><td>382</td><td>260</td><td>68.1%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="sub" style="margin-top:10px">Online courses complete about 18 points below in-person ones. Online is the format with the most room to improve.</p>
+  </section>
+
+  <section class="notes">
+    <h2>Notes</h2>
+    <p><strong>Completed</strong> means the student earned a passing grade. It does not measure attendance.</p>
+    <p><strong>Enrolled</strong> excludes withdrawals made before the census date, which falls on the 15th day of the term.</p>
+  </section>
+</main>
+</body>
+</html>

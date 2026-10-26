@@ -1,0 +1,36 @@
+@title Portside Bike Share: Two-Week Demand
+@subtitle 2026-10-05 to 2026-10-18, for rebalancing crew planning
+@author Operations team, Portside Bike Share
+
+data daily = day,rides; Mon 05,3120; Tue 06,3340; Wed 07,3510; Thu 08,2280; Fri 09,3690; Sat 10,5120; Sun 11,4980; Mon 12,3250; Tue 13,3460; Wed 14,3580; Thu 15,3720; Fri 16,3810; Sat 17,5340; Sun 18,5210
+data weeks = week,rides; Week 1,26040; Week 2,28370
+data split = day type,average rides; Weekend days,5162.5; Weekdays,3376
+
+# Two weeks at a glance
+
+kpi Total rides | 54,410 | 14 days | neutral
+kpi Daily average | 3,886 | rides a day | neutral
+kpi Week 2 vs week 1 | 28,370 | +8.9% on 26,040 | good
+
+kpi Busiest day | 5,340 | Sat 2026-10-17 | neutral
+kpi Quietest day | 2,280 | Thu 2026-10-08 | neutral
+
+The system has 86 stations and 1,100 bikes.
+
+# Daily rides
+
+Saturdays and Sundays lead both weeks. Saturday 2026-10-17 was the peak at 5,340 rides.
+
+chart line daily x=day y=rides title="Rides per day"
+
+!! Thu 2026-10-08 was the quietest day at 2,280 rides. It was rainy, with 31 mm of rain.
+
+# Weekdays and weekends
+
+Weekend days averaged 5,162.5 rides against 3,376 for weekdays, so weekends carry about 1.5 times the load.
+
+chart bar split y=average rides labels title="Average rides per day"
+
+table weeks title="Rides by week"
+
+! Extra rebalancing crews will do the most good on Saturdays and Sundays.

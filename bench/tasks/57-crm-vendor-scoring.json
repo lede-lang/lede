@@ -1,0 +1,62 @@
+{
+  "id": "57-crm-vendor-scoring",
+  "category": "comparison",
+  "title": "CRM vendor scoring",
+  "brief": "Our sales operations lead at Hartwell Industrial Supply has to pick a new CRM for 140 sales and account-management seats, and the vendor shortlist is Pipeboard, Cardinal CRM and Thistle. We scored each from 1 to 5 against five weighted criteria. Weights: Fit to our workflow 30 percent, Integration with our ERP 25, Cost 20, Admin effort 15, Support quality 10. Pipeboard scored 4, 5, 3, 4, 4; Cardinal CRM scored 5, 3, 2, 3, 5; Thistle scored 3, 4, 5, 3, 3 (in the same criteria order). The weighted totals therefore come to 4.05 for Pipeboard, 3.60 for Cardinal CRM and 3.65 for Thistle. List prices per seat per month are 65 dollars for Pipeboard, 89 dollars for Cardinal CRM and 42 dollars for Thistle, so 140 seats cost 109200, 149520 and 70560 dollars a year. Under \"Scorecard\" show the scoring, under \"Annual license cost\" the cost comparison, under \"Risks\" a short note for each vendor (Pipeboard: the ERP connector is certified but the vendor is a 2019 startup; Cardinal CRM: best fit but needs a 12-week implementation and a partner; Thistle: cheapest, but its reporting is weak and two of our dashboards would have to be rebuilt elsewhere), and under \"Recommendation\" say we go with Pipeboard, pending a reference call with another industrial distributor, which is scheduled for 2026-10-28.",
+  "checklist": {
+    "sections": [
+      "Scorecard",
+      "Annual license cost",
+      "Risks",
+      "Recommendation"
+    ],
+    "visible": [
+      "Pipeboard",
+      "Cardinal CRM",
+      "Thistle",
+      "Fit to our workflow",
+      "Integration with our ERP",
+      "Cost",
+      "Admin effort",
+      "Support quality",
+      "reference call"
+    ],
+    "values": [
+      "140",
+      "30",
+      "25",
+      "20",
+      "15",
+      "10",
+      "4.05",
+      "3.60",
+      "3.65",
+      "65",
+      "89",
+      "42",
+      "109200",
+      "149520",
+      "70560",
+      "12-week",
+      "2026-10-28"
+    ]
+  },
+  "needs": [
+    "table",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Thistle just dropped its price to 36 dollars per seat per month. Update its seat price and its annual license cost (still 140 seats) everywhere, and keep the scores as they are.",
+    "expect_visible": [
+      "36 dollars"
+    ],
+    "expect_values": [
+      "60480"
+    ],
+    "expect_absent": [
+      "70560"
+    ]
+  }
+}

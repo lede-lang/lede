@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>After-Hours Care Options</title>
+<style>
+:root{color-scheme:light dark;--bg:#f4f7f7;--card:#fff;--ink:#17201f;--muted:#5a6866;--line:#d7e0df;--accent:#0b6b74;--accent-soft:#e0f1f2;--rec:#0a7a45;--rec-soft:#e5f5ec;--later:#5b4bb0;--later-soft:#eeebfa;--warn:#9a4a00;--warn-soft:#fff3e0;--no:#b42318;--bar:#93a3a1}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1313;--card:#161d1d;--ink:#e5eded;--muted:#9aaba9;--line:#2b3837;--accent:#5fc6cf;--accent-soft:#122d30;--rec:#4cc98a;--rec-soft:#12301f;--later:#a99cff;--later-soft:#211c3c;--warn:#f2a650;--warn-soft:#33240f;--no:#ff7b6e;--bar:#6c7e7c}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+main{max-width:900px;margin:0 auto;padding:34px 16px 64px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+h1{font-size:clamp(1.55rem,5vw,2.3rem);line-height:1.15;margin:.35rem 0 .7rem}
+.lead{color:var(--muted);margin:0 0 .8rem}
+.meta{display:flex;flex-wrap:wrap;gap:.4rem .6rem;font-size:.86rem;color:var(--muted)}
+.meta span{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:.15rem .7rem}
+.ask{margin-top:20px;background:var(--rec-soft);border:1px solid var(--rec);border-left-width:6px;border-radius:12px;padding:16px}
+.ask .k{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;font-weight:800;color:var(--rec)}
+.ask p{margin:.3rem 0 0}
+section{margin-top:40px}
+h2{font-size:1.3rem;margin:0 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+p{margin:0 0 .8rem}
+.opts{display:grid;gap:12px}
+@media (min-width:740px){.opts{grid-template-columns:repeat(3,1fr)}}
+.op{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column}
+.op.now{border:2px solid var(--rec)}
+.op.later{border:2px dashed var(--later)}
+.op h3{margin:0 0 4px;font-size:1.08rem}
+.op .sub{font-size:.86rem;color:var(--muted);margin-bottom:10px}
+.badge{align-self:flex-start;font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border-radius:4px;padding:2px 6px;margin-bottom:6px;color:var(--card)}
+.badge.now{background:var(--rec)}.badge.later{background:var(--later)}.badge.hold{background:var(--muted)}
+dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-size:.94rem}
+dt{color:var(--muted)}
+dd{margin:0;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.chart{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.chart svg{display:block;width:100%;height:auto;max-width:660px}
+.note{font-size:.86rem;color:var(--muted);margin-top:8px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);font-size:.94rem}
+th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:.76rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+td.y{color:var(--rec);font-weight:700}
+td.n{color:var(--no);font-weight:700}
+.capgrid{display:grid;gap:12px}
+@media (min-width:740px){.capgrid{grid-template-columns:repeat(3,1fr)}}
+.cap{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.cap h3{margin:0 0 8px;font-size:1.02rem}
+.cap ul{list-style:none;margin:0;padding:0;font-size:.93rem}
+.cap li{position:relative;padding-left:1.5rem;margin:6px 0}
+.cap li::before{position:absolute;left:0;font-weight:900}
+.cap li.c::before{content:"✓";color:var(--rec)}
+.cap li.x::before{content:"✕";color:var(--no)}
+.plan{display:grid;gap:10px}
+@media (min-width:680px){.plan{grid-template-columns:repeat(3,1fr)}}
+.st{border-radius:12px;padding:14px 16px;border:1px solid var(--line);background:var(--card)}
+.st .k{font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em}
+.st.now{background:var(--rec-soft);border-color:var(--rec)}.st.now .k{color:var(--rec)}
+.st.later{background:var(--later-soft);border-color:var(--later)}.st.later .k{color:var(--later)}
+.st.hold .k{color:var(--muted)}
+.st h3{margin:4px 0 4px;font-size:1.05rem}
+.st p{margin:0;font-size:.93rem}
+footer{margin-top:48px;font-size:.85rem;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<main>
+<header>
+<div class="eyebrow">Larch Valley Medical Group · Partners' meeting</div>
+<h1>Adding after-hours care for our 38,000 patients</h1>
+<div class="meta"><span>Partners' meeting 2026-11-04</span><span>Prepared by Odette Rousseau, Practice Manager</span></div>
+<div class="ask" role="note"><div class="k">Decision needed on 2026-11-04</div><p>Approve the <strong>$260,000 annual budget for telehealth urgent care</strong>. We recommend starting telehealth now and adding the nurse triage line in the second half of 2027.</p></div>
+</header>
+
+<section id="options">
+<h2>Options</h2>
+<div class="opts">
+<div class="op"><span class="badge hold">Under consideration</span><h3>Extended clinic hours</h3><div class="sub">Clinic open until 21:00</div><dl><dt>Annual cost</dt><dd>$410,000</dd><dt>Volume</dt><dd>~900 visits/mo</dd><dt>Average wait</dt><dd>25 min</dd></dl></div>
+<div class="op now"><span class="badge now">Start now</span><h3>Telehealth urgent care</h3><div class="sub">Remote urgent care visits</div><dl><dt>Annual cost</dt><dd>$260,000</dd><dt>Volume</dt><dd>~1,500 visits/mo</dd><dt>Average wait</dt><dd>12 min</dd></dl></div>
+<div class="op later"><span class="badge later">Add H2 2027</span><h3>Nurse triage phone line</h3><div class="sub">Open 17:00 to 23:00</div><dl><dt>Annual cost</dt><dd>$185,000</dd><dt>Volume</dt><dd>~2,200 calls/mo</dd><dt>Answered within</dt><dd>3 min</dd></dl></div>
+</div>
+</section>
+
+<section id="cost-per-contact">
+<h2>Cost per contact</h2>
+<p>Annual cost divided by twelve months of visits or calls.</p>
+<div class="chart">
+<svg viewBox="0 0 400 190" role="img" aria-label="Cost per contact: extended hours about 38 dollars, telehealth about 14 dollars, nurse triage line about 7 dollars.">
+<g font-size="13" font-weight="650" fill="var(--ink)">
+<text x="0" y="18">Extended clinic hours</text>
+<text x="0" y="74" fill="var(--rec)">Telehealth urgent care</text>
+<text x="0" y="130">Nurse triage line</text>
+</g>
+<rect x="0" y="26" width="285" height="22" rx="3" fill="var(--bar)"/>
+<text x="293" y="42" font-size="13" font-weight="700" fill="var(--ink)">≈ $38</text>
+<rect x="0" y="82" width="105" height="22" rx="3" fill="var(--rec)"/>
+<text x="113" y="98" font-size="13" font-weight="700" fill="var(--ink)">≈ $14</text>
+<rect x="0" y="138" width="52.5" height="22" rx="3" fill="var(--later)"/>
+<text x="60" y="154" font-size="13" font-weight="700" fill="var(--ink)">≈ $7</text>
+<text x="0" y="184" font-size="11" fill="var(--muted)">Bars to scale from $0.</text>
+</svg>
+</div>
+<p class="note">Extended hours is the most expensive per contact, but it is the only option that treats patients needing a physical exam.</p>
+</section>
+
+<section id="can-and-cannot">
+<h2>What each can and cannot do</h2>
+<div class="capgrid">
+<div class="cap"><h3>Extended clinic hours</h3><ul><li class="c">Handles any visit that needs an exam</li><li class="x">Highest cost per contact (≈ $38)</li><li class="x">Longest average wait (25 minutes)</li></ul></div>
+<div class="cap"><h3>Telehealth urgent care</h3><ul><li class="c">About 1,500 visits a month</li><li class="c">Average wait of 12 minutes</li><li class="x">Cannot handle visits that need a physical exam</li></ul></div>
+<div class="cap"><h3>Nurse triage line</h3><ul><li class="c">Lowest cost per contact (≈ $7)</li><li class="c">Answered within 3 minutes, 17:00 to 23:00</li><li class="c">Vendor estimates it avoids 18% of emergency room referrals</li><li class="x">Phone advice, not a visit</li></ul></div>
+</div>
+</section>
+
+<section id="recommendation">
+<h2>Recommendation</h2>
+<div class="plan">
+<div class="st now"><div class="k">Now · approve 2026-11-04</div><h3>Telehealth urgent care</h3><p>$260,000 a year. Roughly 1,500 visits a month at about $14 each.</p></div>
+<div class="st later"><div class="k">Second half of 2027</div><h3>Add the nurse triage line</h3><p>$185,000 a year. About 2,200 calls a month at about $7 each.</p></div>
+<div class="st hold"><div class="k">Keep under consideration</div><h3>Extended clinic hours</h3><p>Most expensive per contact, but the only option for patients who need an exam. Revisit if telehealth use is low.</p></div>
+</div>
+<div class="ask" role="note" style="margin-top:16px"><div class="k">What partners approve on 2026-11-04</div><p>The <strong>$260,000 telehealth budget</strong>. The nurse line and extended hours are not part of this approval.</p></div>
+</section>
+
+<footer>Larch Valley Medical Group · Odette Rousseau, Practice Manager · For the partners' meeting on 2026-11-04</footer>
+</main>
+</body>
+</html>

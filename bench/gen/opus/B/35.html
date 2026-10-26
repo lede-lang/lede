@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Write It Down Before You Build It</title>
+<style>
+:root{--bg:#fbfaf7;--text:#24211c;--muted:#6d675d;--border:#e6e1d7;--accent:#9c4a1e;--quote-bg:#f4efe6}
+@media (prefers-color-scheme:dark){:root{--bg:#151410;--text:#e9e5dc;--muted:#a59e91;--border:#322e27;--accent:#e9965f;--quote-bg:#1f1c17}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:18px/1.75 Charter,"Bitstream Charter","Iowan Old Style",Georgia,serif}
+article{max-width:680px;margin:0 auto;padding:48px 16px 72px}
+.kicker{font:600 13px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;text-transform:uppercase;letter-spacing:.09em;color:var(--accent);margin:0 0 12px}
+h1{font-size:clamp(32px,7vw,46px);line-height:1.12;margin:0 0 18px;letter-spacing:-.01em}
+.byline{font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--muted);margin:0 0 36px;padding-bottom:24px;border-bottom:1px solid var(--border)}
+.byline strong{color:var(--text)}
+h2{font-size:24px;line-height:1.3;margin:42px 0 10px}
+p{margin:0 0 18px}
+blockquote{margin:36px 0;padding:22px 24px;background:var(--quote-bg);border-left:4px solid var(--accent);border-radius:0 8px 8px 0}
+blockquote p{margin:0;font-size:clamp(22px,4.5vw,27px);line-height:1.35;font-style:italic}
+ul.prompts{margin:0 0 18px;padding-left:24px}
+ul.prompts li{margin:6px 0}
+footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--border);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--muted)}
+</style>
+</head>
+<body>
+<article>
+<p class="kicker">Thornbury Labs Engineering</p>
+<h1>Write It Down Before You Build It</h1>
+<p class="byline">By <strong>Daniel Reyes</strong>, Staff Engineer at Thornbury Labs</p>
+
+<p>Short written design notes save more time than they cost. That is the whole argument of this essay, and I expect most engineers already half-believe it. The trouble is that believing it and doing it are different habits, and the second one is the one that pays.</p>
+
+<h2>The meeting that should have been a page</h2>
+<p>Most of us know the meeting. Six people join a call to talk about a change. The person proposing it explains it out loud, for the first time, while working out the details as they go. Someone asks a question that reshapes the plan. Someone else joins late and needs the first twenty minutes repeated. An hour later the group agrees on something, and a week after that nobody can quite remember what.</p>
+<p>None of that is anyone's fault. Talking is a poor way to think through a design, because speech does not hold still. You cannot reread a sentence you said ten minutes ago, and neither can your colleagues. A page holds still. It lets the author find the gaps before anyone else has to, and it lets readers question the actual proposal instead of their memory of it.</p>
+
+<h2>What a design note is</h2>
+<p>A design note is one to two pages. It is written before any code, and it is read asynchronously, by people who give it their attention when they have attention to give rather than when a calendar invite says so.</p>
+<p>The length matters. Two pages is enough to state a problem, sketch an approach and name the alternatives, but not enough to hide in. The timing matters more. A note written after the code exists is documentation, which is useful, but it cannot change the decision it describes. The point of writing first is that the writing can still change what you build.</p>
+
+<blockquote><p>"The page is where you find out what you do not know."</p></blockquote>
+
+<p>That is the part people underestimate. Writing is not only how you tell others what you think. It is how you find out whether you think it. An assumption that sounds fine in your head tends to look thin the moment you have to put it in a sentence and give a reason for it.</p>
+
+<h2>What it is not</h2>
+<p>A design note is not a specification. It does not list every field, every edge case or every error message. Those details belong in the code and its tests, where they can be checked. A note that tries to be a specification grows to fifteen pages, goes stale before it is finished, and stops being read.</p>
+<p>It is also not a permission slip. The goal is not to collect approvals or to prove that someone signed off. A note that exists to protect its author reads like a contract, and readers respond by skimming it. A note that exists to expose an idea to criticism reads like an invitation, and readers respond by thinking.</p>
+
+<h2>The cost</h2>
+<p>Writing takes time, and it is fair to ask how much. At Thornbury, the median design note took 3 hours to write. That is less than one meeting with six attendees.</p>
+<p>Against that, the team counted 11 projects in 2026 where a note caught a wrong assumption before any code was written. Each of those would otherwise have been found later, in review, in testing or in production, when fixing it means rewriting work that already exists. Three hours of writing is cheap next to a single week of building the wrong thing, and we had eleven chances to build the wrong thing.</p>
+
+<h2>Start small</h2>
+<p>You do not need a template, a review board or a new tool. You need a page and the willingness to share it before you feel ready. Write the note for your next change that will take more than a few days. Keep it short. Send it to the two or three people most likely to disagree, and ask them to reply in writing.</p>
+<p>Every note, however small, should answer four prompts:</p>
+<ul class="prompts">
+<li>What problem are we solving?</li>
+<li>Why now?</li>
+<li>What did we consider?</li>
+<li>How will we know it worked?</li>
+</ul>
+<p>If you cannot answer those on a page, you are not ready to build. If you can, you will probably build something better.</p>
+
+<footer>Daniel Reyes is a Staff Engineer at Thornbury Labs.</footer>
+</article>
+</body>
+</html>

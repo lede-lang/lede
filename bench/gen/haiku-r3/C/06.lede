@@ -1,0 +1,26 @@
+@title Q3 2026 hiring funnel
+@subtitle Engineering, Lumen Health
+@date 2026-09-30
+
+kpi Applicants | 2,140
+kpi Offers made | 38
+kpi Offers accepted | 31
+kpi Median time to hire | 34 days
+
+## Funnel
+
+data funnel = Stage,Candidates; Applied,2140; Recruiter screen,612; Technical screen,287; Onsite,119; Offer,38; Accepted,31
+
+chart hbar funnel x=Stage y=Candidates labels title="Candidates at each stage"
+
+## By role
+
+table = Role,Openings,Applicants,Onsites,Hires,Days open; Backend Engineer,6,840,44,12,41; Frontend Engineer,4,520,29,8,30; Data Engineer,3,410,25,6,37; SRE,2,230,14,3,52; Engineering Manager,2,140,7,2,66
+
+## Acceptance rate
+
+data accept = month,Acceptance rate; Jan,71; Feb,75; Mar,78; Apr,80; May,74; Jun,83; Jul,85; Aug,79; Sep,84
+
+chart line accept x=month y=Acceptance rate unit=% title="Offer acceptance rate by month"
+
+! SRE and Engineering Manager are the roles taking longest to fill. The team proposes a referral bonus of $3,000 for those two roles, starting 2026-11-01.

@@ -1,0 +1,24 @@
+@title Should we move to a monorepo?
+@subtitle Proposal for the web platform group
+@author Kenji Watanabe
+@date 2026-09-30
+
+We have 23 repositories for one product. A change to the design system takes, on average, four pull requests and two days of version bumps before it reaches the checkout page.
+
+## Pros
+
+- One pull request for a cross-cutting change
+- Shared lint, test and build configuration
+- Atomic refactors across packages
+- Easier onboarding: one clone, one README
+
+## Cons
+
+- CI must learn to build only what changed
+- Repository permissions get coarser
+- A one-time migration of about three weeks
+- Git operations slow down past a few million files
+
+## Recommendation
+
+! **Migrate in Q1**, starting with the design system and the two apps that consume it. Keep the payments service separate until its audit finishes.

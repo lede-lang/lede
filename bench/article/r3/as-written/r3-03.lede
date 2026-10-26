@@ -1,0 +1,72 @@
+@title Fix: round the fuel surcharge per invoice line, not per invoice
+@subtitle Freight invoicing service, billing fix. Written for finance reviewers first and engineers second.
+@width wide
+
+! In one sentence: the 7.35% carrier fuel surcharge was being rounded once after the lines were summed, which over-billed Harbourline customers $1,482.37 in total. This change rounds each line instead, and ties half-cent cases to the even cent. It does not issue refunds (that is FIN-2210) and does not recalculate old invoices.
+
+## The problem
+
+Customers on the Harbourline account were over-billed between Aug 1 and Oct 9 because the carrier fuel surcharge of 7.35% was rounded after summing the invoice lines instead of on each line. Cents added up.
+
+kpi Total over-billed | $1,482.37 | Aug 1 to Oct 9 | bad
+kpi Invoices affected | 6,213 | Harbourline account
+kpi Average error | about $0.24 | per invoice
+kpi Largest error | $3.10 | one invoice
+
+## What changes, in dollars
+
+table = Question,Answer; Does this refund customers?,No. Credits for the over-billing are a separate ticket (FIN-2210) and are not part of this change.; Are earlier invoices recalculated?,No. Invoices finalized before Oct 1 are not recalculated.; What changes on new invoices?,"The surcharge is rounded per line, so new Harbourline invoices stop carrying the over-billing. The size of the change per invoice is on the order of the past error: about $0.24 on average and up to $3.10."; What does the half-even change do?,"A surcharge that lands exactly on half a cent now rounds to the even cent (it used to round up). That can only lower a charge by 1 cent or leave it unchanged, never raise it."
+
+!! Not in the ticket: the half-even rounding rule (commit 0f2d6b8) is a second behavior change on top of the per-line fix. The ticket describes only the per-line problem. Finance reviewers should confirm they want half-even rounding for half-cent cases.
+
+!! Open question to confirm before merge: the ticket gives invoices before Oct 1 as not recalculated, and the over-billing ran to Oct 9. This description does not say how invoices finalized between Oct 1 and Oct 9 are treated. It should be settled in FIN-2210 or here.
+
+## What changed in the code
+
+The change moves the surcharge calculation to round each invoice line, makes half-cent cases round half-even, and adds tests, fixtures and docs. 118 lines were removed and 700 added overall; most of the added lines are tests and fixtures.
+
+data diff = File,Lines added,Lines removed; src/billing/surcharge.ts,88,41; src/billing/invoice_builder.ts,12,57; test/billing/surcharge.spec.ts,214,9; test/fixtures/split_shipments.json,340,0; docs/billing-rules.md,46,11
+
+table diff title="Files changed" bar="Lines added"
+
+data commits = Commit,Date,Author,Message; a41f9c2,2026-10-12,Dana Kowalski,"fix: round per-line, not per-invoice (carrier fuel surcharge)"; 9be07d3,2026-10-13,Dana Kowalski,"test: add fixtures for “split shipment” invoices"; c58e1aa,2026-10-14,Tomasz Wrobel,"refactor: pull surcharge math out of InvoiceBuilder; no behavior change"; 0f2d6b8,2026-10-15,Dana Kowalski,"fix: half-cent cases round half-even (was half-up)"; e7710c4,2026-10-16,Ife Okonkwo,"docs: update billing-rules page, add worked example"
+
+table commits title="Commits, oldest first"
+
+- Two commits change behavior: a41f9c2 (per-line rounding) and 0f2d6b8 (half-even).
+- c58e1aa is a refactor that moves surcharge math out of InvoiceBuilder and says it changes no behavior. Reading the PR commit by commit keeps the refactor apart from the two fixes.
+- The billing-rules page now has a worked example (e7710c4), which is the easiest way for a non-engineer to see the rule.
+
+## How it was checked
+
+data ci = Suite,Tests,Passed,Failed,Skipped,Duration (s),Notes; unit,412,412,0,0,38.2,; integration,96,94,0,2,211.7,"Two skipped: sandbox carrier API down"; contract,31,31,0,0,17.9,; replay (Sept invoices),"1,840","1,812",28,0,604.3,"28 differ by 1 cent; expected"
+
+table ci title="CI report"
+
+Across all four suites: 2,379 tests, 2,349 passed, 28 failed, 2 skipped.
+
+!! The replay suite is not green. 28 of 1,840 replayed September invoices (1.5%) come out one cent different from what the replay expected. The author describes these as expected. Reviewers should look at the list of 28 rather than take that on trust, and confirm that each one is explained by per-line rounding or by half-even rounding.
+
+!! Two integration tests were skipped because the sandbox carrier API was down. Nothing in this change was verified against the live carrier integration in those two tests. They should be re-run before merge.
+
+## What could still go wrong
+
+- The 28 replay differences may hide a real pattern. All are one cent, but the report does not say which direction they went, which accounts they belong to, or whether they are all half-cent cases.
+- The replay compares September invoices, and the over-billing was an average of about $0.24 per invoice across 6,213 invoices. It is not obvious from the CI report what baseline the replay compares against, so it is worth asking how it relates to the $0.24 average. The report only shows 28 one-cent differences.
+- The two skipped integration tests cover the carrier API, which is where the surcharge comes from.
+- The half-even rule is a new rounding policy that applies to every invoice the surcharge touches. The ticket and the Harbourline numbers do not show whether accounts other than Harbourline use the same path. This description does not show that they are unaffected.
+- The refactor and the behavior changes are in the same pull request. If a reviewer wants to back out only the half-even change, it is commit 0f2d6b8.
+
+## What to look at first
+
+1. src/billing/surcharge.ts (+88, -41). This holds the rounding rule itself: per-line rounding and the half-even branch.
+2. The 28 replay differences, to confirm they are one-cent and are explained by the new rules.
+3. The half-even commit (0f2d6b8) and its tests in test/billing/surcharge.spec.ts. This is the change not mentioned in the ticket.
+4. docs/billing-rules.md and its worked example, which show finance what the rule now says.
+5. src/billing/invoice_builder.ts (+12, -57), to check that the refactor really changes no behavior.
+6. test/fixtures/split_shipments.json (+340), the new "split shipment" invoice cases.
+
+## Out of scope
+
+- Credits for the $1,482.37 over-billing: FIN-2210.
+- Recalculating invoices finalized before Oct 1.

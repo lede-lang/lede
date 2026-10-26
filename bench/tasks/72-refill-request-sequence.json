@@ -1,0 +1,53 @@
+{
+  "id": "72-refill-request-sequence",
+  "category": "architecture",
+  "title": "Medora prescription refill flow",
+  "brief": "Medora Health wants an architecture page for how a prescription refill request travels from the patient app to the pharmacy, for the integrations team, version dated 2026-09-30. Section \"Refill sequence\" with four parties, named exactly: Patient App, Refill Service, Clinic EHR, Pharmacy Portal. In order: Patient App tells Refill Service \"request refill\"; Refill Service asks Clinic EHR \"check active prescription and refills left\"; Clinic EHR answers Refill Service \"approved, 2 refills remaining\"; Refill Service sends Pharmacy Portal \"e-prescription, NCPDP SCRIPT\"; Pharmacy Portal answers Refill Service \"accepted, ready in 2 hours\"; Refill Service tells Patient App \"refill confirmed\". Then show the alternative when the clinic declines: Clinic EHR answers Refill Service \"denied, visit needed\" and Refill Service tells Patient App \"book a visit\". Section \"Service targets\", one row per call with its target: the EHR check within 3 s; the pharmacy acknowledgement within 30 s; the confirmation shown in the app within 10 s of the request. Section \"Rules\" with three points: controlled substances are never refilled through the app, a refill covers at most a 90-day supply, and requests made after 21:00 wait in a queue until 07:00. Pharmacists and clinic staff will read this on their phones, so make the controlled-substance rule impossible to miss.",
+  "checklist": {
+    "sections": [
+      "Refill sequence",
+      "Service targets",
+      "Rules"
+    ],
+    "visible": [
+      "Patient App",
+      "Refill Service",
+      "Clinic EHR",
+      "Pharmacy Portal",
+      "request refill",
+      "NCPDP SCRIPT",
+      "refill confirmed",
+      "book a visit",
+      "controlled substances"
+    ],
+    "values": [
+      "2 refills remaining",
+      "2 hours",
+      "3 s",
+      "30 s",
+      "10 s",
+      "90-day",
+      "21:00",
+      "07:00",
+      "2026-09-30"
+    ]
+  },
+  "needs": [
+    "sequence",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "The pharmacy acknowledgement target is now 45 s instead of 30 s, and the overnight queue now holds requests made after 22:00 instead of 21:00.",
+    "expect_visible": [],
+    "expect_values": [
+      "45 s",
+      "22:00"
+    ],
+    "expect_absent": [
+      "30 s",
+      "21:00"
+    ]
+  }
+}

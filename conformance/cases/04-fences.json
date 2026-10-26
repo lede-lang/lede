@@ -1,0 +1,23 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "code",
+      "lang": "ts",
+      "text": "const a = 1;\n  nested();",
+      "line": 1
+    },
+    {
+      "type": "html",
+      "html": "<div class=\"x\">raw <b>html</b></div>",
+      "line": 5
+    },
+    {
+      "type": "html",
+      "html": "<span>inline html</span>",
+      "line": 8
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

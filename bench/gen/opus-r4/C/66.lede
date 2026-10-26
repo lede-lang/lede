@@ -1,0 +1,35 @@
+@title Lantern Notes 3.8.0
+@subtitle Released 2026-10-14
+@date 2026-10-14
+
+Shared folders, scheduled dark mode, Evernote import, faster search and a stack of fixes. Here is what changed.
+
+## New
+
+- **Shared folders.** Invite up to 25 collaborators to a folder and choose view or edit access for each person.
+- **Scheduled dark mode.** Dark mode can now follow sunset, or a time range you set.
+- **Import from Evernote.** Bring in your ENEX files, including attachments up to 50 MB each.
+
+## Improved
+
+- **Search is about twice as fast.** On a library of 10,000 notes, the median query dropped from 410 ms to 190 ms.
+- **Better battery life on Android.** Background sync uses about 18 percent less battery.
+
+## Fixed
+
+- Tables keep their column widths when exported to PDF.
+- The app no longer freezes when you open a note with more than 200 images.
+- Reminders fire at the right time after a daylight saving change.
+- Pasted web links keep their titles.
+- On Windows, dragging a note onto a folder in the sidebar now works with a trackpad.
+- The word count now includes text inside tables.
+
+## Known issues
+
+- Shared folders can't be used with end-to-end encrypted notebooks yet. Support is planned for 3.9.
+- Evernote import drops nested tags deeper than three levels.
+
+## Deprecations
+
+!! Windows 8.1 support ends on 2027-01-31.
+!! From version 3.9, Lantern Notes on Android needs Android 10 or later.

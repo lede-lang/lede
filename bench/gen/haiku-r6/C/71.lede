@@ -1,0 +1,35 @@
+@title Telemetry pipeline architecture
+@subtitle Skerry Wind Power · Owner: Asset Data team · Region eu-north-1 · Reviewed 2026-10-02
+
+## Overview
+Turbine readings flow from each of our 6 offshore wind farms into one central stream, where they are processed once. The processed data is then split into a fast store for dashboards and a cheap archive for audits.
+
+## Pipeline diagram
+diagram telemetry dir=LR title="Telemetry pipeline"
+telemetry: tc "Turbine Controllers" ext "On site, each farm"
+telemetry: eg "Edge Gateway" svc "On site, each farm"
+telemetry: ts "Telemetry Stream" queue
+telemetry: sp "Stream Processor" svc focus
+telemetry: tsdb "Timeseries Store" db
+telemetry: raw "Raw Archive" store
+telemetry: alert "Alerting Service" svc
+telemetry: dash "Operations Dashboard" svc
+telemetry: group cloud "Cloud account" ts, sp, tsdb, raw, alert, dash
+telemetry: tc -> eg : OPC UA, 1 Hz
+telemetry: eg -> ts : MQTT over TLS, batched every 5 s
+telemetry: ts -> sp : consumer
+telemetry: sp -> tsdb : 10 s aggregates
+telemetry: sp -> raw : Parquet every 15 minutes
+telemetry: sp -> alert : threshold breach
+telemetry: tsdb -> dash : queries
+telemetry: legend
+
+## Capacity and retention
+- **Telemetry Stream**: 24 shards, 18000 messages per second at peak
+- **Timeseries Store**: 7 days in memory, then 3 years on magnetic storage
+- **Raw Archive**: 10 years, moved to cold storage after 90 days
+
+## If the uplink fails
+The Edge Gateway buffers up to 6 hours of readings on disk. When the link returns, it replays them in order.
+
+!! After 6 hours, the oldest readings are dropped. Readers must not miss this limit.

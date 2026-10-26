@@ -1,0 +1,24 @@
+@title Message Backbone for Settlement
+@subtitle Fernhill Payments. Decision for Ewan Calloway, platform lead, at the architecture review on 2026-11-09
+
+# Comparison
+
+The settlement service needs 4,200 messages per second at peak, six consuming services, ordering per customer account, and a 7-day replay for audits.
+
+table = Option,Ordering per account,Replay of 7 days,Ops hours a month; Managed Kafka,Yes through partition keys,Built in,12; SQS with SNS,"Yes through FIFO queues, but each queue is capped near 3,000 messages per second, so we would need two","Not available, so we would archive to storage ourselves",3; Self-run RabbitMQ,Yes through queue sharding that we build ourselves,Possible only with the streams plugin the team has not used,30
+
+# Monthly cost
+
+data mc = option,monthly; Managed Kafka,5850; SQS with SNS,2100; Self-run RabbitMQ,3400
+
+chart bar mc y=monthly unit=$ labels title="Monthly cost"
+
+Per year, that is $70,200 for Managed Kafka, $25,200 for SQS with SNS and $40,800 for self-run RabbitMQ. Kafka costs $3,750 a month more than SQS with SNS, which is $45,000 a year.
+
+# Risks
+
+- The main risk is skills. Only 2 of our 9 engineers have run Kafka before, so we budget 5 days of training.
+
+# Recommendation
+
+We recommend Managed Kafka, even though it costs $3,750 a month more than SQS with SNS. Replay is an audit requirement, and SQS has no built-in replay. We budget 5 days of training for the team.

@@ -1,0 +1,49 @@
+{
+  "id": "87-home-office-stipend-policy",
+  "category": "prose",
+  "title": "Larkspur home-office stipend policy",
+  "brief": "People Operations at Larkspur Analytics needs a policy page for the new home-office stipend, effective 2027-01-01, so employees can find the rules without opening tickets. Headings: \"Who is covered\", \"What you get\", \"What you can buy\", \"How to claim\" and \"What is not covered\". Who is covered: all employees who work at least 3 days a week from home, after 90 days of service; part-time employees receive 50 percent. What you get: a one-time setup stipend of 500 dollars, plus 40 dollars a month toward internet and phone, and the setup stipend can be used again after 3 years. What you can buy: a desk, chair, monitor, keyboard, headset and lighting. How to claim: submit receipts in the expense portal within 60 days of purchase; purchases over 250 dollars need written manager approval beforehand; reimbursement arrives within 10 business days. Not covered: gaming equipment, furniture for non-work use, software subscriptions and anything already supplied by the company. Questions go to finance-help@larkspur.example or the #finance-help channel. Plain, friendly language.",
+  "checklist": {
+    "sections": [
+      "Who is covered",
+      "What you get",
+      "What you can buy",
+      "How to claim",
+      "What is not covered"
+    ],
+    "visible": [
+      "Larkspur Analytics",
+      "expense portal",
+      "manager approval",
+      "finance-help@larkspur.example",
+      "#finance-help"
+    ],
+    "values": [
+      "2027-01-01",
+      "3 days",
+      "90 days",
+      "50 percent",
+      "500 dollars",
+      "40 dollars",
+      "3 years",
+      "60 days",
+      "250 dollars",
+      "10 business days"
+    ]
+  },
+  "needs": [
+    "list"
+  ],
+  "edit": {
+    "request": "Raise the one-time setup stipend to 650 dollars and shorten the claim window to 45 days.",
+    "expect_visible": [],
+    "expect_values": [
+      "650 dollars",
+      "45 days"
+    ],
+    "expect_absent": [
+      "500 dollars",
+      "60 days"
+    ]
+  }
+}

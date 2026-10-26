@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Write It Down Before You Build It</title>
+<style>
+:root{--bg:#fafaf7;--fg:#1c1e21;--muted:#5d636b;--accent:#1d6fa3;--card:#ffffff;--border:#e2e0d9;--note:#e9f2f8}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121316;--fg:#e9e9ec;--muted:#9ea4ad;--accent:#6cb8e6;--card:#1b1d22;--border:#2e3138;--note:#152731}}
+body{margin:0;background:var(--bg);color:var(--fg);font:18px/1.7 Charter,Georgia,"Iowan Old Style","Times New Roman",serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:680px;margin:0 auto;padding:40px 18px 64px}
+.kicker{font:600 13px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin:0 0 .6em}
+h1{font-size:clamp(1.9rem,5vw,2.6rem);line-height:1.15;margin:0 0 .4em;font-weight:700}
+.byline{font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--muted);margin:0 0 2em;padding-bottom:1.2em;border-bottom:1px solid var(--border)}
+h2{font:700 1.3rem/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;margin:2.2em 0 .6em}
+p{margin:0 0 1.1em}
+blockquote{margin:2em 0;padding:.2em 0 .2em 1.2em;border-left:3px solid var(--accent);font-size:1.35rem;line-height:1.45;font-style:italic}
+ul{padding-left:1.2em;margin:.6em 0 1.2em}
+li{margin:.4em 0}
+@media (max-width:480px){body{font-size:17px}.wrap{padding:28px 16px 48px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<p class="kicker">Engineering practice</p>
+<h1>Write It Down Before You Build It</h1>
+<p class="byline">Daniel Reyes, Principal Engineer, Thornbury Labs</p>
+
+<h2>The meeting that should have been a page</h2>
+<p>Most of us have sat through a design meeting that ran for ninety minutes and ended with a shrug. Someone drew boxes on a whiteboard. Someone else asked about failure modes. Two people left the room with different ideas of what had been decided. A week later, a branch existed, and nobody could say why it was shaped the way it was.</p>
+<p>The fix is almost never a better meeting. It is a short document, written before any code, that gives the idea a fixed shape. I have come to believe that short written design notes save far more time than they cost, and the evidence from our own team is the reason.</p>
+
+<h2>What a design note is</h2>
+<p>A design note is one to two pages. The author writes it before the first line of code, and the people affected read it asynchronously, in their own time, and comment in the margin. There is no required meeting. If the discussion needs one, the note tells you exactly which questions to bring to it.</p>
+<p>The length is a feature. A page is short enough that someone will actually read it on a Tuesday afternoon, and long enough to force the author to say what they mean.</p>
+
+<h2>What it is not</h2>
+<p>A design note is not a specification. A specification describes what the system must do in complete detail, and it tends to be written after the decisions have already been made. A note describes the decision and the reasoning behind it, while there is still time to change the decision cheaply.</p>
+<p>It is also not a permission slip. Nobody needs to sign it before work starts. Its job is to make the reasoning visible, so that a reviewer can see the assumption that is wrong and say so. Approval, when it exists, comes from the conversation the note starts, not from a signature at the bottom.</p>
+
+<h2>The cost</h2>
+<p>At Thornbury, the median design note took about three hours to write. That is not nothing, and I will not pretend it is. Three hours is roughly the time it takes to start a branch, make one wrong turn, and throw it away.</p>
+<p>Over 2026, we counted eleven projects where a note caught a wrong assumption before any code was written. In each case the assumption was something a reader could see from the page, such as a data volume that was off by a factor of ten, or a dependency that was about to change owners. Had we discovered those problems in review, or in production, each would have cost weeks. The three-hour note paid for itself many times over, and it did so quietly, which is why it is easy to undervalue.</p>
+<blockquote>&ldquo;The page is where you find out what you do not know.&rdquo;</blockquote>
+
+<h2>Start small</h2>
+<p>If your team does not write design notes today, start with the next piece of work that will take more than a week. Do not write a template first. Write one note, share it, and see what the readers ask. You will learn more from one real page than from a month of debating the format.</p>
+<p>Every note should answer four questions. Keep them in view while you write:</p>
+<ul>
+<li>What problem are we solving?</li>
+<li>Why now?</li>
+<li>What else did we consider?</li>
+<li>How will we know it worked?</li>
+</ul>
+<p>If you can answer all four in a page, you are ready to build. If you cannot, you have just saved yourself a lot of time. Share your first note in the #design-notes channel.</p>
+</main>
+</body>
+</html>

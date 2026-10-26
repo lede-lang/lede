@@ -1,0 +1,111 @@
+@title Review guide: PR #318, sleep between samples
+@subtitle Author Marguerite Oyelaran. What to check before you approve or push back.
+@width wide
+
+! Scope: this guide is built from the change summary, the comments and the CI status you gave me. It is not a line-by-line read of the diff, so nothing below is a confirmed bug. Items marked "ask" are questions for the author. Arithmetic marked "mine" is my own calculation from the figures in the thread.
+
+kpi Deep sleep current | 11 uA | -76% vs 46 uA | good
+kpi Review comments | 6 | 1 reply, 5 unanswered | bad
+kpi Simulated tests | 58 of 58 | all pass | good
+kpi Hardware-in-loop | Not run since Oct 9 | bench rig 2 | bad
+
+## Bottom line
+
+I would ask for changes before approving. The 76% number is arithmetically right, but it measures deep sleep current only. The "3+ years" battery claim does not follow from it. Five of the six review comments have no answer. The one answer given explains why the interrupt is armed early, not why that is safe. Two behavior changes (the baseline window and the uplink retries) are outside what the title says. The only test that could catch interrupt timing on real hardware has not run since Oct 9.
+
+## What is actually risky
+
+data risks = Priority,Risk,File,Why it matters,Ask the author
+data risks += High,Wake interrupt re-armed before the fan spin-up delay,src/power/sleep.c,"The interrupt can fire while the fan is still starting. If the handler or main loop touches sensor or power state in that window you get a race that shows up rarely and only on real hardware. Arming early to catch the rain event pin is a fair reason, but a code comment documents the race, it does not remove it.","What does the handler do if it fires during spin-up? Is the event only latched and handled after spin-up? Can it be dropped or handled twice? Which test covers this window?"
+data risks += High,Battery life claim of 3+ years,PR description,"The 11 uA figure is deep sleep only. See the battery arithmetic below: on the numbers in the thread, deep sleep savings alone get you to about 16 months, not 36.","What is the claim based on? Ask for average current over a full wake-sample-send-sleep cycle, measured on a real board."
+data risks += High,Uplink retries dropped from 5 to 3,src/net/uplink.c,"Not mentioned in the title or the description. Ridgeway units saw 18% packet loss in July. If losses were independent, a report would fail all its tries about 0.58% of the time with 3 tries versus 0.019% with 5, roughly 31 times more lost reports (mine). Bursty loss is worse than that.","Was this intentional? What is the evidence it is safe? Is it meant to save radio-on time, and how much does it save?"
+data risks += High,Rolling baseline changed from 5 min to 30 min,src/sensors/pm25.c,"Priya's worry is plausible, but which way it cuts depends on how the baseline is used. If it smooths the reported value, a longer window hides short spikes. If it is a drift reference that is subtracted, a longer window reacts more slowly to real, sustained rises such as building smoke.","What is the baseline used for? Show before and after traces on a replayed wildfire-smoke or step-change event."
+data risks += High,No test for sensor timeout (over 2.5 s),src/sensors/pm25.c,"The only test file in the change is sleep_wake_test.c. When the sensor does not answer, a sleeping device can hang awake or skip a cycle, and that is where battery life goes wrong.","Add a test for the sensor timeout path, or point to where it is already tested."
+data risks += High,Hardware-in-loop job has not run since Oct 9,CI,"58 of 58 simulated tests pass, but a simulation cannot show real current draw, interrupt timing or fan spin-up. If the branch changed after Oct 9, the last hardware result does not cover it.","Rerun on bench rig 2 and attach the result. Say which commit it ran on."
+data risks += Medium,Pin definitions changed for rev D boards,boards/rev_d/pins.h,"6 lines added and 6 removed, with no comments and no mention in the description. A pin change can be linked to the wake or rain pin, and it affects every rev D board.","What changed and why? Does it touch the wake or rain event pin? Are other board revisions affected?"
+data risks += Medium,Calibration header changed,src/sensors/pm25_calib.h,"9 lines added and 3 removed with 0 comments. Calibration constants are easy to change and hard to review.","Which constants changed, and how were the new values derived?"
+table risks
+
+## The interrupt question in plain language
+
+An interrupt is a hardware signal that makes the processor stop what it is doing and run a short piece of code, the handler. The thread says the wake interrupt is re-armed (switched back on) before the fan spin-up delay. Tobias thinks that is racy. Marguerite says it is early on purpose so the rain event pin is not missed. Both can be true, and that is the trade-off:
+
+- Arm late: a rain event that arrives during spin-up is lost.
+- Arm early: the handler can run while the device is only half awake, with the fan not at speed and state not ready.
+
+The review question is not early versus late. It is whether the handler is safe to run at any point in the cycle, for example by only setting a flag that the main code handles after spin-up.
+
+diagram cycle dir=LR title="Wake cycle as described in the thread (not checked against code)"
+cycle: sleep "Deep sleep" svc "11 uA"
+cycle: arm "Re-arm wake interrupt" fn focus
+cycle: fan "Fan spin-up delay" fn focus
+cycle: sample "Read PM2.5" fn "timeout 2.5 s"
+cycle: send "Uplink" fn "retries 3, was 5"
+cycle: rain "Rain event pin" ext
+cycle: sleep -> arm : wake
+cycle: arm -> fan
+cycle: fan -> sample
+cycle: sample -> send
+cycle: send --> sleep
+cycle: rain --> fan : fires here?
+
+## Which comments are still open
+
+data threads = Thread,File,Raised by,Reply,Status,My read
+data threads += "Why is the wake interrupt re-armed before the fan spin-up delay? Looks racy.",src/power/sleep.c,Tobias Lindqvist,"Marguerite: armed early on purpose so the 'rain event' pin is not missed, will add a comment",Answered weakly,"Gives the reason, not the safety argument. A comment is not a test. Ask what happens if the interrupt fires during spin-up."
+data threads += "Deep sleep current measured at 11 uA (was 46 uA). What is the battery life claim based on?",src/power/sleep.c,Tobias Lindqvist,None,Unanswered,"The central claim of the PR has no support yet. See the arithmetic below."
+data threads += "The drift fix changes the baseline from 5-min to 30-min rolling; that will hide real spikes (wildfire smoke, e.g.).",src/sensors/pm25.c,Priya Nair,None,Unanswered,"Needs traces, not an opinion. The direction of the effect depends on how the baseline is used."
+data threads += "Also unit test missing for sensor timeout (> 2.5 s)?",src/sensors/pm25.c,Priya Nair,None,Unanswered,"No pm25 test appears in the file list."
+data threads += "Retry count dropped from 5 to 3; was that intentional? Field units at Ridgeway had 18% packet loss in July.",src/net/uplink.c,Ben O'Callaghan,None,Unanswered,"Real field data points the other way. About 31 times more lost reports if losses are independent (mine)."
+table threads
+
+## Claims in the description to ask the author to back up
+
+data claims = Claim,Does it hold,Ask the author for
+data claims += 76% less idle power,"The arithmetic holds: 46 to 11 uA is a 76.1% cut. But that is deep sleep current only, not idle power for the whole device.","How it was measured (rig, supply voltage, temperature, board revision) and what the figure includes."
+data claims += No change to reporting interval,"Nothing in the summary contradicts it. But the PR also changes the baseline window and the retries, which change what is reported and how reliably it arrives.","A before and after timeline of sample, send and sleep per cycle, and confirmation that sample timing did not move."
+data claims += "Battery life 3+ years (previously about 14 months)","Does not follow from the 11 uA figure. See the arithmetic below.","The full calculation, including radio, fan and sensor, and a measured average current."
+table claims
+
+### Battery arithmetic (mine)
+
+Tobias's rough check, 2,400 mAh divided by 11 uA, gives about 25 years, which shows that deep sleep is not what limits battery life. Working backwards from the old figure of about 14 months, the old average draw was about 235 uA, of which deep sleep was only 46 uA. Cutting 35 uA from that moves life from 14 months to about 16, nowhere near 36. To reach 3 years the average must fall to about 91 uA, so most of the saving would have to come from somewhere else: less time awake, fewer radio-on seconds, or fewer retries. Assumes the full 2,400 mAh is usable, which real cells are not, so treat these as rough.
+
+data battery = Scenario,Average uA,Months
+data battery += Old figure in the PR (about 14 months),235,14
+data battery += Only deep sleep drops by 35 uA,200,16.4
+data battery += What 3 years requires,91,36
+chart hbar battery y=Months unit=mo target="36 PR claim" labels title="Battery life in months"
+table battery
+
+## Size of the change
+
+data files = File,Added,Removed,Comments
+data files += src/power/sleep.c,142,38,3
+data files += src/sensors/pm25.c,57,61,2
+data files += src/sensors/pm25_calib.h,9,3,0
+data files += src/net/uplink.c,24,5,1
+data files += boards/rev_d/pins.h,6,6,0
+data files += test/sim/sleep_wake_test.c,188,0,0
+data files += CHANGELOG,7,0,0
+table files bar=Added title="Lines added, removed and reviewer comments per file"
+
+!! Two files with changed behavior, pm25_calib.h and pins.h, have no comments at all. The new test file is 188 lines and has no review comments either.
+
+## Work through this before you decide
+
+### Ask the author
+- [ ] Explain why the interrupt is safe to fire during fan spin-up, and which test shows it.
+- [ ] Show how 11 uA turns into 3+ years: full-cycle average current, measured.
+- [ ] Say whether the retry drop from 5 to 3 was intentional, and justify it against the Ridgeway 18% loss.
+- [ ] Show before and after PM2.5 traces for the 30-minute baseline on a real spike.
+- [ ] Add the sensor timeout test (over 2.5 s) or point to it.
+- [ ] Explain the rev D pin changes and the calibration header changes.
+
+### Check yourself
+- [ ] Open src/power/sleep.c and find the handler. Confirm whether it only sets a flag or touches sensor and power state.
+- [ ] Look at where the wake interrupt is armed relative to the fan delay, and what the code does if the rain event pin fires in between.
+- [ ] Confirm what the 5 and 3 refer to in uplink.c: tries in total or retries after the first.
+
+### Wait for
+- [ ] A hardware-in-loop run on bench rig 2 against the latest commit. CI note: this is the job that runs the tests on a real board, so it is the only one that can show real current draw and interrupt timing.

@@ -1,0 +1,42 @@
+@title Aurora manual failover
+@subtitle orders-aurora-prod (Aurora PostgreSQL 16)
+@author Database Reliability
+@date 2026-10-01
+
+Use this runbook when the writer has been unhealthy for more than 5 minutes and automatic failover has not happened, or for a planned failover in the Sunday window (02:00 to 04:00 UTC).
+
+## Before you start
+
+- [x] You hold the break-glass role `db-failover-operator`
+- [x] You have joined #db-incidents
+- [ ] The replica lag dashboard is open
+-- [ ] Filter to `orders-aurora-prod`
+-- [ ] Set the range to the last 15 minutes
+
+## Failover
+
+1. Announce the failover in #db-incidents.
+2. Confirm the target reader is healthy.
+-- 1. Replica lag is under 30 seconds.
+-- 2. CPU is under 70% for the last 5 minutes.
+-- 3. No long-running transactions on the reader.
+3. Put the orders service into read-only mode with the flag `orders.readonly`.
+
+!!! **Never fail over to a reader whose lag exceeds 30 seconds.** Committed orders will be lost.
+
+4. Trigger the failover to `orders-aurora-prod-r2`.
+5. Wait for the cluster endpoint to point at the new writer, usually 30 to 60 seconds.
+-- Watch the `writer` field in the console.
+-- If nothing changes after 3 minutes, escalate to the DBA lead.
+6. Turn `orders.readonly` off and watch connections recover to about 400.
+
+## Verify
+
+table = Check,Expected; Writer instance,`orders-aurora-prod-r2`; Replica lag,under 1 second; Orders API error rate,under 0.5%; Connections,about 400
+
+```bash
+aws rds describe-db-clusters --db-cluster-identifier orders-aurora-prod \
+  --query 'DBClusters[0].DBClusterMembers[?IsClusterWriter].DBInstanceIdentifier'
+```
+
+! If the new writer is unhealthy, fail back to `orders-aurora-prod-r1` with the same steps and page the on-call DBA lead.

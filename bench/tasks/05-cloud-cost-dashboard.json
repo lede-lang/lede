@@ -1,0 +1,61 @@
+{
+  "id": "05-cloud-cost-dashboard",
+  "category": "status",
+  "title": "Retail Engineering cloud cost dashboard",
+  "brief": "FinOps request: a cloud cost dashboard for the Retail Engineering org at Halcyon Stores covering April to September 2026. Four tiles at the top: September spend $184200, Month-over-month change +6.4 percent, Budget $190000, Savings Plan coverage 71 percent. Section titled \"Monthly spend\": a line chart of total monthly spend in dollars: Apr 151300, May 158900, Jun 162400, Jul 169800, Aug 173100, Sep 184200. Section titled \"September by service\": a bar chart of September spend by service: EC2 68400, RDS 39100, S3 17800, CloudFront 12600, EKS 21300, Data transfer 14900, Other 10100 (these sum to 184200). Section titled \"Cost anomalies\": a table with columns Date, Service, Team, Excess ($), Cause: 2026-09-08, EC2, Search, 4200, forgotten load-test fleet; 2026-09-17, Data transfer, Media, 2900, cross-region replication misconfigured; 2026-09-25, RDS, Billing, 1700, oversized snapshot retention. End with a warning callout: at the current growth rate October will exceed the $190000 budget, and teams should review the rightsizing report by 2026-10-24.",
+  "checklist": {
+    "sections": [
+      "Monthly spend",
+      "September by service",
+      "Cost anomalies"
+    ],
+    "visible": [
+      "September spend",
+      "Savings Plan coverage",
+      "Budget",
+      "EC2",
+      "RDS",
+      "CloudFront",
+      "EKS",
+      "Data transfer",
+      "Cause",
+      "Excess",
+      "forgotten load-test fleet"
+    ],
+    "values": [
+      "184200",
+      "151300",
+      "158900",
+      "162400",
+      "169800",
+      "173100",
+      "68400",
+      "39100",
+      "17800",
+      "12600",
+      "21300",
+      "6.4",
+      "71",
+      "4200",
+      "2900",
+      "190000"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add October to the monthly spend chart at 192600, and add a new anomaly row: 2026-10-06, EKS, Platform, 3100, idle GPU node group.",
+    "expect_visible": [
+      "idle GPU node group"
+    ],
+    "expect_values": [
+      "192600",
+      "3100"
+    ],
+    "expect_absent": []
+  }
+}

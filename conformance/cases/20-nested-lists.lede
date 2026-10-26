@@ -1,0 +1,15 @@
+1. Roll back
+-- check the canary
+-- [x] page the on-call
+-- 1. drain traffic
+-- 2. restore the snapshot
+2. Verify
+- Notify
+-- post in #incidents
+- Tail item
+-- 1.5 million users were affected
+
+1.5 million users were affected
+--not a sub-item
+\-- escaped is prose
+--

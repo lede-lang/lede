@@ -1,0 +1,38 @@
+@title How login works on the member portal
+@subtitle Pinecrest Credit Union · Identity team · draft 2026-10-08
+
+# Login flow
+
+diagram login sequence title="Login flow"
+login: user "User" user
+login: browser "Browser" ext
+login: app "Web App" svc
+login: auth "Auth Server" svc
+login: api "Profile API" svc
+login: user -> browser : click Sign in
+login: browser -> app : GET /login
+login: app --> browser : 302 to /authorize with PKCE challenge
+login: browser -> auth : GET /authorize
+login: auth --> user : show login and MFA prompt
+login: user -> auth : credentials + MFA code
+login: auth --> browser : 302 to /callback with code
+login: browser -> app : GET /callback with code
+login: app -> auth : POST /token with code verifier
+login: auth --> app : access token + ID token + refresh token
+login: app -> api : GET /me with bearer token
+login: api --> app : profile JSON
+login: app --> browser : set session cookie and render dashboard
+login: app -> auth : refresh_token grant
+login: auth --> app : new access token
+
+# Tokens
+
+table = Token,Lifetime,Stored where; Access token,15 minutes,server-side session; ID token,15 minutes,server-side session; Refresh token,30 days,encrypted session store; Session cookie,12 hours,"browser (HttpOnly, Secure)"
+
+# Security notes
+
+- PKCE is mandatory.
+- MFA is required for every member.
+- Failed logins lock the account after 5 attempts.
+
+!! Tokens must never be exposed to browser JavaScript or kept in browser storage.

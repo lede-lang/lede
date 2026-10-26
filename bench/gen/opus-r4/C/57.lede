@@ -1,0 +1,38 @@
+@title Choosing Hartwell's next CRM
+@subtitle Pipeboard, Cardinal CRM and Thistle, scored for 140 sales and account-management seats
+@date 2026-10-17
+
+Sales operations scored three shortlisted vendors from 1 to 5 against five weighted criteria. Pipeboard comes out ahead on the weighted score and sits in the middle on cost.
+
+kpi Pipeboard | 4.05 | weighted score | good
+kpi Thistle | 3.65 | weighted score
+kpi Cardinal CRM | 3.60 | weighted score
+
+## Scorecard
+
+table = Criterion,Weight,Pipeboard,Cardinal CRM,Thistle; Fit to our workflow,30%,4,5,3; Integration with our ERP,25%,5,3,4; Cost,20%,3,2,5; Admin effort,15%,4,3,3; Support quality,10%,4,5,3; **Weighted total**,100%,**4.05**,**3.60**,**3.65**
+
+Scores run from 1 (poor) to 5 (excellent). Cardinal CRM fits our workflow best, Thistle is the cheapest, and Pipeboard wins overall because it is strong on ERP integration and solid everywhere else.
+
+## Annual license cost
+
+data cost = vendor,annual cost; Cardinal CRM,149520; Pipeboard,109200; Thistle,70560
+chart hbar cost unit=$ labels title="Annual license cost for 140 seats"
+
+table = Vendor,Per seat per month,Seats,Per year; Pipeboard,$65,140,"$109,200"; Cardinal CRM,$89,140,"$149,520"; Thistle,$42,140,"$70,560"
+
+These are list prices before any negotiated discount, and they do not include implementation or partner fees.
+
+## Risks
+
+- **Pipeboard:** the ERP connector is certified, but the vendor is a startup founded in 2019.
+- **Cardinal CRM:** the best fit, but it needs a 12-week implementation and an implementation partner.
+- **Thistle:** the cheapest, but its reporting is weak and two of our dashboards would have to be rebuilt elsewhere.
+
+## Recommendation
+
+**We go with Pipeboard**, pending a reference call with another industrial distributor on 2026-10-28.
+
+It has the highest weighted score, the strongest ERP integration, and costs $40,320 a year less than Cardinal CRM. The reference call is there to test the main risk: whether a young vendor can support a distributor of our size.
+
+! If the reference call raises serious concerns about Pipeboard's stability or support, Thistle is the next option to revisit, with the dashboard rebuild costed in.

@@ -1,0 +1,61 @@
+{
+  "id": "80-school-solar-bids",
+  "category": "comparison",
+  "title": "Ridgeway school solar bids",
+  "brief": "Ridgeway School District has five bids for rooftop solar on its six schools, and the facilities director, Beatrice Ng, needs a comparison page for the board vote on 2026-11-17. Panels must be generating before the school year starts on 2027-09-01. Bids: SunHarvest, 1200 kW, price 2640000 dollars, 25-year savings 7400000, warranty 25 years, complete by 2027-08-15. Brightline Energy, 1150 kW, price 2415000, savings 7050000, warranty 20 years, complete by 2027-09-30. Copperfield Solar, 1250 kW, price 2875000, savings 7900000, warranty 25 years, complete by 2027-07-31. Halcyon Power, 1100 kW, price 2640000, savings 6800000, warranty 30 years, complete by 2027-10-31. Meridian Renewables, 1200 kW, price 2400000, savings 7150000, warranty 15 years, complete by 2027-08-31. Net 25-year benefit (savings minus price): 4760000, 4635000, 5025000, 4160000 and 4750000 in that order. Sections: \"Bids\", \"Net benefit\", \"Schedule fit\" and \"Recommendation\". Brightline and Halcyon would finish after the school year starts. Recommend Copperfield: the highest net benefit, 265000 dollars above SunHarvest, and the earliest completion; say plainly that it also has the highest upfront price, which the district must finance.",
+  "checklist": {
+    "sections": [
+      "Bids",
+      "Net benefit",
+      "Schedule fit",
+      "Recommendation"
+    ],
+    "visible": [
+      "SunHarvest",
+      "Brightline Energy",
+      "Copperfield Solar",
+      "Halcyon Power",
+      "Meridian Renewables",
+      "Beatrice Ng"
+    ],
+    "values": [
+      "2640000",
+      "2415000",
+      "2875000",
+      "2400000",
+      "7400000",
+      "7050000",
+      "7900000",
+      "6800000",
+      "7150000",
+      "4760000",
+      "4635000",
+      "5025000",
+      "4160000",
+      "4750000",
+      "1250 kW",
+      "265000",
+      "2027-07-31",
+      "2027-09-01",
+      "2026-11-17"
+    ]
+  },
+  "needs": [
+    "table",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Meridian Renewables lowered its price to 2300000. Update the price and its net benefit (4850000) everywhere.",
+    "expect_visible": [],
+    "expect_values": [
+      "2300000",
+      "4850000"
+    ],
+    "expect_absent": [
+      "2400000",
+      "4750000"
+    ]
+  }
+}

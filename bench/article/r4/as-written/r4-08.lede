@@ -1,0 +1,93 @@
+@title Incident report: ULT-3 freezer failure
+@subtitle Cold room B, night of 13 to 14 September 2026
+@date Incident 2026-09-14
+@width wide
+
+! Draft for the director, to be shared with the two other labs that use cold room B. Built only from the alarm log and the affected inventory. Anything those do not establish is listed at the end under "What we could not establish".
+
+# Summary
+
+ULT-3 warmed from -79.8 °C to -33.4 °C overnight after its compressor failed. The high-temperature alarm and first page went out at 02:17. The first logged acknowledgement was at 06:30, 4 h 12 min later, and the first person reached the freezer at 07:05, 4 h 47 min after the alarm. Contents were moved to the spare freezer ULT-5 at 07:20.
+
+kpi Samples affected | 2,900 | racks A to E | neutral
+kpi Discarded | 310 | $48,100 est. replacement | bad
+kpi Under review | 1,860 | irreplaceable plasma, cohort “Harbor-2” | bad
+kpi Recovered or in spec | 730 | racks C and E | good
+kpi Alarm to first ack | 4 h 12 min | log shows no earlier ack | bad
+
+The compressor failure started the incident. The response gaps, and the equipment and monitoring that were not in working order, set how long the contents spent warming. The process failed in several places (see "Where the process failed"); this report does not attribute any of it to individuals.
+
+# What happened
+
+The first warning was a compressor current alarm at 01:52, 25 minutes before the temperature alarm. The log shows no page for that warning. At 02:17 the temperature alarm fired and the on-call phone was paged. It was re-sent 15 minutes later with no acknowledgement and escalated to the secondary 30 minutes after the first page. The next logged event is an acknowledgement by the secondary, remotely, at 06:30. A first person arrived on site 35 minutes after that, and contents were moved 15 minutes later.
+
+data response = phase,start,end; Warning raised but nothing paged,0,0.42; Primary paged and re-sent with no ack,0.42,0.92; Escalated to secondary with no ack,0.92,4.63; Remote ack until first person on site,4.63,5.21; On site until contents moved,5.21,5.46
+
+chart range response from=start to=end unit=h title="Hours from the 01:52 compressor warning"
+
+data temps = time,temp; 22:41,-79.8; 02:17,-71.2; 03:05,-58.9; 05:12,-41.0; 07:20,-33.4
+
+chart line temps x=time y=temp unit=°C labels=all target="-65 alarm threshold" mark="02:17 Alarm and page" mark="07:20 Contents moved" title="ULT-3 logged temperatures (readings are not evenly spaced in time)"
+
+data log = time,event,what it shows; 2026-09-13 22:41:07,ULT-3 temp -79.8 C normal,Last normal reading. Nothing is logged for the next 3 h 11 min.; 2026-09-14 01:52:30,ULT-3 compressor current high (warn),"First sign of trouble. The log shows no page for a warning."; 2026-09-14 02:17:43,ULT-3 temp -71.2 C ALARM high-temp (threshold -65),"Alarm 25 min after the warning. Note -71.2 C is colder than the -65 threshold; see open questions."; 2026-09-14 02:17:44,pager sent: on-call (D. Okafor-Lindqvist),One second after the alarm.; 2026-09-14 02:32:44,"pager re-sent, no ack",15 min with no acknowledgement.; 2026-09-14 02:47:44,escalation to secondary (M. O'Hare),30 min after the first page.; 2026-09-14 03:05:12,ULT-3 temp -58.9 C,"Warmer than the threshold now. Rising about 15 C/h since the alarm."; 2026-09-14 03:40:01,ULT-3 door sensor: n/a (sensor offline since 08-29),"Door state unknown. The sensor had been offline for 16 days."; 2026-09-14 05:12:00,ULT-3 temp -41.0 C,"No entries for 1 h 32 min before this. Rising about 8 C/h."; 2026-09-14 06:30:15,ack by M. O'Hare (remote),"First acknowledgement: 4 h 12 min after the alarm, 3 h 42 min after escalation."; 2026-09-14 07:05:00,first person on site (R. Banerjee),"34 min after the ack; 4 h 47 min after the alarm."; 2026-09-14 07:20:00,"ULT-3 temp -33.4 C; contents moved to ULT-5 (spare, 80% full)",15 min after arrival.; 2026-09-14 09:45:00,ULT-3 compressor declared failed by vendor,2 h 25 min after the move. The failure mode is not stated.
+
+table log title="Timeline from the alarm log"
+
+The gaps where nobody responded:
+
+- 01:52 to 02:17: a compressor warning, no page in the log.
+- 02:17 to 06:30: four hours with no acknowledgement. Three automated pages went out (first, re-send, escalation). The log does not show whether any was received.
+- 06:30 to 07:05: an acknowledgement from off site, then 35 minutes before anyone was at the freezer.
+- 03:40: the door sensor was already offline, so there is no record of whether the door was open.
+
+# Impact
+
+data inv = rack,contents,samples,est. replacement ($),status; A,"primary neuron lines, passage 4-6",214,"38,500","thawed, discarded"; B,"plasma aliquots, cohort “Harbor-2”",1860,irreplaceable,"thawed, under review"; C,competent cells and plasmid stocks,420,"6,300","recovered, viability tested"; D,tissue lysates (Prof. Weiss),96,"9,600","thawed, discarded"; E,"reagent aliquots, antibodies",310,"4,650",within spec per vendor; F,empty / spare,0,0,
+
+table inv bar=samples title="Affected inventory, ULT-3"
+
+- **Samples:** 2,900 in racks A to E. 310 discarded (A and D), 1,860 under review (B), 730 recovered or within spec (C and E). Rack F was empty.
+- **Money, confirmed:** $48,100 estimated replacement for the discarded racks (A $38,500, D $9,600).
+- **Money, quoted:** $14,900 for a replacement freezer, not yet spent. With the discarded samples that is $63,000.
+- **Not in that figure:** rack B, which is irreplaceable and has no value in the inventory; racks C and E ($10,950 of replacement value) are not counted because they were recovered; staff time, vendor call-out, lost research time and the cost of the lapsed maintenance contract are not in what we have.
+- **Rack C:** the log says viability was tested but not the result.
+
+# Root cause, as far as we can tell
+
+- **Direct cause:** compressor failure, declared by the vendor at 09:45. A current-high warning came 25 minutes before the temperature alarm. Why the compressor failed is not established.
+- **Why it became a loss:** the contents spent about 5 hours warming between the alarm (02:17) and the move (07:20). The log does not show at what temperature or time each rack was damaged, so we cannot say which losses a faster response would have prevented.
+
+## Where the process failed
+
+- A compressor warning paged nobody, per the log.
+- The paging chain had two tiers. After the secondary was escalated at 02:47, nothing further is logged for 3 h 42 min, and there was no third tier.
+- Nobody was on site overnight; the first person arrived 4 h 47 min after the alarm.
+- The door sensor had been offline since 29 August (16 days) and nothing in the log shows it was being repaired or that it alerted anyone.
+- The maintenance contract on the freezer lapsed in June, so there was no service cover.
+- The pager rota had the wrong secondary number until March. That was fixed before this incident, but it shows the rota was not being tested end to end.
+- The spare freezer ULT-5 was already 80% full, leaving little room for a full unit's contents.
+
+# What we change
+
+Owners and dates are blank because they are for the director to assign.
+
+table = change,closes which gap,owner,due; Page on compressor current-high warnings (non-urgent tier at minimum),Warning paged nobody,To assign,To set; Add a third escalation tier with a phone call and an ack deadline,Four hours without an ack,To assign,To set; Test the pager chain end to end every month and log the result,Rota error went unnoticed until March,To assign,To set; Repair or replace the door sensor and alert when any sensor is offline more than 24 h,Sensor offline 16 days,To assign,To set; Reinstate the maintenance contract,Contract lapsed in June,To assign,To set; Approve and install the replacement freezer ($14,900 quoted),ULT-3 compressor failed,Director,To set; Keep enough spare capacity in ULT-5 to take the largest unit,Spare was 80% full,To assign,To set; Check the alarm rule that fired at -71.2 C against a -65 C threshold,Alarm logic unclear,To assign,To set; Decide the fate of rack B and record the viability result for rack C,Open sample outcomes,Owning groups,To set
+
+## For the two labs sharing cold room B
+
+- Check that your own pager rota and escalation numbers are correct and tested.
+- Check that every freezer door and temperature sensor is reporting.
+- Tell us if any of your samples were in ULT-3; the inventory we have lists only its five racks.
+
+# What we could not establish
+
+- Why the compressor failed; the vendor findings were not provided.
+- Whether the pages reached anyone before 06:30, and why no acknowledgement was recorded. This report does not speculate.
+- Whether the door was open; the sensor was offline.
+- Why the alarm fired at -71.2 °C when its threshold was -65 °C. It may be a rate-of-rise rule, a misconfigured threshold or a logging issue.
+- Whether warnings are meant to page, and whether there were earlier warnings before 01:52. Nothing is logged from 22:41 to 01:52.
+- Whether the earlier rota error played any part; it was fixed in March.
+- The peak temperature and the temperatures between logged readings, and when each rack passed any damage threshold.
+- The condition of rack B and the result of the rack C viability test.
+- How ULT-5, 80% full, took the contents of racks A to E, and whether everything was moved.
+- Whether any other lab's samples in cold room B were affected.

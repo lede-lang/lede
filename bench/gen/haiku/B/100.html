@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Studio wing campaign progress</title>
+<style>
+:root{color-scheme:light dark;--bg:#f7f5f0;--card:#ffffff;--text:#2a2420;--muted:#6b6259;--line:#e4ddd2;--accent:#9a4e2b;--accent2:#c9875e;--track:#ece6dc}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15110e;--card:#201a16;--text:#f0e9e1;--muted:#a79b8e;--line:#3a312a;--accent:#e0a07a;--accent2:#c9875e;--track:#2e2620}}
+:root[data-theme="dark"]{--bg:#15110e;--card:#201a16;--text:#f0e9e1;--muted:#a79b8e;--line:#3a312a;--accent:#e0a07a;--accent2:#c9875e;--track:#2e2620}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 Georgia,"Iowan Old Style","Palatino Linotype",serif}
+.wrap{max-width:680px;margin:0 auto;padding:24px 16px 48px}
+h1{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:1.8rem;line-height:1.2;margin:0 0 4px}
+h2{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:1.15rem;margin:30px 0 10px;padding-top:14px;border-top:1px solid var(--line)}
+.meta{color:var(--muted);font-size:.92rem;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.big{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:0}
+.big b{font-size:2.3rem;color:var(--accent);font-variant-numeric:lining-nums tabular-nums;line-height:1}
+.track{height:16px;background:var(--track);border-radius:999px;overflow:hidden;margin:12px 0 6px}
+.fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:999px}
+.facts{display:grid;gap:8px;grid-template-columns:1fr 1fr;margin-top:12px}
+@media (min-width:560px){.facts{grid-template-columns:repeat(3,1fr)}}
+.facts div{background:var(--track);border-radius:10px;padding:8px 10px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:.88rem;color:var(--muted)}
+.facts b{display:block;color:var(--text);font-size:1.05rem;font-variant-numeric:tabular-nums}
+.lv{margin:12px 0}
+.lv-head{display:flex;justify-content:space-between;gap:10px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:.94rem}
+.lv-head span:last-child{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar{height:12px;background:var(--track);border-radius:999px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:999px}
+ul{padding-left:1.2em}
+li{margin:8px 0}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>Progress</h1>
+<p class="meta">Riverside Arts Center capital campaign for the new studio wing · As of 2026-10-16</p>
+
+<div class="card" style="margin-top:14px">
+  <p class="big"><b>$3.18M</b><span>raised of our $4.5M goal</span></p>
+  <div class="track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="71"><div class="fill" style="width:70.7%"></div></div>
+  <p style="margin:0;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:.95rem"><strong>70.7%</strong> of the goal. <strong>$1.32M</strong> still to go.</p>
+  <div class="facts">
+    <div>Donors<b>412</b></div>
+    <div>Largest single gift<b>$500,000</b></div>
+    <div>Campaign closes<b>2027-03-31</b></div>
+  </div>
+</div>
+
+<h2 id="levels">Gifts by level</h2>
+<div class="card">
+  <div class="lv">
+    <div class="lv-head"><span>$100,000 and up</span><span>6 gifts · $1.62M</span></div>
+    <div class="bar"><i style="width:100%"></i></div>
+  </div>
+  <div class="lv">
+    <div class="lv-head"><span>$25,000 to $99,999</span><span>18 gifts · $0.84M</span></div>
+    <div class="bar"><i style="width:52%"></i></div>
+  </div>
+  <div class="lv">
+    <div class="lv-head"><span>$1,000 to $24,999</span><span>129 gifts · $0.52M</span></div>
+    <div class="bar"><i style="width:32%"></i></div>
+  </div>
+  <div class="lv">
+    <div class="lv-head"><span>Under $1,000</span><span>259 gifts · $0.20M</span></div>
+    <div class="bar"><i style="width:12%"></i></div>
+  </div>
+</div>
+
+<h2 id="next">What comes next</h2>
+<div class="card">
+  <ul>
+    <li><strong>Matching gift:</strong> the Delmar Foundation will match up to $250,000 of new gifts if 150 new donors give by 2026-12-15.</li>
+    <li><strong>Donor evening:</strong> 2026-11-21.</li>
+    <li><strong>Naming opportunities:</strong> 3 studio rooms are still open.</li>
+  </ul>
+</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,45 @@
+@title 911 Call Path and Failover
+@subtitle Marrow County Emergency Communications District
+@author Public Safety Systems
+@date 2026-09-30
+@width wide
+
+# Overview
+Calls arrive from the telephone carriers into the Primary Dispatch Center, where they are routed to the computer-aided dispatch (CAD) system. A Backup Dispatch Center across the county can take over if the primary is lost.
+
+!!! The Backup Dispatch Center is activated only when the shift supervisor declares the primary unavailable. It never takes over automatically.
+
+# Call path
+diagram calls dir=LR title="911 call path"
+calls: callers "Callers" user
+calls: carriers "Telecom Carriers" ext
+calls: router "Call Router" svc focus
+calls: cada "CAD Server A" svc "active" focus
+calls: cadb "CAD Server B" svc "hot standby"
+calls: radio "Radio Gateway" svc
+calls: standby "Standby Call Router" svc
+calls: replica "CAD Replica" db
+calls: gis "State GIS Service" ext
+calls: units "Field Units" team
+calls: callers -> carriers : voice and caller location
+calls: carriers -> router : SIP trunks
+calls: router -> cada : call record
+calls: cada -> cadb : state sync
+calls: cada --> replica : async replication
+calls: router --> standby : heartbeat
+calls: cada -> gis : address lookup
+calls: cada -> radio : dispatch message
+calls: radio -> units : P25 radio
+calls: group primary "Primary Dispatch Center" router, cada, cadb, radio
+calls: group backup "Backup Dispatch Center" standby, replica
+calls: legend
+
+# Failover targets
+kpi Call routing | 30 s | to Standby Call Router
+kpi CAD | 2 min | CAD Server B takes over
+kpi Replica lag | < 5 s | CAD Replica
+kpi Backup center | 10 min | staffed and taking calls
+
+table = component,takes over,target; Call routing,Standby Call Router,within 30 seconds; CAD,CAD Server B,within 2 minutes; CAD data,CAD Replica,lags by under 5 seconds; Whole dispatch center,Backup Dispatch Center,fully staffed and taking calls within 10 minutes
+
+!! The 10-minute backup-center clock starts only once the shift supervisor declares the primary unavailable. Nothing fails over to the backup center automatically.

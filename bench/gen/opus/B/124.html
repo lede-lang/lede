@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>EHR Downtime Runbook · Pelican Bay Clinic</title>
+<style>
+:root{--bg:#f4f7f8;--surface:#ffffff;--ink:#17202a;--muted:#566370;--line:#dde4e8;--accent:#0f6e74;--accent-bg:#e1f2f2;--danger:#b42318;--danger-bg:#fdecea;--warn:#9a5800;--warn-bg:#fff3dc;--ok:#1d7745;--ok-bg:#e6f4ec}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1416;--surface:#172024;--ink:#e6ecef;--muted:#9babb4;--line:#2a363c;--accent:#6fd0d4;--accent-bg:#133236;--danger:#ff8f85;--danger-bg:#3a1c1a;--warn:#f2b55c;--warn-bg:#35280f;--ok:#72d39c;--ok-bg:#15301f}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:28px 16px 64px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:650}
+h1{font-size:clamp(1.65rem,4.6vw,2.3rem);line-height:1.15;margin:.35rem 0 .7rem}
+h2{font-size:1.22rem;margin:0 0 .85rem;line-height:1.3}
+h3{font-size:1rem;margin:0 0 .4rem}
+p{margin:.2rem 0 .8rem}
+.meta{display:flex;flex-wrap:wrap;gap:6px 20px;color:var(--muted);font-size:.9rem;margin:0;padding:0;list-style:none}
+.meta b{color:var(--ink);font-weight:600}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;margin-top:18px}
+.alert{display:flex;gap:14px;align-items:flex-start;background:var(--warn-bg);border:1px solid var(--warn);border-left-width:6px;border-radius:12px;padding:16px 18px;margin-top:22px}
+.alert svg{flex:none;margin-top:2px}
+.alert strong{display:block;color:var(--warn);font-size:1.05rem;margin-bottom:2px}
+.alert p{margin:0}
+.declare{display:grid;gap:12px}
+.declare .box{border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.declare .k{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:650}
+.declare .v{font-size:1.05rem;font-weight:600;margin-top:2px}
+.page{display:inline-block;font-weight:700;background:var(--accent-bg);color:var(--accent);padding:1px 8px;border-radius:6px}
+ol.steps{list-style:none;counter-reset:s;margin:0;padding:0}
+ol.steps>li{counter-increment:s;position:relative;padding:0 0 20px 48px}
+ol.steps>li:last-child{padding-bottom:0}
+ol.steps>li::before{content:counter(s);position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--surface);font-weight:700;display:grid;place-items:center}
+ol.steps>li::after{content:"";position:absolute;left:16px;top:38px;bottom:4px;width:2px;background:var(--line)}
+ol.steps>li:last-child::after{display:none}
+ol.steps h3{padding-top:5px}
+ol.sub{list-style:lower-alpha;margin:0;padding-left:1.2rem}
+ol.sub li{margin:.3rem 0}
+.flag{color:var(--danger);font-weight:600}
+.recovery{display:grid;gap:10px;margin:0;padding:0;list-style:none;counter-reset:r}
+.recovery li{counter-increment:r;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:start;border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.recovery li::before{content:counter(r,lower-alpha);width:26px;height:26px;border-radius:50%;background:var(--accent-bg);color:var(--accent);font-weight:700;display:grid;place-items:center;grid-row:span 2}
+.recovery .when{font-size:.8rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+dl.contacts{display:grid;gap:10px;margin:0}
+dl.contacts div{border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+dl.contacts dt{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+dl.contacts dd{margin:2px 0 0;font-weight:600;font-size:1.05rem}
+dl.contacts .sub{display:block;font-weight:400;font-size:.88rem;color:var(--muted);margin-top:2px}
+footer{margin-top:26px;color:var(--muted);font-size:.85rem;text-align:center}
+@media (min-width:680px){.declare{grid-template-columns:repeat(3,1fr)}dl.contacts{grid-template-columns:repeat(3,1fr)}.card{padding:24px 26px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="eyebrow">Pelican Bay Clinic · Clinical Operations · Runbook</div>
+  <h1>When the electronic health record is unavailable</h1>
+  <ul class="meta">
+    <li>For: <b>Charge nurses and front-desk staff</b></li>
+    <li>Owner: <b>Clinical Operations</b></li>
+    <li>Effective: <b>2026-11-15</b></li>
+  </ul>
+
+  <div class="alert" role="alert">
+    <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 1 21h22L12 2z" fill="var(--warn)"/><path d="M12 9v5" stroke="var(--surface)" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17.5" r="1.3" fill="var(--surface)"/></svg>
+    <div>
+      <strong>The binder's allergy list is the source of truth</strong>
+      <p>Until the record is back, use the allergy list in the downtime binder for every patient. Do not rely on memory or on older printouts.</p>
+    </div>
+  </div>
+
+  <section class="card" id="declare">
+    <h2>Declare downtime</h2>
+    <div class="declare">
+      <div class="box"><div class="k">When</div><div class="v">Record unavailable or unusably slow for 10 minutes</div></div>
+      <div class="box"><div class="k">Announce</div><div class="v">Charge nurse pages <span class="page">"Paper procedures"</span> overhead</div></div>
+      <div class="box"><div class="k">Call</div><div class="v">IT service desk, extension 5000</div></div>
+    </div>
+  </section>
+
+  <section class="card" id="during">
+    <h2>During downtime</h2>
+    <ol class="steps">
+      <li>
+        <h3>Switch to paper</h3>
+        <ol class="sub">
+          <li>Take the downtime binder from each station. It holds the printed schedule (refreshed at <b>05:00</b> daily), an <b>allergy list</b> and a <b>medication list</b> for every patient booked that day.</li>
+          <li>Label every paper form with a patient label sheet.</li>
+        </ol>
+      </li>
+      <li>
+        <h3>Check in patients</h3>
+        <ol class="sub">
+          <li>Confirm identity with <b>two identifiers</b>: name and date of birth.</li>
+          <li>Record the arrival time by hand.</li>
+        </ol>
+      </li>
+      <li>
+        <h3>Orders and medications</h3>
+        <ol class="sub">
+          <li>Write down every verbal order and read it back.</li>
+          <li><span class="flag">Never give a high-risk medication without a second nurse's check.</span></li>
+          <li>Record every dose on the paper medication sheet.</li>
+        </ol>
+      </li>
+      <li>
+        <h3>Keep care moving</h3>
+        <ol class="sub">
+          <li>Do not cancel visits solely because of downtime.</li>
+          <li>Tell patients about any delay beyond <b>20 minutes</b>.</li>
+        </ol>
+      </li>
+    </ol>
+  </section>
+
+  <section class="card" id="recovery">
+    <h2>Recovery</h2>
+    <ol class="recovery">
+      <li><span class="when">When IT announces restoration</span><span>Wait for the all-clear before entering anything.</span></li>
+      <li><span class="when">Within 4 hours</span><span>Scan paper documents into the record.</span></li>
+      <li><span class="when">Within 24 hours</span><span>Reconcile medication entries.</span></li>
+      <li><span class="when">After the event</span><span>Report the event on the incident form.</span></li>
+    </ol>
+  </section>
+
+  <section class="card" id="contacts">
+    <h2>Contacts</h2>
+    <dl class="contacts">
+      <div><dt>IT service desk</dt><dd>Extension 5000</dd></div>
+      <div><dt>Charge nurse supervisor</dt><dd>Rowena Achterberg</dd></div>
+      <div><dt>Privacy officer</dt><dd>Idris Mbeki<span class="sub">Must be told if any paper forms are lost.</span></dd></div>
+    </dl>
+  </section>
+
+  <footer>Pelican Bay Clinic · EHR downtime runbook · Owned by Clinical Operations · Effective 2026-11-15</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,33 @@
+@title EXP-418 Checkout Button Copy
+@subtitle Results of the checkout button copy test, 2026-09-08 to 2026-09-28
+@author Growth Analytics, Marigold Home
+
+kpi Total visitors | 144,607
+kpi Winner | Variant C | "Pay securely now"
+kpi Lift | +12.6% | vs control | good
+kpi Confidence | 99.7%
+
+Three variants of the checkout button copy ran for three weeks:
+- **Control**: "Place order"
+- **Variant B**: "Complete purchase"
+- **Variant C**: "Pay securely now"
+
+# Results
+table = Variant,Visitors,Conversions,Conversion rate,Lift vs control,p-value; Control,"48,210","1,832",3.80%,none,none; Variant B,"48,095","1,919",3.99%,+5.0%,0.14; **Variant C**,"48,302","2,068",**4.28%**,**+12.6%**,**0.003**
+
+# Conversion rate
+data rate = variant,conversion; Control,3.80; Variant B,3.99; Variant C,4.28
+chart bar rate unit=% labels min=3 title="Conversion rate by variant"
+
+# Daily trend
+data daily = day,Control,Variant C; Sep 22,3.71,4.19; Sep 23,3.85,4.33; Sep 24,3.79,4.24; Sep 25,3.92,4.40; Sep 26,3.68,4.17; Sep 27,3.83,4.31; Sep 28,3.81,4.29
+chart line daily unit=% title="Daily conversion rate, final week"
+
+Variant C beat control on every day of the final week, by roughly half a percentage point.
+
+# Decision
+! Ship **Variant C** to 50% of traffic first.
+
+! **Guardrail:** the refund rate was 2.1% for Control and 2.2% for Variant C, which is within tolerance.
+
+Variant B's lift of 5.0% was not significant (p = 0.14). Average order value did not change: $87.40 for Variant C against $87.15 for control.

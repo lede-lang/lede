@@ -1,0 +1,16 @@
+@title How an upload reaches storage
+
+diagram up dir=LR title="Upload path"
+up: user "Browser" user
+up: api "Upload API" svc focus
+up: q "Scan queue" queue
+up: scan "Virus scan" fn
+up: store "Object store" store
+up: user -> api : PUT
+up: api -> q : enqueue
+up: q --> scan : async
+up: scan -> store : clean files
+up: user -x- store : no direct writes
+up: legend
+
+The browser never writes to the object store directly; every file passes the scanner first.

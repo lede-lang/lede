@@ -1,0 +1,7 @@
+data g = team,done,goal; P,64,80; Q,91,85
+table g bar=done target=goal
+kpi Done | 58% | | bar
+kpi Ratio | 0.5 | note text | bar
+kpi Tone | 99% | +1 | good | bar
+kpi Ref | =g.done | | bar
+kpi Bars | 12

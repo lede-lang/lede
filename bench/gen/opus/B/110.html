@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spring Inventory Shipping</title>
+<style>
+:root{color-scheme:light dark;--bg:#f5f6f3;--card:#fff;--ink:#1a1d18;--muted:#5d6358;--line:#d9ddd3;--accent:#2f6b3a;--accent-soft:#e6f2e7;--std:#2f6b3a;--exp:#2f62a8;--air:#b4451f;--hand:#a7aca1;--warn:#9a4a00;--warn-soft:#fff3e0}
+@media (prefers-color-scheme:dark){:root{--bg:#10120f;--card:#181b16;--ink:#e8ebe4;--muted:#a0a798;--line:#2f342b;--accent:#6fcf80;--accent-soft:#16301b;--std:#6fcf80;--exp:#7fb0f5;--air:#f08a63;--hand:#5f6559;--warn:#f2a650;--warn-soft:#33240f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+main{max-width:900px;margin:0 auto;padding:34px 16px 64px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+h1{font-size:clamp(1.55rem,5vw,2.3rem);line-height:1.15;margin:.35rem 0 .7rem}
+.lead{color:var(--muted);margin:0 0 .8rem}
+.meta{display:flex;flex-wrap:wrap;gap:.4rem .6rem;font-size:.86rem;color:var(--muted)}
+.meta span{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:.15rem .7rem}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.kpi .v{font-size:1.25rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.15}
+.kpi .k{font-size:.82rem;color:var(--muted)}
+@media (max-width:480px){.kpis{grid-template-columns:1fr 1fr}.kpi:last-child{grid-column:1/-1}}
+section{margin-top:40px}
+h2{font-size:1.3rem;margin:0 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+p{margin:0 0 .8rem}
+.note{font-size:.86rem;color:var(--muted);margin-top:8px}
+.tbl{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);font-size:.95rem}
+th,td{padding:10px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+th:first-child,td:first-child{text-align:left;white-space:normal}
+th{font-size:.76rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+td:first-child{font-weight:700}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px}
+tr.rec td{background:var(--accent-soft)}
+.tag{display:inline-block;font-size:.64rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:var(--accent);color:var(--card);border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:2px}
+@media (max-width:480px){table{font-size:.84rem}th,td{padding:8px 6px}}
+.chart{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.chart svg{display:block;width:100%;height:auto;max-width:700px}
+.fifth{margin-top:14px;background:var(--accent-soft);border:1px solid var(--accent);border-left-width:6px;border-radius:12px;padding:14px 16px;font-size:1.02rem}
+.recbox{background:var(--card);border:2px solid var(--accent);border-radius:14px;padding:18px}
+.recbox h3{margin:0 0 8px;font-size:1.2rem;color:var(--accent)}
+.ladder{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.ladder li{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;padding:10px 12px;border-radius:10px;border:1px solid var(--line)}
+.ladder .n{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:.85rem;color:var(--card)}
+.ladder b{display:block}
+.ladder span.s{font-size:.9rem;color:var(--muted)}
+footer{margin-top:48px;font-size:.85rem;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<main>
+<header>
+<div class="eyebrow">Fieldstone Outdoor · Supply chain</div>
+<h1>Shipping 400 pallets of spring inventory</h1>
+<p class="lead">Comparing three ways to move the order from our overseas manufacturer to U.S. stores. Goods must be in stores by 2027-03-01, with 7 days allowed for handling after arrival.</p>
+<div class="meta"><span>Leadership meeting 2026-11-12</span><span>Prepared by Mateo Brandt, Supply Chain Planner</span></div>
+<div class="kpis">
+<div class="kpi"><div class="v">Standard ocean</div><div class="k">Recommended mode</div></div>
+<div class="kpi"><div class="v">2027-01-18</div><div class="k">Latest departure</div></div>
+<div class="kpi"><div class="v">$72k–$96k</div><div class="k">Total for 400 pallets</div></div>
+</div>
+</header>
+
+<section id="options">
+<h2>Options</h2>
+<div class="tbl">
+<table>
+<thead><tr><th>Mode</th><th>Transit</th><th>Per pallet</th></tr></thead>
+<tbody>
+<tr class="rec"><td><span class="dot" style="background:var(--std)"></span>Standard ocean<span class="tag">Recommended</span></td><td>28–35 days</td><td>$180–$240</td></tr>
+<tr><td><span class="dot" style="background:var(--exp)"></span>Expedited ocean<br><span style="font-weight:400;font-size:.85rem;color:var(--muted)">Priority vessel service</span></td><td>18–22 days</td><td>$310–$380</td></tr>
+<tr><td><span class="dot" style="background:var(--air)"></span>Air freight</td><td>2–3 days</td><td>$1,350–$1,600</td></tr>
+</tbody>
+</table>
+</div>
+<p class="note">Ranges, because rates move.</p>
+</section>
+
+<section id="total-cost">
+<h2>Total cost for 400 pallets</h2>
+<div class="chart">
+<svg viewBox="0 0 400 230" role="img" aria-label="Total cost ranges for 400 pallets on one scale: standard ocean 72,000 to 96,000 dollars, expedited ocean 124,000 to 152,000 dollars, air freight 540,000 to 640,000 dollars.">
+<g stroke="var(--line)">
+<line x1="10" y1="30" x2="10" y2="186"/><line x1="118.6" y1="30" x2="118.6" y2="186"/><line x1="227.1" y1="30" x2="227.1" y2="186"/><line x1="335.7" y1="30" x2="335.7" y2="186"/>
+</g>
+<g font-size="13" font-weight="650" fill="var(--ink)">
+<text x="10" y="22">Standard ocean</text>
+<text x="10" y="78">Expedited ocean</text>
+<text x="10" y="134">Air freight</text>
+</g>
+<rect x="49.1" y="32" width="13" height="20" rx="2" fill="var(--std)"/>
+<text x="70" y="47" font-size="12.5" font-weight="700" fill="var(--ink)">$72k–$96k</text>
+<rect x="77.3" y="88" width="15.2" height="20" rx="2" fill="var(--exp)"/>
+<text x="100" y="103" font-size="12.5" font-weight="700" fill="var(--ink)">$124k–$152k</text>
+<rect x="303.1" y="144" width="54.3" height="20" rx="2" fill="var(--air)"/>
+<text x="296" y="159" font-size="12.5" font-weight="700" fill="var(--ink)" text-anchor="end">$540k–$640k</text>
+<g font-size="11" fill="var(--muted)" text-anchor="middle">
+<text x="10" y="202">$0</text><text x="118.6" y="202">$200k</text><text x="227.1" y="202">$400k</text><text x="335.7" y="202">$600k</text>
+</g>
+<text x="10" y="224" font-size="10.5" fill="var(--muted)">Bars span each range (low to high), drawn to one scale.</text>
+</svg>
+</div>
+<div class="fifth"><strong>Standard ocean's top-of-range price ($96,000) is still less than one fifth of air's lowest estimate ($540,000).</strong></div>
+<div class="tbl" style="margin-top:14px">
+<table>
+<thead><tr><th>Mode</th><th>Low</th><th>High</th></tr></thead>
+<tbody>
+<tr class="rec"><td>Standard ocean</td><td>$72,000</td><td>$96,000</td></tr>
+<tr><td>Expedited ocean</td><td>$124,000</td><td>$152,000</td></tr>
+<tr><td>Air freight</td><td>$540,000</td><td>$640,000</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section id="timing">
+<h2>Timing</h2>
+<p>Latest departure to be in stores by <strong>2027-03-01</strong>, using the longest transit time plus 7 days of handling.</p>
+<div class="chart">
+<svg viewBox="0 0 400 200" role="img" aria-label="Latest departures: standard ocean 2027-01-18 with 35 days transit, expedited ocean 2027-01-31 with 22 days, air 2027-02-19 with 3 days; each arrives 2027-02-22 and has 7 days handling to reach stores by 2027-03-01.">
+<g stroke="var(--line)"><line x1="110" y1="20" x2="110" y2="150"/><line x1="233.2" y1="20" x2="233.2" y2="150"/></g>
+<line x1="390" y1="14" x2="390" y2="150" stroke="var(--warn)" stroke-width="2.5"/>
+<text x="390" y="11" font-size="11" font-weight="800" fill="var(--warn)" text-anchor="end">In stores 03-01</text>
+<g font-size="12.5" font-weight="650" fill="var(--ink)" text-anchor="end">
+<text x="102" y="45">Standard</text><text x="102" y="85">Expedited</text><text x="102" y="125">Air</text>
+</g>
+<rect x="154.8" y="30" width="196" height="22" fill="var(--std)"/>
+<rect x="350.8" y="30" width="39.2" height="22" fill="var(--hand)"/>
+<rect x="227.6" y="70" width="123.2" height="22" fill="var(--exp)"/>
+<rect x="350.8" y="70" width="39.2" height="22" fill="var(--hand)"/>
+<rect x="334" y="110" width="16.8" height="22" fill="var(--air)"/>
+<rect x="350.8" y="110" width="39.2" height="22" fill="var(--hand)"/>
+<g font-size="11" font-weight="700">
+<text x="160" y="46" fill="var(--card)">depart 01-18 · 35 days</text>
+<text x="232" y="86" fill="var(--card)">depart 01-31 · 22 d</text>
+<text x="328" y="126" fill="var(--ink)" text-anchor="end">depart 02-19 · 3 d</text>
+</g>
+<g font-size="11" fill="var(--muted)" text-anchor="middle">
+<text x="110" y="166">Jan 10</text><text x="233.2" y="166">Feb 1</text><text x="370" y="166">Mar 1</text>
+</g>
+<rect x="110" y="178" width="12" height="10" fill="var(--hand)"/>
+<text x="128" y="187" font-size="11" fill="var(--muted)">7 days handling after arrival (02-22 → 03-01)</text>
+</svg>
+</div>
+<div class="tbl" style="margin-top:14px">
+<table>
+<thead><tr><th>Mode</th><th>Longest transit</th><th>Latest departure</th></tr></thead>
+<tbody>
+<tr class="rec"><td>Standard ocean</td><td>35 days</td><td>2027-01-18</td></tr>
+<tr><td>Expedited ocean</td><td>22 days</td><td>2027-01-31</td></tr>
+<tr><td>Air freight</td><td>3 days</td><td>2027-02-19</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section id="recommendation">
+<h2>Recommendation</h2>
+<div class="recbox">
+<h3>Ship the whole order by standard ocean</h3>
+<p>Book all 400 pallets to <strong>depart by 2027-01-18</strong>, for $72,000 to $96,000 in total.</p>
+<ol class="ladder">
+<li style="background:var(--accent-soft)"><span class="n" style="background:var(--std)">1</span><div><b>Standard ocean: the plan</b><span class="s">Whole order, departing by 2027-01-18.</span></div></li>
+<li><span class="n" style="background:var(--exp)">2</span><div><b>Expedited ocean: fallback if departure slips</b><span class="s">Must depart by 2027-01-31. $124,000 to $152,000.</span></div></li>
+<li><span class="n" style="background:var(--air)">3</span><div><b>Air freight: emergency only</b><span class="s">Must depart by 2027-02-19. $540,000 to $640,000.</span></div></li>
+</ol>
+</div>
+</section>
+
+<footer>Fieldstone Outdoor · Mateo Brandt, Supply Chain Planner · For the leadership meeting on 2026-11-12</footer>
+</main>
+</body>
+</html>

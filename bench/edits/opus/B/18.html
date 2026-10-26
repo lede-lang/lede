@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Postmortem: Late Daily Sales Dashboards — Juniper Retail</title>
+<style>
+:root {
+  --bg: #f7f6f4;
+  --card: #ffffff;
+  --ink: #1f1c18;
+  --ink-2: #67625a;
+  --rule: #e4e1dc;
+  --node-fill: #ffffff;
+  --node-edge: #a19b91;
+  --wire: #4a453e;
+  --fail: #d1352a;
+  --fail-fill: #fdeae8;
+  --good: #1f7a46;
+  --good-bg: #e7f4ec;
+  --bad-bg: #fbecea;
+  --chip: #efece7;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #11100e;
+    --card: #1a1916;
+    --ink: #ece9e4;
+    --ink-2: #a39d93;
+    --rule: #2e2b27;
+    --node-fill: #23211d;
+    --node-edge: #6f6a61;
+    --wire: #cdc7bd;
+    --fail: #ff6d61;
+    --fail-fill: #3b1815;
+    --good: #6fd39a;
+    --good-bg: #15291d;
+    --bad-bg: #341917;
+    --chip: #2a2824;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.page { max-width: 900px; margin: 0 auto; padding: 28px 16px 64px; }
+.chip { display: inline-block; font-size: 0.78rem; font-weight: 700; background: var(--chip); color: var(--ink-2); padding: 2px 10px; border-radius: 999px; }
+h1 { margin: 10px 0 4px; font-size: 1.6rem; line-height: 1.3; }
+.meta { color: var(--ink-2); margin: 0; font-size: 0.92rem; }
+section { background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 18px 20px; margin-top: 16px; }
+h2 { margin: 0 0 10px; font-size: 1.12rem; }
+h3 { margin: 0 0 6px; font-size: 0.95rem; }
+p { margin: 0; }
+ul, ol { margin: 0; padding-left: 1.3em; }
+li { margin: 5px 0; }
+.impact li strong { font-variant-numeric: tabular-nums; }
+.flow { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.flow svg { display: block; width: 100%; min-width: 640px; height: auto; }
+svg text { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.fn rect { fill: var(--node-fill); stroke: var(--node-edge); stroke-width: 1.5; }
+.fn text { fill: var(--ink); font-size: 13px; font-weight: 600; text-anchor: middle; }
+.fn.failed rect { fill: var(--fail-fill); stroke: var(--fail); stroke-width: 2.5; }
+.fn.failed text { fill: var(--fail); font-weight: 800; }
+.fw { stroke: var(--wire); stroke-width: 1.6; fill: none; }
+.fl { fill: var(--ink); font-size: 12px; font-weight: 600; text-anchor: middle; }
+.legend { font-size: 0.85rem; color: var(--ink-2); margin-top: 6px; }
+.legend i { display: inline-block; width: 14px; height: 10px; border: 2px solid var(--fail); background: var(--fail-fill); border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 9px 10px; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-2); }
+tbody tr:last-child td { border-bottom: 0; }
+td.t { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.92rem; white-space: nowrap; width: 1%; }
+tr.fail td { color: var(--fail); font-weight: 600; }
+.lessons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.lessons > div { border-radius: 10px; padding: 12px 14px; }
+.lessons .well { background: var(--good-bg); }
+.lessons .well h3 { color: var(--good); }
+.lessons .not { background: var(--bad-bg); }
+.lessons .not h3 { color: var(--fail); }
+@media (max-width: 640px) {
+  section { padding: 16px 14px; }
+  .lessons { grid-template-columns: 1fr; }
+  th, td { padding: 8px 6px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <span class="chip">Postmortem · Analytics Platform</span>
+  <h1>Daily sales dashboards 9 hours late</h1>
+  <p class="meta">Juniper Retail · 2026-10-02 · Normally ready by 02:00</p>
+
+  <section>
+    <h2>Impact</h2>
+    <ul class="impact">
+      <li><strong>9 hours</strong> of delay: dashboards refreshed at 10:58 instead of 02:00.</li>
+      <li><strong>23 dashboards</strong> were stale.</li>
+      <li>The <strong>08:00 executive sales report</strong> went out with the previous day's numbers.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Pipeline</h2>
+    <div class="flow">
+      <svg viewBox="0 0 984 124" role="img" aria-label="Pipeline flow left to right: Orders DB, CDC Connector, Kafka, then via the orders topic to Spark Job, which failed, then Warehouse, Data Quality Check and Dashboards.">
+        <defs>
+          <marker id="fa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--wire)"/>
+          </marker>
+        </defs>
+        <line class="fw" x1="110" y1="68" x2="144" y2="68" marker-end="url(#fa)"/>
+        <line class="fw" x1="246" y1="68" x2="280" y2="68" marker-end="url(#fa)"/>
+        <line class="fw" x1="382" y1="68" x2="464" y2="68" marker-end="url(#fa)"/>
+        <line class="fw" x1="566" y1="68" x2="600" y2="68" stroke-dasharray="4 4" marker-end="url(#fa)"/>
+        <line class="fw" x1="702" y1="68" x2="736" y2="68" stroke-dasharray="4 4" marker-end="url(#fa)"/>
+        <line class="fw" x1="838" y1="68" x2="872" y2="68" stroke-dasharray="4 4" marker-end="url(#fa)"/>
+        <text class="fl" x="423" y="60">orders topic</text>
+
+        <g class="fn"><rect x="10" y="40" width="100" height="56" rx="10"/><text x="60" y="73">Orders DB</text></g>
+        <g class="fn"><rect x="146" y="40" width="100" height="56" rx="10"/><text x="196" y="65">CDC</text><text x="196" y="81">Connector</text></g>
+        <g class="fn"><rect x="282" y="40" width="100" height="56" rx="10"/><text x="332" y="73">Kafka</text></g>
+        <g class="fn failed"><rect x="466" y="40" width="100" height="56" rx="10"/><text x="516" y="73">Spark Job</text></g>
+        <g class="fn"><rect x="602" y="40" width="100" height="56" rx="10"/><text x="652" y="73">Warehouse</text></g>
+        <g class="fn"><rect x="738" y="40" width="100" height="56" rx="10"/><text x="788" y="65">Data Quality</text><text x="788" y="81">Check</text></g>
+        <g class="fn"><rect x="874" y="40" width="100" height="56" rx="10"/><text x="924" y="73">Dashboards</text></g>
+
+        <g transform="translate(556 30)">
+          <circle r="11" fill="var(--fail)"/>
+          <path d="M-4.5 -4.5 L4.5 4.5 M4.5 -4.5 L-4.5 4.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
+        </g>
+        <text x="516" y="116" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fail)">Failed: out of memory</text>
+        <text x="516" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="var(--fail)" letter-spacing="0.06em">FAILED</text>
+      </svg>
+    </div>
+    <p class="legend"><i></i>Failed component. Dashed arrows: no data delivered downstream until the rerun.</p>
+  </section>
+
+  <section>
+    <h2>Timeline</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Time</th><th>Event</th></tr></thead>
+        <tbody>
+          <tr><td class="t">01:00</td><td>Nightly Spark Job starts</td></tr>
+          <tr class="fail"><td class="t">01:47</td><td>Spark Job fails with out-of-memory on the orders partition for 2026-10-01</td></tr>
+          <tr class="fail"><td class="t">02:30</td><td>Automatic retry also fails</td></tr>
+          <tr><td class="t">07:55</td><td>Analyst reports stale dashboards</td></tr>
+          <tr><td class="t">08:20</td><td>On-call doubles executor memory to 16 GB and reruns</td></tr>
+          <tr><td class="t">10:05</td><td>Spark Job succeeds</td></tr>
+          <tr><td class="t">10:58</td><td>Dashboards refreshed</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Root cause</h2>
+    <p>A promotion on 2026-10-01 produced 4.1 million orders, about 3.4 times the typical 1.2 million. The nightly Spark Job processes each day's orders partition with executors sized at 8 GB each, a figure set for normal volume. The oversized partition did not fit in executor memory, so the job failed with out-of-memory, and the automatic retry failed the same way because nothing about its sizing had changed. Doubling executor memory to 16 GB let the rerun complete.</p>
+  </section>
+
+  <section>
+    <h2>Lessons learned</h2>
+    <div class="lessons">
+      <div class="well">
+        <h3>What went well</h3>
+        <ul>
+          <li>Once engaged, on-call found the cause and fixed it quickly.</li>
+          <li>Rerunning with more memory needed no code change.</li>
+          <li>The analyst who noticed stale data reported it right away.</li>
+        </ul>
+      </div>
+      <div class="not">
+        <h3>What did not</h3>
+        <ul>
+          <li>Two failures overnight paged no one; a person found the problem six hours later.</li>
+          <li>Executor memory was fixed, not sized to the input volume.</li>
+          <li>Dashboards gave no sign their data was stale.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Action items</h2>
+    <ol>
+      <li>Page on-call when the nightly job fails twice.</li>
+      <li>Size executor memory from the input volume.</li>
+      <li>Add a data freshness banner to dashboards.</li>
+      <li>Alert when the job input exceeds 2.5 times the 30-day average.</li>
+    </ol>
+  </section>
+</div>
+</body>
+</html>

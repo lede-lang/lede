@@ -1,0 +1,25 @@
+@title 2026 Engagement Survey: Results
+@subtitle Northwind Freight, for all staff
+
+# Response
+kpi Response rate | 79.4% | 842 of 1,060 employees
+
+Thank you to everyone who took part. 842 of our 1,060 employees responded, a response rate of 79.4 percent.
+
+# Results by statement
+data results = Statement,Favorable (%),Neutral (%),Unfavorable (%); I understand how my work supports company goals,78,15,7; My manager gives me useful feedback,64,22,14; I have the tools I need to do my job,71,18,11; I see a path to grow here,49,27,24; I would recommend this company as a place to work,69,20,11
+table results
+
+Favorable, neutral and unfavorable are the shares of responses for each statement.
+
+# Change since 2025
+kpi Average favorable | 66.2% | +1.2 pts | good
+data change = Statement,Last year,This year; I understand how my work supports company goals,76,78; My manager gives me useful feedback,61,64; I have the tools I need to do my job,70,71; I see a path to grow here,52,49; I would recommend this company as a place to work,66,69
+chart hbar change y=Last year,This year labels title="Favorable score, last year and this year"
+
+The average favorable score rose from 65.0 last year to 66.2 this year. Manager feedback and recommending the company each rose 3 points. Growth fell 3 points, to 49 percent, and it is also our lowest score.
+
+# What we will do
+1. Publish the career framework by 2027-02-28.
+2. Train 90 managers on giving feedback, starting 2026-12-01.
+3. Run a short pulse check in April 2027.

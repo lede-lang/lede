@@ -1,0 +1,46 @@
+@title Rotating TLS certificates on the edge proxies
+@subtitle Redwater Media Platform runbook, owned by Platform Security
+@author Platform Security, Owner
+
+kpi Rotate at | 30 days or fewer left | CERT_EXPIRY_30D | neutral
+kpi Edge proxies | 18 | 1 canary + 17 | neutral
+kpi Hostnames | 12 | covered by the certificates | neutral
+kpi Page Platform Security | > 2% | handshake errors on any proxy | bad
+
+## When to rotate
+
+Rotate when a certificate has 30 days or fewer left. The `CERT_EXPIRY_30D` alert announces it. The certificates cover 12 hostnames across the 18 edge proxies.
+
+## Before you start
+
+- Have the change record open.
+- Confirm no deploy is running in #deploys.
+- Check that the internal CA is healthy.
+
+## Rotation steps
+
+1. Confirm expiry
+-- Run `openssl x509 -enddate -noout` on the live certificate.
+-- Compare the date with the alert.
+2. Request the new certificate
+-- Run `certctl request --profile edge-prod`.
+-- Check that the output lists all 12 hostnames.
+3. Stage it on the canary proxy `edge-canary-01` only
+-- Copy it to `/etc/edge/certs/next`.
+-- Reload the proxy.
+4. Verify the canary
+-- `openssl s_client -connect edge-canary-01:443` shows the new expiry date.
+-- Handshake errors stay under 0.1% for 20 minutes.
+5. Roll out to the other 17 proxies in batches of 3, waiting 5 minutes between batches.
+6. Revoke the old certificate after 48 hours and record it in the change record.
+
+!! Never delete the old private key before step 6. You need it for rollback until the old certificate is revoked.
+
+## Rollback
+
+The previous certificate stays in `/etc/edge/certs/previous` for 7 days. Copy it back and reload the proxy.
+
+## Escalation
+
+- Page Platform Security if any proxy shows more than 2% handshake errors.
+- Post in #platform-sec.

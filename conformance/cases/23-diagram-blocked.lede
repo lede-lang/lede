@@ -1,0 +1,6 @@
+diagram env dir=LR
+env: dev "Dev" svc
+env: stg "Staging" svc
+env: dev -> stg : promote
+env: dev -x- stg : never
+env: stg -x-> dev : no direct data

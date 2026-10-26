@@ -1,0 +1,33 @@
+@title How We Cut Our Checkout Page Weight in Half
+@subtitle From 1.9 MB to 0.9 MB, and from 4.8 to 2.1 seconds to interactive
+@author Sam Whitlock, Kiln Coffee Roasters
+
+# Where we started
+
+Our checkout page had been getting heavier for years, one small addition at a time. Nobody set out to make it slow. We added a nicer date picker for delivery scheduling, then a reviews widget to reassure hesitant buyers, then bigger product photos because they looked great on our own laptops.
+
+When we finally measured it properly, the numbers were hard to look at. The page weighed 1.9 MB, and on a mid-range phone it took 4.8 seconds to become interactive. That is almost five seconds of a customer staring at a page they cannot use, at the exact moment they have decided to give us money.
+
+So we set ourselves a simple goal: cut the page weight in half, and see what happened.
+
+# The three big wins
+
+We went through the page asset by asset and asked whether each one earned its bytes. Most of the savings came from three changes:
+
+1. **We replaced a 310 KB date picker with the native one.** Every modern phone browser already ships a perfectly good date picker. Ours looked a little fancier, but it was the single largest script on the page, and customers did not miss it.
+2. **We lazy-loaded the reviews widget.** Reviews sit near the bottom of the page, and most people never scroll that far before checking out. Now the widget loads only when it is about to come into view.
+3. **We served product photos at the size they are displayed.** We had been sending large photos and letting the browser shrink them. Generating the right sizes and letting the browser pick one cut a surprising amount of weight.
+
+After those changes, the page weighed 0.9 MB and became interactive in 2.1 seconds on the same mid-range phone.
+
+# What did not work
+
+Not every idea paid off. We tried inlining all of our styles directly into the page, on the theory that saving a request would make the first load faster. It did help a little on the first visit. But inlined styles cannot be cached separately, so every repeat visit had to download them again. Repeat visits got slower, and since many of our customers come back to reorder, that was the wrong trade. We rolled it back.
+
+# What is next
+
+We launched the lighter checkout on 2026-08-04. In the four weeks after launch, mobile conversion rose from 2.6% to 3.1%. We are genuinely happy about that, but we want to be honest: we cannot prove the speedup caused all of it. Seasonality, a couple of marketing campaigns and ordinary week-to-week noise all played a part, and we did not run a controlled test.
+
+What we can say is that a faster page is better for customers either way, so we are carrying the same approach to the product and cart pages next. We are also adding a page-weight budget to our build, so the next nice-looking addition has to make its case before it ships.
+
+If this kind of work sounds like fun, we are hiring: come see what is open on the [Kiln careers page](https://kilncoffee.example/careers).

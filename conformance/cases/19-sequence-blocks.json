@@ -1,0 +1,144 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "diagram",
+      "name": "login",
+      "kind": "sequence",
+      "dir": "LR",
+      "title": null,
+      "nodes": [
+        {
+          "id": "browser",
+          "label": "Browser",
+          "kind": "user",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "app",
+          "label": "App",
+          "kind": "svc",
+          "sub": null,
+          "focus": false
+        }
+      ],
+      "edges": [
+        {
+          "from": "browser",
+          "to": "app",
+          "label": "GET /me",
+          "style": "solid",
+          "both": false,
+          "line": 4
+        },
+        {
+          "from": "app",
+          "to": "browser",
+          "label": "200",
+          "style": "dashed",
+          "both": false,
+          "line": 6
+        },
+        {
+          "from": "app",
+          "to": "browser",
+          "label": "401",
+          "style": "dashed",
+          "both": false,
+          "line": 9
+        },
+        {
+          "from": "browser",
+          "to": "app",
+          "label": "POST /login",
+          "style": "solid",
+          "both": false,
+          "line": 10
+        },
+        {
+          "from": "app",
+          "to": "app",
+          "label": "audit",
+          "style": "solid",
+          "both": false,
+          "line": 12
+        },
+        {
+          "from": "browser",
+          "to": "browser",
+          "label": "dismiss",
+          "style": "solid",
+          "both": false,
+          "line": 15
+        },
+        {
+          "from": "browser",
+          "to": "app",
+          "label": "GET /home",
+          "style": "solid",
+          "both": false,
+          "line": 17
+        }
+      ],
+      "groups": [],
+      "notes": [
+        {
+          "over": [
+            "app"
+          ],
+          "text": "cache hit",
+          "after": 2,
+          "line": 7
+        }
+      ],
+      "line": 1,
+      "frames": [
+        {
+          "kind": "alt",
+          "branches": [
+            {
+              "label": "session valid",
+              "from": 1,
+              "to": 2,
+              "line": 5
+            },
+            {
+              "label": "no session",
+              "from": 2,
+              "to": 4,
+              "line": 8
+            },
+            {
+              "label": "",
+              "from": 4,
+              "to": 5,
+              "line": 11
+            }
+          ],
+          "from": 1,
+          "to": 5,
+          "line": 5,
+          "endLine": 13
+        },
+        {
+          "kind": "opt",
+          "branches": [
+            {
+              "label": "cookie banner",
+              "from": 5,
+              "to": 6,
+              "line": 14
+            }
+          ],
+          "from": 5,
+          "to": 6,
+          "line": 14,
+          "endLine": 16
+        }
+      ]
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

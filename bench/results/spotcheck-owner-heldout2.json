@@ -1,0 +1,176 @@
+{
+ "source": "artifact 4Nc6KfdP32SqMmHXzGh4Kv, collection spotcheck, read 2026-10-18",
+ "round": "heldout2",
+ "pairs": 12,
+ "picks": {
+  "P001": "LEFT",
+  "P006": "LEFT",
+  "P011": "RIGHT",
+  "P016": "RIGHT",
+  "P021": "TIE",
+  "P026": "TIE",
+  "P031": "RIGHT",
+  "P036": "LEFT",
+  "P041": "TIE",
+  "P046": "LEFT",
+  "P051": "LEFT",
+  "P056": "TIE"
+ },
+ "resolved": {
+  "P001": {
+   "writer": "haiku-r5",
+   "task": "71",
+   "owner": "lede",
+   "judge": "html"
+  },
+  "P006": {
+   "writer": "haiku-r5",
+   "task": "76",
+   "owner": "lede",
+   "judge": "lede"
+  },
+  "P011": {
+   "writer": "haiku-r5",
+   "task": "81",
+   "owner": "lede",
+   "judge": "lede"
+  },
+  "P016": {
+   "writer": "haiku-r5",
+   "task": "86",
+   "owner": "lede",
+   "judge": "html"
+  },
+  "P021": {
+   "writer": "haiku-r5",
+   "task": "91",
+   "owner": "tie",
+   "judge": "lede"
+  },
+  "P026": {
+   "writer": "haiku-r5",
+   "task": "96",
+   "owner": "tie",
+   "judge": "html"
+  },
+  "P031": {
+   "writer": "opus-r5",
+   "task": "71",
+   "owner": "html",
+   "judge": "html"
+  },
+  "P036": {
+   "writer": "opus-r5",
+   "task": "76",
+   "owner": "html",
+   "judge": "html"
+  },
+  "P041": {
+   "writer": "opus-r5",
+   "task": "81",
+   "owner": "tie",
+   "judge": "html"
+  },
+  "P046": {
+   "writer": "opus-r5",
+   "task": "86",
+   "owner": "html",
+   "judge": "html"
+  },
+  "P051": {
+   "writer": "opus-r5",
+   "task": "91",
+   "owner": "html",
+   "judge": "html"
+  },
+  "P056": {
+   "writer": "opus-r5",
+   "task": "96",
+   "owner": "tie",
+   "judge": "html"
+  }
+ },
+ "docs": {
+  "P001": {
+   "good": [
+    "Diagram"
+   ],
+   "bad": [
+    "Diagram"
+   ],
+   "note": ""
+  },
+  "P006": {
+   "good": [],
+   "bad": [],
+   "note": ""
+  },
+  "P011": {
+   "good": [
+    "Table",
+    "Numbers",
+    "Cards or tiles"
+   ],
+   "bad": [],
+   "note": "The left would be better if there was a y axis with lables, if the bar chart had a legend/title, the cards say 54.7 percent instead of 54.7%. The right wins because the cards have titles that make it very clear of the numbers (and its above, which from a UX standpoint is better). "
+  },
+  "P016": {
+   "good": [
+    "Cards or tiles",
+    "Typography",
+    "Callouts"
+   ],
+   "bad": [],
+   "note": ""
+  },
+  "P021": {
+   "good": [],
+   "bad": [],
+   "note": ""
+  },
+  "P026": {
+   "good": [],
+   "bad": [],
+   "note": "I overall like the right one but theyre both good - the right one wins slightly because percentage complete is a bar, the cards are easier to read, but the left one has easier to read milestones, risks, the titles are better outside of a card. "
+  },
+  "P031": {
+   "good": [
+    "Diagram"
+   ],
+   "bad": [
+    "Diagram"
+   ],
+   "note": ""
+  },
+  "P036": {
+   "good": [],
+   "bad": [],
+   "note": ""
+  },
+  "P041": {
+   "good": [],
+   "bad": [],
+   "note": ""
+  },
+  "P046": {
+   "good": [],
+   "bad": [],
+   "note": "They're both really good but the left is better in terms of UI and display of data/information. I think another round could make the right one better. "
+  },
+  "P051": {
+   "good": [],
+   "bad": [],
+   "note": ""
+  },
+  "P056": {
+   "good": [],
+   "bad": [],
+   "note": "The right is better but theyre both good - theres a calendar icon in the right one, the right one has progress trackers for the cards, but overall the display of info is good... "
+  }
+ },
+ "summary": {
+  "owner_lede_win_or_tie": 8,
+  "judge_lede_win_or_tie_same_pairs": 3,
+  "owner_judge_agreement": 6
+ }
+}

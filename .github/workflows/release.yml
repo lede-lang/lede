@@ -1,0 +1,98 @@
+name: release
+
+# Publishes @lede-lang/core, @lede-lang/html and @lede-lang/cli to npm, with provenance (D48).
+#
+# Manual only, and only from a public repository. Nothing is published before the public repository exists (D45), and
+# npm provenance needs a public repository anyway; in a private one both jobs are skipped.
+#
+# Authentication is npm trusted publishing (OIDC): each package on npmjs.com names this repository, this file
+# (release.yml) and the `npm` environment. npm configures a trusted publisher on a package that already exists, so the
+# very first publish uses an NPM_TOKEN secret on the `npm` environment instead; delete the secret once trusted
+# publishing is set up.
+#
+# The build job tests and packs; the publish job, the only one with an OIDC token, publishes those tarballs.
+# Versions move in lockstep: pnpm pins `workspace:*` to the exact version, and test:pack fails if the three differ.
+# A version already on npm is skipped, so a run that failed halfway can be rerun.
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  # Everything that runs repository and dependency code happens here, without an OIDC token or the npm secret.
+  build:
+    if: ${{ !github.event.repository.private }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: 11
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22.18
+          package-manager-cache: false
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm check:examples
+      - run: pnpm test
+      - run: pnpm test:pack
+      - name: Pack
+        run: |
+          mkdir -p "$RUNNER_TEMP/release"
+          node scripts/pack.ts "$RUNNER_TEMP/release" > "$RUNNER_TEMP/release/packed.tsv"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: tarballs
+          path: ${{ runner.temp }}/release/
+          if-no-files-found: error
+          retention-days: 7
+
+  # Publishes the tarballs the build job tested; no checkout, no install, no repository code.
+  publish:
+    needs: build
+    if: ${{ !github.event.repository.private }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: npm
+    permissions:
+      id-token: write # OIDC for trusted publishing and the provenance attestation
+    steps:
+      # Node 24 for npm 11.5.1 or later, which trusted publishing needs.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: tarballs
+          path: release
+      - name: Publish
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          node -e '
+            const [a, b, c] = process.argv[1].split(".").map(Number);
+            if (a < 11 || (a === 11 && (b < 5 || (b === 5 && c < 1)))) throw new Error(`npm ${process.argv[1]} is older than 11.5.1`);
+          ' "$(npm --version)"
+          # Bootstrap only. npm reads the token from the environment; with none set it authenticates through OIDC.
+          if [ -n "$NPM_TOKEN" ]; then echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' > "$HOME/.npmrc"; fi
+          if [ ! -s release/packed.tsv ]; then echo '::error::release/packed.tsv lists no packages'; exit 1; fi
+          while IFS=$'\t' read -r spec file; do
+            if [ -n "$(npm view "$spec" version 2>/dev/null)" ]; then
+              echo "$spec is already on npm; skipped"
+              continue
+            fi
+            # The ./ matters: npm reads a bare "release/x.tgz" as the GitHub repository release/x.tgz.
+            npm publish "./release/$(basename "$file")" --access public --provenance
+          done < release/packed.tsv

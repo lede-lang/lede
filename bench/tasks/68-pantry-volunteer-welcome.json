@@ -1,0 +1,54 @@
+{
+  "id": "68-pantry-volunteer-welcome",
+  "category": "prose",
+  "title": "Bayside Pantry volunteer welcome",
+  "brief": "Write a welcome page for new volunteers at the Bayside Community Pantry, from the volunteer coordinator, Rosa Delgado. Warm, short sentences. Headings: \"Hours\", \"Your first shift\", \"Roles\", \"Getting here\" and \"Thank you\". We are open for distribution Tuesday 9:00 to 12:00, Thursday 16:00 to 19:00 and Saturday 8:00 to 12:00, and you can come to as many shifts as you like. New volunteers join a 45-minute orientation at 8:00 on the first Saturday of each month, with the next one on 2026-11-07, before their first shift. On your first shift: arrive 15 minutes early, check in with the shift lead (wearing a green apron), wear closed-toe shoes, and leave valuables in the locker; we ask that nobody lifts more than 25 pounds on their own. Roles you may be asked to do: sorting donations, stocking shelves, packing family boxes, greeting clients at the door and helping carry boxes to cars. Clients are neighbors, we do not ask about their income, and we do not take photos. Parking is behind the building on Harbor Street, and the bus stop for route 14 is across the road. If you cannot make a shift, tell us at least 24 hours ahead by texting 555-0142 so we can find cover. Last, a thank-you: last year 312 volunteers gave 9400 hours and helped us serve 41000 meals a month on average.",
+  "checklist": {
+    "sections": [
+      "Hours",
+      "Your first shift",
+      "Roles",
+      "Getting here",
+      "Thank you"
+    ],
+    "visible": [
+      "Bayside Community Pantry",
+      "Rosa Delgado",
+      "orientation",
+      "shift lead",
+      "green apron",
+      "closed-toe shoes",
+      "Harbor Street",
+      "route 14"
+    ],
+    "values": [
+      "45",
+      "8:00",
+      "15 minutes",
+      "25 pounds",
+      "2026-11-07",
+      "555-0142",
+      "24 hours",
+      "312",
+      "9400",
+      "41000"
+    ]
+  },
+  "needs": [
+    "list"
+  ],
+  "edit": {
+    "request": "Change the orientation to 60 minutes and move the next one to 2026-12-05, and add Sunday 10:00 to 13:00 as a fourth distribution slot starting in January.",
+    "expect_visible": [
+      "Sunday"
+    ],
+    "expect_values": [
+      "60",
+      "2026-12-05"
+    ],
+    "expect_absent": [
+      "2026-11-07",
+      "45-minute"
+    ]
+  }
+}

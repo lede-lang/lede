@@ -1,0 +1,57 @@
+{
+  "id": "104-tallgrass-wind-telemetry",
+  "category": "architecture",
+  "title": "Tallgrass wind farm telemetry",
+  "brief": "Windspire Energy needs an architecture page for the telemetry pipeline at its Tallgrass wind farm, owned by Asset Performance and reviewed 2026-10-06, to be read by the control room team on tablets. \"Overview\": two sentences, turbine data is collected on site and summarized before it is sent over a limited link, and the grid operator receives output and availability figures directly from the site. Under \"Pipeline\" show the \"Tallgrass Site\", containing 62 \"Turbine Controllers\", a \"Site SCADA\" system and an \"Edge Historian\"; and the \"Windspire Operations Cloud\", containing an \"Ingest Gateway\", a \"Time-Series Store\" and a \"Forecast Service\". Outside both sit the \"Grid Operator\" and the \"Control Room\". Flows: Turbine Controllers to Site SCADA \"1 sample per second\"; Site SCADA to Edge Historian \"buffered storage\"; Site SCADA to Grid Operator \"output and availability, every 4 seconds\"; Edge Historian to Ingest Gateway \"compressed batches over satellite or fiber\"; Ingest Gateway to Time-Series Store \"validated samples\"; Time-Series Store to Forecast Service \"history\"; Forecast Service to Control Room \"24 hour output forecast\"; Time-Series Store to Control Room \"live and historical views\". Under \"Sizing\" give the numbers: 62 turbines with 140 signals each, so 8680 samples per second and about 750 million samples a day; full-resolution data is kept 30 days and one-minute averages are kept 5 years; the fiber link is 100 Mbps and the satellite fallback is 2 Mbps, which can carry one-minute averages only. Flag clearly that when the site is on satellite fallback the Control Room sees averages, not full-resolution data, and that the Edge Historian can hold 72 hours of full-resolution data until the fiber link returns.",
+  "checklist": {
+    "sections": [
+      "Overview",
+      "Pipeline",
+      "Sizing"
+    ],
+    "visible": [
+      "Tallgrass Site",
+      "Turbine Controllers",
+      "Site SCADA",
+      "Edge Historian",
+      "Windspire Operations Cloud",
+      "Ingest Gateway",
+      "Time-Series Store",
+      "Forecast Service",
+      "Grid Operator",
+      "Control Room",
+      "satellite"
+    ],
+    "values": [
+      "2026-10-06",
+      "62",
+      "140",
+      "8680",
+      "750 million",
+      "30 days",
+      "5 years",
+      "100 Mbps",
+      "2 Mbps",
+      "72 hours",
+      "4 seconds"
+    ]
+  },
+  "needs": [
+    "diagram",
+    "table",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the satellite fallback from 2 Mbps to 5 Mbps, and add a node called \"Alarm Pager\" outside the site and the cloud, with an arrow from Site SCADA labeled \"fault alarms\".",
+    "expect_visible": [
+      "Alarm Pager",
+      "fault alarms"
+    ],
+    "expect_values": [
+      "5 Mbps"
+    ],
+    "expect_absent": [
+      "2 Mbps"
+    ]
+  }
+}

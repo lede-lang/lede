@@ -1,0 +1,19 @@
+@title Feature Flags: Build or Buy
+@subtitle A quick decision page for the Growth team
+@author Growth team, Pebble Bank
+
+kpi Flags today | 140 | in a config file
+kpi Time to flip one | 40 min | full deploy | bad
+
+Today every flag change ships as a deploy. The options are LaunchDarkly, Unleash (self-hosted) and an in-house service.
+
+# Comparison
+table = Option,Annual cost,Setup time,Targeting rules,Audit log; LaunchDarkly,"$54,000",1 week,advanced,yes; Unleash,"$9,000 hosting",3 weeks,good,yes; In-house,no license cost,10 weeks,basic,would need building
+
+# Recommendation
+! Choose **LaunchDarkly**. It has the most advanced targeting rules, its audit log satisfies the compliance team, and it takes only 1 week to set up.
+
+! Finance approved the $54,000 budget on 2026-10-14.
+
+# Risks
+- None of the options has an SDK for our COBOL batch jobs.

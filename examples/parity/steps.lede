@@ -1,0 +1,12 @@
+@title Restore steps
+# Restore steps
+
+1. **Stop the writers.** Pause the nightly import so nothing writes to the volume while the snapshot is chosen and mounted for the restore.
+-- Confirm the import queue reads zero.
+-- Note the time you paused it.
+2. **Pick the snapshot.** List snapshots for the volume and choose the newest one before the corruption was first reported by the monitor.
+3. **Mount and check.** Mount the snapshot read-only on a scratch host and compare the row counts of every large table against the last nightly report before you promote anything.
+
+1. Open the console
+2. Select the volume
+3. Press restore

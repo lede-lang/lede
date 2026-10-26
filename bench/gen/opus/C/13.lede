@@ -1,0 +1,39 @@
+@title Monorepo Deployment Pipeline
+@subtitle Quillstone Software, as of 2026-10-10
+@author Developer Productivity
+@width wide
+
+## Pipeline diagram
+
+diagram pipe dir=LR title="From pull request to production"
+pipe: pr "Pull Request" user
+pipe: lint "Lint and Unit Tests" fn
+pipe: build "Build Image" fn
+pipe: scan "Security Scan" fn
+pipe: staging "Deploy to Staging" svc
+pipe: smoke "Smoke Tests" fn
+pipe: approval "Manual Approval" team
+pipe: canary "Canary 10%" svc focus
+pipe: full "Full Rollout" svc
+pipe: rollback "Auto Rollback" fn
+pipe: pr -> lint
+pipe: lint -> build : pass
+pipe: build -> scan
+pipe: scan -> staging : no critical CVEs
+pipe: staging -> smoke
+pipe: smoke -> approval : pass
+pipe: approval -> canary : approved
+pipe: canary -> full : healthy 30 min
+pipe: canary --> rollback : error rate above 1%
+
+## Stage durations
+
+data stages = Stage,Median (min),p90 (min); Lint and Unit Tests,7.5,13.4; Build Image,4.2,6.9; Security Scan,2.8,4.1; Deploy to Staging,3.1,5.0; Smoke Tests,5.6,9.8; Canary 10%,30,30; Full Rollout,12,18
+chart hbar stages x=Stage y=Median (min) unit=min labels title="Median duration per stage"
+table stages
+
+## Rules
+
+- Manual Approval is required only for services tagged `tier-1`.
+- Friday deploys after 15:00 local time are blocked.
+- Auto Rollback pages the owning team.

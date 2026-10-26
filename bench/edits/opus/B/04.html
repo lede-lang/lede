@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Days without a Sev1 — Fernhill Labs SRE</title>
+<style>
+:root {
+  --bg: #f3f6f4;
+  --panel: #ffffff;
+  --text: #102018;
+  --soft: #55665c;
+  --edge: #dce4df;
+  --grid: #e6ece8;
+  --hero: #0f8a4f;
+  --sev1: #d6342c;
+  --sev2: #e8a33d;
+  --tip-bg: #e8f5ee;
+  --tip-edge: #2f9e66;
+  --tip-fg: #10391f;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0c1210;
+    --panel: #141c18;
+    --text: #e3efe8;
+    --soft: #93a69b;
+    --edge: #24302a;
+    --grid: #1f2924;
+    --hero: #3ddc8a;
+    --sev1: #ff6b61;
+    --sev2: #f5bb5e;
+    --tip-bg: #13281d;
+    --tip-edge: #3ddc8a;
+    --tip-fg: #cfeedd;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--text); font: 17px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.screen { max-width: 1100px; margin: 0 auto; padding: 32px 16px 56px; }
+.hero { text-align: center; padding: 28px 16px 36px; background: var(--panel); border: 1px solid var(--edge); border-radius: 20px; }
+.hero h1 { margin: 0; font-size: clamp(1.2rem, 3vw, 2rem); font-weight: 600; letter-spacing: 0.02em; color: var(--soft); text-transform: uppercase; }
+.big { font-size: clamp(7rem, 30vw, 17rem); font-weight: 800; line-height: 1; color: var(--hero); font-variant-numeric: tabular-nums; letter-spacing: -0.04em; margin: 10px 0 0; }
+.unit { font-size: clamp(1.1rem, 3vw, 1.8rem); font-weight: 600; }
+.since { color: var(--soft); margin-top: 10px; font-size: clamp(0.95rem, 2vw, 1.15rem); }
+.row { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-top: 16px; }
+.panel { background: var(--panel); border: 1px solid var(--edge); border-radius: 16px; padding: 20px; }
+h2 { margin: 0 0 12px; font-size: 1.2rem; }
+svg { width: 100%; height: auto; display: block; }
+.ax { fill: var(--soft); font-size: 13px; }
+.key { display: flex; gap: 18px; font-size: 0.9rem; color: var(--soft); margin-top: 8px; }
+.key i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.streaks { list-style: none; margin: 0; padding: 0; }
+.streaks li { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--edge); }
+.streaks li:last-child { border-bottom: 0; }
+.streaks .d { font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.streaks .cur .d { color: var(--hero); }
+.streaks small { color: var(--soft); display: block; font-size: 0.85rem; }
+.tip { margin-top: 16px; background: var(--tip-bg); border: 1px solid var(--tip-edge); border-radius: 14px; padding: 16px 20px; color: var(--tip-fg); }
+.tip strong { margin-right: 4px; }
+code { font: 0.95em ui-monospace, SFMono-Regular, Menlo, monospace; }
+@media (max-width: 760px) {
+  .row { grid-template-columns: 1fr; }
+  .panel { padding: 16px; }
+}
+</style>
+</head>
+<body>
+<div class="screen">
+  <section class="hero" aria-label="Days without a Sev1">
+    <h1>Days without a Sev1</h1>
+    <div class="big">0</div>
+    <div class="unit">days</div>
+    <div class="since">Last Sev1: billing outage on 2026-10-16</div>
+  </section>
+
+  <div class="row">
+    <section class="panel">
+      <h2>Sev1 and Sev2 incidents per month, 2026</h2>
+      <svg viewBox="0 0 600 240" role="img" aria-label="Grouped bar chart of incidents per month in 2026. Sev1: Jan 1, Feb 0, Mar 1, Apr 0, May 1, Jun 0, Jul 0, Aug 0, Sep 0, Oct 1. Sev2: Jan 4, Feb 3, Mar 5, Apr 2, May 4, Jun 1, Jul 3, Aug 2, Sep 1, Oct 2.">
+        <g stroke="var(--grid)">
+          <line x1="40" y1="200" x2="580" y2="200" stroke="var(--soft)"/>
+          <line x1="40" y1="164" x2="580" y2="164"/>
+          <line x1="40" y1="128" x2="580" y2="128"/>
+          <line x1="40" y1="92" x2="580" y2="92"/>
+          <line x1="40" y1="56" x2="580" y2="56"/>
+          <line x1="40" y1="20" x2="580" y2="20"/>
+        </g>
+        <g class="ax" text-anchor="end">
+          <text x="32" y="204">0</text>
+          <text x="32" y="168">1</text>
+          <text x="32" y="132">2</text>
+          <text x="32" y="96">3</text>
+          <text x="32" y="60">4</text>
+          <text x="32" y="24">5</text>
+        </g>
+        <g fill="var(--sev2)">
+          <rect x="69" y="56" width="20" height="144"/>
+          <rect x="123" y="92" width="20" height="108"/>
+          <rect x="177" y="20" width="20" height="180"/>
+          <rect x="231" y="128" width="20" height="72"/>
+          <rect x="285" y="56" width="20" height="144"/>
+          <rect x="339" y="164" width="20" height="36"/>
+          <rect x="393" y="92" width="20" height="108"/>
+          <rect x="447" y="128" width="20" height="72"/>
+          <rect x="501" y="164" width="20" height="36"/>
+          <rect x="555" y="128" width="20" height="72"/>
+        </g>
+        <g fill="var(--sev1)">
+          <rect x="45" y="164" width="20" height="36"/>
+          <rect x="153" y="164" width="20" height="36"/>
+          <rect x="261" y="164" width="20" height="36"/>
+          <rect x="531" y="164" width="20" height="36"/>
+        </g>
+        <g class="ax" text-anchor="middle">
+          <text x="67" y="224">Jan</text>
+          <text x="121" y="224">Feb</text>
+          <text x="175" y="224">Mar</text>
+          <text x="229" y="224">Apr</text>
+          <text x="283" y="224">May</text>
+          <text x="337" y="224">Jun</text>
+          <text x="391" y="224">Jul</text>
+          <text x="445" y="224">Aug</text>
+          <text x="499" y="224">Sep</text>
+          <text x="553" y="224">Oct</text>
+        </g>
+      </svg>
+      <div class="key"><span><i style="background:var(--sev1)"></i>Sev1</span><span><i style="background:var(--sev2)"></i>Sev2</span></div>
+    </section>
+
+    <section class="panel">
+      <h2>Longest streaks</h2>
+      <ul class="streaks">
+        <li class="cur"><span>Current streak<small>Since 2026-10-16</small></span><span class="d">0 days</span></li>
+        <li><span>Previous record<small>2026</small></span><span class="d">143 days</span></li>
+        <li><span>Runner-up<small>2025</small></span><span class="d">97 days</span></li>
+      </ul>
+    </section>
+  </div>
+
+  <aside class="tip" role="note">
+    <strong>Good to know:</strong> the counter resets only on a declared Sev1, not on Sev2s. Any engineer can declare a Sev1 from the <code>#incidents</code> channel.
+  </aside>
+</div>
+</body>
+</html>

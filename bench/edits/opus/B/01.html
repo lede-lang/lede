@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Platform Engineering Weekly Status</title>
+<style>
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --text: #16191f;
+  --muted: #5b6472;
+  --border: #e2e5ea;
+  --accent: #2f5bd3;
+  --grid: #e7e9ee;
+  --ok-bg: #e5f4ea; --ok-fg: #1d6b3a;
+  --track-bg: #e6eefc; --track-fg: #24489f;
+  --risk-bg: #fff2d9; --risk-fg: #8a5600;
+  --block-bg: #fde6e6; --block-fg: #a42121;
+  --warn-bg: #fff7e6; --warn-border: #e0a019; --warn-fg: #5c3d00;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1216;
+    --surface: #171b21;
+    --text: #e8ebf0;
+    --muted: #9aa3b1;
+    --border: #2a3039;
+    --accent: #7ea2ff;
+    --grid: #262c35;
+    --ok-bg: #163322; --ok-fg: #7fd69c;
+    --track-bg: #1a2744; --track-fg: #a6bfff;
+    --risk-bg: #3a2a0b; --risk-fg: #f3c66b;
+    --block-bg: #3d1717; --block-fg: #ff9d9d;
+    --warn-bg: #2b2210; --warn-border: #c98d1a; --warn-fg: #f6dca5;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+main { max-width: 920px; margin: 0 auto; padding: 28px 16px 56px; }
+header h1 { font-size: 1.6rem; margin: 0 0 4px; letter-spacing: -0.01em; }
+header p { margin: 0; color: var(--muted); }
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin: 24px 0 8px;
+}
+.tile {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.tile .label { font-size: 0.82rem; color: var(--muted); }
+.tile .value { font-size: 2rem; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.tile.alert .value { color: var(--block-fg); }
+section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-top: 16px;
+}
+h2 { font-size: 1.1rem; margin: 0 0 12px; }
+ul.highlights { margin: 0; padding-left: 1.2em; }
+ul.highlights li { margin: 6px 0; }
+.chart svg { width: 100%; height: auto; display: block; }
+.chart .axis text { fill: var(--muted); font-size: 12px; }
+.chart .gridline { stroke: var(--grid); stroke-width: 1; }
+.chart .line { fill: none; stroke: var(--accent); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+.chart .dot { fill: var(--surface); stroke: var(--accent); stroke-width: 2.5; }
+.chart .val { fill: var(--text); font-size: 12px; font-weight: 600; }
+.caption { color: var(--muted); font-size: 0.85rem; margin: 8px 0 0; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); }
+th { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); font-weight: 600; }
+tr:last-child td { border-bottom: 0; }
+td.eta { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pill {
+  display: inline-block; padding: 2px 10px; border-radius: 999px;
+  font-size: 0.82rem; font-weight: 600; white-space: nowrap;
+}
+.pill.done { background: var(--ok-bg); color: var(--ok-fg); }
+.pill.track { background: var(--track-bg); color: var(--track-fg); }
+.pill.risk { background: var(--risk-bg); color: var(--risk-fg); }
+.pill.blocked { background: var(--block-bg); color: var(--block-fg); }
+.warning {
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+  border-left-width: 5px;
+  border-radius: 8px;
+  padding: 14px 16px;
+  color: var(--warn-fg);
+}
+.warning strong { display: block; margin-bottom: 4px; }
+code { font: 0.92em ui-monospace, SFMono-Regular, Menlo, monospace; }
+@media (max-width: 640px) {
+  .tiles { grid-template-columns: repeat(2, 1fr); }
+  .tile .value { font-size: 1.7rem; }
+  section { padding: 16px; }
+  thead { display: none; }
+  table, tbody, tr, td { display: block; width: 100%; }
+  tr { padding: 10px 0; border-bottom: 1px solid var(--border); }
+  tr:last-child { border-bottom: 0; }
+  td { border: 0; padding: 3px 0; display: flex; justify-content: space-between; gap: 12px; }
+  td::before { content: attr(data-label); color: var(--muted); font-size: 0.85rem; }
+  td:first-child { font-weight: 600; }
+  td:first-child::before { content: none; }
+}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Platform Engineering — Weekly Status</h1>
+    <p>Week ending 2026-10-16</p>
+  </header>
+
+  <div class="tiles" role="list">
+    <div class="tile" role="listitem"><div class="label">Deploys this week</div><div class="value">47</div></div>
+    <div class="tile" role="listitem"><div class="label">PRs merged</div><div class="value">141</div></div>
+    <div class="tile alert" role="listitem"><div class="label">Open incidents</div><div class="value">2</div></div>
+    <div class="tile" role="listitem"><div class="label">On-call pages</div><div class="value">9</div></div>
+  </div>
+
+  <section>
+    <h2>Highlights</h2>
+    <ul class="highlights">
+      <li>Postgres 16 upgrade finished on all 14 clusters.</li>
+      <li>Build cache hit rate climbed to 87%.</li>
+      <li>New staging environment is live for the Checkout team.</li>
+    </ul>
+  </section>
+
+  <section class="chart">
+    <h2>PRs merged per week</h2>
+    <svg viewBox="0 0 600 260" role="img" aria-label="Line chart of PRs merged per week, W33 to W42: 98, 104, 117, 109, 121, 126, 118, 129, 132, 141">
+      <g class="axis">
+        <line class="gridline" x1="50" y1="220" x2="580" y2="220"/>
+        <line class="gridline" x1="50" y1="186.67" x2="580" y2="186.67"/>
+        <line class="gridline" x1="50" y1="153.33" x2="580" y2="153.33"/>
+        <line class="gridline" x1="50" y1="120" x2="580" y2="120"/>
+        <line class="gridline" x1="50" y1="86.67" x2="580" y2="86.67"/>
+        <line class="gridline" x1="50" y1="53.33" x2="580" y2="53.33"/>
+        <line class="gridline" x1="50" y1="20" x2="580" y2="20"/>
+        <text x="40" y="224" text-anchor="end">90</text>
+        <text x="40" y="190.67" text-anchor="end">100</text>
+        <text x="40" y="157.33" text-anchor="end">110</text>
+        <text x="40" y="124" text-anchor="end">120</text>
+        <text x="40" y="90.67" text-anchor="end">130</text>
+        <text x="40" y="57.33" text-anchor="end">140</text>
+        <text x="40" y="24" text-anchor="end">150</text>
+        <text x="50" y="244" text-anchor="middle">W33</text>
+        <text x="108.89" y="244" text-anchor="middle">W34</text>
+        <text x="167.78" y="244" text-anchor="middle">W35</text>
+        <text x="226.67" y="244" text-anchor="middle">W36</text>
+        <text x="285.56" y="244" text-anchor="middle">W37</text>
+        <text x="344.44" y="244" text-anchor="middle">W38</text>
+        <text x="403.33" y="244" text-anchor="middle">W39</text>
+        <text x="462.22" y="244" text-anchor="middle">W40</text>
+        <text x="521.11" y="244" text-anchor="middle">W41</text>
+        <text x="580" y="244" text-anchor="end">W42</text>
+      </g>
+      <polyline class="line" points="50,193.33 108.89,173.33 167.78,130 226.67,156.67 285.56,116.67 344.44,100 403.33,126.67 462.22,90 521.11,80 580,50"/>
+      <g>
+        <circle class="dot" cx="50" cy="193.33" r="4.5"/>
+        <circle class="dot" cx="108.89" cy="173.33" r="4.5"/>
+        <circle class="dot" cx="167.78" cy="130" r="4.5"/>
+        <circle class="dot" cx="226.67" cy="156.67" r="4.5"/>
+        <circle class="dot" cx="285.56" cy="116.67" r="4.5"/>
+        <circle class="dot" cx="344.44" cy="100" r="4.5"/>
+        <circle class="dot" cx="403.33" cy="126.67" r="4.5"/>
+        <circle class="dot" cx="462.22" cy="90" r="4.5"/>
+        <circle class="dot" cx="521.11" cy="80" r="4.5"/>
+        <circle class="dot" cx="580" cy="50" r="4.5"/>
+      </g>
+      <g class="val" text-anchor="middle">
+        <text x="50" y="181.33">98</text>
+        <text x="108.89" y="161.33">104</text>
+        <text x="167.78" y="118">117</text>
+        <text x="226.67" y="174.67">109</text>
+        <text x="285.56" y="104.67">121</text>
+        <text x="344.44" y="88">126</text>
+        <text x="403.33" y="144.67">118</text>
+        <text x="462.22" y="78">129</text>
+        <text x="521.11" y="68">132</text>
+        <text x="572" y="38">141</text>
+      </g>
+    </svg>
+    <p class="caption">Last ten weeks, W33–W42. This week (W42) is the high at 141.</p>
+  </section>
+
+  <section>
+    <h2>Workstreams</h2>
+    <table>
+      <thead><tr><th>Workstream</th><th>Owner</th><th>Status</th><th>ETA</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Workstream">Postgres upgrade</td><td data-label="Owner">Priya Nair</td><td data-label="Status"><span class="pill done">Done</span></td><td class="eta" data-label="ETA">2026-10-09</td></tr>
+        <tr><td data-label="Workstream">Service mesh rollout</td><td data-label="Owner">Tomas Ruiz</td><td data-label="Status"><span class="pill track">On track</span></td><td class="eta" data-label="ETA">2026-11-06</td></tr>
+        <tr><td data-label="Workstream">Cost tagging</td><td data-label="Owner">Mei Chen</td><td data-label="Status"><span class="pill track">On track</span></td><td class="eta" data-label="ETA">2026-10-30</td></tr>
+        <tr><td data-label="Workstream">Runner autoscaling</td><td data-label="Owner">Dev Patel</td><td data-label="Status"><span class="pill blocked">Blocked</span></td><td class="eta" data-label="ETA">2026-11-20</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Risks</h2>
+    <div class="warning" role="note">
+      <strong>Runner autoscaling is blocked</strong>
+      It is waiting on a quota increase from the cloud provider (ticket <code>CASE-4471</code>). If the increase is not approved by 2026-10-23, the November date slips.
+    </div>
+  </section>
+</main>
+</body>
+</html>

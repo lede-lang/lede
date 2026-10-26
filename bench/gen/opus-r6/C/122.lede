@@ -1,0 +1,43 @@
+@title Drift Harbor client patch rollback
+@subtitle Runbook for rolling back a bad game client patch
+@author Quillfeather Interactive, Live Ops
+@date 2026-10-13
+
+kpi Crash rate trigger | > 2% | for 15 min | bad
+kpi Login failure trigger | > 5% | for 10 min | bad
+kpi Last good build | 4.12.3 | rollback target | neutral
+kpi Approval | Live Ops lead | #liveops-war-room | neutral
+
+!!! Never roll back after a database schema migration: it corrupts player inventories. Go forward with a hotfix instead.
+
+# When to roll back
+After a patch release, roll back when either is true:
+- Crash rate above 2% of sessions for 15 minutes.
+- Login failures above 5% for 10 minutes.
+
+! The Live Ops lead must approve the rollback in the `#liveops-war-room` channel.
+
+# Do not roll back if
+The patch contained a database schema migration, such as migration 0087 in patch 4.13. Older clients cannot read the new schema, so go forward with a hotfix instead.
+
+# Rollback steps
+1. Stop the bleeding
+-- 1. Pause the deploy pipeline.
+-- 2. Set matchmaking to maintenance mode with the in-game message "Back soon".
+2. Point players to the last good build
+-- 1. In the release console, set the live manifest to build 4.12.3.
+-- 2. Invalidate the CDN cache (takes about 10 minutes).
+3. Verify
+-- 1. Install the build on 3 test accounts, one each on PC, console and mobile.
+-- 2. Confirm login and a full match.
+4. Reopen in stages
+-- 1. Let in 10% of players.
+-- 2. 25% after 5 minutes.
+-- 3. 50% after 5 more minutes.
+-- 4. 100% after another 5 minutes, if the crash rate stays under 1%.
+5. Communicate
+-- 1. Post a status update within 30 minutes of the decision.
+-- 2. Schedule compensation of 500 gems for every active account.
+
+# Contacts
+table = role,name; Live Ops lead,Soledad Ortega; Release engineer on call,Thabo Mokoena; Community manager,Ji-ho Han

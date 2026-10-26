@@ -1,0 +1,57 @@
+{
+  "id": "74-ferry-ticketing-azure",
+  "category": "architecture",
+  "title": "Tidewater ferry ticketing platform",
+  "brief": "Tidewater Ferries needs an architecture page for its online ticketing platform on Azure, owner Digital Channels, region North Europe, reviewed 2026-09-22. Under \"Overview\", two sentences: passengers book through Azure Front Door, and every booking is written to one database and announced as an event so that the scanners at the terminals stay in step. Under \"Diagram\" show the Ticketing subscription, containing the Ticketing VNet (10.50.0.0/16). Inside the VNet are two subnets: App subnet (10.50.1.0/24) with \"Booking Web App\" and \"Ticketing API\"; Data subnet (10.50.2.0/24) with \"Reservations DB\" (Azure SQL) and \"Booking Events\" (Service Bus). Outside the subscription: Passengers, \"Front Door\", \"Port Terminal Scanners\" and \"Payment Provider\". Flows: Passengers to Front Door \"HTTPS\"; Front Door to Booking Web App \"origin request\"; Booking Web App to Ticketing API \"REST\"; Ticketing API to Reservations DB \"SQL, port 1433\"; Ticketing API to Payment Provider \"card authorization\"; Ticketing API to Booking Events \"ticket issued\"; Booking Events to Port Terminal Scanners \"sync every 30 s\". Under \"Capacity\": Booking Web App, 3 to 10 instances at 60 percent CPU; Ticketing API, 4 to 16 pods; Reservations DB, 8 vCores with a read replica in the paired region. Under \"Recovery targets\": recovery point objective 5 minutes, recovery time objective 1 hour, last tested on 2026-08-19.",
+  "checklist": {
+    "sections": [
+      "Overview",
+      "Diagram",
+      "Capacity",
+      "Recovery targets"
+    ],
+    "visible": [
+      "Ticketing subscription",
+      "Ticketing VNet",
+      "App subnet",
+      "Data subnet",
+      "Booking Web App",
+      "Ticketing API",
+      "Reservations DB",
+      "Booking Events",
+      "Passengers",
+      "Front Door",
+      "Port Terminal Scanners",
+      "Payment Provider"
+    ],
+    "values": [
+      "10.50.0.0/16",
+      "10.50.1.0/24",
+      "10.50.2.0/24",
+      "1433",
+      "30 s",
+      "60 percent",
+      "8 vCores",
+      "5 minutes",
+      "1 hour",
+      "2026-08-19",
+      "2026-09-22"
+    ]
+  },
+  "needs": [
+    "diagram",
+    "table"
+  ],
+  "edit": {
+    "request": "Add a node called \"Notification Function\" in the App subnet that receives from Booking Events with an arrow labeled \"ticket issued\", and change the recovery time objective from 1 hour to 30 minutes.",
+    "expect_visible": [
+      "Notification Function"
+    ],
+    "expect_values": [
+      "30 minutes"
+    ],
+    "expect_absent": [
+      "1 hour"
+    ]
+  }
+}

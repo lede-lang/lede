@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tamarind delivery app relaunch</title>
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#f7f5f2; --surface:#ffffff; --surface-2:#f2eee8; --text:#211c17; --muted:#665d53; --border:#e4ddd3;
+  --accent:#b4541a; --accent-soft:#fbeadf;
+  --good:#1d7a4a; --good-soft:#e3f3ea; --mid:#8f5600; --mid-soft:#fbf0dc; --bad:#b42318; --bad-soft:#fde8e6;
+  --c1:#7d6f62; --c2:#b4541a; --c3:#4f7aa8;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#13110f; --surface:#1c1916; --surface-2:#24201c; --text:#ece6df; --muted:#a89d91; --border:#332d27;
+    --accent:#f29a5e; --accent-soft:#3a2416;
+    --good:#5fd09a; --good-soft:#15301f; --mid:#f2b155; --mid-soft:#33270f; --bad:#ff8a7e; --bad-soft:#3a1a17;
+    --c1:#b3a597; --c2:#f29a5e; --c3:#86b2e0;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:920px;margin:0 auto;padding:44px 24px 64px}
+.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;color:var(--accent);font-weight:700;margin:0}
+h1{font-size:clamp(1.7rem,4.5vw,2.35rem);line-height:1.15;margin:.3em 0 .35em;letter-spacing:-.015em}
+h2{font-size:1.3rem;margin:0 0 .8rem}
+h3{font-size:1.05rem;margin:0 0 .45rem}
+p{margin:0 0 .9rem}
+.lede{color:var(--muted);font-size:1.08rem;max-width:66ch}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0;padding:0;list-style:none}
+.facts li{background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:5px 12px;font-size:.88rem;color:var(--muted)}
+.facts strong{color:var(--text)}
+section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:26px;margin:20px 0}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+thead th{font-size:.95rem;border-bottom:2px solid var(--border)}
+tbody th{font-weight:600;color:var(--muted);font-size:.86rem;width:28%}
+tr:last-child td,tr:last-child th{border-bottom:0}
+.lean{background:var(--accent-soft)}
+.pill{display:inline-block;font-size:.82rem;font-weight:600;padding:1px 8px;border-radius:999px}
+.ok{background:var(--good-soft);color:var(--good)}
+.part{background:var(--mid-soft);color:var(--mid)}
+.no{background:var(--bad-soft);color:var(--bad)}
+.num{font-variant-numeric:tabular-nums}
+.chart{width:100%;max-width:640px;height:auto;display:block}
+.chart .lbl{fill:var(--text);font-size:15px;font-weight:600}
+.chart .val{fill:var(--text);font-size:15px;font-variant-numeric:tabular-nums}
+.chart .sub{fill:var(--muted);font-size:13px}
+.chart .b1{fill:var(--c1)} .chart .b2{fill:var(--c2)} .chart .b3{fill:var(--c3)}
+.chart .tick{stroke:var(--border);stroke-width:1}
+.warn{background:var(--mid-soft);border-radius:10px;padding:14px 16px;margin-top:14px}
+.warn strong{color:var(--mid)}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{border:1px solid var(--border);border-radius:12px;padding:18px;background:var(--surface-2)}
+.card.lean{border-color:var(--accent)}
+.pc{margin:0 0 12px;padding:0;list-style:none}
+.pc li{position:relative;padding-left:22px;margin:0 0 6px;font-size:.95rem}
+.pc li::before{position:absolute;left:0;top:0;font-weight:800}
+.pros li::before{content:"+";color:var(--good)}
+.cons li::before{content:"\2212";color:var(--bad)}
+.pclabel{font-size:.75rem;text-transform:uppercase;letter-spacing:.07em;font-weight:700;color:var(--muted);margin:0 0 6px}
+.rec{border:2px solid var(--accent)}
+.rec .big{font-size:1.25rem;font-weight:700;margin-bottom:.6rem}
+.cuts{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cuts li{border:1px dashed var(--accent);border-radius:10px;padding:12px 14px}
+.cuts b{display:block}
+.cuts span{color:var(--muted);font-size:.9rem}
+footer{color:var(--muted);font-size:.85rem;margin-top:28px}
+@media (max-width:760px){.cards{grid-template-columns:1fr}}
+@media (max-width:480px){
+  .wrap{padding:28px 16px 48px}
+  section{padding:18px 14px;border-radius:12px}
+  th,td{padding:8px 5px}
+  table{font-size:.84rem}
+  thead th{font-size:.84rem}
+  tbody th{font-size:.76rem}
+  .pill{font-size:.74rem;padding:1px 6px}
+  .cuts{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Tamarind Grocery &middot; Product council, October 27, 2026</p>
+  <h1>How we rebuild the delivery app</h1>
+  <p class="lede">We are relaunching the delivery app and need to choose how to build it: fully native, Flutter, or a progressive web app. We lean toward Flutter, with two scope cuts, because none of the full-scope options fits our deadline as well.</p>
+  <ul class="facts">
+    <li><strong>4</strong> mobile developers</li>
+    <li>First release by <strong>January 15, 2027</strong> at the latest</li>
+    <li>Owner: <strong>Wanjiru Kamau</strong>, Engineering Manager</li>
+  </ul>
+</header>
+
+<section id="comparison">
+  <h2>Comparison</h2>
+  <table>
+    <thead>
+      <tr><th scope="col"></th><th scope="col">Native (iOS + Android)</th><th scope="col" class="lean">Flutter</th><th scope="col">Web app (PWA)</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">Months to first release</th><td class="num">11</td><td class="num lean">7</td><td class="num">4</td></tr>
+      <tr><th scope="row">Estimated build cost</th><td class="num">$1.45M</td><td class="num lean">$0.92M</td><td class="num">$0.48M</td></tr>
+      <tr><th scope="row">Offline basket and saved lists</th><td><span class="pill ok">Full</span></td><td class="lean"><span class="pill ok">Full</span></td><td><span class="pill part">Partial</span></td></tr>
+      <tr><th scope="row">Push notifications</th><td><span class="pill ok">Full</span></td><td class="lean"><span class="pill ok">Full</span></td><td><span class="pill part">Limited on iOS</span></td></tr>
+      <tr><th scope="row">App store presence</th><td><span class="pill ok">Yes</span></td><td class="lean"><span class="pill ok">Yes</span></td><td><span class="pill no">No</span></td></tr>
+      <tr><th scope="row">Barcode scanning with camera</th><td><span class="pill ok">Smooth</span></td><td class="lean"><span class="pill ok">Good</span></td><td><span class="pill no">Unreliable</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="time-to-first-release">
+  <h2>Time to first release</h2>
+  <p>Estimated months from start to first release, at full scope.</p>
+  <svg class="chart" viewBox="0 0 480 214" role="img" aria-labelledby="tTitle tDesc">
+    <title id="tTitle">Months to first release at full scope</title>
+    <desc id="tDesc">Native 11 months, Flutter 7 months, progressive web app 4 months.</desc>
+    <line class="tick" x1="0" y1="200" x2="340" y2="200"/>
+    <g class="sub" text-anchor="middle">
+      <text x="0" y="214">0</text><text x="113.3" y="214">4</text><text x="198.3" y="214">7</text><text x="311.7" y="214">11</text>
+    </g>
+    <text class="lbl" x="0" y="22">Native (iOS + Android)</text>
+    <rect class="b1" x="0" y="30" width="311.7" height="28" rx="3"/>
+    <text class="val" x="320" y="49">11 months</text>
+    <text class="lbl" x="0" y="86">Flutter</text>
+    <rect class="b2" x="0" y="94" width="198.3" height="28" rx="3"/>
+    <text class="val" x="207" y="113">7 months</text>
+    <text class="lbl" x="0" y="150">Web app (PWA)</text>
+    <rect class="b3" x="0" y="158" width="113.3" height="28" rx="3"/>
+    <text class="val" x="122" y="177">4 months</text>
+  </svg>
+  <div class="warn"><strong>Plainly:</strong> at full scope, Flutter's 7 months misses the January 15, 2027 date. It only works if we cut scope (see the recommendation). Native misses it by an even wider margin.</div>
+</section>
+
+<section id="pros-cons">
+  <h2>Pros and cons</h2>
+  <div class="cards">
+    <div class="card">
+      <h3>Native</h3>
+      <p class="pclabel">Pros</p>
+      <ul class="pc pros">
+        <li>Best experience: smooth barcode scanning, full offline and push.</li>
+        <li>In both app stores.</li>
+      </ul>
+      <p class="pclabel">Cons</p>
+      <ul class="pc cons">
+        <li>Slowest: 11 months to first release.</li>
+        <li>Most expensive: $1.45M.</li>
+        <li>Two separate apps to build and maintain with 4 developers.</li>
+      </ul>
+    </div>
+    <div class="card lean">
+      <h3>Flutter</h3>
+      <p class="pclabel">Pros</p>
+      <ul class="pc pros">
+        <li>One codebase for iOS and Android.</li>
+        <li>Full offline basket, saved lists and push notifications.</li>
+        <li>In both app stores; barcode scanning is good.</li>
+        <li>$0.53M cheaper than native.</li>
+      </ul>
+      <p class="pclabel">Cons</p>
+      <ul class="pc cons">
+        <li>7 months misses January 15 unless we cut scope.</li>
+        <li>Scanning is good, not quite as smooth as native.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Web app (PWA)</h3>
+      <p class="pclabel">Pros</p>
+      <ul class="pc pros">
+        <li>Fastest: 4 months to first release.</li>
+        <li>Cheapest: $0.48M.</li>
+      </ul>
+      <p class="pclabel">Cons</p>
+      <ul class="pc cons">
+        <li>Not in the app stores.</li>
+        <li>Barcode scanning is unreliable.</li>
+        <li>Offline basket only partly works; push is limited on iOS.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="recommendation" class="rec">
+  <h2>Recommendation</h2>
+  <p class="big">Build with Flutter, and cut scope to make the January date.</p>
+  <p>Flutter gives us the app-store presence, offline basket, push notifications and scanning that a grocery app needs, at $0.92M, from a single codebase our 4 developers can carry. The web app is faster and cheaper, but falls short on exactly those features. Native costs more and takes longer.</p>
+  <p>To be clear: at full scope Flutter misses January 15, 2027. To get a first release out in time, we would make two scope cuts:</p>
+  <ul class="cuts">
+    <li><b>1. Drop in-app chat support</b><span>Not part of the first release.</span></li>
+    <li><b>2. Postpone the recipe feature</b><span>Moved to a later release.</span></li>
+  </ul>
+</section>
+
+<footer>Prepared by Wanjiru Kamau for the Tamarind Grocery product council, October 27, 2026. Months and costs are estimates.</footer>
+</div>
+</body>
+</html>

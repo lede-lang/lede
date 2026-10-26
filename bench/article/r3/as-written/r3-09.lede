@@ -1,0 +1,100 @@
+@title Incident Report: Freezer 3 Temperature Excursion
+@subtitle Compressor failure and delayed alarm response, Thursday 2026-10-15
+@date 2026-10-15
+@width wide
+
+## Summary
+
+Freezer 3 was above its -18.0 C limit for 3 hours 25 minutes, from 04:05 to 07:30. Compressor B faulted at 03:40. The backup compressor, Compressor A, tripped one minute later. The warning went to one on-call phone at 03:58 and was not answered. The backup contact acknowledged at 04:52, and Compressor A was reset by hand at 05:10. The highest air temperature in the log is -11.2 C.
+
+18 pallets of the distributor's stock were quarantined at 07:45. We did not record how warm the product cores got, so we cannot yet say whether that stock stayed inside the distributor's limits. The alarm response was slow, and this report says so plainly below.
+
+kpi Time above -18 C | 3 h 25 min | 04:05 to 07:30 | bad
+kpi Highest air temp logged | -11.2 C | at 05:10 | neutral
+kpi Pallets quarantined | 18 | about $286,400 at invoice value | neutral
+kpi Cost so far | $9,850 | call-out, repairs, extra QA time | neutral
+
+## What this means for the distributor's stock
+
+- The distributor's stability data allows excursions up to -10 C for a maximum of 4 hours cumulative.
+- On the air readings in the log, the freezer never got warmer than -11.2 C, which is colder than -10 C.
+- That does not settle it. Product cores warm and cool more slowly than the air, and the log has no core reading between the start of the event and 09:00. At 09:00 a probe in the product core read -17.1 C, still above -18 C, 90 minutes after the air was back below it.
+- The peak core temperature was not recorded. Until it is established, the 18 pallets (3-14 to 3-31) stay quarantined and the disposition is for the distributor's quality manager to decide with the evidence below.
+- The $286,400 is the invoice value of the quarantined stock. It is not a confirmed loss.
+
+The product in Freezer 3 belongs to three clients. The distributor's stock is the 18 pallets above.
+
+## Timeline
+
+data events = Time (local),Source,Event,Temp (C),Notes; 02:14,Freezer 3 sensor,Door open alarm,-21.4,Night shift loading dock B; 02:19,Freezer 3 sensor,Door open alarm cleared,-19.8,; 03:40,Compressor B,Fault code E-41 (low suction pressure),-20.1,Auto-switched to Compressor A; 03:41,Compressor A,Overload trip,-20.0,Not logged by BMS until 03:58; 03:58,BMS,“Compressor offline” warning sent,-19.2,Sent to on-call phone of Kwame Asante; 04:05,Freezer 3 sensor,Temp above -18 limit,-17.6,Alarm threshold is -18.0 per SOP; 04:20,Kwame Asante,"Phone silent; no ack",,"Phone was on charge in another room, he says"; 04:35,BMS,Escalation to backup (Lucia Ferreira),-15.1,; 04:52,Lucia Ferreira,"Acked; arrives on site",-12.9,17 min drive; 05:10,Facilities,Manual reset of Compressor A,-11.2,"Reset worked; compressor running"; 05:55,Freezer 3 sensor,Temp trending down,-14.6,; 07:30,Freezer 3 sensor,Back below -18,-18.3,3 h 25 min total above limit; 07:45,QA (Mei-Lin Zhao),Quarantine tag applied to pallets 3-14 to 3-31,,"18 pallets, ~$286,400 stock at invoice value"; 09:00,QA,Probe readings of product core taken,-17.1,"Core temps are what matter; peak core not recorded"
+
+table events
+
+data air = Time,Air temp; 02:14,-21.4; 02:19,-19.8; 03:40,-20.1; 03:41,-20.0; 03:58,-19.2; 04:05,-17.6; 04:35,-15.1; 04:52,-12.9; 05:10,-11.2; 05:55,-14.6; 07:30,-18.3
+
+chart line air x=Time y=Air temp unit=°C min=-24 max=-8 target="-18 SOP limit" mark="03:41 Compressor A trips" mark="04:52 Backup acks" mark="05:10 Compressor reset" labels=all title="Freezer 3 air temperature at each logged reading (spaced by reading, not to scale in time)"
+
+The 09:00 core probe reading (-17.1 C) is not on the chart because it is product, not air.
+
+## How slow was the response
+
+!! The first warning reached one phone at 03:58 and was not acknowledged. Escalation to the backup took until 04:35, and the backup acknowledged at 04:52, 54 minutes after the first warning. The freezer had been above its -18 C limit since 04:05, and it took 90 minutes from the compressor fault to the manual reset.
+
+data stages = Stage,Start,End; Fault to first warning (03:40 to 03:58),0,18; Warning to escalation (03:58 to 04:35),18,55; Escalation to backup ack (04:35 to 04:52),55,72; Ack to compressor reset (04:52 to 05:10),72,90; Reset to back below -18 C (05:10 to 07:30),90,230
+
+chart range stages from=Start to=End unit=min target="25 above -18 C at 04:05" title="Minutes after the 03:40 compressor fault"
+
+## What we know and what we do not
+
+### Known
+
+- Freezer 3 air was above -18.0 C from 04:05 to 07:30, 3 hours 25 minutes.
+- The highest air reading in the log was -11.2 C at 05:10.
+- Compressor B faulted with E-41 (low suction pressure) at 03:40 and the system switched to Compressor A, which tripped on overload at 03:41.
+- The BMS did not log the Compressor A trip until 03:58, 17 minutes later.
+- The on-call phone did not acknowledge. He says it was on charge in another room.
+- Compressor B was last serviced 14 months ago against a 12-month schedule.
+- A third alarm channel (SMS to the shift supervisor) was proposed in April and was not done.
+- 18 pallets (3-14 to 3-31) were tagged for quarantine at 07:45.
+- A core probe at 09:00 read -17.1 C.
+- Cost so far is $9,850.
+
+### Not known
+
+- The peak core temperature of any pallet. It was not measured.
+- The peak air temperature between readings. The log holds readings at event times only, so -11.2 C is the highest logged value, not necessarily the true peak. The sensor's continuous record should be checked.
+- Why Compressor B had low suction pressure, and why Compressor A tripped on overload.
+- Why the BMS took 17 minutes to log the Compressor A trip.
+- Where the 04:05 above-limit alarm was sent, and to whom. The log does not show it reaching anyone.
+- Whether anyone from the night shift was on site at 03:58. The loading dock was in use at 02:14.
+- The exact time the backup contact reached the site. The log records the acknowledgement and arrival in one entry at 04:52, with a 17-minute drive.
+- Whether the 02:14 door alarm played any part. Temperature was back to -20.1 C by 03:40, and we have no evidence it contributed.
+- The condition of the other two clients' stock. The log records no assessment of it.
+
+## Root causes
+
+cards
+
+### Equipment
+
+Compressor B faulted and Compressor A tripped within a minute, so there was no working compressor. The service on B was 2 months overdue. Overdue service is a contributing factor; we have not shown it caused the fault.
+
+### Alerting
+
+One warning, to one phone, with no one else told. Nothing reached anyone on site. The shift supervisor SMS channel that would have been a second route was proposed in April and never built.
+
+### Escalation
+
+After the unanswered warning the escalation to the backup took until 04:35, and the backup then had a 17-minute drive. Nobody was alerted that the freezer had crossed its limit at 04:05 other than by the same route.
+
+## Corrective actions
+
+All owners and dates below are proposed and need to be confirmed.
+
+data actions = No.,Action,Addresses,Owner (proposed),Due (proposed); 1,"Send the distributor the full record and ask for their decision on pallets 3-14 to 3-31; keep the quarantine until then",Impact,QA (Mei-Lin Zhao),2026-10-23; 2,"Add the SMS alarm to the shift supervisor (the third channel proposed in April)",Alerting,Operations director,2026-10-30; 3,"Send warnings to on-call and backup together; if not acknowledged within 10 minutes, escalate automatically to the shift supervisor",Escalation,Operations director,2026-11-06; 4,"Find out why Compressor B showed E-41 and why Compressor A tripped on overload; service Compressor B",Equipment,Facilities,2026-10-30; 5,"Check every compressor's service date against its schedule and book the overdue ones",Equipment,Facilities,2026-11-13; 6,"Find out why the BMS logged the Compressor A trip 17 minutes late",Alerting,Facilities with the BMS supplier,2026-11-13; 7,"Write a procedure to take product core readings at the alarm and every 30 minutes until the freezer is back in range",Evidence,QA,2026-11-20; 8,"Run an after-hours drill of the whole alarm chain once the new channels are live, then each quarter",Escalation,Operations director,2026-11-27
+
+table actions
+
+## Cost
+
+The estimated cost so far is $9,850 for the call-out, repairs and extra QA time. It does not include any loss of product, which depends on the distributor's decision.

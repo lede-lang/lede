@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edge TLS Rotation</title>
+<style>
+:root{--bg:#f6f5f2;--surface:#ffffff;--surface-2:#f0efeb;--text:#1c1d20;--muted:#5f636b;--line:#e3e1db;--accent:#1f5fbf;--accent-soft:#e6eefb;--ok:#1d7a46;--ok-soft:#e3f3e9;--warn:#9a5b00;--warn-soft:#fbefd9;--bad:#b3261e;--bad-soft:#fbe5e3;--code-bg:#f1f0ec;color-scheme:light dark}
+@media (prefers-color-scheme:dark){:root{--bg:#121315;--surface:#1b1c1f;--surface-2:#232428;--text:#ecebe7;--muted:#a3a6ad;--line:#303237;--accent:#7aa7f0;--accent-soft:#1d2a40;--ok:#5cc58a;--ok-soft:#173023;--warn:#e5ad52;--warn-soft:#352816;--bad:#f2837a;--bad-soft:#3a1d1b;--code-bg:#26272b}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:32px 16px 64px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-size:clamp(1.6rem,5vw,2.2rem);line-height:1.2;margin:.25em 0 .4em;letter-spacing:-.01em}
+h2{font-size:1.25rem;margin:0 0 .8rem;display:flex;align-items:baseline;gap:.5rem}
+h2 .n{font-size:.8rem;color:var(--muted);font-weight:600}
+h3{font-size:1.02rem;margin:0}
+p{margin:.4em 0}
+section{margin-top:36px}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:18px 0 0}
+.meta div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.meta dt{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.meta dd{margin:2px 0 0;font-weight:600;overflow-wrap:anywhere}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em;background:var(--code-bg);padding:.1em .35em;border-radius:5px;overflow-wrap:anywhere}
+pre{margin:.5em 0 0;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;white-space:pre-wrap;word-break:break-word}
+pre code{background:none;padding:0;font-size:.86rem}
+.danger{background:var(--bad-soft);border:2px solid var(--bad);border-radius:12px;padding:16px 18px;display:flex;gap:14px;align-items:flex-start;margin-top:22px}
+.danger svg{flex:none;margin-top:2px}
+.danger strong{color:var(--bad);display:block;font-size:1.08rem;margin-bottom:2px}
+.checks{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.checks li{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.box{flex:none;width:20px;height:20px;border:2px solid var(--muted);border-radius:5px;margin-top:2px}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s;display:grid;gap:14px}
+.steps>li{counter-increment:s;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px 16px 62px;position:relative}
+.steps>li::before{content:counter(s);position:absolute;left:16px;top:14px;width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--surface);font-weight:700;display:grid;place-items:center}
+.steps>li.crit{border-color:var(--bad)}
+.steps>li.crit::before{background:var(--bad)}
+.sub{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:10px}
+.sub li{display:grid;grid-template-columns:24px 1fr;gap:6px}
+.sub .l{font-weight:700;color:var(--muted)}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:var(--bad-soft);color:var(--bad);margin-left:6px;vertical-align:middle}
+.rollout{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.grp{border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--surface-2)}
+.grp small{display:block;font-size:.7rem;color:var(--muted);font-weight:600;text-align:center;margin-bottom:4px}
+.dots{display:flex;gap:4px;justify-content:center}
+.dot{width:14px;height:14px;border-radius:3px;background:var(--accent)}
+.grp.canary .dot{background:var(--warn)}
+.wait{font-size:.7rem;color:var(--muted)}
+.callout{background:var(--accent-soft);border-radius:10px;padding:12px 14px;margin-top:12px}
+.esc{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.esc .card{border-left:4px solid var(--bad)}
+footer{margin-top:44px;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<main class="wrap">
+<div class="eyebrow">Redwater Media · Platform runbook</div>
+<h1>Rotating TLS certificates on the edge proxies</h1>
+<p>How to replace the certificates on all 18 edge proxies safely: canary first, then batches, with a rollback path at every stage.</p>
+<dl class="meta">
+<div><dt>Owner</dt><dd>Platform Security</dd></div>
+<div><dt>Fleet</dt><dd>18 edge proxies</dd></div>
+<div><dt>Coverage</dt><dd>12 hostnames</dd></div>
+<div><dt>Trigger</dt><dd><code>CERT_EXPIRY_30D</code></dd></div>
+</dl>
+
+<div class="danger" role="alert">
+<svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 1 21h22L12 2z" fill="var(--bad)"/><path d="M12 9v5" stroke="var(--bad-soft)" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="17.5" r="1.4" fill="var(--bad-soft)"/></svg>
+<div><strong>Never delete the old private key before step 6.</strong>Until the old certificate is revoked in step 6, its key is your only way back. Deleting it early removes rollback for the whole fleet.</div>
+</div>
+
+<section id="when">
+<h2>When to rotate</h2>
+<div class="card">
+<p>Rotate when a certificate has <strong>30 days or fewer</strong> left. The <code>CERT_EXPIRY_30D</code> alert announces this. The certificates cover <strong>12 hostnames</strong>, and every one must be on the new certificate.</p>
+</div>
+</section>
+
+<section id="before">
+<h2>Before you start</h2>
+<ul class="checks">
+<li><span class="box" aria-hidden="true"></span><span>Have the <strong>change record</strong> open. You will update it in step 6.</span></li>
+<li><span class="box" aria-hidden="true"></span><span>Confirm <strong>no deploy is running</strong> in <code>#deploys</code>.</span></li>
+<li><span class="box" aria-hidden="true"></span><span>Check that the <strong>internal CA is healthy</strong>.</span></li>
+</ul>
+</section>
+
+<section id="steps">
+<h2>Rotation steps <span class="n">do these in order</span></h2>
+<ol class="steps">
+<li>
+<h3>Confirm expiry</h3>
+<ol class="sub">
+<li><span class="l">a</span><div>Run this against the live certificate:<pre><code>openssl x509 -enddate -noout</code></pre></div></li>
+<li><span class="l">b</span><div>Compare the end date with the alert.</div></li>
+</ol>
+</li>
+<li>
+<h3>Request the new certificate</h3>
+<ol class="sub">
+<li><span class="l">a</span><div>Run:<pre><code>certctl request --profile edge-prod</code></pre></div></li>
+<li><span class="l">b</span><div>Check that the output lists <strong>all 12 hostnames</strong>.</div></li>
+</ol>
+</li>
+<li>
+<h3>Stage it on the canary only: <code>edge-canary-01</code></h3>
+<ol class="sub">
+<li><span class="l">a</span><div>Copy the new certificate to <code>/etc/edge/certs/next</code>.</div></li>
+<li><span class="l">b</span><div>Reload the proxy.</div></li>
+</ol>
+</li>
+<li>
+<h3>Verify the canary</h3>
+<ol class="sub">
+<li><span class="l">a</span><div>This should show the new expiry date:<pre><code>openssl s_client -connect edge-canary-01:443</code></pre></div></li>
+<li><span class="l">b</span><div>Handshake errors stay <strong>under 0.1%</strong> for <strong>20 minutes</strong>.</div></li>
+</ol>
+</li>
+<li>
+<h3>Roll out to the other 17 proxies</h3>
+<p>Batches of 3, waiting <strong>5 minutes</strong> between batches.</p>
+<div class="rollout" aria-label="Rollout order: canary, then five batches of three and a final batch of two, with five-minute waits between batches">
+<div class="grp canary"><small>Canary</small><div class="dots"><span class="dot"></span></div></div>
+<span class="wait">20 min</span>
+<div class="grp"><small>Batch 1</small><div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div>
+<span class="wait">5 min</span>
+<div class="grp"><small>Batch 2</small><div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div>
+<span class="wait">5 min</span>
+<div class="grp"><small>Batch 3</small><div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div>
+<span class="wait">5 min</span>
+<div class="grp"><small>Batch 4</small><div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div>
+<span class="wait">5 min</span>
+<div class="grp"><small>Batch 5</small><div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div>
+<span class="wait">5 min</span>
+<div class="grp"><small>Batch 6</small><div class="dots"><span class="dot"></span><span class="dot"></span></div></div>
+</div>
+<p style="font-size:.85rem;color:var(--muted);margin-top:8px">17 proxies in batches of 3 leaves 2 in the last batch.</p>
+</li>
+<li class="crit">
+<h3>Revoke the old certificate <span class="tag">after 48 hours</span></h3>
+<p>Wait 48 hours after the rollout, then revoke the old certificate and record the revocation in the change record. The old private key may be removed only now.</p>
+</li>
+</ol>
+</section>
+
+<section id="rollback">
+<h2>Rollback</h2>
+<div class="card">
+<p>The previous certificate stays in <code>/etc/edge/certs/previous</code> for <strong>7 days</strong>.</p>
+<ol style="margin:.6em 0 0;padding-left:1.3em">
+<li>Copy it back into place.</li>
+<li>Reload the proxy.</li>
+</ol>
+<div class="callout">This only works while the old private key exists, which is why it must not be deleted before step 6.</div>
+</div>
+</section>
+
+<section id="escalation">
+<h2>Escalation</h2>
+<div class="esc">
+<div class="card"><h3>Page Platform Security</h3><p>If <strong>any proxy</strong> shows more than <strong>2% handshake errors</strong>.</p></div>
+<div class="card"><h3>Post in <code>#platform-sec</code></h3><p>Share the proxy name, error rate and which step you were on.</p></div>
+</div>
+</section>
+
+<footer>Owner: Platform Security · Redwater Media Platform team</footer>
+</main>
+</body>
+</html>

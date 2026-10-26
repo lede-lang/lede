@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Route 9 Corridor: Council Decision</title>
+<style>
+:root{--bg:#f4f6f9;--card:#fff;--ink:#16202b;--mut:#55616e;--line:#d3dae2;--acc:#1d5fbf;--acc-s:#e5eefb;--warn:#b0360a;--warn-s:#fdece3;--ok:#13703e;--ok-s:#e2f3ea;--gold:#7a5200;--gold-s:#fcf1d2}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--card:#171f28;--ink:#e7ecf1;--mut:#9ba8b5;--line:#2c3844;--acc:#7db1ff;--acc-s:#16273d;--warn:#ff9d73;--warn-s:#34201a;--ok:#62d796;--ok-s:#12291c;--gold:#f0c35c;--gold-s:#30260f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:900px;margin:0 auto;padding:0 16px 56px}
+header{padding:32px 0 14px;border-bottom:1px solid var(--line)}
+.eyebrow{margin:0 0 6px;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:var(--acc);font-weight:700}
+h1{margin:0 0 8px;font-size:clamp(1.6rem,5.5vw,2.4rem);line-height:1.15;letter-spacing:-.01em}
+.meta{margin:0;color:var(--mut);font-size:.92rem}
+h2{margin:40px 0 12px;font-size:1.4rem;line-height:1.25}
+p{margin:0 0 12px}
+.decide{background:var(--ink);color:var(--bg);border-radius:14px;padding:16px 18px;margin:20px 0 0}
+.decide strong{display:block;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;opacity:.8;margin-bottom:4px}
+.decide span{font-size:1.08rem;font-weight:600}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;position:relative}
+.card.rec{border:2px solid var(--acc);box-shadow:0 0 0 3px var(--acc-s)}
+.card h3{margin:0 0 4px;font-size:1.2rem}
+.card .what{margin:0 0 12px;color:var(--mut);font-size:.94rem}
+.badge{display:inline-block;background:var(--acc);color:var(--card);font-size:.72rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;padding:2px 9px;border-radius:999px;margin-bottom:8px}
+dl{margin:0}
+.row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:.95rem}
+.row dt{color:var(--mut)}
+.row dd{margin:0;font-weight:700;text-align:right}
+.diagram{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.diagram svg{display:block;width:100%;height:auto;max-width:640px;margin:0 auto}
+.tr{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.tr .card p{margin:0;font-size:.97rem}
+.good{color:var(--ok);font-weight:700}
+.bad{color:var(--warn);font-weight:700}
+.callout{border-left:5px solid var(--acc);background:var(--acc-s);border-radius:10px;padding:16px 18px;margin:16px 0}
+.callout.w{border-color:var(--warn);background:var(--warn-s)}
+.callout strong{color:var(--acc)}
+.callout.w strong{color:var(--warn)}
+.note{font-size:.88rem;color:var(--mut);margin-top:10px}
+.dates{margin:14px 0 0;padding:0;list-style:none;display:grid;gap:8px}
+.dates li{display:flex;gap:12px;align-items:baseline;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.dates b{white-space:nowrap}
+svg text{font-family:inherit;fill:var(--ink)}
+.bar{fill:var(--mut)}
+.bar.rec{fill:var(--acc)}
+.bn{font-size:13px;font-weight:700}
+.bv{font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Riverbend City Council &middot; Transportation Department</p>
+  <h1>Route 9 transit corridor: choose an option</h1>
+  <p class="meta">Decision page for councillors &middot; Vote on <time datetime="2026-12-02">2026-12-02</time></p>
+  <div class="decide"><strong>Decision needed</strong><span>Approve an option on 2026-12-02. The federal grant application is due 2027-01-31 and requires a council-approved option.</span></div>
+</header>
+
+<main>
+<section id="options">
+  <h2>Options</h2>
+  <div class="grid">
+    <article class="card">
+      <h3>Enhanced bus</h3>
+      <p class="what">More frequent buses and signal priority at lights.</p>
+      <dl>
+        <div class="row"><dt>Capital cost</dt><dd>$85 million</dd></div>
+        <div class="row"><dt>Time to build</dt><dd>2 years</dd></div>
+        <div class="row"><dt>Weekday riders by 2035</dt><dd>14,000</dd></div>
+        <div class="row"><dt>Operating cost</dt><dd>$22 million a year</dd></div>
+        <div class="row"><dt>Grant could cover up to</dt><dd>$42.5 million</dd></div>
+      </dl>
+    </article>
+    <article class="card rec">
+      <span class="badge">Recommended</span>
+      <h3>Bus rapid transit</h3>
+      <p class="what">Dedicated lanes and stations.</p>
+      <dl>
+        <div class="row"><dt>Capital cost</dt><dd>$310 million</dd></div>
+        <div class="row"><dt>Time to build</dt><dd>4 years</dd></div>
+        <div class="row"><dt>Weekday riders by 2035</dt><dd>26,000</dd></div>
+        <div class="row"><dt>Operating cost</dt><dd>$31 million a year</dd></div>
+        <div class="row"><dt>Grant could cover up to</dt><dd>$155 million</dd></div>
+      </dl>
+    </article>
+    <article class="card">
+      <h3>Light rail</h3>
+      <p class="what">Trains on a dedicated rail line.</p>
+      <dl>
+        <div class="row"><dt>Capital cost</dt><dd>$940 million</dd></div>
+        <div class="row"><dt>Time to build</dt><dd>8 years</dd></div>
+        <div class="row"><dt>Weekday riders by 2035</dt><dd>38,000</dd></div>
+        <div class="row"><dt>Operating cost</dt><dd>$44 million a year</dd></div>
+        <div class="row"><dt>Grant could cover up to</dt><dd>$470 million</dd></div>
+      </dl>
+    </article>
+  </div>
+  <p class="note">A federal grant can cover up to 50 percent of capital cost.</p>
+</section>
+
+<section id="cost-per-rider">
+  <h2>Capital cost per rider</h2>
+  <p>Capital cost divided by expected weekday riders. Lower is cheaper for each rider served.</p>
+  <div class="diagram">
+  <svg viewBox="0 0 400 190" role="img" aria-labelledby="ct cd">
+    <title id="ct">Capital cost per weekday rider</title>
+    <desc id="cd">Enhanced bus about 6,100 dollars, bus rapid transit about 11,900 dollars, light rail about 24,700 dollars.</desc>
+    <text class="bn" x="0" y="18">Enhanced bus</text><text class="bn" x="400" y="18" text-anchor="end">about $6,100</text>
+    <rect class="bar" x="0" y="26" width="97.6" height="26" rx="4"/>
+    <text class="bn" x="0" y="82">Bus rapid transit</text><text class="bn" x="400" y="82" text-anchor="end">about $11,900</text>
+    <rect class="bar rec" x="0" y="90" width="190.4" height="26" rx="4"/>
+    <text class="bn" x="0" y="146">Light rail</text><text class="bn" x="400" y="146" text-anchor="end">about $24,700</text>
+    <rect class="bar" x="0" y="154" width="395.2" height="26" rx="4"/>
+  </svg>
+  </div>
+  <p class="note">Bars share one scale. Light rail costs about four times as much per rider as enhanced bus.</p>
+</section>
+
+<section id="trade-offs">
+  <h2>Trade-offs</h2>
+  <div class="tr">
+    <div class="card"><h3>Enhanced bus</h3><p><span class="good">Cheap and fast to deliver</span>, but it carries the fewest riders and still shares congested lanes.</p></div>
+    <div class="card"><h3>Bus rapid transit</h3><p>The <strong>middle path</strong>. It carries many more riders than enhanced bus and could be upgraded to rail later.</p></div>
+    <div class="card"><h3>Light rail</h3><p><span class="good">Carries the most riders and attracts development</span>, but <span class="bad">takes 8 years</span>, and the city could not fund its share without a bond measure.</p></div>
+  </div>
+</section>
+
+<section id="recommendation">
+  <h2>Recommendation</h2>
+  <div class="callout">
+    <strong>The department recommends bus rapid transit.</strong>
+    <p style="margin:6px 0 0">It balances cost, delivery time and ridership, and keeps the door open to rail later.</p>
+  </div>
+  <div class="callout w">
+    <strong>Council approval is needed on 2026-12-02.</strong>
+    <p style="margin:6px 0 0">The grant application is due 2027-01-31 and requires a council-approved option, so approval at the 2026-12-02 vote is needed to meet the deadline.</p>
+  </div>
+  <ul class="dates">
+    <li><b>2026-12-02</b><span>Council votes and approves an option.</span></li>
+    <li><b>2027-01-31</b><span>Federal grant application due.</span></li>
+  </ul>
+</section>
+</main>
+</div>
+</body>
+</html>

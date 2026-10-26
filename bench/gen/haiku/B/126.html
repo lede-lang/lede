@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Riverside Shelter Campaign Status</title>
+<style>
+:root {
+  --bg: #f7f4ef;
+  --card: #ffffff;
+  --text: #2a2622;
+  --muted: #6c645a;
+  --accent: #2f6f4e;
+  --accent-2: #c58b2a;
+  --track: #e7e1d6;
+  --border: #e1dbd0;
+  --done: #2f6f4e;
+  --up: #c58b2a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14120f;
+    --card: #1e1b17;
+    --text: #efeae0;
+    --muted: #a9a094;
+    --accent: #7cc49b;
+    --accent-2: #e8b65e;
+    --track: #332e27;
+    --border: #3a342c;
+    --done: #7cc49b;
+    --up: #e8b65e;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14120f;
+  --card: #1e1b17;
+  --text: #efeae0;
+  --muted: #a9a094;
+  --accent: #7cc49b;
+  --accent-2: #e8b65e;
+  --track: #332e27;
+  --border: #3a342c;
+  --done: #7cc49b;
+  --up: #e8b65e;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+.wrap { max-width: 760px; margin: 0 auto; padding: 22px 16px 48px; }
+header { margin-bottom: 18px; }
+.org { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .07em; }
+h1 { font-size: 26px; margin: 6px 0 4px; line-height: 1.2; }
+.meta { color: var(--muted); font-size: 14px; }
+h2 { font-size: 19px; margin: 26px 0 10px; }
+section, .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; margin-bottom: 14px; }
+.hero { display: grid; grid-template-columns: 1fr; gap: 14px; }
+.big-num { font-size: 40px; font-weight: 700; line-height: 1; color: var(--accent); font-variant-numeric: tabular-nums; }
+.label { color: var(--muted); font-size: 14px; margin-top: 4px; }
+.progress { height: 14px; background: var(--track); border-radius: 999px; overflow: hidden; margin: 10px 0 4px; }
+.progress > span { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+.stat { background: var(--bg); border-radius: 10px; padding: 10px; }
+.stat b { display: block; font-size: 18px; font-variant-numeric: tabular-nums; }
+.stat span { color: var(--muted); font-size: 13px; }
+.chart-title { font-size: 14px; color: var(--muted); margin-bottom: 4px; }
+svg text { fill: var(--text); font-size: 13px; }
+svg .mut { fill: var(--muted); }
+.match { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; color: var(--muted); margin-top: 6px; }
+.milestones { list-style: none; padding: 0; margin: 0; }
+.milestones li { display: grid; grid-template-columns: 22px 1fr auto; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.milestones li:last-child { border-bottom: 0; }
+.dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--accent); }
+.dot.done { background: var(--done); }
+.dot.up { border-color: var(--up); background: var(--up); }
+.date { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; text-align: right; }
+.need { border-left: 4px solid var(--up); padding: 4px 0 4px 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="org">Riverside Animal Rescue &middot; Campaign status</div>
+  <h1>New Shelter Campaign</h1>
+  <div class="meta">As of 2026-10-16 &middot; Prepared for the board and major donors by Henrietta Voss, Executive Director</div>
+</header>
+
+<h2>Campaign at a glance</h2>
+<section>
+  <div class="hero">
+    <div>
+      <div class="big-num">$3.42M</div>
+      <div class="label">raised toward a $5.0M goal, from 1,860 donors</div>
+    </div>
+    <div>
+      <div class="progress" role="progressbar" aria-valuenow="68.4" aria-valuemin="0" aria-valuemax="100"><span style="width:68.4%"></span></div>
+      <div class="match"><span>68.4% of goal</span><span>$1.58M to go</span></div>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>1,860</b><span>donors</span></div>
+    <div class="stat"><b>$1.58M</b><span>still to raise</span></div>
+    <div class="stat"><b>$96K / $250K</b><span>matched so far</span></div>
+  </div>
+  <p style="margin-bottom:0"><strong>Matching challenge:</strong> an anonymous donor will match up to $250,000 of new gifts through 2026-12-31. $96,000 has been matched so far.</p>
+</section>
+
+<h2>Gifts by level</h2>
+<section>
+  <div class="chart-title">Amount raised by gift level, in millions of dollars</div>
+  <svg viewBox="0 0 640 230" width="100%" role="img" aria-label="Bar chart: Lead gifts 2.10 million from 6 gifts; Major gifts 0.93 million from 74 gifts; Community gifts 0.39 million from 1,780 gifts">
+    <!-- scale: 2.10M = 420px, so 1M = 200px -->
+    <g>
+      <text x="0" y="36">Lead gifts</text>
+      <text class="mut" x="0" y="54">over $100K &middot; 6 gifts</text>
+      <rect x="170" y="18" width="420" height="34" rx="6" fill="var(--accent)"/>
+      <text x="598" y="41" text-anchor="end" style="fill:#fff; font-weight:700">$2.10M</text>
+
+      <text x="0" y="116">Major gifts</text>
+      <text class="mut" x="0" y="134">$10K to $100K &middot; 74 gifts</text>
+      <rect x="170" y="98" width="186" height="34" rx="6" fill="var(--up)"/>
+      <text x="364" y="121">$0.93M</text>
+
+      <text x="0" y="196">Community gifts</text>
+      <text class="mut" x="0" y="214">under $10K &middot; 1,780 gifts</text>
+      <rect x="170" y="178" width="78" height="34" rx="6" fill="var(--muted)"/>
+      <text x="256" y="201">$0.39M</text>
+    </g>
+  </svg>
+  <p class="label" style="margin-bottom:0">Total: $3.42M across 1,860 gifts. Lead gifts are 61 percent of the total in 6 gifts.</p>
+</section>
+
+<h2>Construction milestones</h2>
+<section>
+  <ul class="milestones">
+    <li><span class="dot done"></span><span>Land purchase</span><span class="date">Done 2026-03-14</span></li>
+    <li><span class="dot done"></span><span>Permits approved</span><span class="date">Done 2026-07-22</span></li>
+    <li><span class="dot up"></span><span><strong>Groundbreaking</strong> (upcoming)</span><span class="date">2026-11-08</span></li>
+    <li><span class="dot"></span><span>Framing complete</span><span class="date">Planned 2027-03-19</span></li>
+    <li><span class="dot"></span><span>Opening day</span><span class="date">Planned 2027-09-15</span></li>
+  </ul>
+</section>
+
+<h2>Needs attention</h2>
+<section>
+  <div class="need">
+    <p style="margin-top:0"><strong>Construction starts only when $4.0M is in hand or pledged.</strong> The campaign is $0.58M short of that.</p>
+    <p style="margin-bottom:0">The groundbreaking depends on two pending lead gift proposals worth $0.5M together. They are due for decision by <strong>2026-10-30</strong>.</p>
+  </div>
+</section>
+</div>
+</body>
+</html>

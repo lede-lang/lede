@@ -1,0 +1,466 @@
+[
+ {
+  "pair": "P002",
+  "model": "haiku-r4",
+  "id": "42",
+  "cat": "status",
+  "o": "C",
+  "reason": "Left has a clean, legible line chart and a table that fits at phone width, while right's bar chart has an overlapping target label on desktop, a tiny unreadable chart on the phone, and a clipped table."
+ },
+ {
+  "pair": "P010",
+  "model": "haiku-r4",
+  "id": "50",
+  "cat": "architecture",
+  "o": "C",
+  "reason": "Both sequence diagrams overflow on the phone, but left's tables fit the screen while right's table is cut off at the right edge, and left's overall layout is more polished."
+ },
+ {
+  "pair": "P014",
+  "model": "haiku-r4",
+  "id": "54",
+  "cat": "runbook",
+  "o": "other",
+  "reason": "Left has a clear KPI row, a bar chart and an action table, while right's headline number wraps mid-digit on desktop and it has no chart."
+ },
+ {
+  "pair": "P024",
+  "model": "haiku-r4",
+  "id": "64",
+  "cat": "data",
+  "o": "C",
+  "reason": "Left's chart and tables are clean and legible at both widths, while right's x-axis labels collide on desktop and its phone chart is tiny and the winners table is clipped."
+ },
+ {
+  "pair": "P029",
+  "model": "haiku-r4",
+  "id": "69",
+  "cat": "prose",
+  "o": "other",
+  "reason": "Right has a better article hierarchy with an eyebrow, a byline with role and bolded list lead-ins, and it reads comfortably at both widths, though the two are close."
+ },
+ {
+  "pair": "P031",
+  "model": "opus-r4",
+  "id": "41",
+  "cat": "status",
+  "o": "other",
+  "reason": "Right's larger labelled trend chart, compact sites table with variance column and clearer severity callout read better than left's sparse unlabelled chart and verbose phone cards."
+ },
+ {
+  "pair": "P039",
+  "model": "opus-r4",
+  "id": "49",
+  "cat": "architecture",
+  "o": "other",
+  "reason": "Right's sequence diagram is large, readable and fits the phone, while left's tiny monospace diagram is cut off at phone width and loses content."
+ },
+ {
+  "pair": "P043",
+  "model": "opus-r4",
+  "id": "53",
+  "cat": "runbook",
+  "o": "other",
+  "reason": "Left is a well-structured runbook with clear danger and approval callouts, checkboxes and step cards that hold up on the phone, while right is plainer."
+ },
+ {
+  "pair": "P044",
+  "model": "opus-r4",
+  "id": "54",
+  "cat": "runbook",
+  "o": "other",
+  "reason": "Right's visual timeline, opt-out bars and well-organized sections are more polished, while left's headline number breaks mid-digit on desktop."
+ },
+ {
+  "pair": "P047",
+  "model": "opus-r4",
+  "id": "57",
+  "cat": "comparison",
+  "o": "other",
+  "reason": "Right's heatmap scorecard, cost bars and highlighted recommendation card communicate the decision better and stay legible on the phone."
+ },
+ {
+  "pair": "P007",
+  "model": "haiku-r4",
+  "id": "47",
+  "cat": "architecture",
+  "o": "C",
+  "reason": "Left diagram has clean labels with no overlaps and a fitting capacity table, while right has lines crossing subnet labels, though left's phone diagram is cropped."
+ },
+ {
+  "pair": "P018",
+  "model": "haiku-r4",
+  "id": "58",
+  "cat": "comparison",
+  "o": "other",
+  "reason": "Left has a clean zero-based bar chart, a consistent comparison table and pros/cons cards, whereas right's desktop table is clipped and phone chart axis labels collide."
+ },
+ {
+  "pair": "P025",
+  "model": "haiku-r4",
+  "id": "65",
+  "cat": "data",
+  "o": "other",
+  "reason": "Left has formatted numbers, a clear stacked chart and richer table on desktop, outweighing its clipped phone table versus right's unformatted figures."
+ },
+ {
+  "pair": "P027",
+  "model": "haiku-r4",
+  "id": "67",
+  "cat": "prose",
+  "o": "tie",
+  "reason": "Both are clean, readable FAQs with good dark mode and no defects; the card versus divider styling is a wash."
+ },
+ {
+  "pair": "P030",
+  "model": "haiku-r4",
+  "id": "70",
+  "cat": "prose",
+  "o": "other",
+  "reason": "Right adds a clear does and does-not-do card split and stacks cleanly on phone, while left is plainer prose."
+ },
+ {
+  "pair": "P033",
+  "model": "opus-r4",
+  "id": "43",
+  "cat": "status",
+  "o": "other",
+  "reason": "Left uses a zero-based bar chart with value labels, a timeline and clear issue rows, while right has a truncated y-axis and overlapping annotation labels on phone."
+ },
+ {
+  "pair": "P037",
+  "model": "opus-r4",
+  "id": "47",
+  "cat": "architecture",
+  "o": "other",
+  "reason": "Left diagram is compact, legible and fits the phone, whereas right is a sprawling spaghetti diagram with tiny labels that is cut off at phone width."
+ },
+ {
+  "pair": "P046",
+  "model": "opus-r4",
+  "id": "56",
+  "cat": "comparison",
+  "o": "other",
+  "reason": "Right highlights the leaning option, shows a labeled bar chart with a data table and an emphasized recommendation, with a more finished hierarchy."
+ },
+ {
+  "pair": "P058",
+  "model": "opus-r4",
+  "id": "68",
+  "cat": "prose",
+  "o": "other",
+  "reason": "Left uses polished cards, chips, checklist icons and stat tiles with good phone layout, while right is plainer."
+ },
+ {
+  "pair": "P059",
+  "model": "opus-r4",
+  "id": "69",
+  "cat": "prose",
+  "o": "tie",
+  "reason": "Both are well-set long-form articles with good readability; left has a drop cap and styled quote while right has tidy numbered lists, with no real winner."
+ },
+ {
+  "pair": "P001",
+  "model": "haiku-r4",
+  "id": "41",
+  "cat": "status",
+  "o": "C",
+  "reason": "Left keeps a legible chart and a fully visible table on phone, while right's phone chart is tiny and its table is cut off."
+ },
+ {
+  "pair": "P004",
+  "model": "haiku-r4",
+  "id": "44",
+  "cat": "status",
+  "o": "C",
+  "reason": "Right's phone layout converts the table to cards with nothing cut off, while left's phone table loses the status column despite a stronger desktop with progress bars."
+ },
+ {
+  "pair": "P008",
+  "model": "haiku-r4",
+  "id": "48",
+  "cat": "architecture",
+  "o": "other",
+  "reason": "Left's flowchart is clear and readable at both widths, while right's has long routed connectors, tiny text and a node clipped on phone."
+ },
+ {
+  "pair": "P011",
+  "model": "haiku-r4",
+  "id": "51",
+  "cat": "runbook",
+  "o": "C",
+  "reason": "Left fits everything at phone width, while right's action table drops the Due column off-screen."
+ },
+ {
+  "pair": "P012",
+  "model": "haiku-r4",
+  "id": "52",
+  "cat": "runbook",
+  "o": "C",
+  "reason": "Right has the more polished hierarchy with the critical callout and grouped numbered steps, despite a code wrap at phone width."
+ },
+ {
+  "pair": "P020",
+  "model": "haiku-r4",
+  "id": "60",
+  "cat": "comparison",
+  "o": "other",
+  "reason": "Right has a clear stacked cost chart, formatted currency and cards, while left's desktop Options row breaks out of the column and its table shows unformatted numbers."
+ },
+ {
+  "pair": "P042",
+  "model": "opus-r4",
+  "id": "52",
+  "cat": "runbook",
+  "o": "other",
+  "reason": "Left is a more polished runbook with clear callouts, threshold tiles and step cards, while right is plainer and wraps a code token awkwardly."
+ },
+ {
+  "pair": "P045",
+  "model": "opus-r4",
+  "id": "55",
+  "cat": "runbook",
+  "o": "other",
+  "reason": "Left has a strong 15-minute banner, clear step cards and quick-reference tiles that hold up well on phone."
+ },
+ {
+  "pair": "P051",
+  "model": "opus-r4",
+  "id": "61",
+  "cat": "data",
+  "o": "other",
+  "reason": "Right's heatmap cohort table and clearer line chart are more legible, though its phone chart text is tiny and the last axis label is clipped."
+ },
+ {
+  "pair": "P060",
+  "model": "opus-r4",
+  "id": "70",
+  "cat": "prose",
+  "o": "other",
+  "reason": "Left is a more polished charter with numbered sections, meeting tiles and colored does and does-not panels that work well on phone."
+ },
+ {
+  "pair": "P015",
+  "model": "haiku-r4",
+  "id": "55",
+  "cat": "runbook",
+  "o": "other",
+  "reason": "Stronger hierarchy with a clear red urgent callout and tidy quick-reference cards, and it holds up cleanly on phone."
+ },
+ {
+  "pair": "P016",
+  "model": "haiku-r4",
+  "id": "56",
+  "cat": "comparison",
+  "o": "other",
+  "reason": "Includes a to-scale rent chart and structured cards, while the left page's Options row spills outside the content column on desktop."
+ },
+ {
+  "pair": "P017",
+  "model": "haiku-r4",
+  "id": "57",
+  "cat": "comparison",
+  "o": "C",
+  "reason": "Tables reflow into cards on phone with nothing cut off, whereas the left page's tables clip columns off the screen."
+ },
+ {
+  "pair": "P019",
+  "model": "haiku-r4",
+  "id": "59",
+  "cat": "comparison",
+  "o": "C",
+  "reason": "Phone layout is intact, while the right page's cost and capability tables are clipped at 400px; left's axis-labelled chart is also legible."
+ },
+ {
+  "pair": "P021",
+  "model": "haiku-r4",
+  "id": "61",
+  "cat": "data",
+  "o": "C",
+  "reason": "Phone table shows all months without losing columns, and the KPI cards and labelled line chart are clearer than the left's clipped table."
+ },
+ {
+  "pair": "P022",
+  "model": "haiku-r4",
+  "id": "62",
+  "cat": "data",
+  "o": "other",
+  "reason": "Desktop has large legible bar charts and clear KPI cards versus the left's tiny, overflowing charts, despite the right's clipped phone table."
+ },
+ {
+  "pair": "P036",
+  "model": "opus-r4",
+  "id": "46",
+  "cat": "architecture",
+  "o": "other",
+  "reason": "Larger, legible network diagram that scales to phone with a clear blocked-path marker, whereas the right diagram is tiny and cut off on phone."
+ },
+ {
+  "pair": "P041",
+  "model": "opus-r4",
+  "id": "51",
+  "cat": "runbook",
+  "o": "other",
+  "reason": "Richer timeline visualisation and KPI cards with good phone layout, though the strike-through label on the timeline strip is a minor flaw."
+ },
+ {
+  "pair": "P048",
+  "model": "opus-r4",
+  "id": "58",
+  "cat": "comparison",
+  "o": "other",
+  "reason": "More polished comparison with highlighted Flutter column and clear recommendation, and it fits on phone, despite a clipped chart axis."
+ },
+ {
+  "pair": "P053",
+  "model": "opus-r4",
+  "id": "63",
+  "cat": "data",
+  "o": "other",
+  "reason": "Richer report with annotated grouped chart, highlighted KPIs and a thank-you block that stays readable on phone."
+ },
+ {
+  "pair": "P006",
+  "model": "haiku-r4",
+  "id": "46",
+  "cat": "architecture",
+  "o": "C",
+  "reason": "Left has a larger, readable diagram and stacks the address table into cards on phone, while right's phone diagram is tiny and its table is cut off."
+ },
+ {
+  "pair": "P009",
+  "model": "haiku-r4",
+  "id": "49",
+  "cat": "architecture",
+  "o": "C",
+  "reason": "Left's sequence diagram is compact and tidy with numbered steps and an opt frame and shows more of itself on phone, whereas right's phone diagram is badly clipped and has awkward layout."
+ },
+ {
+  "pair": "P023",
+  "model": "haiku-r4",
+  "id": "63",
+  "cat": "data",
+  "o": "other",
+  "reason": "Left's stacked monthly bars with totals, comma-formatted table and clean phone layout beat right's grouped bars and unformatted numbers in cramped phone tables."
+ },
+ {
+  "pair": "P026",
+  "model": "haiku-r4",
+  "id": "66",
+  "cat": "prose",
+  "o": "other",
+  "reason": "Right has slightly stronger hierarchy with a summary lede and bold lead-ins on both widths, though the two are very close."
+ },
+ {
+  "pair": "P032",
+  "model": "opus-r4",
+  "id": "42",
+  "cat": "status",
+  "o": "other",
+  "reason": "Right's desktop dashboard is richer and more legible (KPI hero, inline bars in the table, large labelled trend chart) despite a slightly tight phone table, while left duplicates the clinic data in a chart and a table."
+ },
+ {
+  "pair": "P034",
+  "model": "opus-r4",
+  "id": "44",
+  "cat": "status",
+  "o": "other",
+  "reason": "Right integrates progress bars into the workstream table, inlines the red explanation and presents the decision as a clear options card, giving a more polished and scannable status page."
+ },
+ {
+  "pair": "P038",
+  "model": "opus-r4",
+  "id": "48",
+  "cat": "architecture",
+  "o": "other",
+  "reason": "Right's flowchart is larger, cleanly routed, color-coded with a legend and fits on phone, while left's has long crossing connectors and a clipped node on phone."
+ },
+ {
+  "pair": "P052",
+  "model": "opus-r4",
+  "id": "62",
+  "cat": "data",
+  "o": "other",
+  "reason": "Right's highlighted bars, summary table and callout are clear on both widths, while left's tiny charts break out of the column on desktop and have overlapping axis labels on phone."
+ },
+ {
+  "pair": "P055",
+  "model": "opus-r4",
+  "id": "65",
+  "cat": "data",
+  "o": "other",
+  "reason": "Right's stacked chart has labelled totals and a dashed 2030 target bar with a quiet palette and proper table, polished on both widths, versus left's thin bars and bare target line."
+ },
+ {
+  "pair": "P005",
+  "model": "haiku-r4",
+  "id": "45",
+  "cat": "status",
+  "o": "C",
+  "reason": "Zero-based bar chart and readable phone layout with stacked finding cards, whereas the right's truncated-axis line chart shrinks to illegible text on phone."
+ },
+ {
+  "pair": "P013",
+  "model": "haiku-r4",
+  "id": "53",
+  "cat": "runbook",
+  "o": "C",
+  "reason": "Right puts the critical warning up front and has more polished editorial typography with numbered step badges, though left's checkboxes and contacts table are functional."
+ },
+ {
+  "pair": "P028",
+  "model": "haiku-r4",
+  "id": "68",
+  "cat": "prose",
+  "o": "other",
+  "reason": "Right presents hours as a clean table, has a stronger title hierarchy and a signature, and reads more finished on both widths."
+ },
+ {
+  "pair": "P035",
+  "model": "opus-r4",
+  "id": "45",
+  "cat": "status",
+  "o": "other",
+  "reason": "Right uses a zero-based bar chart with the latest week emphasized, clear risk callout, and tidy stat cards; left's truncated-axis line chart is weaker."
+ },
+ {
+  "pair": "P040",
+  "model": "opus-r4",
+  "id": "50",
+  "cat": "architecture",
+  "o": "other",
+  "reason": "Right's sequence diagram is large, legible and fits on phone, while left's diagram has tiny mono labels and is cut off at phone width."
+ },
+ {
+  "pair": "P049",
+  "model": "opus-r4",
+  "id": "59",
+  "cat": "comparison",
+  "o": "other",
+  "reason": "Left has a clear grouped bar chart with formatted values, status pills and risk cards; right shows unformatted numbers like 210000 and a plainer line chart."
+ },
+ {
+  "pair": "P054",
+  "model": "opus-r4",
+  "id": "64",
+  "cat": "data",
+  "o": "other",
+  "reason": "Left has a strong hero, a highlighted median bar, share column and richer winners and highlights sections, though its phone chart is small."
+ },
+ {
+  "pair": "P056",
+  "model": "opus-r4",
+  "id": "66",
+  "cat": "prose",
+  "o": "other",
+  "reason": "Right adds count badges and a small 3.7 vs 3.8 comparison bar that makes the speedup visual, with cleaner grouped lists on both widths."
+ },
+ {
+  "pair": "P057",
+  "model": "opus-r4",
+  "id": "67",
+  "cat": "prose",
+  "o": "C",
+  "reason": "Right is a clean, compact FAQ with numbered steps, while left's nested boxes in the stat cards look awkward and the page is longer without added value."
+ }
+]

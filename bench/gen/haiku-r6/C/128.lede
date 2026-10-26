@@ -1,0 +1,25 @@
+@title Student information system upgrade status
+@subtitle Harlow University IT office. As of 2026-10-16
+@author For the steering committee. Go-live: 2027-01-11, ahead of spring registration
+
+Overall status: Amber.
+
+kpi Spent | $1.74M of $2.6M | 66.9% | neutral
+kpi Forecast | $2.78M | $0.18M over budget | bad
+kpi Go-live | 2027-01-11 | ahead of spring registration | neutral
+
+## At a glance
+Budget: $2.6 million is approved, and $1.74 million is spent (66.9%). The forecast at completion is $2.78 million, which is $0.18 million over.
+
+## Milestones
+table = Phase,Complete,Status; Data cleanup,100%,Done; System configuration,85%,Green; Integration testing,40%,Amber; User training,10%,Green; Cutover rehearsal,0%,Planned for 2026-12-07
+
+## Risks
+- Financial aid integration is failing 14 of 60 test cases. Owner: Beatrice Lindgren. Severity: high.
+- Registrar staff have only 55 of the 120 planned training seats confirmed. Owner: Omar Faraj. Severity: medium.
+- A freeze on course catalog changes must begin by 2026-11-20, and 3 departments have not agreed. Owner: Greta Nilsson. Severity: medium.
+
+## Decision needed
+Choose one of two options:
+- Approve $0.18 million of extra vendor support through 2027-01-31, or
+- Move go-live to 2027-02-15. That would miss the first week of spring registration.

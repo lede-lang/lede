@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Postmortem INC-3107: EU Matchmaking DNS Outage — Alder Cloud Games</title>
+<style>
+:root {
+  --bg: #f4f5f8;
+  --card: #ffffff;
+  --ink: #1a1c22;
+  --ink-2: #5f6471;
+  --rule: #dfe1e7;
+  --grid: #eaecf0;
+  --series: #2563eb;
+  --series-fill: rgba(37, 99, 235, 0.1);
+  --low: #d0342c;
+  --mark: #7a8090;
+  --tag-bg: #e8ecf6;
+  --tag-fg: #3b4a6b;
+  --sev-bg: #fde8e6;
+  --sev-fg: #a3261d;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d0e12;
+    --card: #16181e;
+    --ink: #e7e9ee;
+    --ink-2: #9ea3af;
+    --rule: #292c35;
+    --grid: #22252d;
+    --series: #6ea3ff;
+    --series-fill: rgba(110, 163, 255, 0.14);
+    --low: #ff7a70;
+    --mark: #9aa0ae;
+    --tag-bg: #232838;
+    --tag-fg: #b8c3de;
+    --sev-bg: #3a1714;
+    --sev-fg: #ff978d;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.page { max-width: 920px; margin: 0 auto; padding: 28px 16px 64px; }
+.tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag { font-size: 0.78rem; font-weight: 700; padding: 2px 10px; border-radius: 999px; background: var(--tag-bg); color: var(--tag-fg); }
+.tag.sev { background: var(--sev-bg); color: var(--sev-fg); }
+h1 { margin: 10px 0 4px; font-size: 1.6rem; line-height: 1.3; }
+.meta { color: var(--ink-2); margin: 0; font-size: 0.92rem; }
+.tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 22px; }
+.tile { background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 14px 16px; }
+.tile .k { font-size: 0.82rem; color: var(--ink-2); }
+.tile .v { font-size: 1.75rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.3; }
+.tile .v.bad { color: var(--low); }
+section { background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 18px 20px; margin-top: 16px; }
+h2 { margin: 0 0 10px; font-size: 1.12rem; }
+p { margin: 0; }
+code { font: 0.9em ui-monospace, SFMono-Regular, Menlo, monospace; }
+.scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 9px 10px; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-2); white-space: nowrap; }
+tbody tr:last-child td { border-bottom: 0; }
+td.t { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.92rem; white-space: nowrap; width: 1%; }
+tr.hl td { font-weight: 600; }
+svg { display: block; width: 100%; height: auto; }
+.ax { fill: var(--ink-2); font-size: 12px; }
+.note { color: var(--ink-2); font-size: 0.85rem; margin-top: 6px; }
+ul { margin: 0; padding-left: 1.2em; }
+li { margin: 6px 0; }
+@media (max-width: 680px) {
+  .tiles { grid-template-columns: 1fr 1fr; }
+  .tile .v { font-size: 1.4rem; }
+  section { padding: 16px 14px; }
+  th, td { padding: 8px 6px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="tags"><span class="tag sev">INC-3107</span><span class="tag">Network team</span><span class="tag">Resolved</span></div>
+  <h1>Postmortem: DNS misconfiguration broke EU matchmaking</h1>
+  <p class="meta">Alder Cloud Games · 2026-08-19</p>
+
+  <div class="tiles">
+    <div class="tile"><div class="k">Duration</div><div class="v">1 h 52 min</div></div>
+    <div class="tile"><div class="k">Lowest success rate</div><div class="v bad">61.3%</div></div>
+    <div class="tile"><div class="k">Matches failed</div><div class="v">48,200</div></div>
+    <div class="tile"><div class="k">Region</div><div class="v">EU-West</div></div>
+  </div>
+
+  <section>
+    <h2>What happened</h2>
+    <p>At 09:12 UTC a Terraform change replaced the weighted DNS records for <code>match.eu</code> with a single record pointing at a load balancer that had already been decommissioned. Players in Europe resolving the matchmaking endpoint were sent to a dead target, and match creation failed for roughly a third of requests. The bad record was identified and restored by 10:11, but resolvers had cached the failed lookups: negative caching with a TTL of 3,600 seconds kept failures going for close to an hour after the fix, until success rate recovered above 99% at 11:04.</p>
+  </section>
+
+  <section>
+    <h2>Timeline</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Time (UTC)</th><th>Event</th></tr></thead>
+        <tbody>
+          <tr class="hl"><td class="t">09:12</td><td>Terraform apply</td></tr>
+          <tr><td class="t">09:15</td><td>Success rate drops</td></tr>
+          <tr><td class="t">09:31</td><td>Player reports spike on social media</td></tr>
+          <tr><td class="t">09:40</td><td>Incident declared</td></tr>
+          <tr><td class="t">10:05</td><td>Bad record identified</td></tr>
+          <tr class="hl"><td class="t">10:11</td><td>Record restored</td></tr>
+          <tr><td class="t">11:04</td><td>Success rate back above 99%; incident resolved</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Request success rate</h2>
+    <svg viewBox="0 0 600 270" role="img" aria-label="Line chart of matchmaking success rate every 15 minutes: 09:00 99.6%, 09:15 84.2%, 09:30 63.0%, 09:45 61.3%, 10:00 62.8%, 10:15 70.4%, 10:30 81.9%, 10:45 93.5%, 11:00 98.7%, 11:15 99.5%, 11:30 99.7%.">
+      <g stroke="var(--grid)">
+        <line x1="50" y1="220" x2="590" y2="220"/>
+        <line x1="50" y1="170" x2="590" y2="170"/>
+        <line x1="50" y1="120" x2="590" y2="120"/>
+        <line x1="50" y1="70" x2="590" y2="70"/>
+        <line x1="50" y1="20" x2="590" y2="20"/>
+      </g>
+      <g class="ax" text-anchor="end">
+        <text x="42" y="224">60%</text><text x="42" y="174">70%</text><text x="42" y="124">80%</text>
+        <text x="42" y="74">90%</text><text x="42" y="24">100%</text>
+      </g>
+      <g stroke="var(--mark)" stroke-width="1.2" stroke-dasharray="3 3">
+        <line x1="101.6" y1="20" x2="101.6" y2="220"/>
+        <line x1="306.13" y1="20" x2="306.13" y2="220"/>
+      </g>
+      <text x="111" y="236" font-size="11" fill="var(--ink-2)" style="display:none">.</text>
+      <text x="107" y="40" font-size="11.5" fill="var(--ink-2)">09:12 Terraform apply</text>
+      <text x="311" y="40" font-size="11.5" fill="var(--ink-2)">10:11 record restored</text>
+      <polygon fill="var(--series-fill)" points="60,220 60,22 112,99 164,205 216,213.5 268,206 320,168 372,110.5 424,52.5 476,26.5 528,22.5 580,21.5 580,220"/>
+      <polyline fill="none" stroke="var(--series)" stroke-width="3" stroke-linejoin="round" points="60,22 112,99 164,205 216,213.5 268,206 320,168 372,110.5 424,52.5 476,26.5 528,22.5 580,21.5"/>
+      <g fill="var(--card)" stroke="var(--series)" stroke-width="2">
+        <circle cx="60" cy="22" r="3.5"/><circle cx="112" cy="99" r="3.5"/><circle cx="164" cy="205" r="3.5"/>
+        <circle cx="268" cy="206" r="3.5"/><circle cx="320" cy="168" r="3.5"/><circle cx="372" cy="110.5" r="3.5"/>
+        <circle cx="424" cy="52.5" r="3.5"/><circle cx="476" cy="26.5" r="3.5"/><circle cx="528" cy="22.5" r="3.5"/>
+        <circle cx="580" cy="21.5" r="3.5"/>
+      </g>
+      <circle cx="216" cy="213.5" r="5.5" fill="var(--low)"/>
+      <text x="216" y="192" text-anchor="middle" font-size="12" font-weight="700" fill="var(--low)">Low 61.3%</text>
+      <g class="ax" text-anchor="middle">
+        <text x="60" y="242">09:00</text><text x="164" y="242">09:30</text><text x="268" y="242">10:00</text>
+        <text x="372" y="242">10:30</text><text x="476" y="242">11:00</text><text x="580" y="242">11:30</text>
+      </g>
+      <text x="320" y="264" text-anchor="middle" class="ax">Time (UTC), 15-minute intervals</text>
+    </svg>
+    <p class="note">The vertical axis starts at 60% to show the shape of the dip. Recovery after 10:11 was gradual because of negative DNS caching.</p>
+  </section>
+
+  <section>
+    <h2>Action items</h2>
+    <ul>
+      <li>Require a plan review for all DNS changes.</li>
+      <li>Lower the negative cache TTL from 3,600 to 300 seconds.</li>
+      <li>Add synthetic matchmaking checks from three EU cities.</li>
+      <li>Alert when weighted record count drops to one.</li>
+    </ul>
+  </section>
+</div>
+</body>
+</html>

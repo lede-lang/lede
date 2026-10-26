@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Fraud-Screening Vendor Comparison</title>
+<style>
+:root{--bg:#f4f6f9;--card:#fff;--ink:#16202b;--mut:#55616e;--line:#d3dae2;--acc:#1d5fbf;--acc-s:#e5eefb;--warn:#b0360a;--warn-s:#fdece3;--ok:#13703e;--ok-s:#e2f3ea;--gold:#7a5200;--gold-s:#fcf1d2}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--card:#171f28;--ink:#e7ecf1;--mut:#9ba8b5;--line:#2c3844;--acc:#7db1ff;--acc-s:#16273d;--warn:#ff9d73;--warn-s:#34201a;--ok:#62d796;--ok-s:#12291c;--gold:#f0c35c;--gold-s:#30260f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:900px;margin:0 auto;padding:0 16px 56px}
+header{padding:32px 0 14px;border-bottom:1px solid var(--line)}
+.eyebrow{margin:0 0 6px;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:var(--acc);font-weight:700}
+h1{margin:0 0 8px;font-size:clamp(1.6rem,5.5vw,2.4rem);line-height:1.15;letter-spacing:-.01em}
+.meta{margin:0;color:var(--mut);font-size:.92rem}
+h2{margin:40px 0 12px;font-size:1.4rem;line-height:1.25}
+h3{margin:22px 0 8px;font-size:1.05rem}
+p{margin:0 0 12px}
+.decide{background:var(--ink);color:var(--bg);border-radius:14px;padding:16px 18px;margin:20px 0 0}
+.decide strong{display:block;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;opacity:.8;margin-bottom:4px}
+.decide span{font-size:1.08rem;font-weight:600}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{font-size:.82rem;color:var(--ink);background:var(--bg);vertical-align:bottom}
+tbody th{font-size:.9rem;font-weight:600;color:var(--mut);background:var(--card);width:34%}
+tr:last-child td,tr:last-child th{border-bottom:0}
+td.rec,th.rec{background:var(--acc-s)}
+.best{display:inline-block;margin-left:4px;font-size:.65rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ok);border:1px solid var(--ok);border-radius:999px;padding:0 6px;vertical-align:middle;white-space:nowrap}
+.v{font-weight:800}
+.diagram{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.diagram svg{display:block;width:100%;height:auto;max-width:640px;margin:0 auto}
+.callout{border-left:5px solid var(--acc);background:var(--acc-s);border-radius:10px;padding:16px 18px;margin:16px 0}
+.callout.w{border-color:var(--warn);background:var(--warn-s)}
+.callout strong{color:var(--acc)}
+.callout.w strong{color:var(--warn)}
+.note{font-size:.88rem;color:var(--mut);margin-top:10px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.card h3{margin:0 0 6px;font-size:.78rem;text-transform:uppercase;letter-spacing:.07em;color:var(--mut)}
+.stat{font-size:1.8rem;font-weight:800;line-height:1.1;letter-spacing:-.01em}
+.stat.up{color:var(--warn)}
+.card p{margin:6px 0 0;font-size:.93rem}
+svg text{font-family:inherit;fill:var(--ink)}
+.bn{font-size:13px;font-weight:700}
+.bar{fill:var(--acc)}
+.bar.x{fill:var(--warn)}
+.bar.k{fill:var(--mut)}
+.ax{font-size:11.5px;fill:var(--mut);text-anchor:middle}
+.in{font-size:12px;font-weight:700;fill:var(--card)}
+.fz{stroke:var(--ink);stroke-width:2;stroke-dasharray:5 4}
+.gt{font-size:12px;font-weight:800;text-anchor:middle}
+.grd{stroke:var(--line);stroke-width:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Fennimore Payments &middot; Payments steering group</p>
+  <h1>Choosing a fraud-screening vendor</h1>
+  <p class="meta">From Gideon Ashworth, risk lead &middot; Vendor decision due <time datetime="2026-11-20">2026-11-20</time> &middot; About 6 million payment transactions a month</p>
+  <div class="decide"><strong>Our lean</strong><span>Tollgate as the balanced choice, with Kestrel Risk as the budget fallback.</span></div>
+</header>
+
+<main>
+<section id="side-by-side">
+  <h2>Side by side</h2>
+  <div class="tw">
+  <table>
+    <thead><tr><th></th><th class="rec">Tollgate</th><th>Vantage Shield</th><th>Kestrel Risk</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Fraud caught</th><td class="rec">91.2%</td><td>94.8% <span class="best">best</span></td><td>89.5%</td></tr>
+      <tr><th scope="row">Good transactions wrongly blocked</th><td class="rec">1.9%</td><td>3.1%</td><td>1.2% <span class="best">best</span></td></tr>
+      <tr><th scope="row">Cost per 1,000 transactions</th><td class="rec">$4.10</td><td>$6.80</td><td>$2.90 <span class="best">best</span></td></tr>
+      <tr><th scope="row">Integration time</th><td class="rec">6 weeks</td><td>10 weeks</td><td>4 weeks <span class="best">best</span></td></tr>
+      <tr><th scope="row">Annual fees</th><td class="rec v">$295,200</td><td class="v">$489,600</td><td class="v">$208,800</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="annual-fees">
+  <h2>Annual fees</h2>
+  <p>At 6 million transactions a month, the fees for a year are:</p>
+  <div class="diagram">
+  <svg viewBox="0 0 400 190" role="img" aria-labelledby="ft fd">
+    <title id="ft">Annual fees by vendor</title>
+    <desc id="fd">Tollgate 295,200 dollars, Vantage Shield 489,600 dollars, Kestrel Risk 208,800 dollars.</desc>
+    <text class="bn" x="0" y="18">Tollgate</text><text class="bn" x="400" y="18" text-anchor="end">$295,200</text>
+    <rect class="bar" x="0" y="26" width="229.1" height="26" rx="4"/>
+    <text class="bn" x="0" y="82">Vantage Shield</text><text class="bn" x="400" y="82" text-anchor="end">$489,600</text>
+    <rect class="bar x" x="0" y="90" width="380" height="26" rx="4"/>
+    <text class="bn" x="0" y="146">Kestrel Risk</text><text class="bn" x="400" y="146" text-anchor="end">$208,800</text>
+    <rect class="bar k" x="0" y="154" width="162" height="26" rx="4"/>
+  </svg>
+  </div>
+  <p class="note">Bars share one scale starting at zero.</p>
+</section>
+
+<section id="trade-off">
+  <h2>What the trade-off means</h2>
+  <p>Each wrongly blocked transaction is a customer declined at checkout. At this volume, every percentage point of wrongly blocked transactions is roughly 60,000 declined customers a month, so the block rate matters as much as the catch rate.</p>
+  <p><strong>Vantage Shield versus Tollgate:</strong> its extra catch rate (3.6 points) comes with 1.2 points more wrongly blocked and $194,400 more in fees a year.</p>
+  <div class="grid">
+    <div class="card"><h3>Extra fraud caught</h3><div class="stat">+3.6 pts</div><p>94.8% against 91.2%.</p></div>
+    <div class="card"><h3>More wrongly blocked</h3><div class="stat up">+1.2 pts</div><p>3.1% against 1.9%.</p></div>
+    <div class="card"><h3>More in fees a year</h3><div class="stat up">+$194,400</div><p>$489,600 against $295,200.</p></div>
+  </div>
+  <h3>Against Tollgate</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>Vendor</th><th>Fraud caught</th><th>Wrongly blocked</th><th>Annual fees</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Vantage Shield</th><td>3.6 points more</td><td>1.2 points more</td><td>$194,400 more</td></tr>
+      <tr><th scope="row">Kestrel Risk</th><td>1.7 points fewer</td><td>0.7 points fewer</td><td>$86,400 less</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="recommendation">
+  <h2>Recommendation</h2>
+  <div class="callout">
+    <strong>We lean toward Tollgate as the balanced choice.</strong>
+    <p style="margin:6px 0 0">It catches 91.2 percent of fraud, blocks 1.9 percent of good transactions and costs $295,200 a year. <strong>Kestrel Risk is the budget fallback</strong> if the steering group wants to cut fees by about $86,400 a year; it catches fewer fraud cases (89.5 percent) but blocks fewer good customers (1.2 percent).</p>
+  </div>
+  <div class="callout w">
+    <strong>Timing: sign by 2026-12-15 or lose the change-freeze window.</strong>
+    <p style="margin:6px 0 0">If the contract is signed by 2026-12-15, Tollgate and Kestrel Risk would be live before the change freeze on 2027-02-01. Vantage Shield, at 10 weeks, would not.</p>
+  </div>
+  <div class="diagram">
+  <svg viewBox="0 0 400 190" role="img" aria-labelledby="tt td">
+    <title id="tt">Integration time from a 2026-12-15 signing against the 2027-02-01 change freeze</title>
+    <desc id="td">Kestrel Risk is live on 2027-01-12, Tollgate on 2027-01-26 and Vantage Shield on 2027-02-23. The change freeze begins on 2027-02-01, so only Vantage Shield misses it.</desc>
+    <!-- x = 100 + days*3.8, day 0 = 2026-12-15 -->
+    <g class="grd"><line x1="100" y1="34" x2="100" y2="150"/><line x1="217.8" y1="34" x2="217.8" y2="150"/><line x1="335.6" y1="34" x2="335.6" y2="150"/></g>
+    <line class="fz" x1="282.4" y1="26" x2="282.4" y2="150"/>
+    <text class="gt" x="282" y="16">Change freeze 2027-02-01</text>
+
+    <text class="bn" x="0" y="56">Tollgate</text>
+    <rect class="bar" x="100" y="40" width="159.6" height="26" rx="3"/><text class="in" x="106" y="57">live 2027-01-26</text>
+    <text class="bn" x="0" y="96">Vantage Shield</text>
+    <rect class="bar x" x="100" y="80" width="266" height="26" rx="3"/><text class="in" x="106" y="97">live 2027-02-23, after the freeze</text>
+    <text class="bn" x="0" y="136">Kestrel Risk</text>
+    <rect class="bar k" x="100" y="120" width="106.4" height="26" rx="3"/><text class="in" x="106" y="137">live 2027-01-12</text>
+
+    <text class="ax" x="100" y="172">Dec 15</text><text class="ax" x="217.8" y="172">Jan 15</text><text class="ax" x="335.6" y="172">Feb 15</text>
+  </svg>
+  </div>
+  <p class="note">Assumes the contract is signed on 2026-12-15; integration takes 6, 10 and 4 weeks respectively.</p>
+</section>
+</main>
+</div>
+</body>
+</html>

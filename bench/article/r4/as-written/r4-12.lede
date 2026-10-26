@@ -1,0 +1,64 @@
+@title Station Automation Schedule: Plain-Words Guide
+@subtitle 14 jobs, what each schedule string means, when it fires next, and what looks wrong
+@date Snapshot Tue 20 Oct 2026, about 15:00 Pacific
+@width wide
+
+kpi Jobs | 14
+kpi Timezone | Pacific | PDT now, PST from Sun 1 Nov | neutral
+kpi Clock change | Sun 1 Nov | 02:00 PDT goes back to 01:00 PST | neutral
+kpi Flags | 10 | listed under What looks suspicious | bad
+
+!! Next-fire dates below are worked out by hand from the strings as written, assuming the scheduler runs in Pacific local time and that "now" is the snapshot time above. I could not run the scheduler. Confirm which timezone it uses: if it runs in UTC, every local time below moves by an hour on 1 Nov.
+
+## What each job means and when it fires next
+
+data jobs = job,schedule,meaning,next,notes; Weekday news bulletin intro,`0 6 * * 1-5`,Every weekday (Mon to Fri) at 06:00,"Wed 21 Oct 06:00, Thu 22 Oct 06:00, Fri 23 Oct 06:00 (PDT)","plays the sting; “Good morning, [station]”"; "Farm report (live link, 4 min)",`15 6 * * 1-5`,Every weekday at 06:15,"Wed 21 Oct 06:15, Thu 22 Oct 06:15, Fri 23 Oct 06:15 (PDT)",partner feed drops if we're late; Traffic and transit update,`*/20 7-9 * * 1-5`,"Every weekday, every 20 minutes from 07:00 to 09:40 (9 times: :00, :20, :40 in hours 7, 8 and 9)","Wed 21 Oct 07:00, 07:20, 07:40 (PDT)",every 20 min in the morning peak; Sunday gospel hour (pre-roll),`55 8 * * 0`,Every Sunday at 08:55,"Sun 25 Oct 08:55 (PDT), Sun 1 Nov 08:55 (PST), Sun 8 Nov 08:55 (PST)",; Lost & Found: pet notices,`30 12 * * *`,Every day at 12:30,"Wed 21 Oct 12:30, Thu 22 Oct 12:30, Fri 23 Oct 12:30 (PDT)","daily, “read by Rosalind or Bao”"; "Community noticeboard, top of hour",`0 * * * *`,"Every hour on the hour, 24 times a day, overnight included","Tue 20 Oct 15:00, 16:00, 17:00 (PDT)","hourly, except overnight? not sure"; Nightly archive upload,`0 3 * * *`,Every night at 03:00,"Wed 21 Oct 03:00, Thu 22 Oct 03:00, Fri 23 Oct 03:00 (PDT)","takes about 40 min; bandwidth fee over $120/month"; Logs cleanup,`0 4 * * 7`,"Every Sunday at 04:00 (7 means Sunday here, same as 0)","Sun 25 Oct 04:00 (PDT), Sun 1 Nov 04:00 (PST), Sun 8 Nov 04:00 (PST)","7 is Sunday, right?"; Station ID legal (top of hour),`59 * * * *`,"Every hour at 59 minutes past, 24 times a day","Tue 20 Oct 15:59, 16:59, 17:59 (PDT)","required by licence, never skip"; Monthly volunteer thank-you spot,`0 10 1 * *`,10:00 on the 1st of every month,"Sun 1 Nov 10:00 (PST), Tue 1 Dec 10:00 (PST), Fri 1 Jan 10:00 (PST)",; Quarterly pledge-drive promo,`0 9 1 1,4,7,10 *`,"09:00 on the 1st of January, April, July and October","Fri 1 Jan 2027 09:00 (PST), Thu 1 Apr 2027 09:00 (PDT), Thu 1 Jul 2027 09:00 (PDT)",; Friday night jazz handover,`50 21 * * 5`,Every Friday at 21:50 (10 minutes before the 22:00 host swap),"Fri 23 Oct 21:50, Fri 30 Oct 21:50 (PDT), Fri 6 Nov 21:50 (PST)",host swap at 22:00; Currently Playing file refresh,`* * * * *`,"Every minute, 1,440 times a day","Tue 20 Oct 15:00, 15:01, 15:02 (PDT) and every minute after","writes the web widget; $0 but noisy"; Weekly donor email digest,`0 8 * * 1`,Every Monday at 08:00,"Mon 26 Oct 08:00 (PDT), Mon 2 Nov 08:00 (PST), Mon 9 Nov 08:00 (PST)","2,310 recipients; should avoid public holidays"
+
+table jobs cols=job,schedule,meaning,next
+
+table jobs cols=job,notes
+
+## Answering "can the weekday bulletin move to 6:45?"
+
+Yes: change the hour and minute fields only. `45 6 * * 1-5` is every weekday at 06:45. It would not collide with the farm report at 06:15.
+
+```
+45 6 * * 1-5
+```
+
+## What looks suspicious
+
+data flags = flag,jobs,why it matters,suggested fix; Weekday jobs show last run on Monday,"Weekday news bulletin intro, Farm report, Traffic and transit update","The snapshot is Tuesday afternoon but their last runs are Mon 06:00, Mon 06:15 and Mon 09:40. Tuesday's runs should have happened by now. Either the last-run column is stale or Tuesday's bulletin, farm report and traffic updates did not fire.",Check the scheduler log for Tue 20 Oct before changing anything; Station ID legal has no safe handling of the clock change,Station ID legal,"At 02:00 on Sun 1 Nov the 01:59 slot happens twice, and on Sun 14 Mar 2027 the clocks jump from 02:00 to 03:00 so 02:59 does not exist. The licence says never skip. What your scheduler does with those times depends on the scheduler, and I cannot tell which one it is from the strings.",Test both dates in the scheduler or run a one-off ID by hand in that hour; Scheduler timezone unknown,All 14 jobs,"If it runs in UTC, every local time shifts by an hour on Sun 1 Nov (and again in March): bulletin at 05:00 or 07:00 local, jazz handover off by an hour.",Confirm the setting before 1 Nov; Noticeboard runs overnight,Community noticeboard,"As written 0 * * * * does fire overnight, all 24 hours. That answers the question in the notes.","If you want it off overnight, `0 6-22 * * *` runs 06:00 to 22:00 only"; Lots of jobs at the top of the hour,"Community noticeboard with bulletin intro, traffic, archive, logs cleanup, donor digest, thank-you and promo","The noticeboard fires on the same minute as the weekday bulletin intro (06:00), traffic (07:00, 08:00, 09:00), the donor digest (Mon 08:00), the archive (03:00), logs cleanup (Sun 04:00), and the monthly and quarterly spots on the 1st.",Move the noticeboard off :00 (for example :05) if two things should not start together; Friday handover is crowded,"Station ID, Community noticeboard, Jazz handover","On Fridays the jazz handover fires at 21:50, the station ID at 21:59, and the noticeboard at 22:00, which is the exact moment of the host swap.",Offset the noticeboard on Fridays or accept it; 7 for Sunday,Logs cleanup,"Many cron versions accept 7 as Sunday, but 0 is the portable value and the Sunday gospel job already uses 0. It ran last Sunday at 04:00, so it works here today.","`0 4 * * 0` does the same thing"; Every-minute job,Currently Playing file refresh,"1,440 runs a day. The note says it costs $0 but is noisy, and it fires through the doubled hour on 1 Nov.","Keep it if the widget needs minute accuracy, otherwise `*/5 * * * *` is every 5 minutes"; Donor digest cannot skip public holidays,Weekly donor email digest,"A schedule string only says Monday 08:00; it has no holiday list. I have not checked the next Mondays (26 Oct, 2 Nov, 9 Nov, 16 Nov) against any holiday calendar.",Decide who checks holidays before each send; 1 January stacks three spots,Monthly thank-you and Quarterly pledge-drive promo,"On Fri 1 Jan 2027 the promo fires at 09:00 and the thank-you at 10:00, with the noticeboard on the same minutes. 1 Jan is a public holiday in most places, so check the on-air plan. Sun 1 Nov 2026 is also the clock-change day, and the monthly spot fires that day.",Check the on-air plan for those two days
+
+table flags
+
+## Trying the overnight spread (suggestions, not applied)
+
+Nothing is changed in the strings at the bottom. These are options to try. They keep clear of 01:00 to 02:59, because that hour is doubled on 1 Nov and missing on 14 Mar 2027.
+
+data spread = job,now,try,effect; Community noticeboard,`0 * * * *`,`0 6-22 * * *`,no fires from 23:00 to 05:59 so nothing sits on the 03:00 archive or 04:00 cleanup; Nightly archive upload,`0 3 * * *`,`0 3 * * *`,stays at 03:00 and ends about 03:40; Logs cleanup,`0 4 * * 7`,`30 5 * * 0`,moves to Sunday 05:30 and uses 0 for Sunday
+
+table spread
+
+## Jazz handover: "about ten minutes of warning, not exactly ten"
+
+A schedule string fires at one exact minute, so it cannot be "about" ten. Two ways to pick: `50 21 * * 5` is 10 minutes before the 22:00 swap (as now), and `51 21 * * 5` is 9 minutes before. Pick one and tell the host; a changing warning time is not something this format can express.
+
+## Schedule strings to paste back (unchanged)
+
+```
+0 6 * * 1-5          # Weekday news bulletin intro
+15 6 * * 1-5         # Farm report (live link, 4 min)
+*/20 7-9 * * 1-5     # Traffic and transit update
+55 8 * * 0           # Sunday gospel hour (pre-roll)
+30 12 * * *          # Lost & Found: pet notices
+0 * * * *            # Community noticeboard, top of hour
+0 3 * * *            # Nightly archive upload
+0 4 * * 7            # Logs cleanup
+59 * * * *           # Station ID legal (top of hour)
+0 10 1 * *           # Monthly volunteer thank-you spot
+0 9 1 1,4,7,10 *     # Quarterly pledge-drive promo
+50 21 * * 5          # Friday night jazz handover
+* * * * *            # Currently Playing file refresh
+0 8 * * 1            # Weekly donor email digest
+```

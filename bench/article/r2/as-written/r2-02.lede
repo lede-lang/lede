@@ -1,0 +1,69 @@
+@title Class 9B, Monday: three timetable looks
+@subtitle Same day, three treatments, shown as it stands at 11:30
+
+All three looks below show the same real day, Monday for class 9B, and each marks what is happening at 11:30: Break ended at 11:10, so P3 Science in Lab 2 with Dr Banerjee is on.
+
+! The page compiler sets colour and type, so these looks differ in layout and emphasis. School navy and amber, subject colours and display fonts are not applied here.
+
+## Look 1: station departures board
+
+Every period on one dense grid, one row each, with a status column like a departures board.
+
+table = Time,Period,Subject,Room,Teacher,Note,Status; 08:50,P1,Maths,Rm 12,Mr Osei,-,Done; 09:50,P2,English,Rm 4,Ms Lindqvist,-,Done; 10:50-11:10,Break,-,-,-,-,Done; 11:10,P3,Science,Lab 2,Dr Banerjee,Bring goggles,In progress; 12:10,P4,PE,Gym,-,"Kit; changing rooms close 12:25",Scheduled; 13:00-13:45,Lunch,-,-,-,-,Scheduled; 13:45,P5,French,Rm 9,Mme Dubois,-,Scheduled; 14:45-15:45,P6,Art,Studio,-,-,Scheduled
+
+**Best at:** seeing the whole day and its status in one glance, from a distance. **Worst at:** warmth, and phones: seven columns get cramped on a small screen.
+
+## Look 2: one colour per subject, big start times
+
+Each block is led by its start time. Subject colour is not available here, so the subject name leads each card instead.
+
+cards
+
+### P1 Maths
+kpi Maths | 08:50 | P1
+Rm 12, Mr Osei
+
+### P2 English
+kpi English | 09:50 | P2
+Rm 4, Ms Lindqvist
+
+### Break
+kpi Break | 10:50 | until 11:10
+
+### P3 Science
+kpi Science | 11:10 | happening at 11:30 | good
+Lab 2, Dr Banerjee
+! Now at 11:30. Bring goggles.
+
+### P4 PE
+kpi PE | 12:10 | P4
+Gym
+! Bring kit. Changing rooms close 12:25.
+
+### Lunch
+kpi Lunch | 13:00 | until 13:45
+
+### P5 French
+kpi French | 13:45 | P5
+Rm 9, Mme Dubois
+
+### P6 Art
+kpi Art | 14:45 | ends 15:45
+Studio
+
+**Best at:** friendly, scannable start times that a 13-year-old finds quickly. **Worst at:** density: eight cards take space, and the day's order is less obvious than in a table.
+
+## Look 3: calm agenda for a parent's phone
+
+! At 11:30 your child is in P3 Science, Lab 2, with Dr Banerjee. Remember goggles.
+
+step Maths, Rm 12 | 08:50 | Mr Osei
+step English, Rm 4 | 09:50 | Ms Lindqvist
+step Break | 10:50 | until 11:10
+step Science, Lab 2 (happening at 11:30): bring goggles | 11:10 | Dr Banerjee
+step PE, Gym: bring kit, changing rooms close 12:25 | 12:10 | Teacher not listed
+step Lunch | 13:00 | until 13:45
+step French, Rm 9 | 13:45 | Mme Dubois
+step Art, Studio | 14:45 | ends 15:45
+
+**Best at:** a calm, single column read top to bottom on a phone, with notes where parents need them. **Worst at:** at-a-glance comparison across periods, and it is too quiet for a hallway screen.

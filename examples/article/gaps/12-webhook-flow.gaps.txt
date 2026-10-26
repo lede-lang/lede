@@ -1,0 +1,3 @@
+Custom SVG illustration: Lede has no freeform SVG, so used a Lede flowchart diagram with decision nodes, a retry-loop group and a legend.
+Animated or interactive retry timeline: not possible on a static page, so used an hbar chart of wait times plus an exact schedule table.
+Log-scale axis for the 30 s to 24 h backoff: no scale option, so the early bars are tiny and rely on value labels.

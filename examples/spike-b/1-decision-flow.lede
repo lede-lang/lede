@@ -1,0 +1,17 @@
+# Support ticket triage
+Where an incoming ticket goes in its first five minutes.
+
+diagram triage dir=LR title="Ticket triage"
+triage: inbox "New ticket" user
+triage: sev "Is it a production outage?" decision
+triage: page "Page on-call" svc "PagerDuty" focus
+triage: dup "Duplicate of an open ticket?" decision
+triage: merge "Merge and reply" svc
+triage: queue "Assign to queue" svc "Round robin"
+triage: inbox -> sev
+triage: sev -> page : yes
+triage: sev -> dup : no
+triage: dup -> merge : yes
+triage: dup -> queue : no
+
+Both questions are answered by the first responder, not by automation.

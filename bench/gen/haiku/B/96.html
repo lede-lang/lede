@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harbour Street Bridge status</title>
+<style>
+:root{color-scheme:light dark;--bg:#f5f6f8;--card:#ffffff;--text:#1c2230;--muted:#5d6779;--line:#dde2ea;--accent:#2d5fd1;--track:#e3e7ee;--ok:#1d7a4b;--okbg:#e4f4ea;--warn:#8a5a00;--warnbg:#fff4dc;--crit:#b3261e;--critbg:#fde8e6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1117;--card:#171c26;--text:#e6e9ef;--muted:#9ba5b6;--line:#2a3242;--accent:#7fa6ff;--track:#262d3b;--ok:#6fd49a;--okbg:#18301f;--warn:#f2c26b;--warnbg:#3a2e12;--crit:#ff8d84;--critbg:#3d1816}}
+:root[data-theme="dark"]{--bg:#0e1117;--card:#171c26;--text:#e6e9ef;--muted:#9ba5b6;--line:#2a3242;--accent:#7fa6ff;--track:#262d3b;--ok:#6fd49a;--okbg:#18301f;--warn:#f2c26b;--warnbg:#3a2e12;--crit:#ff8d84;--critbg:#3d1816}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:1.7rem;line-height:1.2;margin:0 0 4px}
+h2{font-size:1.2rem;margin:28px 0 10px;padding-top:14px;border-top:1px solid var(--line)}
+.meta{color:var(--muted);font-size:.92rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.big{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.big b{font-size:2.4rem;color:var(--accent);font-variant-numeric:tabular-nums;line-height:1}
+.track{height:14px;background:var(--track);border-radius:999px;overflow:hidden;margin:10px 0 4px}
+.fill{height:100%;background:var(--accent);border-radius:999px}
+.stats{display:grid;gap:8px;grid-template-columns:1fr 1fr;margin-top:12px}
+.stats div{background:var(--track);border-radius:10px;padding:8px 10px;font-size:.9rem}
+.stats b{display:block;font-size:1.1rem;font-variant-numeric:tabular-nums}
+.ms{padding:12px 0;border-bottom:1px solid var(--line)}
+.ms:last-child{border-bottom:0}
+.ms-head{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.ms-name{font-weight:600}
+.pill{font-size:.8rem;font-weight:700;padding:2px 10px;border-radius:999px;white-space:nowrap}
+.p-done{background:var(--okbg);color:var(--ok)}
+.p-amber{background:var(--warnbg);color:var(--warn)}
+.p-green{background:var(--okbg);color:var(--ok)}
+.p-none{background:var(--track);color:var(--muted)}
+.ms .track{height:9px;margin:8px 0 0}
+.pct{font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.risk{border-left:4px solid var(--warn);background:var(--warnbg);border-radius:8px;padding:10px 14px;margin:10px 0}
+ul{padding-left:1.2em}
+li{margin:6px 0}
+.note{color:var(--muted);font-size:.92rem}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>Harbour Street Bridge rebuild</h1>
+<p class="meta">Status as of 2026-10-16 · Whitcombe City Public Works</p>
+
+<h2 id="overview">Overview</h2>
+<div class="card">
+  <div class="big"><b>58%</b><span>complete overall</span></div>
+  <div class="track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="58"><div class="fill" style="width:58%"></div></div>
+  <div class="stats">
+    <div>Budget approved<b>$31.5 million</b></div>
+    <div>Spent to date<b>$17.2 million (54.6%)</b></div>
+    <div>Contingency used<b>$1.3 million of $2.1 million</b></div>
+    <div>Forecast completion<b>2027-11-15</b></div>
+  </div>
+  <p class="note" style="margin:12px 0 0">Planned completion was 2027-09-30. The forecast is now <strong>46 days late</strong>.</p>
+</div>
+
+<h2 id="traffic">Traffic and access</h2>
+<div class="card">
+  <ul>
+    <li>The bridge is <strong>closed to vehicles</strong>.</li>
+    <li>The detour adds about <strong>7 minutes</strong> to a trip.</li>
+    <li>The footbridge <strong>stays open</strong>.</li>
+  </ul>
+</div>
+
+<h2 id="milestones">Milestones</h2>
+<div class="card">
+  <div class="ms">
+    <div class="ms-head"><span class="ms-name">Old span demolition</span><span class="pill p-done">Complete</span></div>
+    <div class="track"><div class="fill" style="width:100%"></div></div>
+    <div class="pct">100% complete</div>
+  </div>
+  <div class="ms">
+    <div class="ms-head"><span class="ms-name">Pier foundations</span><span class="pill p-done">Complete</span></div>
+    <div class="track"><div class="fill" style="width:100%"></div></div>
+    <div class="pct">100% complete</div>
+  </div>
+  <div class="ms">
+    <div class="ms-head"><span class="ms-name">Steel girder fabrication</span><span class="pill p-amber">Amber</span></div>
+    <div class="track"><div class="fill" style="width:85%;background:var(--warn)"></div></div>
+    <div class="pct">85% complete. Amber because the steel supplier is 5 weeks behind.</div>
+  </div>
+  <div class="ms">
+    <div class="ms-head"><span class="ms-name">Girder erection</span><span class="pill p-amber">Amber</span></div>
+    <div class="track"><div class="fill" style="width:30%;background:var(--warn)"></div></div>
+    <div class="pct">30% complete</div>
+  </div>
+  <div class="ms">
+    <div class="ms-head"><span class="ms-name">Approach roads and utilities</span><span class="pill p-green">Green</span></div>
+    <div class="track"><div class="fill" style="width:40%;background:var(--ok)"></div></div>
+    <div class="pct">40% complete</div>
+  </div>
+  <div class="ms">
+    <div class="ms-head"><span class="ms-name">Deck and parapets</span><span class="pill p-none">Not started</span></div>
+    <div class="track"><div class="fill" style="width:0%"></div></div>
+    <div class="pct">0% complete</div>
+  </div>
+</div>
+
+<h2 id="risks">Risks</h2>
+<div class="risk"><strong>Steel supplier delay.</strong> The supplier is 5 weeks behind, which puts girder fabrication at amber.</div>
+<div class="risk"><strong>Winter concrete pours for the deck.</strong> Heated enclosures are budgeted at $380,000.</div>
+
+<h2 id="next">Next 30 days</h2>
+<div class="card">
+  <ul>
+    <li><strong>2026-11-02:</strong> first girders are delivered.</li>
+    <li><strong>2026-11-05, 18:30:</strong> public information meeting at the library.</li>
+  </ul>
+</div>
+</main>
+</body>
+</html>

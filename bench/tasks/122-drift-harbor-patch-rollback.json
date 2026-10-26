@@ -1,0 +1,57 @@
+{
+  "id": "122-drift-harbor-patch-rollback",
+  "category": "runbook",
+  "title": "Drift Harbor patch rollback runbook",
+  "brief": "Quillfeather Interactive's Live Ops team needs a runbook for rolling back a bad game client patch on its online game Drift Harbor, owned by Live Ops, version 2026-10-13. Section \"When to roll back\": crash rate above 2 percent of sessions for 15 minutes, or login failures above 5 percent for 10 minutes, after a patch release; the Live Ops lead must approve in the #liveops-war-room channel. Section \"Do not roll back if\": the patch contained a database schema migration, such as migration 0087 in patch 4.13, in which case go forward with a hotfix instead because older clients cannot read the new schema. Section \"Rollback steps\" in order, with sub-steps. 1 Stop the bleeding: a) pause the deploy pipeline, b) set matchmaking to maintenance mode with the in-game message \"Back soon\". 2 Point players to the last good build: a) in the release console, set the live manifest to build 4.12.3, b) invalidate the CDN cache, which takes about 10 minutes. 3 Verify: a) install the build on 3 test accounts, one each on PC, console and mobile, b) confirm login and a full match. 4 Reopen in stages: a) let in 10 percent of players, b) 25 percent after 5 minutes, c) 50 percent after 5 more minutes, d) 100 percent after another 5 minutes if the crash rate stays under 1 percent. 5 Communicate: a) post a status update within 30 minutes of the decision, b) schedule compensation of 500 gems for every active account. Make sure readers do not miss that rolling back after a schema migration corrupts player inventories. Add a final section \"Contacts\": Live Ops lead, Soledad Ortega; Release engineer on call, Thabo Mokoena; Community manager, Ji-ho Han.",
+  "checklist": {
+    "sections": [
+      "When to roll back",
+      "Do not roll back if",
+      "Rollback steps",
+      "Contacts"
+    ],
+    "visible": [
+      "Drift Harbor",
+      "#liveops-war-room",
+      "4.12.3",
+      "Soledad Ortega",
+      "Thabo Mokoena",
+      "Ji-ho Han",
+      "maintenance mode"
+    ],
+    "values": [
+      "2026-10-13",
+      "2 percent",
+      "15 minutes",
+      "5 percent",
+      "10 minutes",
+      "0087",
+      "4.13",
+      "3 test accounts",
+      "10 percent",
+      "25 percent",
+      "50 percent",
+      "100 percent",
+      "1 percent",
+      "30 minutes",
+      "500 gems"
+    ]
+  },
+  "needs": [
+    "list",
+    "callout",
+    "table"
+  ],
+  "edit": {
+    "request": "Change the crash-rate trigger from 2 percent to 3 percent, and add a sub-step to step 5: \"Update the public status page\".",
+    "expect_visible": [
+      "Update the public status page"
+    ],
+    "expect_values": [
+      "3 percent"
+    ],
+    "expect_absent": [
+      "above 2 percent"
+    ]
+  }
+}

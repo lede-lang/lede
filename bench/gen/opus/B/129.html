@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>40 MW Solar Farm Construction Status · Prairie Sun Energy</title>
+<style>
+:root{--bg:#f6f5f1;--surface:#ffffff;--ink:#1c1c1a;--muted:#5f5e58;--line:#e3e1da;--track:#ebe9e2;--accent:#d08a00;--bar:#3f6fa8;--grid:#e6e4dd;--red:#c0362c;--red-bg:#fdecea;--amber:#9a5800;--amber-bg:#fff3dc;--green:#1d7745;--green-bg:#e6f4ec;--grey-bg:#ecebe6}
+@media (prefers-color-scheme:dark){:root{--bg:#121210;--surface:#1c1c19;--ink:#ecebe6;--muted:#a6a49b;--line:#33322d;--track:#2b2a26;--accent:#f2b544;--bar:#7aa6dd;--grid:#2e2d29;--red:#ff8f85;--red-bg:#3a1c1a;--amber:#f2b55c;--amber-bg:#35280f;--green:#72d39c;--green-bg:#15301f;--grey-bg:#2b2a26}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:26px 16px 64px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:650}
+h1{font-size:clamp(1.6rem,5vw,2.25rem);line-height:1.15;margin:.35rem 0 .6rem}
+h2{font-size:1.2rem;margin:0 0 .9rem;line-height:1.3}
+p{margin:.2rem 0 .8rem}
+.meta{display:flex;flex-wrap:wrap;gap:4px 18px;color:var(--muted);font-size:.9rem;margin:0;padding:0;list-style:none;align-items:center}
+.meta b{color:var(--ink);font-weight:600}
+.overall{display:inline-flex;align-items:center;gap:8px;background:var(--red-bg);color:var(--red);font-weight:700;border-radius:999px;padding:3px 12px;font-size:.85rem;text-transform:uppercase;letter-spacing:.05em}
+.overall::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--red)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:16px}
+.kpis{display:grid;gap:12px}
+.kpi{border:1px solid var(--line);border-radius:12px;padding:14px}
+.kpi .k{font-size:.82rem;color:var(--muted);font-weight:600}
+.kpi .v{font-size:1.7rem;font-weight:770;line-height:1.15;font-variant-numeric:tabular-nums;margin-top:2px}
+.kpi .v small{font-size:.95rem;color:var(--muted);font-weight:500}
+.kpi .bar{height:10px;background:var(--track);border-radius:5px;margin-top:10px;overflow:hidden}
+.kpi .bar div{height:100%;background:var(--accent);border-radius:5px}
+.kpi .note{font-size:.82rem;color:var(--muted);margin-top:6px}
+.chart svg{width:100%;height:auto;display:block}
+.chart text{font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;fill:var(--muted)}
+.chart .val{fill:#fff;font-weight:700}
+.chart .ln{font-weight:700}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.facts div{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.facts .v{font-size:1.2rem;font-weight:740;font-variant-numeric:tabular-nums}
+.facts .k{font-size:.78rem;color:var(--muted)}
+.facts .bad .v{color:var(--red)}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:650}
+tr:last-child td{border-bottom:0}
+td.date{white-space:nowrap}
+td.date .fc{display:block;color:var(--red);font-weight:600;font-size:.88rem}
+.pill{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border-radius:999px;padding:1px 9px;white-space:nowrap}
+.pill.d{background:var(--green-bg);color:var(--green)}
+.pill.r{background:var(--red-bg);color:var(--red)}
+.pill.p{background:var(--grey-bg);color:var(--muted)}
+.pill.l{background:var(--amber-bg);color:var(--amber)}
+.attn{border-left:6px solid var(--red)}
+.attn h2{color:var(--red)}
+.ask{background:var(--red-bg);border-radius:12px;padding:14px 16px;margin-top:12px}
+.ask b.big{display:block;font-size:1.15rem;color:var(--red)}
+.math{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.math li{display:flex;gap:10px}
+.math li::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--muted);margin-top:9px}
+footer{margin-top:24px;color:var(--muted);font-size:.85rem;text-align:center}
+@media (max-width:520px){th.hide,td.hide{display:none}}
+@media (max-width:639px){.facts{grid-template-columns:1fr}}
+@media (min-width:640px){.kpis{grid-template-columns:repeat(3,1fr)}.card{padding:24px 26px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="eyebrow">Prairie Sun Energy · 40 MW solar farm</div>
+  <h1>Construction status</h1>
+  <ul class="meta">
+    <li><span class="overall">Overall red</span></li>
+    <li>As of <b>2026-10-16</b></li>
+    <li>For lenders and the owner · <b>Ingrid Valdez</b>, Construction Manager</li>
+  </ul>
+
+  <section class="card" id="glance">
+    <h2>Project at a glance</h2>
+    <div class="kpis">
+      <div class="kpi"><div class="k">Panels installed</div><div class="v">60,480 <small>of 96,000</small></div><div class="bar"><div style="width:63%"></div></div><div class="note">63.0%</div></div>
+      <div class="kpi"><div class="k">Inverters installed</div><div class="v">14 <small>of 20</small></div><div class="bar"><div style="width:70%"></div></div><div class="note">70%</div></div>
+      <div class="kpi"><div class="k">Budget spent</div><div class="v">$27.8M <small>of $41.5M</small></div><div class="bar"><div style="width:67%"></div></div><div class="note">67.0%</div></div>
+    </div>
+  </section>
+
+  <section class="card" id="pace">
+    <h2>Installation pace</h2>
+    <div class="chart">
+      <svg viewBox="0 0 600 300" role="img" aria-label="Panels installed per week over the last four weeks: 3,300, 3,050, 3,200 and 3,150, averaging 3,175. Required pace 5,074 a week; with a second crew about 5,375 a week.">
+        <g stroke="var(--grid)" stroke-width="1">
+          <line x1="60" y1="250" x2="580" y2="250"/>
+          <line x1="60" y1="173.33" x2="580" y2="173.33"/>
+          <line x1="60" y1="96.67" x2="580" y2="96.67"/>
+          <line x1="60" y1="20" x2="580" y2="20"/>
+        </g>
+        <g text-anchor="end">
+          <text x="52" y="255">0</text>
+          <text x="52" y="178">2k</text>
+          <text x="52" y="102">4k</text>
+          <text x="52" y="25">6k</text>
+        </g>
+        <rect x="90" y="123.5" width="70" height="126.5" rx="3" fill="var(--bar)"/>
+        <rect x="220" y="133.08" width="70" height="116.92" rx="3" fill="var(--bar)"/>
+        <rect x="350" y="127.33" width="70" height="122.67" rx="3" fill="var(--bar)"/>
+        <rect x="480" y="129.25" width="70" height="120.75" rx="3" fill="var(--bar)"/>
+        <g text-anchor="middle" class="val">
+          <text x="125" y="146" class="val">3,300</text>
+          <text x="255" y="156" class="val">3,050</text>
+          <text x="385" y="150" class="val">3,200</text>
+          <text x="515" y="152" class="val">3,150</text>
+        </g>
+        <line x1="60" y1="55.5" x2="580" y2="55.5" stroke="var(--red)" stroke-width="2.5" stroke-dasharray="7 5"/>
+        <line x1="60" y1="43.96" x2="580" y2="43.96" stroke="var(--green)" stroke-width="2.5"/>
+        <text x="66" y="77" class="ln" style="fill:var(--red)">Needed 5,074/wk</text>
+        <text x="574" y="37" text-anchor="end" class="ln" style="fill:var(--green)">With 2nd crew ≈5,375</text>
+        <g text-anchor="middle">
+          <text x="125" y="275">4 wks ago</text>
+          <text x="255" y="275">3 wks ago</text>
+          <text x="385" y="275">2 wks ago</text>
+          <text x="515" y="275">Last week</text>
+        </g>
+        <text x="320" y="296" text-anchor="middle" style="font-size:13px">Panels installed per week</text>
+      </svg>
+    </div>
+    <div class="facts">
+      <div><div class="v">3,175</div><div class="k">average per week, last 4 weeks</div></div>
+      <div class="bad"><div class="v">5,074</div><div class="k">per week needed to finish by 2026-12-04 (7 weeks)</div></div>
+      <div class="bad"><div class="v">2027-01-02</div><div class="k">panels finish at the current pace</div></div>
+    </div>
+  </section>
+
+  <section class="card" id="milestones">
+    <h2>Milestones</h2>
+    <table>
+      <thead><tr><th>Milestone</th><th>Date</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Site grading</td><td class="date">2026-05-22</td><td><span class="pill d">Done</span></td></tr>
+        <tr><td>Foundations and trackers</td><td class="date">2026-09-04</td><td><span class="pill d">Done</span></td></tr>
+        <tr><td>Panels installed</td><td class="date">2026-12-04 planned<span class="fc">2027-01-02 forecast</span></td><td><span class="pill r">Late</span></td></tr>
+        <tr><td>Substation witness test</td><td class="date">2026-11-19</td><td><span class="pill p">Planned</span></td></tr>
+        <tr><td>Energization</td><td class="date">2027-01-15</td><td><span class="pill l">At risk</span></td></tr>
+        <tr><td>Commercial operation</td><td class="date">2027-02-01</td><td><span class="pill p">Planned</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card attn" id="attention">
+    <h2>Needs attention</h2>
+    <ul class="math">
+      <li><span>A second crew starting <b>2026-10-26</b> would add about <b>2,200 panels a week</b>, taking the rate to about <b>5,375 a week</b>.</span></li>
+      <li><span>That is enough to finish by 2026-12-04 <b>only if no more than 2 weather days are lost</b>.</span></li>
+    </ul>
+    <div class="ask"><b class="big">Owner approval needed by 2026-10-21</b>$380,000 for the second crew.</div>
+  </section>
+
+  <footer>Prairie Sun Energy · 40 MW solar farm construction status · As of 2026-10-16</footer>
+</main>
+</body>
+</html>

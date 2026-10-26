@@ -1,0 +1,31 @@
+@title Experiment EXP-418: Checkout Button Copy
+@subtitle Growth Analytics at Marigold Home, 2026-09-08 to 2026-09-28
+
+kpi Total visitors | 144,607 | Sep 8 to Sep 28
+kpi Winner | Variant C | Pay securely now
+kpi Lift | +12.6% | vs control, good
+kpi Confidence | 99.7% | statistical
+
+# Results
+
+table = Variant,Visitors,Conversions,Conversion rate,Lift vs control,p-value; Control (Place order),48210,1832,3.80%,none,none; Variant B (Complete purchase),48095,1919,3.99%,+5.0%,0.14; Variant C (Pay securely now),48302,2068,4.28%,+12.6%,0.003
+
+# Conversion rate
+
+data cr = variant,rate; Control,3.80; Variant B,3.99; Variant C,4.28
+
+chart bar cr unit=% labels title="Conversion rate by variant"
+
+# Daily trend
+
+data daily = day,Control,Variant C; Sep 22,3.71,4.19; Sep 23,3.85,4.33; Sep 24,3.79,4.24; Sep 25,3.92,4.40; Sep 26,3.68,4.17; Sep 27,3.83,4.31; Sep 28,3.81,4.29
+
+chart line daily x=day y=Control,Variant C unit=% title="Daily conversion rate, final week"
+
+# Decision
+
+! Ship Variant C to 50 percent of traffic first.
+
+Variant B was not significant, with a p-value of 0.14. Average order value did not change: it was $87.40 for Variant C and $87.15 for control.
+
+Guardrail: the refund rate was 2.1 percent for control and 2.2 percent for Variant C, which is within tolerance.

@@ -1,0 +1,6 @@
+data m = month,revenue; Jan,100.5; Feb,120.25
+kpi Revenue | =m.revenue
+kpi Uptime | 99.9% | +0.1 | good
+kpi Incidents | 3 | | down from 5
+
+kpi Alone | 1

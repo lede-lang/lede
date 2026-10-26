@@ -1,0 +1,149 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "diagram",
+      "name": "arch",
+      "kind": "flow",
+      "dir": "LR",
+      "title": "Topology",
+      "nodes": [
+        {
+          "id": "api",
+          "label": "Payments API v2",
+          "kind": "svc",
+          "sub": "ECS · 6 tasks",
+          "focus": true
+        },
+        {
+          "id": "db",
+          "label": "Orders DB",
+          "kind": "db",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "user",
+          "label": "user",
+          "kind": null,
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "q",
+          "label": "q",
+          "kind": null,
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "cache",
+          "label": "cache",
+          "kind": null,
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "worker",
+          "label": "worker",
+          "kind": null,
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "a",
+          "label": "a",
+          "kind": null,
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "b",
+          "label": "b",
+          "kind": null,
+          "sub": null,
+          "focus": false
+        }
+      ],
+      "edges": [
+        {
+          "from": "user",
+          "to": "api",
+          "label": "",
+          "style": "solid",
+          "both": false,
+          "line": 4
+        },
+        {
+          "from": "api",
+          "to": "db",
+          "label": "sql",
+          "style": "solid",
+          "both": false,
+          "line": 4
+        },
+        {
+          "from": "api",
+          "to": "q",
+          "label": "",
+          "style": "solid",
+          "both": false,
+          "line": 5
+        },
+        {
+          "from": "api",
+          "to": "cache",
+          "label": "",
+          "style": "solid",
+          "both": false,
+          "line": 5
+        },
+        {
+          "from": "q",
+          "to": "worker",
+          "label": "async",
+          "style": "dashed",
+          "both": false,
+          "line": 6
+        },
+        {
+          "from": "a",
+          "to": "b",
+          "label": "",
+          "style": "solid",
+          "both": true,
+          "line": 7
+        }
+      ],
+      "groups": [
+        {
+          "id": "priv",
+          "label": "Private",
+          "members": [
+            "api",
+            "db"
+          ]
+        },
+        {
+          "id": "vpc",
+          "label": "VPC",
+          "members": [
+            "priv",
+            "q"
+          ]
+        },
+        {
+          "id": "group3",
+          "label": "Unnamed",
+          "members": [
+            "worker"
+          ]
+        }
+      ],
+      "notes": [],
+      "line": 1
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

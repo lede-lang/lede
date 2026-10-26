@@ -1,0 +1,54 @@
+{
+  "id": "48-returns-decision-flow",
+  "category": "architecture",
+  "title": "Greenmoor returns decision flow",
+  "brief": "Greenmoor Apparel's customer care team wants a one-page explanation of how a return request gets decided, current as of 2026-10-12, so new agents stop asking the same questions. Under \"Decision flow\", show the path a request takes. It starts at \"Return requested\", then asks \"Within 30 days of delivery?\". If no, it goes to \"Decline return\". If yes, it asks \"Final-sale item?\"; yes goes to \"Decline return\" and no goes to \"Issue prepaid label\". After the label, \"Item received at warehouse\", then \"Inspection passes?\". If inspection fails it goes to \"Offer store credit at 50 percent\". If it passes, ask \"Order value over 200 dollars?\"; yes goes to \"Returns Lead review\" and no goes to \"Refund to original payment\". Returns Lead review also ends at \"Refund to original payment\" labeled \"approved\". Then \"Service levels\", the target for each step: label issued within 1 business hour of request; inspection within 2 business days of arrival; refund posted within 3 business days of inspection; Returns Lead review within 1 business day. Finish with a short \"Exceptions\" section covering: damaged-on-arrival items skip the 30-day and final-sale checks, gift returns always get store credit, and customers with more than 4 returns in 90 days are routed to the Returns Lead.",
+  "checklist": {
+    "sections": [
+      "Decision flow",
+      "Service levels",
+      "Exceptions"
+    ],
+    "visible": [
+      "Return requested",
+      "Within 30 days of delivery?",
+      "Decline return",
+      "Final-sale item?",
+      "Issue prepaid label",
+      "Item received at warehouse",
+      "Inspection passes?",
+      "Offer store credit at 50 percent",
+      "Returns Lead review",
+      "Refund to original payment",
+      "approved"
+    ],
+    "values": [
+      "30",
+      "200",
+      "1 business hour",
+      "2 business days",
+      "3 business days",
+      "1 business day",
+      "4",
+      "90",
+      "2026-10-12"
+    ]
+  },
+  "needs": [
+    "diagram",
+    "table",
+    "list"
+  ],
+  "edit": {
+    "request": "Change the window from 30 days to 45 days everywhere, and make the high-value review threshold 300 dollars instead of 200.",
+    "expect_visible": [
+      "45"
+    ],
+    "expect_values": [
+      "300"
+    ],
+    "expect_absent": [
+      "30 days"
+    ]
+  }
+}

@@ -1,0 +1,30 @@
+@title Month-end close runbook
+@subtitle Tallow & Brook Distribution, finance operations. Version dated 2026-10-01
+@author Controller. Goal: close the books within 5 working days
+
+## Calendar
+1. Working day 1: cut off sales and purchasing at 17:00, and finish bank reconciliations.
+2. Working day 2: post accruals and depreciation, and reconcile inventory to the warehouse count.
+3. Working day 3: eliminate intercompany balances between the three legal entities, and reconcile payroll.
+4. Working day 4: review variances.
+5. Working day 5: the Controller signs off, and the books lock at 12:00.
+
+!!! The books lock at 12:00 on day 5. Nothing is posted after that without an approved reopen request.
+
+## Before sign-off
+- [ ] Every balance sheet account is reconciled.
+- [ ] Every reconciling difference is under $50, or explained.
+- [ ] Each variance over 5% and over $10,000 has a written explanation.
+- [ ] Intercompany balances net to zero.
+- [ ] The trial balance debits equal credits.
+
+## If a deadline slips
+1. Tell the Controller the same day.
+2. Decide whether the slip delays sign-off. If day 5 will be missed by more than 1 working day, notify the CFO, Valentina Sokolov.
+3. Do not post late entries after the lock without a reopen request signed by the Controller.
+4. Record the cause in the close log.
+
+## Contacts
+- Controller: Marcus Eldridge
+- Accounts payable lead: Noor Haddad
+- CFO: Valentina Sokolov

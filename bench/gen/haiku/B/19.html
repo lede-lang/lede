@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Runbook: Settlement Consumer Lag Alert</title>
+<style>
+:root{--page:#f3f5f6;--card:#fff;--ink:#1c2427;--mute:#58656b;--edge:#d3dbde;--teal:#14707a;--teal-soft:#e2f1f3;--amber:#a86200;--amber-bg:#fff4e0;--amber-bd:#d9861e;--amber-ink:#5a3300;--red:#b03a2e;--red-soft:#fbe9e6;--note-bg:#ecf3fb;--note-bd:#3d6db3;--note-ink:#1d3a66;}
+@media (prefers-color-scheme: dark){
+:root:not([data-theme="light"]){--page:#0d1316;--card:#151d21;--ink:#dfe8eb;--mute:#97a6ad;--edge:#27343a;--teal:#5ac5d0;--teal-soft:#132a2f;--amber:#f0a94a;--amber-bg:#352508;--amber-bd:#e09a3c;--amber-ink:#ffdba6;--red:#ff8b7d;--red-soft:#3a1b17;--note-bg:#15233a;--note-bd:#79a2de;--note-ink:#d5e4ff;}
+}
+:root[data-theme="dark"]{--page:#0d1316;--card:#151d21;--ink:#dfe8eb;--mute:#97a6ad;--edge:#27343a;--teal:#5ac5d0;--teal-soft:#132a2f;--amber:#f0a94a;--amber-bg:#352508;--amber-bd:#e09a3c;--amber-ink:#ffdba6;--red:#ff8b7d;--red-soft:#3a1b17;--note-bg:#15233a;--note-bd:#79a2de;--note-ink:#d5e4ff;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 56px}
+.tag{display:inline-block;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--teal);background:var(--teal-soft);padding:3px 9px;border-radius:999px}
+h1{font-size:1.6rem;line-height:1.25;margin:10px 0 4px}
+.meta{color:var(--mute);font-size:.92rem;margin:0}
+h2{font-size:1.12rem;margin:30px 0 10px;padding-bottom:4px;border-bottom:1px solid var(--edge)}
+.card{background:var(--card);border:1px solid var(--edge);border-radius:10px;padding:12px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.95rem;min-width:460px}
+th,td{padding:9px 8px;text-align:left;border-bottom:1px solid var(--edge)}
+th{color:var(--mute);font-weight:600;font-size:.84rem}
+td.n{text-align:right;font-variant-numeric:tabular-nums}
+svg{display:block;width:100%;min-width:600px;height:auto}
+svg text{font-size:12.5px;fill:var(--ink)}
+svg .m{fill:var(--mute);font-size:11.5px}
+svg .node{fill:var(--card);stroke:var(--teal);stroke-width:1.4}
+svg .act{fill:var(--teal-soft);stroke:var(--teal);stroke-width:1.4}
+svg .done{fill:var(--card);stroke:var(--teal);stroke-width:2}
+svg .ln{fill:none;stroke:var(--mute);stroke-width:1.5}
+svg .ah{fill:var(--mute)}
+ol{padding-left:22px}
+li{margin:8px 0}
+.warn{margin:18px 0;padding:14px 16px;background:var(--red-soft);border-left:5px solid var(--red);color:var(--ink);border-radius:8px}
+.warn strong{display:block;margin-bottom:2px;color:var(--red)}
+.esc{margin:16px 0 0;padding:14px 16px;background:var(--amber-bg);border-left:4px solid var(--amber-bd);color:var(--amber-ink);border-radius:8px}
+.esc strong{display:block;margin-bottom:2px}
+.note{margin-top:20px;padding:12px 16px;background:var(--note-bg);border-left:4px solid var(--note-bd);color:var(--note-ink);border-radius:8px;font-size:.95rem}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <span class="tag">Runbook · Streaming team</span>
+  <h1>Consumer lag alert: settlement-consumer on payments-events</h1>
+  <p class="meta">Corvid Payments · Applies to the settlement-consumer group</p>
+
+  <h2>Alert thresholds</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>Severity</th><th class="n">Lag (messages)</th><th>Duration</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>Warning</td><td class="n">50,000</td><td>10 minutes</td><td>Slack only</td></tr>
+        <tr><td>Critical</td><td class="n">250,000</td><td>5 minutes</td><td>Page on-call</td></tr>
+        <tr><td>Emergency</td><td class="n">1,000,000</td><td>Any</td><td>Page on-call and the Streaming lead</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Triage flow</h2>
+  <div class="card">
+  <svg viewBox="0 0 760 320" role="img" aria-label="Triage decision diagram. Lag alert fires, then check whether consumers are running. If not, restart consumers. If yes, check for partition skew. Skew means rebalance partitions; no skew means scale out consumers. Restart, rebalance and scale out each lead to lag recovering.">
+    <defs>
+      <marker id="triageArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path class="ah" d="M0,0 L10,5 L0,10 z"/>
+      </marker>
+    </defs>
+
+    <rect class="node" x="20" y="150" width="130" height="46" rx="8"/>
+    <text x="85" y="177" text-anchor="middle">Lag alert fires</text>
+
+    <rect class="node" x="200" y="150" width="140" height="46" rx="8"/>
+    <text x="270" y="177" text-anchor="middle">Consumers running?</text>
+
+    <rect class="act" x="200" y="40" width="140" height="46" rx="8"/>
+    <text x="270" y="67" text-anchor="middle">Restart consumers</text>
+
+    <rect class="node" x="400" y="150" width="140" height="46" rx="8"/>
+    <text x="470" y="177" text-anchor="middle">Partition skew?</text>
+
+    <rect class="act" x="400" y="40" width="140" height="46" rx="8"/>
+    <text x="470" y="67" text-anchor="middle">Rebalance partitions</text>
+
+    <rect class="act" x="400" y="260" width="140" height="46" rx="8"/>
+    <text x="470" y="287" text-anchor="middle">Scale out consumers</text>
+
+    <rect class="done" x="610" y="150" width="130" height="46" rx="8"/>
+    <text x="675" y="177" text-anchor="middle">Lag recovering</text>
+
+    <!-- flow -->
+    <line class="ln" x1="150" y1="173" x2="200" y2="173" marker-end="url(#triageArrow)"/>
+
+    <line class="ln" x1="270" y1="150" x2="270" y2="86" marker-end="url(#triageArrow)"/>
+    <text class="m" x="278" y="122">no</text>
+
+    <line class="ln" x1="340" y1="173" x2="400" y2="173" marker-end="url(#triageArrow)"/>
+    <text class="m" x="370" y="166" text-anchor="middle">yes</text>
+
+    <line class="ln" x1="470" y1="150" x2="470" y2="86" marker-end="url(#triageArrow)"/>
+    <text class="m" x="478" y="122">yes</text>
+
+    <line class="ln" x1="470" y1="196" x2="470" y2="260" marker-end="url(#triageArrow)"/>
+    <text class="m" x="478" y="232">no</text>
+
+    <path class="ln" d="M 270 40 V 20 H 675 V 150" marker-end="url(#triageArrow)"/>
+    <path class="ln" d="M 540 63 H 675 V 150" marker-end="url(#triageArrow)"/>
+    <path class="ln" d="M 540 283 H 675 V 196" marker-end="url(#triageArrow)"/>
+  </svg>
+  </div>
+
+  <h2>Steps</h2>
+  <ol>
+    <li>Check the consumer pods in the streaming namespace.</li>
+    <li>Check per-partition lag.</li>
+    <li>If one partition holds more than 40 percent of the lag, treat it as skew.</li>
+    <li>Scale the deployment to at most 24 replicas, because the topic has 24 partitions.</li>
+  </ol>
+
+  <div class="warn" role="alert">
+    <strong>Never reset consumer offsets to latest</strong>
+    Unprocessed settlements would be skipped, and they would have to be reconciled by hand.
+  </div>
+
+  <div class="esc" role="note">
+    <strong>Escalation</strong>
+    If lag is still growing after 30 minutes, escalate to the Streaming lead.
+  </div>
+</main>
+</body>
+</html>

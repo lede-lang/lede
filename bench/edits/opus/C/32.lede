@@ -1,0 +1,26 @@
+@title Digital Support Summary
+@subtitle January to September 2026
+@author Customer Support (digital channels), Gullwing Airlines
+
+kpi Tickets | 18,420 | September
+kpi Median first response | 2.4 h | September
+kpi CSAT | 4.3 / 5 | September
+kpi Self-service deflection | 37% | September
+
+# Ticket volume
+data vol = month,tickets; Jan,15210; Feb,14380; Mar,16950; Apr,17210; May,16480; Jun,21740; Jul,23960; Aug,20110; Sep,18420; Oct,17260
+chart line vol title="Tickets per month"
+
+# Tickets by category
+data cat = category,tickets; Refunds,5130; Booking changes,4470; Baggage,3260; Loyalty points,2410; App login,1840; Other,1310
+chart hbar cat labels title="September tickets by category"
+
+# CSAT by channel
+table = Channel,Tickets,Median first response (h),CSAT; Chat,"8,920",0.3,4.5; Email,"6,140",**6.8**,**3.9**; Phone callback,"2,210",1.1,4.4; Social,"1,150",3.2,4.0; WhatsApp,940,0.5,4.6
+
+# Notes
+- The June and July spike came from the summer schedule changes.
+- The new refund self-service form launched on 2026-08-12.
+- Email response times remain the weakest point.
+
+!! Refunds are still the largest category, at 5,130 tickets in September, despite the new form.

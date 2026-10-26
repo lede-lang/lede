@@ -1,0 +1,136 @@
+@title Label directions for the whole range
+@subtitle Four visual directions, each applied to all 12 beers, with your three hard constraints checked
+@width wide
+
+Four directions that differ in mood, not just in colour: heritage, loud, calm and handmade. Each one is applied to every beer below, so you can read across and pick one or steal pieces. Everything here is a written spec (colours, type, layout, ABV treatment, per-beer treatment). Hex values and sizes are my proposals to be proofed, because your current navy and brass codes were not supplied.
+
+kpi SKUs | 12 | 11 selling, 1 launching Dec 1
+kpi Q3 revenue | $603,300 | 11 selling SKUs
+kpi Top three SKUs | 62% of revenue | Dock Street, Harbour Lights, Widow's Peak
+kpi ABV range | 0.5% to 10.4% | on one shelf
+
+## The range today
+
+data range = SKU,Beer name,ABV (%),Pack,Units sold (Q3),Revenue ($),Notes; HB-001,Harbour Lights Pale Ale,5.2,6 x 355 mL,"18,420","110,520","flagship; people recognise the lighthouse"; HB-002,Widow's Peak IPA,6.8,6 x 355 mL,"12,905","90,335","name is a pun, “Widow's” apostrophe keeps getting lost"; HB-003,"Tuesday Stout (Oatmeal, Milk)",4.9,4 x 473 mL,"6,310","44,170",
+data range += HB-004,Salt & Vinegar Gose,4.1,4 x 473 mL,"2,240","17,920","love it or hate it; stockists want a warning on the label?"; HB-005,Dock Street Lager,4.6,12 x 355 mL,"24,880","174,160","volume driver, bars and grocery"; HB-006,"“Last Call” Barleywine",10.4,500 mL,910,"13,650","gift buyers; vintage-dated each year"
+data range += HB-007,Pumpkin Patch Ale (seasonal),5.5,6 x 355 mL,"7,780","54,460","Sep to Nov only; always sells out in 5 weeks"; HB-008,Midwinter Porter (seasonal),6.0,4 x 473 mL,,,launches Dec 1; HB-009,Low Tide Session (alcohol-free),0.5,6 x 355 mL,"3,150","22,050","new; needs to NOT look like a sad diet beer"
+data range += HB-010,"Brewer's Choice, Vol. 4: Hazy; Unfiltered",7.1,473 mL,"1,480","11,840","one-off collab, art by local illustrator"; HB-011,Fisherman's Wheat,4.8,6 x 355 mL,"5,020","33,640",summer only in practice; HB-012,Cellar Door Amber,5.0,6 x 355 mL,"4,365","30,555","the quiet one; nobody can describe it"
+
+table range
+
+data rev = beer,revenue; Dock Street Lager,174160; Harbour Lights Pale Ale,110520; Widow's Peak IPA,90335; Pumpkin Patch Ale (seasonal),54460; "Tuesday Stout (Oatmeal, Milk)",44170; Fisherman's Wheat,33640; Cellar Door Amber,30555; Low Tide Session (alcohol-free),22050; Salt & Vinegar Gose,17920; "“Last Call” Barleywine",13650; "Brewer's Choice, Vol. 4: Hazy; Unfiltered",11840
+
+chart hbar rev unit=$ title="Q3 revenue by beer (Midwinter Porter not yet on sale)"
+
+Three beers carry 62% of revenue, so a direction has to be right on Dock Street, Harbour Lights and Widow's Peak first. The longest names are HB-010 (41 characters), HB-009 (31) and HB-003 (29), so every direction needs a name block that can take three lines.
+
+## Rules every direction follows
+
+1. **ABV:** numerals at least 10 mm tall on a 355 mL can, in the same place and at the same size on every SKU, including 0.5% and 10.4%. This is a proposal. Print a proof and read it at arm's length before committing.
+2. **Names never crop:** the name sits at least 5 mm inside trim and seam, uses a real typographic apostrophe and real curly quotes, and breaks between words only.
+3. **Seasonals:** they change in shape or value as well as colour, so they still stand out in a one-colour glance down the shelf.
+
+## The four directions at a glance
+
+cards
+
+### A. Lighthouse Almanac
+- **Mood:** heritage, trustworthy, bookish.
+- **Look:** engraved line art on an off-white panel, brass ABV roundel.
+- **Brand colours:** kept (navy, brass, off-white).
+- **Best at:** the flagship and the gift beers.
+- **Weak at:** may read as a polish of today's label rather than a change.
+
+### B. Signal Flags
+- **Mood:** loud, playful, confident.
+- **Look:** each beer is a maritime signal flag of flat colour blocks, with a huge ABV number.
+- **Brand colours:** dropped.
+- **Best at:** ABV legibility and shelf impact.
+- **Weak at:** a whole range this bold makes seasonals harder to separate.
+
+### C. Quiet Tide
+- **Mood:** calm, modern, restrained.
+- **Look:** pale tonal labels, lots of space, a fine waterline whose height shows ABV.
+- **Brand colours:** dropped for a muted coastal set.
+- **Best at:** Cellar Door and the seasonals (the only dark labels).
+- **Weak at:** ABV from arm's length and Low Tide looking like a diet beer.
+
+### D. Fish Market Riso
+- **Mood:** irreverent, handmade, witty.
+- **Look:** two-spot-colour overprint on cream, hand-lettered names, each pun drawn literally.
+- **Brand colours:** navy kept as the ink, brass dropped.
+- **Best at:** the pun names and the illustrator collab.
+- **Weak at:** hand-lettering is where cropping and lost apostrophes happen.
+
+## Hard constraints, side by side
+
+table = Constraint,A. Lighthouse Almanac,B. Signal Flags,C. Quiet Tide,D. Fish Market Riso; **ABV legible from arm's length**,Ready,Ready,At risk,Ready; **Seasonals stand out from core**,Ready,At risk,Ready,Ready; **Pun names not cropped**,Ready,Ready,Ready,At risk; **Low Tide does not look like a diet beer**,Ready,Ready,At risk,Ready; **Keeps navy and brass**,Ready,No-go,No-go,At risk
+
+## Direction A: Lighthouse Almanac
+
+Heritage. Engraved line art, a fixed grid, and the current navy, brass and off-white tightened into a system. Core labels are an off-white panel on a navy body with a brass ABV roundel at lower right. Seasonals flip to a brass field with navy ink and a notched season ribbon, so they are the only brass-field labels on the shelf.
+
+table = Role,Hex,Use; Navy,`#14243F`,Body and ink; Brass,`#B88A3B`,ABV roundel and seasonal field; Off-white,`#F4EFE3`,Label panel
+
+Type: a high-contrast serif for names (Playfair Display or similar), a narrow grotesque for pack size and small print.
+
+data dirA = SKU,Beer,Treatment; HB-001,Harbour Lights Pale Ale,"The largest lighthouse engraving in the range. Beam lines run down to the ABV roundel (5.2%). Keeps the equity people already recognise."; HB-002,Widow's Peak IPA,"Engraved widow's walk roofline. The apostrophe is drawn as an oversized brass mark with a 6 mm safe margin, so it cannot be lost at the seam. Roundel 6.8%."; HB-003,"Tuesday Stout (Oatmeal, Milk)","The only navy panel in core, with off-white ink and an engraved oat sheaf. Tuesday Stout on two lines, the bracket on its own small line. Roundel 4.9%."; HB-004,Salt & Vinegar Gose,"Pale-brass panel with an engraved salt crystal and a large brass ampersand. A taste line on the face (Salty. Sour. Decide in one sip.) answers the stockists' request without a warning triangle. Roundel 4.1%."
+data dirA += HB-005,Dock Street Lager,"An engraved street-sign plate carries the name. The 12-pack carton repeats the ABV roundel on all four sides because it sells in bars and in grocery. Roundel 4.6%."; HB-006,"“Last Call” Barleywine","Matte navy bottle, brass foil, engraved bell. The curly quotes stay. A ledger-style vintage plate is a separate swappable element, so only that plate changes each year. Roundel 10.4% at the same numeral size despite the extra character."; HB-007,Pumpkin Patch Ale (seasonal),"Seasonal system: brass field, navy ink, engraved pumpkin, notched ribbon reading Autumn, Sep to Nov. Room on the ribbon for a sold-out sticker, since it sells out in 5 weeks. Roundel 5.5%."; HB-008,Midwinter Porter (seasonal),"Same seasonal system so the pair reads as a set: brass field, navy ink, engraved harbour in snow, ribbon reading Winter, from Dec 1. Roundel 6.0%."
+data dirA += HB-009,Low Tide Session (alcohol-free),"Off-white panel, full-strength navy line art of a harbour at low water, full-weight type. Roundel 0.5% at the same size as every other beer. No light cues: no thin type, no pastel."; HB-010,"Brewer's Choice, Vol. 4: Hazy; Unfiltered","A fixed frame (navy border, brass Vol. 4 tab, ABV roundel 7.1%) around a full-bleed window for the local illustrator's art. Name on three lines: Brewer's Choice / Vol. 4 / Hazy; Unfiltered."; HB-011,Fisherman's Wheat,"Off-white panel, engraved net and sun, with a small brass Summer tab. Core framing, since it is only summer in practice. Roundel 4.8%."; HB-012,Cellar Door Amber,"An engraved arched door slightly ajar with a brass glow. One descriptor line from the head brewer (not supplied) gives the quiet one something to say. Roundel 5.0%."
+
+table dirA
+
+## Direction B: Signal Flags
+
+Loud and geometric. Each beer is a flag of three or four flat colour blocks with no illustration. A huge ABV number (about 18 mm tall) sits top left as part of the flag. The name runs along the bottom in a heavy condensed sans on a plain band. Core labels are rectangular flags. Seasonals are swallowtail flags (notched edge) that wrap the whole can with a fluorescent edge band.
+
+table = Role,Hex,Use; Signal red,`#D8352A`,Flag blocks; Signal yellow,`#F2C230`,Flag blocks; Signal blue,`#1F4FA3`,Flag blocks; Ink,`#101418`,Name band and numerals; White,`#FFFFFF`,Blocks and numerals; Fluoro orange,`#FF7A00`,Autumn edge band; Fluoro cyan,`#00D2FF`,Winter edge band
+
+Type: a heavy condensed grotesque, all caps for names, tabular numerals for ABV.
+
+data dirB = SKU,Beer,Treatment; HB-001,Harbour Lights Pale Ale,"Blue field, white band, yellow disc for the lamp. ABV 5.2 in white on the blue. The disc becomes the most recognisable shape in the range."; HB-002,Widow's Peak IPA,"Red and black triangle for the peak on white. The apostrophe is a cut-out black wedge in the name band, drawn at cap height so it cannot vanish. ABV 6.8 in white on red."; HB-003,"Tuesday Stout (Oatmeal, Milk)","Black field with one yellow stripe. ABV 4.9 in yellow. Tuesday Stout large, the bracket on its own small line."; HB-004,Salt & Vinegar Gose,"Diagonal split in yellow and white. ABV 4.1 in black. The band carries a one-line taste cue (Love it or hate it) in place of a warning."
+data dirB += HB-005,Dock Street Lager,"Plain red and white halves, the simplest flag. The ABV 4.6 is set largest, because this pack sells on a bar shelf and in a grocery aisle, and is repeated on the carton sides."; HB-006,"“Last Call” Barleywine","Black and yellow chequer cut to a single square, gold ink, bottle only. ABV 10.4 at the same height as the others. The vintage year is a flag-style number block in the corner that changes yearly."; HB-007,Pumpkin Patch Ale (seasonal),"Seasonal: swallowtail flag in yellow and red with a fluorescent orange edge band that reads Sep to Nov. ABV 5.5 in black."; HB-008,Midwinter Porter (seasonal),"Seasonal: swallowtail flag in blue and white with a fluorescent cyan edge band that reads From Dec 1. ABV 6.0 in blue."
+data dirB += HB-009,Low Tide Session (alcohol-free),"A full-strength yellow and blue flag, the opposite of a pastel diet look. ABV 0.5 at the same height as 10.4, so it is not hidden."; HB-010,"Brewer's Choice, Vol. 4: Hazy; Unfiltered","Exception flag: white field with a hard black border, and the illustrator's art in a window on the flag. ABV 7.1 stays outside the art. Name on three lines."; HB-011,Fisherman's Wheat,"Yellow and blue vertical halves with a small sun-yellow Summer corner. ABV 4.8 in white."; HB-012,Cellar Door Amber,"The quiet one made loud: a single tall yellow door-shaped block on blue, nothing else. ABV 5.0."
+
+table dirB
+
+## Direction C: Quiet Tide
+
+Calm and modern. Pale tonal labels, generous empty space, small precise type. A fine horizontal waterline works like a tide gauge: its height shows the ABV, and the number sits large beneath it. Core labels are always pale with dark text. Seasonals are the only deep, full-wrap labels, so they separate by value contrast, not just hue.
+
+table = Role,Hex,Use; Fog,`#CAD2C5`,Core tone; Mist,`#DCE3E6`,Core tone; Oat,`#D9CFB8`,Core tone; Sand,`#E9E2D3`,Core tone and seasonal text; Stone,`#C9C5BD`,Core tone; Slate,`#2F3E46`,Text on core; Rust,`#B5532F`,Autumn seasonal field; Night,`#1B1F23`,Winter seasonal field
+
+Type: a humanist sans in sentence case. The typeface must have an apostrophe with a clear curl.
+
+data dirC = SKU,Beer,Treatment; HB-001,Harbour Lights Pale Ale,"Fog tone. The lighthouse is reduced to one fine vertical line and a lamp dot. Waterline at 5.2, numeral 5.2 beneath it."; HB-002,Widow's Peak IPA,"Mist tone. The apostrophe is set at 1.4 times size in a typeface with an unmistakable curl. Name on two lines with 8 mm margins. Waterline at 6.8."; HB-003,"Tuesday Stout (Oatmeal, Milk)","Oat tone, which suits an oatmeal stout, with Slate text. The bracket is a small subline. Waterline at 4.9."; HB-004,Salt & Vinegar Gose,"Sand tone with a fine salt-grain texture and the line Salty. Sour. in place of a warning. Waterline at 4.1."
+data dirC += HB-005,Dock Street Lager,"Stone tone. The only bold-weight name in core, since it is the volume driver. The carton shows the waterline at large scale. Waterline at 4.6."; HB-006,"“Last Call” Barleywine","Oat tone with a deboss and a Rust vintage stamp. Waterline near the top at 10.4, and the numeral is the largest in the range."; HB-007,Pumpkin Patch Ale (seasonal),"Rust full wrap with Sand text. The numeral 5.5 is reversed out in Sand. The word autumn in lowercase, nothing else."; HB-008,Midwinter Porter (seasonal),"Night full wrap with Sand text. The numeral 6.0 is reversed out. The word winter in lowercase."
+data dirC += HB-009,Low Tide Session (alcohol-free),"Sand tone with Slate text at full weight and the numeral 0.5 as large as the others. The waterline sits very low, which is the idea but also the risk: it can read as empty. This is the weakest fit in this direction."; HB-010,"Brewer's Choice, Vol. 4: Hazy; Unfiltered","A pale frame with wide margins around the illustrator's art, which becomes the loudest thing on the shelf. Name on three lines. Waterline at 7.1."; HB-011,Fisherman's Wheat,"Sand tone with a pale yellow stripe and a small word summer. Waterline at 4.8."; HB-012,Cellar Door Amber,"Mist tone with a single arch outline for the door. The quiet one gets the quiet system, so it fits this direction best. Waterline at 5.0."
+
+table dirC
+
+## Direction D: Fish Market Riso
+
+Irreverent and handmade. Two spot colours overprinted on cream paper, with visible grain and slight misregistration. Names are hand-lettered but kept straight on a baseline, never tilted across the seam. Each pun is drawn literally as a small cartoon. ABV sits in a rubber-stamp circle with a white knockout and numerals at least 10 mm tall. Seasonals add a third spot colour and a sticker burst.
+
+table = Role,Hex,Use; Cream,`#F6EFE0`,Paper; Fluoro orange,`#FF5A36`,Spot colour 1; Teal,`#0E7C86`,Spot colour 2; Navy ink,`#14243F`,Line art and names; Fluoro lime,`#C8E629`,Seasonal third spot
+
+Type: hand-lettered names built on a sturdy sign-painter's alphabet, with a real apostrophe drawn in.
+
+data dirD = SKU,Beer,Treatment; HB-001,Harbour Lights Pale Ale,"Teal and navy lighthouse. The orange beam overprints the sky, making a third colour where they cross. Stamp 5.2%."; HB-002,Widow's Peak IPA,"A cartoon widow in a rooftop lookout, the peak as the roof. The apostrophe is a big hand-inked orange blob, larger than any letter, so it cannot get lost. Stamp 6.8%."; HB-003,"Tuesday Stout (Oatmeal, Milk)","A sleepy calendar page for Tuesday, with an oat and a milk doodle. Name in orange on a navy flood. Stamp 4.9%."; HB-004,Salt & Vinegar Gose,"A chip-paper cone doodle, the ampersand drawn as a fish. A stamped joke warning (Love it or hate it) answers the stockists in the brand's own voice. Stamp 4.1%."
+data dirD += HB-005,Dock Street Lager,"A street-sign doodle in two colours, the simplest and most legible label. Big stamp, repeated on the carton. Stamp 4.6%."; HB-006,"“Last Call” Barleywine","A hand-lettered Last Call on a bar bell, with the quote marks drawn large. Navy flood and orange. Vintage year hand-stamped each batch. Stamp 10.4%."; HB-007,Pumpkin Patch Ale (seasonal),"Seasonal: lime third spot, a pumpkin with a face, and a sticker burst reading Autumn, Sep to Nov. Stamp 5.5%."; HB-008,Midwinter Porter (seasonal),"Seasonal: lime third spot, a snowy harbour, and a sticker burst reading Dec 1. Stamp 6.0%."
+data dirD += HB-009,Low Tide Session (alcohol-free),"Full-strength orange and teal, a wave doodle with a grin. Nothing pastel or thin. Stamp 0.5% as large as the rest."; HB-010,"Brewer's Choice, Vol. 4: Hazy; Unfiltered","Frame only: cream border, a hand-lettered Vol. 4 stamp and the ABV stamp 7.1%. The local illustrator's art replaces our riso illustration, which is the point of the collab."; HB-011,Fisherman's Wheat,"A fisherman in a boat in orange and teal, with an ear of wheat for a fishing rod. Stamp 4.8%."; HB-012,Cellar Door Amber,"Teal and navy door with an oversized keyhole as its one visual joke. Stamp 5.0%."
+
+table dirD
+
+## What to steal from each
+
+table = Piece,From,Why; ABV roundel in a fixed spot,A,Same place and size on every SKU makes the range read as a family; Big flag numeral,B,The strongest ABV legibility of any direction; Tide-gauge waterline,C,Turns ABV into a picture as well as a number; ABV stamp with white knockout,D,Legible on any art; Swappable vintage plate,A,Last Call changes only one element a year; Swallowtail shape,B,Seasonals separate by shape as well as colour; Dark-only seasonals,C,Separation by value works in a one-colour glance; Illustrator frame,A and D,Gives Brewer's Choice a fixed frame so every volume still looks like it belongs; Drawn-in apostrophe,D,Fixes the Widow's problem by making it a feature
+
+## Check before anything is printed
+
+- **Low Tide at 0.5%:** the name says alcohol-free. Many regulators reserve that wording for lower strengths than 0.5%, and use non-alcoholic or low-alcohol at this level. Confirm the wording with your regulator.
+- **Gose warning:** the notes do not say what the stockists want warned about. No direction here includes mandatory text zones (regulatory statements, allergens, deposit marks). Tuesday Stout has Milk in its name, so check the allergen rules.
+- **Fisherman's Wheat** is summer only in practice, but you named only two seasonals. I treated it as core with a small summer tag.
+- **Midwinter Porter** has no sales yet. Pumpkin Patch's Q3 figure covers only September.
+- **Can or bottle** is not stated per SKU. Sizes above assume a 355 mL can, and Last Call is a bottle.
+- **Proof the ABV sizes** at arm's length, and proof the colours on the real can and label stock. Fluorescent inks and riso overprint may need a specialist printer.

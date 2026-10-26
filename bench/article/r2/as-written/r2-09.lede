@@ -1,0 +1,64 @@
+@title From Donation to Tax Receipt
+@subtitle How a gift is recorded, approved, receipted and claimed at Riverside Literacy Trust
+
+Every gift ends the same way: it is entered in the donor database, checked against two rules (size and address), receipted, and, where it qualifies, added to the Gift Aid claim. This page follows one gift through every branch.
+
+kpi Gifts last year | 6,420
+kpi Total given | £318,775
+kpi Carried Gift Aid | 38% | of gifts | bar
+
+## The whole process
+diagram flow dir=TB title="Donation to receipt"
+flow: online "Online gift" user "Instant, via payment provider"
+flow: cheque "Cheque" user "Office enters it within 3 working days"
+flow: event "Event cash" user "Safe, counted by two people next morning"
+flow: entry "Enter in donor database" db "Always with a gift type" focus
+flow: big "£250 or more?" decision
+flow: fm "Finance manager approves" team "Target 2 working days"
+flow: auto "Receipt is automatic" svc
+flow: addr "Address on record?" decision
+flow: chase "Chase list" queue "Reviewed Fridays, receipt waits"
+flow: email "Donor has email?" decision
+flow: sendmail "Email the receipt" svc
+flow: post "Post the receipt" svc
+flow: ga "UK donor and ticked Gift Aid?" decision
+flow: claim "Monthly Gift Aid claim" ext "Submitted on the 5th, 25% on top"
+flow: none "Nothing claimed" ext
+flow: online -> entry
+flow: cheque -> entry
+flow: event -> entry
+flow: entry -> big
+flow: big -> fm : yes
+flow: big -> auto : no
+flow: fm -> addr
+flow: auto -> addr
+flow: addr -> chase : no
+flow: chase --> addr : address found
+flow: addr -> email : yes
+flow: email -> sendmail : yes
+flow: email -> post : no
+flow: addr -> ga : yes
+flow: ga -> claim : yes
+flow: ga -> none : no
+flow: legend
+
+## Step by step
+1. The gift arrives. Online gifts land instantly through the payment provider. Cheques are entered by the office within 3 working days. Event cash goes in the safe and is counted by two people the next morning.
+2. Every gift is entered in the donor database with a gift type, whichever route it took.
+3. Size decision: if the gift is £250 or more, the finance manager approves it before a receipt goes out (target 2 working days). Under £250, the receipt is automatic.
+4. Address check: if the address is missing, the gift goes to the chase list, which is reviewed on Fridays, and the receipt waits until the address is found.
+5. Delivery: receipts are emailed, or posted if there is no email address.
+6. Gift Aid decision: if the donor is in the UK and ticked Gift Aid, we add the gift to the monthly claim submitted on the 5th. The claim is worth 25% on top of the gift, so a £100 gift brings in £25. Otherwise nothing is claimed.
+
+## Timing at a glance
+table = Stage,Who,How long; Online gift arrives,Payment provider,Instant; Cheque entered,Office,Within 3 working days; Event cash counted,Two people,Next morning; Approval of gifts of £250 or more,Finance manager,Target 2 working days; Chase list review,Office,Every Friday; Gift Aid claim,Finance,The 5th of each month
+
+## Examples
+- A £40 online gift from a UK donor who ticked Gift Aid: entered instantly, receipt is automatic and emailed, and £10 is claimed on the next claim on the 5th.
+- A £500 cheque from a donor with no email: entered within 3 working days, approved by the finance manager, receipt posted.
+- Event cash with no address on the form: counted next morning and entered, then it goes on the chase list and the receipt waits.
+
+## The numbers
+Last year we processed 6,420 gifts totalling £318,775, an average of about £50 a gift. 38% of gifts carried Gift Aid, so more than a third of the gifts you enter will end up on the monthly claim.
+
+! Always enter the gift type. Every later step starts from the database record.

@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monorepo Deployment Pipeline — Quillstone Software</title>
+<style>
+:root {
+  --bg: #f6f6f9;
+  --card: #ffffff;
+  --fg: #1b1b24;
+  --fg-2: #5f6070;
+  --rule: #e0e0e8;
+  --grid: #ebebf1;
+  --node-fill: #ffffff;
+  --node-edge: #8e8fa3;
+  --gate-fill: #fff7e0;
+  --gate-edge: #c99000;
+  --ok-fill: #e6f6ec;
+  --ok-edge: #2b9b5a;
+  --bad-fill: #fde9e8;
+  --bad-edge: #d1453b;
+  --src-fill: #ecebff;
+  --src-edge: #5b54d6;
+  --wire: #434456;
+  --bar: #5b54d6;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f0f14;
+    --card: #18181f;
+    --fg: #e9e9f0;
+    --fg-2: #9c9daf;
+    --rule: #2b2b36;
+    --grid: #23232d;
+    --node-fill: #1f1f28;
+    --node-edge: #6a6b80;
+    --gate-fill: #2e260d;
+    --gate-edge: #e8b631;
+    --ok-fill: #12301f;
+    --ok-edge: #4fcf86;
+    --bad-fill: #3a1716;
+    --bad-edge: #ff7468;
+    --src-fill: #22204a;
+    --src-edge: #938dff;
+    --wire: #c3c4d2;
+    --bar: #8f89ff;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.page { max-width: 960px; margin: 0 auto; padding: 28px 16px 60px; }
+h1 { margin: 0; font-size: 1.6rem; }
+.meta { color: var(--fg-2); margin: 4px 0 0; font-size: 0.92rem; }
+section { background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 18px 20px; margin-top: 16px; }
+h2 { margin: 0 0 10px; font-size: 1.12rem; }
+.flow { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.flow svg { min-width: 700px; }
+svg { display: block; width: 100%; height: auto; }
+svg text { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.st rect { fill: var(--node-fill); stroke: var(--node-edge); stroke-width: 1.5; }
+.st text { fill: var(--fg); font-size: 13px; font-weight: 600; text-anchor: middle; }
+.st.src rect { fill: var(--src-fill); stroke: var(--src-edge); }
+.st.gate rect { fill: var(--gate-fill); stroke: var(--gate-edge); stroke-dasharray: 5 3; }
+.st.ok rect { fill: var(--ok-fill); stroke: var(--ok-edge); }
+.st.bad rect { fill: var(--bad-fill); stroke: var(--bad-edge); }
+.ar { fill: none; stroke: var(--wire); stroke-width: 1.6; }
+.al { fill: var(--fg); font-size: 12px; font-weight: 600; text-anchor: middle; paint-order: stroke; stroke: var(--card); stroke-width: 5px; stroke-linejoin: round; }
+.ax { fill: var(--fg-2); font-size: 12px; }
+.cl { fill: var(--fg); font-size: 13px; }
+.vl { fill: var(--fg); font-size: 12px; font-weight: 600; }
+.scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; min-width: 380px; margin-top: 16px; }
+th, td { padding: 10px; border-bottom: 1px solid var(--rule); text-align: right; }
+th:first-child, td:first-child { text-align: left; }
+th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--fg-2); }
+tbody tr:last-child td { border-bottom: 0; }
+ul { margin: 0; padding-left: 1.2em; }
+li { margin: 6px 0; }
+code { font: 0.9em ui-monospace, SFMono-Regular, Menlo, monospace; }
+.hint { display: none; font-size: 0.82rem; color: var(--fg-2); margin-top: 6px; }
+@media (max-width: 740px) {
+  section { padding: 16px 14px; }
+  .hint { display: block; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Monorepo Deployment Pipeline</h1>
+  <p class="meta">Quillstone Software · Developer Productivity · As of 2026-10-10</p>
+
+  <section>
+    <h2>Pipeline diagram</h2>
+    <div class="flow">
+      <svg viewBox="0 0 860 340" role="img" aria-labelledby="pdt pdd">
+        <title id="pdt">Deployment pipeline flow</title>
+        <desc id="pdd">Pull Request goes to Lint and Unit Tests; on pass to Build Image; then Security Scan; with no critical CVEs to Deploy to Staging; then Smoke Tests; on pass to Manual Approval; when approved to Canary 10%. From Canary 10%, if healthy for 30 minutes to Full Rollout, or if error rate is above 1% to Auto Rollback.</desc>
+        <defs>
+          <marker id="pa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--wire)"/>
+          </marker>
+        </defs>
+
+        <!-- Arrows -->
+        <path class="ar" d="M136 68 H204" marker-end="url(#pa)"/>
+        <path class="ar" d="M322 68 H390" marker-end="url(#pa)"/>
+        <path class="ar" d="M508 68 H576" marker-end="url(#pa)"/>
+        <path class="ar" d="M694 68 H762" marker-end="url(#pa)"/>
+        <path class="ar" d="M822 96 V140 H78 V210" marker-end="url(#pa)"/>
+        <path class="ar" d="M136 240 H204" marker-end="url(#pa)"/>
+        <path class="ar" d="M322 240 H390" marker-end="url(#pa)"/>
+        <path class="ar" d="M508 230 H590 V188 H718" marker-end="url(#pa)"/>
+        <path class="ar" d="M508 250 H590 V292 H718" marker-end="url(#pa)"/>
+
+        <!-- Arrow labels -->
+        <text class="al" x="357" y="60">pass</text>
+        <text class="al" x="543" y="46">no critical</text>
+        <text class="al" x="543" y="60">CVEs</text>
+        <text class="al" x="171" y="232">pass</text>
+        <text class="al" x="357" y="232">approved</text>
+        <text class="al" x="654" y="180">healthy 30 min</text>
+        <text class="al" x="654" y="284">error rate above 1%</text>
+
+        <!-- Row 1 -->
+        <g class="st src"><rect x="20" y="40" width="116" height="56" rx="10"/><text x="78" y="73">Pull Request</text></g>
+        <g class="st"><rect x="206" y="40" width="116" height="56" rx="10"/><text x="264" y="65">Lint and</text><text x="264" y="81">Unit Tests</text></g>
+        <g class="st"><rect x="392" y="40" width="116" height="56" rx="10"/><text x="450" y="73">Build Image</text></g>
+        <g class="st"><rect x="578" y="40" width="116" height="56" rx="10"/><text x="636" y="73">Security Scan</text></g>
+        <g class="st"><rect x="764" y="40" width="116" height="56" rx="10" transform="translate(-20 0)"/><text x="802" y="65">Deploy to</text><text x="802" y="81">Staging</text></g>
+
+        <!-- Row 2 -->
+        <g class="st"><rect x="20" y="212" width="116" height="56" rx="10"/><text x="78" y="245">Smoke Tests</text></g>
+        <g class="st gate"><rect x="206" y="212" width="116" height="56" rx="10"/><text x="264" y="237">Manual</text><text x="264" y="253">Approval</text></g>
+        <g class="st"><rect x="392" y="212" width="116" height="56" rx="10"/><text x="450" y="245">Canary 10%</text></g>
+        <g class="st ok"><rect x="720" y="160" width="116" height="56" rx="10"/><text x="778" y="193">Full Rollout</text></g>
+        <g class="st bad"><rect x="720" y="264" width="116" height="56" rx="10"/><text x="778" y="297">Auto Rollback</text></g>
+      </svg>
+    </div>
+    <p class="hint">Scroll sideways to see the full pipeline.</p>
+  </section>
+
+  <section>
+    <h2>Stage durations</h2>
+    <svg viewBox="0 0 600 290" role="img" aria-label="Bar chart of median stage duration in minutes: Lint and Unit Tests 7.5, Build Image 4.2, Security Scan 2.8, Deploy to Staging 3.1, Smoke Tests 5.6, Canary 10% 30, Full Rollout 12.">
+      <g stroke="var(--grid)">
+        <line x1="150" y1="6" x2="150" y2="252"/>
+        <line x1="220" y1="6" x2="220" y2="252"/>
+        <line x1="290" y1="6" x2="290" y2="252"/>
+        <line x1="360" y1="6" x2="360" y2="252"/>
+        <line x1="430" y1="6" x2="430" y2="252"/>
+        <line x1="500" y1="6" x2="500" y2="252"/>
+        <line x1="570" y1="6" x2="570" y2="252"/>
+      </g>
+      <g class="ax" text-anchor="middle">
+        <text x="150" y="270">0</text><text x="220" y="270">5</text><text x="290" y="270">10</text>
+        <text x="360" y="270">15</text><text x="430" y="270">20</text><text x="500" y="270">25</text>
+        <text x="570" y="270">30 min</text>
+      </g>
+      <g class="cl" text-anchor="end">
+        <text x="142" y="29">Lint and Unit Tests</text>
+        <text x="142" y="63">Build Image</text>
+        <text x="142" y="97">Security Scan</text>
+        <text x="142" y="131">Deploy to Staging</text>
+        <text x="142" y="165">Smoke Tests</text>
+        <text x="142" y="199">Canary 10%</text>
+        <text x="142" y="233">Full Rollout</text>
+      </g>
+      <g fill="var(--bar)">
+        <rect x="150" y="12" width="105" height="24" rx="3"/>
+        <rect x="150" y="46" width="58.8" height="24" rx="3"/>
+        <rect x="150" y="80" width="39.2" height="24" rx="3"/>
+        <rect x="150" y="114" width="43.4" height="24" rx="3"/>
+        <rect x="150" y="148" width="78.4" height="24" rx="3"/>
+        <rect x="150" y="182" width="420" height="24" rx="3"/>
+        <rect x="150" y="216" width="168" height="24" rx="3"/>
+      </g>
+      <g class="vl">
+        <text x="261" y="29">7.5</text>
+        <text x="215" y="63">4.2</text>
+        <text x="195" y="97">2.8</text>
+        <text x="199" y="131">3.1</text>
+        <text x="234" y="165">5.6</text>
+        <text x="324" y="233">12</text>
+      </g>
+      <text x="562" y="199" text-anchor="end" font-size="12" font-weight="700" fill="#fff">30</text>
+    </svg>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Stage</th><th>Median (min)</th><th>p90 (min)</th></tr></thead>
+        <tbody>
+          <tr><td>Lint and Unit Tests</td><td>7.5</td><td>13.4</td></tr>
+          <tr><td>Build Image</td><td>4.2</td><td>6.9</td></tr>
+          <tr><td>Security Scan</td><td>2.8</td><td>4.1</td></tr>
+          <tr><td>Deploy to Staging</td><td>3.1</td><td>5.0</td></tr>
+          <tr><td>Smoke Tests</td><td>5.6</td><td>9.8</td></tr>
+          <tr><td>Canary 10%</td><td>30</td><td>30</td></tr>
+          <tr><td>Full Rollout</td><td>12</td><td>18</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Rules</h2>
+    <ul>
+      <li>Manual Approval is required only for services tagged <code>tier-1</code>.</li>
+      <li>Friday deploys after 15:00 local time are blocked.</li>
+      <li>Auto Rollback pages the owning team.</li>
+    </ul>
+  </section>
+</div>
+</body>
+</html>

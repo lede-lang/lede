@@ -1,0 +1,16 @@
+@title Vulnerability backlog, week 42
+@subtitle Halvorsen Retail security team, week ending 2026-10-16
+kpi Open critical | 3 | open | bad
+kpi Open high | 41 | open | neutral
+kpi Open medium | 188 | open | neutral
+kpi Patch SLA compliance | 91.5% | target 95% | bad
+kpi Median age of open critical | 6 days | open | neutral
+
+## Open high findings
+data highs = week,open highs; W37,63; W38,58; W39,52; W40,49; W41,44; W42,41
+chart bar highs y=open highs labels title="Open highs, last six weeks"
+
+## Critical findings
+table = finding,summary,owner,due; VULN-8812,Remote code execution in the image-resize library,Tobias Lind,2026-10-18; VULN-8830,Exposed admin console on a staging server,Nadia Haddad,2026-10-17; VULN-8841,Outdated TLS on the POS gateway,Reggie Okoye,2026-10-23
+
+!! **VULN-8841 is the risky one.** It touches store payment terminals, so the fix needs a change window.

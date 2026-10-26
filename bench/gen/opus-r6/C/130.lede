@@ -1,0 +1,38 @@
+@title Moonlit Harbor alpha status
+@subtitle Week 42 (ending 2026-10-16), for the publisher ahead of the alpha review on 2026-11-20
+@author Zuri Okonkwo-Hale, Producer, Lanternfish Games
+@date 2026-10-16
+
+# Alpha at a glance
+kpi Overall | Amber | alpha review 2026-11-20 | At risk
+
+kpi Features complete | 31 of 40 | 77.5% | bar
+kpi Levels playable | 14 of 18 | 77.8% | bar
+kpi Open bugs | 212 | 9 priority 1 | bad
+kpi Min-spec console | 58 fps | target 60 fps | bad
+
+# Bug trend
+data bugs = week,open bugs; W37,340; W38,318; W39,291; W40,264; W41,238; W42,212
+chart line bugs y=open bugs labels=end title="Open bugs by week"
+Open bugs are falling by about 26 a week, which would leave about 80 open by the alpha review on 2026-11-20.
+
+# Features
+The 9 remaining features by status:
+cards
+### In progress (4)
+- Fishing mini-game
+- Ship customization
+- Co-op invites
+- Photo mode
+### Not started (3)
+- Harbor festival events
+- Achievements
+- Accessibility options
+### Cut candidates (2)
+- Weather-driven trading
+- Pet companion
+
+# Risks
+table = risk,detail,date; Performance,"2 fps below target in the busiest harbor scene; optimization sprint booked 2026-11-02 to 2026-11-13",2026-11-13; Accessibility options,"Not started, and required for the console certification submission",2027-02-08; Cut candidates,"Dropping both would save about 6 weeks of work, decision needed",2026-10-30
+
+!! Decision needed by 2026-10-30: whether to cut weather-driven trading and pet companion, saving about 6 weeks of work.

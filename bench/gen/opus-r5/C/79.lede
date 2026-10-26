@@ -1,0 +1,31 @@
+@title Settlement Message Backbone
+@subtitle Choosing the message backbone for the new settlement service
+@author Ewan Calloway, Platform Lead
+@date Architecture review 2026-11-09
+
+kpi Recommendation | Managed Kafka | +$3,750/month vs SQS | bad
+
+We recommend **Managed Kafka**. It costs $3,750 a month more than SQS with SNS, but it is the only option with 7-day replay built in, and replay is an audit requirement.
+
+kpi Peak throughput | 4,200 msg/s
+kpi Consumers | 6 services
+kpi Ordering | per account
+kpi Replay | last 7 days
+
+# Comparison
+table = Requirement,Managed Kafka,SQS with SNS,Self-run RabbitMQ; Ordering per account,"Yes, partition keys","Yes, FIFO queues; capped near 3,000 msg/s each, so two queues","Yes, queue sharding we build ourselves"; 7-day replay,**Built in**,"**Not available**; we archive to storage ourselves","Only with the streams plugin, new to the team"; Operations effort,12 h/month,3 h/month,30 h/month; Monthly cost,"$5,850","$2,100","$3,400"; Yearly cost,"$70,200","$25,200","$40,800"
+
+# Monthly cost
+data cost = option,usd per month,ops hours; Managed Kafka,5850,12; SQS with SNS,2100,3; RabbitMQ (self-run),3400,30
+chart bar cost y=usd per month unit=$ title="Monthly cost" focus="Managed Kafka"
+
+SQS with SNS is cheapest and needs the least operations work, but it cannot replay without a storage archive we would build and maintain. RabbitMQ needs the most operations effort, 30 hours a month.
+
+# Risks
+!! Only 2 of our 9 engineers have run Kafka before. We budget 5 days of training for the team.
+- **Kafka:** costs $3,750 a month ($45,000 a year) more than SQS.
+- **SQS:** no replay; a home-built archive becomes part of the audit path. Two FIFO queues are needed to reach 4,200 msg/s.
+- **RabbitMQ:** per-account ordering and replay both depend on work or tooling the team has not done before.
+
+# Recommendation
+! Choose Managed Kafka. Replay of the last 7 days is an audit requirement, and Kafka is the only option that meets it out of the box while also giving per-account ordering through partition keys. Budget 5 days of Kafka training.

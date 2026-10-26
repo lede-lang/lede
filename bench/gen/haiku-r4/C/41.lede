@@ -1,0 +1,23 @@
+@title Ashgrove Logistics weekly operations
+@subtitle Four U.S. fulfillment sites, week ending 2026-10-16
+kpi Orders shipped | 48,210 | this week | neutral
+kpi On-time dispatch | 96.4% | target 97.0% | bad
+kpi Dock-to-stock | 3.8 hours | average | neutral
+kpi Open safety observations | 7 | open | bad
+
+## On-time trend
+data ontime = week,on-time percent; W34,97.1; W35,97.4; W36,96.9; W37,97.2; W38,97.0; W39,96.8; W40,96.9; W41,96.4
+chart line ontime x=week y=on-time percent title="On-time dispatch, W34 to W41" unit=% min=96 max=98 target="97.0 target" labels
+
+## Sites
+table = site,manager,orders shipped,on-time percent; Reno NV,Alicia Tran,11940,97.8; Columbus OH,Marcus Bell,14380,97.2; Dallas TX,Priyanka Rao,12115,96.5; **Savannah GA**,Joel Okafor,9775,93.6
+
+**Savannah GA** is the site to look at first, at 93.6 percent on time. Dallas TX is worth watching at 96.5 percent.
+
+## Needs attention
+- Savannah's container crane was out of service from 2026-10-12 to 2026-10-15. That left a backlog of 1150 orders.
+- The backlog should be cleared by 2026-10-19 with approved overtime.
+
+## Next week
+- Crane inspection sign-off on 2026-10-18.
+- 220 seasonal associates start on 2026-11-02.

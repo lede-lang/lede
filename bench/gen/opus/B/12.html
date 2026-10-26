@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checkout Payment Flow v2 — Tidewater Grocers</title>
+<style>
+:root {
+  --bg: #f4f7f7;
+  --surface: #ffffff;
+  --ink: #142022;
+  --ink-2: #5a6a6d;
+  --rule: #dbe3e4;
+  --grid: #e6ecec;
+  --head-fill: #e2f1f3;
+  --head-edge: #1b7f8c;
+  --life: #b3c3c5;
+  --msg: #243134;
+  --alt-edge: #8a6d1d;
+  --alt-fill: rgba(214, 170, 45, 0.07);
+  --budget: #94a3b8;
+  --measured: #0e9384;
+  --over: #d92d20;
+  --warn-bg: #fff1e6;
+  --warn-edge: #f2711c;
+  --warn-ink: #5c2400;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0c1213;
+    --surface: #141c1d;
+    --ink: #e2eced;
+    --ink-2: #93a4a6;
+    --rule: #263234;
+    --grid: #1f2a2b;
+    --head-fill: #12313a;
+    --head-edge: #4cc3d1;
+    --life: #3a4a4c;
+    --msg: #c8d6d8;
+    --alt-edge: #e3b94a;
+    --alt-fill: rgba(227, 185, 74, 0.07);
+    --budget: #64748b;
+    --measured: #2ed3b7;
+    --over: #ff6b5f;
+    --warn-bg: #321d0e;
+    --warn-edge: #ff8f3f;
+    --warn-ink: #ffdcc2;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.page { max-width: 980px; margin: 0 auto; padding: 28px 16px 60px; }
+h1 { margin: 0; font-size: 1.6rem; }
+.meta { color: var(--ink-2); margin: 4px 0 0; font-size: 0.92rem; }
+.ver { display: inline-block; background: var(--head-fill); color: var(--head-edge); font-weight: 700; font-size: 0.78rem; padding: 1px 8px; border-radius: 6px; margin-left: 6px; vertical-align: 2px; }
+section { background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 18px 20px; margin-top: 16px; }
+h2 { margin: 0 0 10px; font-size: 1.12rem; }
+.seq { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.seq svg { display: block; width: 100%; min-width: 700px; height: auto; }
+svg { display: block; width: 100%; height: auto; }
+svg text { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.pp rect { fill: var(--head-fill); stroke: var(--head-edge); stroke-width: 1.5; }
+.pp text { fill: var(--ink); font-size: 13.5px; font-weight: 700; text-anchor: middle; }
+.ll { stroke: var(--life); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.mg { stroke: var(--msg); stroke-width: 1.6; }
+.mg.rt { stroke-dasharray: 6 4; }
+.mt { fill: var(--ink); font-size: 12px; text-anchor: middle; paint-order: stroke; stroke: var(--surface); stroke-width: 5px; stroke-linejoin: round; }
+.guard { fill: var(--alt-edge); font-size: 12px; font-weight: 700; }
+.ax { fill: var(--ink-2); font-size: 12px; }
+.bv { fill: var(--ink); font-size: 11.5px; font-weight: 600; text-anchor: middle; }
+.legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 0.85rem; color: var(--ink-2); margin-top: 8px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; min-width: 420px; margin-bottom: 18px; }
+th, td { padding: 10px; border-bottom: 1px solid var(--rule); text-align: right; }
+th:first-child, td:first-child { text-align: left; }
+th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-2); }
+tbody tr:last-child td { border-bottom: 0; font-weight: 700; }
+td.over { color: var(--over); font-weight: 700; }
+.warn { background: var(--warn-bg); border: 1px solid var(--warn-edge); border-left-width: 6px; border-radius: 10px; padding: 14px 16px; color: var(--warn-ink); }
+.warn strong { display: block; margin-bottom: 2px; }
+h3 { font-size: 1rem; margin: 16px 0 6px; }
+ul { margin: 0; padding-left: 1.2em; }
+li { margin: 5px 0; }
+@media (max-width: 720px) {
+  section { padding: 16px 14px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>In-app Checkout Payment Flow <span class="ver">v2</span></h1>
+  <p class="meta">Tidewater Grocers · Payments Engineering · 2026-09-22</p>
+
+  <section>
+    <h2>Payment sequence</h2>
+    <div class="seq">
+      <svg viewBox="0 0 880 620" role="img" aria-labelledby="pst psd">
+        <title id="pst">Checkout payment sequence</title>
+        <desc id="psd">Mobile App posts checkout with cart and card token to Checkout API. Checkout API asks Fraud Service to score the order and receives a risk score. Alternative branch: if risk score is 80 or below, Checkout API authorizes the amount with Payment Gateway and gets an auth code, records a pending charge in Ledger and gets an entry id, then replies order confirmed to Mobile App. If risk score is above 80, Checkout API replies step-up verification required to Mobile App and does not call Payment Gateway.</desc>
+        <defs>
+          <marker id="hd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--msg)"/>
+          </marker>
+        </defs>
+
+        <line class="ll" x1="90" y1="60" x2="90" y2="605"/>
+        <line class="ll" x1="265" y1="60" x2="265" y2="605"/>
+        <line class="ll" x1="440" y1="60" x2="440" y2="605"/>
+        <line class="ll" x1="615" y1="60" x2="615" y2="605"/>
+        <line class="ll" x1="790" y1="60" x2="790" y2="605"/>
+
+        <g class="pp"><rect x="25" y="20" width="130" height="40" rx="8"/><text x="90" y="45">Mobile App</text></g>
+        <g class="pp"><rect x="200" y="20" width="130" height="40" rx="8"/><text x="265" y="45">Checkout API</text></g>
+        <g class="pp"><rect x="375" y="20" width="130" height="40" rx="8"/><text x="440" y="45">Fraud Service</text></g>
+        <g class="pp"><rect x="545" y="20" width="140" height="40" rx="8"/><text x="615" y="45">Payment Gateway</text></g>
+        <g class="pp"><rect x="725" y="20" width="130" height="40" rx="8"/><text x="790" y="45">Ledger</text></g>
+
+        <line class="mg" x1="90" y1="122" x2="263" y2="122" marker-end="url(#hd)"/>
+        <text class="mt" x="177" y="101">POST /checkout</text>
+        <text class="mt" x="177" y="115">with cart and card token</text>
+
+        <line class="mg" x1="265" y1="168" x2="438" y2="168" marker-end="url(#hd)"/>
+        <text class="mt" x="352" y="161">score order</text>
+
+        <line class="mg rt" x1="440" y1="210" x2="267" y2="210" marker-end="url(#hd)"/>
+        <text class="mt" x="352" y="203">risk score</text>
+
+        <!-- alt fragment -->
+        <rect x="30" y="236" width="830" height="352" fill="var(--alt-fill)" stroke="var(--alt-edge)" stroke-width="1.5"/>
+        <path d="M30 236 H78 V250 L70 258 H30 Z" fill="var(--alt-edge)"/>
+        <text x="42" y="252" fill="var(--surface)" font-size="12" font-weight="700">alt</text>
+        <text class="guard" x="88" y="254">[risk score ≤ 80]</text>
+
+        <line class="mg" x1="265" y1="292" x2="613" y2="292" marker-end="url(#hd)"/>
+        <text class="mt" x="440" y="285">authorize amount</text>
+
+        <line class="mg rt" x1="615" y1="334" x2="267" y2="334" marker-end="url(#hd)"/>
+        <text class="mt" x="440" y="327">auth code</text>
+
+        <line class="mg" x1="265" y1="376" x2="788" y2="376" marker-end="url(#hd)"/>
+        <text class="mt" x="527" y="369">record pending charge</text>
+
+        <line class="mg rt" x1="790" y1="418" x2="267" y2="418" marker-end="url(#hd)"/>
+        <text class="mt" x="527" y="411">entry id</text>
+
+        <line class="mg rt" x1="265" y1="460" x2="92" y2="460" marker-end="url(#hd)"/>
+        <text class="mt" x="177" y="453">order confirmed</text>
+
+        <line x1="30" y1="488" x2="860" y2="488" stroke="var(--alt-edge)" stroke-width="1.5" stroke-dasharray="8 5"/>
+        <text class="guard" x="42" y="506">[risk score &gt; 80]</text>
+
+        <line class="mg rt" x1="265" y1="548" x2="92" y2="548" marker-end="url(#hd)"/>
+        <text class="mt" x="177" y="541">step-up verification required</text>
+        <text x="440" y="560" text-anchor="middle" font-size="12" font-style="italic" fill="var(--ink-2)">Payment Gateway is not called</text>
+      </svg>
+    </div>
+  </section>
+
+  <section>
+    <h2>Latency budget</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Step</th><th>p95 budget (ms)</th><th>Measured p95 (ms)</th></tr></thead>
+        <tbody>
+          <tr><td>Fraud scoring</td><td>120</td><td>96</td></tr>
+          <tr><td>Authorization</td><td>450</td><td class="over">512</td></tr>
+          <tr><td>Ledger write</td><td>40</td><td>31</td></tr>
+          <tr><td>Total checkout</td><td>800</td><td class="over">811</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <svg viewBox="0 0 600 260" role="img" aria-label="Grouped bar chart of p95 budget versus measured, in milliseconds. Fraud scoring 120 vs 96; Authorization 450 vs 512; Ledger write 40 vs 31; Total checkout 800 vs 811.">
+      <g stroke="var(--grid)">
+        <line x1="60" y1="220" x2="580" y2="220" stroke="var(--ink-2)"/>
+        <line x1="60" y1="175.6" x2="580" y2="175.6"/>
+        <line x1="60" y1="131.1" x2="580" y2="131.1"/>
+        <line x1="60" y1="86.7" x2="580" y2="86.7"/>
+        <line x1="60" y1="42.2" x2="580" y2="42.2"/>
+      </g>
+      <g class="ax" text-anchor="end">
+        <text x="52" y="224">0</text><text x="52" y="180">200</text><text x="52" y="135">400</text>
+        <text x="52" y="91">600</text><text x="52" y="46">800 ms</text>
+      </g>
+      <g fill="var(--budget)">
+        <rect x="87" y="193.3" width="36" height="26.7"/>
+        <rect x="217" y="120" width="36" height="100"/>
+        <rect x="347" y="211.1" width="36" height="8.9"/>
+        <rect x="477" y="42.2" width="36" height="177.8"/>
+      </g>
+      <rect x="127" y="198.7" width="36" height="21.3" fill="var(--measured)"/>
+      <rect x="257" y="106.2" width="36" height="113.8" fill="var(--over)"/>
+      <rect x="387" y="213.1" width="36" height="6.9" fill="var(--measured)"/>
+      <rect x="517" y="39.8" width="36" height="180.2" fill="var(--over)"/>
+      <g class="bv">
+        <text x="105" y="187">120</text><text x="145" y="192">96</text>
+        <text x="235" y="114">450</text><text x="275" y="100">512</text>
+        <text x="365" y="205">40</text><text x="405" y="207">31</text>
+        <text x="495" y="36">800</text><text x="535" y="33">811</text>
+      </g>
+      <g class="ax" text-anchor="middle">
+        <text x="125" y="242">Fraud scoring</text>
+        <text x="255" y="242">Authorization</text>
+        <text x="385" y="242">Ledger write</text>
+        <text x="515" y="242">Total checkout</text>
+      </g>
+    </svg>
+    <div class="legend">
+      <span><i style="background:var(--budget)"></i>p95 budget</span>
+      <span><i style="background:var(--measured)"></i>Measured, within budget</span>
+      <span><i style="background:var(--over)"></i>Measured, over budget</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Open issues</h2>
+    <div class="warn" role="alert">
+      <strong>Authorization is 62 ms over budget</strong>
+      Measured p95 is 512 ms against a 450 ms budget because the gateway's us-east endpoint is called from us-west-2. This also pushes total checkout to 811 ms, over its 800 ms budget.
+    </div>
+    <h3>Next steps</h3>
+    <ul>
+      <li>Move authorization calls to the gateway's regional endpoint.</li>
+      <li>Add a 2-second timeout with one retry on authorization.</li>
+      <li>Alert when total checkout p95 exceeds 800 ms.</li>
+    </ul>
+  </section>
+</div>
+</body>
+</html>

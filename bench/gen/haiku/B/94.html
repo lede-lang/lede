@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data subject access request runbook</title>
+<style>
+:root{color-scheme:light dark;--bg:#f5f6f8;--card:#ffffff;--text:#1c2230;--muted:#5d6779;--line:#dde2ea;--accent:#2d5fd1;--crit:#b3261e;--critbg:#fde8e6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1117;--card:#171c26;--text:#e6e9ef;--muted:#9ba5b6;--line:#2a3242;--accent:#7fa6ff;--crit:#ff8d84;--critbg:#3d1816}}
+:root[data-theme="dark"]{--bg:#0e1117;--card:#171c26;--text:#e6e9ef;--muted:#9ba5b6;--line:#2a3242;--accent:#7fa6ff;--crit:#ff8d84;--critbg:#3d1816}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:780px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:1.7rem;line-height:1.2;margin:0 0 6px}
+h2{font-size:1.2rem;margin:30px 0 10px;padding-top:14px;border-top:1px solid var(--line)}
+.meta{color:var(--muted);font-size:.92rem}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+ol{padding-left:1.4em}
+li{margin:7px 0}
+ol.sub{list-style-type:lower-alpha;margin:4px 0;padding-left:1.6em}
+ul{padding-left:1.3em}
+.deadline{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0}
+.deadline b{font-size:1.4rem;color:var(--accent)}
+.donot{border-left:4px solid var(--crit);background:var(--critbg);border-radius:8px;padding:12px 14px;margin:12px 0}
+.donot li{margin:6px 0}
+a{color:var(--accent)}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>Data subject access request runbook</h1>
+<p class="meta">Quillfeather Software · Privacy team · Owner: Privacy Officer</p>
+
+<h2 id="deadlines">Deadlines</h2>
+<div class="deadline"><b>30 days</b> from receiving a valid request.</div>
+<ul>
+  <li>The deadline can be extended by up to <strong>60 more days</strong>, but only for complex requests, and only if we tell the requester within the first 30 days.</li>
+  <li>Our internal target is to deliver by <strong>day 25</strong>.</li>
+</ul>
+
+<h2 id="steps">Handling steps</h2>
+<ol>
+  <li><strong>Log the request</strong> in the privacy tracker within 1 business day.</li>
+  <li><strong>Verify identity</strong> within 5 business days.
+    <ol class="sub">
+      <li>Ask for two documents.</li>
+      <li>Never accept a photo of a card that shows a full number.</li>
+    </ol>
+  </li>
+  <li><strong>Confirm the scope</strong> with the requester by email.</li>
+  <li><strong>Collect data</strong> from the six systems listed below.</li>
+  <li><strong>Legal reviews the export</strong> and redacts other people's data.</li>
+  <li><strong>Package the export.</strong>
+    <ol class="sub">
+      <li>Use an encrypted ZIP.</li>
+      <li>Send the password by SMS, never in the same email.</li>
+    </ol>
+  </li>
+  <li><strong>Deliver by day 25</strong> and record the delivery date.</li>
+  <li><strong>Close the ticket</strong> and keep the log for 3 years.</li>
+</ol>
+
+<h2 id="systems">Systems to search</h2>
+<div class="scroll">
+<table>
+  <thead><tr><th>System</th><th>Owner</th><th class="n">Days needed</th></tr></thead>
+  <tbody>
+    <tr><td>CRM</td><td>Sales Ops</td><td class="n">3</td></tr>
+    <tr><td>Billing</td><td>Finance Systems</td><td class="n">4</td></tr>
+    <tr><td>Support desk</td><td>Support Ops</td><td class="n">3</td></tr>
+    <tr><td>Product database</td><td>Data Platform</td><td class="n">6</td></tr>
+    <tr><td>Marketing email</td><td>Growth</td><td class="n">2</td></tr>
+    <tr><td>Analytics events</td><td>Data Platform</td><td class="n">6</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="meta">Backups are not searched. Note the date of the last backup in the ticket.</p>
+
+<h2 id="donot">Do not</h2>
+<div class="donot">
+  <ul>
+    <li>Do not delete data in response to an access request.</li>
+    <li>Do not send the export to an address that has not been verified.</li>
+    <li>Do not discuss the request in public channels.</li>
+  </ul>
+</div>
+
+<h2 id="contacts">Contacts</h2>
+<ul>
+  <li>Privacy Officer: Anneliese Vogt, <a href="mailto:privacy@quillfeather.example">privacy@quillfeather.example</a></li>
+  <li>Legal reviewer: Marcus Teo</li>
+  <li>Escalation channel: #privacy-requests</li>
+</ul>
+</main>
+</body>
+</html>

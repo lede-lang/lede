@@ -1,0 +1,47 @@
+{
+  "id": "55-lost-laptop-response",
+  "category": "runbook",
+  "title": "Lost laptop response",
+  "brief": "Wexford Legal's IT team needs a quick response card for when a staff member reports a lost or stolen laptop. Effective 2026-11-01 and owned by IT Security. The first rule is that the person reports it within 15 minutes of noticing, by calling the service desk on extension 4100 (not by email). Then the service desk works through these steps: 1 mark the device as lost in the device manager, which locks it and starts remote wipe on next connection; 2 disable the user's sessions and revoke their VPN certificate; 3 check whether the laptop held client files outside the document management system, which is not allowed but does happen; 4 if it did, notify the General Counsel's office within 1 hour, because client confidentiality rules may require telling the client; 5 order a replacement, standard turnaround 1 business day; 6 file the report in the incident log within 24 hours. Everyone must be told clearly that full-disk encryption is enforced on all laptops, so a lost device is not automatically a data breach, but it must still be reported. Also add a very short \"Quick reference\" at the bottom with Service desk 4100, Security hotline 4199 (after hours) and the #it-security channel.",
+  "checklist": {
+    "sections": [
+      "Quick reference"
+    ],
+    "visible": [
+      "Wexford Legal",
+      "IT Security",
+      "service desk",
+      "remote wipe",
+      "VPN certificate",
+      "General Counsel",
+      "full-disk encryption",
+      "#it-security",
+      "Security hotline"
+    ],
+    "values": [
+      "15 minutes",
+      "4100",
+      "4199",
+      "1 hour",
+      "1 business day",
+      "24 hours",
+      "2026-11-01"
+    ]
+  },
+  "needs": [
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the reporting window from 15 minutes to 30 minutes, and add a step after revoking the VPN certificate: \"Reset the user's password and MFA enrollment\".",
+    "expect_visible": [
+      "Reset the user's password and MFA enrollment"
+    ],
+    "expect_values": [
+      "30 minutes"
+    ],
+    "expect_absent": [
+      "15 minutes"
+    ]
+  }
+}

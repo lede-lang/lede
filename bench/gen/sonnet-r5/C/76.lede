@@ -1,0 +1,33 @@
+@title Lease or buy the new digital press
+@subtitle Decision for the meeting on 2026-11-12
+@author Lucinda Marsh, Owner, Orchard Press
+@date 2026-11-12
+
+We recommend the lease. It costs 17600 dollars more than buying over four years, but it needs no large cash outlay.
+
+kpi Lease premium over four years | $17,600 | more than buying | bad
+
+## Options
+
+The press prints about 2.4 million pages a month. Both options run over a four-year horizon.
+
+table = item,Buy,Lease; Up-front cash,"$412,000 purchase price","$15,300 deposit (two monthly payments)"; Service,"$14,400 a year","Included"; Payments,None,"$7,650 a month for 48 months"; End of term,"Resale value about $120,000 (a guess)","Optional buyout at $95,000, price fixed today"
+
+## Four-year cost
+
+data cost = option,net four-year cost; Buy,349600; Lease,367200
+
+chart bar cost unit=$ labels title="Net four-year cost"
+
+table = line,Buy,Lease; Purchase price,"$412,000",—; Service contract (4 years),"$57,600",Included; Lease payments (48 x $7,650),—,"$367,200"; Expected resale value,"-$120,000",—; **Net four-year cost**,**$349,600**,**$367,200**
+
+The lease costs 17600 dollars more over four years. The lease deposit of 15300 dollars and the optional 95000 dollar buyout are not included in its figure.
+
+## Risks
+
+- **Buy:** it ties up cash we need for the new bindery, and the resale value is a guess.
+- **Lease:** it locks us in for 48 months, although the buyout price is fixed today.
+
+## Recommendation
+
+Lease the press. It costs 17600 dollars more over four years, and we accept that in exchange for keeping our cash for the new bindery.

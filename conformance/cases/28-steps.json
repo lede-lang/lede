@@ -1,0 +1,60 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "steps",
+      "items": [
+        {
+          "title": "Announce",
+          "due": "by 14:00",
+          "note": "post in the channel",
+          "line": 1
+        },
+        {
+          "title": "Roll out",
+          "due": "in progress",
+          "note": "",
+          "line": 2
+        },
+        {
+          "title": "Verify",
+          "due": "",
+          "note": "",
+          "line": 3
+        }
+      ],
+      "line": 1
+    },
+    {
+      "type": "steps",
+      "items": [
+        {
+          "title": "Second run",
+          "due": "",
+          "note": "",
+          "line": 5
+        }
+      ],
+      "line": 5
+    },
+    {
+      "type": "paragraph",
+      "text": "steps are prose when the word is longer. step escaped is prose too",
+      "line": 6
+    },
+    {
+      "type": "list",
+      "ordered": true,
+      "start": 1,
+      "items": [
+        {
+          "text": "Numbered lists are unchanged.",
+          "checked": null
+        }
+      ],
+      "line": 8
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

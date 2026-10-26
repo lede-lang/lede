@@ -1,0 +1,51 @@
+@title Late daily sales dashboards
+@subtitle Analytics Platform team, Juniper Retail, 2026-10-02
+@date 2026-10-02
+
+## Impact
+
+- 9 hours of delay.
+- 23 dashboards stale.
+- The 08:00 executive sales report went out with the previous day's numbers.
+
+## Pipeline
+
+diagram pipe dir=LR title="Daily sales pipeline"
+
+pipe: db "Orders DB" db
+pipe: cdc "CDC Connector" svc
+pipe: kafka "Kafka" queue
+pipe: spark "Spark Job" job "failed with out of memory" focus
+pipe: wh "Warehouse" store
+pipe: dash "Dashboards" ext
+pipe: db -> cdc
+pipe: cdc -> kafka
+pipe: kafka -> spark : orders topic
+pipe: spark -> wh
+pipe: wh -> dash
+
+## Timeline
+
+table = Time,Event; 01:00,nightly Spark Job starts; 01:47,Spark Job fails with out-of-memory on the orders partition for 2026-10-01; 02:30,automatic retry also fails; 07:55,analyst reports stale dashboards; 08:20,on-call doubles executor memory to 16 GB and reruns; 10:05,Spark Job succeeds; 10:58,dashboards refreshed
+
+## Root cause
+
+A promotion produced 3.4 times the normal order volume, 4.1 million orders against a typical 1.2 million. Executors had 8 GB each, which was not enough for that volume.
+
+## Lessons learned
+
+**What went well**
+
+- On-call found the memory cause and reran the job the same morning.
+- The rerun with 16 GB executors succeeded.
+
+**What did not go well**
+
+- The nightly job failed twice before anyone was paged.
+- An analyst found the stale dashboards at 07:55.
+
+## Action items
+
+1. Page on-call when the nightly job fails twice.
+2. Size executor memory from the input volume.
+3. Add a data freshness banner to dashboards.

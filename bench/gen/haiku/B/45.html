@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Halvorsen Vulnerability Backlog</title>
+<style>
+:root{--bg:#f4f5f7;--card:#ffffff;--fg:#1b1f26;--muted:#5b6370;--line:#d9dee6;--accent:#2a56c6;--good:#17794a;--goodbg:#e2f4ea;--warn:#8a5200;--warnbg:#fcf0d9;--bad:#b3261e;--badbg:#fbe3e0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0f1115;--card:#181b21;--fg:#e6e9ef;--muted:#9aa3b0;--line:#2b313b;--accent:#8fb0ff;--good:#62d39b;--goodbg:#15301f;--warn:#f0b35c;--warnbg:#36290f;--bad:#ff8b82;--badbg:#3b1a18}}
+:root[data-theme="dark"]{--bg:#0f1115;--card:#181b21;--fg:#e6e9ef;--muted:#9aa3b0;--line:#2b313b;--accent:#8fb0ff;--good:#62d39b;--goodbg:#15301f;--warn:#f0b35c;--warnbg:#36290f;--bad:#ff8b82;--badbg:#3b1a18}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:1.6rem;line-height:1.2;margin:0 0 6px}
+h2{font-size:1.15rem;margin:34px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+p.sub{color:var(--muted);margin:0 0 18px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.kpi .v{font-size:1.5rem;font-weight:650;font-variant-numeric:tabular-nums}
+.kpi .l{color:var(--muted);font-size:.85rem;margin-top:2px}
+.kpi .t{font-size:.85rem;margin-top:6px}
+.good{color:var(--good)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.callout{border-left:4px solid var(--warn);background:var(--warnbg);padding:12px 14px;border-radius:8px;margin:14px 0}
+.callout.bad{border-color:var(--bad);background:var(--badbg)}
+.tbl{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tbl th,.tbl td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top;font-size:.94rem}
+.tbl th{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.tbl tr:last-child td{border-bottom:0}
+.tbl tr.hi td{background:var(--badbg)}
+.tbl tr.watch td{background:var(--warnbg)}
+.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tag{display:inline-block;font-size:.78rem;font-weight:650;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.tag.g{background:var(--goodbg);color:var(--good)} .tag.a{background:var(--warnbg);color:var(--warn)} .tag.r{background:var(--badbg);color:var(--bad)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+code{font-size:.9em}
+svg{display:block;width:100%;height:auto}
+svg text{fill:var(--fg);font-size:12px}
+svg .sm{fill:var(--muted);font-size:11px}
+svg .lbl{font-size:11px;paint-order:stroke;stroke:var(--bg);stroke-width:4px;stroke-linejoin:round}
+svg .ln{stroke:var(--muted);stroke-width:1.4;fill:none}
+svg .arr{fill:var(--muted)}
+@media (max-width:560px){.tbl th,.tbl td{padding:7px 6px;font-size:.88rem}.wrap{padding:18px 14px 40px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Vulnerability backlog: week 42</h1>
+<p class="sub">Halvorsen Retail security team &middot; week ending 2026-10-16</p>
+
+<h2>Headlines</h2>
+<div class="kpis">
+  <div class="kpi"><div class="v bad">3</div><div class="l">Open critical findings</div></div>
+  <div class="kpi"><div class="v warn">41</div><div class="l">Open high findings</div></div>
+  <div class="kpi"><div class="v">188</div><div class="l">Open medium findings</div></div>
+  <div class="kpi"><div class="v warn">91.5%</div><div class="l">Patch SLA compliance</div><div class="t bad">Target 95%</div></div>
+  <div class="kpi"><div class="v">6 days</div><div class="l">Median age of an open critical</div></div>
+</div>
+
+<h2>Open high findings, last six weeks</h2>
+<div class="card">
+<svg viewBox="0 0 560 230" role="img" aria-label="Line chart of open high findings falling from 63 in W37 to 41 in W42">
+  <g stroke="var(--line)" stroke-width="1">
+    <line x1="44" y1="200" x2="540" y2="200"/>
+    <line x1="44" y1="155" x2="540" y2="155"/>
+    <line x1="44" y1="110" x2="540" y2="110"/>
+    <line x1="44" y1="65" x2="540" y2="65"/>
+  </g>
+  <text class="sm" x="0" y="204">30</text>
+  <text class="sm" x="0" y="159">40</text>
+  <text class="sm" x="0" y="114">50</text>
+  <text class="sm" x="0" y="69">60</text>
+  <polyline points="60,51.5 144,74 228,101 312,114.5 396,137 480,150.5" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round"/>
+  <g fill="var(--accent)">
+    <circle cx="60" cy="51.5" r="4"/><circle cx="144" cy="74" r="4"/><circle cx="228" cy="101" r="4"/><circle cx="312" cy="114.5" r="4"/><circle cx="396" cy="137" r="4"/><circle cx="480" cy="150.5" r="4"/>
+  </g>
+  <g text-anchor="middle">
+    <text class="lbl" x="60" y="42.5">63</text>
+    <text class="lbl" x="144" y="65">58</text>
+    <text class="lbl" x="228" y="92">52</text>
+    <text class="lbl" x="312" y="106">49</text>
+    <text class="lbl" x="396" y="128">44</text>
+    <text class="lbl" x="480" y="142">41</text>
+    <text class="sm" x="60" y="222">W37</text>
+    <text class="sm" x="144" y="222">W38</text>
+    <text class="sm" x="228" y="222">W39</text>
+    <text class="sm" x="312" y="222">W40</text>
+    <text class="sm" x="396" y="222">W41</text>
+    <text class="sm" x="480" y="222">W42</text>
+  </g>
+</svg>
+<p class="sub" style="margin:8px 0 0">Open high findings at the end of each week. Down from 63 to 41.</p>
+</div>
+
+<h2>Critical findings</h2>
+<div class="callout bad">
+  <strong>VULN-8841 needs a change window.</strong> It is outdated TLS on the POS gateway, and the gateway touches store payment terminals. Plan the change window now. The due date is 2026-10-23.
+</div>
+<div class="card" style="padding:0;overflow:hidden">
+<table class="tbl" style="border:0;border-radius:0">
+  <thead><tr><th>ID</th><th>Finding</th><th>Owner</th><th>Due</th></tr></thead>
+  <tbody>
+    <tr><td>VULN-8812</td><td>Remote code execution in the image-resize library</td><td>Tobias Lind</td><td>2026-10-18</td></tr>
+    <tr><td>VULN-8830</td><td>Exposed admin console on a staging server</td><td>Nadia Haddad</td><td>2026-10-17</td></tr>
+    <tr class="hi"><td><strong>VULN-8841</strong></td><td><strong>Outdated TLS on the POS gateway</strong> (store payment terminals, needs a change window)</td><td>Reggie Okoye</td><td>2026-10-23</td></tr>
+  </tbody>
+</table>
+</div>
+</div>
+</body>
+</html>

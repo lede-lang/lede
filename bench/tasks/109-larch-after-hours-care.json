@@ -1,0 +1,56 @@
+{
+  "id": "109-larch-after-hours-care",
+  "category": "comparison",
+  "title": "Larch Valley after-hours care options",
+  "brief": "Larch Valley Medical Group wants to add after-hours care for its 38000 patients, and the practice manager, Odette Rousseau, needs a decision page for the partners' meeting on 2026-11-04. Three options. Extended clinic hours until 21:00: annual cost 410000 dollars, about 900 visits a month, average wait 25 minutes, and it can handle any visit that needs an exam. Telehealth urgent care: 260000 dollars a year, about 1500 visits a month, average wait 12 minutes, and it cannot handle visits that need a physical exam. Nurse triage phone line, open 17:00 to 23:00: 185000 dollars a year, about 2200 calls a month, answered within 3 minutes, and the vendor estimates it avoids 18 percent of emergency room referrals. Per contact that is about 38 dollars for extended hours, 14 for telehealth and 7 for the triage line. Sections: \"Options\", \"Cost per contact\", \"What each can and cannot do\" and \"Recommendation\". Our recommendation is to start with the telehealth service now and add the nurse line in the second half of 2027, and the page should say that extended hours is the most expensive per contact but the only option that treats patients needing an exam, so it stays under consideration if telehealth use is low. Partners should see that the decision needed on 2026-11-04 is approval of the 260000 dollar telehealth budget.",
+  "checklist": {
+    "sections": [
+      "Options",
+      "Cost per contact",
+      "What each can and cannot do",
+      "Recommendation"
+    ],
+    "visible": [
+      "Extended clinic hours",
+      "Telehealth urgent care",
+      "Nurse triage phone line",
+      "Odette Rousseau"
+    ],
+    "values": [
+      "38000",
+      "2026-11-04",
+      "21:00",
+      "410000",
+      "900",
+      "25 minutes",
+      "260000",
+      "1500",
+      "12 minutes",
+      "185000",
+      "2200",
+      "3 minutes",
+      "18 percent",
+      "17:00",
+      "23:00"
+    ]
+  },
+  "needs": [
+    "table",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the telehealth annual cost to 300000 dollars and its cost per contact to 17 dollars, and the partners' meeting is moved to 2026-11-11.",
+    "expect_visible": [],
+    "expect_values": [
+      "300000",
+      "17 dollars",
+      "2026-11-11"
+    ],
+    "expect_absent": [
+      "260000",
+      "2026-11-04"
+    ]
+  }
+}

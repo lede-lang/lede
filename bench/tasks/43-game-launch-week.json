@@ -1,0 +1,63 @@
+{
+  "id": "43-game-launch-week",
+  "category": "status",
+  "title": "Tidebreakers launch week status",
+  "brief": "Starlark Games is a week into the launch of Tidebreakers and the studio head wants a status page she can forward to the board. Launch was Monday 2026-10-12 at 09:00 Pacific in 38 countries. Headline numbers through Friday 2026-10-16: 1.38 million installs, peak daily active users of 412000, day-1 retention of 41.3 percent, crash-free sessions of 99.2 percent, and a store rating of 4.4. Daily active users by day: Mon 268000, Tue 331000, Wed 369000, Thu 412000, Fri 398000. Under \"Launch week\" tell the story of the week as a short annotated timeline: Monday the login queue peaked at 22000 players at 14:20 and the team added auth capacity; Tuesday hotfix 1.0.1 shipped, fixing a launch crash on Android 12 devices and lifting crash-free sessions from 97.6 to 99.0 percent; Wednesday server capacity was doubled to 120 game servers; Thursday the store featured the game in 14 countries; Friday the first weekend event was announced for 2026-10-17. Under \"Open issues\" list the open issues in priority order with owner and target date: P1 matchmaking timeouts in Asia-Pacific, Keiko Arai, 2026-10-19; P2 purchase restore failing on some iOS devices, Dan Whitaker, 2026-10-23; P3 leaderboard shows stale ranks after midnight UTC, Samira Boateng, 2026-10-30. Casual tone is fine, it is a game studio.",
+  "checklist": {
+    "sections": [
+      "Launch week",
+      "Open issues"
+    ],
+    "visible": [
+      "Tidebreakers",
+      "installs",
+      "Daily active users",
+      "Day-1 retention",
+      "Crash-free sessions",
+      "Keiko Arai",
+      "Dan Whitaker",
+      "Samira Boateng",
+      "matchmaking",
+      "hotfix 1.0.1"
+    ],
+    "values": [
+      "1.38",
+      "412000",
+      "41.3",
+      "99.2",
+      "4.4",
+      "268000",
+      "331000",
+      "369000",
+      "398000",
+      "22000",
+      "14:20",
+      "97.6",
+      "99.0",
+      "120",
+      "14",
+      "38",
+      "2026-10-19",
+      "2026-10-23",
+      "2026-10-30",
+      "2026-10-17"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "list",
+    "table",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add Saturday 2026-10-17 to the daily active users with 441000, change the peak to 441000, and mark the P1 matchmaking timeouts issue as resolved on 2026-10-17.",
+    "expect_visible": [
+      "Saturday"
+    ],
+    "expect_values": [
+      "441000"
+    ],
+    "expect_absent": []
+  }
+}

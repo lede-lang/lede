@@ -1,0 +1,42 @@
+@title Electric Reliability, January to September 2026
+@subtitle Data summary for the state regulator and the board
+@author Sven Lindqvist, Reliability Engineer
+@date 2026-09-30
+
+# Reliability at a glance
+
+kpi Avg outage per customer | 99.6 min | target 105 min | good
+kpi Customers served | 412,000 | 5 districts | neutral
+kpi Outage events | 177 | Jan to Sep | neutral
+
+The system as a whole meets the regulator's target of 105 minutes. Three districts do not: Hills (176), Plains (131) and Coastal (112). Hills is the worst by a wide margin.
+
+# By district
+
+Minutes below are the average outage time per customer, with the 105-minute target shown as a dashed line.
+
+data districts = district,customers,events,minutes,target; Hills,61000,37,176,105; Plains,24000,19,131,105; Coastal,98000,41,112,105; Valley,142000,58,84,105; Metro,87000,22,49,105
+
+chart hbar districts x=district y=minutes target="105 target" unit=" min" labels title="Average outage minutes per customer"
+
+chart hbar districts x=district y=customers sort title="Customers by district"
+
+table districts cols=district,customers,events,minutes,target bar=minutes target=target sort=-minutes title="Districts, worst first"
+
+!! Hills, Plains and Coastal are above the 105-minute target. Hills at 176 minutes is 68% over it.
+
+! Metro's low figure of 49 minutes reflects its underground cables.
+
+# Causes
+
+data causes = cause,share; Storms,46; Equipment failure,27; Vegetation,15; Other,12
+
+chart hbar causes x=cause y=share unit=% labels title="Share of outage minutes by cause"
+
+Storms and equipment failure account for 73% of outage minutes. Vegetation, at 15%, is the cause the Hills program targets.
+
+# Next steps
+
+step Start the Hills tree-trimming program | 2026-11-02
+
+The program was approved with a budget of $1.8M and covers 210 line miles.

@@ -1,0 +1,44 @@
+@title Greenhouse irrigation schedule check
+@subtitle Four zones on one pump: what is broken in the current schedule and a valid fix
+@width wide
+
+!! The current schedule is invalid. Zone 1 (Tomatoes) and Zone 2 (Peppers) overlap by 5 minutes on Monday, Wednesday and Friday. Every other rule passes.
+
+kpi Rules broken | 1 | of 5 | bad
+kpi Peak day | 804 L | Mon, Wed, Fri | neutral
+kpi Daily limit | 900 L | 96 L headroom at peak
+
+## Current schedule
+
+data zones = zone,name,start,end,minutes,runs per day,days,litres per day; 1,Tomatoes,05:30,05:50,20,1,Daily,240; 2,Peppers,05:45,06:00,15,1,"Mon, Wed, Fri",180; 3,Seedlings,"06:00 and 16:00","06:10 and 16:10",10,2,Daily,240; 4,Herb bench,06:10,06:22,12,1,Daily,144
+
+table zones title="Schedule as it stands (12 L per minute)"
+
+## What is broken and why
+
+table = rule,result,detail; "Runs must not overlap",Failed,"Zone 1 runs 05:30 to 05:50 and Zone 2 starts at 05:45, so both would need the pump for 5 minutes (Mon, Wed, Fri)"; "No run longer than 45 minutes",Passed,"Longest run is 20 minutes (Zone 1)"; "At most 900 L per day",Passed,"Highest day is 804 L"; "Nothing starts 11:00 to 15:00",Passed,"Starts are 05:30, 05:45, 06:00, 06:10 and 16:00"; "Zone names unique and not blank",Passed,"Tomatoes, Peppers, Seedlings, Herb bench"
+
+## Litres used each day
+
+data week = day,litres; Mon,804; Tue,624; Wed,804; Thu,624; Fri,804; Sat,624; Sun,624
+
+chart bar week x=day y=litres labels unit=L target="900 L limit" min=0 max=1000 title="Water per day, current and fixed schedule"
+
+Totals are the same before and after the fix below, because only a start time moves.
+
+## Suggested fix
+
+Start Zone 1 at 05:25 instead of 05:30. It then finishes at 05:45, exactly when Zone 2 starts, and Zone 2 still finishes at 06:00 when Zone 3 starts.
+
+table = zone,name,start,minutes,days,status; 1,Tomatoes,05:25,20,Daily,Ready; 2,Peppers,05:45,15,"Mon, Wed, Fri",Ready; 3,Seedlings,"06:00, 16:00",10,Daily,Ready; 4,Herb bench,06:10,12,Daily,Ready
+
+! With this change all five rules pass. Runs are back to back with no gap, so a late start on any zone would cause a new overlap; a one minute gap per zone would be safer if the morning window allows.
+
+## Schedule to copy once valid
+
+```
+Zone 1 | Tomatoes   | 05:25 | 20 min | Daily
+Zone 2 | Peppers    | 05:45 | 15 min | Mon, Wed, Fri
+Zone 3 | Seedlings  | 06:00, 16:00 | 10 min | Daily
+Zone 4 | Herb bench | 06:10 | 12 min | Daily
+```

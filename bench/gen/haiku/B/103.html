@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab Result Routing</title>
+<style>
+:root{--bg:#f6f5f1;--card:#ffffff;--fg:#1c1f24;--muted:#5d6470;--line:#d8dbe0;--accent:#2a5d9f;--red:#b42318;--redbg:#fdecea;--green:#2b6e4a;--greenbg:#e8f4ec}
+@media (prefers-color-scheme: dark){:root{--bg:#101215;--card:#181b20;--fg:#e7e9ee;--muted:#9aa2ad;--line:#2d333b;--accent:#8db6ef;--red:#ff8a80;--redbg:#3a1a18;--green:#7fd1a0;--greenbg:#15301f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+main{max-width:900px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:1.75rem;line-height:1.2;margin:0 0 6px}
+h2{font-size:1.25rem;margin:34px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+p{margin:0 0 12px}
+.meta{color:var(--muted);font-size:.9rem;margin:0 0 20px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.9rem;margin:8px 0}
+.key{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:6px;border:2px solid}
+.key.u{background:var(--redbg);border-color:var(--red)}
+.key.r{background:var(--greenbg);border-color:var(--green)}
+.diagram{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;margin:12px 0}
+.diagram svg{display:block;width:100%;height:auto}
+svg text{fill:var(--fg);font-size:13px}
+svg .sub{fill:var(--muted);font-size:11px}
+svg .node{stroke-width:2}
+svg .urg{fill:var(--redbg);stroke:var(--red)}
+svg .rou{fill:var(--greenbg);stroke:var(--green)}
+svg .dec{fill:var(--card);stroke:var(--accent);stroke-width:2}
+svg .ln{fill:none;stroke:var(--muted);stroke-width:1.6}
+svg .lbl{font-size:12px;font-weight:600;fill:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{text-align:left;vertical-align:top;padding:8px 6px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:600;font-size:.82rem;text-transform:uppercase;letter-spacing:.04em}
+.tw{overflow-x:auto}
+.tag{display:inline-block;font-size:.78rem;font-weight:700;padding:2px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.03em}
+.tag.u{background:var(--redbg);color:var(--red)}
+.tag.r{background:var(--greenbg);color:var(--green)}
+.note{border-left:4px solid var(--accent);padding:10px 14px;background:var(--card);border-radius:8px;margin:14px 0}
+@media (max-width:520px){th,td{font-size:.88rem;padding:6px 4px}}
+</style>
+</head>
+<body>
+<main>
+<h1>Lab Result Routing</h1>
+<p class="meta">Owner: Laboratory Informatics &middot; Current as of 2026-10-02</p>
+<p>This page shows who is told about a finished lab result, and when. Read it once before your first shift on a unit.</p>
+<div class="legend"><span><span class="key u"></span>Urgent: critical value path</span><span><span class="key r"></span>Routine: everything else</span></div>
+
+<h2>Routing flow</h2>
+<div class="diagram">
+<svg viewBox="0 0 690 392" role="img" aria-label="Routing flow. Critical values go to a phone call and read-back, with escalation if read-back is not confirmed in 15 minutes. Non-critical results are flagged or filed, then released to the patient portal.">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--muted)"/></marker></defs>
+
+<rect class="node dec" x="120" y="14" width="240" height="36" rx="18"/><text x="240" y="37" text-anchor="middle" style="font-weight:600">Result verified in lab system</text>
+<path class="ln" marker-end="url(#ar)" d="M240,50 V80"/>
+
+<rect class="node dec" x="155" y="80" width="170" height="32" rx="16"/><text x="240" y="101" text-anchor="middle" style="font-weight:600">Critical value?</text>
+
+<path class="ln" marker-end="url(#ar)" d="M155,96 H95 V142"/>
+<text class="lbl" x="118" y="90">Yes</text>
+<path class="ln" marker-end="url(#ar)" d="M325,96 H490 V142"/>
+<text class="lbl" x="400" y="90">No</text>
+
+<rect class="node urg" x="10" y="142" width="170" height="36" rx="6"/><text x="95" y="164" text-anchor="middle">Phone the ordering clinician</text>
+<path class="ln" marker-end="url(#ar)" d="M95,178 V208"/>
+
+<rect class="node urg" x="10" y="208" width="170" height="44" rx="6"/><text x="95" y="226" text-anchor="middle">Read-back confirmed</text><text x="95" y="243" text-anchor="middle">within 15 minutes?</text>
+<path class="ln" marker-end="url(#ar)" d="M95,252 V290"/>
+<text class="lbl" x="103" y="276">Yes</text>
+<path class="ln" marker-end="url(#ar)" d="M180,230 H185"/>
+<text class="lbl" x="183" y="222" text-anchor="middle">No</text>
+
+<rect class="node urg" x="185" y="208" width="130" height="44" rx="6"/><text x="250" y="226" text-anchor="middle">Escalate to</text><text x="250" y="243" text-anchor="middle">department head</text>
+<path class="ln" marker-end="url(#ar)" d="M250,252 V308 H180"/>
+
+<rect class="node urg" x="10" y="290" width="170" height="36" rx="6"/><text x="95" y="312" text-anchor="middle">Log the read-back</text>
+<path class="ln" marker-end="url(#ar)" d="M95,326 V348 H170"/>
+
+<rect class="node rou" x="410" y="142" width="160" height="36" rx="6"/><text x="490" y="164" text-anchor="middle">Flagged abnormal?</text>
+<path class="ln" marker-end="url(#ar)" d="M490,178 V208"/>
+<text class="lbl" x="498" y="196">Yes</text>
+<path class="ln" marker-end="url(#ar)" d="M570,160 H632 V208"/>
+<text class="lbl" x="600" y="152">No</text>
+
+<rect class="node rou" x="410" y="208" width="160" height="36" rx="6"/><text x="490" y="230" text-anchor="middle">Add to clinician inbox</text>
+<path class="ln" marker-end="url(#ar)" d="M470,244 V330"/>
+
+<rect class="node rou" x="584" y="208" width="96" height="44" rx="6"/><text x="632" y="226" text-anchor="middle">File without</text><text x="632" y="243" text-anchor="middle">alert</text>
+<path class="ln" marker-end="url(#ar)" d="M632,252 V300 H480 V330"/>
+
+<rect class="node rou" x="170" y="330" width="320" height="36" rx="6"/><text x="330" y="352" text-anchor="middle" style="font-weight:600">Release to patient portal</text>
+</svg>
+</div>
+
+<h2>Time limits</h2>
+<div class="tw">
+<table>
+<thead><tr><th>Step</th><th>Limit</th><th>Track</th></tr></thead>
+<tbody>
+<tr><td>Phone call to the ordering clinician, after verification</td><td>within 10 minutes of verification</td><td><span class="tag u">Urgent</span></td></tr>
+<tr><td>Read-back confirmation, after the call</td><td>within 15 minutes of the call</td><td><span class="tag u">Urgent</span></td></tr>
+<tr><td>Abnormal result reviewed in the clinician inbox</td><td>within 1 business day</td><td><span class="tag r">Routine</span></td></tr>
+<tr><td>Routine result released to the patient portal</td><td>after 24 hours</td><td><span class="tag r">Routine</span></td></tr>
+<tr><td>Abnormal result held before release</td><td>72 hours, so the clinician can speak to the patient first</td><td><span class="tag r">Routine</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>Who is called</h2>
+<div class="note">
+<p><strong>Weekdays, 07:00 to 19:00:</strong> the ordering clinician.</p>
+<p><strong>Nights and weekends:</strong> the covering physician, reached through the hospital operator.</p>
+<p><strong>Escalation:</strong> the department head, Dr. Naomi Eze.</p>
+</div>
+</main>
+</body>
+</html>

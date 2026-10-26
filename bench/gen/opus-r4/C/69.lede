@@ -1,0 +1,63 @@
+@title Why We Replaced Our Standup With a Written Update
+@subtitle What happened when a team across five time zones stopped meeting every day
+@author Odile Marchetti, Engineering Manager, Cresswell Systems
+
+## The standup nobody liked
+
+For a long time I told myself our daily standup was fine. It was fifteen minutes. It was on the calendar. People showed up, mostly. That is a low bar, and I should have noticed sooner that we were only just clearing it.
+
+My team has 11 engineers spread across 5 time zones. We held standup at 14:00 UTC because it was the least bad time we could find. Least bad still meant 06:00 for one person and 22:00 for two others. Those three were routinely half asleep or absent, and I could not blame them.
+
+The rest of the team had a different problem. They were awake, but they were being quietly annoyed. Most of what got said was status read aloud: I worked on the migration, I will keep working on the migration. Useful information, perhaps, but nothing that needed eleven people on a call to hear it at the same moment. The real conversations, about a stuck review or a confusing requirement, tended to happen afterward in smaller groups, if they happened at all.
+
+Nobody complained loudly. That is the thing about a meeting everyone tolerates. It survives because no single person dislikes it enough to kill it.
+
+## What we tried
+
+On 2026-03-02 we stopped holding the standup and replaced it with a written update. Each engineer posts in a shared thread by 10:00 in their own local time, answering three prompts:
+
+1. What I finished.
+2. What I am doing next.
+3. What is blocking me.
+
+That is the whole format. We did not add a template beyond those three lines, and we did not ask for long answers. A good update is often four or five sentences. Because the deadline follows local time, the thread fills up in waves as the day moves around the world, and whenever anyone starts work there is a fresh set of updates waiting for them.
+
+I set two expectations at the start. First, everyone posts, including me. Second, everyone reads the thread before starting their own work, and replies when they can help with someone else's blocker. The second expectation turned out to matter far more than the first.
+
+We agreed to treat it as an experiment, track it for six months, until 2026-09-25, and go back if it was not working.
+
+## What we measured
+
+We looked at three things.
+
+The first was whether people felt informed. Every quarter we run a short team survey, and one question asks whether you feel informed about the team's work. Before the change, 61 percent said they did. After it, 84 percent did. I had expected that number to dip, honestly, since we had removed the one moment each day when everyone was nominally in the same place. Instead, the people who had been missing the call, or struggling to stay awake through it, finally had a reliable way to know what was going on.
+
+The second was how long blockers stayed blocked. The median time to resolve a blocker fell from 26 hours to 11. This was the result that surprised me most, and the reason is simple once you see it. A blocker posted at the end of one person's day was visible overnight to someone in another zone, who could often clear it before the original engineer woke up. In the old model, a blocker raised at standup tended to wait for the next standup, or for someone to remember it.
+
+The third was time. Meeting time dropped by 55 minutes per engineer per week. Across a team of eleven, that is a meaningful amount of attention handed back.
+
+I do not want to overstate any of this. These are one team's numbers over six months, and a quarterly survey is a blunt instrument. But all three moved in the same direction, and they matched what people were telling me.
+
+## What it cost
+
+It was not free, and the cost was the part I had underestimated.
+
+We lost spontaneous banter. The standup was never a great place for real work, but it was a place where someone mentioned their weekend, or a joke landed, or you simply saw a colleague's face. A written thread is efficient, and it is a little lonely.
+
+The clearest signal came from a new hire, who told me they felt isolated in their first weeks. They could read about everyone's work, but they had little sense of who these people were. That was a fair criticism and a useful one.
+
+We made two changes. We added a 30-minute optional video social on Fridays, with no agenda and no status updates. And we gave every new starter a buddy, someone whose job in those first weeks is to answer the questions you would feel silly asking in a thread. Neither fix fully replaces what we lost, but together they close most of the gap.
+
+## Should you do this?
+
+Maybe not. I want to be fair about where this would not work.
+
+If your team sits in one office on one schedule, a short standup may well be the cheapest way to stay in sync, and a written thread may just add reading to everyone's day. Our problem was largely a time zone problem, and a written update is a good answer to that problem in particular. And if nobody on your team reads the thread, the whole thing collapses. A written update nobody reads is worse than a meeting, because it looks like communication without being any.
+
+If you are a manager considering the same change, here are the three things I would tell you:
+
+1. **Run it for 8 weeks.** The first few weeks feel awkward, and you will not learn much from them. Give it long enough to settle before you judge it.
+2. **Ask people in the retrospective what they miss.** Not whether they like it, but what they miss. That question is how we found the isolation problem.
+3. **Be willing to bring the meeting back.** Say so at the start, and mean it. People engage more honestly with an experiment they know can end.
+
+We have not brought ours back. But I am glad we kept the option open, because it made it easier for everyone to tell me the truth.

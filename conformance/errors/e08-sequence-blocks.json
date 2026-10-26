@@ -1,0 +1,38 @@
+[
+  {
+    "severity": "error",
+    "code": "diagram-block-stray",
+    "line": 4,
+    "col": 4
+  },
+  {
+    "severity": "error",
+    "code": "diagram-block-stray",
+    "line": 5,
+    "col": 4
+  },
+  {
+    "severity": "error",
+    "code": "diagram-block-syntax",
+    "line": 7,
+    "col": 4
+  },
+  {
+    "severity": "error",
+    "code": "diagram-block-stray",
+    "line": 9,
+    "col": 4
+  },
+  {
+    "severity": "error",
+    "code": "diagram-block-nested",
+    "line": 10,
+    "col": 4
+  },
+  {
+    "severity": "error",
+    "code": "diagram-block-unclosed",
+    "line": 14,
+    "col": 1
+  }
+]

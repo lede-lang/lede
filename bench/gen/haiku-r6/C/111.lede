@@ -1,0 +1,25 @@
+@title Q3 2026 sales summary
+@subtitle July to September 2026, by category
+@author Imani Okoro, Retail Finance Lead
+
+## Q3 at a glance
+kpi Q3 revenue | $5.87M | +8.3% on Q3 last year | good
+kpi Best month | September | $2.24M | good
+kpi Average basket | $42.70 | September, up from $38.40 in July | good
+
+September was the best month of the quarter. Seasonal and holiday helped most: it reached 23.2% of September revenue once the autumn displays went up on 2026-09-08.
+
+## Revenue by category
+data rev = month,Plants,Tools and supplies,Furniture,Seasonal and holiday; Jul,820,410,530,90; Aug,760,390,480,150; Sep,910,450,360,520
+
+chart bar rev stack labels title="Monthly revenue by category, $ thousands"
+
+table = Month,Plants,Tools and supplies,Furniture,Seasonal and holiday,Total ($K); July,820 (44.3%),410 (22.2%),530 (28.6%),90 (4.9%),1850; August,760 (42.7%),390 (21.9%),480 (27.0%),150 (8.4%),1780; September,910 (40.6%),450 (20.1%),360 (16.1%),520 (23.2%),2240; Q3 total,2490 (42.4%),1250 (21.3%),1370 (23.3%),760 (12.9%),5870
+
+Plants is still the biggest category for the quarter, at 42.4% of revenue. The mix moved toward seasonal goods as the quarter went on. Seasonal and holiday grew from 4.9% of July revenue to 23.2% of September revenue, while Furniture fell from 28.6% to 16.1% as patio season ended.
+
+## Watch items
+! Furniture needs a clearance decision. Its revenue fell 32.1% from July to September, from $530K to $360K, as patio season ended. It is the one category that needs action this quarter.
+
+- Plants remains the largest category, but its share slipped from 44.3% in July to 40.6% in September.
+- Average basket size rose every month, to $42.70 in September.

@@ -1,0 +1,67 @@
+@title FW-482: average four humidity reads, sample every 2 s
+@subtitle Fixes false 100% humidity alarms and roughly halves average current
+
+## Why this change exists
+
+Three units in a Lisbon warehouse raised false 100% humidity alarms. A glitched read returned 0xFFFF, and the old code converted it straight to 100 %RH and reported it as real.
+
+Battery life is the second problem. In the field it is only about 14 months, because the sensor is sampled every 500 ms and draws 212 µA on average.
+
+## What changed
+
+- `humidity_read()` now takes 4 reads and reports their average, not a single read.
+- Any read that returns 0xFFFF aborts the whole sample and returns `-EIO`. No value is written to `*out`.
+- `wdt_feed()` is called after each read. Four reads take about 150 ms and the watchdog timeout is 1 s, so the loop stays well inside it.
+- `SAMPLE_PERIOD_MS` goes from 500 to 2000, which is where most of the current saving comes from.
+
+## Bench results
+
+kpi Average current | 96 µA | -55% from 212 µA | good
+kpi Noise | ±0.6 %RH | down from ±1.8 %RH | good
+kpi Worst alarm delay | 2 s | up from 0.5 s | bad
+
+If average current were the only drain, 96 µA against 212 µA would stretch the 14 months to roughly 31 months. That is arithmetic, not a field measurement.
+
+## Risk
+
+!! Alarms can now be detected up to 2 s late, up from 0.5 s. Product's limit is 5 s, so the margin is 3 s.
+
+!! Not tested below -10 °C. The bench results do not cover cold-storage conditions.
+
+## For reviewers
+
+- [ ] Check what the caller of `humidity_read()` does with `-EIO`. It must not raise an alarm and must not use a stale or zero value. Before this change the function always returned 0, so this path is new.
+- [ ] A sensor stuck at 0xFFFF now produces no readings at all rather than a false 100%. Confirm that is the behaviour we want, or whether repeated `-EIO` should raise a fault.
+- [ ] One bad read throws away all four. There is no retry inside the function.
+- [ ] `sum / SAMPLES_PER_AVG` is integer division. The truncation is under 1 raw count, about 0.0015 %RH, so I left it.
+
+## Diff
+
+```diff
+--- a/src/sensor/humidity.c
++++ b/src/sensor/humidity.c
+@@ -41,14 +41,22 @@
+-#define SAMPLE_PERIOD_MS 500
++#define SAMPLE_PERIOD_MS 2000
++#define SAMPLES_PER_AVG  4
+
+ int humidity_read(float *out)
+ {
+-    uint16_t raw = read_raw();
+-    *out = raw * 100.0f / 65535.0f;
+-    return 0;
++    uint32_t sum = 0;
++    for (int i = 0; i < SAMPLES_PER_AVG; i++) {
++        uint16_t raw = read_raw();
++        if (raw == 0xFFFF) {
++            return -EIO;
++        }
++        sum += raw;
++        wdt_feed();
++    }
++    *out = (sum / SAMPLES_PER_AVG) * 100.0f / 65535.0f;
++    return 0;
+ }
+```
+
+Ticket: FW-482

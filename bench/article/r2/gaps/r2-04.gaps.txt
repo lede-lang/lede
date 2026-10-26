@@ -1,0 +1,2 @@
+Lede has no way to attach a note to a line of code (no inline annotation or margin comments, no per-line anchors).
+Substituted: the diff in a code fence with the original line numbers, then one callout per note that starts with "Line N, severity". Severity is carried by callout level (critical for blocker, warning for major, note for minor) plus a kpi row of counts and a task checklist to work through. The link between note and line is by number only, not visual.

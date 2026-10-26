@@ -1,0 +1,37 @@
+@title Orders platform architecture
+@subtitle Commerce Platform · Kestrel Outfitters · last reviewed 2026-10-01
+
+# Overview
+
+The Orders platform takes web orders, reserves stock and charges cards. It handles about 3200 orders per hour at peak.
+
+# Architecture diagram
+
+diagram orders dir=LR title="Orders platform"
+orders: cust "Customers" user
+orders: stripe "Stripe" ext
+orders: alb "Application Load Balancer" lb
+orders: svc "Orders Service" svc
+orders: inv "Inventory Service" svc
+orders: db "Orders DB" db
+orders: q "Order Events" queue
+orders: ecr "ECR Registry" store
+orders: group vpc "Orders VPC (10.20.0.0/16)" alb, svc, inv, db
+orders: group prod "Prod account" vpc, q
+orders: group shared "Shared services account" ecr
+orders: cust -> alb : HTTPS
+orders: alb -> svc : /orders
+orders: alb -> inv : /inventory
+orders: svc -> db : SQL
+orders: svc -> q : publish
+orders: q -> inv : poll
+orders: svc -> stripe : charge
+orders: ecr -> svc : image pull
+
+# Components
+
+table = Component,Runtime,Purpose; Orders Service,"ECS Fargate, 6 tasks",Takes orders and charges cards; Inventory Service,"ECS Fargate, 4 tasks",Reserves stock; Orders DB,"RDS PostgreSQL 16 on db.r6g.xlarge, Multi-AZ",Stores orders; Order Events,"Standard SQS queue, 14 day retention",Carries order events to Inventory
+
+# Failure modes
+
+!! An Orders DB Multi-AZ failover takes about 60 seconds. During that time, order writes fail and the storefront shows a retry banner.

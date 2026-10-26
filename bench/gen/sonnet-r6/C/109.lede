@@ -1,0 +1,48 @@
+@title After-Hours Care Options
+@subtitle Larch Valley Medical Group, partners' meeting 2026-11-04
+@author Odette Rousseau, Practice Manager
+@date 2026-11-04
+
+We want to add after-hours care for our 38000 patients.
+
+!!! Decision needed on 2026-11-04: approve the $260000 telehealth budget.
+
+## Options
+
+grid 3
+
+### Extended clinic hours until 21:00
+- Annual cost: $410000
+- About 900 visits a month
+- Average wait: 25 minutes
+- Handles any visit that needs an exam
+
+### Telehealth urgent care
+**Recommended to start now.**
+- Annual cost: $260000
+- About 1500 visits a month
+- Average wait: 12 minutes
+- Cannot handle visits that need a physical exam
+
+### Nurse triage phone line
+Open 17:00 to 23:00.
+- Annual cost: $185000
+- About 2200 calls a month
+- Answered within 3 minutes
+- Vendor estimates it avoids 18% of emergency room referrals
+
+## Cost per contact
+
+data cpc = option,dollars per contact; Extended hours,38; Telehealth,14; Triage line,7
+
+chart hbar cpc unit=$ labels title="Cost per contact"
+
+## What each can and cannot do
+
+table = Option,Can do,Cannot do; Extended hours,Any visit that needs an exam,Lowest volume and longest wait; Telehealth,Fast access for about 1500 visits a month,Visits that need a physical exam; Triage line,Answers within 3 minutes and may avoid 18% of ER referrals,Treat patients
+
+Extended hours is the most expensive per contact, but it is the only option that treats patients who need an exam. It stays under consideration if telehealth use is low.
+
+## Recommendation
+
+Start with the **telehealth service** now and add the **nurse line** in the second half of 2027.

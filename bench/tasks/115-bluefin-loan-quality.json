@@ -1,0 +1,64 @@
+{
+  "id": "115-bluefin-loan-quality",
+  "category": "data",
+  "title": "Bluefin loan portfolio quality, Q3 2026",
+  "brief": "Bluefin Credit Union's chief risk officer, Anselm Wachira, needs a loan portfolio quality summary for the board's Q3 2026 meeting on 2026-10-29. Balances and the share of loans 30 or more days delinquent, by loan type, for Q2 and Q3. Auto: 412 million dollars, 1.9 percent in Q2 and 2.2 in Q3. Mortgage: 988 million, 0.6 and 0.6. Personal: 143 million, 3.4 and 4.1. Revolving credit: 96 million, 2.8 and 3.0. Total balances are 1639 million dollars. Weighted across the portfolio, delinquency rose from 1.3 percent in Q2 to 1.4 percent in Q3. Charge-offs were 3.9 million dollars in Q3 against 3.1 million in Q2, and the allowance for loan losses is 21.3 million dollars, 1.3 percent of loans. Draw out that personal loans have the highest delinquency and the largest rise (up 0.7 points), that auto is rising more slowly (up 0.3) but matters more in dollars because it is 412 million, and that mortgages, which are 60.3 percent of balances, were flat. Sections: \"Portfolio at a glance\", \"Delinquency by loan type\" (Q2 beside Q3 so the movement is visible), \"What changed\" and \"Actions\". Actions: tighten personal loan underwriting for credit scores below 640 starting 2026-11-15, add early outreach for auto loans at 15 days past due, and review reserve adequacy at the January meeting.",
+  "checklist": {
+    "sections": [
+      "Portfolio at a glance",
+      "Delinquency by loan type",
+      "What changed",
+      "Actions"
+    ],
+    "visible": [
+      "Auto",
+      "Mortgage",
+      "Personal",
+      "Revolving credit",
+      "Anselm Wachira",
+      "underwriting"
+    ],
+    "values": [
+      "2026-10-29",
+      "412 million",
+      "1.9",
+      "2.2",
+      "988 million",
+      "0.6",
+      "143 million",
+      "3.4",
+      "4.1",
+      "96 million",
+      "2.8",
+      "3.0",
+      "1639 million",
+      "1.3",
+      "1.4",
+      "3.9 million",
+      "3.1 million",
+      "21.3 million",
+      "60.3",
+      "640",
+      "2026-11-15"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Personal loan delinquency in Q3 was restated to 3.9 percent, and the underwriting change now starts on 2026-12-01.",
+    "expect_visible": [],
+    "expect_values": [
+      "3.9 percent",
+      "2026-12-01"
+    ],
+    "expect_absent": [
+      "4.1",
+      "2026-11-15"
+    ]
+  }
+}

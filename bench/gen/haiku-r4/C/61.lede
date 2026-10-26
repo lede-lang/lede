@@ -1,0 +1,28 @@
+@title Cohort retention, June to September 2026
+@subtitle Share of each signup cohort still active, by months since signup
+
+Recent signup cohorts are keeping users better. Month-1 retention is up 7 points, from 46 percent in the June cohort to 53 percent in the September cohort.
+
+## Cohort table
+
+data cohorts = cohort,signups,month 0,month 1,month 2,month 3; Jun 2026,"18,400",100,46,38,33; Jul 2026,"21,700",100,48,40,35; Aug 2026,"25,300",100,51,43,; Sep 2026,"29,800",100,53,,
+
+table cohorts title="Percent still active, by months since signup"
+
+Cohort sizes total 95,200 signups. Months not reached yet are left blank, not zero.
+
+## Retention by month
+
+kpi Month-1 retention | 50.0% | weighted across cohorts
+kpi Month-2 retention | 40.6% | June to August cohorts
+kpi Month-3 retention | 34.1% | June and July cohorts
+
+data curves = month,Jun 2026,Jul 2026,Aug 2026,Sep 2026; Month 0,100,100,100,100; Month 1,46,48,51,53; Month 2,38,40,43,; Month 3,33,35,,
+
+chart line curves unit=% min=0 max=100 title="Share still active, by months since signup"
+
+## Takeaways
+
+- The onboarding changes shipped on 2026-07-20 line up with the jump from 48 to 51 percent at month 1, between the July and August cohorts.
+- The biggest drop is always between month 0 and month 1.
+- September's cohort is the largest, at 29,800 signups, and is also the best retaining so far.

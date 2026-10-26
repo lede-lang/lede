@@ -1,0 +1,39 @@
+@title 911 Call Receiving and Dispatch
+@subtitle Architecture for the Marrow County Emergency Communications District
+@author Public Safety Systems team
+@date 2026-09-30
+
+## Overview
+Calls arrive from the telephone carriers into the primary dispatch center. A backup dispatch center across the county can take over if the primary is lost.
+
+## Call path
+diagram callpath dir=LR title="Call path"
+callpath: callers "Callers" ext
+callpath: carriers "Telecom Carriers" ext
+callpath: router "Call Router" svc
+callpath: cada "CAD Server A" svc "active" focus
+callpath: cadb "CAD Server B" svc "hot standby"
+callpath: radio "Radio Gateway" svc
+callpath: sbr "Standby Call Router" svc
+callpath: repl "CAD Replica" store
+callpath: gis "State GIS Service" ext
+callpath: field "Field Units" user
+callpath: callers -> carriers : voice and caller location
+callpath: carriers -> router : SIP trunks
+callpath: router -> cada : call record
+callpath: cada -> cadb : state sync
+callpath: cada --> repl : asynchronous replication
+callpath: router --> sbr : heartbeat
+callpath: cada -> gis : address lookup
+callpath: cada -> radio : dispatch message
+callpath: radio -> field : P25 radio
+callpath: group pdc "Primary Dispatch Center" router, cada, cadb, radio
+callpath: group bdc "Backup Dispatch Center" sbr, repl
+
+!! The backup center is activated only when the shift supervisor declares the primary unavailable. It is never activated automatically.
+
+## Failover targets
+- Call routing switches to the Standby Call Router within 30 seconds.
+- CAD Server B takes over within 2 minutes.
+- The CAD Replica lags by under 5 seconds.
+- The whole backup center is fully staffed and taking calls within 10 minutes.

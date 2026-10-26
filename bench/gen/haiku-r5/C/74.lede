@@ -1,0 +1,42 @@
+@title Ticketing Platform Architecture
+@subtitle Tidewater Ferries, region North Europe, reviewed 2026-09-22
+@author Digital Channels
+
+# Overview
+
+Passengers book through Azure Front Door. Every booking is written to one database and announced as an event so that the scanners at the terminals stay in step.
+
+# Diagram
+
+diagram tide dir=LR title="Ticketing on Azure"
+tide: pax "Passengers" user
+tide: fd "Front Door" lb
+tide: web "Booking Web App" svc
+tide: api "Ticketing API" svc
+tide: rdb "Reservations DB" db "Azure SQL"
+tide: bev "Booking Events" queue "Service Bus"
+tide: scan "Port Terminal Scanners" ext
+tide: pay "Payment Provider" ext
+tide: pax -> fd : HTTPS
+tide: fd -> web : origin request
+tide: web -> api : REST
+tide: api -> rdb : SQL, port 1433
+tide: api -> pay : card authorization
+tide: api -> bev : ticket issued
+tide: bev -> scan : sync every 30 s
+tide: group appsub "App subnet (10.50.1.0/24)" web, api
+tide: group datasub "Data subnet (10.50.2.0/24)" rdb, bev
+tide: group vnet "Ticketing VNet (10.50.0.0/16)" appsub, datasub
+tide: group sub "Ticketing subscription" vnet
+
+# Capacity
+
+- **Booking Web App:** 3 to 10 instances at 60 percent CPU.
+- **Ticketing API:** 4 to 16 pods.
+- **Reservations DB:** 8 vCores, with a read replica in the paired region.
+
+# Recovery targets
+
+- Recovery point objective: 5 minutes.
+- Recovery time objective: 1 hour.
+- Last tested: 2026-08-19.

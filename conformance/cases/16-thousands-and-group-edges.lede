@@ -1,0 +1,8 @@
+table = Option,Monthly cost,Notes; SQS,$310,managed; Kafka,$1,450,self-run; Big,"$12,000",quoted
+diagram lz dir=LR
+lz: prodvpc -> tgw : attachment
+lz: tgw "Transit Gateway" svc
+lz: app "App subnets"
+lz: group prodvpc "Prod VPC" app
+lz: group prod "Prod account" prodvpc
+lz: prod -> tgw : peering

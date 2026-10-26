@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/lede-lang/lede/security/advisories/new
+    about: A script or a remote fetch in a compiled page. Private; see SECURITY.md.
+  - name: Documentation and playground
+    url: https://ledelang.dev/
+    about: The reference, a gallery of pages and a playground that compiles Lede in the browser.

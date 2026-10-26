@@ -1,0 +1,45 @@
+@title Product Design Principles
+@subtitle Fathom Bank, Design Systems team
+@author Design Systems team, Fathom Bank
+
+These principles were agreed in a workshop with 26 designers and engineers on 2026-09-17. They apply to all customer-facing apps.
+
+## Clarity over cleverness
+
+Customers should understand what a control does before they touch it. Plain labels beat clever icons, especially where money moves. When in doubt, say the action out loud.
+
+- Do: label buttons with the action, such as "Send transfer".
+- Avoid: icons without text for money movement.
+
+## Show the money
+
+Fees, limits and totals belong in front of the customer before they commit. A customer who learns the real cost on the last screen will feel tricked, even if the fee was disclosed somewhere.
+
+- Do: show fees before confirmation.
+- Avoid: revealing fees on the final screen.
+
+## Forgive mistakes
+
+People make mistakes, and the product should make them recoverable. A customer who schedules the wrong transfer should be able to take it back without calling anyone.
+
+- Do: allow undo for 10 seconds after a transfer is scheduled.
+- Avoid: making cancellation a phone call.
+
+## Accessible by default
+
+Accessibility is part of the design, not a later pass. Color should support meaning, never carry it alone, and text should be readable for everyone who uses the app.
+
+- Do: meet a contrast ratio of 4.5 to 1.
+- Avoid: relying on color alone for status.
+
+## Calm, not urgent
+
+Customers make better decisions when they are not rushed. State deadlines plainly, and let people take the time they need.
+
+- Do: state plain deadlines.
+- Avoid: countdown timers that push decisions.
+
+> "If a customer has to read it twice, we wrote it wrong."
+> — Ines Albrecht, Head of Design
+
+! Disagreements with a principle go to the monthly design council, not to individual reviews.

@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sale-to-Stock Sequence</title>
+<style>
+:root{--bg:#f6f5f1;--card:#ffffff;--fg:#1c1f24;--muted:#5d6470;--line:#d8dbe0;--accent:#2a5d9f}
+@media (prefers-color-scheme: dark){:root{--bg:#101215;--card:#181b20;--fg:#e7e9ee;--muted:#9aa2ad;--line:#2d333b;--accent:#8db6ef}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+main{max-width:900px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:1.75rem;line-height:1.2;margin:0 0 6px}
+h2{font-size:1.25rem;margin:34px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+p{margin:0 0 12px}
+ul{padding-left:20px;margin:0 0 12px}
+li{margin-bottom:8px}
+.meta{color:var(--muted);font-size:.9rem;margin:0 0 20px}
+.diagram{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;margin:12px 0}
+.diagram svg{display:block;width:100%;height:auto}
+svg text{fill:var(--fg);font-size:13px}
+svg .life{stroke:var(--line);stroke-width:1.5;stroke-dasharray:4 4}
+svg .part{fill:var(--card);stroke:var(--accent);stroke-width:1.5}
+svg .msg{fill:none;stroke:var(--fg);stroke-width:1.6}
+svg .dash{stroke-dasharray:6 4;stroke:var(--muted)}
+svg .b{fill:var(--accent)}
+svg .bt{fill:#fff;font-size:12px;font-weight:700;text-anchor:middle}
+svg .off{fill:var(--card);stroke:var(--muted);stroke-dasharray:4 3}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{text-align:left;vertical-align:top;padding:8px 6px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:600;font-size:.82rem;text-transform:uppercase;letter-spacing:.04em}
+.tw{overflow-x:auto}
+.note{border-left:4px solid var(--accent);padding:10px 14px;background:var(--card);border-radius:8px;margin:14px 0}
+@media (max-width:520px){th,td{font-size:.88rem;padding:6px 4px}}
+</style>
+</head>
+<body>
+<main>
+<h1>Sale-to-Stock Sequence</h1>
+<p class="meta">Owner: Retail Platform team &middot; Dated 2026-10-08 &middot; For new engineers</p>
+
+<p>This page explains how a sale at a store register reaches the online stock count.</p>
+
+<h2>Sale-to-stock sequence</h2>
+<div class="diagram">
+<svg viewBox="0 0 660 510" role="img" aria-label="Sequence diagram: Store POS, Edge Sync Agent, Inventory API, Stock Ledger and Storefront exchange messages for a sale.">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--fg)"/></marker></defs>
+<line class="life" x1="70" y1="50" x2="70" y2="500"/>
+<line class="life" x1="200" y1="50" x2="200" y2="500"/>
+<line class="life" x1="330" y1="50" x2="330" y2="500"/>
+<line class="life" x1="460" y1="50" x2="460" y2="500"/>
+<line class="life" x1="590" y1="50" x2="590" y2="500"/>
+
+<rect class="part" x="10" y="10" width="120" height="40" rx="6"/><text x="70" y="34" text-anchor="middle">Store POS</text>
+<rect class="part" x="140" y="10" width="120" height="40" rx="6"/><text x="200" y="34" text-anchor="middle">Edge Sync Agent</text>
+<rect class="part" x="270" y="10" width="120" height="40" rx="6"/><text x="330" y="34" text-anchor="middle">Inventory API</text>
+<rect class="part" x="400" y="10" width="120" height="40" rx="6"/><text x="460" y="34" text-anchor="middle">Stock Ledger</text>
+<rect class="part" x="530" y="10" width="120" height="40" rx="6"/><text x="590" y="34" text-anchor="middle">Storefront</text>
+
+<line class="msg" marker-end="url(#ar)" x1="70" y1="90" x2="200" y2="90"/>
+<line class="msg" marker-end="url(#ar)" x1="200" y1="135" x2="330" y2="135"/>
+<line class="msg" marker-end="url(#ar)" x1="330" y1="180" x2="460" y2="180"/>
+<line class="msg dash" marker-end="url(#ar)" x1="460" y1="225" x2="330" y2="225"/>
+<line class="msg dash" marker-end="url(#ar)" x1="330" y1="270" x2="200" y2="270"/>
+<line class="msg" marker-end="url(#ar)" x1="330" y1="315" x2="590" y2="315"/>
+
+<circle class="b" cx="135" cy="78" r="10"/><text class="bt" x="135" y="82">1</text>
+<circle class="b" cx="265" cy="123" r="10"/><text class="bt" x="265" y="127">2</text>
+<circle class="b" cx="395" cy="168" r="10"/><text class="bt" x="395" y="172">3</text>
+<circle class="b" cx="395" cy="213" r="10"/><text class="bt" x="395" y="217">4</text>
+<circle class="b" cx="265" cy="258" r="10"/><text class="bt" x="265" y="262">5</text>
+<circle class="b" cx="460" cy="303" r="10"/><text class="bt" x="460" y="307">6</text>
+
+<rect class="off" x="10" y="345" width="640" height="48" rx="8"/>
+<text x="24" y="366" style="font-weight:600">Offline: Store POS keeps selling; Edge Sync Agent queues adjustments locally</text>
+<text x="24" y="383" class="sub" style="fill:var(--muted);font-size:12px">The queue is sent in order when the link returns.</text>
+
+<line class="msg dash" marker-end="url(#ar)" x1="200" y1="425" x2="330" y2="425"/>
+<circle class="b" cx="265" cy="413" r="10"/><text class="bt" x="265" y="417">7</text>
+<text x="338" y="429" style="font-size:12px">replay queued adjustments</text>
+</svg>
+</div>
+
+<div class="tw">
+<table>
+<thead><tr><th>#</th><th>From</th><th>To</th><th>Message</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Store POS</td><td>Edge Sync Agent</td><td>sale recorded, 2 units of SKU 48113</td></tr>
+<tr><td>2</td><td>Edge Sync Agent</td><td>Inventory API</td><td>POST /adjustments, batched every 5 seconds</td></tr>
+<tr><td>3</td><td>Inventory API</td><td>Stock Ledger</td><td>append decrement</td></tr>
+<tr><td>4</td><td>Stock Ledger</td><td>Inventory API</td><td>new on-hand count</td></tr>
+<tr><td>5</td><td>Inventory API</td><td>Edge Sync Agent</td><td>202 Accepted</td></tr>
+<tr><td>6</td><td>Inventory API</td><td>Storefront</td><td>publish stock change</td></tr>
+<tr><td>7</td><td>Edge Sync Agent</td><td>Inventory API</td><td>replay queued adjustments (offline case, in order)</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>Timing budget</h2>
+<div class="tw">
+<table>
+<thead><tr><th>Hop</th><th>Limit</th></tr></thead>
+<tbody>
+<tr><td>Register to agent</td><td>under 1 second</td></tr>
+<tr><td>Agent batch interval</td><td>5 seconds</td></tr>
+<tr><td>API to ledger</td><td>under 200 milliseconds</td></tr>
+<tr><td>Ledger to storefront</td><td>under 10 seconds</td></tr>
+<tr><td>End to end</td><td>under 20 seconds for 99 percent of sales</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>Good to know</h2>
+<div class="note">
+<p><strong>The Stock Ledger is the only source of truth.</strong> The Storefront count is a copy and may lag the ledger by up to 20 seconds.</p>
+</div>
+<ul>
+<li>The local queue on the edge holds up to 4 hours of sales, which is about 3,000 adjustments at a busy store.</li>
+<li>Every adjustment carries an idempotency key, so replays never double count a sale.</li>
+<li>Online orders reserve stock for 15 minutes at checkout.</li>
+</ul>
+</main>
+</body>
+</html>

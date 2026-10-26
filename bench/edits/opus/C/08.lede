@@ -1,0 +1,41 @@
+@title Orders Platform Architecture
+@subtitle Kestrel Outfitters
+@author Commerce Platform
+@date Last reviewed 2026-10-01
+
+## Overview
+
+The Orders platform takes web orders, reserves stock and charges cards. It handles about 3,200 orders per hour at peak.
+
+## Architecture diagram
+
+diagram orders dir=LR title="Orders platform"
+orders: customers "Customers" user
+orders: stripe "Stripe" ext
+orders: alb "Application Load Balancer" lb
+orders: ordsvc "Orders Service" svc "ECS Fargate, 6 tasks" focus
+orders: invsvc "Stock Service" svc "ECS Fargate, 4 tasks"
+orders: notifsvc "Notification Service" svc
+orders: db "Orders DB" db "RDS PostgreSQL 16" focus
+orders: events "Order Events" queue "SQS"
+orders: ecr "ECR Registry" store
+orders: customers -> alb : HTTPS
+orders: alb -> ordsvc : /orders
+orders: alb -> invsvc : /inventory
+orders: ordsvc -> db : SQL
+orders: ordsvc -> events : publish
+orders: events --> invsvc : poll
+orders: events -> notifsvc : subscribe
+orders: ordsvc -> stripe : charge
+orders: ecr --> ordsvc : image pull
+orders: group vpc "Orders VPC 10.20.0.0/16" alb, ordsvc, invsvc, notifsvc, db
+orders: group prod "Prod account" vpc, events
+orders: group shared "Shared services account" ecr
+
+## Components
+
+table = Component,Runtime,Purpose; Orders Service,"ECS Fargate, 6 tasks",Accepts orders and charges cards; Stock Service,"ECS Fargate, 4 tasks",Reserves stock; Orders DB,"RDS PostgreSQL 16, db.r6g.xlarge, Multi-AZ",Stores orders; Order Events,"SQS standard queue, 14-day retention",Carries order events to inventory
+
+## Failure modes
+
+!! An Orders DB Multi-AZ failover takes about 60 seconds. During that window order writes fail and the storefront shows a retry banner.

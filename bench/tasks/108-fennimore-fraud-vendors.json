@@ -1,0 +1,58 @@
+{
+  "id": "108-fennimore-fraud-vendors",
+  "category": "comparison",
+  "title": "Fennimore fraud-screening vendors",
+  "brief": "Fennimore Payments processes about 6 million customer payment transactions a month and has to choose a fraud-screening vendor by 2026-11-20. The risk lead, Gideon Ashworth, wants a comparison page for the payments steering group. Three vendors. Tollgate: catches 91.2 percent of fraud, wrongly blocks 1.9 percent of good transactions, costs 4.10 dollars per 1000 transactions, integration takes 6 weeks. Vantage Shield: catches 94.8 percent, 3.1 percent wrongly blocked, 6.80 dollars per 1000, 10 weeks. Kestrel Risk: catches 89.5 percent, 1.2 percent wrongly blocked, 2.90 dollars per 1000, 4 weeks. At 6 million transactions a month the annual fees come to 295200 dollars for Tollgate, 489600 for Vantage Shield and 208800 for Kestrel Risk. Use the sections \"Side by side\", \"Annual fees\", \"What the trade-off means\" and \"Recommendation\". For the trade-off, explain that each wrongly blocked transaction is a customer declined at checkout, and that Vantage Shield's extra catch rate over Tollgate (3.6 points) comes with 1.2 points more wrongly blocked and 194400 dollars more in fees a year. We lean toward Tollgate as the balanced choice, with Kestrel Risk as the budget fallback if the steering group wants to cut fees by about 86400 dollars a year. State plainly that if the contract is signed by 2026-12-15, Tollgate and Kestrel Risk would be live before the change freeze on 2027-02-01 but Vantage Shield, at 10 weeks, would not.",
+  "checklist": {
+    "sections": [
+      "Side by side",
+      "Annual fees",
+      "What the trade-off means",
+      "Recommendation"
+    ],
+    "visible": [
+      "Tollgate",
+      "Vantage Shield",
+      "Kestrel Risk",
+      "Gideon Ashworth",
+      "change freeze"
+    ],
+    "values": [
+      "2026-11-20",
+      "91.2",
+      "94.8",
+      "89.5",
+      "1.9",
+      "3.1",
+      "1.2",
+      "4.10",
+      "6.80",
+      "2.90",
+      "295200",
+      "489600",
+      "208800",
+      "194400",
+      "86400",
+      "2026-12-15",
+      "2027-02-01"
+    ]
+  },
+  "needs": [
+    "table",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Kestrel Risk's price is now 3.40 dollars per 1000 transactions instead of 2.90, which makes its annual fees 244800 dollars.",
+    "expect_visible": [],
+    "expect_values": [
+      "3.40",
+      "244800"
+    ],
+    "expect_absent": [
+      "2.90",
+      "208800"
+    ]
+  }
+}

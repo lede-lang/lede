@@ -1,0 +1,5 @@
+Lede cannot render label mockups, colour swatches, typefaces or any picture of a beer, which is the whole point of a visual direction. I substituted a written spec per direction: palette table with hex codes, type description, layout rules, and a one-paragraph treatment for each of the 12 beers in each of the 4 directions. I did not use a raw HTML fence to fake mockups.
+Cannot place the directions side by side visually (grid works only for blocks of text and tables). Substituted a cards row, a constraints status table, and per-direction tables.
+Cannot make the user able to pick pieces and combine them; substituted a "what to steal" table.
+Hex codes, ABV sizes (10 mm) and safe margins are my proposals; the brief gave no current brand hex values, can or bottle format, or mandatory label text. Flagged on the page, along with the 0.5% alcohol-free wording question and the Gose and milk allergen questions.
+Numbers with thousands separators are quoted text in the table and plain in the chart data. Midwinter Porter has no sales, so it is left out of the revenue chart.

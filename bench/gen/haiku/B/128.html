@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Student Information System Upgrade Status</title>
+<style>
+:root {
+  --bg: #f6f5f2;
+  --card: #ffffff;
+  --text: #22201b;
+  --muted: #645f55;
+  --border: #dedbd2;
+  --track: #e8e5dc;
+  --green: #2d7a4b;
+  --amber: #c98a12;
+  --red: #b83227;
+  --accent: #6b3e8c;
+  --planned: #8c867a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15121a;
+    --card: #1e1a24;
+    --text: #ece8f2;
+    --muted: #a59eb1;
+    --border: #36303e;
+    --track: #2b2634;
+    --green: #6cc48c;
+    --amber: #f0b74a;
+    --red: #ff7b6e;
+    --accent: #c09ae0;
+    --planned: #8f879c;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15121a;
+  --card: #1e1a24;
+  --text: #ece8f2;
+  --muted: #a59eb1;
+  --border: #36303e;
+  --track: #2b2634;
+  --green: #6cc48c;
+  --amber: #f0b74a;
+  --red: #ff7b6e;
+  --accent: #c09ae0;
+  --planned: #8f879c;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+.wrap { max-width: 760px; margin: 0 auto; padding: 22px 16px 48px; }
+header { border-bottom: 3px solid var(--accent); padding-bottom: 12px; margin-bottom: 18px; }
+.org { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .07em; }
+h1 { font-size: 26px; margin: 6px 0 4px; line-height: 1.2; }
+.meta { color: var(--muted); font-size: 14px; }
+h2 { font-size: 19px; color: var(--accent); margin: 26px 0 10px; }
+section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; margin-bottom: 14px; }
+.overall { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.status { font-weight: 700; color: #1d1600; background: var(--amber); padding: 6px 14px; border-radius: 999px; text-transform: uppercase; letter-spacing: .05em; font-size: 14px; }
+.budget-big { font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.bar { height: 14px; background: var(--track); border-radius: 999px; overflow: hidden; margin: 10px 0 6px; }
+.bar > span { display: block; height: 100%; background: var(--accent); }
+.facts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
+.facts div { background: var(--bg); border-radius: 10px; padding: 10px; font-size: 13px; color: var(--muted); }
+.facts b { display: block; color: var(--text); font-size: 17px; font-variant-numeric: tabular-nums; }
+.ms { list-style: none; margin: 0; padding: 0; }
+.ms li { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center; }
+.ms li:last-child { border-bottom: 0; }
+.ms .name { font-weight: 600; }
+.ms .prog { display: flex; align-items: center; gap: 10px; grid-column: 1 / -1; }
+.ms .track { flex: 1; height: 10px; background: var(--track); border-radius: 999px; overflow: hidden; }
+.ms .track > span { display: block; height: 100%; }
+.ms .pct { font-variant-numeric: tabular-nums; width: 44px; text-align: right; font-size: 14px; color: var(--muted); }
+.tag { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px; color: #fff; text-transform: uppercase; }
+.tag.done { background: var(--green); }
+.tag.green { background: var(--green); }
+.tag.amber { background: var(--amber); color: #1d1600; }
+.tag.planned { background: var(--planned); }
+.risks { list-style: none; margin: 0; padding: 0; }
+.risks li { padding: 10px 0; border-bottom: 1px solid var(--border); }
+.risks li:last-child { border-bottom: 0; }
+.sev { font-size: 12px; font-weight: 700; text-transform: uppercase; padding: 2px 8px; border-radius: 6px; margin-left: 6px; }
+.sev.high { background: var(--red); color: #fff; }
+.sev.medium { background: var(--amber); color: #1d1600; }
+.owner { color: var(--muted); font-size: 14px; }
+.decision { border-left: 5px solid var(--amber); padding: 4px 0 4px 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="org">Harlow University &middot; IT Office</div>
+  <h1>Student Information System Upgrade</h1>
+  <div class="meta">Status as of 2026-10-16 &middot; For the steering committee &middot; Go-live 2027-01-11</div>
+</header>
+
+<h2>At a glance</h2>
+<section>
+  <div class="overall">
+    <span>Overall project status</span>
+    <span class="status">Amber</span>
+  </div>
+  <div style="margin-top:14px" class="budget-big">$1.74M of $2.6M spent</div>
+  <div class="bar" role="progressbar" aria-valuenow="66.9" aria-valuemin="0" aria-valuemax="100"><span style="width:66.9%"></span></div>
+  <div class="meta">66.9 percent of approved budget spent</div>
+  <div class="facts">
+    <div>Approved<b>$2.60M</b></div>
+    <div>Forecast at completion<b>$2.78M</b></div>
+    <div>Forecast over budget<b>$0.18M</b></div>
+  </div>
+</section>
+
+<h2>Milestones</h2>
+<section>
+  <ul class="ms">
+    <li><span class="name">Data cleanup</span><span class="tag done">Done</span>
+      <div class="prog"><div class="track"><span style="width:100%;background:var(--green)"></span></div><span class="pct">100%</span></div></li>
+    <li><span class="name">System configuration</span><span class="tag green">Green</span>
+      <div class="prog"><div class="track"><span style="width:85%;background:var(--green)"></span></div><span class="pct">85%</span></div></li>
+    <li><span class="name">Integration testing</span><span class="tag amber">Amber</span>
+      <div class="prog"><div class="track"><span style="width:40%;background:var(--amber)"></span></div><span class="pct">40%</span></div></li>
+    <li><span class="name">User training</span><span class="tag green">Green</span>
+      <div class="prog"><div class="track"><span style="width:10%;background:var(--green)"></span></div><span class="pct">10%</span></div></li>
+    <li><span class="name">Cutover rehearsal</span><span class="tag planned">Planned</span>
+      <div class="prog"><div class="track"><span style="width:0%;background:var(--planned)"></span></div><span class="pct">0%</span></div>
+      <span class="owner" style="grid-column:1/-1">Planned for 2026-12-07</span></li>
+  </ul>
+</section>
+
+<h2>Risks</h2>
+<section>
+  <ul class="risks">
+    <li>The financial aid integration is failing 14 of 60 test cases.
+      <span class="sev high">High</span>
+      <div class="owner">Owner: Beatrice Lindgren</div></li>
+    <li>Registrar staff have only 55 of the 120 planned training seats confirmed.
+      <span class="sev medium">Medium</span>
+      <div class="owner">Owner: Omar Faraj</div></li>
+    <li>A freeze on course catalog changes must begin by 2026-11-20, and 3 departments have not agreed.
+      <span class="sev medium">Medium</span>
+      <div class="owner">Owner: Greta Nilsson</div></li>
+  </ul>
+</section>
+
+<h2>Decision needed</h2>
+<section class="decision">
+  <p style="margin-top:0">Choose one of two options:</p>
+  <ul style="margin-bottom:0">
+    <li><strong>Approve $0.18M</strong> of extra vendor support through 2027-01-31, keeping go-live on 2027-01-11.</li>
+    <li><strong>Move go-live to 2027-02-15</strong>, which would miss the first week of spring registration.</li>
+  </ul>
+</section>
+</div>
+</body>
+</html>

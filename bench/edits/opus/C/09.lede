@@ -1,0 +1,44 @@
+@title Clickstream Data Platform
+@subtitle Harbor Media, as of 2026-09-30
+@author Data Engineering
+
+## Overview
+
+We collect about 1,800 million events per day from our web and mobile apps, stream them through Kinesis and Firehose, and land them in an S3 data lake. A nightly EMR job cleans the raw data into curated tables, which load into Redshift for analysts to query through Superset.
+
+## Architecture diagram
+
+diagram lake dir=LR title="Clickstream pipeline"
+lake: apps "Web and Mobile Apps" user
+lake: looker "Superset" ext
+lake: stream "Clickstream Stream" queue "Kinesis"
+lake: firehose "Firehose" svc
+lake: raw "Raw Bucket" store
+lake: curated "Curated Bucket" store
+lake: glue "Glue Catalog" db
+lake: emr "EMR Cluster" svc focus
+lake: redshift "Redshift Cluster" db focus
+lake: featurestore "Feature Store" store
+lake: apps -> stream : events
+lake: stream -> firehose : batch
+lake: firehose -> raw : parquet every 5 min
+lake: raw -> emr : nightly ETL
+lake: emr -> curated : cleaned tables
+lake: emr -> featurestore : features
+lake: curated -> redshift : COPY
+lake: glue -> emr : schemas
+lake: redshift -> looker : SQL
+lake: group ingest "Ingest account" stream, firehose
+lake: group lakevpc "Lake VPC 10.40.0.0/16" emr, redshift, featurestore
+lake: group analytics "Analytics account" raw, curated, glue, lakevpc
+
+## Datasets
+
+data datasets = Dataset,Daily volume (GB),Retention (days),Owner; raw_events,940,30,Ingest squad; sessions,120,400,Analytics Eng; page_views,310,400,Analytics Eng; ad_impressions,260,90,Ad Tech
+table datasets
+
+## Known limits
+
+- Firehose buffering means data arrives up to 5 minutes late.
+- The nightly ETL finishes around 03:40 UTC.
+- Redshift is a 4-node ra3.4xlarge cluster that queues queries above 50 concurrent users.

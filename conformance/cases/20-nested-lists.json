@@ -1,0 +1,80 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "list",
+      "ordered": true,
+      "start": 1,
+      "items": [
+        {
+          "text": "Roll back",
+          "checked": null
+        },
+        {
+          "text": "check the canary",
+          "checked": null,
+          "level": 2,
+          "ordered": false
+        },
+        {
+          "text": "page the on-call",
+          "checked": true,
+          "level": 2,
+          "ordered": false
+        },
+        {
+          "text": "drain traffic",
+          "checked": null,
+          "level": 2,
+          "ordered": true
+        },
+        {
+          "text": "restore the snapshot",
+          "checked": null,
+          "level": 2,
+          "ordered": true
+        },
+        {
+          "text": "Verify",
+          "checked": null
+        }
+      ],
+      "line": 1
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "start": 1,
+      "items": [
+        {
+          "text": "Notify",
+          "checked": null
+        },
+        {
+          "text": "post in #incidents",
+          "checked": null,
+          "level": 2,
+          "ordered": false
+        },
+        {
+          "text": "Tail item",
+          "checked": null
+        },
+        {
+          "text": "1.5 million users were affected",
+          "checked": null,
+          "level": 2,
+          "ordered": false
+        }
+      ],
+      "line": 7
+    },
+    {
+      "type": "paragraph",
+      "text": "1.5 million users were affected --not a sub-item -- escaped is prose --",
+      "line": 12
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

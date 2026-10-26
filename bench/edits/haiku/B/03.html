@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Q4 2026 Mid-Market Pipeline</title>
+<style>
+:root{--bg:#f7f7f4;--surface:#ffffff;--ink:#202124;--soft:#63666e;--rule:#e2e2dc;--brand:#0f6b6b;--amber-bg:#fff6e5;--amber:#b86e00;--amber-ink:#5a3800;}
+@media (prefers-color-scheme: dark){
+:root:not([data-theme="light"]){--bg:#101412;--surface:#18201d;--ink:#e6ebe8;--soft:#97a39e;--rule:#2a3530;--brand:#48c3c3;--amber-bg:#33270c;--amber:#e8aa3a;--amber-ink:#ffdfa6;}
+}
+:root[data-theme="dark"]{--bg:#101412;--surface:#18201d;--ink:#e6ebe8;--soft:#97a39e;--rule:#2a3530;--brand:#48c3c3;--amber-bg:#33270c;--amber:#e8aa3a;--amber-ink:#ffdfa6;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
+.page{max-width:920px;margin:0 auto;padding:24px 16px 60px}
+.kicker{color:var(--soft);font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;margin:0}
+h1{font-size:1.7rem;margin:4px 0 2px}
+.asof{color:var(--soft);margin:0 0 20px;font-size:.92rem}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:14px}
+.tile b{display:block;font-size:1.6rem;color:var(--brand)}
+.tile span{color:var(--soft);font-size:.86rem}
+h2{font-size:1.15rem;margin:32px 0 10px;color:var(--ink)}
+.box{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:12px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.94rem;min-width:400px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--rule);text-align:left}
+th{color:var(--soft);font-weight:600;font-size:.84rem}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.callout{background:var(--amber-bg);border-left:4px solid var(--amber);color:var(--amber-ink);padding:14px 16px;border-radius:6px;margin:16px 0}
+.callout strong{color:var(--amber)}
+svg{display:block;width:100%;height:auto}
+svg text{font-size:12.5px;fill:var(--ink)}
+svg .lab{fill:var(--soft)}
+svg .bars{fill:var(--brand)}
+svg .sep{stroke:var(--rule)}
+</style>
+</head>
+<body>
+<main class="page">
+<p class="kicker">Sales Operations · Mid-Market</p>
+<h1>Q4 2026 Pipeline, Northwind Analytics</h1>
+<p class="asof">Mid-Market team, as of 2026-10-14</p>
+
+<div class="tiles">
+  <div class="tile"><b>$4,820K</b><span>Total pipeline</span></div>
+  <div class="tile"><b>$1,930K</b><span>Weighted pipeline</span></div>
+  <div class="tile"><b>$2,400K</b><span>Quota</span></div>
+  <div class="tile"><b>27%</b><span>Win rate</span></div>
+</div>
+
+<h2>Pipeline by stage</h2>
+<div class="box">
+<svg viewBox="0 0 600 230" role="img" aria-label="Horizontal bar chart of open pipeline value by stage in thousands of dollars: Prospecting 1640, Discovery 1210, Demo 880, Proposal 640, Negotiation 330, Verbal commit 120.">
+  <line class="sep" x1="130" y1="8" x2="130" y2="222"/>
+  <rect class="bars" x="130" y="20" width="346.2" height="22" rx="3"/>
+  <rect class="bars" x="130" y="56" width="255.4" height="22" rx="3"/>
+  <rect class="bars" x="130" y="92" width="185.8" height="22" rx="3"/>
+  <rect class="bars" x="130" y="128" width="135.1" height="22" rx="3"/>
+  <rect class="bars" x="130" y="164" width="69.7" height="22" rx="3"/>
+  <rect class="bars" x="130" y="200" width="25.3" height="22" rx="3"/>
+  <text x="120" y="35" text-anchor="end">Prospecting</text>
+  <text x="120" y="71" text-anchor="end">Discovery</text>
+  <text x="120" y="107" text-anchor="end">Demo</text>
+  <text x="120" y="143" text-anchor="end">Proposal</text>
+  <text x="120" y="179" text-anchor="end">Negotiation</text>
+  <text x="120" y="215" text-anchor="end">Verbal commit</text>
+  <text x="482.2" y="35">$1,640K</text>
+  <text x="391.4" y="71">$1,210K</text>
+  <text x="321.8" y="107">$880K</text>
+  <text x="271.1" y="143">$640K</text>
+  <text x="205.7" y="179">$330K</text>
+  <text x="161.3" y="215">$120K</text>
+</svg>
+</div>
+
+<div class="box" style="margin-top:14px">
+<table>
+  <thead><tr><th>Stage</th><th class="n">Deals</th><th class="n">Value ($K)</th></tr></thead>
+  <tbody>
+    <tr><td>Prospecting</td><td class="n">82</td><td class="n">1,640</td></tr>
+    <tr><td>Discovery</td><td class="n">51</td><td class="n">1,210</td></tr>
+    <tr><td>Demo</td><td class="n">34</td><td class="n">880</td></tr>
+    <tr><td>Proposal</td><td class="n">19</td><td class="n">640</td></tr>
+    <tr><td>Negotiation</td><td class="n">9</td><td class="n">330</td></tr>
+    <tr><td>Verbal commit</td><td class="n">4</td><td class="n">120</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Top deals</h2>
+<div class="box">
+<table>
+  <thead><tr><th>Account</th><th>Owner</th><th>Stage</th><th class="n">Value ($K)</th><th>Close date</th></tr></thead>
+  <tbody>
+    <tr><td>Halvorsen Freight</td><td>Jamie Okafor</td><td>Negotiation</td><td class="n">210</td><td>2026-11-21</td></tr>
+    <tr><td>Brightline Clinics</td><td>Sara Lindqvist</td><td>Proposal</td><td class="n">185</td><td>2026-12-05</td></tr>
+    <tr><td>Quarry Hill Hotels</td><td>Sara Lindqvist</td><td>Proposal</td><td class="n">150</td><td>2026-12-18</td></tr>
+    <tr><td>Cobalt Mining Co</td><td>Jamie Okafor</td><td>Verbal commit</td><td class="n">120</td><td>2026-10-31</td></tr>
+    <tr><td>Fernwood Schools</td><td>Luis Ortega</td><td>Demo</td><td class="n">96</td><td>2026-12-12</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Forecast notes</h2>
+<p>Weighted pipeline covers 80 percent of quota ($1,930K of $2,400K). To be safe, the team needs about $470K of new weighted pipeline before 2026-11-15.</p>
+<div class="callout" role="note">
+  <strong>Coverage gap:</strong> about $470K of new weighted pipeline is needed before 2026-11-15 to close the gap to quota.
+</div>
+</main>
+</body>
+</html>

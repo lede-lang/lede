@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2026 Engagement Survey</title>
+<style>
+:root{--bg:#f8f6f3;--surface:#fff;--text:#231f1a;--muted:#6b645a;--border:#e5dfd6;--y25:#b9b1a5;--y26:#c4562b;--grid:#ece7df;--call-bg:#fdf0e9;--call:#c4562b;--low:#fbe9e2}
+@media (prefers-color-scheme:dark){:root{--bg:#14120f;--surface:#1e1b17;--text:#ede8e1;--muted:#a8a095;--border:#36312a;--y25:#6c655b;--y26:#ef8a5e;--grid:#2c2823;--call-bg:#33211a;--call:#ef8a5e;--low:#2f211b}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:880px;margin:0 auto;padding:32px 16px 64px}
+.eyebrow{font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 0 6px}
+h1{font-size:clamp(26px,5vw,34px);line-height:1.2;margin:0 0 6px}
+.lede{color:var(--muted);margin:0 0 22px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:34px}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.tile .k{font-size:13px;color:var(--muted)}
+.tile .v{font-size:30px;font-weight:700;line-height:1.2;margin:4px 0 2px}
+.tile .s{font-size:13px;color:var(--muted)}
+section{margin-bottom:34px}
+h2{font-size:21px;margin:0 0 12px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px}
+.chart{padding:18px}
+svg{display:block;width:100%;height:auto;max-width:640px}
+.legend{display:flex;gap:16px;list-style:none;margin:0 0 10px;padding:0;font-size:14px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:460px;font-variant-numeric:tabular-nums}
+th,td{padding:10px 14px;border-bottom:1px solid var(--border);text-align:right}
+th:first-child,td:first-child{text-align:left}
+thead th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+tbody tr:last-child td{border-bottom:0}
+tr.low{background:var(--low)}
+ul.focus{margin:0 0 14px;padding-left:22px}
+ul.focus li{margin:6px 0}
+.callout{background:var(--call-bg);border:1px solid var(--call);border-left-width:6px;border-radius:10px;padding:14px 16px}
+.privacy{color:var(--muted);font-size:14px;border-top:1px solid var(--border);padding-top:14px}
+</style>
+</head>
+<body>
+<main>
+<p class="eyebrow">Hollow Creek Software · People Ops</p>
+<h1>2026 engagement survey results</h1>
+<p class="lede">Survey closed 2026-09-26. 412 of 474 employees responded.</p>
+
+<div class="tiles">
+<div class="tile"><div class="k">Response rate</div><div class="v">87%</div><div class="s">412 of 474 employees</div></div>
+<div class="tile"><div class="k">Overall engagement</div><div class="v">74%</div><div class="s">favorable</div></div>
+<div class="tile"><div class="k">eNPS</div><div class="v">31</div><div class="s">employee Net Promoter Score</div></div>
+</div>
+
+<section>
+<h2>Results by question</h2>
+<div class="panel chart">
+<ul class="legend">
+<li><i style="background:var(--y25)"></i>2025</li>
+<li><i style="background:var(--y26)"></i>2026</li>
+</ul>
+<svg viewBox="0 0 480 420" role="img" aria-label="Bar chart of percent favorable, 2025 versus 2026. I understand our strategy 61 to 72. My manager supports my growth 70 to 76. I have the tools to do my job 64 to 59. Workload is sustainable 52 to 48. I would recommend working here 73 to 79. Decisions are communicated well 49 to 58.">
+<g stroke="var(--grid)" stroke-width="1">
+<line x1="110" y1="28" x2="110" y2="394"/><line x1="210" y1="28" x2="210" y2="394"/><line x1="310" y1="28" x2="310" y2="394"/><line x1="410" y1="28" x2="410" y2="394"/>
+</g>
+<line x1="10" y1="20" x2="10" y2="394" stroke="var(--border)" stroke-width="1.5"/>
+<g fill="var(--muted)" font-size="12" text-anchor="middle">
+<text x="10" y="412">0%</text><text x="110" y="412">25%</text><text x="210" y="412">50%</text><text x="310" y="412">75%</text><text x="410" y="412">100%</text>
+</g>
+<g fill="var(--text)" font-size="15" font-weight="600">
+<text x="10" y="24">I understand our strategy</text>
+<text x="10" y="90">My manager supports my growth</text>
+<text x="10" y="156">I have the tools to do my job</text>
+<text x="10" y="222">Workload is sustainable</text>
+<text x="10" y="288">I would recommend working here</text>
+<text x="10" y="354">Decisions are communicated well</text>
+</g>
+<g fill="var(--y25)">
+<rect x="10" y="30" width="244" height="14"/>
+<rect x="10" y="96" width="280" height="14"/>
+<rect x="10" y="162" width="256" height="14"/>
+<rect x="10" y="228" width="208" height="14"/>
+<rect x="10" y="294" width="292" height="14"/>
+<rect x="10" y="360" width="196" height="14"/>
+</g>
+<g fill="var(--y26)">
+<rect x="10" y="46" width="288" height="14"/>
+<rect x="10" y="112" width="304" height="14"/>
+<rect x="10" y="178" width="236" height="14"/>
+<rect x="10" y="244" width="192" height="14"/>
+<rect x="10" y="310" width="316" height="14"/>
+<rect x="10" y="376" width="232" height="14"/>
+</g>
+<g font-size="12" fill="var(--muted)">
+<text x="260" y="41">61%</text><text x="296" y="107">70%</text><text x="272" y="173">64%</text><text x="224" y="239">52%</text><text x="308" y="305">73%</text><text x="212" y="371">49%</text>
+</g>
+<g font-size="12" fill="var(--text)" font-weight="700">
+<text x="304" y="57">72%</text><text x="320" y="123">76%</text><text x="252" y="189">59%</text><text x="208" y="255">48%</text><text x="332" y="321">79%</text><text x="248" y="387">58%</text>
+</g>
+</svg>
+</div>
+</section>
+
+<section>
+<h2>By department</h2>
+<div class="panel table-wrap">
+<table>
+<thead><tr><th>Department</th><th>Responses</th><th>Response rate</th><th>Engagement</th></tr></thead>
+<tbody>
+<tr><td>Engineering</td><td>168</td><td>89%</td><td>71%</td></tr>
+<tr><td>Sales</td><td>92</td><td>81%</td><td>77%</td></tr>
+<tr class="low"><td>Support</td><td>74</td><td>90%</td><td>69%</td></tr>
+<tr><td>Operations</td><td>48</td><td>86%</td><td>80%</td></tr>
+<tr><td>G&amp;A</td><td>30</td><td>88%</td><td>83%</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section>
+<h2>Focus areas</h2>
+<ul class="focus">
+<li><strong>Tools:</strong> "I have the tools to do my job" fell from 64% to 59% favorable.</li>
+<li><strong>Workload:</strong> "Workload is sustainable" fell from 52% to 48% favorable.</li>
+</ul>
+<div class="callout" role="note">Support has the lowest engagement of any department at 69%. A listening session is set for 2026-10-28.</div>
+</section>
+
+<p class="privacy">Comments are kept anonymous. This page reports aggregate results only and quotes no individual responses.</p>
+</main>
+</body>
+</html>

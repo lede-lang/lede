@@ -1,0 +1,20 @@
+@title Patient access, September 2026
+@subtitle Northfield Community Health, for the clinic directors' meeting on 2026-10-19
+kpi Median days to next new-patient appointment | 9.2 days | target 7 days | bad
+kpi No-show rate | 7.1% | overall | neutral
+kpi Phone abandonment | 4.3% | overall | neutral
+kpi Patient satisfaction | 4.5 of 5 | overall | neutral
+
+## Clinics
+table = clinic,median wait days,no-show rate,phone abandonment; **Eastgate**,12.4,11.8%,6.9%; Lakeview,8.1,5.9%,3.2%; Millbrook,7.3,6.2%,3.8%; **Harlan Street**,10.9,7.4%,4.9%; Riverside,6.4,4.8%,2.9%
+
+!! Eastgate and Harlan Street are the problem spots. Leadership must notice them now.
+
+## Wait trend
+data waits = month,median wait days; Apr,6.8; May,7.2; Jun,7.9; Jul,8.4; Aug,9.0; Sep,9.2
+chart line waits x=month y=median wait days title="Median wait for new patients" unit=days target="7 target" labels
+
+## What we are doing
+1. Open a Saturday clinic at Eastgate starting 2026-11-07. Eastgate lost Dr. Hana Yoshida in August and has 2 open physician posts.
+2. Send text reminders two days before visits. The Lakeview pilot cut its no-show rate from 8.0 to 5.9 percent.
+3. Keep the phone lines at Harlan Street open until 19:00.

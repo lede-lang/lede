@@ -1,0 +1,48 @@
+@title How to Read Your Electric Bill
+@subtitle Eastgrove Power residential rates, effective 2026-11-01
+@author Customer Education team
+@date 2026-11-01
+
+## Your bill at a glance
+
+Your bill has three charges, plus sales tax:
+
+1. **Service charge:** a fixed $14.50 every month.
+2. **Delivery charge:** $0.045 for each kilowatt-hour (kWh) you use.
+3. **Supply charge:** the price of the power itself. It depends on **when** you use it.
+
+Sales tax of 5.2% is added to the total.
+
+kpi Service charge | $14.50 | per month
+kpi Delivery | $0.045 | per kWh
+kpi Supply, peak | $0.31 | per kWh | bad
+kpi Supply, super off-peak | $0.08 | per kWh | good
+
+## What each charge means
+
+table = Charge,What it is,Rate; Service charge,A fixed monthly fee for being connected,$14.50 a month; Delivery charge,The cost of carrying power to your home,$0.045 per kWh; Supply charge,The power you use (price depends on the time of day),$0.08 to $0.31 per kWh; Sales tax,Applied to the total,5.2%; Late payment fee,Added to unpaid balances after the due date,1.5%
+
+- **Due date:** your bill is due 21 days after the bill date. After that, a 1.5% late fee is added to any unpaid balance.
+- **Budget billing:** spreads your year into 12 equal payments. We review it every 6 months.
+- **CARE discount:** income-qualified households can get 20% off. Enrolling takes about 10 minutes online.
+
+## Time-of-use hours
+
+data supply = period,rate; Peak,0.31; Off-peak,0.12; Super off-peak,0.08
+
+chart bar supply unit=$ labels focus="Peak" title="Supply price per kWh"
+
+table = Period,Hours,Supply price; Peak,16:00 to 21:00 on weekdays,$0.31 per kWh; Off-peak,All other hours,$0.12 per kWh; Super off-peak,00:00 to 06:00 every day,$0.08 per kWh
+
+!! Peak power costs more than 2.5 times as much as off-peak power. Using power after 21:00 instead of at 18:00 cuts its supply price from $0.31 to $0.12 per kWh.
+
+## Ways to lower your bill
+
+- **Run the dishwasher and laundry after 21:00**, when peak ends.
+- **Precool your home before 16:00**, then set the thermostat 2 degrees higher during peak.
+- **Charge your electric vehicle after midnight**, at the super off-peak price of $0.08 per kWh.
+- **Check if you qualify for CARE** for 20% off your bill.
+
+---
+
+**Need help?** Call 800-555-0166 or use your online account page.

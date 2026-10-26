@@ -1,0 +1,34 @@
+@title Spring Inventory Shipping Modes
+@subtitle Comparison for leadership, 2026-11-12
+@author Mateo Brandt, Supply Chain Planner
+
+Fieldstone Outdoor must move 400 pallets of spring inventory from its overseas manufacturer to U.S. stores. The goods must be in stores by 2027-03-01, and we allow 7 days for handling after arrival. Rates move, so the figures are ranges.
+
+## Options
+cards
+### Standard ocean
+- Transit: 28 to 35 days
+- Cost: $180 to $240 per pallet
+
+### Expedited ocean
+- Transit: 18 to 22 days, on a priority vessel service
+- Cost: $310 to $380 per pallet
+
+### Air freight
+- Transit: 2 to 3 days
+- Cost: $1,350 to $1,600 per pallet
+
+## Total cost for 400 pallets
+data total = mode,low,high; Standard ocean,72000,96000; Expedited ocean,124000,152000; Air freight,540000,640000
+chart range total from=low to=high unit=$ title="Total cost for 400 pallets"
+
+## Timing
+Latest departure to be in stores by 2027-03-01, using the longest transit plus handling:
+- Standard ocean: 2027-01-18
+- Expedited ocean: 2027-01-31
+- Air freight: 2027-02-19
+
+## Recommendation
+Book standard ocean for the whole order, departing by 2027-01-18. Use expedited ocean as the fallback if departure slips, and air only in an emergency. Standard ocean's top-of-range price, $96,000, is still less than one fifth of air's lowest estimate, $540,000.
+
+!! Leadership meets on 2026-11-12. Booking standard ocean departs by 2027-01-18.

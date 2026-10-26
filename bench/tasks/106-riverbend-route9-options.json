@@ -1,0 +1,55 @@
+{
+  "id": "106-riverbend-route9-options",
+  "category": "comparison",
+  "title": "Riverbend Route 9 corridor options",
+  "brief": "The Riverbend City Council votes on 2026-12-02 on how to improve the Route 9 transit corridor, and the transportation department needs a decision page for councillors, many of whom will read it on their phones. Three options. Enhanced bus: more frequent buses and signal priority at lights; capital cost 85 million dollars, 2 years to build, 14000 weekday riders expected by 2035, operating cost 22 million dollars a year. Bus rapid transit: dedicated lanes and stations; 310 million dollars, 4 years, 26000 weekday riders, 31 million a year. Light rail: 940 million dollars, 8 years, 38000 weekday riders, 44 million a year. That works out to a capital cost per weekday rider of about 6100 dollars for enhanced bus, 11900 for bus rapid transit and 24700 for light rail. A federal grant can cover up to 50 percent of capital cost, but the application is due 2027-01-31 and requires a council-approved option. Use the sections \"Options\" (side by side), \"Capital cost per rider\", \"Trade-offs\" and \"Recommendation\". Trade-offs in plain language: enhanced bus is cheap and fast to deliver but carries the fewest riders and still shares congested lanes; bus rapid transit is the middle path and could be upgraded to rail later; light rail carries the most riders and attracts development, but takes 8 years and the city could not fund its share without a bond measure. The department recommends bus rapid transit, and the page should say plainly that it needs the council's approval on 2026-12-02 to meet the grant deadline.",
+  "checklist": {
+    "sections": [
+      "Options",
+      "Capital cost per rider",
+      "Trade-offs",
+      "Recommendation"
+    ],
+    "visible": [
+      "Enhanced bus",
+      "Bus rapid transit",
+      "Light rail",
+      "Route 9",
+      "bond measure"
+    ],
+    "values": [
+      "2026-12-02",
+      "85 million",
+      "310 million",
+      "940 million",
+      "14000",
+      "26000",
+      "38000",
+      "22 million",
+      "31 million",
+      "44 million",
+      "6100",
+      "11900",
+      "24700",
+      "50 percent",
+      "2027-01-31"
+    ]
+  },
+  "needs": [
+    "table",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "The grant application deadline has moved to 2027-02-28, and the light rail build time is now 9 years instead of 8.",
+    "expect_visible": [],
+    "expect_values": [
+      "2027-02-28",
+      "9 years"
+    ],
+    "expect_absent": [
+      "2027-01-31"
+    ]
+  }
+}

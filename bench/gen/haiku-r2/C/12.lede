@@ -1,0 +1,40 @@
+@title In-app checkout payment flow
+@subtitle Payments Engineering · Tidewater Grocers · version 2, dated 2026-09-22
+
+# Payment sequence
+
+diagram pay sequence title="Checkout payment"
+pay: app "Mobile App" user
+pay: api "Checkout API" svc
+pay: fraud "Fraud Service" svc
+pay: gw "Payment Gateway" ext
+pay: ledger "Ledger" store
+pay: app -> api : POST /checkout with cart and card token
+pay: api -> fraud : score order
+pay: fraud --> api : risk score
+pay: api -> gw : authorize amount
+pay: gw --> api : auth code
+pay: api -> ledger : record pending charge
+pay: ledger --> api : entry id
+pay: api --> app : order confirmed
+pay: note api : Alternative branch when the risk score is above 80
+pay: api --> app : step-up verification required
+pay: note api : The Payment Gateway is not called on this branch
+
+# Latency budget
+
+data latency = Step,p95 budget (ms),Measured p95 (ms); Fraud scoring,120,96; Authorization,450,512; Ledger write,40,31; Total checkout,800,811
+
+table latency
+
+chart bar latency y=p95 budget (ms),Measured p95 (ms) unit=ms labels title="Budget vs measured p95 latency"
+
+# Open issues
+
+!! **Authorization is over budget by 62 ms.** The gateway's us-east endpoint is called from us-west-2.
+
+Next steps:
+
+- Move to the regional endpoint.
+- Add a 2 second timeout with one retry.
+- Alert when total p95 exceeds 800 ms.

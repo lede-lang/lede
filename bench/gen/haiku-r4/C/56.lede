@@ -1,0 +1,43 @@
+@title Ardent Bio office move
+@subtitle Choosing a new home for 96 people before the lease ends on 2027-03-31
+
+Ardent Bio needs about 24,000 square feet for its 96-person team, with wet-lab space for roughly a third of it. Leadership decides on 2026-11-13. Three buildings are on the table.
+
+## Options
+
+grid 3
+
+**Harbor Point.** Lab-ready now, on a 10-year lease, with move-in on 2027-02-01. Median commute 24 minutes.
+
+**Mill District.** Partly lab-ready, on a 7-year lease, with move-in on 2027-03-01. We pay about $1.1 million of fit-out. Median commute 31 minutes.
+
+**Northgate Park.** No lab space, on a 10-year lease, with move-in on 2027-01-15. We would need a separate lab lease nearby. Median commute 42 minutes.
+
+## Annual rent
+
+Annual base rent at 24,000 square feet:
+
+data rent = building,dollars per sq ft,annual base rent; Harbor Point,58,"$1,392,000"; Mill District,46,"$1,104,000"; Northgate Park,38,"$912,000"
+
+table rent title="Annual base rent at 24,000 sq ft"
+
+Harbor Point costs $288,000 a year more in base rent than Mill District.
+
+## Pros and cons
+
+- **Harbor Point**
+-- Lab space is ready now, with no fit-out to pay for.
+-- Shortest median commute, at 24 minutes.
+-- Downside: the highest rent, and a 10-year commitment.
+- **Mill District**
+-- Middle rent, with the whole team in one building.
+-- Downside: about $1.1 million of fit-out before the lab is usable, and a 7-year term that is shorter but still real.
+-- Median commute of 31 minutes.
+- **Northgate Park**
+-- Lowest rent, at $38 per square foot.
+-- Downside: no lab space, so we would need a second lease nearby, and the team would be split across two sites.
+-- Longest median commute, at 42 minutes.
+
+## Recommendation
+
+Our leaning is Mill District. Harbor Point costs $288,000 a year more in base rent, and Northgate Park splits the team across two sites. Mill District is not free of problems. The fit-out cost of about $1.1 million and the 7-year term are real downsides, and we should weigh both on 2026-11-13.

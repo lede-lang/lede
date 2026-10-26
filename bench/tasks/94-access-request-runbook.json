@@ -1,0 +1,56 @@
+{
+  "id": "94-access-request-runbook",
+  "category": "runbook",
+  "title": "Quillfeather access request runbook",
+  "brief": "Quillfeather Software's privacy team needs a runbook for handling a data subject access request, owned by the Privacy Officer. Sections: \"Deadlines\", \"Handling steps\", \"Systems to search\", \"Do not\" and \"Contacts\". Deadlines: we must respond within 30 days of receiving a valid request, extendable by up to 60 more days only for complex requests and only if we tell the requester within the first 30 days; our internal target is to deliver by day 25. Handling steps, in order, with sub-steps. 1 Log the request in the privacy tracker within 1 business day. 2 Verify identity within 5 business days: a) ask for two documents, b) never accept a photo of a card showing a full number. 3 Confirm the scope with the requester by email. 4 Collect data from the six systems below. 5 Legal reviews the export and redacts other people's data. 6 Package: a) encrypted ZIP, b) send the password by SMS, never in the same email. 7 Deliver by day 25 and record the delivery date. 8 Close the ticket and keep the log for 3 years. Systems to search, with the owner and the days they need: CRM, Sales Ops, 3 days; Billing, Finance Systems, 4 days; Support desk, Support Ops, 3 days; Product database, Data Platform, 6 days; Marketing email, Growth, 2 days; Analytics events, Data Platform, 6 days. Backups are not searched, but note the date of the last backup. \"Do not\": do not delete data in response to an access request, do not send the export to an address that was not verified, and do not discuss the request in public channels. Contacts: Privacy Officer, Anneliese Vogt, privacy@quillfeather.example; Legal reviewer, Marcus Teo; escalation channel #privacy-requests.",
+  "checklist": {
+    "sections": [
+      "Deadlines",
+      "Handling steps",
+      "Systems to search",
+      "Do not",
+      "Contacts"
+    ],
+    "visible": [
+      "privacy tracker",
+      "encrypted ZIP",
+      "Sales Ops",
+      "Finance Systems",
+      "Support Ops",
+      "Anneliese Vogt",
+      "privacy@quillfeather.example",
+      "Marcus Teo",
+      "#privacy-requests"
+    ],
+    "values": [
+      "30 days",
+      "60 more days",
+      "day 25",
+      "1 business day",
+      "5 business days",
+      "3 years",
+      "3 days",
+      "4 days",
+      "6 days",
+      "2 days"
+    ]
+  },
+  "needs": [
+    "list",
+    "table",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the internal delivery target from day 25 to day 21 everywhere, and replace Marcus Teo with Sofia Brandao as the Legal reviewer.",
+    "expect_visible": [
+      "Sofia Brandao"
+    ],
+    "expect_values": [
+      "day 21"
+    ],
+    "expect_absent": [
+      "day 25",
+      "Marcus Teo"
+    ]
+  }
+}

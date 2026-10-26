@@ -1,0 +1,29 @@
+@title INC-3107 EU Matchmaking DNS Outage
+@subtitle Postmortem, Alder Cloud Games
+@author Network team
+@date 2026-08-19
+
+kpi Duration | 1 h 52 min
+kpi Lowest success rate | 61.3% | | bad
+kpi Matches failed | 48,200 | | bad
+kpi Region | EU-West
+
+## What happened
+
+A Terraform change replaced the weighted DNS records for `match.eu` with a single record pointing at a decommissioned load balancer, so players in Europe could not reach matchmaking. The record was restored at 10:11, but resolvers had negatively cached the failures with a TTL of 3600 seconds, which kept matches failing for close to an hour after the fix.
+
+## Timeline
+
+table = Time (UTC),Event; 09:12,Terraform apply; 09:15,Success rate drops; 09:31,Player reports spike on social media; 09:40,Incident declared; 10:05,Bad record identified; 10:11,Record restored; 11:04,Success rate back above 99% and incident resolved
+
+## Request success rate
+
+data success = time,success rate; 09:00,99.6; 09:15,84.2; 09:30,63.0; 09:45,61.3; 10:00,62.8; 10:15,70.4; 10:30,81.9; 10:45,93.5; 11:00,98.7; 11:15,99.5; 11:30,99.7
+chart line success x=time unit=% title="Matchmaking success rate, 15-minute intervals (UTC)"
+
+## Action items
+
+- Require a plan review for DNS changes.
+- Lower the negative cache TTL to 300 seconds.
+- Add synthetic matchmaking checks from three EU cities.
+- Alert when weighted record count drops to one.

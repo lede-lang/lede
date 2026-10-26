@@ -1,0 +1,36 @@
+@title Message queue for order events
+@subtitle Decision record for the Orders team
+@author Lina Okafor, Staff Engineer
+@date 2026-10-12
+
+We need a queue between checkout and fulfilment that survives a regional outage, handles 4,000 messages a second at peak, and does not need a dedicated team to run it.
+
+## Options
+
+table = Option,Monthly cost,Peak throughput,Replay,Ops load; **Amazon SQS**,"$1,150",Unlimited,No,Low; Kafka (MSK),"$6,400","50,000/s",Yes,High; RabbitMQ (Amazon MQ),"$2,300","8,000/s",No,Medium; Google Pub/Sub,"$1,480",Unlimited,Yes (7 days),Low
+
+## Pros and cons
+
+### Amazon SQS
+- Pro: fully managed, nothing to operate
+- Pro: scales automatically past peak
+- Con: no replay of consumed messages
+- Con: 256 KB message limit
+
+### Kafka (MSK)
+- Pro: replay up to retention
+- Pro: supports stream processing later
+- Con: needs partition planning
+- Con: we own broker upgrades
+
+### RabbitMQ (Amazon MQ)
+- Pro: flexible routing
+- Con: we would own capacity planning
+- Con: lowest throughput ceiling
+
+## Recommendation
+
+! **Choose Amazon SQS.** It covers peak load with no capacity planning, and replay can be added later with an S3 archive of every message.
+
+> Pick the queue you never have to think about, then spend the saved time on the consumers.
+> — Lina Okafor

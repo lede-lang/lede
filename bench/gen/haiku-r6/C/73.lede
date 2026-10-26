@@ -1,0 +1,34 @@
+@title Building permit routing
+@subtitle Whitcombe City planning office · Current as of 2026-10-01
+
+## Routing flow
+diagram permit title="Building permit routing"
+permit: recv "Application received" svc
+permit: complete "Submission complete?" decision
+permit: ret "Return to applicant" svc
+permit: value "Project value over 50000 dollars?" decision
+permit: fast "Fast-track review" svc
+permit: historic "In a historic district?" decision
+permit: heritage "Heritage Board review" svc
+permit: plan "Plan review" svc
+permit: issued "Permit issued" svc
+permit: recv -> complete
+permit: complete -> ret : no
+permit: complete -> value : yes
+permit: value -> fast : no
+permit: value -> historic : yes
+permit: historic -> heritage : yes
+permit: historic -> plan : no
+permit: heritage -> plan : cleared
+permit: fast -> issued : approved
+permit: plan -> issued : approved
+
+## Review times
+- Completeness check: 2 business days
+- Fast-track review: 3 business days
+- Plan review: 15 business days
+- Heritage Board review: 30 days, added on top of the plan review time
+
+## Fees
+- Base fee: $180 for every application
+- Plus 0.8 percent of the project value above $50,000

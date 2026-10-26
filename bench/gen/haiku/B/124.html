@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EHR Downtime Runbook</title>
+<style>
+:root {
+  --bg: #f2f6f7;
+  --card: #ffffff;
+  --text: #13262b;
+  --muted: #557077;
+  --accent: #0e7a8a;
+  --accent-soft: #e2f1f3;
+  --warn: #b3261e;
+  --warn-soft: #fbe9e7;
+  --border: #d2dfe2;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c1719;
+    --card: #142126;
+    --text: #e3eef0;
+    --muted: #94adb3;
+    --accent: #6fd3e0;
+    --accent-soft: #15303a;
+    --warn: #ff9b92;
+    --warn-soft: #3b1d1b;
+    --border: #243a40;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c1719;
+  --card: #142126;
+  --text: #e3eef0;
+  --muted: #94adb3;
+  --accent: #6fd3e0;
+  --accent-soft: #15303a;
+  --warn: #ff9b92;
+  --warn-soft: #3b1d1b;
+  --border: #243a40;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+.wrap { max-width: 800px; margin: 0 auto; padding: 22px 16px 48px; }
+header { border-bottom: 3px solid var(--accent); padding-bottom: 14px; margin-bottom: 18px; }
+.org { color: var(--muted); font-size: 14px; text-transform: uppercase; letter-spacing: .06em; }
+h1 { font-size: 27px; line-height: 1.2; margin: 6px 0 6px; }
+.meta { color: var(--muted); font-size: 14px; }
+h2 { font-size: 20px; color: var(--accent); margin: 26px 0 10px; }
+h3 { font-size: 17px; margin: 0 0 6px; }
+section, .card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+.announce {
+  background: var(--accent-soft);
+  border-left: 5px solid var(--accent);
+  padding: 14px 16px;
+  border-radius: 8px;
+  font-size: 17px;
+}
+.phrase { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 700; color: var(--accent); }
+.binder {
+  background: var(--warn-soft);
+  border-left: 5px solid var(--warn);
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+.step {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+.step-top { display: flex; gap: 12px; align-items: center; margin-bottom: 8px; }
+.num {
+  flex: 0 0 auto;
+  width: 30px; height: 30px; border-radius: 8px;
+  background: var(--accent); color: var(--card);
+  text-align: center; line-height: 30px; font-weight: 700;
+}
+ol.sub { list-style: lower-alpha; padding-left: 22px; margin: 0; }
+ol.sub li { margin: 6px 0; }
+.never-box { border: 2px solid var(--warn); border-radius: 10px; padding: 12px 14px; margin-top: 8px; font-weight: 600; }
+.recovery li { margin: 8px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+td:first-child { font-weight: 600; width: 48%; }
+.note { color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="org">Pelican Bay Clinic &middot; Clinical Operations</div>
+  <h1>Electronic Health Record Downtime</h1>
+  <div class="meta">For charge nurses and front-desk staff &middot; Effective 2026-11-15</div>
+</header>
+
+<section>
+  <h2 style="margin-top:0">Declare downtime</h2>
+  <p>Downtime is declared when the record has been unavailable or unusably slow for <strong>10 minutes</strong>.</p>
+  <div class="announce">
+    The charge nurse announces <span class="phrase">&ldquo;Paper procedures&rdquo;</span> on the overhead page and calls the IT service desk on <strong>extension 5000</strong>.
+  </div>
+</section>
+
+<h2>During downtime</h2>
+
+<div class="step">
+  <div class="step-top"><span class="num">1</span><h3>Switch to paper</h3></div>
+  <ol class="sub">
+    <li>Take the downtime binder from each station. It holds the printed schedule, refreshed at 05:00 daily, and an allergy list and a medication list for every patient booked that day.</li>
+    <li>Label every paper form with a patient label sheet.</li>
+  </ol>
+</div>
+<div class="binder">The allergy list in the binder is the source of truth until the record is back.</div>
+
+<div class="step">
+  <div class="step-top"><span class="num">2</span><h3>Check in patients</h3></div>
+  <ol class="sub">
+    <li>Confirm identity with two identifiers: name and date of birth.</li>
+    <li>Record the arrival time by hand.</li>
+  </ol>
+</div>
+
+<div class="step">
+  <div class="step-top"><span class="num">3</span><h3>Orders and medications</h3></div>
+  <ol class="sub">
+    <li>Write down every verbal order and read it back.</li>
+    <li>Never give a high-risk medication without a second nurse's check.</li>
+    <li>Record every dose on the paper medication sheet.</li>
+  </ol>
+</div>
+
+<div class="step">
+  <div class="step-top"><span class="num">4</span><h3>Keep care moving</h3></div>
+  <ol class="sub">
+    <li>Do not cancel visits solely because of downtime.</li>
+    <li>Tell patients about any delay beyond 20 minutes.</li>
+  </ol>
+</div>
+
+<h2>Recovery</h2>
+<section class="recovery">
+  <ol class="sub">
+    <li>When IT announces restoration, wait for the all-clear before entering anything.</li>
+    <li>Scan paper documents into the record within 4 hours.</li>
+    <li>Reconcile medication entries within 24 hours.</li>
+    <li>Report the event on the incident form.</li>
+  </ol>
+</section>
+
+<h2>Contacts</h2>
+<section>
+<table>
+  <tbody>
+    <tr><td>IT service desk</td><td>Extension 5000</td></tr>
+    <tr><td>Charge nurse supervisor</td><td>Rowena Achterberg</td></tr>
+    <tr><td>Privacy officer</td><td>Idris Mbeki</td></tr>
+  </tbody>
+</table>
+<p class="note" style="margin-bottom:0">Tell the privacy officer if any paper forms are lost.</p>
+</section>
+</div>
+</body>
+</html>

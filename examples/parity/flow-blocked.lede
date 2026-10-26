@@ -1,0 +1,11 @@
+@title Blocked path
+# Blocked path
+
+diagram env dir=LR title="Environments"
+env: dev "Dev" svc
+env: stg "Staging" svc
+env: prod "Production" svc focus
+env: dev -> stg : promote
+env: stg -> prod : release
+env: dev -x- prod : never
+env: stg -x-> prod : no direct data

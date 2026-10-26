@@ -1,0 +1,51 @@
+@title How to Read Your Water Bill
+@subtitle Tarn Valley Water · a guide to your quarterly bill
+
+## Your bill at a glance
+
+We send you a bill every 3 months. It has three parts: what you pay for the water you used, a sewer charge, and a fixed service charge.
+
+data example = part,amount; Usage,180.30; Sewer,144.24; Service charge,38.40
+
+kpi Example total | $362.94 | household using 72 m3
+
+chart hbar example unit=$ labels title="Where the money goes on a $362.94 bill"
+
+Payment is due 21 days after the date on your bill.
+
+## Usage charges
+
+We measure your water with a meter, in cubic meters (m3). One cubic meter is 1,000 liters. The more you use, the higher the price for each extra cubic meter:
+
+table = tier,water used,price per m3; Tier 1,first 30 m3,$1.85; Tier 2,next 30 m3,$2.60; Tier 3,above 60 m3,$3.90
+
+Your sewer charge is 80% of your usage charge, so it goes up and down with the water you use.
+
+### Worked example: 72 m3 in a quarter
+
+table = part,how it is worked out,amount; Tier 1,30 m3 × $1.85,$55.50; Tier 2,30 m3 × $2.60,$78.00; Tier 3,12 m3 × $3.90,$46.80; **Usage charge**,,**$180.30**; Sewer charge,80% of $180.30,$144.24; Service charge,fixed,$38.40; **Total**,,**$362.94**
+
+## Fixed charges
+
+The service charge is **$38.40 per quarter**. It is the same on every bill, however much water you use.
+
+## Ways to pay
+
+cards
+
+### Online
+Pay at [tarnvalleywater.example/pay](https://tarnvalleywater.example/pay).
+
+### By phone
+Call 555-0121.
+
+### In person
+Visit our Main Street office, Monday to Friday, 8:30 to 16:30.
+
+! Sign up for autopay and we take $2 off every bill.
+
+## If you cannot pay on time
+
+We are here to help. Call us on **555-0133 before your due date** and we will set up a payment plan with you.
+
+!! If a bill stays unpaid, a late fee of 5% is added after 30 days.

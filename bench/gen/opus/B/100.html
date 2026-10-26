@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Studio Wing Campaign</title>
+<style>
+:root{--bg:#faf6f0;--surface:#ffffff;--surface-2:#f2ebe1;--text:#2a2320;--muted:#6e625b;--line:#e8dfd3;--accent:#b4532a;--accent-2:#d98a4e;--accent-soft:#f8e7da;--ok:#2f7a4f;color-scheme:light dark}
+@media (prefers-color-scheme:dark){:root{--bg:#171412;--surface:#211d1a;--surface-2:#2c2622;--text:#f1e9e1;--muted:#b3a69c;--line:#3a332e;--accent:#e9865a;--accent-2:#f0b07c;--accent-soft:#3a271d;--ok:#6cc792}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:32px 16px 64px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+h1{font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-size:clamp(1.8rem,6vw,2.5rem);line-height:1.15;margin:.2em 0 .3em;font-weight:700;letter-spacing:-.01em}
+h2{font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-size:1.4rem;margin:0 0 .7rem;font-weight:700}
+p{margin:.4em 0}
+section{margin-top:36px}
+.lede{color:var(--muted);font-size:1.05rem}
+.prog{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px}
+.raised{font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-size:clamp(2.4rem,10vw,3.2rem);font-weight:700;line-height:1;letter-spacing:-.02em}
+.raised small{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:1rem;font-weight:500;color:var(--muted);letter-spacing:0}
+.thermo{position:relative;height:22px;border-radius:11px;background:var(--surface-2);margin:16px 0 6px;overflow:hidden}
+.thermo i{display:block;height:100%;width:70.7%;border-radius:11px;background:linear-gradient(90deg,var(--accent-2),var(--accent))}
+.thermo span{position:absolute;left:12px;top:0;line-height:22px;font-size:.8rem;font-weight:700;color:#fff}
+.tl{display:flex;justify-content:space-between;font-size:.85rem;color:var(--muted)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.stat{background:var(--surface-2);border-radius:12px;padding:12px 14px}
+.stat .v{font-size:1.35rem;font-weight:750;letter-spacing:-.01em}
+.stat .k{font-size:.85rem;color:var(--muted)}
+.lv{display:grid;gap:10px}
+.l{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.l .r{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.l .nm{font-weight:700}
+.l .amt{font-weight:750;font-variant-numeric:tabular-nums}
+.l .tr{height:10px;border-radius:5px;background:var(--surface-2);margin-top:8px;overflow:hidden}
+.l .tr i{display:block;height:100%;border-radius:5px;background:var(--accent)}
+.l .g{font-size:.86rem;color:var(--muted);margin-top:4px}
+.cap{font-size:.85rem;color:var(--muted);margin:0 0 10px}
+.match{background:var(--accent-soft);border-radius:16px;padding:18px 20px;border:1px solid var(--line)}
+.match .big{font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-size:1.35rem;font-weight:700;line-height:1.3}
+.match .goal{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.match .goal span{background:var(--surface);border-radius:999px;padding:4px 12px;font-size:.88rem;font-weight:600}
+.next{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:10px}
+.next li{display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.ic{flex:none;width:44px;height:44px;border-radius:50%;background:var(--accent-soft);display:grid;place-items:center}
+footer{margin-top:44px;color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padding-top:14px;text-align:center}
+</style>
+</head>
+<body>
+<main class="wrap">
+<div class="eyebrow">Riverside Arts Center · Capital campaign</div>
+<h1>Building the new studio wing, together</h1>
+<p class="lede">Thank you. Here is where the campaign stands as of 16 October 2026.</p>
+
+<section id="progress" style="margin-top:24px">
+<h2>Progress</h2>
+<div class="prog">
+<div class="raised">$3.18M <small>raised of $4.5M</small></div>
+<div class="thermo" role="img" aria-label="70.7 percent of the 4.5 million dollar goal raised"><i></i><span>70.7%</span></div>
+<div class="tl"><span>$1.32M still to go</span><span>Closes 31 March 2027</span></div>
+<div class="stats">
+<div class="stat"><div class="v">412</div><div class="k">donors so far</div></div>
+<div class="stat"><div class="v">$500,000</div><div class="k">largest single gift</div></div>
+</div>
+</div>
+</section>
+
+<section id="levels">
+<h2>Gifts by level</h2>
+<p class="cap">Every gift counts: 259 of our 412 donors gave under $1,000.</p>
+<div class="lv">
+<div class="l"><div class="r"><span class="nm">$100,000 and up</span><span class="amt">$1.62M</span></div><div class="tr"><i style="width:100%"></i></div><div class="g">6 gifts</div></div>
+<div class="l"><div class="r"><span class="nm">$25,000 to $99,999</span><span class="amt">$0.84M</span></div><div class="tr"><i style="width:51.9%"></i></div><div class="g">18 gifts</div></div>
+<div class="l"><div class="r"><span class="nm">$1,000 to $24,999</span><span class="amt">$0.52M</span></div><div class="tr"><i style="width:32.1%"></i></div><div class="g">129 gifts</div></div>
+<div class="l"><div class="r"><span class="nm">Under $1,000</span><span class="amt">$0.20M</span></div><div class="tr"><i style="width:12.3%"></i></div><div class="g">259 gifts</div></div>
+</div>
+</section>
+
+<section id="next">
+<h2>What comes next</h2>
+<div class="match">
+<div class="big">The Delmar Foundation will match up to $250,000 of new gifts.</div>
+<p>The match unlocks if 150 new donors give by 15 December 2026.</p>
+<div class="goal"><span>150 new donors</span><span>by 2026-12-15</span><span>up to $250,000 matched</span></div>
+</div>
+<ul class="next">
+<li><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="var(--accent)" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/></svg></span><div><strong>Donor evening</strong><br><span style="color:var(--muted)">Saturday 21 November 2026</span></div></li>
+<li><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V9l8-5 8 5v12" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/><path d="M10 21v-6h4v6" fill="none" stroke="var(--accent)" stroke-width="2"/></svg></span><div><strong>3 naming opportunities still open</strong><br><span style="color:var(--muted)">Studio rooms in the new wing</span></div></li>
+</ul>
+</section>
+
+<footer>With gratitude from everyone at the Riverside Arts Center</footer>
+</main>
+</body>
+</html>

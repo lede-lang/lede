@@ -1,0 +1,88 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "diagram",
+      "name": "f",
+      "kind": "flow",
+      "dir": "LR",
+      "title": null,
+      "nodes": [
+        {
+          "id": "a",
+          "label": "API",
+          "kind": "svc",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "b",
+          "label": "Store",
+          "kind": "db",
+          "sub": null,
+          "focus": false
+        }
+      ],
+      "edges": [
+        {
+          "from": "a",
+          "to": "b",
+          "label": "",
+          "style": "solid",
+          "both": false,
+          "line": 4
+        },
+        {
+          "from": "a",
+          "to": "b",
+          "label": "async",
+          "style": "dashed",
+          "both": false,
+          "line": 5
+        }
+      ],
+      "groups": [],
+      "notes": [],
+      "line": 1,
+      "legend": true
+    },
+    {
+      "type": "diagram",
+      "name": "g",
+      "kind": "flow",
+      "dir": "TB",
+      "title": null,
+      "nodes": [
+        {
+          "id": "legend",
+          "label": "Legend node",
+          "kind": null,
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "x",
+          "label": "x",
+          "kind": null,
+          "sub": null,
+          "focus": false
+        }
+      ],
+      "edges": [
+        {
+          "from": "x",
+          "to": "legend",
+          "label": "",
+          "style": "solid",
+          "both": false,
+          "line": 9
+        }
+      ],
+      "groups": [],
+      "notes": [],
+      "line": 7
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

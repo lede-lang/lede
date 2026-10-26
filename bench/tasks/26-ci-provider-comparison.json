@@ -1,0 +1,59 @@
+{
+  "id": "26-ci-provider-comparison",
+  "category": "comparison",
+  "title": "Replacing Jenkins: CI providers",
+  "brief": "Developer Experience at Ridgeback Robotics is replacing Jenkins and wants a comparison of CI providers for the firmware and cloud repos (roughly 38000 build minutes per month, 120 engineers; some jobs need ARM runners and a hardware-in-the-loop lab). Options: GitHub Actions, CircleCI, Buildkite. Section titled \"Comparison\" as a table with columns Provider, Median build time (min), ARM runners, Self-hosted agents, Monthly cost: GitHub Actions, 14.2, yes, yes, 2860 dollars; CircleCI, 11.8, yes, yes, 3420 dollars; Buildkite, 9.6, via our own agents, yes (required), 2150 dollars plus our compute. Section titled \"Benchmarks\": a grouped bar chart of median build time in minutes for our three reference pipelines on each provider: firmware-build (GitHub Actions 21.4, CircleCI 17.9, Buildkite 13.2), cloud-api-tests (GitHub Actions 9.8, CircleCI 8.1, Buildkite 7.4), docs-site (GitHub Actions 3.1, CircleCI 2.7, Buildkite 2.9). Section titled \"Pros and cons\" with lists for each provider. Section titled \"Recommendation\": Buildkite, because the hardware-in-the-loop lab needs self-hosted agents anyway; put it in a callout. Add a warning that Buildkite moves runner patching onto the DevEx on-call, estimated at 6 hours a month.",
+  "checklist": {
+    "sections": [
+      "Comparison",
+      "Benchmarks",
+      "Pros and cons",
+      "Recommendation"
+    ],
+    "visible": [
+      "GitHub Actions",
+      "CircleCI",
+      "Buildkite",
+      "Median build time",
+      "ARM runners",
+      "Self-hosted agents",
+      "firmware-build",
+      "cloud-api-tests",
+      "docs-site"
+    ],
+    "values": [
+      "38000",
+      "14.2",
+      "11.8",
+      "9.6",
+      "2860",
+      "3420",
+      "2150",
+      "21.4",
+      "17.9",
+      "13.2",
+      "8.1",
+      "7.4",
+      "2.7",
+      "2.9"
+    ]
+  },
+  "needs": [
+    "table",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add a fourth reference pipeline, sim-regression, to the benchmarks chart with GitHub Actions 34.5, CircleCI 29.0 and Buildkite 22.6.",
+    "expect_visible": [
+      "sim-regression"
+    ],
+    "expect_values": [
+      "34.5",
+      "29.0",
+      "22.6"
+    ],
+    "expect_absent": []
+  }
+}

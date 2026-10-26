@@ -1,0 +1,4204 @@
+[
+ {
+  "key": "haiku/B/41",
+  "model": "haiku",
+  "arm": "B",
+  "id": "41",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 8651,
+  "tokens": 3517,
+  "pageBytes": 8651,
+  "ttfmrTokens": 1865,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9,
+   "missSections": [],
+   "missVisible": [
+    "Reno NV",
+    "Columbus OH",
+    "Dallas TX",
+    "Savannah GA"
+   ],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/42",
+  "model": "haiku",
+  "arm": "B",
+  "id": "42",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 8160,
+  "tokens": 3247,
+  "pageBytes": 8160,
+  "ttfmrTokens": 1861,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/43",
+  "model": "haiku",
+  "arm": "B",
+  "id": "43",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "list",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 5656,
+  "tokens": 2307,
+  "pageBytes": 5656,
+  "ttfmrTokens": 1884,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.4375,
+   "missSections": [
+    "Open issues"
+   ],
+   "missVisible": [
+    "Keiko Arai",
+    "Dan Whitaker",
+    "Samira Boateng",
+    "matchmaking",
+    "hotfix 1.0.1"
+   ],
+   "missValues": [
+    "268000",
+    "331000",
+    "369000",
+    "398000",
+    "22000",
+    "14:20",
+    "97.6",
+    "99.0",
+    "2026-10-19",
+    "2026-10-23",
+    "2026-10-30",
+    "2026-10-17"
+   ]
+  }
+ },
+ {
+  "key": "haiku/B/44",
+  "model": "haiku",
+  "arm": "B",
+  "id": "44",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "table",
+   "callout",
+   "list"
+  ],
+  "srcBytes": 7487,
+  "tokens": 2883,
+  "pageBytes": 7487,
+  "ttfmrTokens": 1876,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/45",
+  "model": "haiku",
+  "arm": "B",
+  "id": "45",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 6641,
+  "tokens": 2673,
+  "pageBytes": 6641,
+  "ttfmrTokens": 1429,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/46",
+  "model": "haiku",
+  "arm": "B",
+  "id": "46",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 7128,
+  "tokens": 2798,
+  "pageBytes": 7128,
+  "ttfmrTokens": 1179,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/47",
+  "model": "haiku",
+  "arm": "B",
+  "id": "47",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table"
+  ],
+  "srcBytes": 8465,
+  "tokens": 3366,
+  "pageBytes": 8465,
+  "ttfmrTokens": 1108,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/48",
+  "model": "haiku",
+  "arm": "B",
+  "id": "48",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 6838,
+  "tokens": 2703,
+  "pageBytes": 6838,
+  "ttfmrTokens": 1102,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/49",
+  "model": "haiku",
+  "arm": "B",
+  "id": "49",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 6196,
+  "tokens": 2463,
+  "pageBytes": 6196,
+  "ttfmrTokens": 1188,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/50",
+  "model": "haiku",
+  "arm": "B",
+  "id": "50",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 5718,
+  "tokens": 2253,
+  "pageBytes": 5718,
+  "ttfmrTokens": 1151,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/51",
+  "model": "haiku",
+  "arm": "B",
+  "id": "51",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 5253,
+  "tokens": 2013,
+  "pageBytes": 5253,
+  "ttfmrTokens": 1246,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/52",
+  "model": "haiku",
+  "arm": "B",
+  "id": "52",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 4170,
+  "tokens": 1603,
+  "pageBytes": 4170,
+  "ttfmrTokens": 923,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/53",
+  "model": "haiku",
+  "arm": "B",
+  "id": "53",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout",
+   "table"
+  ],
+  "srcBytes": 4470,
+  "tokens": 1677,
+  "pageBytes": 4470,
+  "ttfmrTokens": 1040,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/54",
+  "model": "haiku",
+  "arm": "B",
+  "id": "54",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 6435,
+  "tokens": 2433,
+  "pageBytes": 6435,
+  "ttfmrTokens": 1285,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9333333333333333,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1240000",
+    "7440000"
+   ]
+  }
+ },
+ {
+  "key": "haiku/B/55",
+  "model": "haiku",
+  "arm": "B",
+  "id": "55",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 3471,
+  "tokens": 1327,
+  "pageBytes": 3471,
+  "ttfmrTokens": 956,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/56",
+  "model": "haiku",
+  "arm": "B",
+  "id": "56",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 7891,
+  "tokens": 2899,
+  "pageBytes": 7891,
+  "ttfmrTokens": 1276,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8214285714285714,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2026-11-13",
+    "2027-03-31",
+    "2027-02-01",
+    "2027-03-01",
+    "2027-01-15"
+   ]
+  }
+ },
+ {
+  "key": "haiku/B/57",
+  "model": "haiku",
+  "arm": "B",
+  "id": "57",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 6075,
+  "tokens": 2353,
+  "pageBytes": 6075,
+  "ttfmrTokens": 1003,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9666666666666667,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2026-10-28"
+   ]
+  }
+ },
+ {
+  "key": "haiku/B/58",
+  "model": "haiku",
+  "arm": "B",
+  "id": "58",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 6098,
+  "tokens": 2199,
+  "pageBytes": 6098,
+  "ttfmrTokens": 1029,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9090909090909091,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2027-01-15",
+    "2026-10-27"
+   ]
+  }
+ },
+ {
+  "key": "haiku/B/59",
+  "model": "haiku",
+  "arm": "B",
+  "id": "59",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 6855,
+  "tokens": 2524,
+  "pageBytes": 6855,
+  "ttfmrTokens": 1041,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9655172413793104,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2026-11-04"
+   ]
+  }
+ },
+ {
+  "key": "haiku/B/60",
+  "model": "haiku",
+  "arm": "B",
+  "id": "60",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 7995,
+  "tokens": 2963,
+  "pageBytes": 7995,
+  "ttfmrTokens": 1166,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8064516129032258,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1926000",
+    "1719000",
+    "1555200",
+    "1609800",
+    "2028-01-01",
+    "2026-11-10"
+   ]
+  }
+ },
+ {
+  "key": "haiku/B/61",
+  "model": "haiku",
+  "arm": "B",
+  "id": "61",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 6786,
+  "tokens": 2566,
+  "pageBytes": 6786,
+  "ttfmrTokens": 1164,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9333333333333333,
+   "missSections": [],
+   "missVisible": [
+    "Jun 2026"
+   ],
+   "missValues": [
+    "2026-07-20"
+   ]
+  }
+ },
+ {
+  "key": "haiku/B/62",
+  "model": "haiku",
+  "arm": "B",
+  "id": "62",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list"
+  ],
+  "srcBytes": 6129,
+  "tokens": 2309,
+  "pageBytes": 6129,
+  "ttfmrTokens": 1009,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9428571428571428,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1349600",
+    "2026-06-30"
+   ]
+  }
+ },
+ {
+  "key": "haiku/B/63",
+  "model": "haiku",
+  "arm": "B",
+  "id": "63",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list"
+  ],
+  "srcBytes": 7333,
+  "tokens": 2761,
+  "pageBytes": 7333,
+  "ttfmrTokens": 1188,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.967741935483871,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2026-08-15"
+   ]
+  }
+ },
+ {
+  "key": "haiku/B/64",
+  "model": "haiku",
+  "arm": "B",
+  "id": "64",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 6154,
+  "tokens": 2465,
+  "pageBytes": 6154,
+  "ttfmrTokens": 985,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9767441860465116,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2026-10-25"
+   ]
+  }
+ },
+ {
+  "key": "haiku/B/65",
+  "model": "haiku",
+  "arm": "B",
+  "id": "65",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 6675,
+  "tokens": 2573,
+  "pageBytes": 6675,
+  "ttfmrTokens": 1156,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.967741935483871,
+   "missSections": [],
+   "missVisible": [
+    "not been externally assured"
+   ],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/66",
+  "model": "haiku",
+  "arm": "B",
+  "id": "66",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 3050,
+  "tokens": 1087,
+  "pageBytes": 3050,
+  "ttfmrTokens": 564,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8695652173913043,
+   "missSections": [],
+   "missVisible": [
+    "Evernote ENEX"
+   ],
+   "missValues": [
+    "2026-10-14",
+    "2027-01-31"
+   ]
+  }
+ },
+ {
+  "key": "haiku/B/67",
+  "model": "haiku",
+  "arm": "B",
+  "id": "67",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 2859,
+  "tokens": 976,
+  "pageBytes": 2859,
+  "ttfmrTokens": 530,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9166666666666666,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2 blocks",
+    "2026-11-01"
+   ]
+  }
+ },
+ {
+  "key": "haiku/B/68",
+  "model": "haiku",
+  "arm": "B",
+  "id": "68",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 3209,
+  "tokens": 1191,
+  "pageBytes": 3209,
+  "ttfmrTokens": 642,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9565217391304348,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2026-11-07"
+   ]
+  }
+ },
+ {
+  "key": "haiku/B/69",
+  "model": "haiku",
+  "arm": "B",
+  "id": "69",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 6485,
+  "tokens": 1794,
+  "pageBytes": 6485,
+  "ttfmrTokens": 533,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.75,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "15-minute",
+    "06:00",
+    "22:00",
+    "2026-03-02",
+    "2026-09-25",
+    "30-minute",
+    "8 weeks"
+   ]
+  }
+ },
+ {
+  "key": "haiku/B/70",
+  "model": "haiku",
+  "arm": "B",
+  "id": "70",
+  "category": "prose",
+  "needs": [
+   "list",
+   "table"
+  ],
+  "srcBytes": 3241,
+  "tokens": 1146,
+  "pageBytes": 3241,
+  "ttfmrTokens": 620,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.7916666666666666,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2027-01-01",
+    "2027-03-10",
+    "2027-06-09",
+    "2027-09-08",
+    "2027-12-08"
+   ]
+  }
+ },
+ {
+  "key": "haiku-r4/C/41",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "41",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1194,
+  "tokens": 420,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 31324,
+  "ttfmrTokens": 99,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r4/C/42",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "42",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1201,
+  "tokens": 390,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 30808,
+  "ttfmrTokens": 102,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r4/C/43",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "43",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "list",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1358,
+  "tokens": 398,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 31060,
+  "ttfmrTokens": 141,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r4/C/44",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "44",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "table",
+   "callout",
+   "list"
+  ],
+  "srcBytes": 1182,
+  "tokens": 325,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 25790,
+  "ttfmrTokens": 103,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r4/C/45",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "45",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 884,
+  "tokens": 292,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 30784,
+  "ttfmrTokens": 101,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r4/C/46",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "46",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1572,
+  "tokens": 503,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 37634,
+  "ttfmrTokens": 69,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r4/C/47",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "47",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table"
+  ],
+  "srcBytes": 1582,
+  "tokens": 505,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 41538,
+  "ttfmrTokens": 65,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r4/C/48",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "48",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1312,
+  "tokens": 365,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 37989,
+  "ttfmrTokens": 45,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r4/C/49",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "49",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1301,
+  "tokens": 348,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 29569,
+  "ttfmrTokens": 48,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r4/C/50",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "50",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1322,
+  "tokens": 337,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 29521,
+  "ttfmrTokens": 46,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9545454545454546,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "31"
+   ]
+  }
+ },
+ {
+  "key": "haiku-r4/C/51",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "51",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1570,
+  "tokens": 427,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24884,
+  "ttfmrTokens": 101,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r4/C/52",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "52",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1638,
+  "tokens": 432,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24612,
+  "ttfmrTokens": 53,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r4/C/53",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "53",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout",
+   "table"
+  ],
+  "srcBytes": 1506,
+  "tokens": 381,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24268,
+  "ttfmrTokens": 68,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r4/C/54",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "54",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1754,
+  "tokens": 498,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24868,
+  "ttfmrTokens": 114,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9333333333333333,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1240000",
+    "7440000"
+   ]
+  }
+ },
+ {
+  "key": "haiku-r4/C/55",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "55",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1050,
+  "tokens": 250,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 23676,
+  "ttfmrTokens": 56,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9411764705882353,
+   "missSections": [],
+   "missVisible": [
+    "Wexford Legal"
+   ],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r4/C/56",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "56",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 2004,
+  "tokens": 581,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 25169,
+  "ttfmrTokens": 81,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9285714285714286,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1392000",
+    "1104000"
+   ]
+  }
+ },
+ {
+  "key": "haiku-r4/C/57",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "57",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1546,
+  "tokens": 440,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 30082,
+  "ttfmrTokens": 63,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r4/C/58",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "58",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1956,
+  "tokens": 516,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 30758,
+  "ttfmrTokens": 114,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r4/C/59",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "59",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1894,
+  "tokens": 515,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 31477,
+  "ttfmrTokens": 94,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9655172413793104,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "100000"
+   ]
+  }
+ },
+ {
+  "key": "haiku-r4/C/60",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "60",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 2166,
+  "tokens": 612,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 30400,
+  "ttfmrTokens": 69,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.967741935483871,
+   "missSections": [],
+   "missVisible": [
+    "Tomasz Wieczorek"
+   ],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r4/C/61",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "61",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1362,
+  "tokens": 412,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 34813,
+  "ttfmrTokens": 66,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r4/C/62",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "62",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1482,
+  "tokens": 451,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 36636,
+  "ttfmrTokens": 100,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9714285714285714,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1349600"
+   ]
+  }
+ },
+ {
+  "key": "haiku-r4/C/63",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "63",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1486,
+  "tokens": 424,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 32851,
+  "ttfmrTokens": 48,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9032258064516129,
+   "missSections": [],
+   "missVisible": [
+    "Camille Ferreira"
+   ],
+   "missValues": [
+    "7310",
+    "16.0"
+   ]
+  }
+ },
+ {
+  "key": "haiku-r4/C/64",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "64",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1279,
+  "tokens": 444,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 31085,
+  "ttfmrTokens": 50,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r4/C/65",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "65",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1298,
+  "tokens": 407,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 31122,
+  "ttfmrTokens": 91,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r4/C/66",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "66",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1281,
+  "tokens": 336,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24090,
+  "ttfmrTokens": 47,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r4/C/67",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "67",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 1438,
+  "tokens": 360,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24309,
+  "ttfmrTokens": 69,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r4/C/68",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "68",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 1357,
+  "tokens": 386,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 23965,
+  "ttfmrTokens": 54,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r4/C/69",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "69",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 5267,
+  "tokens": 1216,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 27906,
+  "ttfmrTokens": 147,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9285714285714286,
+   "missSections": [],
+   "missVisible": [
+    "Cresswell Systems"
+   ],
+   "missValues": [
+    "8 weeks"
+   ]
+  }
+ },
+ {
+  "key": "haiku-r4/C/70",
+  "model": "haiku-r4",
+  "arm": "C",
+  "id": "70",
+  "category": "prose",
+  "needs": [
+   "list",
+   "table"
+  ],
+  "srcBytes": 1309,
+  "tokens": 323,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 23863,
+  "ttfmrTokens": 64,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/41",
+  "model": "opus",
+  "arm": "B",
+  "id": "41",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 11504,
+  "tokens": 4321,
+  "pageBytes": 11504,
+  "ttfmrTokens": 2033,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/42",
+  "model": "opus",
+  "arm": "B",
+  "id": "42",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 12738,
+  "tokens": 4577,
+  "pageBytes": 12738,
+  "ttfmrTokens": 2195,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/43",
+  "model": "opus",
+  "arm": "B",
+  "id": "43",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "list",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 10943,
+  "tokens": 4009,
+  "pageBytes": 10943,
+  "ttfmrTokens": 1946,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/44",
+  "model": "opus",
+  "arm": "B",
+  "id": "44",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "table",
+   "callout",
+   "list"
+  ],
+  "srcBytes": 11478,
+  "tokens": 3976,
+  "pageBytes": 11478,
+  "ttfmrTokens": 2398,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/45",
+  "model": "opus",
+  "arm": "B",
+  "id": "45",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 8233,
+  "tokens": 3113,
+  "pageBytes": 8233,
+  "ttfmrTokens": 1622,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/46",
+  "model": "opus",
+  "arm": "B",
+  "id": "46",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 14046,
+  "tokens": 4971,
+  "pageBytes": 14046,
+  "ttfmrTokens": 2189,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/47",
+  "model": "opus",
+  "arm": "B",
+  "id": "47",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table"
+  ],
+  "srcBytes": 12262,
+  "tokens": 4434,
+  "pageBytes": 12262,
+  "ttfmrTokens": 1667,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/48",
+  "model": "opus",
+  "arm": "B",
+  "id": "48",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 11079,
+  "tokens": 3967,
+  "pageBytes": 11079,
+  "ttfmrTokens": 1685,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/49",
+  "model": "opus",
+  "arm": "B",
+  "id": "49",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 14043,
+  "tokens": 4938,
+  "pageBytes": 14043,
+  "ttfmrTokens": 2086,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/50",
+  "model": "opus",
+  "arm": "B",
+  "id": "50",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 12394,
+  "tokens": 4463,
+  "pageBytes": 12394,
+  "ttfmrTokens": 1717,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/51",
+  "model": "opus",
+  "arm": "B",
+  "id": "51",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 12302,
+  "tokens": 4405,
+  "pageBytes": 12302,
+  "ttfmrTokens": 2165,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/52",
+  "model": "opus",
+  "arm": "B",
+  "id": "52",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 10581,
+  "tokens": 3812,
+  "pageBytes": 10581,
+  "ttfmrTokens": 2323,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 38,
+  "contrast-400-light": 0,
+  "overflow-dark": 38,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.92,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "6 to 8",
+    "nine"
+   ]
+  }
+ },
+ {
+  "key": "opus/B/53",
+  "model": "opus",
+  "arm": "B",
+  "id": "53",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout",
+   "table"
+  ],
+  "srcBytes": 9346,
+  "tokens": 3295,
+  "pageBytes": 9346,
+  "ttfmrTokens": 2081,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/54",
+  "model": "opus",
+  "arm": "B",
+  "id": "54",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 11540,
+  "tokens": 3917,
+  "pageBytes": 11540,
+  "ttfmrTokens": 2015,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9333333333333333,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1240000",
+    "7440000"
+   ]
+  }
+ },
+ {
+  "key": "opus/B/55",
+  "model": "opus",
+  "arm": "B",
+  "id": "55",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 7875,
+  "tokens": 2868,
+  "pageBytes": 7875,
+  "ttfmrTokens": 1984,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/56",
+  "model": "opus",
+  "arm": "B",
+  "id": "56",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 11774,
+  "tokens": 4154,
+  "pageBytes": 11774,
+  "ttfmrTokens": 1933,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.6785714285714286,
+   "missSections": [],
+   "missVisible": [
+    "wet-lab"
+   ],
+   "missValues": [
+    "1392000",
+    "1104000",
+    "1.1 million",
+    "2026-11-13",
+    "2027-03-31",
+    "2027-02-01",
+    "2027-03-01",
+    "2027-01-15"
+   ]
+  }
+ },
+ {
+  "key": "opus/B/57",
+  "model": "opus",
+  "arm": "B",
+  "id": "57",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 10010,
+  "tokens": 3797,
+  "pageBytes": 10010,
+  "ttfmrTokens": 1784,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/58",
+  "model": "opus",
+  "arm": "B",
+  "id": "58",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 10492,
+  "tokens": 3794,
+  "pageBytes": 10492,
+  "ttfmrTokens": 1958,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.7727272727272727,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1.45 million",
+    "0.92 million",
+    "0.48 million",
+    "2027-01-15",
+    "2026-10-27"
+   ]
+  }
+ },
+ {
+  "key": "opus/B/59",
+  "model": "opus",
+  "arm": "B",
+  "id": "59",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 11224,
+  "tokens": 4226,
+  "pageBytes": 11224,
+  "ttfmrTokens": 1866,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9655172413793104,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2026-11-04"
+   ]
+  }
+ },
+ {
+  "key": "opus/B/60",
+  "model": "opus",
+  "arm": "B",
+  "id": "60",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 13149,
+  "tokens": 4846,
+  "pageBytes": 13149,
+  "ttfmrTokens": 2152,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 1,
+  "overflow-light": 0,
+  "contrast-400-light": 1,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8064516129032258,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1926000",
+    "1719000",
+    "1555200",
+    "1609800",
+    "2028-01-01",
+    "2026-11-10"
+   ]
+  }
+ },
+ {
+  "key": "opus/B/61",
+  "model": "opus",
+  "arm": "B",
+  "id": "61",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 10250,
+  "tokens": 3988,
+  "pageBytes": 10250,
+  "ttfmrTokens": 1976,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 4,
+  "overflow-light": 0,
+  "contrast-400-light": 4,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/62",
+  "model": "opus",
+  "arm": "B",
+  "id": "62",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list"
+  ],
+  "srcBytes": 10893,
+  "tokens": 3968,
+  "pageBytes": 10893,
+  "ttfmrTokens": 1729,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 1,
+  "overflow-light": 0,
+  "contrast-400-light": 1,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9428571428571428,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1349600",
+    "2026-06-30"
+   ]
+  }
+ },
+ {
+  "key": "opus/B/63",
+  "model": "opus",
+  "arm": "B",
+  "id": "63",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list"
+  ],
+  "srcBytes": 10424,
+  "tokens": 4008,
+  "pageBytes": 10424,
+  "ttfmrTokens": 1882,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.967741935483871,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2026-08-15"
+   ]
+  }
+ },
+ {
+  "key": "opus/B/64",
+  "model": "opus",
+  "arm": "B",
+  "id": "64",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 10470,
+  "tokens": 4221,
+  "pageBytes": 10470,
+  "ttfmrTokens": 1906,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 2,
+  "overflow-light": 0,
+  "contrast-400-light": 2,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9767441860465116,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2026-10-25"
+   ]
+  }
+ },
+ {
+  "key": "opus/B/65",
+  "model": "opus",
+  "arm": "B",
+  "id": "65",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 9193,
+  "tokens": 3569,
+  "pageBytes": 9193,
+  "ttfmrTokens": 1643,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.967741935483871,
+   "missSections": [],
+   "missVisible": [
+    "not been externally assured"
+   ],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/66",
+  "model": "opus",
+  "arm": "B",
+  "id": "66",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 6156,
+  "tokens": 2314,
+  "pageBytes": 6156,
+  "ttfmrTokens": 1401,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 1,
+  "overflow-light": 0,
+  "contrast-400-light": 1,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9565217391304348,
+   "missSections": [],
+   "missVisible": [
+    "Evernote ENEX"
+   ],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/67",
+  "model": "opus",
+  "arm": "B",
+  "id": "67",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 6583,
+  "tokens": 2313,
+  "pageBytes": 6583,
+  "ttfmrTokens": 1293,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 2,
+  "overflow-light": 0,
+  "contrast-400-light": 2,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9166666666666666,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "80 percent",
+    "2026-11-01"
+   ]
+  }
+ },
+ {
+  "key": "opus/B/68",
+  "model": "opus",
+  "arm": "B",
+  "id": "68",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 6464,
+  "tokens": 2382,
+  "pageBytes": 6464,
+  "ttfmrTokens": 1489,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 3,
+  "overflow-light": 0,
+  "contrast-400-light": 3,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/69",
+  "model": "opus",
+  "arm": "B",
+  "id": "69",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 8407,
+  "tokens": 2517,
+  "pageBytes": 8407,
+  "ttfmrTokens": 1046,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8928571428571429,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2026-03-02",
+    "2026-09-25",
+    "11 hours"
+   ]
+  }
+ },
+ {
+  "key": "opus/B/70",
+  "model": "opus",
+  "arm": "B",
+  "id": "70",
+  "category": "prose",
+  "needs": [
+   "list",
+   "table"
+  ],
+  "srcBytes": 5876,
+  "tokens": 2112,
+  "pageBytes": 5876,
+  "ttfmrTokens": 1318,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r4/C/41",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "41",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1376,
+  "tokens": 485,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 32706,
+  "ttfmrTokens": 103,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r4/C/42",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "42",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1631,
+  "tokens": 534,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 38410,
+  "ttfmrTokens": 127,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r4/C/43",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "43",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "list",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1405,
+  "tokens": 432,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 32718,
+  "ttfmrTokens": 139,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r4/C/44",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "44",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "table",
+   "callout",
+   "list"
+  ],
+  "srcBytes": 1532,
+  "tokens": 417,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 33186,
+  "ttfmrTokens": 101,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r4/C/45",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "45",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 881,
+  "tokens": 304,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 30504,
+  "ttfmrTokens": 105,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r4/C/46",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "46",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1904,
+  "tokens": 578,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 38241,
+  "ttfmrTokens": 80,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r4/C/47",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "47",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table"
+  ],
+  "srcBytes": 1534,
+  "tokens": 522,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 41729,
+  "ttfmrTokens": 78,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r4/C/48",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "48",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1411,
+  "tokens": 368,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 38213,
+  "ttfmrTokens": 49,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r4/C/49",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "49",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1586,
+  "tokens": 409,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 30040,
+  "ttfmrTokens": 77,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r4/C/50",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "50",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1655,
+  "tokens": 408,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 30286,
+  "ttfmrTokens": 97,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r4/C/51",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "51",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1472,
+  "tokens": 409,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 25269,
+  "ttfmrTokens": 84,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r4/C/52",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "52",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1716,
+  "tokens": 473,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24973,
+  "ttfmrTokens": 54,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r4/C/53",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "53",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout",
+   "table"
+  ],
+  "srcBytes": 1683,
+  "tokens": 451,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 25189,
+  "ttfmrTokens": 103,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r4/C/54",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "54",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 2033,
+  "tokens": 566,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 25963,
+  "ttfmrTokens": 113,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9333333333333333,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1240000",
+    "7440000"
+   ]
+  }
+ },
+ {
+  "key": "opus-r4/C/55",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "55",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1092,
+  "tokens": 268,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24087,
+  "ttfmrTokens": 104,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r4/C/56",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "56",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 3174,
+  "tokens": 898,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 32499,
+  "ttfmrTokens": 108,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8928571428571429,
+   "missSections": [],
+   "missVisible": [
+    "wet-lab"
+   ],
+   "missValues": [
+    "1.1 million",
+    "31 minutes"
+   ]
+  }
+ },
+ {
+  "key": "opus-r4/C/57",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "57",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 2180,
+  "tokens": 602,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 31727,
+  "ttfmrTokens": 121,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r4/C/58",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "58",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 2506,
+  "tokens": 654,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 35816,
+  "ttfmrTokens": 111,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8636363636363636,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1.45 million",
+    "0.92 million",
+    "0.48 million"
+   ]
+  }
+ },
+ {
+  "key": "opus-r4/C/59",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "59",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 2223,
+  "tokens": 603,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 34413,
+  "ttfmrTokens": 139,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9655172413793104,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "100000"
+   ]
+  }
+ },
+ {
+  "key": "opus-r4/C/60",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "60",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 2833,
+  "tokens": 816,
+  "errors": [
+   "21:147 data-row-width row \"**Mixed: 12 electric,6 hybrid**,–,**\"$1,609,800\"**\" has 6 fields; _table2 has 3 columns (Option,Five-year cost per van,Fleet of 18)"
+  ],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 39355,
+  "ttfmrTokens": 149,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r4/C/61",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "61",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1494,
+  "tokens": 462,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 35048,
+  "ttfmrTokens": 126,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r4/C/62",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "62",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list"
+  ],
+  "srcBytes": 2002,
+  "tokens": 594,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 37740,
+  "ttfmrTokens": 66,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9714285714285714,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1349600"
+   ]
+  }
+ },
+ {
+  "key": "opus-r4/C/63",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "63",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1945,
+  "tokens": 593,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 34205,
+  "ttfmrTokens": 69,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r4/C/64",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "64",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1285,
+  "tokens": 464,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 32336,
+  "ttfmrTokens": 54,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r4/C/65",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "65",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1820,
+  "tokens": 572,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 32141,
+  "ttfmrTokens": 82,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.967741935483871,
+   "missSections": [],
+   "missVisible": [
+    "not been externally assured"
+   ],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r4/C/66",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "66",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1404,
+  "tokens": 365,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24353,
+  "ttfmrTokens": 60,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9565217391304348,
+   "missSections": [],
+   "missVisible": [
+    "Evernote ENEX"
+   ],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r4/C/67",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "67",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 1915,
+  "tokens": 486,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24981,
+  "ttfmrTokens": 96,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r4/C/68",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "68",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 1543,
+  "tokens": 441,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 25271,
+  "ttfmrTokens": 59,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r4/C/69",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "69",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 5914,
+  "tokens": 1354,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 28652,
+  "ttfmrTokens": 107,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9285714285714286,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "15-minute",
+    "11 hours"
+   ]
+  }
+ },
+ {
+  "key": "opus-r4/C/70",
+  "model": "opus-r4",
+  "arm": "C",
+  "id": "70",
+  "category": "prose",
+  "needs": [
+   "list",
+   "table"
+  ],
+  "srcBytes": 1575,
+  "tokens": 400,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24821,
+  "ttfmrTokens": 79,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ }
+]

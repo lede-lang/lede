@@ -1,0 +1,46 @@
+version: 2
+updates:
+  # Actions are pinned to commit SHAs with a version comment; Dependabot moves both.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: "ci(deps)"
+    groups:
+      actions:
+        patterns: ["*"]
+  # One lockfile for the workspace (packages/* and bench). cooldown matches the 7-day minimum release age the project asks of
+  # every dependency; security updates ignore it.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    ignore:
+      # Majors are bumped by hand: release tooling can only be exercised by the public repository's workflow.
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+      # Bench tooling renders and scores the published benchmark; a version change can move the numbers, so it is bumped by
+      # hand, with a rerun. playwright-core is pinned exactly for the same reason.
+      - dependency-name: playwright-core
+      - dependency-name: markdown-it
+      - dependency-name: mermaid
+      - dependency-name: axe-core
+      - dependency-name: diff
+      - dependency-name: "@anthropic-ai/tokenizer"
+      # A 0.x minor changes diagram layout; look at the site figures first.
+      - dependency-name: elkjs
+    commit-message:
+      prefix: "build(deps)"
+      prefix-development: "build(deps-dev)"
+    groups:
+      dev-tooling:
+        dependency-type: development
+        update-types: [minor, patch]
+      runtime:
+        dependency-type: production
+        update-types: [minor, patch]

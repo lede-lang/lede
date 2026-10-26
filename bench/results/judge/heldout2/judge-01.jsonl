@@ -1,0 +1,10 @@
+{"pair":"P001","winner":"RIGHT","reason":"RIGHT shows the pipeline as clean grouped boxes with readable labels on both widths, while LEFT's diagram has a huge empty dashed box, long dead arrows and tiny monospace labels."}
+{"pair":"P002","winner":"LEFT","reason":"LEFT draws a real sequence diagram with an alt/else frame and legible labels, whereas RIGHT flattens it to a numbered list, though RIGHT's phone layout is cleaner."}
+{"pair":"P003","winner":"RIGHT","reason":"RIGHT draws a true flowchart with decision diamonds and yes/no branches that stays legible at phone width, while LEFT flattens the branching into a linear stack plus a text list of other paths."}
+{"pair":"P004","winner":"RIGHT","reason":"RIGHT nests the subscription, vnet and subnets as readable boxes and adds a flows table, while LEFT's diagram has tiny text, long empty connectors and cramped wrapping on phone."}
+{"pair":"P005","winner":"LEFT","reason":"LEFT shows the 12-step sign-in as a proper sequence diagram on desktop, though on phone it falls back to a cramped narrow list; RIGHT is a plain list on both."}
+{"pair":"P006","winner":"LEFT","reason":"RIGHT's bar chart clips its value labels (349,60 and 367,2 are cut off) and has oversized type, while LEFT is clean, consistent and fully legible at both widths."}
+{"pair":"P007","winner":"LEFT","reason":"RIGHT has a nice bar chart on desktop but its phone tables are cut off at the right edge (flight hours, trade-off columns), while LEFT wraps every table fully on phone."}
+{"pair":"P008","winner":"RIGHT","reason":"RIGHT adds a labeled annual-premium bar chart on desktop and turns the plan table into readable cards on phone, while LEFT has no chart and its phone plan table is truncated."}
+{"pair":"P009","winner":"RIGHT","reason":"RIGHT has a monthly cost bar chart and stacked comparison cards on phone, while LEFT's phone comparison table is cut off, though RIGHT's phone chart drops the SQS with SNS label."}
+{"pair":"P010","winner":"LEFT","reason":"LEFT has fully readable bid cards, a bar chart and schedule table on phone, while RIGHT's bids table is cut off at the right edge on phone."}

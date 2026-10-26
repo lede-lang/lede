@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Member-Profile Database Choice</title>
+<style>
+:root{--bg:#f4f6f9;--surface:#fff;--text:#18202b;--muted:#5d6777;--border:#dbe1e9;--pg:#336791;--ddb:#c7731c;--mdb:#3f8f4f;--rec-bg:#e8f0f8;--rec:#336791;--warn-bg:#fff4e0;--warn:#c98a12;--warn-text:#6a4700}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1319;--surface:#181e27;--text:#e3e8ef;--muted:#99a3b3;--border:#2a323e;--pg:#6fa3d6;--ddb:#eba04f;--mdb:#6cc27c;--rec-bg:#16243a;--rec:#6fa3d6;--warn-bg:#2e2410;--warn:#d9a33a;--warn-text:#f3d79a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:900px;margin:0 auto;padding:32px 16px 64px}
+.eyebrow{font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 0 6px}
+h1{font-size:clamp(26px,5vw,34px);line-height:1.2;margin:0 0 8px}
+.due{display:inline-block;background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:3px 12px;font-size:14px;margin:0 0 18px}
+.load{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:0 0 30px}
+.load div{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.load b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
+.load span{font-size:13px;color:var(--muted)}
+section{margin-bottom:34px}
+h2{font-size:21px;margin:0 0 12px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:600px}
+th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--border)}
+thead th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+tbody tr:last-child>*{border-bottom:0}
+.chart{padding:18px}
+svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:16px;list-style:none;margin:0 0 8px;padding:0;font-size:14px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.pc{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.pc .panel{padding:14px 16px}
+.pc h3{margin:0 0 4px;font-size:17px}
+.pc h4{margin:10px 0 2px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.pc ul{margin:0;padding-left:20px}
+.callout{border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.callout .label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.callout p{margin:4px 0 0}
+.rec{background:var(--rec-bg);border:1px solid var(--rec)}
+.rec .label{color:var(--rec)}
+.warn{background:var(--warn-bg);border:1px solid var(--warn);border-left-width:6px;color:var(--warn-text)}
+</style>
+</head>
+<body>
+<main>
+<p class="eyebrow">Lattice Fitness · Accounts team</p>
+<h1>Database for the member-profile service</h1>
+<span class="due">Decision due 2026-11-04</span>
+<div class="load" aria-label="Workload">
+<div><b>9 million</b><span>member profiles, ~2 KB each</span></div>
+<div><b>3,500/s</b><span>peak reads</span></div>
+<div><b>220/s</b><span>peak writes</span></div>
+<div><b>Key lookups</b><span>plus admin search by email and gym</span></div>
+</div>
+
+<section>
+<h2>Comparison</h2>
+<div class="panel table-wrap">
+<table>
+<thead><tr><th>Option</th><th>Query flexibility</th><th>Scaling model</th><th>Ops effort</th><th>Multi-region</th></tr></thead>
+<tbody>
+<tr><th scope="row">PostgreSQL (RDS)</th><td>High</td><td>Vertical plus read replicas</td><td>Medium</td><td>Read replicas only</td></tr>
+<tr><th scope="row">DynamoDB</th><td>Low</td><td>Automatic</td><td>Low</td><td>Global tables</td></tr>
+<tr><th scope="row">MongoDB Atlas</th><td>Medium</td><td>Sharding</td><td>Medium</td><td>Global clusters</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section>
+<h2>Cost at scale</h2>
+<div class="panel chart">
+<ul class="legend">
+<li><i style="background:var(--pg)"></i>PostgreSQL</li>
+<li><i style="background:var(--ddb)"></i>DynamoDB</li>
+<li><i style="background:var(--mdb)"></i>MongoDB Atlas</li>
+</ul>
+<svg viewBox="0 0 640 310" role="img" aria-label="Grouped bar chart of estimated monthly cost in dollars. Today: PostgreSQL 780, DynamoDB 540, MongoDB Atlas 910. 3x traffic: 1640, 1420, 1870. 10x traffic: 4300, 4650, 5200.">
+<g stroke="var(--border)" stroke-width="1">
+<line x1="70" y1="270" x2="620" y2="270"/><line x1="70" y1="210" x2="620" y2="210"/><line x1="70" y1="150" x2="620" y2="150"/><line x1="70" y1="90" x2="620" y2="90"/><line x1="70" y1="30" x2="620" y2="30"/>
+</g>
+<g fill="var(--muted)" font-size="12" text-anchor="end">
+<text x="62" y="274">$0</text><text x="62" y="214">$1,500</text><text x="62" y="154">$3,000</text><text x="62" y="94">$4,500</text><text x="62" y="34">$6,000</text>
+</g>
+<rect x="90" y="238.8" width="44" height="31.2" fill="var(--pg)"/>
+<rect x="140" y="248.4" width="44" height="21.6" fill="var(--ddb)"/>
+<rect x="190" y="233.6" width="44" height="36.4" fill="var(--mdb)"/>
+<rect x="273" y="204.4" width="44" height="65.6" fill="var(--pg)"/>
+<rect x="323" y="213.2" width="44" height="56.8" fill="var(--ddb)"/>
+<rect x="373" y="195.2" width="44" height="74.8" fill="var(--mdb)"/>
+<rect x="456" y="98" width="44" height="172" fill="var(--pg)"/>
+<rect x="506" y="84" width="44" height="186" fill="var(--ddb)"/>
+<rect x="556" y="62" width="44" height="208" fill="var(--mdb)"/>
+<g fill="var(--text)" font-size="11" text-anchor="middle" font-variant-numeric="tabular-nums">
+<text x="112" y="233">$780</text><text x="162" y="243">$540</text><text x="212" y="228">$910</text>
+<text x="295" y="199">$1,640</text><text x="345" y="208">$1,420</text><text x="395" y="190">$1,870</text>
+<text x="478" y="93">$4,300</text><text x="528" y="79">$4,650</text><text x="578" y="57">$5,200</text>
+</g>
+<g fill="var(--text)" font-size="13" text-anchor="middle">
+<text x="162" y="292">Today</text><text x="345" y="292">3x traffic</text><text x="528" y="292">10x traffic</text>
+</g>
+</svg>
+</div>
+</section>
+
+<section>
+<h2>Pros and cons</h2>
+<div class="pc">
+<div class="panel"><h3>PostgreSQL (RDS)</h3>
+<h4>Pros</h4><ul><li>High query flexibility for admin search by email and gym</li><li>Within $220/month of DynamoDB at 3x traffic</li></ul>
+<h4>Cons</h4><ul><li>Scales vertically plus read replicas</li><li>Multi-region via read replicas only</li></ul></div>
+<div class="panel"><h3>DynamoDB</h3>
+<h4>Pros</h4><ul><li>Cheapest today and at 3x</li><li>Automatic scaling, low ops effort</li><li>Global tables</li></ul>
+<h4>Cons</h4><ul><li>Low query flexibility for admin search</li><li>Costs more than PostgreSQL at 10x</li></ul></div>
+<div class="panel"><h3>MongoDB Atlas</h3>
+<h4>Pros</h4><ul><li>Medium query flexibility</li><li>Global clusters</li></ul>
+<h4>Cons</h4><ul><li>Most expensive at every traffic level</li><li>Medium ops effort with sharding</li></ul></div>
+</div>
+</section>
+
+<section>
+<h2>Recommendation</h2>
+<div class="callout rec">
+<div class="label">Recommendation</div>
+<p><strong>PostgreSQL (RDS).</strong> Admin search needs flexible queries, and its cost stays within $220 a month of DynamoDB at our realistic 3x horizon ($1,640 against $1,420).</p>
+</div>
+<div class="callout warn" role="note">
+<div class="label">Warning</div>
+<p>Write volume above 2,000 per second would force us to revisit sharding.</p>
+</div>
+</section>
+</main>
+</body>
+</html>

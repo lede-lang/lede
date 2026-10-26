@@ -1,0 +1,21 @@
+@title Payments API SLOs
+@subtitle 30-day window ending 2026-10-15
+@author Payments Reliability
+@date 2026-10-15
+
+kpi Availability | 99.95% | target 99.9% | good
+kpi Error budget remaining | 62% | | neutral
+kpi p99 latency | 412 ms | target 500 ms | good
+
+## Daily availability
+data avail = day,availability,target; Oct 6,99.98,99.9; Oct 7,99.97,99.9; Oct 8,99.91,99.9; Oct 9,99.99,99.9; Oct 10,99.96,99.9; Oct 11,99.82,99.9; Oct 12,99.94,99.9; Oct 13,99.97,99.9; Oct 14,99.99,99.9; Oct 15,99.98,99.9
+chart line avail x=day y=availability,target focus=availability unit=% min=99.8 max=100 title="Daily availability vs 99.9% target"
+
+Oct 11 dipped to 99.82%, below the 99.9% target.
+
+## Service SLOs
+data slos = Service,SLO target,Current,Budget consumed; payments-api,99.9,99.95,38; ledger-writer,99.95,99.97,41; card-tokenizer,99.99,99.993,70; refunds-worker,99.5,99.71,22; payout-scheduler,99.9,99.86,140
+table slos
+chart bar slos x=Service y=Budget consumed unit=% labels title="Error budget consumed by service"
+
+!! **Budget exhausted.** payout-scheduler has burned 140% of its error budget. Feature deploys to it are frozen until 2026-10-29 per the error budget policy.

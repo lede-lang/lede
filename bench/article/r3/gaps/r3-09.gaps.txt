@@ -1,0 +1,6 @@
+Mostly expressible. Substitutions and limits:
+- The temperature line chart spaces readings evenly by reading, not to scale in time (no time-axis chart); said so in the chart title. Only one target line is available, so the distributor's -10 C limit is in text, not on the chart.
+- No documented way to put double quotes inside a data field, so “Compressor offline” uses curly quotes.
+- The incident date (Thursday 2026-10-15) is inferred from "last Thursday" and today's date; confirm.
+- Corrective actions: owners are roles/names from the log, and all due dates and the 10-minute / 30-minute intervals are proposals, marked as such in the table headers.
+- The 09:00 core reading is in the timeline table but left off the air-temperature chart because it is product, not air.

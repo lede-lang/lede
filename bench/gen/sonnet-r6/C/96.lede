@@ -1,0 +1,32 @@
+@title Harbour Street Bridge rebuild
+@subtitle Status for council and residents
+@author Whitcombe City Public Works
+@date 2026-10-16
+
+kpi Project complete | 58% | forecast 46 days late | bad
+
+The bridge is closed to vehicles. The footbridge stays open.
+
+! The detour adds about 7 minutes to a trip.
+
+kpi Budget spent | $17.2M | 54.6% of $31.5M | neutral
+kpi Contingency used | $1.3M | of $2.1M | neutral
+kpi Forecast completion | 2027-11-15 | planned 2027-09-30 | bad
+
+## Milestones
+
+data ms = milestone,percent,status; Old span demolition,100,Done; Pier foundations,100,Done; Steel girder fabrication,85,At risk; Girder erection,30,At risk; Approach roads and utilities,40,On track; Deck and parapets,0,Not started
+
+table ms bar=percent
+
+Girder fabrication is amber because the steel supplier is 5 weeks behind.
+
+## Risks
+
+- **Supplier delay.** The steel supplier is 5 weeks behind, which pushes girder erection and the finish date.
+- **Winter concrete pours for the deck.** Heated enclosures are budgeted at $380,000.
+
+## Next 30 days
+
+step First girders delivered | 2026-11-02
+step Public information meeting, library, 18:30 | 2026-11-05

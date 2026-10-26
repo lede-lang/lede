@@ -1,0 +1,45 @@
+@title Handling a data subject access request
+@subtitle Quillfeather Software privacy runbook
+@author Privacy Officer
+
+kpi Respond within | 30 days | of a valid request
+kpi Extension | up to 60 days | complex requests only
+kpi Internal delivery target | day 25 | good
+
+## Deadlines
+
+We must respond within 30 days of receiving a valid request. A complex request can be extended by up to 60 more days, but only if we tell the requester within the first 30 days. Our internal target is to deliver by day 25.
+
+## Handling steps
+
+1. Log the request in the privacy tracker within 1 business day.
+2. Verify identity within 5 business days.
+-- 1. Ask for two documents.
+-- 2. Never accept a photo of a card showing a full number.
+3. Confirm the scope with the requester by email.
+4. Collect data from the six systems below.
+5. Legal reviews the export and redacts other people's data.
+6. Package the export.
+-- 1. Use an encrypted ZIP.
+-- 2. Send the password by SMS, never in the same email.
+7. Deliver by day 25 and record the delivery date.
+8. Close the ticket and keep the log for 3 years.
+
+## Systems to search
+
+data systems = system,owner,days; CRM,Sales Ops,3; Billing,Finance Systems,4; Support desk,Support Ops,3; Product database,Data Platform,6; Marketing email,Growth,2; Analytics events,Data Platform,6
+
+table systems bar=days title="Days each system needs"
+
+Backups are not searched, but note the date of the last backup.
+
+## Do not
+
+!! Do not delete data in response to an access request.
+
+- Do not send the export to an address that was not verified.
+- Do not discuss the request in public channels.
+
+## Contacts
+
+table = role,contact; Privacy Officer,"Anneliese Vogt, privacy@quillfeather.example"; Legal reviewer,Marcus Teo; Escalation channel,#privacy-requests

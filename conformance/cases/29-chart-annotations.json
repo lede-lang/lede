@@ -1,0 +1,95 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "data",
+      "name": "q",
+      "line": 1
+    },
+    {
+      "type": "chart",
+      "kind": "line",
+      "data": "q",
+      "x": "quarter",
+      "y": [
+        "spend"
+      ],
+      "title": null,
+      "stack": false,
+      "labels": true,
+      "unit": null,
+      "min": null,
+      "max": null,
+      "focus": null,
+      "target": null,
+      "line": 2,
+      "labelMode": "end"
+    },
+    {
+      "type": "chart",
+      "kind": "bar",
+      "data": "q",
+      "x": "quarter",
+      "y": [
+        "spend"
+      ],
+      "title": null,
+      "stack": false,
+      "labels": true,
+      "unit": null,
+      "min": null,
+      "max": null,
+      "focus": null,
+      "target": null,
+      "line": 3,
+      "labelMode": "all",
+      "hatch": [
+        "Q3 est",
+        "Q2"
+      ]
+    },
+    {
+      "type": "chart",
+      "kind": "bar",
+      "data": "q",
+      "x": "quarter",
+      "y": [
+        "spend"
+      ],
+      "title": null,
+      "stack": false,
+      "labels": true,
+      "unit": null,
+      "min": null,
+      "max": null,
+      "focus": null,
+      "target": null,
+      "line": 4
+    }
+  ],
+  "data": {
+    "q": {
+      "name": "q",
+      "columns": [
+        "quarter",
+        "spend"
+      ],
+      "rows": [
+        [
+          "Q1",
+          "1.8"
+        ],
+        [
+          "Q2",
+          "2.1"
+        ],
+        [
+          "Q3 est",
+          "2.4"
+        ]
+      ],
+      "line": 1
+    }
+  },
+  "diagnostics": []
+}

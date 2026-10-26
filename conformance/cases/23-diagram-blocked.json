@@ -1,0 +1,59 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "diagram",
+      "name": "env",
+      "kind": "flow",
+      "dir": "LR",
+      "title": null,
+      "nodes": [
+        {
+          "id": "dev",
+          "label": "Dev",
+          "kind": "svc",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "stg",
+          "label": "Staging",
+          "kind": "svc",
+          "sub": null,
+          "focus": false
+        }
+      ],
+      "edges": [
+        {
+          "from": "dev",
+          "to": "stg",
+          "label": "promote",
+          "style": "solid",
+          "both": false,
+          "line": 4
+        },
+        {
+          "from": "dev",
+          "to": "stg",
+          "label": "never",
+          "style": "blocked",
+          "both": false,
+          "line": 5
+        },
+        {
+          "from": "stg",
+          "to": "dev",
+          "label": "no direct data",
+          "style": "blocked",
+          "both": false,
+          "line": 6
+        }
+      ],
+      "groups": [],
+      "notes": [],
+      "line": 1
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

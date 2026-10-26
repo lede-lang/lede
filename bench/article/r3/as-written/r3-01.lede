@@ -1,0 +1,107 @@
+@title Overdue fines: three proposals compared
+@subtitle For Thursday's library board meeting. Baseline is last year's circulation report; proposals A, B and C are weighed against it.
+@width wide
+
+! Read this first. This page is static: it cannot take typed assumptions or move sliders. Every figure marked "derived" is arithmetic on the circulation report. Where a proposal's effect depends on something the report does not contain, the page says so and lists the assumption you would have to supply (see "Assumptions to settle").
+
+## Where things stand today
+
+kpi Fines billed | $84,650.20 | 12 branches, last year
+kpi Fines collected | $32,002.55 | 37.8% of billed | bad
+kpi Not collected | $52,647.65 | billed minus collected
+kpi Cardholders blocked | 3,876 | 12 branches
+
+Totals are derived by adding the branch rows. They include Lakeside (seasonal) and Veterans' Branch, North, whose billed figure has lost-item fees mixed in.
+
+The most important number for a board deciding on revenue: if every fine disappeared, the most revenue that could be lost is what is collected today, $32,002.55, not the $84,650.20 billed.
+
+data circ = Branch,Items Out (count),Overdue Rate (%),Fines Billed ($),Fines Collected ($),Cardholders Blocked,Notes; Main Street,"48,212",6.4%,"$31,480.50","$12,905.25","1,204","Biggest block count; “temporary” desk staffed 2 days/wk"; O'Brien Memorial,"9,870",8.1%,"$7,102.00","$2,311.75",388,
+data circ += St. Anne's (Eastside),"12,455",9.9%,"$10,964.80","$3,090.00",502,"Lots of kids' cards; parents dispute charges"
+data circ += Riverbend,"6,018",4.2%,"$1,845.25","$1,402.10",61,
+data circ += "Hollis; Annex","3,340",11.3%,"$3,771.00","$604.50",219,"Bookmobile stop; “no fines” signs up since March"
+data circ += Quarry Hill,"7,902",7.0%,"$4,230.60","$1,988.00",247,
+data circ += Dunmore,"5,115",5.5%,"$2,260.00","$1,512.40",90,Pays by check only
+data circ += Lakeside (seasonal),"2,640",,"$980.00","$415.00",33,Open May-Sept only
+data circ += Harlan Road,"8,731",7.7%,"$5,674.35","$2,105.90",301,
+data circ += "Veterans' Branch, North","11,206",8.8%,"$8,803.20","$3,447.65",436,"Lost-item fees mixed in; can't separate them"
+data circ += Mill Creek,"4,477",3.9%,"$1,320.00","$1,198.00",40,
+data circ += Tannery Row,"6,903",10.2%,"$6,218.50","$1,022.00",355,"Teens, after-school crowd"
+
+table circ title="Last year's circulation report, by branch"
+
+data fines = Branch,Billed,Collected; Main Street,31480.50,12905.25; O'Brien Memorial,7102.00,2311.75; St. Anne's (Eastside),10964.80,3090.00; Riverbend,1845.25,1402.10; "Hollis; Annex",3771.00,604.50; Quarry Hill,4230.60,1988.00; Dunmore,2260.00,1512.40; Lakeside (seasonal),980.00,415.00; Harlan Road,5674.35,2105.90; "Veterans' Branch, North",8803.20,3447.65; Mill Creek,1320.00,1198.00; Tannery Row,6218.50,1022.00
+
+chart hbar fines y=Billed,Collected unit=$ title="Billed versus collected, by branch"
+
+data rate = Branch,Collected as % of billed (derived); Main Street,41.0; O'Brien Memorial,32.5; St. Anne's (Eastside),28.2; Riverbend,76.0; "Hollis; Annex",16.0; Quarry Hill,47.0; Dunmore,66.9; Lakeside (seasonal),42.3; Harlan Road,37.1; "Veterans' Branch, North",39.2; Mill Creek,90.8; Tannery Row,16.4
+
+chart hbar rate unit=% labels title="Share of billed fines actually collected (derived)"
+
+data blocked = Branch,Cardholders blocked; Main Street,1204; O'Brien Memorial,388; St. Anne's (Eastside),502; Riverbend,61; "Hollis; Annex",219; Quarry Hill,247; Dunmore,90; Lakeside (seasonal),33; Harlan Road,301; "Veterans' Branch, North",436; Mill Creek,40; Tannery Row,355
+
+chart hbar blocked labels title="Cardholders blocked, by branch"
+
+Main Street alone holds 40% of collected dollars and 31% of blocked cardholders (both derived), so any county-wide result is largely a Main Street result. Mill Creek and Riverbend collect 90.8% and 76.0% of what they bill; Hollis; Annex and Tannery Row collect about 16%.
+
+## The three proposals
+
+cards
+
+### Proposal A
+End daily fines entirely. Charge a flat $5.00 replacement fee once an item is 30 days late.
+
+### Proposal B
+Cap fines at $10.00 per item. One-time "forgive and reset" for any account under $25.
+
+### Proposal C
+Fine-free for cards under 18 only. Adults unchanged, but the blocking threshold rises from $10 to $25.
+
+## What each one does to revenue and to blocked cardholders
+
+table = Proposal,Revenue,Blocked cardholders,What the data supports; **A** flat $5.00 fee,"Fee income = $5.00 x items reaching day 30 x share of fees paid. Break-even with today's collections is about 6,401 paid fees.","One fee ($5.00) is below today's $10 block threshold; blocks would come mainly from accounts with 2 or more fees, if fees count toward the block at all.",Direction only: likely lower revenue and fewer blocks. Size unknown.; **B** $10 cap plus reset,"Cap only trims items fined above $10; reset writes off balances under $25. Neither amount is in the report. The ceiling on any write-off is the $52,647.65 uncollected.","Reset could clear every blocked account under $25. Ceiling is all 3,876; the real count is not in the report.",Direction only: lower revenue (mostly uncollectable dollars) and fewer blocks. Size unknown.; **C** under-18 fine-free,"Loss is limited to what under-18 cards pay today, which is not broken out. The ceiling is total collected, $32,002.55.","Raising the threshold to $25 unblocks adult accounts holding $10 to $25. That count is not in the report.",Direction only: lower revenue and fewer blocks. Branch effect concentrates at St. Anne's and Tannery Row.
+
+### Proposal A, in more detail
+
+The report gives items out and an overdue rate per branch. Multiplying them (derived, Lakeside excluded because it has no rate) gives roughly 9,100 overdue items across 11 branches, if "overdue rate" means the share of items out that were overdue. Breaking even on $32,002.55 at $5.00 a fee needs about 6,401 fees paid, which is roughly 70% of those ~9,100 items reaching day 30 and being paid. Today only 37.8% of billed dollars are collected. That points toward lower revenue under A, but the report cannot say how many overdue items reach day 30, so it is a direction and not a forecast.
+
+### Proposal B, in more detail
+
+The report has no per-item fine amounts and no account balances, so neither the cap nor the reset can be sized. What it does tell you: 3,876 accounts are blocked at the current $10 threshold, and $52,647.65 of billed fines was never collected. A forgiveness that touches only uncollected dollars costs less in real revenue than its face value suggests. Collection is already low at the branches where the balances are largest.
+
+### Proposal C, in more detail
+
+The report does not split fines by cardholder age. The branch notes point to where under-18 cards matter: St. Anne's (Eastside), "lots of kids' cards; parents dispute charges", and Tannery Row, "teens, after-school crowd". Those two collect only 28.2% and 16.4% of what they bill, so the revenue actually at risk there is nearer their collected dollars ($3,090.00 and $1,022.00) than their billed dollars ($10,964.80 and $6,218.50). The threshold change affects every branch, adults included.
+
+## Branch by branch, where it matters
+
+table = Branch,What stands out,Proposals most affected; Main Street,"40% of collected dollars and 31% of blocked cardholders; a “temporary” desk staffed 2 days a week.","All three; the totals are mostly decided here"; "Hollis; Annex","Collects 16.0%. “No fines” signs have been up since March, so the year mixes two regimes and cannot be separated.","A and B (it already behaves like a fine-free branch)"; St. Anne's (Eastside),"28.2% collected; kids' cards; parents dispute charges.","C most; B (reset)"; Tannery Row,"16.4% collected; teens after school.",C most; "Veterans' Branch, North","Lost-item fees are mixed into billed and cannot be separated.","A (replacement fee overlaps with lost-item charges); billed figure overstates fines"; Mill Creek,"90.8% collected; only 40 blocked.","A and B could cost real revenue here, since people pay"; Riverbend,"76.0% collected; 61 blocked.",Same as Mill Creek; Dunmore,"Pays by check only, so collections may lag the billing.","Collection rate may be understated"; Lakeside (seasonal),"Open May-Sept only; no overdue rate given.","Do not generalize from it"
+
+## Assumptions to settle
+
+The page cannot recalculate when you change a number, so here are the assumptions behind each proposal, what the report gives you for them, and what you would have to supply. Plug your own values into the formulas.
+
+table = Assumption,Used by,What the report gives,What you must supply; Share of overdue items that reach day 30,A,Items out and overdue rate per branch (11 of 12),A guess or a pull from the system; Share of $5.00 fees paid,A,"Today's collected share of billed: 37.8% overall, 16.0% to 90.8% by branch",A guess; Whether a $5.00 fee counts toward blocking,A,Current block threshold of $10,A policy answer; Number of items fined above $10,B,Nothing,A system query; Number of accounts with balances under $25,B and C,Nothing,A system query; Share of fines billed to under-18 cards,C,Branch notes only,A system query by card type; Number of adult accounts holding $10 to $25,C,Nothing,A system query; Whether people return items sooner or borrow more once fines change,All,Nothing,A judgment; the report has no behavior data
+
+1. Revenue under A = $5.00 x items reaching day 30 x share of fees paid.
+2. Revenue lost under B = cap savings (items fined above $10) + balances forgiven (accounts under $25).
+3. Revenue lost under C = collected fines on under-18 cards. Blocked change under C = adult accounts holding $10 to $25.
+
+## Where the data is too thin to conclude anything
+
+!! No proposal can be sized from this report alone. It has branch totals only: no per-item fines, no account balances, no age split, no days-late distribution, and no behavior data. Branch-by-branch rankings of the proposals rest on notes, not on numbers.
+
+!! Twelve branches is too few to claim that overdue rate and collection rate move together, and the branches differ in size by a factor of 18 (Lakeside 2,640 items out, Main Street 48,212).
+
+- Lakeside (seasonal) has no overdue rate and is open about five months, so its totals are not comparable to the other eleven.
+- Veterans' Branch, North mixes lost-item fees into fines and the report cannot separate them. Its $8,803.20 billed overstates fines.
+- Hollis; Annex has had "no fines" signs up since March. Its year blends two regimes, so it cannot be read as either "with fines" or "without".
+- Dunmore pays by check only, so its collected figure may lag. Its 66.9% may understate the real rate.
+- Main Street runs a "temporary" desk two days a week; its block count of 1,204 may not hold when the desk goes away.
+- One year of data. Seasonal and storm effects, one-off amnesties and staffing changes cannot be seen.
+- "Fines billed" is not revenue. At a 37.8% collection rate the revenue at stake is a third of the billed total.
+
+## What I would tell the board
+
+- All three proposals probably cost revenue and reduce blocked cardholders, and the report cannot say by how much.
+- The most revenue that could be lost is $32,002.55, the amount collected last year. The $84,650.20 billed is not at risk.
+- The cheapest information to buy before Thursday is four system queries: items fined above $10, accounts with balances under $25, fines by under-18 cards, and items that reached 30 days late.

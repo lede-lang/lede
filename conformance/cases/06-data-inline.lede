@@ -1,0 +1,2 @@
+data t = name,"note, with comma",n; "Smith, J","a;b",3; Lee,"say ""hi""",4
+data t += Kim,plain,5

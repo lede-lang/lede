@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Feature Flags: Build or Buy</title>
+<style>
+:root{--bg:#f6f7fb;--surface:#fff;--text:#1a1d2b;--muted:#5f6478;--border:#dfe2ec;--accent:#4b4fc4;--accent-soft:#ececfb;--risk:#b5442b}
+@media (prefers-color-scheme:dark){:root{--bg:#10111a;--surface:#191b27;--text:#e5e6f0;--muted:#9da1b5;--border:#2c2f40;--accent:#9a9df2;--accent-soft:#1f2140;--risk:#f08b72}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:820px;margin:0 auto;padding:34px 16px 64px}
+.eyebrow{font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 0 6px}
+h1{font-size:clamp(26px,5vw,34px);line-height:1.2;margin:0 0 14px}
+.today{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:0 0 30px}
+.today div{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+.today b{display:block;font-size:24px}
+.today span{color:var(--muted);font-size:14px}
+section{margin-bottom:32px}
+h2{font-size:21px;margin:0 0 12px}
+.table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--border);border-radius:12px}
+table{width:100%;border-collapse:collapse;min-width:580px}
+th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--border)}
+thead th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+tbody tr:last-child>*{border-bottom:0}
+tr.pick{background:var(--accent-soft)}
+.callout{background:var(--accent-soft);border:1px solid var(--accent);border-left:6px solid var(--accent);border-radius:12px;padding:16px 18px}
+.callout .label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent)}
+.callout p{margin:4px 0 0}
+ul.risks{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+ul.risks li{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--risk);border-radius:8px;padding:10px 14px}
+</style>
+</head>
+<body>
+<main>
+<p class="eyebrow">Pebble Bank · Growth team</p>
+<h1>Feature flags: build or buy</h1>
+<div class="today" aria-label="Today">
+<div><b>140</b><span>flags kept in a config file today</span></div>
+<div><b>40 min</b><span>deploy needed just to flip one flag</span></div>
+</div>
+
+<section>
+<h2>Comparison</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Option</th><th>Annual cost</th><th>Setup time</th><th>Targeting rules</th><th>Audit log</th></tr></thead>
+<tbody>
+<tr class="pick"><th scope="row">LaunchDarkly</th><td>$54,000</td><td>1 week</td><td>Advanced</td><td>Yes</td></tr>
+<tr><th scope="row">Unleash (self-hosted)</th><td>$9,000 hosting</td><td>3 weeks</td><td>Good</td><td>Yes</td></tr>
+<tr><th scope="row">In-house</th><td>No license cost</td><td>10 weeks</td><td>Basic</td><td>Would need building</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section>
+<h2>Recommendation</h2>
+<div class="callout">
+<div class="label">Recommendation</div>
+<p><strong>LaunchDarkly.</strong> It has the most advanced targeting rules, an audit log that satisfies the compliance team, and the shortest setup at 1 week, for $54,000 a year.</p>
+</div>
+<p style="margin:12px 0 0;color:var(--muted)"><strong style="color:var(--text)">Note:</strong> Finance approved the $54,000 budget on 2026-10-14.</p>
+</section>
+
+<section>
+<h2>Risks</h2>
+<ul class="risks">
+<li>We own Unleash upgrades and uptime.</li>
+<li>None of the options has an SDK for our COBOL batch jobs.</li>
+</ul>
+</section>
+</main>
+</body>
+</html>

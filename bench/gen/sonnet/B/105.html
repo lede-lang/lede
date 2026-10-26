@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Matchmaking and Game Server Architecture</title>
+<style>
+:root{--bg:#f4f6f9;--card:#fff;--ink:#16202b;--mut:#55616e;--line:#d3dae2;--acc:#1d5fbf;--acc-s:#e5eefb;--warn:#b0360a;--warn-s:#fdece3;--ok:#13703e;--ok-s:#e2f3ea;--gold:#7a5200;--gold-s:#fcf1d2}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--card:#171f28;--ink:#e7ecf1;--mut:#9ba8b5;--line:#2c3844;--acc:#7db1ff;--acc-s:#16273d;--warn:#ff9d73;--warn-s:#34201a;--ok:#62d796;--ok-s:#12291c;--gold:#f0c35c;--gold-s:#30260f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:920px;margin:0 auto;padding:0 16px 56px}
+header{padding:32px 0 14px;border-bottom:1px solid var(--line)}
+.eyebrow{margin:0 0 6px;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:var(--acc);font-weight:700}
+h1{margin:0 0 8px;font-size:clamp(1.6rem,5.5vw,2.4rem);line-height:1.15;letter-spacing:-.01em}
+.meta{margin:0;color:var(--mut);font-size:.92rem}
+h2{margin:40px 0 12px;font-size:1.4rem;line-height:1.25}
+h3{margin:24px 0 10px;font-size:1.05rem}
+p{margin:0 0 12px}
+.callout{border-left:5px solid var(--gold);background:var(--gold-s);border-radius:10px;padding:14px 16px;margin:20px 0}
+.callout strong{color:var(--gold)}
+.diagram{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;overflow-x:auto}
+.diagram svg{display:block;margin:0 auto;width:100%;min-width:440px;max-width:560px;height:auto}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.76rem;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.r,th.r{text-align:right}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.stat{font-size:2rem;font-weight:800;line-height:1.1;color:var(--acc);letter-spacing:-.01em}
+.card p{margin:6px 0 0;font-size:.95rem}
+.note{font-size:.88rem;color:var(--mut);margin-top:10px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin:10px 2px 0;font-size:.85rem;color:var(--mut)}
+.sw{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:6px}
+/* svg */
+svg text{font-family:inherit;fill:var(--ink)}
+.n{fill:var(--acc-s);stroke:var(--acc);stroke-width:1.5}
+.n.out{fill:var(--card);stroke:var(--ink)}
+.n.gold{fill:var(--gold-s);stroke:var(--gold);stroke-width:2.2}
+.ctr{fill:none;stroke:var(--acc);stroke-width:1.8}
+.ctr.echo{stroke-dasharray:3 4;opacity:.7}
+.ctr.sh{stroke:var(--gold);stroke-width:2}
+.e{fill:none;stroke:var(--ink);stroke-width:1.6}
+.ah{fill:var(--ink)}
+.t{font-size:13.5px;font-weight:700;text-anchor:middle}
+.s{font-size:11.5px;text-anchor:middle;fill:var(--mut)}
+.l{font-size:12px;fill:var(--mut);paint-order:stroke;stroke:var(--card);stroke-width:4px;stroke-linejoin:round}
+.lc{text-anchor:middle}
+.le{text-anchor:end}
+.ct{font-size:12.5px;font-weight:700;fill:var(--acc)}
+.ct.g{fill:var(--gold)}
+.rl{font-size:12.5px;font-weight:600}
+.bar{fill:var(--acc)}
+.bar2{fill:var(--acc-s);stroke:var(--acc);stroke-width:1.4;stroke-dasharray:4 3}
+.bt{font-size:12.5px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Embergate Online &middot; Backend Services</p>
+  <h1>Matchmaking and game servers</h1>
+  <p class="meta">Owner: Backend Services &middot; Reviewed <time datetime="2026-09-22">2026-09-22</time> &middot; For engineers joining the live team</p>
+</header>
+
+<main>
+<section id="overview">
+  <h2>Overview</h2>
+  <p>Players are matched into 10-player games and placed on the nearest regional server fleet. Each region can run alone if another region fails.</p>
+</section>
+
+<section id="architecture">
+  <h2>Architecture</h2>
+  <div class="diagram">
+  <svg viewBox="0 0 500 580" role="img" aria-labelledby="at ad">
+    <title id="at">Matchmaking and game server architecture</title>
+    <desc id="ad">Players connect to the Global Edge, which sends queue requests to the Matchmaker in the Regional Stack. The Regional Stack, repeated in each of three regions, holds the Matchmaker, Session Allocator, Game Server Fleet and Regional Cache. The Matchmaker reads skill ratings from the Regional Cache, loads profiles from the shared Player Profile Database and sends a match of 10 players to the Session Allocator, which starts a session on the Game Server Fleet. Players send UDP game traffic directly to the Game Server Fleet, which sends match results to the shared Leaderboard Service.</desc>
+    <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah"/></marker></defs>
+
+    <rect class="ctr echo" x="16" y="154" width="484" height="272" rx="14"/>
+    <rect class="ctr" x="8" y="146" width="484" height="272" rx="14"/>
+    <text class="ct le" x="480" y="408" style="text-anchor:end">Regional Stack (same in each of 3 regions)</text>
+    <rect class="ctr sh" x="8" y="456" width="484" height="112" rx="14"/>
+    <text class="ct g" x="20" y="476">Shared across regions</text>
+
+    <rect class="n out" x="100" y="8" width="170" height="34" rx="8"/><text class="t" x="185" y="30">Players</text>
+    <rect class="n out" x="100" y="76" width="170" height="40" rx="8"/><text class="t" x="185" y="101">Global Edge</text>
+
+    <rect class="n" x="100" y="182" width="170" height="44" rx="8"/><text class="t" x="185" y="209">Matchmaker</text>
+    <rect class="n" x="370" y="182" width="110" height="44" rx="8"/><text class="t" x="425" y="209">Regional Cache</text>
+    <rect class="n" x="100" y="268" width="170" height="40" rx="8"/><text class="t" x="185" y="293">Session Allocator</text>
+    <rect class="n" x="100" y="350" width="170" height="46" rx="8"/><text class="t" x="185" y="378">Game Server Fleet</text>
+
+    <rect class="n gold" x="100" y="494" width="170" height="52" rx="8"/><text class="t" x="185" y="517">Leaderboard Service</text><text class="s" x="185" y="535">shared</text>
+    <rect class="n gold" x="290" y="494" width="190" height="52" rx="8"/><text class="t" x="385" y="517">Player Profile Database</text><text class="s" x="385" y="535">shared</text>
+
+    <path class="e" d="M185 42V75" marker-end="url(#ar)"/>
+    <path class="e" d="M185 116V181" marker-end="url(#ar)"/>
+    <path class="e" d="M270 198H369" marker-end="url(#ar)"/>
+    <path class="e" d="M270 216H320V493" marker-end="url(#ar)"/>
+    <path class="e" d="M185 226V267" marker-end="url(#ar)"/>
+    <path class="e" d="M185 308V349" marker-end="url(#ar)"/>
+    <path class="e" d="M100 25H34V373H99" marker-end="url(#ar)"/>
+    <path class="e" d="M185 396V493" marker-end="url(#ar)"/>
+
+    <text class="l" x="193" y="63">connect</text>
+    <text class="l" x="193" y="137">queue request</text>
+    <text class="l lc" x="320" y="192">skill ratings</text>
+    <text class="l" x="328" y="330">load profile</text>
+    <text class="l" x="193" y="252">match of 10 players</text>
+    <text class="l" x="193" y="334">start session</text>
+    <text class="l" x="40" y="236">UDP game</text><text class="l" x="40" y="249">traffic</text>
+    <text class="l" x="193" y="446">match results</text>
+  </svg>
+  </div>
+  <div class="legend"><span><span class="sw" style="background:var(--acc-s);border:1.5px solid var(--acc)"></span>inside each region</span><span><span class="sw" style="background:var(--gold-s);border:2px solid var(--gold)"></span>shared by all regions</span></div>
+
+  <div class="callout" role="note">
+    <strong>Watch these two in a regional failover.</strong> The Player Profile Database and the Leaderboard Service are the only shared parts. Everything else lives inside a region, so these are the components every surviving region still depends on.
+  </div>
+
+  <h3>Every flow</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>From</th><th>To</th><th>Carries</th></tr></thead>
+    <tbody>
+      <tr><td>Players</td><td>Global Edge</td><td>connect</td></tr>
+      <tr><td>Global Edge</td><td>Matchmaker</td><td>queue request</td></tr>
+      <tr><td>Matchmaker</td><td>Regional Cache</td><td>skill ratings</td></tr>
+      <tr><td>Matchmaker</td><td>Player Profile Database</td><td>load profile</td></tr>
+      <tr><td>Matchmaker</td><td>Session Allocator</td><td>match of 10 players</td></tr>
+      <tr><td>Session Allocator</td><td>Game Server Fleet</td><td>start session</td></tr>
+      <tr><td>Players</td><td>Game Server Fleet</td><td>UDP game traffic</td></tr>
+      <tr><td>Game Server Fleet</td><td>Leaderboard Service</td><td>match results</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="note">The Global Edge routes each player to the closest region.</p>
+</section>
+
+<section id="regions">
+  <h2>Regions and capacity</h2>
+  <p>Three regions run the same stack: us-east, eu-central and ap-southeast. Each has 150 game servers, and each server runs 6 matches of 10 players.</p>
+  <div class="tw">
+  <table>
+    <thead><tr><th>Region</th><th class="r">Game servers</th><th class="r">Matches per server</th><th class="r">Concurrent players</th></tr></thead>
+    <tbody>
+      <tr><td>us-east</td><td class="r">150</td><td class="r">6 &times; 10 players</td><td class="r"><strong>9,000</strong></td></tr>
+      <tr><td>eu-central</td><td class="r">150</td><td class="r">6 &times; 10 players</td><td class="r"><strong>9,000</strong></td></tr>
+      <tr><td>ap-southeast</td><td class="r">150</td><td class="r">6 &times; 10 players</td><td class="r"><strong>9,000</strong></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Scaling a region</h3>
+  <p>Servers scale up to 400 per region when more than 2,000 players are waiting in the queue. At 60 players per server, that raises a region from 9,000 to as many as 24,000 concurrent players.</p>
+  <div class="diagram">
+  <svg viewBox="0 0 400 170" role="img" aria-labelledby="ct cd" style="min-width:340px;max-width:640px">
+    <title id="ct">Concurrent players per region, baseline and maximum scale-up</title>
+    <desc id="cd">Each of the three regions holds 9,000 concurrent players at 150 servers and up to 24,000 at 400 servers.</desc>
+    <text class="rl" x="0" y="35">us-east</text>
+    <rect class="bar2" x="92" y="18" width="300" height="24" rx="3"/><rect class="bar" x="92" y="18" width="112.5" height="24" rx="3"/>
+    <text class="bt" x="98" y="35" style="fill:var(--card)">9,000</text><text class="bt" x="214" y="35">up to 24,000</text>
+    <text class="rl" x="0" y="85">eu-central</text>
+    <rect class="bar2" x="92" y="68" width="300" height="24" rx="3"/><rect class="bar" x="92" y="68" width="112.5" height="24" rx="3"/>
+    <text class="bt" x="98" y="85" style="fill:var(--card)">9,000</text><text class="bt" x="214" y="85">up to 24,000</text>
+    <text class="rl" x="0" y="135">ap-southeast</text>
+    <rect class="bar2" x="92" y="118" width="300" height="24" rx="3"/><rect class="bar" x="92" y="118" width="112.5" height="24" rx="3"/>
+    <text class="bt" x="98" y="135" style="fill:var(--card)">9,000</text><text class="bt" x="214" y="135">up to 24,000</text>
+    <text class="s" x="92" y="162" style="text-anchor:start">150 servers (solid)</text><text class="s" x="392" y="162" style="text-anchor:end">400 servers at full scale-up (dashed)</text>
+  </svg>
+  </div>
+
+  <h3>Matchmaking time targets</h3>
+  <div class="grid">
+    <div class="card"><div class="stat">10 sec</div><p>median matchmaking time target.</p></div>
+    <div class="card"><div class="stat">30 sec</div><p>95th percentile matchmaking time target.</p></div>
+    <div class="card"><div class="stat">2,000</div><p>players waiting in queue triggers scale-up to as many as 400 servers.</p></div>
+  </div>
+</section>
+</main>
+</div>
+</body>
+</html>

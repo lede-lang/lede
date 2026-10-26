@@ -1,0 +1,6 @@
+Form-based editor with inputs per flag: not expressible; showed today vs proposed values in a table sorted by area and listed every change with its reason.
+Group flags by area: done with a sort=area table; no collapsible groups, so areas are rows of one table.
+Show dependencies between flags: done with a prerequisite diagram plus a flag-by-prerequisite check table and a blast-radius table.
+Warn live when enabling a flag whose prerequisite is off: not expressible; pre-ran the check for the proposed set (all Go) and added a what-if for ai_assistant showing the Blocked case with a warning callout.
+Copy diff button: not expressible; wrote the changed-keys-only YAML as a copyable fenced block, plus the full resulting flags.yaml.
+Toggling a different flag and recomputing warnings: not expressible; the reader would need to rerun the check by hand against the dependency table.

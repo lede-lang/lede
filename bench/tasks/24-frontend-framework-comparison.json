@@ -1,0 +1,45 @@
+{
+  "id": "24-frontend-framework-comparison",
+  "category": "comparison",
+  "title": "Frontend framework for the scheduling admin",
+  "brief": "The Internal Tools guild at Wrenfield University IT wants a short page comparing frontend frameworks for rewriting the course-scheduling admin app (about 60 screens, 5 developers, mostly forms and tables). Options: React, Vue and Svelte. Section titled \"Criteria\" as a bulleted list: team familiarity, form and table libraries, hiring pool, bundle size, long-term support. Section titled \"Comparison\" as a table with columns Framework, Team familiarity, Form/table ecosystem, Bundle size (KB), Hiring pool: React, 4 of 5 developers, excellent, 142, large; Vue, 1 of 5 developers, good, 98, medium; Svelte, 0 of 5 developers, fair, 41, small. Section titled \"Pros and cons\" with a short pros list and cons list for each framework. Section titled \"Recommendation\": React, mainly because four of the five developers already know it and the data grid we need exists today; put this in a callout. Add a quote from the guild lead, Hannah Osei: \"We are optimizing for the next five years of maintenance, not the first five weeks of building.\" Note at the end: Svelte was the favorite in the prototype spike, and we will revisit it for smaller tools.",
+  "checklist": {
+    "sections": [
+      "Criteria",
+      "Comparison",
+      "Pros and cons",
+      "Recommendation"
+    ],
+    "visible": [
+      "React",
+      "Vue",
+      "Svelte",
+      "Team familiarity",
+      "Bundle size",
+      "Hiring pool",
+      "Hannah Osei",
+      "next five years of maintenance"
+    ],
+    "values": [
+      "60",
+      "142",
+      "98",
+      "41"
+    ]
+  },
+  "needs": [
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add a fourth option, Angular: 2 of 5 developers, excellent ecosystem, 167 KB bundle, large hiring pool, to the comparison table and the pros and cons.",
+    "expect_visible": [
+      "Angular"
+    ],
+    "expect_values": [
+      "167"
+    ],
+    "expect_absent": []
+  }
+}

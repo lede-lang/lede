@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orion 5.0 Readiness</title>
+<style>
+:root{--bg:#f6f5f2;--surface:#ffffff;--surface-2:#efeee9;--text:#1c1d20;--muted:#5f636b;--line:#e3e1db;--accent:#1f5fbf;--accent-soft:#e6eefb;--ok:#1d7a46;--ok-soft:#e3f3e9;--warn:#9a5b00;--warn-soft:#fbefd9;--bad:#b3261e;--bad-soft:#fbe5e3;--info:#1f5fbf;--info-soft:#e6eefb;color-scheme:light dark}
+@media (prefers-color-scheme:dark){:root{--bg:#121315;--surface:#1b1c1f;--surface-2:#26272b;--text:#ecebe7;--muted:#a3a6ad;--line:#303237;--accent:#7aa7f0;--accent-soft:#1d2a40;--ok:#5cc58a;--ok-soft:#173023;--warn:#e5ad52;--warn-soft:#352816;--bad:#f2837a;--bad-soft:#3a1d1b;--info:#7aa7f0;--info-soft:#1d2a40}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:28px 16px 64px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-size:clamp(1.6rem,5.5vw,2.2rem);line-height:1.15;margin:.25em 0 .3em;letter-spacing:-.01em}
+h2{font-size:1.25rem;margin:0 0 .8rem}
+h3{font-size:1rem;margin:0}
+p{margin:.4em 0}
+section{margin-top:34px}
+.asof{color:var(--muted);margin:0}
+.dates{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-top:18px}
+.dates div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.dates dt{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.dates dd{margin:2px 0 0;font-weight:700}
+.score{margin-top:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.score .big{font-size:2.6rem;font-weight:800;letter-spacing:-.03em;line-height:1}
+.score .big small{font-size:1.1rem;color:var(--muted);font-weight:600}
+.segs{display:flex;gap:4px;margin-top:8px}
+.segs i{width:22px;height:10px;border-radius:3px;display:block}
+.score .side{flex:1;min-width:200px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.82rem;color:var(--muted);margin-top:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.beta{font-size:.9rem;color:var(--muted);margin-top:10px}
+.beta strong{color:var(--text)}
+table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--surface-2)}
+tr:last-child td{border-bottom:0}
+td.c{font-weight:650}
+tr.gap td{background:var(--bad-soft)}
+tr.risk td{background:var(--warn-soft)}
+.st{display:inline-block;font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.st.met{background:var(--ok-soft);color:var(--ok)}
+.st.not{background:var(--bad);color:#fff}
+.st.risk{background:var(--warn);color:#fff}
+.st.track{background:var(--info-soft);color:var(--info)}
+@media (prefers-color-scheme:dark){.st.not,.st.risk{color:#1b1c1f}}
+@media (max-width:600px){
+table,tbody,tr,td{display:block;width:100%}
+thead{display:none}
+table{border:0;background:none}
+tr{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:8px;padding:10px 14px;display:grid;grid-template-columns:1fr 1fr;gap:4px 12px}
+tr.gap{border-color:var(--bad);background:var(--bad-soft)}
+tr.risk{border-color:var(--warn);background:var(--warn-soft)}
+tr.gap td,tr.risk td{background:none}
+td{border:0;padding:0}
+td.c{grid-column:1/2;align-self:center}
+td.s{grid-column:2/3;text-align:right;align-self:center}
+td.c{order:1}td.s{order:2}td.cur{order:3}td.req{order:4}
+td.cur::before,td.req::before{content:attr(data-l);display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+}
+.gaps{display:grid;gap:12px}
+.gp{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--bad);border-radius:12px;padding:14px 16px}
+.gp .r{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
+.gp .due{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.gp .o{color:var(--muted);font-size:.9rem;margin-top:2px}
+.gp .d{font-size:.88rem;margin-top:6px}
+.decision{background:var(--surface);border:2px solid var(--accent);border-radius:14px;padding:18px 20px}
+.decision .lab{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;font-weight:800;color:var(--accent)}
+.decision .rec{font-size:1.3rem;font-weight:800;margin:4px 0 10px;line-height:1.25}
+.paths{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.path{border-radius:10px;padding:12px 14px;background:var(--surface-2)}
+.path .h{font-weight:700}
+.path.go{border-left:4px solid var(--ok)}
+.path.slip{border-left:4px solid var(--warn)}
+footer{margin-top:44px;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<main class="wrap">
+<div class="eyebrow">Orion mobile app · Release readiness</div>
+<h1>Orion 5.0: ready for go/no-go?</h1>
+<p class="asof">As of 16 October 2026 · Release manager Lorenzo Baptiste</p>
+
+<dl class="dates">
+<div><dt>Go/no-go meeting</dt><dd>2026-10-22, 10:00</dd></div>
+<div><dt>Target release</dt><dd>2026-10-27</dd></div>
+<div><dt>Beta testers active</dt><dd>8,200</dd></div>
+</dl>
+
+<div class="score">
+<div><div class="big">5 <small>of 9</small></div><div style="color:var(--muted);font-size:.9rem">criteria met</div></div>
+<div class="side">
+<div class="segs" role="img" aria-label="5 met, 2 not met, 1 at risk, 1 on track">
+<i style="background:var(--ok)"></i><i style="background:var(--ok)"></i><i style="background:var(--ok)"></i><i style="background:var(--ok)"></i><i style="background:var(--ok)"></i><i style="background:var(--bad)"></i><i style="background:var(--bad)"></i><i style="background:var(--warn)"></i><i style="background:var(--info)"></i>
+</div>
+<div class="legend"><span><i style="background:var(--ok)"></i>5 met</span><span><i style="background:var(--bad)"></i>2 not met</span><span><i style="background:var(--warn)"></i>1 at risk</span><span><i style="background:var(--info)"></i>1 on track</span></div>
+</div>
+</div>
+
+<section id="checklist">
+<h2>Readiness checklist</h2>
+<table>
+<thead><tr><th>Criterion</th><th>Current</th><th>Required</th><th>Status</th></tr></thead>
+<tbody>
+<tr class="gap"><td class="c">Open P2 bugs</td><td class="cur" data-l="Current">6</td><td class="req" data-l="Required">At most 5</td><td class="s"><span class="st not">Not met</span></td></tr>
+<tr class="gap"><td class="c">Beta crash-free sessions</td><td class="cur" data-l="Current">99.4%</td><td class="req" data-l="Required">At least 99.5%</td><td class="s"><span class="st not">Not met</span></td></tr>
+<tr class="risk"><td class="c">Languages complete</td><td class="cur" data-l="Current">14 of 16</td><td class="req" data-l="Required">16 of 16</td><td class="s"><span class="st risk">At risk</span></td></tr>
+<tr><td class="c">App store submission</td><td class="cur" data-l="Current">Scheduled 2026-10-20</td><td class="req" data-l="Required">Submitted by 2026-10-21</td><td class="s"><span class="st track">On track</span></td></tr>
+<tr><td class="c">Feature complete</td><td class="cur" data-l="Current">Yes</td><td class="req" data-l="Required">Yes</td><td class="s"><span class="st met">Met</span></td></tr>
+<tr><td class="c">Open P1 bugs</td><td class="cur" data-l="Current">0</td><td class="req" data-l="Required">0</td><td class="s"><span class="st met">Met</span></td></tr>
+<tr><td class="c">Accessibility audit</td><td class="cur" data-l="Current">Passed 2026-10-09</td><td class="req" data-l="Required">Pass</td><td class="s"><span class="st met">Met</span></td></tr>
+<tr><td class="c">Load test at 3× peak</td><td class="cur" data-l="Current">Passed</td><td class="req" data-l="Required">Pass</td><td class="s"><span class="st met">Met</span></td></tr>
+<tr><td class="c">Rollback rehearsed</td><td class="cur" data-l="Current">Yes</td><td class="req" data-l="Required">Yes</td><td class="s"><span class="st met">Met</span></td></tr>
+</tbody>
+</table>
+<p style="font-size:.85rem;color:var(--muted)">Open items listed first.</p>
+</section>
+
+<section id="gaps">
+<h2>Gaps to close</h2>
+<div class="gaps">
+<div class="gp"><div class="r"><h3>Languages: Thai and Hebrew</h3><span class="due">Due 2026-10-20</span></div><div class="o">Owner: Chloe Dubois</div><div class="d">14 of 16 complete; the two missing are Thai and Hebrew.</div></div>
+<div class="gp"><div class="r"><h3>Open P2 bugs</h3><span class="due">Due 2026-10-21</span></div><div class="o">Owner: Hannah Weiss</div><div class="d">6 open; must be at most 5.</div></div>
+<div class="gp"><div class="r"><h3>Crash-free sessions</h3><span class="due">Due 2026-10-21</span></div><div class="o">Owner: Ibrahim Sesay</div><div class="d">99.4% in beta; must be at least 99.5%.</div></div>
+</div>
+</section>
+
+<section id="decision">
+<h2>Decision</h2>
+<div class="decision">
+<div class="lab">Recommendation</div>
+<div class="rec">Conditional go, if all three gaps are closed by 2026-10-21.</div>
+<div class="paths">
+<div class="path go"><div class="h">All three closed by 2026-10-21</div>Release as planned on 2026-10-27.</div>
+<div class="path slip"><div class="h">Any gap still open</div>Slip the release by one week, to 2026-11-03.</div>
+</div>
+</div>
+</section>
+
+<footer>Orion 5.0 · Prepared by Lorenzo Baptiste for the go/no-go meeting on 2026-10-22 at 10:00</footer>
+</main>
+</body>
+</html>

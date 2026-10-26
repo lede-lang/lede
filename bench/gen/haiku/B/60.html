@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Replacing 18 Delivery Vans</title>
+<style>
+:root{--bg:#f6f5f1;--surface:#ffffff;--ink:#1c1e22;--muted:#5d6370;--line:#dcd9d1;--accent:#2f6b5c;--warm:#b8642e;--blue:#3f6396}
+@media (prefers-color-scheme:dark){:root{--bg:#14161a;--surface:#1d2026;--ink:#eceae4;--muted:#a4a9b4;--line:#353a44;--accent:#6cbba3;--warm:#e39a66;--blue:#8db2e3}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif}
+main{max-width:920px;margin:0 auto;padding:32px 16px 64px}
+.kicker{color:var(--accent);font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;margin:0 0 6px}
+h1{font-size:clamp(26px,5vw,36px);line-height:1.15;margin:0 0 12px}
+h2{font-size:21px;margin:40px 0 14px;padding-top:16px;border-top:1px solid var(--line)}
+h3{font-size:17px;margin:0 0 8px}
+p{margin:0 0 14px}
+.lede{color:var(--muted);font-size:17px}
+.note{color:var(--muted);font-size:14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+.card ul{margin:0;padding-left:18px;font-size:15px} .card li{margin:0 0 4px}
+.table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+tr:last-child td{border-bottom:0}
+.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px}
+svg{display:block;width:100%;height:auto}
+.axis{stroke:var(--line);stroke-width:1}
+.lbl{font-size:14px;fill:var(--muted)}
+.lbl-strong{font-size:14px;fill:var(--ink);font-weight:600}
+.bar{fill:var(--accent)} .bar2{fill:var(--warm)} .bar3{fill:var(--blue)} .bar4{fill:#8a7f6a}
+ul{padding-left:20px;margin:0 0 14px} li{margin:0 0 8px}
+.rec{background:var(--surface);border-left:4px solid var(--accent);padding:16px 18px;border-radius:8px}
+.key{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:14px;color:var(--muted);margin:10px 0 0}
+.key span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:12px;height:12px;border-radius:2px;display:inline-block}
+</style>
+</head>
+<body>
+<main>
+<p class="kicker">Budget meeting, 10 November 2026</p>
+<h1>Replacing 18 delivery vans: diesel, hybrid or electric</h1>
+<p class="lede">Prepared for Tomasz Wieczorek, operations director. We replace the fleet over the next two years. This page compares five-year cost per van and sets out the risks of each option.</p>
+
+<h2>Options</h2>
+<div class="cards">
+  <div class="card">
+    <h3>Diesel</h3>
+    <ul>
+      <li>Purchase: $41,000</li>
+      <li>Fuel: $9,800 a year</li>
+      <li>Maintenance: $3,400 a year</li>
+      <li>Low-emission zone fee from 1 January 2028: $12.50 a day</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Hybrid</h3>
+    <ul>
+      <li>Purchase: $46,500</li>
+      <li>Fuel: $6,900 a year</li>
+      <li>Maintenance: $2,900 a year</li>
+      <li>No range concerns; still has tailpipe emissions</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Electric</h3>
+    <ul>
+      <li>Purchase: $58,200 after the $7,500 incentive</li>
+      <li>Charger installation: $4,200</li>
+      <li>Electricity: $3,100 a year</li>
+      <li>Maintenance: $1,700 a year</li>
+      <li>Real-world range: about 180 miles in summer, 150 in winter</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Five-year cost</h2>
+<p>Per van, in US dollars. Running costs are the annual figure multiplied by five.</p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Cost item</th><th class="num">Diesel</th><th class="num">Hybrid</th><th class="num">Electric</th></tr></thead>
+  <tbody>
+    <tr><td>Purchase</td><td class="num">$41,000</td><td class="num">$46,500</td><td class="num">$58,200</td></tr>
+    <tr><td>Fuel or electricity, five years</td><td class="num">$49,000</td><td class="num">$34,500</td><td class="num">$15,500</td></tr>
+    <tr><td>Charger installation</td><td class="num">&mdash;</td><td class="num">&mdash;</td><td class="num">$4,200</td></tr>
+    <tr><td>Maintenance, five years</td><td class="num">$17,000</td><td class="num">$14,500</td><td class="num">$8,500</td></tr>
+    <tr><td><strong>Total per van</strong></td><td class="num"><strong>$107,000</strong></td><td class="num"><strong>$95,500</strong></td><td class="num"><strong>$86,400</strong></td></tr>
+    <tr><td>Whole fleet of 18 vans</td><td class="num">$1,926,000</td><td class="num">$1,719,000</td><td class="num">$1,555,200</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="chart" style="margin-top:16px">
+  <svg id="van-chart" role="img" aria-label="Stacked column chart of five-year cost per van: diesel $107,000, hybrid $95,500, electric $86,400"></svg>
+  <div class="key">
+    <span><i class="sw" style="background:var(--accent)"></i>Purchase</span>
+    <span><i class="sw" style="background:var(--warm)"></i>Fuel or electricity</span>
+    <span><i class="sw" style="background:#8a7f6a"></i>Charger installation</span>
+    <span><i class="sw" style="background:var(--blue)"></i>Maintenance</span>
+  </div>
+</div>
+
+<h2>Risks</h2>
+<ul>
+  <li><strong>Electric range in winter.</strong> The electric van's real-world range is about 150 miles in winter and 180 in summer. Our longest route is 140 miles a day, so the two longest routes are tight in January. That is why the plan gives the electric vans the 12 shorter routes.</li>
+  <li><strong>Charging.</strong> Six depot chargers have to serve 12 electric vans overnight. The charging schedule needs checking before the first vans arrive.</li>
+  <li><strong>Hybrid emissions.</strong> Hybrids have no range worries, but they still produce tailpipe emissions. Our five-year figures do not price that in.</li>
+  <li><strong>Diesel fee.</strong> From 1 January 2028, diesel vans are subject to a low-emission zone fee of $12.50 a day. That fee is not included in the diesel totals above.</li>
+  <li><strong>Incentive.</strong> The electric price assumes the $7,500 incentive applies.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<div class="rec">
+<p>Buy electric for the 12 shorter routes, and hybrid for the 6 longest.</p>
+<p>This mixed fleet comes to $1,609,800 for the 18 vans: 12 at $86,400 and 6 at $95,500. That is about $316,200 less than staying with diesel at $1,926,000, and about $109,200 less than an all-hybrid fleet at $1,719,000. It also avoids the diesel low-emission zone fee. The hybrids cover the longest routes because of the winter range limit.</p>
+</div>
+</main>
+<script>
+(function(){
+  var svg=document.getElementById('van-chart');
+  var W=560,H=300,base=250,top=24,max=107000,bw=120;
+  var vans=[["Diesel",[41000,49000,0,17000],107000],["Hybrid",[46500,34500,0,14500],95500],["Electric",[58200,15500,4200,8500],86400]];
+  var cls=["bar","bar2","bar4","bar3"];
+  var cw=(W-40)/vans.length, out='';
+  out+='<line class="axis" x1="20" y1="'+base+'" x2="'+(W-20)+'" y2="'+base+'"/>';
+  vans.forEach(function(v,i){
+    var x=20+i*cw+(cw-bw)/2, y=base;
+    v[1].forEach(function(val,k){
+      if(val===0){return;}
+      var h=(base-top)*val/max; y-=h;
+      out+='<rect class="'+cls[k]+'" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw+'" height="'+h.toFixed(1)+'"/>';
+    });
+    out+='<text class="lbl-strong" x="'+(x+bw/2).toFixed(1)+'" y="'+(y-8).toFixed(1)+'" text-anchor="middle">$'+v[2].toLocaleString('en-US')+'</text>';
+    out+='<text class="lbl" x="'+(x+bw/2).toFixed(1)+'" y="'+(base+22)+'" text-anchor="middle">'+v[0]+'</text>';
+  });
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  svg.innerHTML=out;
+})();
+</script>
+</body>
+</html>

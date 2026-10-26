@@ -1,0 +1,46 @@
+@title Electronic health record downtime
+@subtitle Runbook for charge nurses and front-desk staff, Pelican Bay Clinic
+@author Clinical Operations
+@date 2026-11-15
+
+kpi Declare after | 10 min | record unavailable or slow
+kpi IT service desk | ext. 5000
+kpi Paper scans due | 4 hours | after restoration
+
+!!! The allergy list in the downtime binder is the source of truth until the record is back.
+
+## Declare downtime
+
+Downtime is declared when the record has been unavailable or unusably slow for 10 minutes.
+
+1. The charge nurse announces "Paper procedures" on the overhead page.
+2. The charge nurse calls the IT service desk on extension 5000.
+
+## During downtime
+
+1. Switch to paper
+-- Take the downtime binder from each station. It holds the printed schedule refreshed at 05:00 daily, an allergy list and a medication list for every patient booked that day.
+-- Label every paper form with a patient label sheet.
+2. Check in patients
+-- Confirm identity with two identifiers: name and date of birth.
+-- Record the arrival time by hand.
+3. Orders and medications
+-- Write down every verbal order and read it back.
+-- Never give a high-risk medication without a second nurse's check.
+-- Record every dose on the paper medication sheet.
+4. Keep care moving
+-- Do not cancel visits solely because of downtime.
+-- Tell patients about any delay beyond 20 minutes.
+
+## Recovery
+
+1. When IT announces restoration, wait for the all-clear before entering anything.
+2. Scan paper documents into the record within 4 hours.
+3. Reconcile medication entries within 24 hours.
+4. Report the event on the incident form.
+
+## Contacts
+
+table = role,name; IT service desk,extension 5000; Charge nurse supervisor,Rowena Achterberg; Privacy officer,Idris Mbeki
+
+! Tell the privacy officer, Idris Mbeki, if any paper forms are lost.

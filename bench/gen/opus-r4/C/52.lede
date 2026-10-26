@@ -1,0 +1,43 @@
+@title search-prod cluster red runbook
+@subtitle On-call runbook for Quarry Press's nine-node OpenSearch cluster
+@author Search Infrastructure
+
+`search-prod` serves article search and the subscriber archive.
+
+## Symptoms
+
+- The `CLUSTER_RED` alert fires.
+- Search returns partial or empty results.
+- Editors report that new articles do not appear.
+
+## Triage
+
+1. Check cluster health with `GET _cluster/health` and note the number of unassigned shards.
+2. Ask the cluster why with `GET _cluster/allocation/explain`.
+
+The usual causes are disk watermarks, a lost data node, or a bad index template after a deploy.
+
+table = disk watermark,threshold; Low,85%; High,90%; Flood stage,95%
+
+## Fix by cause
+
+!!! **Never delete an index without a snapshot taken in the last 24 hours.** The archive cannot be rebuilt.
+
+1. **Disk watermark**
+-- 1. Find the fullest nodes with `GET _cat/allocation?v`.
+-- 2. Delete `logs-*` indices older than 90 days. Never touch `articles-*` or `archive-*`.
+-- 3. Once disk is under 80%, clear the read-only block with `PUT _all/_settings`, setting `index.blocks.read_only_allow_delete` to `null`.
+-- 4. Wait for the shards to relocate.
+2. **Lost data node**
+-- 1. Check the instance in the AWS console.
+-- 2. If it is gone, let the autoscaling group replace it. This usually takes 6 to 8 minutes.
+-- 3. Shard recovery then takes about 20 minutes for the 1.2 TB per node.
+3. **Bad index template**
+-- 1. Find the last deploy in #deploys.
+-- 2. Roll the template back using the saved copy in the `search-config` repository.
+-- 3. Reindex the affected index.
+
+## Escalation
+
+- If the cluster is still red after 30 minutes, page the Search Infrastructure lead.
+- Open an incident in #incidents.

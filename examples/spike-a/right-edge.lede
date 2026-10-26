@@ -1,0 +1,6 @@
+@title Release health
+# Release health
+
+data rel = week,crash free,sessions; W1,98.1,40; W2,98.4,42; W3,98.2,45; W4,98.9,47; W5,99.0,52; W6,99.1,55; W7,99.0,58; W8,99.3,61; W9,99.2,66; W10,99.4,70; W11,99.5,74; W12,99.6,79
+
+chart line rel y=crash free unit=% target="99 crash-free goal" labels title="Crash-free sessions" mark="W9 SDK 4.1" mark="W10 hotfix" mark="W11 feature flag cleanup" mark="W12 GA"

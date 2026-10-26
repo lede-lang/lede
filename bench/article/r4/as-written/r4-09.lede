@@ -1,0 +1,105 @@
+@title Why a sidewalk-repair permit takes 29 days
+@subtitle How an application moves through the office, last quarter, 1,846 applications
+@date Last quarter
+@width wide
+
+# The three-minute version
+
+kpi Median time, received to issued | 29 days | service charter target: 15 working days | bad
+
+The median sidewalk-repair permit took 29 days from received to issued last quarter. The charter promises 15 working days, so fewer than half of permits meet it. The fastest 10% finish in 8 days and the slowest 10% take 71 days or more. Three places stand out: the wait for utility replies, applications bounced at the first check, and the heritage review.
+
+kpi Applications | 1,846 | last quarter | neutral
+kpi Fastest 10% | 8 days | finish within | good
+kpi Slowest 10% | 71+ days | take at least | bad
+kpi Bounced at first check | 31% | usually a missing site plan | bad
+kpi Issued | 94% | 6% rejected or withdrawn | neutral
+
+# How an application moves
+
+Each box shows the owner, the median days spent at that step, and the share of all applications that reach it. Dashed lines are loops back and paths some applications skip.
+
+diagram flow dir=TB title="A sidewalk-repair permit, step by step"
+flow: s1 "1 Application received" svc "Front counter, 0 days, 100%"
+flow: s2 "2 Completeness check" svc "Permit clerks, 2 days, 100%"
+flow: ok "Complete?" decision
+flow: s3 "3 Applicant resubmits" user "Applicant, 9 days, 31%" focus
+flow: s4 "4 Utility locate request" svc "Engineering, 4 days, 88%"
+flow: s5 "5 Utility replies collected" svc "Engineering, 11 days, 88%" focus
+flow: s6 "6 Street-use review" svc "Traffic & Transportation, 3 days, 64%"
+flow: s7 "7 Tree and root check" svc "Parks (forestry), 6 days, 27%"
+flow: s8 "8 Heritage district review" svc "Planning, 21 days, 9%"
+flow: s9 "9 Fee calculation" svc "Finance, 1 day, 97%"
+flow: s10 "10 Payment" user "Applicant, 3 days, 97%"
+flow: s11 "11 Final approval and signature" svc "Director of Works, 2 days, 94%"
+flow: s12 "12 Permit issued" svc "Permit clerks, 1 day, 94%"
+flow: s13 "13 Rejected or withdrawn" ext "6% of applications"
+flow: group reviews "Review steps, only if triggered" s6, s7, s8
+flow: s1 -> s2
+flow: s2 -> ok
+flow: ok -> s3 : no, 31%
+flow: s3 --> s2 : resubmit
+flow: ok -> s4 : yes, 88%
+flow: ok --> reviews : no utilities, 12%
+flow: s4 -> s5
+flow: s5 -> reviews : if triggered
+flow: s5 --> s9 : none needed
+flow: reviews -> s9
+flow: s8 --> s13 : most withdrawn
+flow: s9 -> s10 -> s11 -> s12
+flow: legend
+
+# Where it gets stuck
+
+cards
+
+### Utility replies (step 5)
+
+88% of applications, about 1,624, wait a median 11 days here, after 4 days for the request itself. Gas and telecom reply separately, and "waiting on the phone company" appears in 140 staff notes. This is done by 2 engineers who are shared with other work.
+
+### Bounced at the first check (steps 2 and 3)
+
+31% of applications, about 572, fail the completeness check, usually for a missing site plan. They then wait a median 9 days for the applicant and go back to the check. It is the longest wait the city does not control.
+
+### Heritage review (step 8)
+
+Only 9% of applications, about 166, need it, but it adds a median 21 days. The sub-committee meets monthly and missing a meeting adds 4 weeks. Most of the 6% rejected or withdrawn are withdrawn after this step.
+
+## Where the waiting adds up
+
+Weighting each step's median days by the number of applications that reach it gives a rough picture of where the office's total waiting sits. It is an approximation, useful for ranking, not for totals.
+
+data load = step,application-days; 5 Utility replies,17864; 4 Utility locate request,6496; 10 Payment,5373; 3 Applicant resubmits,5148; 2 Completeness check,3692; 6 Street-use review,3543; 8 Heritage review,3486; 11 Final approval,3470; 7 Tree and root check,2988; 9 Fee calculation,1791; 12 Permit issued,1735
+
+chart hbar load unit=" days" focus="5 Utility replies" labels title="Approximate application-days by step (median days x applications reaching it)"
+
+Step 5 holds about 32% of the weighted waiting, and steps 4 and 5 together about 44%. Heritage has the longest wait per application but a small share of the total because few applications need it.
+
+# For the department head: fix step 5 first
+
+- **Why step 5:** it touches 88% of applications, has the second-longest median of any step (11 days) and the largest share of waiting. Staff recorded the cause in 140 notes.
+- **What a fix looks like:** one named owner for utility replies, a reply deadline and a chase date, and both utilities asked at the same time. These are proposals for you to cost; the data has no cost or effect figures.
+- **What it will not do alone:** adding the median days on the common path (1, 2, 4, 5, 9, 10, 11, 12) gives about 24 days. Cutting step 5 from 11 days to 5 would bring that to about 18, and the overall median to somewhere near 23. That is still above the 15 working day target, which is about 21 calendar days. The bounce at step 2 is the second fix.
+
+table = Fix (proposed),Steps,Applications touched,Median wait today; Reply deadline and chasing for utilities,4 and 5,"about 1,624 (88%)",4 + 11 days; Site-plan checklist at the counter and in the online form,2 and 3,about 572 (31%),2 + 9 days and a second check; Heritage meeting calendar and early screening,8,about 166 (9%),21 days
+
+# What does not add up
+
+!! Read the numbers below with these limits in mind.
+
+- **Units differ.** The charter target is in working days; the 29-day overall median does not say. If it is calendar days, it is about 20 to 21 working days against 15. If it is working days, it is nearly double. Either way it exceeds the target, so fewer than half of permits meet it.
+- **Step medians do not add up to 29.** Medians do not sum, and the data does not say whether steps overlap. The 24-day common path above is a guide, not a measured figure.
+- **Step 1 shows 0 days, but paper applications are keyed in late.** The clock probably starts when the application is keyed in, so measured times understate what a paper applicant experiences.
+- **The funnel does not close.** 97% reach fee calculation and payment but 94% reach approval, and 6% leave. That implies about 3% leave before fee calculation and about 3% between payment and approval. Only the heritage step is named as a cause. If "most" of the 6% (about 111 applications) leave after heritage, then at least about 56 of the roughly 166 heritage applications, about a third, end without a permit.
+- **Where the 12% who skip steps 4 and 5 go is not in the data.** The diagram sends them to the next steps in order.
+- **Counts are approximate.** They are the rounded percentages applied to 1,846.
+- **Application-days understate real waiting.** They use medians as a stand-in for averages, and with a spread of 8 to 71+ days the true totals are likely larger.
+- **The 2-day completeness median** does not say whether it includes second passes after a resubmission.
+
+# Appendix: the steps as reported
+
+data steps = step,owner,median days,% of applications reaching it,notes; 1 Application received,Front counter,0,100,"online and paper, paper gets keyed in late"; 2 Completeness check,Permit clerks,2,100,"31% bounced back to applicant (missing site plan, usually)"; 3 Applicant resubmits,Applicant,9,31,longest wait we don't control; 4 Utility locate request,Engineering (Dana's team),4,88,gas and telecom reply separately; 5 Utility replies collected,Engineering,11,88,“waiting on the phone company” is in 140 notes; 6 Street-use review,Traffic & Transportation,3,64,only if lane or sidewalk closure; 7 Tree and root check,Parks (forestry),6,27,triggered inside 3 m of a city tree; 8 Heritage district review,"Planning, Heritage Sub-committee",21,9,"meets monthly; miss a meeting, add 4 weeks"; 9 Fee calculation,Finance,1,97,"fees range $85 to $1,240"; 10 Payment,Applicant,3,97,6% pay late; 11 Final approval and signature,Director of Works,2,94,signs on Tuesdays and Fridays; 12 Permit issued,Permit clerks,1,94,; 13 Rejected or withdrawn,n/a,n/a,6,most are withdrawn after the heritage step
+
+table steps title="Permit system data, last quarter"
+
+Staffing: 4 permit clerks, 2 engineers shared with other work, 1 director.

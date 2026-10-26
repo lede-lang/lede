@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sales Kickoff City</title>
+<style>
+:root{
+  --bg:#f5f6f8;--surface:#ffffff;--surface-2:#eef0f4;--ink:#151820;--ink-2:#394150;--muted:#5f6879;--line:#dadee6;--line-2:#aeb5c3;
+  --accent:#c2410c;--accent-soft:#fdeee5;
+  --pick:#0e6e8c;--pick-soft:#e1f1f6;
+  --bar:#9aa3b2;
+  --warn:#b3261e;--warn-soft:#fdeceb;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1015;--surface:#161920;--surface-2:#1e222b;--ink:#e8ebf1;--ink-2:#c5cbd6;--muted:#9aa3b3;--line:#2a2f3a;--line-2:#4b5263;
+    --accent:#ff9d6b;--accent-soft:#3a1d0c;
+    --pick:#5cc8e6;--pick-soft:#122e38;
+    --bar:#5d6678;
+    --warn:#ff8f86;--warn-soft:#361614;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:28px 16px 72px}
+.eyebrow{margin:0;font-size:.78rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+h1{margin:.35rem 0 .5rem;font-size:clamp(1.65rem,5vw,2.35rem);line-height:1.15;letter-spacing:-.015em}
+.lede{margin:0 0 14px;color:var(--ink-2);font-size:1.05rem;max-width:62ch}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.meta li{font-size:.84rem;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 11px}
+.meta b{font-weight:600;color:var(--muted);margin-right:4px}
+section{margin-top:40px}
+h2{margin:0 0 14px;font-size:1.3rem;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+h2::before{content:"";flex:none;width:4px;height:1.1em;border-radius:2px;background:var(--accent)}
+p{margin:0 0 12px;max-width:68ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+@media (max-width:520px){.card{padding:12px 8px}}
+svg{display:block;width:100%;height:auto}
+svg text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+
+.summary{margin-top:22px;padding:16px 18px;border-radius:14px;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--pick)}
+.summary .k{font-size:.76rem;font-weight:750;letter-spacing:.08em;text-transform:uppercase;color:var(--pick)}
+.summary p{margin:4px 0 0;font-size:1.06rem}
+
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:right;vertical-align:middle}
+th:first-child,td:first-child{text-align:left}
+thead th{font-size:.74rem;font-weight:700;letter-spacing:.04em;color:var(--muted);line-height:1.25;vertical-align:bottom}
+thead th small{display:block;font-weight:500;letter-spacing:0;text-transform:none}
+tbody td{font-size:.97rem}
+tbody td:first-child{font-weight:650}
+tbody tr:last-child td{border-bottom:0}
+tr.pick td{background:var(--pick-soft)}
+tr.pick td:first-child{box-shadow:inset 4px 0 0 var(--pick)}
+tr.out td{color:var(--muted)}
+tr.out td:first-child{text-decoration:line-through;text-decoration-thickness:1.5px}
+td.bad{color:var(--warn)!important;font-weight:800}
+.tag{display:block;margin-top:1px;font-size:.7rem;font-weight:750;letter-spacing:.03em;text-decoration:none}
+.tag.p{color:var(--pick)}
+.tag.o{color:var(--warn)}
+tr.out td:first-child .tag{display:inline-block;text-decoration:none}
+@media (max-width:480px){
+  th,td{padding:9px 5px}
+  tbody td{font-size:.9rem}
+  thead th{font-size:.68rem}
+}
+.tnote{margin:12px 4px 0;font-size:.86rem;color:var(--muted)}
+
+.chart-title{margin:0 0 4px;font-weight:700}
+.chart-sub{margin:0 0 12px;font-size:.88rem;color:var(--muted)}
+.chart{max-width:620px}
+.g{stroke:var(--line);stroke-width:1}
+.gl{font-size:10.5px;fill:var(--muted)}
+.cl{font-size:12px;font-weight:600;fill:var(--ink-2)}
+.cv{font-size:11.5px;font-weight:650;fill:var(--ink)}
+.b{fill:var(--bar)}
+.bp{fill:var(--pick)}
+.bo{fill:url(#ho)}
+.bo-o{fill:none;stroke:var(--warn);stroke-width:1.2}
+.co{font-size:11.5px;font-weight:650;fill:var(--warn)}
+.cvp{font-size:12px;font-weight:800;fill:var(--pick)}
+.ax{stroke:var(--line-2);stroke-width:1.2}
+.pt{fill:var(--bar);stroke:var(--surface);stroke-width:1.5}
+.ptp{fill:var(--pick);stroke:var(--surface);stroke-width:2}
+.pto{fill:none;stroke:var(--warn);stroke-width:1.75}
+.pl{font-size:11.5px;font-weight:600;fill:var(--ink-2)}
+.plp{font-size:12px;font-weight:800;fill:var(--pick)}
+.plo{font-size:11px;font-weight:600;fill:var(--warn)}
+.axl{font-size:11px;fill:var(--muted)}
+
+.tr{display:grid;gap:12px}
+@media (min-width:760px){.tr{grid-template-columns:1.1fr 1fr;align-items:start}}
+.points{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.points li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:.94rem}
+.points li b{display:block;font-size:1rem}
+.points li.o{border-left:4px solid var(--warn)}
+.points li.p{border-left:4px solid var(--pick)}
+
+.rec{border:2px solid var(--pick);background:var(--pick-soft);border-radius:16px;padding:20px}
+.rec .verdict{margin:0 0 10px;font-size:1.5rem;font-weight:850;color:var(--pick);line-height:1.2}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:0 0 14px}
+@media (min-width:640px){.kpis{grid-template-columns:repeat(4,1fr)}}
+.kpis div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.kpis .v{font-size:1.2rem;font-weight:800;font-variant-numeric:tabular-nums}
+.kpis .k{font-size:.8rem;color:var(--muted)}
+.rec ul{margin:0;padding-left:20px}
+.rec li{margin:4px 0}
+footer{margin-top:48px;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <p class="eyebrow">Harlow Devices · Decision</p>
+    <h1>Where should we hold the 2027 sales kickoff?</h1>
+    <p class="lede">220 attendees, 2 event days and 3 hotel nights, 2027-03-16 to 2027-03-18. Seven cities are on the shortlist.</p>
+    <ul class="meta">
+      <li><b>Decision</b>Leadership, 2026-11-03</li>
+      <li><b>Attendees</b>220</li>
+      <li><b>Event</b>2027-03-16 to 03-18</li>
+    </ul>
+    <div class="summary">
+      <div class="k">Recommendation</div>
+      <p><b>Prague.</b> Only €2,820 more than Athens, with a flight 1.6 hours shorter.</p>
+    </div>
+  </header>
+
+  <section id="shortlist">
+    <h2>Shortlist</h2>
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">City</th>
+            <th scope="col">Venue<small>€ per day</small></th>
+            <th scope="col">Flight<small>hours</small></th>
+            <th scope="col">Hotel<small>€ per night</small></th>
+            <th scope="col">Largest room<small>seats</small></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Lisbon</td><td>18,500</td><td>3.5</td><td>165</td><td>300</td></tr>
+          <tr class="pick"><td>Prague<span class="tag p">RECOMMENDED</span></td><td>14,200</td><td>2.0</td><td>138</td><td>260</td></tr>
+          <tr><td>Vienna</td><td>21,800</td><td>1.8</td><td>189</td><td>320</td></tr>
+          <tr class="out"><td>Krakow<span class="tag o">OUT: ROOM TOO SMALL</span></td><td>11,900</td><td>2.5</td><td>112</td><td class="bad">190</td></tr>
+          <tr><td>Seville</td><td>16,400</td><td>3.8</td><td>149</td><td>280</td></tr>
+          <tr><td>Athens</td><td>15,100</td><td>3.6</td><td>131</td><td>250</td></tr>
+          <tr><td>Dublin</td><td>23,900</td><td>2.2</td><td>204</td><td>340</td></tr>
+        </tbody>
+      </table>
+      <p class="tnote">Flight time is the average from our hub. We need a room for 220.</p>
+    </div>
+  </section>
+
+  <section id="total">
+    <h2>Total cost</h2>
+    <div class="card">
+      <p class="chart-title">Total cost for 220 people, cheapest first</p>
+      <p class="chart-sub">Two venue days plus 660 hotel room nights (220 rooms × 3 nights), in euros.</p>
+      <svg class="chart" viewBox="0 0 360 246" role="img" aria-label="Total cost: Krakow 97,720 euros but excluded; Athens 116,660; Prague 119,480; Seville 131,140; Lisbon 145,900; Vienna 168,340; Dublin 182,440.">
+        <defs>
+          <pattern id="ho" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--surface)"/><rect width="2" height="6" fill="var(--warn)" opacity=".6"/></pattern>
+        </defs>
+        <line class="g" x1="78" y1="6" x2="78" y2="228"/>
+        <line class="g" x1="130.5" y1="6" x2="130.5" y2="228"/>
+        <line class="g" x1="183" y1="6" x2="183" y2="228"/>
+        <line class="g" x1="235.5" y1="6" x2="235.5" y2="228"/>
+        <line class="g" x1="288" y1="6" x2="288" y2="228"/>
+        <text class="gl" x="78" y="242" text-anchor="middle">€0</text>
+        <text class="gl" x="130.5" y="242" text-anchor="middle">50k</text>
+        <text class="gl" x="183" y="242" text-anchor="middle">100k</text>
+        <text class="gl" x="235.5" y="242" text-anchor="middle">150k</text>
+        <text class="gl" x="288" y="242" text-anchor="middle">200k</text>
+
+        <text class="cl" x="70" y="26.5" text-anchor="end" style="fill:var(--warn)">Krakow</text>
+        <rect class="bo" x="78" y="12" width="102.61" height="20"/>
+        <rect class="bo-o" x="78" y="12" width="102.61" height="20"/>
+        <text class="co" x="186.6" y="26.5">€97,720 · out, seats 190</text>
+
+        <text class="cl" x="70" y="58.5" text-anchor="end">Athens</text>
+        <rect class="b" x="78" y="44" width="122.49" height="20" rx="2"/>
+        <text class="cv" x="206.5" y="58.5">€116,660</text>
+
+        <text class="cl" x="70" y="90.5" text-anchor="end" style="fill:var(--pick);font-weight:800">Prague</text>
+        <rect class="bp" x="78" y="76" width="125.45" height="20" rx="2"/>
+        <text class="cvp" x="209.5" y="90.5">€119,480 · +€2,820</text>
+
+        <text class="cl" x="70" y="122.5" text-anchor="end">Seville</text>
+        <rect class="b" x="78" y="108" width="137.7" height="20" rx="2"/>
+        <text class="cv" x="221.7" y="122.5">€131,140</text>
+
+        <text class="cl" x="70" y="154.5" text-anchor="end">Lisbon</text>
+        <rect class="b" x="78" y="140" width="153.2" height="20" rx="2"/>
+        <text class="cv" x="237.2" y="154.5">€145,900</text>
+
+        <text class="cl" x="70" y="186.5" text-anchor="end">Vienna</text>
+        <rect class="b" x="78" y="172" width="176.76" height="20" rx="2"/>
+        <text class="cv" x="260.8" y="186.5">€168,340</text>
+
+        <text class="cl" x="70" y="218.5" text-anchor="end">Dublin</text>
+        <rect class="b" x="78" y="204" width="191.56" height="20" rx="2"/>
+        <text class="cv" x="275.6" y="218.5">€182,440</text>
+      </svg>
+      <p class="tnote">Prague's "+€2,820" is the difference from Athens, the cheapest city whose largest room fits everyone.</p>
+    </div>
+  </section>
+
+  <section id="tradeoffs">
+    <h2>Trade-offs</h2>
+    <div class="tr">
+      <div class="card">
+        <p class="chart-title">Cost against travel time</p>
+        <p class="chart-sub">Lower left is better: cheaper and a shorter flight.</p>
+        <svg class="chart" viewBox="0 0 360 262" role="img" aria-label="Scatter of total cost against average flight time. Vienna 1.8 hours, 168,340 euros. Prague 2.0 hours, 119,480. Dublin 2.2 hours, 182,440. Krakow 2.5 hours, 97,720, excluded. Lisbon 3.5 hours, 145,900. Athens 3.6 hours, 116,660. Seville 3.8 hours, 131,140.">
+          <line class="g" x1="50" y1="200" x2="340" y2="200"/>
+          <line class="g" x1="50" y1="150" x2="340" y2="150"/>
+          <line class="g" x1="50" y1="100" x2="340" y2="100"/>
+          <line class="g" x1="50" y1="50" x2="340" y2="50"/>
+          <line class="ax" x1="50" y1="220" x2="340" y2="220"/>
+          <line class="ax" x1="50" y1="20" x2="50" y2="220"/>
+          <text class="gl" x="44" y="203.5" text-anchor="end">100</text>
+          <text class="gl" x="44" y="153.5" text-anchor="end">125</text>
+          <text class="gl" x="44" y="103.5" text-anchor="end">150</text>
+          <text class="gl" x="44" y="53.5" text-anchor="end">175</text>
+          <text class="gl" x="50" y="234" text-anchor="middle">1.5</text>
+          <text class="gl" x="108" y="234" text-anchor="middle">2.0</text>
+          <text class="gl" x="166" y="234" text-anchor="middle">2.5</text>
+          <text class="gl" x="224" y="234" text-anchor="middle">3.0</text>
+          <text class="gl" x="282" y="234" text-anchor="middle">3.5</text>
+          <text class="gl" x="340" y="234" text-anchor="middle">4.0</text>
+          <text class="axl" x="10" y="12">Total cost, € thousands</text>
+          <text class="axl" x="195" y="254" text-anchor="middle">Average flight time from hub, hours</text>
+
+          <circle class="pt" cx="84.8" cy="63.3" r="5.5"/><text class="pl" x="93" y="67.5">Vienna</text>
+          <circle class="pt" cx="131.2" cy="35.1" r="5.5"/><text class="pl" x="139" y="39.3">Dublin</text>
+          <circle class="ptp" cx="108" cy="161" r="7"/><text class="plp" x="118" y="165.2">Prague</text>
+          <circle class="pto" cx="166" cy="204.6" r="5.5"/><text class="plo" x="175" y="208.8">Krakow, out (190 seats)</text>
+          <circle class="pt" cx="282" cy="108.2" r="5.5"/><text class="pl" x="274" y="112.4" text-anchor="end">Lisbon</text>
+          <circle class="pt" cx="316.8" cy="137.7" r="5.5"/><text class="pl" x="308.8" y="141.9" text-anchor="end">Seville</text>
+          <circle class="pt" cx="293.6" cy="166.7" r="5.5"/><text class="pl" x="285.6" y="170.9" text-anchor="end">Athens</text>
+        </svg>
+      </div>
+      <ul class="points">
+        <li class="o"><b>Krakow is out.</b>It is the cheapest at €97,720, but its largest room seats only 190, fewer than our 220 attendees.</li>
+        <li><b>Athens is the cheapest city that fits.</b>€116,660, but the average flight is 3.6 hours, one of the longest on the list.</li>
+        <li class="p"><b>Prague costs almost the same and is much closer.</b>€119,480 is €2,820 more than Athens (about €13 per attendee), and the flight is 2.0 hours, 1.6 hours shorter.</li>
+        <li><b>Vienna has the shortest flight, at a price.</b>1.8 hours, but €168,340, which is €48,860 more than Prague.</li>
+        <li><b>Dublin is the most expensive.</b>€182,440, with the highest venue and hotel rates.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="recommendation">
+    <h2>Recommendation</h2>
+    <div class="rec">
+      <p class="verdict">We recommend Prague.</p>
+      <div class="kpis">
+        <div><div class="v">€119,480</div><div class="k">total cost</div></div>
+        <div><div class="v">+€2,820</div><div class="k">vs Athens</div></div>
+        <div><div class="v">2.0 h</div><div class="k">flight, 1.6 h shorter than Athens</div></div>
+        <div><div class="v">260 seats</div><div class="k">largest room, for 220 people</div></div>
+      </div>
+      <ul>
+        <li>It is only €2,820 more than Athens, the cheapest city that can seat everyone.</li>
+        <li>Every attendee saves 1.6 hours of average flight time compared with Athens.</li>
+        <li>Krakow would be cheaper, but its largest room seats only 190, so it cannot host the event.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>Harlow Devices · 2027 sales kickoff city · for the leadership decision on 2026-11-03</footer>
+</main>
+</body>
+</html>

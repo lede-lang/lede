@@ -1,0 +1,49 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Title",
+      "line": 1
+    },
+    {
+      "type": "paragraph",
+      "text": "First line second line joins.",
+      "line": 2
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Section",
+      "line": 5
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Sub",
+      "line": 6
+    },
+    {
+      "type": "heading",
+      "level": 3,
+      "text": "Too deep",
+      "line": 7
+    },
+    {
+      "type": "paragraph",
+      "text": "#nospace is prose",
+      "line": 8
+    }
+  ],
+  "data": {},
+  "diagnostics": [
+    {
+      "severity": "warning",
+      "code": "heading-depth",
+      "message": "headings go to ### (got ####); write ###, which is how it renders",
+      "line": 7,
+      "col": 1
+    }
+  ]
+}

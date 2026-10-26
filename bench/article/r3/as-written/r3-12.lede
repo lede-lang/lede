@@ -1,0 +1,149 @@
+@title Orchard Irrigation Schedule: Rule Check and Edit Sheet
+@subtitle The current controller export, checked against the pump, water, power-price, dusk and crop rules
+@width wide
+
+! This page is a fixed check, not a live editor: it does not recalculate when you change a time. Edit the copy-out block at the bottom, then bring the changed zones back to be re-checked. The check below covers the schedule exactly as exported.
+
+kpi Pump peak | 565 L/min | limit is 600 | good
+kpi Days over water allocation | 5 of 7 | Mon, Tue, Wed, Fri, Sat | bad
+kpi Water per week | 405,350 L | 364,000 L allowed | bad
+kpi Dusk-buffer breaches | 1 | Z9 starts 19:00 | bad
+
+# What the check found
+
+table = rule,result,detail; Pump 600 L/min or less,Go,"The highest simultaneous load is 565 L/min on Wednesday (Z6 with Z7 or Z8, and Z5 with Z7). Z1 with Z2 would total 620 L/min, so their 15-minute gap (06:15 to 06:30) is what protects the pump."; Water 52,000 L per day,Failed,"Monday, Tuesday, Wednesday, Friday and Saturday are over. Only Thursday and Sunday are within the allocation."; No zone over 90 minutes,Go,"Z5 and Z6 run exactly 90 minutes, so they have no room to grow."; Nothing from 11:00 to 16:00,Go,"The latest morning finish is Z4 at 08:00 and the first evening start is Z9 at 19:00."; Nothing within an hour after dusk (18:40 to 19:40),Failed,"Z9 runs 19:00 to 19:30, inside the window."; Z7 never over 45 minutes,Go,"Z7 runs exactly 45 minutes."; Cherries dry for 3 days before picking (Bing from Oct 28),At risk,"Z7 is scheduled for Monday Oct 26, one of the three dry days, if Oct 28 is a Wednesday as it is in 2026. Rainier (Z8) has no picking date in the export, so it cannot be checked."; The four apple zones not watered on consecutive days,At risk,"The rule can be read two ways, and the schedule passes one and fails the other. See below."
+
+# The schedule as exported
+
+data schedule = zone,crop,start,run min,days,flow L/min,soil moisture %,notes; Z1,Honeycrisp apples,05:00,75,"Mon, Thu",310,24.5,"Young trees, planted 2023"
+data schedule += Z2,Honeycrisp apples,06:30,75,"Mon, Thu",310,26.1,
+data schedule += Z3,Fuji apples,05:30,60,"Tue, Fri",280,21.8,Drains fast; sandy patch near the road
+data schedule += Z4,Fuji apples,07:00,60,"Tue, Fri",280,27.3,
+data schedule += Z5,Bartlett pears,04:30,90,"Wed, Sat",345,30.2,“Wet corner” in NE rows; check for leaks
+data schedule += Z6,Bartlett pears,06:15,90,"Wed, Sat",345,29.7,
+data schedule += Z7,Cherries (Bing),05:45,45,"Mon, Wed, Fri",220,19.4,Needs deficit stress before harvest; do not exceed 45 min
+data schedule += Z8,Cherries (Rainier),06:30,45,"Mon, Wed, Fri",220,,Sensor broken since Sept
+data schedule += Z9,Nursery rows,19:00,30,Daily,95,33.8,Hand-watered Sundays
+data schedule += Z10,Plum (Santa Rosa),21:30,80,"Tue, Sat",260,25.0,
+
+table schedule
+
+## The weekly pattern
+
+A dot is a day the zone runs. Z9 is exported as Daily but its note says hand-watered Sundays, so its Sunday is a question mark.
+
+table = zone,Mon,Tue,Wed,Thu,Fri,Sat,Sun; Z1,●,,,●,,,; Z2,●,,,●,,,; Z3,,●,,,●,,; Z4,,●,,,●,,; Z5,,,●,,,●,; Z6,,,●,,,●,; Z7,●,,●,,●,,; Z8,●,,●,,●,,; Z9,●,●,●,●,●,●,●?; Z10,,●,,,,●,
+
+## What each zone draws
+
+Litres per run is flow times run time. Weekly litres is litres per run times the days the zone runs.
+
+table = zone,start,end,flow L/min,litres per run,runs per week,litres per week; Z1,05:00,06:15,310,"23,250",2,"46,500"; Z2,06:30,07:45,310,"23,250",2,"46,500"; Z3,05:30,06:30,280,"16,800",2,"33,600"; Z4,07:00,08:00,280,"16,800",2,"33,600"; Z5,04:30,06:00,345,"31,050",2,"62,100"; Z6,06:15,07:45,345,"31,050",2,"62,100"; Z7,05:45,06:30,220,"9,900",3,"29,700"; Z8,06:30,07:15,220,"9,900",3,"29,700"; Z9,19:00,19:30,95,"2,850",7,"19,950"; Z10,21:30,22:50,260,"20,800",2,"41,600"; **Total**,,,,,,**405,350**
+
+# Pump limit: 600 L/min
+
+The pump limit is a sum over whatever is running at the same moment. These pairs add up to more than 600 L/min and must never overlap:
+
+- Any two of Z1, Z2, Z5 and Z6 (310 + 310 = 620 at the lowest, up to 345 + 345 = 690).
+- Z5 or Z6 with Z3 or Z4 (345 + 280 = 625).
+- Z5 or Z6 with Z10 (345 + 260 = 605).
+- Z7 and Z8 together with any zone except Z9 (440 + 160 or more).
+
+These pairs are fine: Z1 or Z2 with Z3 or Z4 (590, only 10 L/min of headroom), Z3 with Z4 (560), and Z7 or Z8 with any single other zone (at most 565).
+
+The schedule only overlaps zones in these places, all within the limit:
+
+table = day,zones,overlap,load L/min; Mon,Z1 with Z7,05:45 to 06:15,530; Mon,Z2 with Z8,06:30 to 07:15,530; Wed,Z5 with Z7,05:45 to 06:00,565; Wed,Z6 with Z7,06:15 to 06:30,565; Wed,Z6 with Z8,06:30 to 07:15,565; Fri,Z3 with Z7,05:45 to 06:30,500; Fri,Z4 with Z8,07:00 to 07:15,500
+
+Wednesday is the tightest day: four zones in the morning and the nursery in the evening.
+
+data wed = zone,start,end; Z5 pears,4.5,6.0; Z6 pears,6.25,7.75; Z7 Bing cherries,5.75,6.5; Z8 Rainier cherries,6.5,7.25; Z9 nursery,19.0,19.5
+
+chart range wed from=start to=end target="18.67 dusk" title="Wednesday, hours on the 24-hour clock (6.25 is 06:15, 19.5 is 19:30)"
+
+# Water allocation: 52,000 L per day
+
+This is where the schedule breaks. Daily totals are the litres from each zone that runs that day.
+
+data water = day,litres; Mon,69150; Tue,57250; Wed,84750; Thu,49350; Fri,56250; Sat,85750; Sun,2850
+
+chart bar water y=litres target="52000 allocation" unit=L labels title="Litres per day against the 52,000 L allocation"
+
+table = day,zones running,litres,against 52000 L,verdict; Mon,"Z1, Z2, Z7, Z8, Z9","69,150","17,150 over",Failed; Tue,"Z3, Z4, Z9, Z10","57,250","5,250 over",Failed; Wed,"Z5, Z6, Z7, Z8, Z9","84,750","32,750 over",Failed; Thu,"Z1, Z2, Z9","49,350","2,650 spare",Go; Fri,"Z3, Z4, Z7, Z8, Z9","56,250","4,250 over",Failed; Sat,"Z5, Z6, Z9, Z10","85,750","33,750 over",Failed; Sun,"Z9 only, if the controller runs it","2,850","49,150 spare",Go
+
+!! Moving start times cannot fix this. Even if the same water were spread perfectly over seven days, the week would need 405,350 L against 364,000 L allowed (52,000 x 7), about 41,350 L too much. Spare daily capacity exists only on Sunday and, slightly, on Thursday. Run times, days or the allocation figure itself have to change, and that is your decision.
+
+This check uses flow times run time for each zone and assumes the flow figures in the export are what each zone really draws. If the 52,000 L allocation is measured differently (for example weekly, or at the meter), the verdict changes.
+
+# Dusk buffer: nothing between 18:40 and 19:40
+
+Dusk is about 18:40 this month and moves through the year, so the window moves with it. Z9 (nursery) starts at 19:00 and runs to 19:30, inside the window. Z10 at 21:30 is clear.
+
+# Cherries before picking
+
+Bing picking starts Oct 28, so Z7 must not be watered on the 3 days before: Oct 25, 26 and 27. In 2026 those are Sunday, Monday and Tuesday, and Z7 runs Monday, Wednesday and Friday, so **Monday Oct 26 has to be skipped**. A weekly schedule cannot skip one date by itself; that needs a one-off override or a manual change.
+
+The export has no picking date for Rainier cherries (Z8), so the check cannot say whether Z8 has a dry period coming. Z8 also has no soil moisture reading (sensor broken since Sept).
+
+# Apple zones on consecutive days
+
+The four apple zones (Z1 to Z4) are watered on Monday, Tuesday, Thursday and Friday. The rule "should not all be watered on consecutive days" can mean two things:
+
+- **No back-to-back apple days at all.** Fails: Monday is followed by Tuesday, and Thursday by Friday.
+- **No long unbroken run of apple days.** Passes: the longest run is two days, with Wednesday, Saturday and Sunday off.
+
+Tell me which one you meant and the check can be settled.
+
+# Questions the export cannot answer
+
+- Z9 is exported as Daily, but the note says hand-watered Sundays. Should the controller run it on Sunday?
+- Is the 52,000 L figure a hard daily cap, and is it measured the way flow times run time is?
+- When does Rainier (Z8) picking start?
+- Z8 has no moisture reading, and Z5 has the wettest reading (30.2%) with the longest runs and a note to check for leaks. Neither can be judged from the numbers given.
+- Peak power ($0.31/kWh) versus off-peak ($0.11/kWh): nothing runs in the 11:00 to 16:00 window, so there is no peak cost to count, and the export has no pump kWh to price the rest.
+
+# Proposals (not yet accepted)
+
+These are proposals, not values you gave me.
+
+1. **Proposal: Z9 start at 19:40** (ends 20:10) to clear the dusk window. Any start from 19:40 on works, or any start by 18:10 so it finishes by 18:40. The window will shift as dusk changes.
+2. **Proposal: skip Z7 on Monday Oct 26** with a one-off override, for the Bing dry period.
+3. **Decision needed: water allocation.** I have not proposed new run times, because the right cuts depend on which crops you can afford to shorten.
+
+# Copy-out
+
+Both blocks use the same layout as the controller export.
+
+## As exported (unchanged)
+
+```
+Zone | Crop | Start Time | Run Time (min) | Days | Flow (L/min) | Soil Moisture (%) | Notes
+Z1 | Honeycrisp apples | 05:00 | 75 | Mon, Thu | 310 | 24.5 | Young trees, planted 2023
+Z2 | Honeycrisp apples | 06:30 | 75 | Mon, Thu | 310 | 26.1 |
+Z3 | Fuji apples | 05:30 | 60 | Tue, Fri | 280 | 21.8 | Drains fast; sandy patch near the road
+Z4 | Fuji apples | 07:00 | 60 | Tue, Fri | 280 | 27.3 |
+Z5 | Bartlett pears | 04:30 | 90 | Wed, Sat | 345 | 30.2 | "Wet corner" in NE rows; check for leaks
+Z6 | Bartlett pears | 06:15 | 90 | Wed, Sat | 345 | 29.7 |
+Z7 | Cherries (Bing) | 05:45 | 45 | Mon, Wed, Fri | 220 | 19.4 | Needs deficit stress before harvest; do not exceed 45 min
+Z8 | Cherries (Rainier) | 06:30 | 45 | Mon, Wed, Fri | 220 | | Sensor broken since Sept
+Z9 | Nursery rows | 19:00 | 30 | Daily | 95 | 33.8 | Hand-watered Sundays
+Z10 | Plum (Santa Rosa) | 21:30 | 80 | Tue, Sat | 260 | 25.0 |
+```
+
+## Proposal: dusk fix only (Z9 at 19:40)
+
+This still breaks the daily water allocation.
+
+```
+Zone | Crop | Start Time | Run Time (min) | Days | Flow (L/min) | Soil Moisture (%) | Notes
+Z1 | Honeycrisp apples | 05:00 | 75 | Mon, Thu | 310 | 24.5 | Young trees, planted 2023
+Z2 | Honeycrisp apples | 06:30 | 75 | Mon, Thu | 310 | 26.1 |
+Z3 | Fuji apples | 05:30 | 60 | Tue, Fri | 280 | 21.8 | Drains fast; sandy patch near the road
+Z4 | Fuji apples | 07:00 | 60 | Tue, Fri | 280 | 27.3 |
+Z5 | Bartlett pears | 04:30 | 90 | Wed, Sat | 345 | 30.2 | "Wet corner" in NE rows; check for leaks
+Z6 | Bartlett pears | 06:15 | 90 | Wed, Sat | 345 | 29.7 |
+Z7 | Cherries (Bing) | 05:45 | 45 | Mon, Wed, Fri | 220 | 19.4 | Needs deficit stress before harvest; do not exceed 45 min
+Z8 | Cherries (Rainier) | 06:30 | 45 | Mon, Wed, Fri | 220 | | Sensor broken since Sept
+Z9 | Nursery rows | 19:40 | 30 | Daily | 95 | 33.8 | Hand-watered Sundays
+Z10 | Plum (Santa Rosa) | 21:30 | 80 | Tue, Sat | 260 | 25.0 |
+```

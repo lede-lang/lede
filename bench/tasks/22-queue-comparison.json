@@ -1,0 +1,47 @@
+{
+  "id": "22-queue-comparison",
+  "category": "comparison",
+  "title": "Choosing a message queue",
+  "brief": "The Fulfillment team at Saltmarsh Foods needs to choose a message queue for the new order-routing service and wants a decision page for the architecture review on 2026-10-21. Expected load: 1800 messages per second at peak, 400 on average, messages under 8 KB, at-least-once delivery is acceptable, and ordering is needed only per order. Section titled \"Options\": SQS, Kafka (Amazon MSK) and RabbitMQ (Amazon MQ), one line each. Section titled \"Comparison\" as a table with a row per option and columns Ordering, Throughput ceiling, Ops burden, Replay, Monthly cost: SQS: FIFO per message group, very high, none, no, 310 dollars; Kafka: per partition, very high, high, yes up to retention, 1450 dollars; RabbitMQ: per queue, medium, medium, no, 690 dollars. Add a bar chart comparing estimated monthly cost: SQS 310, Kafka 1450, RabbitMQ 690. Section titled \"Pros and cons\": for each option two or three pros and cons as lists (SQS: fully managed and scales automatically, but no replay and a 256 KB message limit; Kafka: replay and stream processing, but needs partition planning and broker upgrades; RabbitMQ: flexible routing, but we would own capacity planning). Section titled \"Recommendation\": recommend SQS with FIFO queues keyed by order ID, in a highlighted callout, and note that we will revisit if the analytics team needs event replay in 2027.",
+  "checklist": {
+    "sections": [
+      "Options",
+      "Comparison",
+      "Pros and cons",
+      "Recommendation"
+    ],
+    "visible": [
+      "SQS",
+      "Kafka",
+      "RabbitMQ",
+      "Ordering",
+      "Throughput ceiling",
+      "Ops burden",
+      "Replay",
+      "Monthly cost"
+    ],
+    "values": [
+      "1800",
+      "400",
+      "310",
+      "1450",
+      "690",
+      "256",
+      "2026-10-21"
+    ]
+  },
+  "needs": [
+    "table",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the recommendation to Kafka, and add a warning that it needs a dedicated on-call rotation for the brokers.",
+    "expect_visible": [
+      "dedicated on-call"
+    ],
+    "expect_values": [],
+    "expect_absent": []
+  }
+}

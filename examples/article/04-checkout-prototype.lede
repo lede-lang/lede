@@ -1,0 +1,94 @@
+@title Checkout button: play, then purple
+@subtitle Parameter sheet and starting presets for the click animation
+@author Frontend prototype notes
+@date 2026-10-19
+
+! This page is static, so there are no sliders. Every slider is a row in the parameter table below, with its range and default. Try values in your own copy of the button, then paste the winning set into the "Parameters that worked" block at the bottom.
+
+kpi Total duration | 760 ms | default preset | neutral
+kpi Purple reached | 540 ms | 70% of the run | neutral
+kpi Peak squish | 0.94x | scale at press | neutral
+kpi Final color | #7C3AED | violet-600 | neutral
+
+## What happens on click
+
+The button runs four overlapping phases. The play animation is the icon morph (cart to play triangle to check). The purple fill starts before the morph ends, so the color change feels like part of the motion and not an afterthought.
+
+data phases = phase,start,end; Press squish,0,90; Play icon morph,60,420; Fill to purple,300,540; Settle and check,540,760
+chart range phases from=start to=end target="540 purple" title="Animation timeline (ms)"
+
+1. Press: button scales down to the peak squish value.
+2. Play: the cart icon morphs into a play triangle, then a check mark.
+3. Fill: the background sweeps from the brand blue to purple, left to right.
+4. Settle: scale returns to 1.0 with a small overshoot, then the label reads "Paid".
+
+## Parameters to tune
+
+Each row is one control you would want a slider or dropdown for. Change one at a time and keep the rest at default.
+
+data params = parameter,default,min,max,step,unit,what it changes; Press scale,0.94,0.85,1.00,0.01,x,how hard the button squishes; Press duration,90,40,200,10,ms,speed of the squish; Icon morph duration,360,150,700,10,ms,length of the play animation; Fill delay,300,0,500,10,ms,when purple starts relative to click; Fill duration,240,100,600,10,ms,how quickly it turns purple; Overshoot,1.04,1.00,1.12,0.01,x,bounce past 1.0 when settling; Stagger,60,0,120,10,ms,gap between icon layers
+table params
+
+data options = option,choices,default; Easing,"ease-out, ease-in-out, spring, linear",spring; Fill direction,"left to right, center out, top down",left to right; Icon sequence,"cart > play > check, cart > check, play only",cart > play > check; Purple shade,"#7C3AED, #8B5CF6, #6D28D9",#7C3AED; Reduced motion,"instant swap, fade only",fade only
+table options
+
+## Easing curves compared
+
+Progress of the fill (0 to 100) over its duration, sampled at 10 steps. Spring overshoots past 100 and settles; that overshoot is what reads as "playful".
+
+data ease = step,ease-out,ease-in-out,spring,linear; 0,0,0,0,0; 1,27,5,22,10; 2,49,18,58,20; 3,66,35,92,30; 4,79,50,110,40; 5,88,65,108,50; 6,94,78,103,60; 7,97,88,100,70; 8,99,95,100,80; 9,100,99,100,90; 10,100,100,100,100
+chart line ease x=step y=ease-out,ease-in-out,spring,linear title="Fill progress by easing" unit=%
+
+## Starting presets
+
+cards
+### Snappy
+Press 0.96, morph 220 ms, fill delay 180 ms, fill 160 ms, ease-out. Total about 480 ms. Feels like a native control.
+### Playful (default)
+Press 0.94, morph 360 ms, fill delay 300 ms, fill 240 ms, spring with 1.04 overshoot. Total 760 ms.
+### Theatrical
+Press 0.90, morph 520 ms, fill delay 380 ms, fill 360 ms, spring with 1.08 overshoot. Total about 1000 ms. Fun once, tiring on the third purchase.
+
+## Parameters that worked
+
+Fill this block in after trying values, then copy it from here (select the block; there is no copy button). This is the default preset as a starting point.
+
+```css
+.checkout-btn {
+  --press-scale: 0.94;
+  --press-ms: 90ms;
+  --morph-ms: 360ms;
+  --fill-delay-ms: 300ms;
+  --fill-ms: 240ms;
+  --overshoot: 1.04;
+  --stagger-ms: 60ms;
+  --easing: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --fill-color: #7C3AED;
+}
+```
+
+```json
+{
+  "pressScale": 0.94,
+  "pressMs": 90,
+  "morphMs": 360,
+  "fillDelayMs": 300,
+  "fillMs": 240,
+  "overshoot": 1.04,
+  "staggerMs": 60,
+  "easing": "spring",
+  "fillDirection": "left-to-right",
+  "color": "#7C3AED"
+}
+```
+
+## Review checklist
+
+- [ ] Total run is under 800 ms, so a second click is never blocked for long
+- [ ] Purple is fully reached before the label changes to "Paid"
+- [ ] The button ignores clicks while running (no double submit)
+- [ ] White label on #7C3AED stays above 4.5:1 contrast mid-fill
+- [ ] Reduced motion setting gives a fade, not a skip
+- [ ] 60 fps on a mid-range phone, not only on the dev laptop
+
+!! Do not tie the order submit to the end of the animation. Fire the request on click and let the animation run alongside it, or a slow animation reads as a slow checkout.

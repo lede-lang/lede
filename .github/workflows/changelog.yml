@@ -1,0 +1,66 @@
+name: changelog
+
+# Tags a version, writes CHANGELOG.md and the GitHub release from the conventional commits on main, and commits the new version
+# into the packages and plugin manifests (D54). It does not publish to npm: release.yml does that by hand, on the tag.
+#
+# Public repository only; in a private one the job is skipped. It needs a v0.* tag on main (tag the first release commit v0.1.0):
+# with no tag semantic-release would start at 1.0.0, and every package stays on 0.x.
+#
+# The release commit goes to main with a GitHub App token, because the ruleset on main requires a pull request and the app is its
+# bypass actor. The checkout keeps no credentials, so install scripts never see the token. Repository secrets:
+# SEMANTIC_RELEASE_APP_ID and SEMANTIC_RELEASE_PRIVATE_KEY.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: changelog
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: ${{ !github.event.repository.private }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3
+        with:
+          app-id: ${{ secrets.SEMANTIC_RELEASE_APP_ID }}
+          private-key: ${{ secrets.SEMANTIC_RELEASE_PRIVATE_KEY }}
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Require a 0.x baseline tag
+        run: |
+          if ! git tag --merged HEAD --list 'v0.*' | grep -q .; then
+            echo "::error::no v0.* tag reachable from main: semantic-release would release 1.0.0. Tag the cut commit v0.1.0 first."
+            exit 1
+          fi
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: 11
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22.18
+          cache: pnpm
+      # The root project only: semantic-release needs none of the benchmark or package dependencies.
+      - run: pnpm install --frozen-lockfile --filter .
+      - name: Run semantic-release
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+          GIT_AUTHOR_NAME: github-actions[bot]
+          GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+          GIT_COMMITTER_NAME: github-actions[bot]
+          GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+        run: pnpm exec semantic-release

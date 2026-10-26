@@ -1,0 +1,97 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "data",
+      "name": "g",
+      "line": 1
+    },
+    {
+      "type": "table",
+      "data": "g",
+      "cols": null,
+      "sort": null,
+      "limit": null,
+      "title": null,
+      "line": 2,
+      "bars": [
+        "done"
+      ],
+      "targetCol": "goal"
+    },
+    {
+      "type": "kpis",
+      "items": [
+        {
+          "label": "Done",
+          "value": "58%",
+          "delta": "",
+          "tone": null,
+          "note": "",
+          "ref": null,
+          "bar": true
+        },
+        {
+          "label": "Ratio",
+          "value": "0.5",
+          "delta": "note text",
+          "tone": null,
+          "note": "",
+          "ref": null,
+          "bar": true
+        },
+        {
+          "label": "Tone",
+          "value": "99%",
+          "delta": "+1",
+          "tone": "good",
+          "note": "",
+          "ref": null,
+          "bar": true
+        },
+        {
+          "label": "Ref",
+          "value": "91",
+          "delta": "+27",
+          "tone": null,
+          "note": "",
+          "ref": "g.done",
+          "bar": true
+        },
+        {
+          "label": "Bars",
+          "value": "12",
+          "delta": "",
+          "tone": null,
+          "note": "",
+          "ref": null
+        }
+      ],
+      "line": 3
+    }
+  ],
+  "data": {
+    "g": {
+      "name": "g",
+      "columns": [
+        "team",
+        "done",
+        "goal"
+      ],
+      "rows": [
+        [
+          "P",
+          "64",
+          "80"
+        ],
+        [
+          "Q",
+          "91",
+          "85"
+        ]
+      ],
+      "line": 1
+    }
+  },
+  "diagnostics": []
+}

@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pelham Furniture emissions 2023 to 2025</title>
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#f5f5f2; --surface:#ffffff; --surface-2:#efefea; --text:#1d1e1a; --muted:#5e6058; --border:#deded6; --grid:#e7e7e0;
+  --accent:#335c4a; --accent-soft:#e4ede8;
+  --s1:#2f4858; --s2:#e0a84c; --s3:#86a99a; --target:#1d1e1a;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#111210; --surface:#191a17; --surface-2:#21221e; --text:#e9e9e3; --muted:#a3a59b; --border:#30312c; --grid:#292a25;
+    --accent:#8fc4ab; --accent-soft:#18291f;
+    --s1:#8db4cc; --s2:#f0c070; --s3:#5d8172; --target:#e9e9e3;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:44px 24px 64px}
+.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;color:var(--accent);font-weight:700;margin:0}
+h1{font-size:clamp(1.7rem,4.5vw,2.35rem);line-height:1.15;margin:.3em 0 .35em;letter-spacing:-.015em}
+h2{font-size:1.3rem;margin:0 0 .8rem}
+p{margin:0 0 .9rem}
+.lede{color:var(--muted);font-size:1.08rem;max-width:66ch}
+section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:26px;margin:20px 0}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.kpi{background:var(--surface-2);border-radius:12px;padding:14px 16px}
+.kpi .k{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;line-height:1.3}
+.kpi .v{font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.3;margin-top:4px}
+.kpi .s{font-size:.84rem;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.88rem;margin:0 0 8px;padding:0;list-style:none}
+.legend li{display:flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:3px}
+.legend i.t{background:transparent;border:2px dashed var(--target)}
+.chart{width:100%;max-width:620px;height:auto;display:block}
+.chart .grid{stroke:var(--grid);stroke-width:1}
+.chart .axis{fill:var(--muted);font-size:12px}
+.chart .xl{fill:var(--text);font-size:13px;font-weight:600}
+.chart .tot{fill:var(--text);font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.chart .tgt{fill:none;stroke:var(--target);stroke-width:1.5;stroke-dasharray:5 4}
+.f1{fill:var(--s1)} .f2{fill:var(--s2)} .f3{fill:var(--s3)}
+table{width:100%;border-collapse:collapse;font-size:.95rem;margin-top:18px}
+th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left}
+thead th{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-bottom:2px solid var(--border);vertical-align:bottom}
+tr.total th,tr.total td{font-weight:700;border-top:2px solid var(--border);border-bottom:0}
+.r{text-align:right;font-variant-numeric:tabular-nums}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px}
+.note{font-size:.92rem;color:var(--muted);margin-top:12px}
+.caveats{margin:0;padding-left:20px}
+.caveats li{margin-bottom:8px}
+footer{color:var(--muted);font-size:.85rem;margin-top:28px}
+@media (max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:480px){
+  .wrap{padding:28px 16px 48px}
+  section{padding:18px 14px;border-radius:12px}
+  th,td{padding:8px 4px}
+  table{font-size:.84rem}
+  thead th{font-size:.66rem;letter-spacing:.02em}
+  .kpi .v{font-size:1.25rem}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Pelham Furniture &middot; Annual report 2025</p>
+  <h1>Greenhouse gas inventory, 2023 to 2025</h1>
+  <p class="lede">Our emissions fell by 13.7% over two years, mostly because of cleaner electricity. Most of what remains sits in our supply chain, and we are not yet on a path that reaches our 2030 target. All figures in tonnes of CO<sub>2</sub>e.</p>
+</header>
+
+<section id="headline">
+  <h2>Headline</h2>
+  <div class="kpis">
+    <div class="kpi"><div class="k">2025 total</div><div class="v">22,870 t</div><div class="s">2023: 26,500 t</div></div>
+    <div class="kpi"><div class="k">Change since 2023</div><div class="v">&minus;3,630 t</div><div class="s">&minus;13.7%</div></div>
+    <div class="kpi"><div class="k">Scope 3 share, 2025</div><div class="v">86.6%</div><div class="s">of the total</div></div>
+    <div class="kpi"><div class="k">Still to cut by 2030</div><div class="v">4,320 t</div><div class="s">to reach 18,550 t</div></div>
+  </div>
+  <p>Scope 2 emissions fell 54.6% as we moved 6 of our 8 sites to renewable electricity contracts. That accounts for most of the reduction so far. Scope 3, the emissions in our value chain, now makes up 86.6% of the total, and that is the real challenge.</p>
+  <p>Our target is a 30% cut against 2023 by 2030, which means 18,550 tonnes or lower. From 2025 we still have 4,320 tonnes to go.</p>
+</section>
+
+<section id="emissions-by-scope">
+  <h2>Emissions by scope</h2>
+  <ul class="legend" aria-hidden="true">
+    <li><i style="background:var(--s1)"></i>Scope 1</li>
+    <li><i style="background:var(--s2)"></i>Scope 2 (market-based)</li>
+    <li><i style="background:var(--s3)"></i>Scope 3</li>
+    <li><i class="t"></i>2030 target</li>
+  </ul>
+  <svg class="chart" viewBox="0 0 480 254" role="img" aria-labelledby="eTitle eDesc">
+    <title id="eTitle">Emissions by scope, tonnes CO2e, 2023 to 2025, with 2030 target</title>
+    <desc id="eDesc">2023: scope 1 1,840, scope 2 3,260, scope 3 21,400, total 26,500. 2024: 1,720, 2,610, 20,900, total 25,230. 2025: 1,590, 1,480, 19,800, total 22,870. 2030 target: 18,550 or lower.</desc>
+    <line class="grid" x1="60" y1="230" x2="470" y2="230"/>
+    <line class="grid" x1="60" y1="160" x2="470" y2="160"/>
+    <line class="grid" x1="60" y1="90" x2="470" y2="90"/>
+    <line class="grid" x1="60" y1="20" x2="470" y2="20"/>
+    <g class="axis" text-anchor="end">
+      <text x="54" y="234">0</text><text x="54" y="164">10,000</text><text x="54" y="94">20,000</text><text x="54" y="24">30,000</text>
+    </g>
+    <rect class="f1" x="81.25" y="217.12" width="60" height="12.88"/>
+    <rect class="f2" x="81.25" y="194.3" width="60" height="22.82"/>
+    <rect class="f3" x="81.25" y="44.5" width="60" height="149.8"/>
+    <rect class="f1" x="183.75" y="217.96" width="60" height="12.04"/>
+    <rect class="f2" x="183.75" y="199.69" width="60" height="18.27"/>
+    <rect class="f3" x="183.75" y="53.39" width="60" height="146.3"/>
+    <rect class="f1" x="286.25" y="218.87" width="60" height="11.13"/>
+    <rect class="f2" x="286.25" y="208.51" width="60" height="10.36"/>
+    <rect class="f3" x="286.25" y="69.91" width="60" height="138.6"/>
+    <rect class="tgt" x="389.5" y="100.9" width="58.5" height="128.35"/>
+    <g class="tot" text-anchor="middle">
+      <text x="111.25" y="37">26,500</text><text x="213.75" y="46">25,230</text><text x="316.25" y="62">22,870</text><text x="418.75" y="93">18,550</text>
+    </g>
+    <g class="xl" text-anchor="middle">
+      <text x="111.25" y="248">2023</text><text x="213.75" y="248">2024</text><text x="316.25" y="248">2025</text><text x="418.75" y="248">2030 target</text>
+    </g>
+  </svg>
+
+  <table>
+    <thead>
+      <tr><th scope="col">Tonnes CO<sub>2</sub>e</th><th scope="col" class="r">2023</th><th scope="col" class="r">2024</th><th scope="col" class="r">2025</th><th scope="col" class="r">Change since 2023</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row"><span class="sw" style="background:var(--s1)"></span>Scope 1</th><td class="r">1,840</td><td class="r">1,720</td><td class="r">1,590</td><td class="r">&minus;13.6%</td></tr>
+      <tr><th scope="row"><span class="sw" style="background:var(--s2)"></span>Scope 2 (market-based)</th><td class="r">3,260</td><td class="r">2,610</td><td class="r">1,480</td><td class="r">&minus;54.6%</td></tr>
+      <tr><th scope="row"><span class="sw" style="background:var(--s3)"></span>Scope 3</th><td class="r">21,400</td><td class="r">20,900</td><td class="r">19,800</td><td class="r">&minus;7.5%</td></tr>
+      <tr class="total"><th scope="row">Total</th><td class="r">26,500</td><td class="r">25,230</td><td class="r">22,870</td><td class="r">&minus;13.7%</td></tr>
+    </tbody>
+  </table>
+  <p class="note">Scope 3 fell 1,600 tonnes, a smaller share than scopes 1 and 2, so its weight in the total has grown. Reaching 18,550 tonnes by 2030 will depend mainly on cutting scope 3.</p>
+</section>
+
+<section id="method-and-caveats">
+  <h2>Method and caveats</h2>
+  <ul class="caveats">
+    <li>Scope 3 covers purchased materials, upstream transport and business travel only. It does not include the use of sold products.</li>
+    <li>The 2023 baseline was restated in 2025 after supplier data improved.</li>
+    <li>The inventory follows the GHG Protocol and has not yet been externally assured.</li>
+  </ul>
+</section>
+
+<footer>Prepared by Odalys Brandt, Sustainability Manager, Pelham Furniture, for the annual report.</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,78 @@
+@title Payments Weekly Status
+@subtitle Week of Oct 12 to Oct 16, 2026
+@author Priya Raman, Engineering Manager, Payments
+@date 2026-10-16
+@width wide
+
+Five of seven sprint commitments shipped and authorization success hit a six-week high. Two items slipped: EU acquirer routing (blocked on partner certificates) and ledger reconciliation v2. The chargeback rate is above its 0.50% ceiling for the second week running, and that is the risk I most want your attention on.
+
+kpi Auth success rate | 98.7% | +0.3 pts | good
+kpi p99 checkout latency | 412 ms | -9% | good
+kpi Chargeback rate | 0.61% | +0.07 pts | bad
+kpi Sprint commitments done | 71% | 5 of 7 | bar
+
+## What shipped
+
+data shipped = item,owner,status,result
+data shipped += Retry with jitter for issuer timeouts,Dana Okafor,Done,"Auth success 98.4% to 98.7%; no rollbacks"
+data shipped += Idempotency keys on the refunds API,Luis Herrera,Done,"Duplicate refunds: 14 the week before, 0 since Wednesday"
+data shipped += Apple Pay token refresh fix,Mei Tanaka,Done,"iOS checkout failures down 62%"
+data shipped += Settlement-lag dashboard,Aiko Brandt,Done,"On-call can see lag per bank; used in Thursday's page"
+data shipped += PCI scope document refresh,Tomas Reyes,Done,"Signed off by the assessor Oct 15"
+
+table shipped
+
+grid 2
+
+data auth = week,rate
+data auth += Sep 7,98.2
+data auth += Sep 14,98.1
+data auth += Sep 21,98.2
+data auth += Sep 28,97.6
+data auth += Oct 5,98.4
+data auth += Oct 12,98.7
+
+data cb = week,rate
+data cb += Sep 21,0.44
+data cb += Sep 28,0.47
+data cb += Oct 5,0.54
+data cb += Oct 12,0.61
+
+chart line auth x=week y=rate unit=% min=97 max=99.5 target="99.0 goal" mark="Sep 28 Issuer outage" mark="Oct 12 Retry jitter" labels=end title="Authorization success rate, weekly"
+chart bar cb x=week y=rate unit=% target="0.50 ceiling" focus="Oct 12" labels title="Chargeback rate, weekly"
+
+## What slipped
+
+data slipped = item,owner,was due,now due,status,why
+data slipped += EU acquirer routing,Marcus Webb,Oct 14,Oct 23,Blocked,"Acquirer sandbox certificates arrived 6 days late"
+data slipped += Ledger reconciliation v2,Samir Patel,Oct 16,Oct 21,At risk,"2 partner file formats still failing; 3 of 8 partners in shadow mode"
+
+table slipped
+
+! The EU slip does not move the Nov 1 pilot yet. It does if certificates are not live by Oct 23.
+
+## Risks
+
+!! Chargeback rate is 0.61% against our 0.50% ceiling. Our acquirer opens a formal review at 0.65%, which brings fines starting at $25,000 per month and a remediation plan. At the current trend we cross that line in about two weeks.
+
+data risks = risk,likelihood,impact,owner,mitigation
+data risks += Chargebacks cross the 0.65% acquirer threshold,High,"Fines from $25,000 per month plus a remediation plan",Tomas Reyes,"Friendly-fraud rule tuning ships Oct 20; weekly review with Risk"
+data risks += EU routing slips past the Nov 1 pilot,Medium,"Pilot (about $2.3M monthly volume) moves to December",Marcus Webb,"Escalated to the acquirer account lead; fallback is the current acquirer at +0.3 pts in fees"
+data risks += Ledger v2 not ready for the Oct 30 quarter-end close,Medium,"Finance keeps manual reconciliation, about 12 analyst-hours per week",Samir Patel,"Prioritize the 5 remaining partners by volume; daily check-in"
+data risks += Apple Pay coverage gap while Mei is out Oct 26 to 30,Low,"Slower response to wallet incidents",Dana Okafor,"Runbook handoff and a named backup by Oct 23"
+
+table risks
+
+## Next week
+
+step Ship chargeback rule tuning to production | Tue Oct 20 | Tomas Reyes
+step Finish ledger v2 partner file fixes (5 of 8 partners in shadow) | Wed Oct 21 | Samir Patel
+step Chargeback review with Risk and Finance | Thu Oct 22 | Priya Raman
+step Route 10% of EU traffic to the new acquirer | Fri Oct 23 | Marcus Webb
+step Move settlement-lag alerts to paging | Fri Oct 23 | Aiko Brandt
+
+## Decisions needed from you
+
+1. A call to the acquirer's regional head by Oct 21 to ask for priority on the EU certificates. This is the only thing that protects the Nov 1 pilot date.
+2. Approval for one contractor for 6 weeks ($38,000) to cover Mei's absence and the ledger v2 backlog.
+3. Agreement that if chargebacks reach 0.65% before Oct 30, we pause new-merchant onboarding until the rate is back under 0.55%.

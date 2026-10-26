@@ -1,0 +1,30 @@
+# Long-label stress
+diagram s dir=LR title="Hostile and very long labels"
+s: a "Incoming <script>alert(1)</script> request" user
+s: d1 "Does the \"customer\" have an active contract with premium support entitlements?" decision
+s: d2 "OK?" decision
+s: d3 "Is the account in good standing AND verified?" decision
+s: x "Escalate to the regional compliance and legal review board" svc "slow path, 3 days"
+s: y "Auto-approve" svc
+s: z "Reject with <b>reason</b>" svc
+s: a -> d1
+s: d1 -> d2 : yes, active
+s: d1 -> x : no, expired or missing
+s: d2 -> y : yes
+s: d2 -> d3 : no
+s: d3 -> y : yes
+s: d3 -> z : no
+s: x --> d3 : after review
+
+diagram q sequence title="Long conditions"
+q: c "Client" user
+q: g "Gateway with a long name" svc
+q: c -> g : request with a really long message label
+q: alt "the token is valid and has not been revoked by an administrator in the last hour <b>x</b> \"q\""
+q: g --> c : 200
+q: else "token expired or revoked, or the <script>alert(1)</script> header is malformed"
+q: g --> c : 401
+q: end
+q: opt "audit"
+q: g -> g : log
+q: end

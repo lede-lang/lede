@@ -1,0 +1,56 @@
+{
+  "id": "49-webhook-retry-sequence",
+  "category": "architecture",
+  "title": "Parcelwise webhook delivery",
+  "brief": "Write up how Parcelwise delivers shipment webhooks to merchants, for the integrations docs of our developer portal, version dated 2026-10-05. First a section \"Delivery sequence\" showing the exchange between five parties, named exactly: Order Service, Event Bus, Delivery Worker, Merchant Endpoint, Dead Letter Queue. In order: Order Service tells Event Bus \"publish order.shipped\"; Event Bus tells Delivery Worker \"deliver event\"; Delivery Worker calls Merchant Endpoint \"POST /webhooks, signed, 10 s timeout\"; Merchant Endpoint answers Delivery Worker \"503 Service Unavailable\"; Delivery Worker tells Event Bus \"requeue with 1 minute delay\"; Event Bus tells Delivery Worker \"deliver event, attempt 2\"; Delivery Worker calls Merchant Endpoint \"POST /webhooks\"; Merchant Endpoint answers \"200 OK\"; Delivery Worker tells Event Bus \"acknowledge\". After that, show what happens when the merchant never recovers: Delivery Worker sends the event to Dead Letter Queue as \"park after attempt 6\". Section \"Retry schedule\", the delay after the previous failure for each attempt: 1 immediate; 2 1 minute; 3 5 minutes; 4 30 minutes; 5 2 hours; 6 12 hours. Section \"Good to know\" with three points: every request carries an X-Parcelwise-Signature header (HMAC-SHA256 of the body), events can arrive out of order so merchants should compare the sequence number, and parked events are kept for 14 days and can be replayed from the dashboard. Make sure readers do not miss that responses slower than 10 seconds count as failures.",
+  "checklist": {
+    "sections": [
+      "Delivery sequence",
+      "Retry schedule",
+      "Good to know"
+    ],
+    "visible": [
+      "Order Service",
+      "Event Bus",
+      "Delivery Worker",
+      "Merchant Endpoint",
+      "Dead Letter Queue",
+      "publish order.shipped",
+      "503 Service Unavailable",
+      "requeue with 1 minute delay",
+      "200 OK",
+      "park after attempt 6",
+      "X-Parcelwise-Signature",
+      "HMAC-SHA256"
+    ],
+    "values": [
+      "10 s",
+      "2 hours",
+      "12 hours",
+      "30 minutes",
+      "5 minutes",
+      "14 days",
+      "6",
+      "2026-10-05"
+    ]
+  },
+  "needs": [
+    "sequence",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the number of attempts from 6 to 7 by adding attempt 7 with a 24 hours delay, and have the Dead Letter Queue message say \"park after attempt 7\".",
+    "expect_visible": [
+      "park after attempt 7",
+      "24 hours"
+    ],
+    "expect_values": [
+      "7"
+    ],
+    "expect_absent": [
+      "park after attempt 6"
+    ]
+  }
+}

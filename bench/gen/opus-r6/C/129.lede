@@ -1,0 +1,32 @@
+@title 40 MW solar farm
+@subtitle Construction status for the lenders and the owner
+@author Ingrid Valdez, Construction Manager
+@date 2026-10-16
+
+# Project at a glance
+kpi Overall | Red | panels forecast 2027-01-02 | bad
+
+kpi Panels installed | 60,480 of 96,000 | 63.0% | bar
+kpi Inverters installed | 14 of 20 | 70% | bar
+kpi Budget spent | $27.8M of $41.5M | 67.0% | bar
+
+!!! At the current pace panels finish about 2027-01-02, four weeks after the 2026-12-04 plan, and energization on 2027-01-15 is at risk.
+
+# Installation pace
+data pace = week,panels; Wk -3,3300; Wk -2,3050; Wk -1,3200; This week,3150
+chart bar pace y=panels target="5074 needed" title="Panels installed per week (last four weeks)"
+
+kpi Current average | 3,175/week | last 4 weeks | bad
+kpi Needed to finish 2026-12-04 | 5,074/week | 7 weeks left | neutral
+kpi With second crew | ~5,375/week | +2,200/week | good
+
+# Milestones
+table = milestone,planned,forecast,status; Site grading,2026-05-22,2026-05-22,Done; Foundations and trackers,2026-09-04,2026-09-04,Done; Panels installed,2026-12-04,2027-01-02,At risk; Substation witness test,2026-11-19,2026-11-19,Planned; Energization,2027-01-15,2027-01-15,At risk; Commercial operation,2027-02-01,2027-02-01,Planned
+
+# Needs attention
+!! The owner must approve $380,000 for a second crew by 2026-10-21.
+
+A second crew starting 2026-10-26 would add about 2,200 panels a week, taking the rate to about 5,375 a week. That is enough to finish by 2026-12-04 only if no more than 2 weather days are lost.
+
+step Owner approves $380,000 for the second crew | 2026-10-21 | Owner
+step Second crew starts | 2026-10-26 | Ingrid Valdez

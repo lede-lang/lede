@@ -1,0 +1,7 @@
+data g = team,done,goal,owner; P,64,80,ann; Q,91,85,bo
+table g target=goal
+table g bar=done target=owner
+table g bar=done target=nope
+kpi Over | 120% | | bar
+kpi Words | ready | | bar
+kpi Money | $50 | | bar

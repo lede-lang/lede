@@ -1,0 +1,53 @@
+{
+  "id": "73-permit-routing-flow",
+  "category": "architecture",
+  "title": "Whitcombe building permit routing",
+  "brief": "The Whitcombe City planning office wants a one-page explanation of how a building permit application is routed, current as of 2026-10-01, so front-counter staff and applicants stop guessing. Under \"Routing flow\", show the path. It starts at \"Application received\", then asks \"Submission complete?\". If no, it goes to \"Return to applicant\". If yes, it asks \"Project value over 50000 dollars?\"; no goes to \"Fast-track review\" and yes asks \"In a historic district?\". Yes goes to \"Heritage Board review\" and no goes to \"Plan review\". Heritage Board review continues to Plan review, labeled \"cleared\". Fast-track review ends at \"Permit issued\" labeled \"approved\", and Plan review also ends at Permit issued, labeled \"approved\". Then \"Review times\", the target for each stage: completeness check within 2 business days; fast-track review within 3 business days; plan review within 15 business days; Heritage Board review within 30 days, added on top of the plan review time. Finish with \"Fees\": a base fee of 180 dollars for every application, plus 0.8 percent of the project value above 50000 dollars. Applicants read this on their phones, so the flow must stay readable on a narrow screen.",
+  "checklist": {
+    "sections": [
+      "Routing flow",
+      "Review times",
+      "Fees"
+    ],
+    "visible": [
+      "Application received",
+      "Submission complete?",
+      "Return to applicant",
+      "Project value over 50000 dollars?",
+      "Fast-track review",
+      "In a historic district?",
+      "Heritage Board review",
+      "Plan review",
+      "Permit issued",
+      "cleared",
+      "approved"
+    ],
+    "values": [
+      "50000",
+      "2 business days",
+      "3 business days",
+      "15 business days",
+      "30 days",
+      "180",
+      "0.8",
+      "2026-10-01"
+    ]
+  },
+  "needs": [
+    "diagram",
+    "table",
+    "list"
+  ],
+  "edit": {
+    "request": "Raise the project value threshold from 50000 to 75000 dollars everywhere, and make the fast-track target 4 business days instead of 3.",
+    "expect_visible": [],
+    "expect_values": [
+      "75000",
+      "4 business days"
+    ],
+    "expect_absent": [
+      "50000",
+      "3 business days"
+    ]
+  }
+}

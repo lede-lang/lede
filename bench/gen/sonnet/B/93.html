@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cold Room B Temperature Alarm Runbook</title>
+<style>
+:root{
+  --bg:#f4f7f9;--surface:#ffffff;--ink:#16202a;--muted:#546270;--line:#d9e0e6;
+  --accent:#0b6e8a;--accent-soft:#e3f2f7;
+  --warn:#8a5a00;--warn-bg:#fff4d6;--warn-line:#e6b94d;
+  --crit:#a8161b;--crit-bg:#fde8e8;--crit-line:#e48a8d;
+  --code-bg:#edf1f4;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1317;--surface:#161d23;--ink:#e7edf2;--muted:#9aa8b4;--line:#28323b;
+    --accent:#5fc3de;--accent-soft:#12272f;
+    --warn:#f2c25b;--warn-bg:#2d2410;--warn-line:#7b5f1c;
+    --crit:#ff9a9d;--crit-bg:#331416;--crit-line:#86363a;
+    --code-bg:#222b33;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:780px;margin:0 auto;padding:20px 16px 56px}
+.eyebrow{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:12px 0 6px}
+h1{font-size:1.75rem;line-height:1.2;margin:0 0 8px}
+.sub{color:var(--muted);margin:0 0 16px;font-size:.95rem}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 16px}
+.facts div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.facts strong{display:block;font-size:1.4rem;line-height:1.2;color:var(--accent)}
+.facts span{font-size:.85rem;color:var(--muted)}
+@media (max-width:560px){.facts{grid-template-columns:1fr}.facts div{display:flex;align-items:baseline;gap:12px}.facts strong{min-width:8ch}}
+.rule{background:var(--crit);color:#fff;border-radius:12px;padding:16px 18px;margin:0 0 8px;border:3px solid var(--crit-line)}
+.rule strong{display:block;font-size:1.35rem;line-height:1.25;letter-spacing:.01em;text-transform:uppercase}
+.rule span{display:block;margin-top:4px;font-size:1rem}
+@media (prefers-color-scheme:dark){.rule{background:#8f1d22;color:#fff;border-color:#c24b50}}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;padding:10px 0;font-size:.9rem}
+nav a{color:var(--accent);text-decoration:none;font-weight:600}
+section{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 18px 8px;margin:16px 0}
+h2{font-size:1.25rem;margin:0 0 12px;line-height:1.3}
+p{margin:0 0 12px}
+code{font:.88em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--code-bg);padding:1px 6px;border-radius:5px}
+.levels{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+@media (max-width:560px){.levels{grid-template-columns:1fr}}
+.lvl{border-radius:10px;padding:12px 14px;border:2px solid}
+.lvl h3{margin:0 0 4px;font-size:1rem;text-transform:uppercase;letter-spacing:.06em}
+.lvl p{margin:0}
+.lvl.w{background:var(--warn-bg);border-color:var(--warn-line)}
+.lvl.w h3{color:var(--warn)}
+.lvl.c{background:var(--crit-bg);border-color:var(--crit-line)}
+.lvl.c h3{color:var(--crit)}
+.big{font-size:1.15rem;font-weight:700}
+.range{font-size:.92rem;color:var(--muted)}
+ol.steps{list-style:none;counter-reset:s;padding:0;margin:0 0 8px}
+ol.steps>li{counter-increment:s;position:relative;padding:0 0 14px 46px;margin:0}
+ol.steps>li::before{content:counter(s);position:absolute;left:0;top:0;width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:grid;place-items:center}
+@media (prefers-color-scheme:dark){ol.steps>li::before{color:#0e1317}}
+.split{display:flex;height:34px;border-radius:8px;overflow:hidden;margin:6px 0 4px;font-size:.85rem;font-weight:700}
+.split div{display:flex;align-items:center;justify-content:center;white-space:nowrap}
+.split .c{background:var(--accent);color:#fff;flex:9000}
+.split .t{background:var(--warn-bg);color:var(--warn);border:2px solid var(--warn-line);flex:3400}
+@media (prefers-color-scheme:dark){.split .c{color:#0e1317}}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.85rem;color:var(--muted);margin:0 0 12px}
+.nodiscard{background:var(--crit-bg);border:3px solid var(--crit);border-radius:12px;padding:14px 16px;margin:0 0 14px}
+.nodiscard strong{display:block;color:var(--crit);font-size:1.3rem;line-height:1.25;text-transform:uppercase}
+.nodiscard p{margin:6px 0 0}
+table{width:100%;border-collapse:collapse;margin-bottom:12px}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line)}
+th{font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+td.p a{font-weight:700;color:var(--accent);text-decoration:none;white-space:nowrap}
+@media (max-width:480px){
+  table,thead,tbody,tr,td{display:block}
+  thead{position:absolute;left:-9999px}
+  tr{border-bottom:1px solid var(--line);padding:8px 0}
+  td{border:0;padding:1px 0}
+  td.p a{font-size:1.15rem}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Runbook &middot; Marlowe Vaccine Depot</p>
+  <h1>Temperature alarm in Cold Room B</h1>
+  <p class="sub">Owner: Depot Operations</p>
+
+  <div class="facts">
+    <div><strong>12,400</strong><span>doses held in Cold Room B</span></div>
+    <div><strong>2 to 8 &deg;C</strong><span>required range at all times</span></div>
+    <div><strong>9,000</strong><span>doses fit in backup Cold Room C</span></div>
+  </div>
+
+  <div class="rule" role="alert">
+    <strong>Nobody discards anything.</strong>
+    <span>Only the Quality Manager decides what happens to a dose. Quarantine it, never throw it away.</span>
+  </div>
+
+  <nav aria-label="Sections">
+    <a href="#levels">Alarm levels</a>
+    <a href="#first">First 15 minutes</a>
+    <a href="#moving">Moving stock</a>
+    <a href="#quarantine">Quarantine and escalation</a>
+    <a href="#contacts">Contacts</a>
+  </nav>
+
+  <section id="levels">
+    <h2>Alarm levels</h2>
+    <div class="levels">
+      <div class="lvl w">
+        <h3>Warning</h3>
+        <p class="big">Above 8 &deg;C for 10 minutes</p>
+      </div>
+      <div class="lvl c">
+        <h3>Critical</h3>
+        <p class="big">Above 12 &deg;C or below 0 &deg;C</p>
+      </div>
+    </div>
+    <p class="range">Safe range: 2 to 8 &deg;C.</p>
+  </section>
+
+  <section id="first">
+    <h2>First 15 minutes</h2>
+    <ol class="steps">
+      <li>Acknowledge the alarm on the monitoring panel <strong>within 5 minutes</strong>.</li>
+      <li>Check that the door is fully shut and the seal is intact.</li>
+      <li>Check that the compressor has power, and note the temperature shown on the data logger.</li>
+      <li>Call the refrigeration contractor <strong>Polar Service</strong> on <a href="tel:5550190">555-0190</a>. They respond within 4 hours.</li>
+    </ol>
+  </section>
+
+  <section id="moving">
+    <h2>Moving stock</h2>
+    <p>If the temperature is still above 8 &deg;C after 15 minutes, move the doses.</p>
+    <div class="split" role="img" aria-label="12,400 doses: 9,000 to Cold Room C and 3,400 to transport boxes">
+      <div class="c">9,000</div>
+      <div class="t">3,400</div>
+    </div>
+    <div class="legend"><span><b>9,000</b> doses to backup Cold Room C</span><span><b>3,400</b> doses into the 6 validated transport boxes with ice packs</span></div>
+    <p>Log every box on the transfer sheet.</p>
+  </section>
+
+  <section id="quarantine">
+    <h2>Quarantine and escalation</h2>
+    <div class="nodiscard">
+      <strong>Do not discard anything</strong>
+      <p>Only the Quality Manager decides. No one else throws away, destroys or writes off a dose, whatever the logger says.</p>
+    </div>
+    <p>Any lot out of range for more than <strong>30 minutes in total</strong> is quarantined, and the Quality Manager is told immediately.</p>
+    <p>If the alarm is not resolved within <strong>2 hours</strong>, call the Operations Director.</p>
+  </section>
+
+  <section id="contacts">
+    <h2>Contacts</h2>
+    <table>
+      <thead><tr><th>Role</th><th>Name</th><th>Phone</th></tr></thead>
+      <tbody>
+        <tr><td>Night supervisor</td><td>Gabriela Nunez</td><td class="p"><a href="tel:5550187">555-0187</a></td></tr>
+        <tr><td>Quality Manager</td><td>Peter Aldous</td><td class="p"><a href="tel:5550152">555-0152</a></td></tr>
+        <tr><td>Refrigeration contractor</td><td>Polar Service</td><td class="p"><a href="tel:5550190">555-0190</a></td></tr>
+      </tbody>
+    </table>
+  </section>
+</div>
+</body>
+</html>

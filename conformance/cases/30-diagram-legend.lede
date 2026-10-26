@@ -1,0 +1,9 @@
+diagram f dir=LR
+f: a "API" svc
+f: b "Store" db
+f: a -> b
+f: a --> b : async
+f: legend
+diagram g
+g: legend "Legend node"
+g: x -> legend

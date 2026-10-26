@@ -1,0 +1,73 @@
+{
+  "id": "99-support-desk-week-42",
+  "category": "status",
+  "title": "Pinecrest support desk week 42",
+  "brief": "The support lead at Pinecrest Software, Adaeze Nwosu, wants the weekly support desk status for week 42 (ending 2026-10-16). We received 2486 tickets and solved 2391, and the open backlog is 612. Median first response time is 2.7 hours against a 2.0 target and customer satisfaction is 91.2 percent. Open backlog over ten weeks: W33 410, W34 425, W35 438, W36 470, W37 505, W38 531, W39 556, W40 579, W41 598, W42 612. Under \"By category\" show tickets received and median first response in hours: Billing 702, 3.4; Login and access 548, 1.6; Bugs 497, 3.1; How-to 421, 2.2; Feature requests 318, 3.0. Billing and Bugs are the slow ones. Under \"Needs attention\": the backlog has grown every week since W33; 3 agents are on leave until 2026-10-30, and the billing queue lost the most capacity. Under \"Next week\": 2 new agents start on 2026-11-02 and Saturday coverage is added from 2026-10-24. People will read this on their phones.",
+  "checklist": {
+    "sections": [
+      "By category",
+      "Needs attention",
+      "Next week"
+    ],
+    "visible": [
+      "Adaeze Nwosu",
+      "Billing",
+      "Login and access",
+      "Bugs",
+      "How-to",
+      "Feature requests",
+      "backlog"
+    ],
+    "values": [
+      "2486",
+      "2391",
+      "612",
+      "2.7",
+      "2.0",
+      "91.2",
+      "W33",
+      "W42",
+      "410",
+      "425",
+      "438",
+      "470",
+      "505",
+      "531",
+      "556",
+      "579",
+      "598",
+      "702",
+      "548",
+      "497",
+      "421",
+      "318",
+      "3.4",
+      "1.6",
+      "3.1",
+      "2.2",
+      "3.0",
+      "2026-10-30",
+      "2026-11-02",
+      "2026-10-24"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add W43 with a backlog of 590, change the headline backlog to 590, and change customer satisfaction to 91.8 percent.",
+    "expect_visible": [],
+    "expect_values": [
+      "W43",
+      "590",
+      "91.8"
+    ],
+    "expect_absent": [
+      "91.2"
+    ]
+  }
+}

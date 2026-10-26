@@ -1,0 +1,21 @@
+name: Feature request
+description: A new word, block, option or CLI behaviour.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What page could you not write?
+      description: A brief a model was given, or a page you wanted, and what Lede could not express.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What you would write instead
+      description: A few lines of the syntax you have in mind, if you have one.
+      render: text
+  - type: markdown
+    attributes:
+      value: |
+        The model reference is capped (see CONTRIBUTING.md), so a new word has to earn its place. Say which existing word comes closest and why it falls short.

@@ -1,0 +1,276 @@
+@title Search-as-you-type: implementation plan
+@subtitle Debounced input with request cancellation for the product search box in the React app
+@author Claude, Frontend platform
+@date 2026-10-19
+@width wide
+
+## TL;DR
+
+Today the search box fires one request per keystroke and shows whichever response lands last. This plan adds a 250 ms debounce and cancels the superseded request with `AbortController`, so results always match what is in the box.
+
+kpi Requests per search | 3 | -73% vs. 11 today | good
+kpi Debounce | 250 ms | trial range 150 to 400 ms | neutral
+kpi Estimate | 8 days | 2 engineers | neutral
+kpi Files touched | 7 | 3 new | neutral
+
+- **In scope:** the header search box, the `useSearch` hook, the fetch client, tests, a feature flag.
+- **Out of scope:** server-side ranking, search history, keyboard navigation of results.
+- **Done means:** typing "react hooks" never shows results for "react ho", and the Network tab shows aborted requests rather than parallel ones.
+
+## What the user sees
+
+Four states of the search box. The key rule: old results stay on screen while a new request is loading, so the list never flashes empty.
+
+grid 2 count=4
+```
+IDLE (fewer than 2 characters)
++-----------------------------+
+| (search) Search products... |
++-----------------------------+
+ Type 2 or more characters
+```
+```
+LOADING (old results stay visible)
++-----------------------------+
+| (search) react ho      (...)|
++-----------------------------+
+ React Hooks Handbook   (dim)
+ React Hooks in Depth   (dim)
+```
+```
+RESULTS
++-----------------------------+
+| (search) react hooks     (x)|
++-----------------------------+
+ React Hooks Handbook
+ React Hooks in Depth
+ Hooks Cheat Sheet        3 hits
+```
+```
+EMPTY and ERROR
++-----------------------------+
+| (search) zzzq            (x)|
++-----------------------------+
+ No results for "zzzq"
+
+ Error: Search failed (503)
+ [ Retry ]
+```
+
+## How the data flows
+
+Everything between the keystroke and the screen runs in the browser except one request. The hook `useSearch` is the only place that owns an `AbortController`.
+
+diagram flow dir=LR title="Keystroke to results"
+flow: user "User" user
+flow: box "SearchBox" fn "controlled input"
+flow: deb "useDebouncedValue" fn "250 ms idle"
+flow: hook "useSearch" fn "owns AbortController" focus
+flow: cache "Query cache" cache "Map, 60 s TTL"
+flow: list "ResultsList" fn
+flow: api "GET /api/search" svc "existing endpoint"
+flow: group app "React app (browser)" box, deb, hook, cache, list
+flow: user -> box : keystrokes
+flow: box -> deb : raw text
+flow: deb -> hook : settled query
+flow: hook -> cache : lookup
+flow: cache --> list : hit
+flow: hook -> api : fetch + signal
+flow: api --> hook : JSON
+flow: hook -> list : items, status
+
+### What happens when two queries overlap
+
+The case this feature exists for: the user keeps typing while request A is still in flight.
+
+diagram race sequence title="Typing past an in-flight request"
+race: user "User" user
+race: box "SearchBox" fn
+race: hook "useSearch" fn
+race: api "Search API" svc
+race: user -> box : types re
+race: box -> hook : query re after 250 ms idle
+race: hook -> api : GET q=re (request A)
+race: user -> box : types a
+race: box -> hook : query rea after 250 ms idle
+race: note hook : effect cleanup calls A.abort()
+race: hook --> api : abort A
+race: hook -> api : GET q=rea (request B)
+race: opt "A was already in flight"
+race: api --> hook : A rejects with AbortError
+race: note hook : ignored, state untouched
+race: end
+race: api --> hook : B returns 200 with items
+race: hook --> box : status ok, items from B
+
+## Decisions worth a look
+
+### Debounce delay
+
+data deb = delay,requests,added wait ms; "0 ms",11,0; "150 ms",6,150; "250 ms",3,250; "400 ms",2,400
+
+Requests fired while typing "react hooks" in a recorded burst-typing session.
+
+chart bar deb x=delay y=requests title="Requests per search by debounce delay" focus="250 ms"
+
+!! The delay is the latency floor. 250 ms is the usual point where requests drop sharply without the box feeling laggy. Make it a constant and revisit after a week of real traffic.
+
+### Other choices
+
+table = decision,chosen,rejected,why; Cancellation,`AbortController` per effect,"ignore-stale flag only","Cancels the network request as well as the update"; Debounce,"hook on the value","debounced callback","Works with React 18 Strict Mode double effects"; Cache,"in-memory `Map`, 60 s","SWR or React Query","No new dependency for one box"; Min length,2 characters,1 character,"One letter matches most of the catalog"
+
+## Code to review
+
+### 1. The debounce hook
+
+Debounce the value, not the handler. The cleanup clears the timer on every change, which is the whole trick.
+
+```ts
+// src/hooks/useDebouncedValue.ts
+import { useEffect, useState } from 'react';
+
+export function useDebouncedValue<T>(value: T, delayMs = 250): T {
+  const [debounced, setDebounced] = useState(value);
+
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), delayMs);
+    return () => clearTimeout(id);
+  }, [value, delayMs]);
+
+  return debounced;
+}
+```
+
+### 2. The search hook with cancellation
+
+The cleanup function aborts the previous request. The `AbortError` guard stops a cancelled request from being reported as a failure.
+
+```ts
+// src/hooks/useSearch.ts
+const MIN_CHARS = 2;
+
+export function useSearch(query: string): SearchState {
+  const [state, setState] = useState<SearchState>({ status: 'idle', items: [] });
+
+  useEffect(() => {
+    const q = query.trim();
+    if (q.length < MIN_CHARS) {
+      setState({ status: 'idle', items: [] });
+      return undefined;
+    }
+
+    const controller = new AbortController();
+    setState((s) => ({ ...s, status: 'loading' })); // keep old items on screen
+
+    searchApi(q, controller.signal)
+      .then((items) =>
+        setState({ status: items.length ? 'ok' : 'empty', items }),
+      )
+      .catch((err) => {
+        if (err.name === 'AbortError') return; // superseded, not a failure
+        setState({ status: 'error', items: [], error: err.message });
+      });
+
+    return () => controller.abort();
+  }, [query]);
+
+  return state;
+}
+```
+
+### 3. The fetch client
+
+```ts
+// src/api/search.ts
+export async function searchApi(q: string, signal: AbortSignal): Promise<Item[]> {
+  const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`, { signal });
+  if (!res.ok) throw new Error(`Search failed (${res.status})`);
+  return (await res.json()).items;
+}
+```
+
+### 4. The component
+
+```tsx
+// src/components/SearchBox.tsx
+export function SearchBox() {
+  const [text, setText] = useState('');
+  const debounced = useDebouncedValue(text, 250);
+  const { status, items, error } = useSearch(debounced);
+
+  return (
+    <div role="search">
+      <input
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        aria-busy={status === 'loading'}
+        aria-controls="search-results"
+      />
+      <ResultsList id="search-results" status={status} items={items} error={error} />
+    </div>
+  );
+}
+```
+
+### 5. The test that proves cancellation
+
+```ts
+// src/hooks/useSearch.test.ts
+it('aborts the previous request when the query changes', async () => {
+  const signals: AbortSignal[] = [];
+  vi.spyOn(api, 'searchApi').mockImplementation((_q, signal) => {
+    signals.push(signal);
+    return new Promise(() => {}); // never resolves
+  });
+
+  const { rerender } = renderHook(({ q }) => useSearch(q), {
+    initialProps: { q: 're' },
+  });
+  rerender({ q: 'rea' });
+
+  expect(signals).toHaveLength(2);
+  expect(signals[0].aborted).toBe(true);
+  expect(signals[1].aborted).toBe(false);
+});
+```
+
+## State machine
+
+table = state,entered when,shows,leaves when; **idle**,"fewer than 2 characters",hint text,"2 or more characters settle"; **loading**,"a request starts",previous items dimmed,"response, error or abort"; **ok**,"1 or more items return","result list","query changes"; **empty**,"0 items return","No results message","query changes"; **error**,"non-2xx or network failure","message and Retry","query changes or Retry"
+
+## Files
+
+table = file,change,status; `src/hooks/useDebouncedValue.ts`,new,Ready; `src/hooks/useSearch.ts`,new,Ready; `src/api/search.ts`,"accept an `AbortSignal`",Ready; `src/components/SearchBox.tsx`,"wire both hooks",In progress; `src/components/ResultsList.tsx`,"add loading and error states",In progress; `src/hooks/useSearch.test.ts`,new,Ready; `src/flags.ts`,"add `searchDebounce` flag",Ready
+
+## Risks and edge cases
+
+!! **Stale response overwrites fresh one.** If the `AbortError` guard is removed, a late response from request A can replace results for B. The cancellation test above protects this.
+
+!! **IME composition.** While a user composes Japanese or Chinese text, intermediate input should not search. Skip updates between `compositionstart` and `compositionend`.
+
+! **Strict Mode runs effects twice in development.** The first request is aborted by the cleanup and re-issued. This is expected and harmless.
+
+! **Aborting does not stop server work.** The browser drops the connection, but the server may still finish the query. Confirm the API cancels on client disconnect before launch.
+
+## Test plan
+
+table = case,how,expected; Overlapping queries,"unit test, fake timers","earlier signal aborted, later one live"; Late A after B,"mock A to resolve after B","results show B"; Slow network,"throttle to 3G in devtools","old items stay visible while loading"; Empty and error,"mock 200 with [] and 503","empty message, error with Retry"; Rapid backspace,"hold Backspace to empty","returns to idle, no request"; Strict Mode,"mount in dev","at most one live request per query"
+
+## Schedule
+
+data plan = task,start,end; "Hooks and unit tests",2026-10-20,2026-10-22; "API signal support",2026-10-21,2026-10-23; "Component and states",2026-10-22,2026-10-26; "Accessibility and IME pass",2026-10-26,2026-10-28; "Flagged rollout",2026-10-28,2026-10-30
+
+chart range plan from=start to=end target="2026-10-30 release" title="Eight working days"
+
+## Rollout
+
+step Merge behind the `searchDebounce` flag | 2026-10-26 | Priya
+step Enable for internal staff | 2026-10-28 | Priya
+step Enable for 10% of traffic and watch request volume | 2026-10-29 | Marcus
+step Full rollout, remove the flag next sprint | 2026-10-30 | Marcus
+
+## Open questions
+
+- [ ] Does `/api/search` cancel work when the client disconnects?
+- [ ] Should the 60 s cache survive route changes, or reset on navigation?
+- [ ] Is 2 characters the right minimum for non-Latin scripts?

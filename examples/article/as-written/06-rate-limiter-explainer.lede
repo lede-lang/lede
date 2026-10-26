@@ -1,0 +1,158 @@
+@title How the API rate limiter works
+@subtitle A Redis-backed token bucket in TypeScript, read once
+@author Platform team
+@date 2026-10-19
+
+! In one paragraph: every caller (tenant plus route) owns a bucket that holds up to 60 tokens and refills at 1 token per second. Each request takes one token. If the bucket has a token, the request goes through; if not, it gets a 429 with a Retry-After. The whole check runs as one Lua script inside Redis, so concurrent requests cannot double-spend a token.
+
+kpi Capacity | 60 tokens | burst size | neutral
+kpi Refill | 1 token/s | 60 per minute steady | neutral
+kpi Redis timeout | 25 ms | then fail open | neutral
+kpi Idle expiry | 120 s | bucket resets to full | neutral
+
+## The flow
+
+Read this diagram top to bottom. The diamond is the only decision; everything else is bookkeeping. The dashed line is the failure path that lets traffic through.
+
+diagram flow dir=TB title="One request through the limiter"
+flow: client "Client request" user
+flow: mw "rateLimit middleware" svc "Express, builds the key" focus
+flow: redis "Redis" db "runs take.lua"
+flow: ok "Token available?" decision
+flow: app "Route handler" svc
+flow: deny "429 + Retry-After" ext
+flow: open "Fail open" ext "log + metric"
+flow: client -> mw : request
+flow: mw -> redis : EVALSHA
+flow: redis -> ok : allowed, left, retry
+flow: ok -> app : yes
+flow: ok -> deny : no
+flow: mw --> open : timeout or error
+flow: open --> app : allow
+flow: legend
+
+## What a bucket does over time
+
+Start full at 60. A burst of 60 at 1 s empties it. It refills 1 token per second, so by 30 s it holds 29. A second burst of 25 takes it to 4, and it creeps back to the 60 cap by 90 s.
+
+data bucket = time,tokens; 0 s,60; 10 s,9; 20 s,19; 30 s,29; 40 s,13; 50 s,23; 60 s,33; 70 s,43; 80 s,53; 90 s,60; 100 s,60
+chart line bucket x=time y=tokens target="60 capacity" mark="10 s burst of 60" mark="40 s burst of 25" title="Tokens left in one bucket" unit=" tokens"
+
+## The four pieces of code
+
+### 1. Limits config
+
+The numbers live in one table. A route can override the default; anything not listed uses `default`.
+
+```ts
+// src/ratelimit/limits.ts
+export const LIMITS: Record<string, Limit> = {
+  default:         { capacity: 60,  refillPerSec: 1,  cost: 1 },
+  "POST /search":  { capacity: 20,  refillPerSec: 0.5, cost: 1 },
+  "POST /export":  { capacity: 5,   refillPerSec: 0.05, cost: 5 },
+};
+```
+
+1. `capacity` is the burst size and the cap on stored tokens.
+2. `refillPerSec` is the steady rate. It may be fractional: 0.05 is one token every 20 seconds.
+3. `cost` is how many tokens one call takes. Export costs 5, so a full bucket allows exactly one export.
+
+### 2. Building the key
+
+```ts
+// src/ratelimit/key.ts
+export function bucketKey(req: Request): string {
+  const who = req.auth?.tenantId ?? req.ip;
+  const route = `${req.method} ${req.route.path}`;
+  return `rl:{${who}}:${route}`;
+}
+```
+
+1. Authenticated calls are limited per tenant, so every user in a company shares one bucket.
+2. Anonymous calls fall back to the IP address.
+3. The braces around `who` are a Redis Cluster hash tag. They keep all of one tenant's buckets on the same shard.
+
+### 3. The Lua script
+
+This is the heart of the limiter. It runs atomically on Redis, so no other command can interleave between the read and the write.
+
+```lua
+-- src/ratelimit/take.lua
+local capacity = tonumber(ARGV[1])
+local refill   = tonumber(ARGV[2])   -- tokens per second
+local cost     = tonumber(ARGV[3])
+
+local t   = redis.call('TIME')
+local now = t[1] * 1000 + math.floor(t[2] / 1000)
+
+local h      = redis.call('HMGET', KEYS[1], 'tokens', 'ts')
+local tokens = tonumber(h[1]) or capacity
+local ts     = tonumber(h[2]) or now
+
+tokens = math.min(capacity, tokens + math.max(0, now - ts) * refill / 1000)
+
+local allowed = 0
+if tokens >= cost then
+  tokens  = tokens - cost
+  allowed = 1
+end
+
+redis.call('HSET', KEYS[1], 'tokens', tokens, 'ts', now)
+redis.call('PEXPIRE', KEYS[1], math.ceil(capacity / refill * 1000) * 2)
+
+local retry = 0
+if allowed == 0 then retry = math.ceil((cost - tokens) / refill * 1000) end
+return { allowed, math.floor(tokens), retry }
+```
+
+1. Lines 1 to 3 read the limit. Nothing is hard-coded in Lua.
+2. Lines 5 and 6 take the time from Redis, not from the app server. App clocks drift; Redis has one clock.
+3. Lines 8 to 10 load the bucket. A missing key means a brand-new caller, who starts full.
+4. Line 12 is the refill: elapsed time times the rate, capped at capacity. Nobody runs a timer; refill is computed lazily on the next request.
+5. Lines 14 to 18 decide. Tokens are taken only when there are enough for the full cost.
+6. Line 21 sets the key to expire after twice the time needed to refill from empty. That is where the 120 s idle expiry comes from.
+7. Lines 23 and 24 work out how long until enough tokens exist. That becomes `Retry-After`.
+
+### 4. The middleware
+
+```ts
+// src/ratelimit/middleware.ts
+export async function rateLimit(req: Request, res: Response, next: NextFunction) {
+  const limit = LIMITS[`${req.method} ${req.route.path}`] ?? LIMITS.default;
+  try {
+    const [allowed, left, retryMs] = await withTimeout(
+      redis.evalsha(TAKE_SHA, 1, bucketKey(req), limit.capacity, limit.refillPerSec, limit.cost),
+      25,
+    );
+    res.setHeader("X-RateLimit-Remaining", left);
+    if (!allowed) {
+      res.setHeader("Retry-After", Math.ceil(retryMs / 1000));
+      return res.status(429).json({ error: "rate_limited" });
+    }
+  } catch (err) {
+    metrics.increment("ratelimit.fail_open");
+    logger.warn({ err }, "rate limiter unavailable, allowing request");
+  }
+  next();
+}
+```
+
+1. Picks the route's limit, or the default.
+2. Calls the script by its SHA, with a 25 ms timeout so Redis trouble cannot stall the API.
+3. Returns 429 with `Retry-After` in whole seconds when the script says no.
+4. On any error or timeout it logs, bumps a metric and calls `next()`. The limiter fails open.
+
+## Gotchas
+
+!! Fail open means that if Redis is down, there is no rate limiting at all. Alert on `ratelimit.fail_open`, not just on 429s.
+
+!! One tenant shares one bucket across all its users and API keys. A single noisy integration can lock out the rest of the company.
+
+! `Retry-After` is rounded up to whole seconds, but the script reports milliseconds. A client that retries after exactly that many seconds will succeed; one that retries sooner will be refused again.
+
+- **Idle buckets reset to full.** The key expires after 120 s (twice the time to refill from empty). A caller who pauses for two minutes comes back with a full bucket.
+- **`EVALSHA` can fail with NOSCRIPT** after a Redis failover or restart. The client reloads the script and retries once; if that also fails you hit the fail-open path.
+- **Hash tags concentrate load.** `{tenantId}` pins all of a tenant's buckets to one shard, so one very large tenant makes a hot shard.
+- **Anonymous traffic is limited by IP.** Offices and mobile carriers share addresses, so legitimate users can be throttled together. Make sure `trust proxy` is set, or every request appears to come from the load balancer.
+- **Tokens are fractional inside Redis** but `X-RateLimit-Remaining` is floored. A header of 0 can still mean 0.9 of a token.
+- **Cost greater than capacity can never succeed.** Setting `cost: 5` with `capacity: 4` returns 429 forever and the script reports a retry time that never arrives.

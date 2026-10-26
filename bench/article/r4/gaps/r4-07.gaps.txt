@@ -1,0 +1,6 @@
+Nothing essential was inexpressible. Substitutions and limits:
+- Hapag "Bremen Express" kept with straight quotes mid-field in the data line; the reference does not say how embedded quotes are handled, so it may not parse as intended.
+- Quoted thousands ("3,812") in the appendix table are display strings, so heat/bar cannot rank them; the by-berth table uses plain numbers instead.
+- The blank delay/demurrage cells for Yang Ming Wellness are kept blank in the log table (no way to mark "not entered"); the callout explains it.
+- No way to mark a table row or cell as an estimate or inferred value; I said so in prose (implied $/h rates, cause grouping).
+- Board decisions are numbered text; Lede has no decision or owner/due field for them.

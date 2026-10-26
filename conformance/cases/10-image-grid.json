@@ -1,0 +1,68 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "image",
+      "src": "chart.png",
+      "alt": "A rising line",
+      "caption": "Weekly",
+      "line": 1
+    },
+    {
+      "type": "grid",
+      "columns": 2,
+      "count": 2,
+      "children": [
+        {
+          "type": "note",
+          "tone": "note",
+          "text": "left",
+          "line": 3
+        },
+        {
+          "type": "note",
+          "tone": "note",
+          "text": "right",
+          "line": 4
+        }
+      ],
+      "line": 2
+    },
+    {
+      "type": "note",
+      "tone": "note",
+      "text": "after grid",
+      "line": 5
+    },
+    {
+      "type": "grid",
+      "columns": 3,
+      "count": 2,
+      "children": [
+        {
+          "type": "note",
+          "tone": "note",
+          "text": "a",
+          "line": 7
+        }
+      ],
+      "line": 6
+    },
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Heading closes grid",
+      "line": 8
+    }
+  ],
+  "data": {},
+  "diagnostics": [
+    {
+      "severity": "warning",
+      "code": "grid-unfilled",
+      "message": "grid expected 2 blocks but a heading came after 1; put 2 blocks between `grid` and the next heading, or lower the count",
+      "line": 6,
+      "col": 1
+    }
+  ]
+}

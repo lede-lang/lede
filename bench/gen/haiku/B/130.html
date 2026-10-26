@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moonlit Harbor Alpha Status</title>
+<style>
+:root {
+  --bg: #f4f6fa;
+  --card: #ffffff;
+  --text: #1c2233;
+  --muted: #5c6378;
+  --border: #d9deea;
+  --track: #e5e9f2;
+  --accent: #2c5fb3;
+  --amber: #c98a12;
+  --green: #2e7d4a;
+  --red: #b83227;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1220;
+    --card: #161c2c;
+    --text: #e4e9f5;
+    --muted: #9aa3ba;
+    --border: #283047;
+    --track: #212a3e;
+    --accent: #7fa8f0;
+    --amber: #f0b74a;
+    --green: #6cc48c;
+    --red: #ff7b6e;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1220;
+  --card: #161c2c;
+  --text: #e4e9f5;
+  --muted: #9aa3ba;
+  --border: #283047;
+  --track: #212a3e;
+  --accent: #7fa8f0;
+  --amber: #f0b74a;
+  --green: #6cc48c;
+  --red: #ff7b6e;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+.wrap { max-width: 760px; margin: 0 auto; padding: 22px 16px 48px; }
+header { border-bottom: 3px solid var(--accent); padding-bottom: 12px; margin-bottom: 18px; }
+.org { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .07em; }
+h1 { font-size: 26px; margin: 6px 0 4px; line-height: 1.2; }
+.meta { color: var(--muted); font-size: 14px; }
+h2 { font-size: 19px; color: var(--accent); margin: 26px 0 10px; }
+section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; margin-bottom: 14px; }
+.status-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.status { background: var(--amber); color: #1d1600; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; padding: 6px 14px; border-radius: 999px; font-size: 14px; }
+.kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+.kpi { background: var(--bg); border-radius: 10px; padding: 10px 12px; }
+.kpi b { display: block; font-size: 22px; font-variant-numeric: tabular-nums; }
+.kpi span { color: var(--muted); font-size: 13px; }
+.bar { height: 12px; background: var(--track); border-radius: 999px; overflow: hidden; margin-top: 8px; }
+.bar > span { display: block; height: 100%; background: var(--accent); }
+svg text { fill: var(--text); font-size: 13px; }
+svg .mut { fill: var(--muted); }
+.feat { list-style: none; padding: 0; margin: 0; }
+.feat li { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.feat li:last-child { border-bottom: 0; }
+.tag { font-size: 12px; font-weight: 700; text-transform: uppercase; padding: 2px 9px; border-radius: 999px; color: #fff; white-space: nowrap; align-self: center; }
+.tag.prog { background: var(--accent); }
+.tag.ns { background: var(--muted); }
+.tag.cut { background: var(--red); }
+.group { font-weight: 700; margin: 12px 0 4px; font-size: 15px; }
+.group:first-child { margin-top: 0; }
+.risk { border-left: 4px solid var(--red); padding: 4px 0 4px 14px; margin: 10px 0; }
+.risk:first-child { margin-top: 0; }
+.risk:last-child { margin-bottom: 0; }
+.num-big { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+@media (max-width: 420px) { .kpis { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="org">Lanternfish Games &middot; Moonlit Harbor</div>
+  <h1>Alpha Status, Week 42</h1>
+  <div class="meta">Week 42, ending 2026-10-16 &middot; For the publisher &middot; Producer: Zuri Okonkwo-Hale &middot; Alpha review 2026-11-20</div>
+</header>
+
+<h2>Alpha at a glance</h2>
+<section>
+  <div class="status-row"><span>Overall project status</span><span class="status">Amber</span></div>
+  <div class="kpis">
+    <div class="kpi"><b>31 of 40</b><span>planned features complete (77.5%)</span>
+      <div class="bar"><span style="width:77.5%"></span></div></div>
+    <div class="kpi"><b>14 of 18</b><span>levels playable</span>
+      <div class="bar"><span style="width:77.8%"></span></div></div>
+    <div class="kpi"><b>212</b><span>open bugs, of which 9 are priority 1</span></div>
+    <div class="kpi"><b>58 fps</b><span>average on minimum-spec console (target 60)</span></div>
+  </div>
+</section>
+
+<h2>Bug trend</h2>
+<section>
+  <div style="font-size:14px;color:var(--muted);margin-bottom:6px">Open bugs by week, W37 to W42</div>
+  <svg viewBox="0 0 640 260" width="100%" role="img" aria-label="Line chart of open bugs by week: W37 340, W38 318, W39 291, W40 264, W41 238, W42 212. Falling by about 26 a week.">
+    <!-- x: W37 at x=70, W42 at x=570, step 100. y: 0 at y=220, 400 at y=20 => y = 220 - v*200/400 = 220 - v/2 -->
+    <line x1="60" y1="220" x2="620" y2="220" stroke="var(--border)"/>
+    <line x1="60" y1="120" x2="620" y2="120" stroke="var(--border)" stroke-dasharray="3 4"/>
+    <line x1="60" y1="20" x2="620" y2="20" stroke="var(--border)" stroke-dasharray="3 4"/>
+    <text class="mut" x="8" y="24">400</text>
+    <text class="mut" x="8" y="124">200</text>
+    <text class="mut" x="8" y="224">0</text>
+    <!-- points: W37 340->y=50; W38 318->y=61; W39 291->y=74.5; W40 264->y=88; W41 238->y=101; W42 212->y=114 -->
+    <polyline fill="none" stroke="var(--accent)" stroke-width="3" stroke-linejoin="round" points="70,50 170,61 270,74.5 370,88 470,101 570,114"/>
+    <g fill="var(--accent)">
+      <circle cx="70" cy="50" r="5"/>
+      <circle cx="170" cy="61" r="5"/>
+      <circle cx="270" cy="74.5" r="5"/>
+      <circle cx="370" cy="88" r="5"/>
+      <circle cx="470" cy="101" r="5"/>
+      <circle cx="570" cy="114" r="5"/>
+    </g>
+    <text x="70" y="40" text-anchor="middle">340</text>
+    <text x="170" y="51" text-anchor="middle">318</text>
+    <text x="270" y="64" text-anchor="middle">291</text>
+    <text x="370" y="78" text-anchor="middle">264</text>
+    <text x="470" y="91" text-anchor="middle">238</text>
+    <text x="570" y="104" text-anchor="middle">212</text>
+    <text x="70" y="240" text-anchor="middle" class="mut">W37</text>
+    <text x="170" y="240" text-anchor="middle" class="mut">W38</text>
+    <text x="270" y="240" text-anchor="middle" class="mut">W39</text>
+    <text x="370" y="240" text-anchor="middle" class="mut">W40</text>
+    <text x="470" y="240" text-anchor="middle" class="mut">W41</text>
+    <text x="570" y="240" text-anchor="middle" class="mut">W42</text>
+  </svg>
+  <p style="margin-bottom:0">Falling by about 26 a week, the trend would leave about 80 open bugs by 2026-11-20.</p>
+</section>
+
+<h2>Features</h2>
+<section>
+  <div class="group">Remaining 9 features</div>
+  <ul class="feat">
+    <li>Fishing mini-game <span class="tag prog">In progress</span></li>
+    <li>Ship customization <span class="tag prog">In progress</span></li>
+    <li>Co-op invites <span class="tag prog">In progress</span></li>
+    <li>Photo mode <span class="tag prog">In progress</span></li>
+    <li>Harbor festival events <span class="tag ns">Not started</span></li>
+    <li>Achievements <span class="tag ns">Not started</span></li>
+    <li>Accessibility options <span class="tag ns">Not started</span></li>
+    <li>Weather-driven trading <span class="tag cut">Cut candidate</span></li>
+    <li>Pet companion <span class="tag cut">Cut candidate</span></li>
+  </ul>
+</section>
+
+<h2>Risks</h2>
+<section>
+  <div class="risk">
+    <strong>Performance.</strong> The busiest harbor scene runs 2 frames per second below target. The optimization sprint is booked for 2026-11-02 to 2026-11-13.
+  </div>
+  <div class="risk">
+    <strong>Accessibility.</strong> Accessibility options have not started, and they are required for the console certification submission on 2027-02-08.
+  </div>
+  <div class="risk">
+    <strong>Scope decision.</strong> Dropping the two cut candidates would save about 6 weeks of work. <strong>The decision is needed by 2026-10-30.</strong>
+  </div>
+</section>
+</div>
+</body>
+</html>

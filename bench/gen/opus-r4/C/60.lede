@@ -1,0 +1,40 @@
+@title Replacing the delivery van fleet
+@subtitle Diesel, hybrid or electric for Sunrise Bakery's 18 vans, for the budget meeting on 2026-11-10
+@author Tomasz Wieczorek, Operations Director
+@date 2026-10-17
+
+We replace all 18 delivery vans over the next two years. This page compares the three options on five-year cost and on how they fit our routes.
+
+kpi Recommended mixed fleet | $1,609,800 | 12 electric, 6 hybrid
+kpi Saving against diesel | $316,200 | over five years | good
+kpi Vans to replace | 18 | over two years
+
+## Options
+
+table = Option,Purchase per van,Energy per year,Maintenance per year,What to know; Diesel,"$41,000","$9,800 fuel","$3,400","Low-emission zone fee of $12.50 a day from 2028-01-01"; Hybrid,"$46,500","$6,900 fuel","$2,900","No range worries, still has tailpipe emissions"; Electric,"$58,200 after the $7,500 incentive","$3,100 electricity","$1,700","Plus $4,200 charger installation; range 180 miles in summer, 150 in winter"
+
+## Five-year cost
+
+data van = option,purchase,charger,energy,maintenance; Diesel,41000,0,49000,17000; Hybrid,46500,0,34500,14500; Electric,58200,4200,15500,8500
+chart bar van stack unit=$ title="Five-year cost per van"
+
+table = Option,Five-year cost per van,Fleet of 18; Diesel,"$107,000","$1,926,000"; Hybrid,"$95,500","$1,719,000"; Electric,"$86,400","$1,555,200"; **Mixed: 12 electric, 6 hybrid**,–,**"$1,609,800"**
+
+data fleet = option,five-year cost; Diesel,1926000; Hybrid,1719000; Mixed fleet,1609800; All electric,1555200
+chart hbar fleet unit=$ labels title="Five-year cost for all 18 vans"
+
+The diesel figures do not include the low-emission zone fee, which starts on 2028-01-01 and would make diesel more expensive still.
+
+## Risks
+
+- **Electric range in winter.** Our longest route is 140 miles a day. Real-world range is about 180 miles in summer but about 150 in winter, so the longest two routes would be tight in January.
+- **Charging.** We can charge overnight at the depot, but only with 6 chargers, so every electric van has to share and the charging schedule matters.
+- **Electric purchase price.** The $58,200 price depends on the $7,500 incentive. If the incentive changes before we buy, electric costs more.
+- **Hybrid emissions.** Hybrids remove range worries but still produce tailpipe emissions.
+- **Diesel fees.** Diesel vans pay the city low-emission zone fee of $12.50 a day from 2028-01-01, during the life of these vans.
+
+## Recommendation
+
+**Buy electric vans for the 12 shorter routes and hybrid vans for the 6 longest.**
+
+This mixed fleet costs $1,609,800 over five years for all 18 vans, about $316,200 less than staying with diesel. It costs $54,600 more than an all-electric fleet, but it keeps hybrids on the longest routes, where winter range would be too tight for an electric van, and it avoids the low-emission zone fee entirely.

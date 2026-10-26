@@ -1,0 +1,47 @@
+@title Product Design Principles
+@subtitle Fathom Bank Design Systems, for every design review
+@author Design Systems team
+
+These principles were agreed in a workshop with 26 designers and engineers on 2026-09-17. They apply to all customer-facing apps, and every design review should check work against them.
+
+# Clarity over cleverness
+
+Customers come to us to get something done, not to admire the interface. When a clever pattern and a plain one both work, choose the plain one, especially where money moves.
+
+- **Do**: label buttons with the action they take.
+- **Avoid**: icons without text for money movement.
+
+# Show the money
+
+Fees, rates and totals are the part of any screen customers care about most. Show them early and plainly, so that nobody reaches the end of a flow surprised by a number.
+
+- **Do**: show fees before confirmation.
+- **Avoid**: revealing fees on the final screen.
+
+# Forgive mistakes
+
+Everyone taps the wrong thing sometimes. A good flow makes mistakes cheap to undo, so customers can act with confidence instead of fear.
+
+- **Do**: allow undo for 10 seconds after a transfer is scheduled.
+- **Avoid**: making cancellation a phone call.
+
+# Accessible by default
+
+Accessibility is part of the design from the start, not a fix added at the end. If a design does not work for every customer, it is not finished.
+
+- **Do**: meet a contrast ratio of 4.5 to 1.
+- **Avoid**: relying on color alone for status.
+
+# Calm, not urgent
+
+Financial decisions deserve time. We give customers the facts they need and let them decide at their own pace, without manufactured pressure.
+
+- **Do**: state plain deadlines.
+- **Avoid**: countdown timers that push decisions.
+
+---
+
+> If a customer has to read it twice, we wrote it wrong.
+> — Ines Albrecht, Head of Design
+
+! Disagreements with a principle go to the monthly design council, not to individual reviews.

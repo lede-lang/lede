@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>INC-2874 Postmortem</title>
+<style>
+:root{--bg:#f4f5f7;--card:#ffffff;--fg:#1b1f26;--muted:#5b6370;--line:#d9dee6;--accent:#2a56c6;--good:#17794a;--goodbg:#e2f4ea;--warn:#8a5200;--warnbg:#fcf0d9;--bad:#b3261e;--badbg:#fbe3e0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0f1115;--card:#181b21;--fg:#e6e9ef;--muted:#9aa3b0;--line:#2b313b;--accent:#8fb0ff;--good:#62d39b;--goodbg:#15301f;--warn:#f0b35c;--warnbg:#36290f;--bad:#ff8b82;--badbg:#3b1a18}}
+:root[data-theme="dark"]{--bg:#0f1115;--card:#181b21;--fg:#e6e9ef;--muted:#9aa3b0;--line:#2b313b;--accent:#8fb0ff;--good:#62d39b;--goodbg:#15301f;--warn:#f0b35c;--warnbg:#36290f;--bad:#ff8b82;--badbg:#3b1a18}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:1.6rem;line-height:1.2;margin:0 0 6px}
+h2{font-size:1.15rem;margin:34px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+p.sub{color:var(--muted);margin:0 0 18px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.kpi .v{font-size:1.5rem;font-weight:650;font-variant-numeric:tabular-nums}
+.kpi .l{color:var(--muted);font-size:.85rem;margin-top:2px}
+.bad{color:var(--bad)} .warn{color:var(--warn)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.tbl{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tbl th,.tbl td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top;font-size:.94rem}
+.tbl th{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.tbl tr:last-child td{border-bottom:0}
+.scroll{overflow-x:auto}
+.scroll .tbl{min-width:460px}
+.time{font-weight:650;font-variant-numeric:tabular-nums;margin-right:8px}
+.note{color:var(--muted);font-size:.92rem}
+ul.tl{list-style:none;padding:0;margin:0}
+ul.tl li{position:relative;padding:0 0 14px 22px;border-left:2px solid var(--line);margin-left:6px}
+ul.tl li::before{content:"";position:absolute;left:-6px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--accent)}
+ul.tl li:last-child{border-left-color:transparent}
+ul.tl li.key::before{background:var(--bad)}
+svg{display:block;width:100%;height:auto;max-width:420px}
+svg text{fill:var(--fg);font-size:13px}
+svg .sm{fill:var(--muted);font-size:12px}
+@media (max-width:560px){.tbl th,.tbl td{padding:7px 6px;font-size:.88rem}.wrap{padding:18px 14px 40px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>INC-2874: duplicate push notifications</h1>
+<p class="sub">Peakform Fitness &middot; 2026-09-21 &middot; owner: Messaging team &middot; plain account, no blame</p>
+
+<div class="kpis">
+  <div class="kpi"><div class="v">1,240,000</div><div class="l">Users targeted, once each</div></div>
+  <div class="kpi"><div class="v bad">7,440,000</div><div class="l">Duplicate notifications</div></div>
+  <div class="kpi"><div class="v bad">3.4%</div><div class="l">Push opt-outs (42,160 users), normal 0.2%</div></div>
+  <div class="kpi"><div class="v warn">4.6 to 4.3</div><div class="l">App store rating over the following week</div></div>
+</div>
+
+<h2>Summary</h2>
+<p>A weekly workout reminder campaign was meant to go out once to 1,240,000 users. A retry bug in the queue consumer re-sent each message six extra times. Users therefore got the same notification seven times, 7,440,000 duplicates in total, over 38 minutes.</p>
+
+<h2>Timeline</h2>
+<p class="note">All times Pacific.</p>
+<ul class="tl">
+  <li><span class="time">16:00</span>Campaign released.</li>
+  <li><span class="time">16:04</span>The first consumer timeouts begin and retries start.</li>
+  <li><span class="time">16:09</span>Social media complaints appear.</li>
+  <li><span class="time">16:15</span>Support pages the Messaging on-call.</li>
+  <li class="key"><span class="time">16:22</span>On-call pauses the campaign sender.</li>
+  <li class="key"><span class="time">16:38</span>Queue purged and duplicates stop.</li>
+</ul>
+
+<h2>Contributing factors</h2>
+<p>The consumer treated a slow downstream acknowledgement as a failure, and it had no idempotency key, so a retry could not be recognized as a repeat. The campaign tool allows a send to the entire user base without a staged ramp. The pause switch took 7 minutes to find because it was not documented.</p>
+
+<h2>Customer impact</h2>
+<p>Users received the same workout reminder up to seven times. Opt-outs from push jumped to 3.4 percent of recipients, 42,160 users, against a normal rate of 0.2 percent. The app store rating dropped from 4.6 to 4.3 over the following week.</p>
+<div class="card" style="margin-top:12px">
+<svg viewBox="0 0 400 160" role="img" aria-label="Bar chart comparing push opt-out rates: normal 0.2 percent, incident 3.4 percent">
+  <line x1="60" y1="140" x2="380" y2="140" stroke="var(--line)" stroke-width="1"/>
+  <rect x="100" y="24.4" width="80" height="115.6" rx="3" fill="var(--bad)"/>
+  <rect x="240" y="133.2" width="80" height="6.8" rx="3" fill="var(--muted)"/>
+  <text x="140" y="18" text-anchor="middle">3.4%</text>
+  <text x="280" y="127" text-anchor="middle">0.2%</text>
+  <text class="sm" x="140" y="156" text-anchor="middle">Incident</text>
+  <text class="sm" x="280" y="156" text-anchor="middle">Normal</text>
+</svg>
+<p class="note" style="margin:8px 0 0">Push opt-out rate, share of recipients.</p>
+</div>
+
+<h2>Action items</h2>
+<div class="scroll">
+<table class="tbl">
+  <thead><tr><th>Action</th><th>Owner</th><th>Due</th></tr></thead>
+  <tbody>
+    <tr><td>Add idempotency keys to the push consumer</td><td>Daniel Okonkwo-Reyes</td><td>2026-10-09</td></tr>
+    <tr><td>Require staged ramps of 1, 10 and 100 percent for sends over 100,000 users</td><td>Priya Venkatesan</td><td>2026-10-23</td></tr>
+    <tr><td>Document the sender pause switch in the on-call guide</td><td>Messaging on-call</td><td>2026-09-28</td></tr>
+    <tr><td>Send an apology notice and in-app note to affected users</td><td>Customer Care</td><td>2026-09-24</td></tr>
+  </tbody>
+</table>
+</div>
+</div>
+</body>
+</html>

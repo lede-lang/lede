@@ -1,0 +1,25 @@
+@title Q4 2026 pipeline: Mid-Market
+@subtitle Northwind Analytics · as of 2026-10-14
+
+kpi Total pipeline | $4,970K
+kpi Weighted pipeline | $1,930K
+kpi Quota | $2,400K
+kpi Win rate | 27%
+
+# Pipeline by stage
+
+data stages = Stage,Deals,Value ($K); Prospecting,82,1640; Discovery,51,1210; Demo,34,880; Proposal,20,790; Negotiation,9,330; Verbal commit,4,120
+
+chart bar stages x=Stage y=Value ($K) unit=$K labels title="Open pipeline value by stage ($K)"
+
+table stages
+
+# Top deals
+
+table = Account,Owner,Stage,Value ($K),Close date; Halvorsen Freight,Jamie Okafor,Negotiation,210,2026-11-21; Brightline Clinics,Sara Lindqvist,Proposal,185,2026-12-05; Quarry Hill Hotels,Sara Lindqvist,Proposal,150,2026-12-18;Cobalt Mining Co,Jamie Okafor,Verbal commit,120,2026-10-31; Fernwood Schools,Luis Ortega,Demo,96,2026-12-12
+
+# Forecast notes
+
+Weighted pipeline covers 80 percent of quota. To be safe, the team needs about $470K of new weighted pipeline before 2026-11-15.
+
+!! Forecast gap: weighted pipeline is $470K short of the $2,400K quota. New weighted pipeline must land before 2026-11-15.

@@ -1,0 +1,37 @@
+@title Q3 2026 Sales Summary
+@subtitle Foxglove Garden Centers, July to September 2026
+@author Imani Okoro, Retail Finance Lead
+
+# Q3 at a glance
+
+kpi Q3 revenue | $5.87M | +8.3% vs Q3 2025 | good
+kpi Best month | Sep, $2.24M | Jul $1.85M, Aug $1.78M | neutral
+kpi Avg basket (Sep) | $42.70 | +$4.30 since Jul | good
+
+September was the best month. Seasonal and holiday reached 23.2% of September revenue once autumn displays went up on 2026-09-08.
+
+Plants is still the biggest category at 42.4% of the quarter.
+
+Furniture fell 32.1% from July to September as patio season ended.
+
+# Revenue by category
+
+Figures are in thousands of dollars. Seasonal and holiday grew from a sliver of July sales to nearly a quarter of September. Furniture shrank as it did.
+
+data rev = month,Plants,Tools and supplies,Furniture,Seasonal and holiday; Jul,820,410,530,90; Aug,760,390,480,150; Sep,910,450,360,520
+
+chart bar rev x=month y=Plants,Tools and supplies,Furniture,Seasonal and holiday stack title="Monthly revenue by category" unit=K
+
+table = category,Jul,Aug,Sep,Q3 total; Plants,820,760,910,**2490**; Tools and supplies,410,390,450,**1250**; Furniture,530,480,360,**1370**; Seasonal and holiday,90,150,520,**760**; **Total**,**1850**,**1780**,**2240**,**5870**
+
+data basket = month,basket; Jul,38.40; Aug,39.10; Sep,42.70
+
+chart line basket x=month y=basket title="Average basket size" unit=$ labels
+
+# Watch items
+
+!! Furniture needs a clearance decision. It fell from 530 in July to 360 in September (-32.1%), the only category to decline, and patio season is over.
+
+- Decide whether to start a Furniture clearance.
+- Plants (2490) and Tools and supplies (1250) held steady, so no action is needed there.
+- Seasonal and holiday should keep climbing as holiday displays go up.

@@ -1,0 +1,30 @@
+@title Greenhouse gas inventory, 2023 to 2025
+@subtitle Pelham Furniture emissions in tonnes of CO2e, for the annual report
+@author Odalys Brandt, Sustainability Manager
+@date 2026-10-17
+
+## Headline
+
+kpi 2025 emissions | 22,870 t | -13.7% since 2023 | good
+kpi Reduction since 2023 | 3,630 t | -13.7%
+kpi Scope 2 change | -54.6% | since 2023 | good
+kpi Scope 3 share of total | 86.6% | in 2025 | bad
+kpi Still to cut by 2030 | 4,320 t | to reach 18,550 t
+
+Our emissions fell 3,630 tonnes, or 13.7 percent, between 2023 and 2025. Most of that came from electricity: scope 2 fell 54.6 percent as 6 of our 8 sites moved to renewable electricity contracts. Scope 3, the emissions in our supply chain, fell much less and is now 86.6 percent of the total. That is where the real challenge lies.
+
+Our target is a 30 percent cut against 2023 by 2030, which means 18,550 tonnes or lower. From 2025 we still have 4,320 tonnes to go.
+
+## Emissions by scope
+
+data ghg = year,Scope 1,Scope 2,Scope 3; 2023,1840,3260,21400; 2024,1720,2610,20900; 2025,1590,1480,19800
+chart bar ghg stack unit=" t" target="18550 2030 target" title="Emissions by scope, tonnes CO2e"
+
+table = Scope,2023,2024,2025,Change since 2023; Scope 1,"1,840","1,720","1,590",-13.6%; Scope 2 (market-based),"3,260","2,610","1,480",-54.6%; Scope 3,"21,400","20,900","19,800",-7.5%; **Total**,"**26,500**","**25,230**","**22,870**",**-13.7%**
+
+## Method and caveats
+
+- Scope 3 covers purchased materials, upstream transport and business travel only. It does not include emissions from the use of products we sell.
+- The 2023 baseline was restated in 2025 after supplier data improved.
+- The inventory follows the GHG Protocol and has not yet been externally assured.
+- Scope 2 is reported on a market-based basis, which reflects our renewable electricity contracts.

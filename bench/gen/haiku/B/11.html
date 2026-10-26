@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meridian Logistics AWS Landing Zone</title>
+<style>
+:root{--page:#f3f5f7;--card:#ffffff;--ink:#1c2631;--mute:#5b6674;--edge:#d4dbe3;--teal:#17707a;--teal-soft:#e4f2f3;--note-bg:#eef4ff;--note-bd:#3766c4;--note-ink:#1d3a73;}
+@media (prefers-color-scheme: dark){
+:root:not([data-theme="light"]){--page:#0e1316;--card:#151c21;--ink:#e1e8ee;--mute:#95a1ad;--edge:#27323b;--teal:#5fc3cc;--teal-soft:#15272b;--note-bg:#162236;--note-bd:#7aa2ec;--note-ink:#d3e2ff;}
+}
+:root[data-theme="dark"]{--page:#0e1316;--card:#151c21;--ink:#e1e8ee;--mute:#95a1ad;--edge:#27323b;--teal:#5fc3cc;--teal-soft:#15272b;--note-bg:#162236;--note-bd:#7aa2ec;--note-ink:#d3e2ff;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:940px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:1.6rem;margin:0 0 4px}
+.meta{color:var(--mute);margin:0;font-size:.92rem}
+h2{font-size:1.12rem;margin:30px 0 10px;padding-bottom:4px;border-bottom:1px solid var(--edge)}
+.card{background:var(--card);border:1px solid var(--edge);border-radius:10px;padding:10px;overflow-x:auto}
+svg{display:block;width:100%;min-width:620px;height:auto}
+svg text{font-size:12px;fill:var(--ink)}
+svg .lbl{fill:var(--mute);font-size:11px}
+svg .gh{font-weight:700;fill:var(--teal);font-size:12.5px}
+svg .acct{fill:none;stroke:var(--teal);stroke-width:1.4;stroke-dasharray:6 4}
+svg .vpc{fill:var(--teal-soft);stroke:var(--teal);stroke-width:1}
+svg .node{fill:var(--card);stroke:var(--teal);stroke-width:1.3}
+svg .ln{fill:none;stroke:var(--mute);stroke-width:1.5}
+svg .ah{fill:var(--mute)}
+table{width:100%;border-collapse:collapse;font-size:.94rem;min-width:460px}
+th,td{padding:9px 8px;border-bottom:1px solid var(--edge);text-align:left}
+th{color:var(--mute);font-weight:600;font-size:.84rem}
+ul{padding-left:20px;margin:6px 0}
+li{margin:6px 0}
+.note{margin:18px 0;padding:14px 16px;background:var(--note-bg);border-left:4px solid var(--note-bd);color:var(--note-ink);border-radius:8px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>AWS Landing Zone</h1>
+  <p class="meta">Cloud Foundations team · Meridian Logistics · As of 2026-10-05</p>
+
+  <h2>Account structure</h2>
+  <div class="card">
+  <svg viewBox="0 0 900 470" role="img" aria-label="Account structure diagram. Management account holds AWS Organizations and IAM Identity Center. Security account holds GuardDuty and Security Hub. Log Archive account holds the Log Archive Bucket, which receives CloudTrail logs from AWS Organizations. Network account holds the Transit Gateway and an Egress VPC with a NAT Gateway. Prod workload account has Prod VPC with Prod App and Prod Data subnets. Dev workload account has Dev VPC with Dev App subnets. Prod VPC and Dev VPC attach to the Transit Gateway.">
+    <defs>
+      <marker id="lzArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path class="ah" d="M0,0 L10,5 L0,10 z"/>
+      </marker>
+    </defs>
+
+    <!-- account groups -->
+    <rect class="acct" x="16" y="40" width="280" height="120" rx="10"/>
+    <text class="gh" x="28" y="60">Management account</text>
+    <rect class="acct" x="316" y="40" width="280" height="120" rx="10"/>
+    <text class="gh" x="328" y="60">Security account</text>
+    <rect class="acct" x="616" y="40" width="268" height="120" rx="10"/>
+    <text class="gh" x="628" y="60">Log Archive account</text>
+    <rect class="acct" x="16" y="200" width="280" height="230" rx="10"/>
+    <text class="gh" x="28" y="220">Network account</text>
+    <rect class="acct" x="316" y="200" width="300" height="230" rx="10"/>
+    <text class="gh" x="328" y="220">Prod workload account</text>
+    <rect class="acct" x="636" y="200" width="248" height="230" rx="10"/>
+    <text class="gh" x="648" y="220">Dev workload account</text>
+
+    <!-- VPC groups -->
+    <rect class="vpc" x="40" y="310" width="230" height="100" rx="8"/>
+    <text class="lbl" x="48" y="328">Egress VPC</text>
+    <text class="lbl" x="262" y="328" text-anchor="end">10.0.0.0/20</text>
+    <rect class="vpc" x="332" y="240" width="268" height="180" rx="8"/>
+    <text class="lbl" x="344" y="258">Prod VPC · 10.10.0.0/16</text>
+    <rect class="vpc" x="652" y="240" width="216" height="180" rx="8"/>
+    <text class="lbl" x="664" y="258">Dev VPC · 10.20.0.0/16</text>
+
+    <!-- management, security, log archive nodes -->
+    <rect class="node" x="30" y="80" width="110" height="44" rx="6"/>
+    <text x="85" y="100" text-anchor="middle">AWS</text>
+    <text x="85" y="115" text-anchor="middle">Organizations</text>
+    <rect class="node" x="160" y="80" width="120" height="44" rx="6"/>
+    <text x="220" y="100" text-anchor="middle">IAM Identity</text>
+    <text x="220" y="115" text-anchor="middle">Center</text>
+    <rect class="node" x="326" y="80" width="100" height="44" rx="6"/>
+    <text x="376" y="106" text-anchor="middle">GuardDuty</text>
+    <rect class="node" x="470" y="80" width="116" height="44" rx="6"/>
+    <text x="528" y="106" text-anchor="middle">Security Hub</text>
+    <rect class="node" x="636" y="80" width="150" height="44" rx="6"/>
+    <text x="711" y="106" text-anchor="middle">Log Archive Bucket</text>
+
+    <!-- network -->
+    <rect class="node" x="40" y="240" width="230" height="44" rx="6"/>
+    <text x="155" y="266" text-anchor="middle">Transit Gateway</text>
+    <rect class="node" x="60" y="344" width="190" height="44" rx="6"/>
+    <text x="155" y="370" text-anchor="middle">NAT Gateway</text>
+
+    <!-- prod and dev -->
+    <rect class="node" x="346" y="280" width="110" height="50" rx="6"/>
+    <text x="401" y="302" text-anchor="middle">Prod App</text>
+    <text x="401" y="317" text-anchor="middle">Subnets</text>
+    <rect class="node" x="478" y="280" width="110" height="50" rx="6"/>
+    <text x="533" y="302" text-anchor="middle">Prod Data</text>
+    <text x="533" y="317" text-anchor="middle">Subnets</text>
+    <rect class="node" x="668" y="280" width="184" height="50" rx="6"/>
+    <text x="760" y="302" text-anchor="middle">Dev App</text>
+    <text x="760" y="317" text-anchor="middle">Subnets</text>
+
+    <!-- connections -->
+    <path class="ln" d="M 85 80 V 22 H 711 V 80" marker-end="url(#lzArrow)"/>
+    <text class="lbl" x="398" y="15" text-anchor="middle">CloudTrail logs</text>
+
+    <line class="ln" x1="426" y1="102" x2="470" y2="102" marker-end="url(#lzArrow)"/>
+    <text class="lbl" x="448" y="94" text-anchor="middle">findings</text>
+
+    <path class="ln" d="M 270 262 H 300 V 300 H 332" marker-end="url(#lzArrow)"/>
+    <text class="lbl" x="300" y="318" text-anchor="middle">attachment</text>
+
+    <path class="ln" d="M 760 420 V 452 H 22 V 262 H 40" marker-end="url(#lzArrow)"/>
+    <text class="lbl" x="440" y="446" text-anchor="middle">attachment</text>
+
+    <line class="ln" x1="155" y1="284" x2="155" y2="344" marker-end="url(#lzArrow)"/>
+    <text class="lbl" x="148" y="300" text-anchor="end">0.0.0.0/0</text>
+  </svg>
+  </div>
+
+  <h2>Network ranges</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>VPC</th><th>Account</th><th>CIDR</th><th>Region</th></tr></thead>
+      <tbody>
+        <tr><td>Egress VPC</td><td>Network</td><td>10.0.0.0/20</td><td>us-west-2</td></tr>
+        <tr><td>Prod VPC</td><td>Prod workload</td><td>10.10.0.0/16</td><td>us-west-2</td></tr>
+        <tr><td>Dev VPC</td><td>Dev workload</td><td>10.20.0.0/16</td><td>us-west-2</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Guardrails</h2>
+  <div class="card">
+    <p style="margin:6px 0 2px">Service control policies in effect:</p>
+    <ul>
+      <li>Deny leaving the organization.</li>
+      <li>Deny disabling CloudTrail.</li>
+      <li>Deny regions other than us-west-2 and us-east-1.</li>
+      <li>Deny root user access keys.</li>
+    </ul>
+  </div>
+
+  <aside class="note" role="note">
+    <strong>Isolation:</strong> Prod and Dev VPCs cannot route to each other. The Transit Gateway uses separate route tables, rt-prod and rt-dev.
+  </aside>
+</main>
+</body>
+</html>

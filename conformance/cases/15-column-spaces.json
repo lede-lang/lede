@@ -1,0 +1,103 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "data",
+      "name": "burn",
+      "line": 1
+    },
+    {
+      "type": "chart",
+      "kind": "line",
+      "data": "burn",
+      "x": "day",
+      "y": [
+        "Open Bugs",
+        "closed bugs"
+      ],
+      "title": "Burn down",
+      "stack": false,
+      "labels": false,
+      "unit": null,
+      "min": null,
+      "max": null,
+      "focus": null,
+      "target": null,
+      "line": 2
+    },
+    {
+      "type": "chart",
+      "kind": "bar",
+      "data": "burn",
+      "x": "day",
+      "y": [
+        "Value ($K)"
+      ],
+      "title": null,
+      "stack": false,
+      "labels": true,
+      "unit": null,
+      "min": null,
+      "max": null,
+      "focus": null,
+      "target": null,
+      "line": 3
+    },
+    {
+      "type": "table",
+      "data": "burn",
+      "cols": [
+        "day",
+        "Value ($K)"
+      ],
+      "sort": {
+        "col": "Open Bugs",
+        "desc": true
+      },
+      "limit": null,
+      "title": null,
+      "line": 4
+    },
+    {
+      "type": "kpis",
+      "items": [
+        {
+          "label": "Open",
+          "value": "9",
+          "delta": "−3",
+          "tone": null,
+          "note": "",
+          "ref": "burn.open bugs"
+        }
+      ],
+      "line": 5
+    }
+  ],
+  "data": {
+    "burn": {
+      "name": "burn",
+      "columns": [
+        "day",
+        "Open Bugs",
+        "closed bugs",
+        "Value ($K)"
+      ],
+      "rows": [
+        [
+          "Mon",
+          "12",
+          "3",
+          "4.5"
+        ],
+        [
+          "Tue",
+          "9",
+          "6",
+          "5"
+        ]
+      ],
+      "line": 1
+    }
+  },
+  "diagnostics": []
+}

@@ -1,0 +1,44 @@
+{
+  "id": "17-tls-rotation-runbook",
+  "category": "runbook",
+  "title": "TLS certificate rotation",
+  "brief": "Small runbook for the Edge team at Sycamore Travel: rotating the public TLS certificates on our load balancers by hand. Section titled \"Certificates\" with a table of columns Domain, Expires, Days left: www.sycamoretravel.example, 2026-11-14, 29; api.sycamoretravel.example, 2026-11-02, 17; partners.sycamoretravel.example, 2027-01-20, 96. Section titled \"Steps\" as a numbered list: request the new certificate in the certificate manager; validate it via the DNS record; wait for the status Issued; attach the new certificate to the listener on edge-alb-prod; test with an external checker; remove the old certificate after 24 hours. Add a warning callout before the attach step: never remove the old certificate first, because clients will get handshake errors until the new one is attached. Add a note at the end that the automated renewal job is broken until ticket EDGE-812 is fixed, which is why this is manual for now.",
+  "checklist": {
+    "sections": [
+      "Certificates",
+      "Steps"
+    ],
+    "visible": [
+      "api.sycamoretravel.example",
+      "edge-alb-prod",
+      "EDGE-812",
+      "Days left",
+      "handshake errors"
+    ],
+    "values": [
+      "2026-11-14",
+      "2026-11-02",
+      "2027-01-20",
+      "29",
+      "17",
+      "96",
+      "24"
+    ]
+  },
+  "needs": [
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add a row for status.sycamoretravel.example expiring 2026-10-30 with 14 days left, and call it out as the most urgent certificate.",
+    "expect_visible": [
+      "status.sycamoretravel.example"
+    ],
+    "expect_values": [
+      "2026-10-30",
+      "14"
+    ],
+    "expect_absent": []
+  }
+}

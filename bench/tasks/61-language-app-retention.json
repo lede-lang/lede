@@ -1,0 +1,62 @@
+{
+  "id": "61-language-app-retention",
+  "category": "data",
+  "title": "Mosaic app cohort retention",
+  "brief": "The growth team at Mosaic Language Learning wants a one-page summary of how well recent signup cohorts keep coming back. Cohort sizes (new users who signed up that month): Jun 2026 18400, Jul 21700, Aug 25300, Sep 29800, 95200 in total. Share of each cohort still active N months after signup, in percent: Jun: month 0 100, month 1 46, month 2 38, month 3 33. Jul: 100, 48, 40, 35. Aug: 100, 51, 43 (month 3 not reached yet). Sep: 100, 53 (months 2 and 3 not reached yet). Weighted across cohorts, month-1 retention is 50.0 percent, month-2 retention 40.6 percent (Jun to Aug) and month-3 retention 34.1 percent (Jun and Jul). Headline: month-1 retention is up 7 points from the June cohort to the September cohort. Use the sections \"Cohort table\" (cohorts against months since signup, so the pattern is easy to see), \"Retention by month\" (how retention decays for each cohort) and \"Takeaways\", with three short takeaways: onboarding changes shipped 2026-07-20 line up with the jump from 48 to 51 percent, the biggest drop is always between month 0 and month 1, and September's cohort is the largest and also the best retaining so far. Add a note that months not reached yet are left blank, not zero.",
+  "checklist": {
+    "sections": [
+      "Cohort table",
+      "Retention by month",
+      "Takeaways"
+    ],
+    "visible": [
+      "Jun 2026",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Month 1",
+      "Month 2",
+      "Month 3",
+      "onboarding"
+    ],
+    "values": [
+      "18400",
+      "21700",
+      "25300",
+      "29800",
+      "95200",
+      "46",
+      "48",
+      "51",
+      "53",
+      "38",
+      "40",
+      "43",
+      "33",
+      "35",
+      "50.0",
+      "40.6",
+      "34.1",
+      "7",
+      "2026-07-20"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "table",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add the October cohort of 33100 new users with 100 percent at month 0, and correct September's month-1 retention to 54 percent.",
+    "expect_visible": [
+      "Oct"
+    ],
+    "expect_values": [
+      "33100",
+      "54"
+    ],
+    "expect_absent": []
+  }
+}

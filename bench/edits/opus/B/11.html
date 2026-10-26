@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AWS Landing Zone — Meridian Logistics</title>
+<style>
+:root {
+  --bg: #f5f6f8;
+  --sheet: #ffffff;
+  --text: #1a1f27;
+  --text-2: #5e6673;
+  --hair: #dee2e8;
+  --acct-fill: #f7f8fb;
+  --acct-edge: #8a94a6;
+  --mgmt: #6d5bd0;
+  --sec: #c2410c;
+  --log: #0f766e;
+  --net: #2563eb;
+  --prod: #b4235a;
+  --dev: #4d7c0f;
+  --vpc-fill: #eef4ff;
+  --node-fill: #ffffff;
+  --node-edge: #9aa3b2;
+  --wire: #3f4856;
+  --note-bg: #eaf2ff;
+  --note-edge: #3b82f6;
+  --note-ink: #11305f;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1015;
+    --sheet: #161921;
+    --text: #e7eaf0;
+    --text-2: #9aa2ae;
+    --hair: #2a2f39;
+    --acct-fill: #1a1e27;
+    --acct-edge: #5c6575;
+    --mgmt: #a596ff;
+    --sec: #fb8a4c;
+    --log: #3cc8b4;
+    --net: #6ea2ff;
+    --prod: #f27aa6;
+    --dev: #9bd14a;
+    --vpc-fill: #182237;
+    --node-fill: #20252f;
+    --node-edge: #687182;
+    --wire: #c0c7d2;
+    --note-bg: #14223a;
+    --note-edge: #6ea2ff;
+    --note-ink: #d6e5ff;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.page { max-width: 1000px; margin: 0 auto; padding: 28px 16px 60px; }
+h1 { margin: 0; font-size: 1.6rem; }
+.meta { color: var(--text-2); margin: 4px 0 0; font-size: 0.92rem; }
+section { background: var(--sheet); border: 1px solid var(--hair); border-radius: 12px; padding: 18px 20px; margin-top: 16px; }
+h2 { margin: 0 0 10px; font-size: 1.12rem; }
+.dia { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.dia svg { display: block; width: 100%; min-width: 740px; height: auto; }
+.pan { display: none; font-size: 0.82rem; color: var(--text-2); margin-top: 6px; }
+svg text { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.acct { fill: var(--acct-fill); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.vpc { fill: var(--vpc-fill); stroke-width: 1.4; }
+.gl { font-size: 13px; font-weight: 700; }
+.vl { font-size: 12px; font-weight: 600; }
+.nd rect { fill: var(--node-fill); stroke: var(--node-edge); stroke-width: 1.4; }
+.nd text { fill: var(--text); font-size: 12.5px; font-weight: 600; text-anchor: middle; }
+.wr { fill: none; stroke: var(--wire); stroke-width: 1.6; }
+.wt { fill: var(--text); font-size: 12px; font-weight: 600; text-anchor: middle; paint-order: stroke; stroke: var(--sheet); stroke-width: 5px; stroke-linejoin: round; }
+.scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 460px; }
+th, td { padding: 10px; border-bottom: 1px solid var(--hair); text-align: left; }
+th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-2); }
+tbody tr:last-child td { border-bottom: 0; }
+td.mono, code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.92em; }
+ul { margin: 0; padding-left: 1.2em; }
+li { margin: 5px 0; }
+.note { margin-top: 16px; background: var(--note-bg); border-left: 5px solid var(--note-edge); border-radius: 10px; padding: 14px 18px; color: var(--note-ink); }
+.note strong { display: block; margin-bottom: 2px; }
+@media (max-width: 780px) {
+  section { padding: 16px 14px; }
+  .pan { display: block; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>AWS Landing Zone</h1>
+  <p class="meta">Meridian Logistics · Cloud Foundations · As of 2026-10-05</p>
+
+  <section>
+    <h2>Account structure</h2>
+    <div class="dia">
+      <svg viewBox="0 0 960 580" role="img" aria-labelledby="lzt lzd">
+        <title id="lzt">Landing zone account structure</title>
+        <desc id="lzd">Seven accounts. Management account holds AWS Organizations and IAM Identity Center; AWS Organizations sends CloudTrail logs to the Log Archive Bucket in the Log Archive account. Security account holds GuardDuty, which sends findings to Security Hub. Network account holds the Transit Gateway and an Egress VPC with a NAT Gateway; the Transit Gateway routes 0.0.0.0/0 to the NAT Gateway. Prod workload account holds Prod VPC with Prod App Subnets and Prod Data Subnets. Dev workload account holds Dev VPC with Dev App Subnets. Staging workload account holds Staging VPC. Prod VPC, Dev VPC and Staging VPC each have an attachment to the Transit Gateway.</desc>
+        <defs>
+          <marker id="aw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--wire)"/>
+          </marker>
+        </defs>
+
+        <!-- Top row accounts -->
+        <rect class="acct" x="20" y="40" width="300" height="140" rx="12" stroke="var(--mgmt)"/>
+        <text class="gl" x="32" y="62" fill="var(--mgmt)">Management account</text>
+        <rect class="acct" x="340" y="40" width="300" height="140" rx="12" stroke="var(--sec)"/>
+        <text class="gl" x="352" y="62" fill="var(--sec)">Security account</text>
+        <rect class="acct" x="660" y="40" width="280" height="140" rx="12" stroke="var(--log)"/>
+        <text class="gl" x="672" y="62" fill="var(--log)">Log Archive account</text>
+
+        <!-- Bottom row accounts -->
+        <rect class="acct" x="20" y="230" width="300" height="330" rx="12" stroke="var(--prod)"/>
+        <text class="gl" x="32" y="252" fill="var(--prod)">Prod workload account</text>
+        <rect class="vpc" x="40" y="270" width="260" height="270" rx="10" stroke="var(--prod)"/>
+        <text class="vl" x="52" y="290" fill="var(--prod)">Prod VPC · 10.10.0.0/16</text>
+
+        <rect class="acct" x="340" y="230" width="300" height="330" rx="12" stroke="var(--net)"/>
+        <text class="gl" x="352" y="252" fill="var(--net)">Network account</text>
+        <rect class="vpc" x="370" y="410" width="240" height="130" rx="10" stroke="var(--net)"/>
+        <text class="vl" x="382" y="430" fill="var(--net)">Egress VPC · 10.0.0.0/20</text>
+
+        <rect class="acct" x="660" y="230" width="280" height="205" rx="12" stroke="var(--dev)"/>
+        <text class="gl" x="672" y="252" fill="var(--dev)">Dev workload account</text>
+        <rect class="vpc" x="680" y="270" width="240" height="150" rx="10" stroke="var(--dev)"/>
+        <text class="vl" x="692" y="290" fill="var(--dev)">Dev VPC · 10.20.0.0/16</text>
+
+        <rect class="acct" x="660" y="450" width="280" height="110" rx="12" stroke="var(--acct-edge)"/>
+        <text class="gl" x="672" y="472" fill="var(--text-2)">Staging workload account</text>
+        <rect class="vpc" x="680" y="485" width="240" height="60" rx="10" stroke="var(--acct-edge)"/>
+        <text class="vl" x="692" y="520" fill="var(--text-2)">Staging VPC · 10.30.0.0/16</text>
+
+        <!-- Wires -->
+        <path class="wr" d="M100 90 V22 H800 V88" marker-end="url(#aw)"/>
+        <path class="wr" d="M465 115 H533" marker-end="url(#aw)"/>
+        <path class="wr" d="M300 325 H418" marker-end="url(#aw)"/>
+        <path class="wr" d="M680 325 H562" marker-end="url(#aw)"/>
+        <path class="wr" d="M490 350 V458" marker-end="url(#aw)"/>
+        <path class="wr" d="M680 515 H625 V340 H562" marker-end="url(#aw)"/>
+
+        <!-- Wire labels -->
+        <text class="wt" x="450" y="26">CloudTrail logs</text>
+        <text class="wt" x="500" y="104">findings</text>
+        <text class="wt" x="360" y="315">attachment</text>
+        <text class="wt" x="620" y="315">attachment</text>
+        <text class="wt" x="530" y="392">0.0.0.0/0</text>
+        <text class="wt" x="625" y="445">attachment</text>
+
+        <!-- Nodes -->
+        <g class="nd"><rect x="35" y="90" width="130" height="50" rx="8"/><text x="100" y="120">AWS Organizations</text></g>
+        <g class="nd"><rect x="175" y="90" width="135" height="50" rx="8"/><text x="242.5" y="120">IAM Identity Center</text></g>
+        <g class="nd"><rect x="355" y="90" width="110" height="50" rx="8"/><text x="410" y="120">GuardDuty</text></g>
+        <g class="nd"><rect x="535" y="90" width="95" height="50" rx="8"/><text x="582.5" y="120">Security Hub</text></g>
+        <g class="nd"><rect x="720" y="90" width="160" height="50" rx="8"/><text x="800" y="120">Log Archive Bucket</text></g>
+
+        <g class="nd"><rect x="420" y="300" width="140" height="50" rx="8"/><text x="490" y="330">Transit Gateway</text></g>
+        <g class="nd"><rect x="420" y="460" width="140" height="50" rx="8"/><text x="490" y="490">NAT Gateway</text></g>
+
+        <g class="nd"><rect x="70" y="350" width="200" height="50" rx="8"/><text x="170" y="380">Prod App Subnets</text></g>
+        <g class="nd"><rect x="70" y="450" width="200" height="50" rx="8"/><text x="170" y="480">Prod Data Subnets</text></g>
+
+        <g class="nd"><rect x="720" y="340" width="160" height="50" rx="8"/><text x="800" y="370">Dev App Subnets</text></g>
+      </svg>
+    </div>
+    <p class="pan">Scroll sideways to see the full diagram.</p>
+  </section>
+
+  <section>
+    <h2>Network ranges</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>VPC</th><th>Account</th><th>CIDR</th><th>Region</th></tr></thead>
+        <tbody>
+          <tr><td>Egress VPC</td><td>Network</td><td class="mono">10.0.0.0/20</td><td class="mono">us-west-2</td></tr>
+          <tr><td>Prod VPC</td><td>Prod workload</td><td class="mono">10.10.0.0/16</td><td class="mono">us-west-2</td></tr>
+          <tr><td>Dev VPC</td><td>Dev workload</td><td class="mono">10.20.0.0/16</td><td class="mono">us-west-2</td></tr>
+          <tr><td>Staging VPC</td><td>Staging workload</td><td class="mono">10.30.0.0/16</td><td class="mono">us-west-2</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Guardrails</h2>
+    <p style="margin:0 0 6px;color:var(--text-2)">Service control policies applied across the organization:</p>
+    <ul>
+      <li>Deny leaving the organization.</li>
+      <li>Deny disabling CloudTrail.</li>
+      <li>Deny all regions other than <code>us-west-2</code> and <code>us-east-1</code>.</li>
+      <li>Deny creating access keys for the root user.</li>
+    </ul>
+    <div class="note" role="note">
+      <strong>Prod and Dev are isolated</strong>
+      Prod and Dev VPCs cannot route to each other: the Transit Gateway uses separate route tables, <code>rt-prod</code> and <code>rt-dev</code>.
+    </div>
+  </section>
+</div>
+</body>
+</html>

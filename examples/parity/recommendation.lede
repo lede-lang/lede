@@ -1,0 +1,17 @@
+@title Tool choice
+# Tool choice
+
+data tools = option,cost,effort; Atlas,low,medium; Beacon,medium,low; Cairn,high,low
+table tools
+
+table = criterion,Atlas,Beacon,Cairn; Cost,low,medium,high; Effort,medium,low,low; Support,community,paid,paid
+
+## Recommendation
+
+**Choose Beacon.** It costs a little more than Atlas but needs the least effort from the team.
+
+Revisit in the spring.
+
+## Notes
+
+This section is not a card. It is ordinary text that happens to follow.

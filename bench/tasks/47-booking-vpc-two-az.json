@@ -1,0 +1,62 @@
+{
+  "id": "47-booking-vpc-two-az",
+  "category": "architecture",
+  "title": "Calloway booking web tier",
+  "brief": "Calloway Travel needs an architecture page for the booking web tier, owner Booking Platform, region eu-west-1, reviewed 2026-09-28. Under \"Overview\", two sentences: customers reach us through CloudFront with a WAF in front, and the tier is spread over two Availability Zones to survive losing one. Under \"Diagram\" show the Booking account, containing the Booking VPC (10.40.0.0/16). Inside the VPC are three groups of subnets: Public subnets (10.40.0.0/23) with the Application Load Balancer and two NAT gateways, \"NAT Gateway A\" and \"NAT Gateway B\"; App subnets (10.40.10.0/23) with \"Web Fleet A\" and \"Web Fleet B\", each an Auto Scaling group; Data subnets (10.40.20.0/23) with \"Bookings DB Primary\" and \"Bookings DB Standby\". An \"S3 Gateway Endpoint\" also sits in the VPC. Outside the account: Travelers, \"CloudFront and WAF\" and the \"Partner Inventory API\". Flows: Travelers to CloudFront and WAF \"HTTPS\"; CloudFront and WAF to Application Load Balancer \"origin request\"; Application Load Balancer to Web Fleet A \"port 8080\"; Application Load Balancer to Web Fleet B \"port 8080\"; Web Fleet A to Bookings DB Primary \"SQL\"; Web Fleet B to Bookings DB Primary \"SQL\"; Bookings DB Primary to Bookings DB Standby \"synchronous replication\"; Web Fleet A to NAT Gateway A \"outbound\"; NAT Gateway A to Partner Inventory API \"HTTPS\"; Web Fleet B to S3 Gateway Endpoint \"receipts\". Under \"Capacity\", for each component its size and scaling: Web fleets, m6i.large, 3 to 12 instances per AZ on CPU above 55 percent; Bookings DB, db.r6g.2xlarge Multi-AZ, storage autoscaling to 4 TB; NAT gateways, one per AZ, 5 Gbps each.",
+  "checklist": {
+    "sections": [
+      "Overview",
+      "Diagram",
+      "Capacity"
+    ],
+    "visible": [
+      "Booking account",
+      "Booking VPC",
+      "Public subnets",
+      "App subnets",
+      "Data subnets",
+      "Application Load Balancer",
+      "NAT Gateway A",
+      "NAT Gateway B",
+      "Web Fleet A",
+      "Web Fleet B",
+      "Bookings DB Primary",
+      "Bookings DB Standby",
+      "S3 Gateway Endpoint",
+      "Travelers",
+      "CloudFront and WAF",
+      "Partner Inventory API",
+      "synchronous replication"
+    ],
+    "values": [
+      "10.40.0.0/16",
+      "10.40.0.0/23",
+      "10.40.10.0/23",
+      "10.40.20.0/23",
+      "eu-west-1",
+      "8080",
+      "55",
+      "db.r6g.2xlarge",
+      "4 TB",
+      "5 Gbps",
+      "2026-09-28"
+    ]
+  },
+  "needs": [
+    "diagram",
+    "table"
+  ],
+  "edit": {
+    "request": "Change the Bookings DB instance class to db.r6g.4xlarge and add a node called \"Redis Session Cache\" in the Data subnets, with arrows from Web Fleet A and from Web Fleet B labeled \"sessions\".",
+    "expect_visible": [
+      "Redis Session Cache",
+      "sessions"
+    ],
+    "expect_values": [
+      "db.r6g.4xlarge"
+    ],
+    "expect_absent": [
+      "db.r6g.2xlarge"
+    ]
+  }
+}

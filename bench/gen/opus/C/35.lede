@@ -1,0 +1,40 @@
+@title Write It Down Before You Build It
+@subtitle Short written design notes save more time than they cost
+@author Daniel Reyes, Staff Engineer, Thornbury Labs
+
+# The meeting that should have been a page
+Most of us have sat through it. Six engineers, an hour on the calendar, and a whiteboard that fills up with boxes nobody photographs. Halfway through, someone asks what problem we are actually solving, and the room discovers that three people had three different answers. The meeting ends with a promise to "sync again next week." Nothing was decided; the confusion just got a time slot.
+
+That hour was not wasted because meetings are bad. It was wasted because nobody had written anything down first. The thinking that should have happened at a desk, slowly and alone, was being done out loud by six people at once, and it went about as well as you would expect.
+
+# What a design note is
+A design note is one to two pages, written before any code exists, and read asynchronously. It says what problem we are solving, why it matters now, what approaches we looked at, and which one we intend to try. It is short enough that a busy colleague will actually read it over coffee, and specific enough that they can disagree with it.
+
+The asynchronous part matters more than it sounds. A reader alone with a page notices gaps that a listener in a meeting glides over. They can reread the paragraph that bothered them. They can leave a comment that says "this assumes the queue is ordered, and it isn't," and that single sentence can save a week.
+
+> The page is where you find out what you do not know.
+
+Writing does the same thing for the author. It is easy to hold a vague plan in your head and feel confident about it. It is much harder to write that plan as sentences, because sentences demand that you choose. The moment you try to explain how a retry behaves when the downstream service is half up, you find out whether you know.
+
+# What it is not
+A design note is not a specification. It does not list every field, every endpoint, or every error code. Those details change the moment you start building, and trying to pin them down in advance produces a long document that is out of date by the first pull request.
+
+It is also not a permission slip. The point of writing a note is not to collect approvals before you are allowed to start. If a note turns into a gate that someone has to sign, people stop writing honest notes and start writing defensive ones. The note exists to sharpen the thinking, and anyone who reads it is helping, not ruling.
+
+# The cost
+The obvious objection is time. Engineers want to build, and writing feels like a delay. So at Thornbury we measured it. Across the notes written this year, the median design note took 3 hours to write. That is less than half a day, and less than the meeting most of them replaced once you count everyone in the room.
+
+On the other side of the ledger, the team counted 11 projects in 2026 where a note caught a wrong assumption before any code was written. Some were small, such as an API that did not return the field we thought it did. Others were not: one note revealed that two teams were about to build the same service. Each of those would have cost days or weeks to discover later, after the code had to be unwound.
+
+Three hours against weeks of rework is not a close call.
+
+# Start small
+You do not need a template committee or a review board to begin. Pick the next piece of work that will take more than a few days, and write one page before you open your editor. Share it with two people whose opinion you trust. Read their comments, change your mind if you need to, and then build.
+
+If the note feels pointless, it was probably short, and that is fine. Over time you will notice which notes earned their three hours, and the habit will justify itself.
+
+Every note, however short, should answer four prompts:
+- What problem are we solving?
+- Why now?
+- What did we consider?
+- How will we know it worked?

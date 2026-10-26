@@ -1,0 +1,39 @@
+@title Ferry Ticketing Platform
+@subtitle Tidewater Ferries online ticketing on Azure, region North Europe
+@author Digital Channels, Owner
+@date 2026-09-22
+
+## Overview
+Passengers book through Azure Front Door, and every booking is written to one database.
+Each booking is also announced as an event so that the scanners at the terminals stay in step.
+
+## Diagram
+diagram tix dir=TB title="Ticketing platform"
+tix: pax "Passengers" user
+tix: fd "Front Door" lb
+tix: web "Booking Web App" svc
+tix: api "Ticketing API" svc focus
+tix: db "Reservations DB" db "Azure SQL" focus
+tix: bus "Booking Events" queue "Service Bus"
+tix: scan "Port Terminal Scanners" ext
+tix: pay "Payment Provider" ext
+tix: pax -> fd : HTTPS
+tix: fd -> web : origin request
+tix: web -> api : REST
+tix: api -> db : SQL, port 1433
+tix: api -> pay : card authorization
+tix: api -> bus : ticket issued
+tix: bus --> scan : sync every 30 s
+tix: group app "App subnet 10.50.1.0/24" web, api
+tix: group data "Data subnet 10.50.2.0/24" db, bus
+tix: group vnet "Ticketing VNet 10.50.0.0/16" app, data
+tix: group sub "Ticketing subscription" vnet
+tix: legend
+
+## Capacity
+table = Component,Capacity; Booking Web App,"3 to 10 instances, scales at 60% CPU"; Ticketing API,4 to 16 pods; Reservations DB,"8 vCores, read replica in the paired region"
+
+## Recovery targets
+kpi Recovery point objective | 5 min
+kpi Recovery time objective | 1 h
+kpi Last tested | 2026-08-19

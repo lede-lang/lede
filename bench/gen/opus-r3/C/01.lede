@@ -1,0 +1,26 @@
+@title Platform Engineering Weekly Status
+@subtitle Week ending 2026-10-16
+@author Platform Engineering
+@date 2026-10-16
+
+kpi Deploys this week | 47
+kpi PRs merged | 132
+kpi Open incidents | 2
+kpi On-call pages | 9
+
+## Highlights
+
+- Postgres 16 upgrade finished on all 14 clusters.
+- Build cache hit rate climbed to 87%.
+- New staging environment is live for the Checkout team.
+
+data prs = week,merged; W33,98; W34,104; W35,117; W36,109; W37,121; W38,126; W39,118; W40,129; W41,132
+chart line prs x=week y=merged title="PRs merged per week"
+
+## Workstreams
+
+table = Workstream,Owner,Status,ETA; Postgres upgrade,Priya Nair,Done,2026-10-09; Service mesh rollout,Tomas Ruiz,On track,2026-11-06; Cost tagging,Mei Chen,At risk,2026-10-30; Runner autoscaling,Dev Patel,Blocked,2026-11-20
+
+## Risks
+
+!! **Runner autoscaling is blocked** on a quota increase from the cloud provider (ticket `CASE-4471`). If it is not approved by 2026-10-23, the November date slips.

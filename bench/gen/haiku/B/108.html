@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fraud Screening Vendor Comparison</title>
+<style>
+:root{--bg:#f6f5f1;--card:#ffffff;--fg:#1c1f24;--muted:#5d6470;--line:#d8dbe0;--accent:#2a5d9f}
+@media (prefers-color-scheme: dark){:root{--bg:#101215;--card:#181b20;--fg:#e7e9ee;--muted:#9aa2ad;--line:#2d333b;--accent:#8db6ef}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+main{max-width:900px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:1.75rem;line-height:1.2;margin:0 0 6px}
+h2{font-size:1.25rem;margin:34px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+p{margin:0 0 12px}
+.meta{color:var(--muted);font-size:.9rem;margin:0 0 20px}
+.lead{font-size:1.05rem;margin-bottom:16px}
+.chart{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0}
+.chart svg{display:block;width:100%;height:auto}
+svg text{fill:var(--fg);font-size:14px}
+svg .lab{fill:var(--muted);font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{text-align:left;vertical-align:top;padding:8px 6px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:600;font-size:.82rem;text-transform:uppercase;letter-spacing:.04em}
+.tw{overflow-x:auto}
+.note{border-left:4px solid var(--accent);padding:10px 14px;background:var(--card);border-radius:8px;margin:14px 0}
+.rec{border:2px solid var(--accent);background:var(--card);border-radius:12px;padding:16px}
+@media (max-width:520px){th,td{font-size:.88rem;padding:6px 4px}}
+</style>
+</head>
+<body>
+<main>
+<h1>Fraud Screening Vendor Comparison</h1>
+<p class="meta">Fennimore Payments &middot; For the payments steering group &middot; Decision needed by 2026-11-20 &middot; Risk lead: Gideon Ashworth</p>
+
+<p class="lead">We process about 6 million customer payment transactions a month and need to choose a fraud-screening vendor by <strong>2026-11-20</strong>. We lean toward Tollgate as the balanced choice.</p>
+
+<h2>Side by side</h2>
+<div class="tw">
+<table>
+<thead><tr><th>Measure</th><th>Tollgate</th><th>Vantage Shield</th><th>Kestrel Risk</th></tr></thead>
+<tbody>
+<tr><td>Fraud caught</td><td>91.2%</td><td>94.8%</td><td>89.5%</td></tr>
+<tr><td>Good transactions wrongly blocked</td><td>1.9%</td><td>3.1%</td><td>1.2%</td></tr>
+<tr><td>Fee per 1,000 transactions</td><td>$4.10</td><td>$6.80</td><td>$2.90</td></tr>
+<tr><td>Integration time</td><td>6 weeks</td><td>10 weeks</td><td>4 weeks</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>Annual fees</h2>
+<p>At 6 million transactions a month, that is 72 million a year.</p>
+<div class="chart">
+<svg viewBox="0 0 600 190" role="img" aria-label="Annual fees bar chart: Tollgate 295,200 dollars, Vantage Shield 489,600 dollars, Kestrel Risk 208,800 dollars.">
+<text x="0" y="46" style="font-weight:600">Tollgate</text>
+<rect x="170" y="24" width="241" height="36" rx="4" style="fill:var(--accent)"/>
+<text x="419" y="48" class="lab">$295,200</text>
+<text x="0" y="106" style="font-weight:600">Vantage Shield</text>
+<rect x="170" y="84" width="400" height="36" rx="4" style="fill:var(--accent)"/>
+<text x="578" y="108" class="lab" text-anchor="end">$489,600</text>
+<text x="0" y="166" style="font-weight:600">Kestrel Risk</text>
+<rect x="170" y="144" width="171" height="36" rx="4" style="fill:var(--accent)"/>
+<text x="349" y="168" class="lab">$208,800</text>
+</svg>
+</div>
+
+<h2>What the trade-off means</h2>
+<p>Each wrongly blocked transaction is a customer declined at checkout.</p>
+<p>Vantage Shield catches 3.6 points more fraud than Tollgate. That comes with 1.2 points more good transactions wrongly blocked, and $194,400 more in fees a year.</p>
+<p>Kestrel Risk is the budget option. It costs $86,400 a year less than Tollgate, but catches 1.7 points less fraud (89.5% against 91.2%).</p>
+
+<h2>Recommendation</h2>
+<div class="rec">
+<p><strong>We lean toward Tollgate</strong> as the balanced choice between fraud caught, customers declined and fees. Kestrel Risk is the budget fallback if the steering group wants to cut about $86,400 a year in fees.</p>
+</div>
+<div class="note">
+<p><strong>Timing:</strong> if the contract is signed by <strong>2026-12-15</strong>, Tollgate (6 weeks) and Kestrel Risk (4 weeks) would be live before the change freeze on <strong>2027-02-01</strong>. Vantage Shield, at 10 weeks, would not.</p>
+</div>
+</main>
+</body>
+</html>

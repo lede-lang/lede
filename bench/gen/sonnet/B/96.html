@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harbour Street Bridge Rebuild Status</title>
+<style>
+:root{
+  --bg:#f3f6f8;--surface:#ffffff;--ink:#16212a;--muted:#55636f;--line:#d9e1e7;
+  --accent:#145f8f;--accent-soft:#e2eef6;
+  --green:#1b7a46;--green-bg:#e4f4ea;
+  --amber:#8a5a00;--amber-bg:#fff1cc;--amber-bar:#e0a000;
+  --done:#145f8f;--grey:#6c7882;--grey-bg:#e9edf0;
+  --track:#e3e9ee;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1317;--surface:#161d23;--ink:#e8eef2;--muted:#9aa8b3;--line:#27313a;
+    --accent:#6bb7e6;--accent-soft:#14283a;
+    --green:#6fd498;--green-bg:#12281b;
+    --amber:#f2c25b;--amber-bg:#2c2410;--amber-bar:#e0a92a;
+    --done:#6bb7e6;--grey:#9aa8b3;--grey-bg:#222b32;
+    --track:#26313a;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:18px 16px 48px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:8px 0 4px}
+h1{font-size:1.6rem;line-height:1.2;margin:0 0 4px}
+.asof{color:var(--muted);margin:0 0 16px;font-size:.92rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 14px}
+.hero .big{font-size:3rem;font-weight:800;line-height:1;color:var(--accent);font-variant-numeric:tabular-nums}
+.hero .big small{font-size:1.4rem;font-weight:700}
+.hero .lbl{color:var(--muted);font-size:.95rem;margin-left:6px}
+.track{height:16px;background:var(--track);border-radius:8px;overflow:hidden;margin:10px 0 0}
+.track i{display:block;height:100%;background:var(--accent);border-radius:8px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 14px}
+@media (max-width:480px){.grid{grid-template-columns:1fr}}
+.grid .card{margin:0}
+.k{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin:0 0 4px}
+.v{font-size:1.5rem;font-weight:800;line-height:1.2;font-variant-numeric:tabular-nums}
+.v.late{color:var(--amber)}
+.s{font-size:.9rem;color:var(--muted);margin:2px 0 0}
+.sbar{position:relative;height:12px;background:var(--track);border-radius:6px;margin:10px 0 4px;overflow:hidden}
+.sbar i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:6px}
+.sbar b{position:absolute;left:0;top:0;bottom:0;background:var(--amber-bar);opacity:.95}
+.sleg{font-size:.8rem;color:var(--muted)}
+.open{display:flex;gap:12px;align-items:flex-start}
+.open .ic{flex:none;width:40px;height:40px;border-radius:10px;background:var(--accent-soft);display:grid;place-items:center;font-size:1.3rem}
+.open p{margin:0}
+h2{font-size:1.2rem;margin:26px 0 10px;line-height:1.3}
+.ms{list-style:none;margin:0;padding:0}
+.ms li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 10px}
+.ms .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.ms .n{font-weight:700}
+.pill{flex:none;font-size:.75rem;font-weight:700;border-radius:999px;padding:2px 10px;text-transform:uppercase;letter-spacing:.04em}
+.pill.complete{background:var(--accent-soft);color:var(--done)}
+.pill.amber{background:var(--amber-bg);color:var(--amber)}
+.pill.green{background:var(--green-bg);color:var(--green)}
+.pill.ns{background:var(--grey-bg);color:var(--grey)}
+.pct{display:flex;align-items:center;gap:10px;margin-top:8px}
+.pct .t{flex:1;height:10px;background:var(--track);border-radius:5px;overflow:hidden}
+.pct .t i{display:block;height:100%;border-radius:5px}
+.pct .t i.complete{background:var(--done)}
+.pct .t i.amber{background:var(--amber-bar)}
+.pct .t i.green{background:var(--green)}
+.pct span{font-weight:700;font-variant-numeric:tabular-nums;min-width:3.2ch;text-align:right}
+.note{font-size:.88rem;color:var(--muted);margin:6px 0 0}
+.risk{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--amber-bar);border-radius:12px;padding:12px 14px;margin:0 0 10px}
+.risk h3{margin:0 0 2px;font-size:1rem}
+.risk p{margin:0}
+.next{list-style:none;padding:0;margin:0}
+.next li{display:flex;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 10px}
+.next .d{flex:none;text-align:center;min-width:3.4rem;background:var(--accent-soft);border-radius:8px;padding:4px 6px;color:var(--accent);font-weight:800;line-height:1.15}
+.next .d small{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.next .d span{font-size:1.4rem}
+.next p{margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Whitcombe City &middot; Public Works</p>
+  <h1>Harbour Street Bridge rebuild</h1>
+  <p class="asof">Status as of 2026-10-16</p>
+
+  <div class="card hero">
+    <div><span class="big">58<small>%</small></span><span class="lbl">of the project complete</span></div>
+    <div class="track" role="img" aria-label="58 percent complete"><i style="width:58%"></i></div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <p class="k">Budget spent</p>
+      <p class="v">$17.2M <span style="font-size:1rem;font-weight:600;color:var(--muted)">of $31.5M</span></p>
+      <div class="sbar" role="img" aria-label="54.6 percent of the budget spent"><i style="width:54.6%"></i></div>
+      <p class="s">54.6 percent spent, including $1.3M drawn from the $2.1M contingency.</p>
+    </div>
+    <div class="card">
+      <p class="k">Completion date</p>
+      <p class="v late">46 days late</p>
+      <p class="s">Planned 2027-09-30. Forecast now <strong>2027-11-15</strong>.</p>
+    </div>
+  </div>
+
+  <div class="card open">
+    <div class="ic" aria-hidden="true">&#128679;</div>
+    <div>
+      <p><strong>The bridge is closed to vehicles.</strong> The detour adds about 7 minutes to a trip. The footbridge stays open.</p>
+    </div>
+  </div>
+
+  <h2>Milestones</h2>
+  <ul class="ms">
+    <li>
+      <div class="row"><span class="n">Old span demolition</span><span class="pill complete">Complete</span></div>
+      <div class="pct"><div class="t"><i class="complete" style="width:100%"></i></div><span>100%</span></div>
+    </li>
+    <li>
+      <div class="row"><span class="n">Pier foundations</span><span class="pill complete">Complete</span></div>
+      <div class="pct"><div class="t"><i class="complete" style="width:100%"></i></div><span>100%</span></div>
+    </li>
+    <li>
+      <div class="row"><span class="n">Steel girder fabrication</span><span class="pill amber">Amber</span></div>
+      <div class="pct"><div class="t"><i class="amber" style="width:85%"></i></div><span>85%</span></div>
+      <p class="note">Amber because the steel supplier is 5 weeks behind.</p>
+    </li>
+    <li>
+      <div class="row"><span class="n">Girder erection</span><span class="pill amber">Amber</span></div>
+      <div class="pct"><div class="t"><i class="amber" style="width:30%"></i></div><span>30%</span></div>
+    </li>
+    <li>
+      <div class="row"><span class="n">Approach roads and utilities</span><span class="pill green">Green</span></div>
+      <div class="pct"><div class="t"><i class="green" style="width:40%"></i></div><span>40%</span></div>
+    </li>
+    <li>
+      <div class="row"><span class="n">Deck and parapets</span><span class="pill ns">Not started</span></div>
+      <div class="pct"><div class="t"><i style="width:0"></i></div><span>0%</span></div>
+    </li>
+  </ul>
+
+  <h2>Risks</h2>
+  <div class="risk">
+    <h3>Supplier delay</h3>
+    <p>The steel supplier is 5 weeks behind on girder fabrication.</p>
+  </div>
+  <div class="risk">
+    <h3>Winter concrete pours for the deck</h3>
+    <p>Heated enclosures are budgeted at $380,000.</p>
+  </div>
+
+  <h2>Next 30 days</h2>
+  <ul class="next">
+    <li>
+      <div class="d"><small>Nov</small><span>2</span></div>
+      <p><strong>First girders delivered</strong><br><span style="color:var(--muted)">2026-11-02</span></p>
+    </li>
+    <li>
+      <div class="d"><small>Nov</small><span>5</span></div>
+      <p><strong>Public information meeting</strong><br><span style="color:var(--muted)">2026-11-05 at 18:30, at the library</span></p>
+    </li>
+  </ul>
+</div>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Matchmaking Architecture</title>
+<style>
+:root{color-scheme:light dark;--bg:#f5f5f8;--card:#fff;--ink:#191a23;--muted:#5d5f70;--line:#dcdce6;--accent:#5a3fc0;--accent-soft:#efebfb;--warn:#a34700;--warn-soft:#fff2e3;--node:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#0f0f15;--card:#181820;--ink:#e9e9f1;--muted:#a0a1b3;--line:#2e2e3c;--accent:#a996ff;--accent-soft:#221c3d;--warn:#f5a85a;--warn-soft:#33230f;--node:#1f1f29}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+main{max-width:940px;margin:0 auto;padding:36px 16px 64px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+h1{font-size:clamp(1.6rem,4.5vw,2.3rem);line-height:1.15;margin:.35rem 0 .7rem}
+.meta{display:flex;flex-wrap:wrap;gap:.4rem .6rem;font-size:.88rem;color:var(--muted)}
+.meta span{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:.15rem .7rem}
+section{margin-top:40px}
+h2{font-size:1.3rem;margin:0 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+h3{font-size:1.02rem;margin:24px 0 10px}
+p{margin:0 0 .8rem}
+.watch{border:1px solid var(--warn);border-left-width:6px;background:var(--warn-soft);border-radius:12px;padding:14px 16px;margin-top:20px}
+.watch b.t{display:block;color:var(--warn);margin-bottom:4px}
+.figure{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.figure svg{display:block;width:100%;min-width:760px;height:auto}
+.hint{font-size:.82rem;color:var(--muted);margin-top:8px}
+@media (min-width:800px){.hint{display:none}}
+.zr{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4}
+.zr.back{fill:var(--card);opacity:.9}
+.zsh{fill:var(--warn-soft);stroke:var(--warn);stroke-width:1.8;stroke-dasharray:7 4}
+.zt{font-size:14.5px;font-weight:750}
+.zs{font-size:12px}
+.n rect{fill:var(--node);stroke:var(--muted);stroke-width:1.4}
+.n.ext rect{stroke-dasharray:5 3}
+.n.sh rect{stroke:var(--warn);stroke-width:2.2}
+.nt{fill:var(--ink);font-size:13.5px;font-weight:650;text-anchor:middle}
+.e{stroke:var(--muted);stroke-width:1.6;fill:none}
+.e.udp{stroke:var(--accent);stroke-dasharray:2 4;stroke-width:2.2;stroke-linecap:round}
+.ah{fill:var(--muted)}.aha{fill:var(--accent)}
+.el{fill:var(--muted);font-size:12.5px;paint-order:stroke;stroke:var(--card);stroke-width:5px;stroke-linejoin:round}
+.mid{text-anchor:middle}
+.flows{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:6px;font-size:.93rem}
+@media (min-width:700px){.flows{grid-template-columns:1fr 1fr}}
+.flows li{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+.flows em{color:var(--muted);font-style:normal}
+.regions{display:grid;gap:12px}
+@media (min-width:680px){.regions{grid-template-columns:repeat(3,1fr)}}
+.rg{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.rg .name{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:700;color:var(--accent);font-size:1.05rem}
+.rg .big{font-size:1.6rem;font-weight:800;font-variant-numeric:tabular-nums;margin-top:6px;line-height:1.1}
+.rg .k{font-size:.86rem;color:var(--muted)}
+.math{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:12px;font-size:.98rem;text-align:center;font-variant-numeric:tabular-nums}
+.math b{font-size:1.1rem}
+.math .op{color:var(--muted);margin:0 .4rem}
+.targets{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+.tg{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.tg .v{font-size:1.6rem;font-weight:800;line-height:1.1}
+.tg .k{font-size:.88rem;color:var(--muted)}
+.chart{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:12px}
+.chart svg{display:block;width:100%;height:auto}
+footer{margin-top:48px;font-size:.85rem;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<main>
+<header>
+<div class="eyebrow">Embergate Online · Live team onboarding</div>
+<h1>Matchmaking and game server architecture</h1>
+<div class="meta"><span>Owner: Backend Services</span><span>Reviewed 2026-09-22</span></div>
+</header>
+
+<section id="overview">
+<h2>Overview</h2>
+<p>Players are matched into 10-player games and placed on the nearest regional server fleet. Each region can run alone if another region fails.</p>
+<div class="watch" role="note"><b class="t">Watch these in a regional failover</b>The <strong>Player Profile Database</strong> and the <strong>Leaderboard Service</strong> are the only parts shared across regions. Everything else is duplicated per region.</div>
+</section>
+
+<section id="architecture">
+<h2>Architecture</h2>
+<div class="figure">
+<svg viewBox="0 0 1040 540" role="img" aria-labelledby="at ad">
+<title id="at">Matchmaking architecture diagram</title>
+<desc id="ad">Players connect to the Global Edge, which sends queue requests to the Matchmaker in the nearest Regional Stack. The Matchmaker reads skill ratings from the Regional Cache, loads profiles from the shared Player Profile Database, and sends a match of 10 players to the Session Allocator, which starts a session on the Game Server Fleet. Players send UDP game traffic to the Game Server Fleet, which sends match results to the shared Leaderboard Service.</desc>
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0L10,5L0,10z"/></marker>
+<marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="aha" d="M0,0L10,5L0,10z"/></marker>
+</defs>
+<rect class="zr back" x="236" y="56" width="480" height="470" rx="14"/>
+<rect class="zr back" x="228" y="48" width="480" height="470" rx="14"/>
+<rect class="zr" x="220" y="40" width="480" height="470" rx="14"/>
+<text class="zt" x="238" y="66" fill="var(--accent)">Regional Stack</text>
+<text class="zs" x="238" y="84" fill="var(--muted)">× 3: us-east, eu-central, ap-southeast</text>
+<rect class="zsh" x="760" y="40" width="260" height="470" rx="14"/>
+<text class="zt" x="778" y="66" fill="var(--warn)">Shared across regions</text>
+<text class="zs" x="778" y="84" fill="var(--warn)">Watch in failover</text>
+
+<!-- edges -->
+<line class="e" x1="95" y1="137" x2="95" y2="251" marker-end="url(#a)"/>
+<text class="el" x="104" y="198">connect</text>
+<line class="e udp" x1="170" y1="110" x2="501" y2="110" marker-end="url(#aa)"/>
+<text class="el mid" x="380" y="101" fill="var(--accent)" style="fill:var(--accent);font-weight:650">UDP game traffic</text>
+<line class="e" x1="170" y1="280" x2="263" y2="280" marker-end="url(#a)"/>
+<text class="el mid" x="216" y="257">queue</text><text class="el mid" x="216" y="271">request</text>
+<line class="e" x1="340" y1="307" x2="340" y2="411" marker-end="url(#a)"/>
+<text class="el" x="348" y="378">skill ratings</text>
+<line class="e" x1="415" y1="280" x2="503" y2="280" marker-end="url(#a)"/>
+<text class="el mid" x="459" y="257">match of</text><text class="el mid" x="459" y="271">10 players</text>
+<line class="e" x1="580" y1="253" x2="580" y2="139" marker-end="url(#a)"/>
+<text class="el" x="588" y="200">start session</text>
+<line class="e" x1="655" y1="110" x2="813" y2="110" marker-end="url(#a)"/>
+<text class="el mid" x="734" y="101">match results</text>
+<path class="e" d="M385,307 V350 H890 V411" marker-end="url(#a)"/>
+<text class="el mid" x="640" y="342">load profile</text>
+
+<!-- nodes -->
+<g class="n ext"><rect x="20" y="83" width="150" height="54" rx="9"/><text class="nt" x="95" y="115">Players</text></g>
+<g class="n"><rect x="20" y="253" width="150" height="54" rx="9"/><text class="nt" x="95" y="285">Global Edge</text></g>
+<g class="n"><rect x="265" y="253" width="150" height="54" rx="9"/><text class="nt" x="340" y="285">Matchmaker</text></g>
+<g class="n"><rect x="265" y="413" width="150" height="54" rx="9"/><text class="nt" x="340" y="445">Regional Cache</text></g>
+<g class="n"><rect x="505" y="253" width="150" height="54" rx="9"/><text class="nt" x="580" y="285">Session Allocator</text></g>
+<g class="n"><rect x="505" y="83" width="150" height="54" rx="9"/><text class="nt" x="580" y="115">Game Server Fleet</text></g>
+<g class="n sh"><rect x="815" y="83" width="150" height="54" rx="9"/><text class="nt" x="890" y="115">Leaderboard Service</text></g>
+<g class="n sh"><rect x="800" y="413" width="180" height="54" rx="9"/><text class="nt" x="890" y="436">Player Profile</text><text class="nt" x="890" y="454">Database</text></g>
+</svg>
+</div>
+<p class="hint">Swipe sideways to see the whole diagram.</p>
+<p style="font-size:.88rem;color:var(--muted);margin-top:10px">The Global Edge routes each player to the closest region. The stacked purple box is one regional stack; all three regions are identical.</p>
+<ul class="flows" aria-label="All flows">
+<li>Players → Global Edge <em>· connect</em></li>
+<li>Global Edge → Matchmaker <em>· queue request</em></li>
+<li>Matchmaker → Regional Cache <em>· skill ratings</em></li>
+<li>Matchmaker → Player Profile Database <em>· load profile</em></li>
+<li>Matchmaker → Session Allocator <em>· match of 10 players</em></li>
+<li>Session Allocator → Game Server Fleet <em>· start session</em></li>
+<li>Players → Game Server Fleet <em>· UDP game traffic</em></li>
+<li>Game Server Fleet → Leaderboard Service <em>· match results</em></li>
+</ul>
+</section>
+
+<section id="regions">
+<h2>Regions and capacity</h2>
+<div class="regions">
+<div class="rg"><div class="name">us-east</div><div class="big">9,000</div><div class="k">concurrent players · 150 game servers</div></div>
+<div class="rg"><div class="name">eu-central</div><div class="big">9,000</div><div class="k">concurrent players · 150 game servers</div></div>
+<div class="rg"><div class="name">ap-southeast</div><div class="big">9,000</div><div class="k">concurrent players · 150 game servers</div></div>
+</div>
+<div class="math"><b>150</b> servers <span class="op">×</span> <b>6</b> matches <span class="op">×</span> <b>10</b> players <span class="op">=</span> <b>9,000</b> concurrent players per region</div>
+
+<h3>Matchmaking time targets</h3>
+<div class="targets">
+<div class="tg"><div class="v">10 s</div><div class="k">median</div></div>
+<div class="tg"><div class="v">30 s</div><div class="k">95th percentile</div></div>
+</div>
+
+<h3>Scaling</h3>
+<p>When more than <strong>2,000 players are waiting</strong> in a region's queue, that region scales its fleet up to <strong>400 game servers</strong>.</p>
+<div class="chart">
+<svg viewBox="0 0 640 110" role="img" aria-label="Game servers per region: 150 normally, up to 400 when more than 2000 players are queued.">
+<text x="0" y="30" font-size="13" font-weight="650" fill="var(--ink)">Normal</text>
+<rect x="110" y="14" width="168.75" height="24" rx="3" fill="var(--accent)" opacity=".55"/>
+<text x="286" y="31" font-size="13" font-weight="700" fill="var(--ink)">150 servers</text>
+<text x="0" y="70" font-size="13" font-weight="650" fill="var(--ink)">Scaled up</text>
+<rect x="110" y="54" width="450" height="24" rx="3" fill="var(--accent)"/>
+<text x="568" y="71" font-size="13" font-weight="700" fill="var(--ink)">400</text>
+<line x1="110" y1="6" x2="110" y2="86" stroke="var(--muted)"/>
+<text x="110" y="104" font-size="11.5" fill="var(--muted)">0 servers · bars to scale · trigger: queue above 2,000 players</text>
+</svg>
+</div>
+<div class="watch" role="note"><b class="t">Regional failover checklist</b>Each region runs on its own, so a failed region does not take down the others. The two shared parts, the <strong>Player Profile Database</strong> and the <strong>Leaderboard Service</strong>, are the ones to watch.</div>
+</section>
+
+<footer>Embergate Online · Backend Services · Reviewed 2026-09-22</footer>
+</main>
+</body>
+</html>

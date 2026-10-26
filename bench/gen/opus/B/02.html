@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Payments API — SLO Dashboard</title>
+<style>
+:root {
+  --bg: #f4f6f8;
+  --panel: #ffffff;
+  --ink: #111827;
+  --sub: #5a6474;
+  --line: #e1e5eb;
+  --grid: #eceff3;
+  --series: #0f766e;
+  --target: #c2410c;
+  --bar: #3b6fd8;
+  --bar-over: #c62828;
+  --good: #15803d;
+  --bad: #b91c1c;
+  --callout-bg: #fdecec;
+  --callout-edge: #d93636;
+  --callout-ink: #6b1212;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --ink: #e6edf3;
+    --sub: #9198a1;
+    --line: #2b323c;
+    --grid: #232a33;
+    --series: #2dd4bf;
+    --target: #fb923c;
+    --bar: #6d9bff;
+    --bar-over: #f87171;
+    --good: #4ade80;
+    --bad: #f87171;
+    --callout-bg: #3a1618;
+    --callout-edge: #ef5350;
+    --callout-ink: #ffd5d5;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15.5px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.wrap { max-width: 960px; margin: 0 auto; padding: 28px 16px 60px; }
+.top h1 { margin: 0; font-size: 1.55rem; }
+.top .meta { color: var(--sub); margin-top: 4px; }
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 22px 0; }
+.tile { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+.tile .k { color: var(--sub); font-size: 0.85rem; }
+.tile .v { font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.25; }
+.tile .t { font-size: 0.85rem; color: var(--good); font-weight: 600; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; margin-top: 16px; }
+.card h2 { margin: 0 0 12px; font-size: 1.12rem; }
+svg { display: block; width: 100%; height: auto; }
+svg text { font-family: inherit; }
+.ax { fill: var(--sub); font-size: 12px; }
+.gl { stroke: var(--grid); }
+.legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 0.85rem; color: var(--sub); margin-top: 8px; }
+.legend span::before { content: ""; display: inline-block; width: 18px; height: 0; border-top: 3px solid; vertical-align: middle; margin-right: 6px; }
+.legend .s::before { border-color: var(--series); }
+.legend .tg::before { border-color: var(--target); border-top-style: dashed; }
+.table-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+th, td { padding: 10px 10px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--sub); }
+tr:last-child td { border-bottom: 0; }
+td.svc { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.92rem; }
+.under { color: var(--bad); font-weight: 700; }
+.over { color: var(--bad); font-weight: 700; }
+.callout { margin-top: 16px; background: var(--callout-bg); border: 1px solid var(--callout-edge); border-left: 6px solid var(--callout-edge); border-radius: 10px; padding: 14px 18px; color: var(--callout-ink); }
+.callout h2 { margin: 0 0 4px; font-size: 1.05rem; }
+.callout p { margin: 0; }
+@media (max-width: 600px) {
+  .tiles { grid-template-columns: 1fr; gap: 10px; }
+  .tile { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 4px 12px; }
+  .tile .v { font-size: 1.6rem; }
+  .card { padding: 16px 14px; }
+  th, td { padding: 8px 6px; font-size: 0.88rem; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Payments API — SLO Dashboard</h1>
+    <div class="meta">Payments Reliability · 30-day window ending 2026-10-15</div>
+  </header>
+
+  <div class="tiles">
+    <div class="tile"><div class="k">Availability</div><div class="v">99.95%</div><div class="t">Target 99.9% · meeting</div></div>
+    <div class="tile"><div class="k">Error budget remaining</div><div class="v">62%</div><div class="t">38% consumed</div></div>
+    <div class="tile"><div class="k">p99 latency</div><div class="v">412 ms</div><div class="t">Target 500 ms · meeting</div></div>
+  </div>
+
+  <section class="card">
+    <h2>Daily availability</h2>
+    <svg viewBox="0 0 600 260" role="img" aria-label="Daily availability Oct 6 to Oct 15 with a 99.9 percent target line. Oct 11 dipped to 99.82, below target.">
+      <line class="gl" x1="60" y1="20" x2="580" y2="20"/>
+      <line class="gl" x1="60" y1="60" x2="580" y2="60"/>
+      <line class="gl" x1="60" y1="140" x2="580" y2="140"/>
+      <line class="gl" x1="60" y1="180" x2="580" y2="180"/>
+      <line class="gl" x1="60" y1="220" x2="580" y2="220"/>
+      <text class="ax" x="52" y="24" text-anchor="end">100.00</text>
+      <text class="ax" x="52" y="64" text-anchor="end">99.95</text>
+      <text class="ax" x="52" y="104" text-anchor="end">99.90</text>
+      <text class="ax" x="52" y="144" text-anchor="end">99.85</text>
+      <text class="ax" x="52" y="184" text-anchor="end">99.80</text>
+      <text class="ax" x="52" y="224" text-anchor="end">99.75</text>
+      <rect x="60" y="100" width="520" height="120" fill="var(--target)" opacity="0.06"/>
+      <line x1="60" y1="100" x2="580" y2="100" stroke="var(--target)" stroke-width="2" stroke-dasharray="7 5"/>
+      <text x="578" y="94" text-anchor="end" font-size="12" font-weight="600" fill="var(--target)">Target 99.9%</text>
+      <polyline fill="none" stroke="var(--series)" stroke-width="3" stroke-linejoin="round" points="60,36 117.78,44 175.56,92 233.33,28 291.11,52 348.89,164 406.67,68 464.44,44 522.22,28 580,36"/>
+      <g fill="var(--panel)" stroke="var(--series)" stroke-width="2.5">
+        <circle cx="60" cy="36" r="4"/>
+        <circle cx="117.78" cy="44" r="4"/>
+        <circle cx="175.56" cy="92" r="4"/>
+        <circle cx="233.33" cy="28" r="4"/>
+        <circle cx="291.11" cy="52" r="4"/>
+        <circle cx="406.67" cy="68" r="4"/>
+        <circle cx="464.44" cy="44" r="4"/>
+        <circle cx="522.22" cy="28" r="4"/>
+        <circle cx="580" cy="36" r="4"/>
+      </g>
+      <circle cx="348.89" cy="164" r="6" fill="var(--bad)" stroke="var(--panel)" stroke-width="2"/>
+      <text x="348.89" y="188" text-anchor="middle" font-size="12" font-weight="700" fill="var(--bad)">Oct 11: 99.82%</text>
+      <g class="ax" text-anchor="middle">
+        <text x="60" y="244">Oct 6</text>
+        <text x="117.78" y="244">7</text>
+        <text x="175.56" y="244">8</text>
+        <text x="233.33" y="244">9</text>
+        <text x="291.11" y="244">10</text>
+        <text x="348.89" y="244">11</text>
+        <text x="406.67" y="244">12</text>
+        <text x="464.44" y="244">13</text>
+        <text x="522.22" y="244">14</text>
+        <text x="575" y="244">15</text>
+      </g>
+    </svg>
+    <div class="legend"><span class="s">Daily availability (%)</span><span class="tg">99.9% target</span></div>
+  </section>
+
+  <section class="card">
+    <h2>Service SLOs</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Service</th><th>SLO target</th><th>Current</th><th>Budget consumed</th></tr></thead>
+        <tbody>
+          <tr><td class="svc">payments-api</td><td>99.9%</td><td>99.95%</td><td>38%</td></tr>
+          <tr><td class="svc">ledger-writer</td><td>99.95%</td><td>99.97%</td><td>41%</td></tr>
+          <tr><td class="svc">card-tokenizer</td><td>99.99%</td><td>99.993%</td><td>70%</td></tr>
+          <tr><td class="svc">refunds-worker</td><td>99.5%</td><td>99.71%</td><td>22%</td></tr>
+          <tr><td class="svc">payout-scheduler</td><td>99.9%</td><td class="under">99.86%</td><td class="over">140%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 style="margin-top:22px">Budget consumed by service</h2>
+    <svg viewBox="0 0 600 220" role="img" aria-label="Bar chart of error budget consumed: payments-api 38%, ledger-writer 41%, card-tokenizer 70%, refunds-worker 22%, payout-scheduler 140%.">
+      <line class="gl" x1="140" y1="10" x2="140" y2="190"/>
+      <line class="gl" x1="280" y1="10" x2="280" y2="190"/>
+      <line class="gl" x1="560" y1="10" x2="560" y2="190"/>
+      <text class="ax" x="140" y="208" text-anchor="middle">0%</text>
+      <text class="ax" x="280" y="208" text-anchor="middle">50%</text>
+      <text class="ax" x="420" y="208" text-anchor="middle">100%</text>
+      <text class="ax" x="560" y="208" text-anchor="middle">150%</text>
+      <g class="ax" text-anchor="end" font-size="12">
+        <text x="132" y="34">payments-api</text>
+        <text x="132" y="70">ledger-writer</text>
+        <text x="132" y="106">card-tokenizer</text>
+        <text x="132" y="142">refunds-worker</text>
+        <text x="132" y="178">payout-scheduler</text>
+      </g>
+      <g fill="var(--bar)">
+        <rect x="140" y="18" width="106.4" height="22" rx="3"/>
+        <rect x="140" y="54" width="114.8" height="22" rx="3"/>
+        <rect x="140" y="90" width="196" height="22" rx="3"/>
+        <rect x="140" y="126" width="61.6" height="22" rx="3"/>
+      </g>
+      <rect x="140" y="162" width="392" height="22" rx="3" fill="var(--bar-over)"/>
+      <line x1="420" y1="10" x2="420" y2="190" stroke="var(--target)" stroke-width="2" stroke-dasharray="5 4"/>
+      <g font-size="12" font-weight="600" fill="var(--ink)">
+        <text x="252.4" y="34">38%</text>
+        <text x="260.8" y="70">41%</text>
+        <text x="342" y="106">70%</text>
+        <text x="207.6" y="142">22%</text>
+      </g>
+      <text x="526" y="178" text-anchor="end" font-size="12" font-weight="700" fill="#fff">140%</text>
+    </svg>
+    <div class="legend"><span class="tg">100% = budget fully spent</span></div>
+  </section>
+
+  <aside class="callout" role="alert">
+    <h2>Budget exhausted</h2>
+    <p><strong>payout-scheduler</strong> has burned 140% of its error budget. Per the error budget policy, feature deploys to it are frozen until 2026-10-29.</p>
+  </aside>
+</div>
+</body>
+</html>

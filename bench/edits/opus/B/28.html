@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2026 Revenue by Region</title>
+<style>
+:root{--bg:#f5f6f3;--surface:#fff;--text:#1b211c;--muted:#5e675f;--border:#dce1db;--emea:#2f6db5;--apac:#c2571f;--amer:#2e8a55;--note-bg:#eef2f8;--note:#4f6f9a}
+@media (prefers-color-scheme:dark){:root{--bg:#111412;--surface:#1a1e1b;--text:#e5eae5;--muted:#9ba69c;--border:#2c332d;--emea:#6fa4e8;--apac:#f08c55;--amer:#62c58b;--note-bg:#1a2333;--note:#7f9fcc}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:960px;margin:0 auto;padding:32px 16px 64px}
+.eyebrow{font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 0 6px}
+h1{font-size:clamp(26px,5vw,34px);line-height:1.2;margin:0 0 6px}
+.lede{color:var(--muted);margin:0 0 24px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:34px}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.tile .k{font-size:13px;color:var(--muted)}
+.tile .v{font-size:28px;font-weight:700;line-height:1.2;margin:4px 0 2px;font-variant-numeric:tabular-nums}
+.tile .s{font-size:13px;color:var(--muted)}
+section{margin-bottom:34px}
+h2{font-size:21px;margin:0 0 12px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px}
+.chart{padding:18px}
+svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:16px;list-style:none;margin:0 0 8px;padding:0;font-size:14px}
+.legend i{display:inline-block;width:16px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:520px;font-variant-numeric:tabular-nums}
+th,td{padding:9px 14px;border-bottom:1px solid var(--border);text-align:right}
+th:first-child,td:first-child{text-align:left}
+thead th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.tot{font-weight:700}
+tfoot td{font-weight:700;border-bottom:0;border-top:2px solid var(--border)}
+caption{caption-side:bottom;text-align:left;color:var(--muted);font-size:13px;padding:8px 14px}
+ul.hl{margin:0;padding-left:22px}
+ul.hl li{margin:6px 0}
+.note{background:var(--note-bg);border-left:5px solid var(--note);border-radius:8px;padding:12px 16px}
+</style>
+</head>
+<body>
+<main>
+<p class="eyebrow">Vantage Outdoor Gear · Finance</p>
+<h1>2026 revenue by region</h1>
+<p class="lede">January through October, in thousands of dollars.</p>
+
+<div class="tiles">
+<div class="tile"><div class="k">Year-to-date revenue</div><div class="v">$15,343K</div><div class="s">Jan to Oct, all regions</div></div>
+<div class="tile"><div class="k">Best month</div><div class="v">$1,776K</div><div class="s">October</div></div>
+<div class="tile"><div class="k">APAC growth</div><div class="v">44.8%</div><div class="s">January to September</div></div>
+<div class="tile"><div class="k">Americas share</div><div class="v">45.0%</div><div class="s">of year-to-date revenue</div></div>
+</div>
+
+<section>
+<h2>Monthly revenue</h2>
+<div class="panel chart">
+<ul class="legend">
+<li><i style="background:var(--amer)"></i>Americas</li>
+<li><i style="background:var(--emea)"></i>EMEA</li>
+<li><i style="background:var(--apac)"></i>APAC</li>
+</ul>
+<svg viewBox="0 0 650 310" role="img" aria-label="Line chart of monthly revenue in thousands of dollars by region, January to October 2026. Americas from 620 to 779, EMEA from 412 to 566, APAC from 288 to 431.">
+<g stroke="var(--border)" stroke-width="1">
+<line x1="60" y1="270" x2="570" y2="270"/><line x1="60" y1="230" x2="570" y2="230"/><line x1="60" y1="190" x2="570" y2="190"/><line x1="60" y1="150" x2="570" y2="150"/><line x1="60" y1="110" x2="570" y2="110"/><line x1="60" y1="70" x2="570" y2="70"/><line x1="60" y1="30" x2="570" y2="30"/>
+</g>
+<g fill="var(--muted)" font-size="12" text-anchor="end">
+<text x="52" y="274">$200K</text><text x="52" y="234">$300K</text><text x="52" y="194">$400K</text><text x="52" y="154">$500K</text><text x="52" y="114">$600K</text><text x="52" y="74">$700K</text><text x="52" y="34">$800K</text>
+</g>
+<g fill="var(--muted)" font-size="12" text-anchor="middle">
+<text x="80" y="292">Jan</text><text x="134" y="292">Feb</text><text x="188" y="292">Mar</text><text x="242" y="292">Apr</text><text x="296" y="292">May</text><text x="350" y="292">Jun</text><text x="404" y="292">Jul</text><text x="458" y="292">Aug</text><text x="512" y="292">Sep</text><text x="566" y="292">Oct</text>
+</g>
+<g fill="none" stroke-width="2.5" stroke-linejoin="round">
+<polyline stroke="var(--amer)" points="80,102 134,112 188,90.8 242,81.6 296,69.2 350,56 404,62.8 458,74 512,48.4 566,38.4"/>
+<polyline stroke="var(--emea)" points="80,185.2 134,190.8 188,168 242,161.6 296,148.8 350,138.8 404,151.2 458,157.2 512,133.6 566,123.6"/>
+<polyline stroke="var(--apac)" points="80,234.8 134,229.6 188,221.2 242,224 296,212.4 350,202.8 404,194 458,189.2 512,183.2 566,177.6"/>
+</g>
+<g>
+<circle cx="566" cy="38.4" r="4" fill="var(--amer)"/><circle cx="566" cy="123.6" r="4" fill="var(--emea)"/><circle cx="566" cy="177.6" r="4" fill="var(--apac)"/>
+</g>
+<g font-size="12" font-weight="600">
+<text x="578" y="35" fill="var(--amer)">Americas</text><text x="578" y="49" fill="var(--muted)" font-weight="400">$779K</text>
+<text x="578" y="120" fill="var(--emea)">EMEA</text><text x="578" y="134" fill="var(--muted)" font-weight="400">$566K</text>
+<text x="578" y="174" fill="var(--apac)">APAC</text><text x="578" y="188" fill="var(--muted)" font-weight="400">$431K</text>
+</g>
+</svg>
+</div>
+</section>
+
+<section>
+<h2>Revenue table</h2>
+<div class="panel table-wrap">
+<table>
+<caption>Thousands of dollars.</caption>
+<thead><tr><th>Month</th><th>EMEA</th><th>APAC</th><th>Americas</th><th>Total</th></tr></thead>
+<tbody>
+<tr><td>Jan</td><td>412</td><td>288</td><td>620</td><td class="tot">1,320</td></tr>
+<tr><td>Feb</td><td>398</td><td>301</td><td>595</td><td class="tot">1,294</td></tr>
+<tr><td>Mar</td><td>455</td><td>322</td><td>648</td><td class="tot">1,425</td></tr>
+<tr><td>Apr</td><td>471</td><td>315</td><td>671</td><td class="tot">1,457</td></tr>
+<tr><td>May</td><td>503</td><td>344</td><td>702</td><td class="tot">1,549</td></tr>
+<tr><td>Jun</td><td>528</td><td>368</td><td>735</td><td class="tot">1,631</td></tr>
+<tr><td>Jul</td><td>497</td><td>390</td><td>718</td><td class="tot">1,605</td></tr>
+<tr><td>Aug</td><td>482</td><td>402</td><td>690</td><td class="tot">1,574</td></tr>
+<tr><td>Sep</td><td>541</td><td>417</td><td>754</td><td class="tot">1,712</td></tr>
+<tr><td>Oct</td><td>566</td><td>431</td><td>779</td><td class="tot">1,776</td></tr>
+</tbody>
+<tfoot><tr><td>Year to date</td><td>4,853</td><td>3,578</td><td>6,912</td><td>15,343</td></tr></tfoot>
+</table>
+</div>
+</section>
+
+<section>
+<h2>Highlights</h2>
+<ul class="hl">
+<li>APAC was the fastest-growing region, up 44.8% from January to September.</li>
+<li>EMEA dipped in July and August because of the summer sales holiday.</li>
+<li>October was the record month at $1,776K.</li>
+</ul>
+</section>
+
+<div class="note" role="note"><strong>Note:</strong> Figures are unaudited and exclude the wholesale channel.</div>
+</main>
+</body>
+</html>

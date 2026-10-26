@@ -1,0 +1,41 @@
+@title Tallgrass Telemetry Pipeline
+@subtitle Windspire Energy, Tallgrass wind farm
+@author Asset Performance
+@date 2026-10-06
+
+# Overview
+Turbine data is collected on site and summarized before it is sent to the operations cloud over a limited link. The grid operator receives output and availability figures directly from the site.
+
+!! On satellite fallback the Control Room sees one-minute averages, not full-resolution data. The Edge Historian holds up to 72 hours of full-resolution data until the fiber link returns.
+
+# Pipeline
+diagram pipe dir=TB title="Telemetry pipeline"
+pipe: turbines "Turbine Controllers" svc "62 turbines"
+pipe: scada "Site SCADA" svc focus
+pipe: hist "Edge Historian" store "72 h buffer" focus
+pipe: gw "Ingest Gateway" svc
+pipe: tsdb "Time-Series Store" db
+pipe: fc "Forecast Service" svc
+pipe: grid "Grid Operator" ext
+pipe: room "Control Room" team
+pipe: turbines -> scada : 1 sample/s
+pipe: scada -> hist : buffered storage
+pipe: scada -> grid : every 4 s
+pipe: hist --> gw : compressed batches
+pipe: gw -> tsdb : validated samples
+pipe: tsdb -> fc : history
+pipe: fc -> room : 24 h forecast
+pipe: tsdb -> room : live and historical
+pipe: group site "Tallgrass Site" turbines, scada, hist
+pipe: group cloud "Windspire Operations Cloud" gw, tsdb, fc
+pipe: legend
+
+The site sends output and availability to the Grid Operator every 4 seconds. The Edge Historian sends compressed batches to the cloud over fiber, or over satellite when fiber is down.
+
+# Sizing
+kpi Turbines | 62 | 140 signals each
+kpi Sample rate | 8,680/s
+kpi Daily volume | ~750M samples
+kpi Edge buffer | 72 h | full resolution
+
+table = item,value; Full-resolution retention,30 days; One-minute average retention,5 years; Fiber link,100 Mbps (full resolution); Satellite fallback,2 Mbps (one-minute averages only)

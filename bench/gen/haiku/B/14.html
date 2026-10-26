@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Real-Time Quote Pricing Architecture</title>
+<style>
+:root{--page:#f4f5f9;--card:#fff;--ink:#1a1f2e;--mute:#5a6276;--edge:#d5dae6;--violet:#5a46b9;--violet-soft:#efedfb;--amber-bg:#fff3de;--amber-bd:#d4861c;--amber-ink:#5a3400;}
+@media (prefers-color-scheme: dark){
+:root:not([data-theme="light"]){--page:#0c0d15;--card:#151827;--ink:#e4e7f3;--mute:#9aa1b8;--edge:#2a3048;--violet:#a99bff;--violet-soft:#1d1b3a;--amber-bg:#352508;--amber-bd:#e39a3c;--amber-ink:#ffdba6;}
+}
+:root[data-theme="dark"]{--page:#0c0d15;--card:#151827;--ink:#e4e7f3;--mute:#9aa1b8;--edge:#2a3048;--violet:#a99bff;--violet-soft:#1d1b3a;--amber-bg:#352508;--amber-bd:#e39a3c;--amber-ink:#ffdba6;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:1.6rem;margin:0 0 4px}
+.meta{color:var(--mute);margin:0;font-size:.92rem}
+h2{font-size:1.12rem;margin:30px 0 10px;padding-bottom:4px;border-bottom:1px solid var(--edge)}
+.card{background:var(--card);border:1px solid var(--edge);border-radius:10px;padding:10px;overflow-x:auto}
+svg{display:block;width:100%;min-width:640px;height:auto}
+svg text{font-size:12px;fill:var(--ink)}
+svg .mute{fill:var(--mute);font-size:11px}
+svg .gh{font-weight:700;fill:var(--violet);font-size:12.5px}
+svg .acct{fill:none;stroke:var(--violet);stroke-width:1.4;stroke-dasharray:6 4}
+svg .vpc{fill:var(--violet-soft);stroke:var(--violet);stroke-width:1}
+svg .node{fill:var(--card);stroke:var(--violet);stroke-width:1.3}
+svg .ext{fill:var(--page);stroke:var(--mute);stroke-width:1.2}
+svg .ln{fill:none;stroke:var(--mute);stroke-width:1.5}
+svg .ah{fill:var(--mute)}
+table{width:100%;border-collapse:collapse;font-size:.94rem;min-width:460px}
+th,td{padding:9px 8px;border-bottom:1px solid var(--edge);text-align:left}
+th{color:var(--mute);font-weight:600;font-size:.84rem}
+ol{padding-left:22px}
+li{margin:6px 0}
+.warn{margin:18px 0 0;padding:14px 16px;background:var(--amber-bg);border-left:4px solid var(--amber-bd);color:var(--amber-ink);border-radius:8px}
+.warn strong{display:block;margin-bottom:2px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Real-Time Quote Pricing Model</h1>
+  <p class="meta">ML Platform team · Orchard Insurance · Reviewed 2026-10-12</p>
+
+  <h2>Overview</h2>
+  <p>The service prices about 450 quotes per second at peak, with a p99 target of 250 ms. Agents submit quote requests through the Agent Portal, and the Inference VPC scores each one against the approved model.</p>
+
+  <h2>Architecture diagram</h2>
+  <div class="card">
+  <svg viewBox="0 0 820 380" role="img" aria-label="Architecture diagram. Agent Portal sends quote requests to API Gateway in the Prod account. API Gateway invokes the Inference Lambda in the Inference VPC, which gets features from the Feature Cache and predicts with the SageMaker Endpoint. The Model Bucket loads the model into the endpoint. In the ML account, the Training Pipeline registers a model in the Model Registry, and the approved artifact goes to the Model Bucket.">
+    <defs>
+      <marker id="mlArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path class="ah" d="M0,0 L10,5 L0,10 z"/>
+      </marker>
+    </defs>
+
+    <!-- groups -->
+    <rect class="acct" x="200" y="20" width="420" height="340" rx="10"/>
+    <text class="gh" x="212" y="40">Prod account</text>
+    <rect class="vpc" x="340" y="130" width="260" height="220" rx="8"/>
+    <text class="mute" x="352" y="344">Inference VPC</text>
+    <rect class="acct" x="640" y="20" width="160" height="230" rx="10"/>
+    <text class="gh" x="652" y="40">ML account</text>
+
+    <!-- outside -->
+    <rect class="ext" x="16" y="228" width="110" height="50" rx="6"/>
+    <text x="71" y="257" text-anchor="middle">Agent Portal</text>
+
+    <!-- prod -->
+    <rect class="node" x="216" y="230" width="110" height="46" rx="6"/>
+    <text x="271" y="257" text-anchor="middle">API Gateway</text>
+    <rect class="node" x="440" y="56" width="150" height="44" rx="6"/>
+    <text x="515" y="83" text-anchor="middle">Model Bucket</text>
+
+    <!-- inference VPC -->
+    <rect class="node" x="356" y="170" width="120" height="46" rx="6"/>
+    <text x="416" y="192" text-anchor="middle">Inference</text>
+    <text x="416" y="207" text-anchor="middle">Lambda</text>
+    <rect class="node" x="496" y="170" width="92" height="46" rx="6"/>
+    <text x="542" y="192" text-anchor="middle">Feature</text>
+    <text x="542" y="207" text-anchor="middle">Cache</text>
+    <rect class="node" x="356" y="262" width="232" height="56" rx="6"/>
+    <text x="472" y="294" text-anchor="middle">SageMaker Endpoint</text>
+
+    <!-- ML account -->
+    <rect class="node" x="656" y="60" width="128" height="44" rx="6"/>
+    <text x="720" y="80" text-anchor="middle">Training</text>
+    <text x="720" y="96" text-anchor="middle">Pipeline</text>
+    <rect class="node" x="656" y="150" width="128" height="44" rx="6"/>
+    <text x="720" y="170" text-anchor="middle">Model</text>
+    <text x="720" y="186" text-anchor="middle">Registry</text>
+
+    <!-- connections -->
+    <line class="ln" x1="126" y1="253" x2="216" y2="253" marker-end="url(#mlArrow)"/>
+    <text class="mute" x="171" y="246" text-anchor="middle">quote request</text>
+
+    <path class="ln" d="M 326 253 H 341 V 193 H 356" marker-end="url(#mlArrow)"/>
+    <text class="mute" x="292" y="222" text-anchor="middle">invoke</text>
+
+    <path class="ln" d="M 416 170 V 150 H 542 V 170" marker-end="url(#mlArrow)"/>
+    <text class="mute" x="470" y="144" text-anchor="end">get features</text>
+
+    <line class="ln" x1="416" y1="216" x2="416" y2="262" marker-end="url(#mlArrow)"/>
+    <text class="mute" x="423" y="244">predict</text>
+
+    <path class="ln" d="M 486 100 V 262" marker-end="url(#mlArrow)"/>
+    <text class="mute" x="492" y="240">load model</text>
+
+    <line class="ln" x1="720" y1="104" x2="720" y2="150" marker-end="url(#mlArrow)"/>
+    <text class="mute" x="728" y="132">register model</text>
+
+    <path class="ln" d="M 656 172 H 620 V 78 H 590" marker-end="url(#mlArrow)"/>
+    <text class="mute" x="626" y="120">approved artifact</text>
+  </svg>
+  </div>
+
+  <h2>Capacity</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>Component</th><th>Size</th><th>Scaling</th></tr></thead>
+      <tbody>
+        <tr><td>SageMaker Endpoint</td><td>ml.c6i.2xlarge</td><td>4 to 12 instances, scaled on invocations per instance</td></tr>
+        <tr><td>Inference Lambda</td><td>1024 MB</td><td>200 reserved concurrency</td></tr>
+        <tr><td>Feature Cache</td><td>cache.r7g.large</td><td>2 replicas</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Deployment</h2>
+  <div class="card">
+    <ol>
+      <li>Register the model in the Model Registry.</li>
+      <li>Approve it in the Model Registry.</li>
+      <li>Blue/green deploy, shifting 10 percent of traffic every 5 minutes.</li>
+      <li>Roll back automatically if p99 exceeds 250 ms.</li>
+    </ol>
+  </div>
+
+  <div class="warn" role="alert">
+    <strong>The Feature Cache is not a source of truth</strong>
+    A cache miss falls back to the policy database and adds about 90 ms to the request.
+  </div>
+</main>
+</body>
+</html>

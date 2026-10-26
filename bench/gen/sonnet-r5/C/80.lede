@@ -1,0 +1,33 @@
+@title Rooftop solar bids for six schools
+@subtitle Ridgeway School District, board vote on 2026-11-17
+@author Beatrice Ng, Facilities director
+
+We recommend Copperfield Solar: the highest net benefit and the earliest completion. It also has the highest upfront price, which the district must finance.
+
+kpi Net benefit gap | $265,000 | Copperfield above SunHarvest | good
+
+## Bids
+
+data bids = bidder,size kW,price,25-year savings,warranty years,complete by,net benefit; Copperfield Solar,1250,2875000,7900000,25,2027-07-31,5025000; SunHarvest,1200,2640000,7400000,25,2027-08-15,4760000; Meridian Renewables,1200,2400000,7150000,15,2027-08-31,4750000; Brightline Energy,1150,2415000,7050000,20,2027-09-30,4635000; Halcyon Power,1100,2640000,6800000,30,2027-10-31,4160000
+
+table bids cols=bidder,size kW,price,25-year savings,warranty years title="Five bids, price and savings in dollars"
+
+## Net benefit
+
+Net 25-year benefit is savings minus price.
+
+chart hbar bids x=bidder y=net benefit unit=$ labels focus="Copperfield Solar" title="Net 25-year benefit"
+
+## Schedule fit
+
+Panels must be generating before the school year starts on 2027-09-01.
+
+table bids cols=bidder,complete by sort=complete by
+
+!! Brightline Energy (2027-09-30) and Halcyon Power (2027-10-31) would finish after the school year starts.
+
+## Recommendation
+
+Choose Copperfield Solar. It has the highest net benefit, 265000 dollars above SunHarvest, and the earliest completion, 2027-07-31.
+
+!! Copperfield also has the highest upfront price, 2875000 dollars, which the district must finance.

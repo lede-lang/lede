@@ -1,0 +1,27 @@
+@title Q4 sales status
+@subtitle Corvina Software, week 42 ending 2026-10-16, for the CRO's Monday meeting
+@author Sales Operations
+@date 2026-10-16
+
+kpi Q4 bookings | $6.9M | 60% of $11.5M target
+
+kpi Open pipeline | $14.8M | neutral
+kpi Win rate | 27% | neutral
+kpi Average deal | $84,000 | neutral
+
+data weekly = week,bookings; W36,0.5; W37,0.7; W38,0.6; W39,1.1; W40,0.9; W41,1.4; W42,1.7
+chart bar weekly y=bookings unit=$M title="Weekly bookings ($M)" focus="W42"
+Fiscal Q4 began on 2026-08-31 (week 36).
+
+# Regions
+data regions = region,target,booked,percent of target; North America,5.2,3.4,65; EMEA,4.1,2.3,56; APAC,2.2,1.2,55
+chart hbar regions y=percent of target unit=% max=100 title="Percent of Q4 target" focus="APAC"
+table regions heat=percent of target
+!! EMEA (56%) and APAC (55%) are behind North America (65%). Target and booked are in $M.
+
+# Deals to watch
+table = deal,value,region,close date,owner; Northline Clinics,"$750,000",North America,2026-10-23,Dana Whitfield; Hollis Rail,$1.2M,EMEA,2026-10-30,Ravi Menon; Pacific Grid,"$900,000",APAC,2026-11-13,Aiko Fujimoto
+
+# Next week
+- 2026-10-19: forecast call
+- 2026-10-21: APAC pipeline review

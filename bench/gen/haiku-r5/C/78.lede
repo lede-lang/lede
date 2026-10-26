@@ -1,0 +1,31 @@
+@title 2027 Dental Plan Options
+@subtitle Fenwick Studios, 112 employees. Prepared for Dalia Lund, HR lead. Open enrollment closes 2026-11-20
+
+# Plans
+
+Monthly premiums are for the employee.
+
+table = Plan,Monthly premium,Annual maximum,Deductible,Orthodontia; Basic,$14,"$1,000",$75,None; Plus,$28,"$1,500",$50,None; Premier,$41,"$2,500",$25,"50% up to a $1,500 lifetime maximum"; Family Max,$63,"$3,000",None,"50% up to a $2,000 lifetime maximum"
+
+# Annual premium
+
+The annual employee premium is 12 times the monthly premium.
+
+data prem = plan,annual; Basic,168; Plus,336; Premier,492; Family Max,756
+
+chart bar prem y=annual unit=$ labels title="Annual employee premium"
+
+Family Max costs $264 more a year than Premier.
+
+# Who each plan suits
+
+In the pulse survey, 38 employees said they have children who will need braces soon. That is why orthodontia matters.
+
+- **Basic:** the lowest premium, with no orthodontia cover.
+- **Plus:** a middle option, with a $1,500 annual maximum, a $50 deductible and no orthodontia.
+- **Premier:** orthodontia at 50 percent, a $25 deductible and a $2,500 annual maximum.
+- **Family Max:** no deductible, and orthodontia up to $2,000 for life. It suits families with ongoing orthodontia.
+
+# Recommendation
+
+We recommend Premier as the default plan. Family Max costs $264 more a year and only pays off for families with ongoing orthodontia.

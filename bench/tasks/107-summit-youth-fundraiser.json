@@ -1,0 +1,55 @@
+{
+  "id": "107-summit-youth-fundraiser",
+  "category": "comparison",
+  "title": "Summit Youth fundraising event options",
+  "brief": "Summit Youth Mentoring needs to choose its main fundraising event for spring 2027, and the development director, Priya Venkataraman, wants a decision page for the board meeting on 2026-11-17; board members will read it on their phones. The goal is to net at least 100000 dollars. Three options, with ranges because attendance is uncertain. Spring gala: net revenue 120000 to 180000 dollars, up-front cost 60000, about 400 staff and volunteer hours, and the risk is that it depends on a few large sponsors. Family walkathon: net 70000 to 110000, up-front cost 25000, about 250 hours, and the risk is weather on the day. Online giving campaign: net 40000 to 95000, up-front cost 8000, about 120 hours, and the risk is that results depend on social media reach. Sections: \"Options\" (side by side), \"Net revenue range\" (so the board can see which options can fall below the goal), \"Risks\" and \"Recommendation\". The gala is the only option whose whole range stays above the goal, but it also needs the most money up front and the most effort; the walkathon reaches the goal only at the top of its range and the online campaign never reaches it on its own. Our recommendation is the gala, with the online campaign as a low-cost add-on. Say clearly that the board needs to approve the 60000 dollar gala budget on 2026-11-17 for a gala date of 2027-04-24.",
+  "checklist": {
+    "sections": [
+      "Options",
+      "Net revenue range",
+      "Risks",
+      "Recommendation"
+    ],
+    "visible": [
+      "Spring gala",
+      "Family walkathon",
+      "Online giving campaign",
+      "Priya Venkataraman"
+    ],
+    "values": [
+      "2026-11-17",
+      "100000",
+      "120000",
+      "180000",
+      "60000",
+      "400",
+      "70000",
+      "110000",
+      "25000",
+      "250",
+      "40000",
+      "95000",
+      "8000",
+      "120 hours",
+      "2027-04-24"
+    ]
+  },
+  "needs": [
+    "table",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the gala date to 2027-05-01 and the walkathon's top-of-range net revenue from 110000 to 125000 dollars.",
+    "expect_visible": [],
+    "expect_values": [
+      "2027-05-01",
+      "125000"
+    ],
+    "expect_absent": [
+      "2027-04-24",
+      "110000"
+    ]
+  }
+}

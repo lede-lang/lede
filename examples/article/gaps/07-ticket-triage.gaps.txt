@@ -1,0 +1,5 @@
+Draggable cards across four columns: not expressible; used one table per bucket (Now/Next/Later/Cut) in pick-up order, and moving a ticket means editing the export block.
+Copy-as-Markdown button: not expressible; wrote the final Markdown (ordering plus one rationale line per bucket) as a copyable fenced block.
+Pre-sort by best guess: done as the static layout itself; added a "calls worth a second look" table to stand in for dragging borderline tickets.
+Live recount of points per bucket after moves: not expressible; counts and the chart are fixed to the proposed ordering.
+Board-style kanban columns side by side: not available for 30 cards; `grid` would work only for a few blocks, so buckets are stacked sections.

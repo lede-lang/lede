@@ -1,0 +1,42 @@
+@title Late Sales Dashboards Postmortem
+@subtitle Daily sales dashboards 9 hours late on 2026-10-02, Juniper Retail
+@author Analytics Platform
+@date 2026-10-02
+
+## Impact
+- 9 hours of delay: dashboards normally ready by 02:00 refreshed at 10:58.
+- 23 dashboards stale.
+- The 08:00 executive sales report went out with the previous day's numbers.
+
+## Pipeline
+diagram pipe dir=LR title="Nightly sales pipeline"
+pipe: odb "Orders DB" db
+pipe: cdc "CDC Connector" svc
+pipe: kafka "Kafka" queue
+pipe: spark "Spark Job" fn "failed: out of memory" focus
+pipe: wh "Warehouse" db
+pipe: dash "Dashboards" ext
+pipe: odb -> cdc -> kafka
+pipe: kafka -> spark : orders topic
+pipe: spark -> wh -> dash
+
+## Timeline
+table = Time,Event; 01:00,Nightly Spark Job starts; 01:47,Spark Job fails with out-of-memory on the orders partition for 2026-10-01; 02:30,Automatic retry also fails; 07:55,Analyst reports stale dashboards; 08:20,On-call doubles executor memory to 16 GB and reruns; 10:05,Spark Job succeeds; 10:58,Dashboards refreshed
+
+## Root cause
+A promotion on 2026-10-01 produced 3.4 times the normal order volume: 4.1 million orders against a typical 1.2 million. The Spark executors were sized at 8 GB each for normal days, so the job ran out of memory on that day's orders partition. The automatic retry used the same settings and failed the same way, and nobody was paged, so the failure sat unnoticed until an analyst spotted stale dashboards.
+
+## Lessons learned
+### What went well
+- Once noticed, the cause was found and fixed in under 30 minutes.
+- Doubling executor memory let the rerun succeed without code changes.
+
+### What did not go well
+- Two consecutive failures paged nobody.
+- Executor memory was fixed and ignored input volume.
+- Dashboards gave no sign that their data was stale.
+
+## Action items
+1. Page on-call when the nightly job fails twice.
+2. Size executor memory from the input volume.
+3. Add a data freshness banner to dashboards.

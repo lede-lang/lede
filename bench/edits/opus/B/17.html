@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Runbook: Manual TLS Certificate Rotation — Sycamore Travel Edge</title>
+<style>
+:root {
+  --bg: #f5f7f5;
+  --card: #ffffff;
+  --ink: #18201b;
+  --ink-2: #5a665e;
+  --line: #dde3df;
+  --brand: #2e7d4f;
+  --chip-bg: #e6f2ea;
+  --soon-bg: #fff1dc;
+  --soon-fg: #8a4b00;
+  --urgent-bg: #fde7e5;
+  --urgent-fg: #a3241a;
+  --ok-bg: #e4f4e9;
+  --ok-fg: #1d6a3a;
+  --code-bg: #eef1ef;
+  --warn-bg: #fdecea;
+  --warn-edge: #d23b2f;
+  --warn-ink: #5c130d;
+  --note-bg: #eef4fb;
+  --note-edge: #4f86c6;
+  --note-ink: #17314f;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1210;
+    --card: #161c18;
+    --ink: #e5ece7;
+    --ink-2: #98a59c;
+    --line: #27302a;
+    --brand: #62cf8f;
+    --chip-bg: #1a3324;
+    --soon-bg: #33240d;
+    --soon-fg: #f6c26b;
+    --urgent-bg: #3b1714;
+    --urgent-fg: #ff958a;
+    --ok-bg: #143021;
+    --ok-fg: #7ad9a0;
+    --code-bg: #212823;
+    --warn-bg: #371614;
+    --warn-edge: #ff6a5c;
+    --warn-ink: #ffd6d1;
+    --note-bg: #142238;
+    --note-edge: #6ea2e6;
+    --note-ink: #d5e5fa;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.page { max-width: 780px; margin: 0 auto; padding: 28px 16px 64px; }
+.kicker { display: inline-block; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--brand); background: var(--chip-bg); padding: 2px 10px; border-radius: 999px; }
+h1 { margin: 10px 0 4px; font-size: 1.55rem; line-height: 1.3; }
+.meta { color: var(--ink-2); margin: 0; font-size: 0.92rem; }
+section { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; margin-top: 16px; }
+h2 { margin: 0 0 10px; font-size: 1.12rem; }
+code { font: 0.88em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: var(--code-bg); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+th, td { padding: 10px 8px; border-bottom: 1px solid var(--line); text-align: left; }
+th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-2); }
+th.r, td.r { text-align: right; }
+tbody tr:last-child td { border-bottom: 0; }
+td.dom code { background: none; padding: 0; font-size: 0.9em; }
+td.exp { white-space: nowrap; }
+.days { display: inline-block; min-width: 3.2em; text-align: center; font-weight: 700; padding: 1px 8px; border-radius: 999px; }
+.days.urgent { background: var(--urgent-bg); color: var(--urgent-fg); }
+.days.soon { background: var(--soon-bg); color: var(--soon-fg); }
+.days.ok { background: var(--ok-bg); color: var(--ok-fg); }
+ol.steps { margin: 0; padding: 0; list-style: none; counter-reset: n; }
+ol.steps li { counter-increment: n; position: relative; padding: 10px 0 10px 44px; border-bottom: 1px solid var(--line); }
+ol.steps li:last-child { border-bottom: 0; }
+ol.steps li::before { content: counter(n); position: absolute; left: 0; top: 10px; width: 28px; height: 28px; border-radius: 50%; background: var(--chip-bg); color: var(--brand); font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; }
+ol.steps li.warnrow { padding-left: 0; border-bottom: 0; counter-increment: none; }
+ol.steps li.warnrow::before { content: none; }
+.warn { background: var(--warn-bg); border: 2px solid var(--warn-edge); border-radius: 10px; padding: 12px 16px; color: var(--warn-ink); }
+.warn strong { display: block; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.82rem; margin-bottom: 2px; }
+.note { margin-top: 16px; background: var(--note-bg); border-left: 5px solid var(--note-edge); border-radius: 10px; padding: 14px 18px; color: var(--note-ink); }
+.note strong { display: block; margin-bottom: 2px; }
+@media (max-width: 560px) {
+  section { padding: 16px 14px; }
+  th, td { padding: 8px 4px; }
+  td.dom code { font-size: 0.8em; }
+  .hide-sm { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <span class="kicker">Runbook · Edge team</span>
+  <h1>Rotating public TLS certificates by hand</h1>
+  <p class="meta">Sycamore Travel · Load balancer certificates</p>
+
+  <section>
+    <h2>Certificates</h2>
+    <table>
+      <thead><tr><th>Domain</th><th>Expires</th><th class="r">Days left</th></tr></thead>
+      <tbody>
+        <tr><td class="dom"><code>status.sycamoretravel.example</code></td><td class="exp">2026-10-30</td><td class="r"><span class="days urgent">14</span></td></tr>
+        <tr><td class="dom"><code>api.sycamoretravel.example</code></td><td class="exp">2026-11-02</td><td class="r"><span class="days urgent">17</span></td></tr>
+        <tr><td class="dom"><code>www.sycamoretravel.example</code></td><td class="exp">2026-11-14</td><td class="r"><span class="days soon">29</span></td></tr>
+        <tr><td class="dom"><code>partners.sycamoretravel.example</code></td><td class="exp">2027-01-20</td><td class="r"><span class="days ok">96</span></td></tr>
+      </tbody>
+    </table>
+    <div class="warn" role="note" style="margin-top:12px">
+      <strong>Most urgent</strong>
+      <code>status.sycamoretravel.example</code> expires on 2026-10-30, in 14 days. Rotate it first.
+    </div>
+  </section>
+
+  <section>
+    <h2>Steps</h2>
+    <ol class="steps">
+      <li>Request the new certificate in the certificate manager.</li>
+      <li>Validate it via the DNS record.</li>
+      <li>Wait for the status <strong>Issued</strong>.</li>
+      <li class="warnrow" aria-hidden="false">
+        <div class="warn" role="alert">
+          <strong>Do not remove the old certificate first</strong>
+          Clients will get TLS handshake errors until the new certificate is attached. Attach the new one, then remove the old one later.
+        </div>
+      </li>
+      <li>Attach the new certificate to the listener on <code>edge-alb-prod</code>.</li>
+      <li>Test with an external checker.</li>
+      <li>Remove the old certificate after 24 hours.</li>
+    </ol>
+  </section>
+
+  <aside class="note" role="note">
+    <strong>Why this is manual for now</strong>
+    The automated renewal job is broken until ticket <code>EDGE-812</code> is fixed. Until then, rotate certificates with this runbook.
+  </aside>
+</div>
+</body>
+</html>

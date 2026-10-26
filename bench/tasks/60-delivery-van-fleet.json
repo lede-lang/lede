@@ -1,0 +1,64 @@
+{
+  "id": "60-delivery-van-fleet",
+  "category": "comparison",
+  "title": "Sunrise Bakery delivery vans",
+  "brief": "Sunrise Bakery Co. replaces its 18 delivery vans over the next two years and the operations director, Tomasz Wieczorek, wants one page that compares diesel, hybrid and electric for the budget meeting on 2026-11-10. Five-year cost per van, in dollars. Diesel: purchase 41000, fuel 9800 a year, maintenance 3400 a year, total 107000. Hybrid: purchase 46500, fuel 6900 a year, maintenance 2900 a year, total 95500. Electric: purchase 58200 after the 7500 dollar incentive, charger installation 4200, electricity 3100 a year, maintenance 1700 a year, total 86400. For the whole fleet of 18 that is 1926000 for diesel, 1719000 for hybrid and 1555200 for electric. Operational facts: the longest route is 140 miles a day; the electric van's real-world range is about 180 miles in summer and 150 in winter, so it is tight on the longest two routes in January; we can charge overnight at the depot with 6 chargers. Hybrids have no range worries but still produce tailpipe emissions; diesel vans are subject to the city low-emission zone fee of 12.50 dollars a day starting 2028-01-01. Use the sections \"Options\", \"Five-year cost\" (with the totals), \"Risks\" (honest ones) and \"Recommendation\": buy electric for the 12 shorter routes and hybrid for the 6 longest, and have the page show that this mixed fleet comes to 1609800 dollars for the 18 vans, about 316200 less than staying with diesel.",
+  "checklist": {
+    "sections": [
+      "Options",
+      "Five-year cost",
+      "Risks",
+      "Recommendation"
+    ],
+    "visible": [
+      "Diesel",
+      "Hybrid",
+      "Electric",
+      "charger",
+      "low-emission zone",
+      "Tomasz Wieczorek"
+    ],
+    "values": [
+      "18",
+      "41000",
+      "46500",
+      "58200",
+      "9800",
+      "6900",
+      "3100",
+      "107000",
+      "95500",
+      "86400",
+      "1926000",
+      "1719000",
+      "1555200",
+      "1609800",
+      "316200",
+      "140",
+      "180",
+      "150",
+      "12.50",
+      "2028-01-01",
+      "2026-11-10"
+    ]
+  },
+  "needs": [
+    "table",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Winter range turns out to be 135 miles, not 150. Change that figure everywhere, and change the recommendation to buy hybrid for the 8 longest routes and electric for the other 10, with the mixed fleet total updated to 1628000 dollars.",
+    "expect_visible": [
+      "hybrid for the 8"
+    ],
+    "expect_values": [
+      "135",
+      "1628000"
+    ],
+    "expect_absent": [
+      "150 in winter"
+    ]
+  }
+}

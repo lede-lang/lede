@@ -1,0 +1,60 @@
+{
+  "id": "78-dental-plan-options",
+  "category": "comparison",
+  "title": "Fenwick Studios dental plan options",
+  "brief": "Fenwick Studios, a design agency with 112 employees, has to pick the dental plan for 2027, and the HR lead, Dalia Lund, wants an options page before open enrollment closes on 2026-11-20. Four plans. Basic: 14 dollars a month for the employee, annual maximum 1000, deductible 75, no orthodontia. Plus: 28 dollars, annual maximum 1500, deductible 50, no orthodontia. Premier: 41 dollars, annual maximum 2500, deductible 25, orthodontia at 50 percent up to a lifetime maximum of 1500. Family Max: 63 dollars, annual maximum 3000, no deductible, orthodontia at 50 percent up to a lifetime maximum of 2000. The annual employee premium is therefore 168, 336, 492 and 756 dollars. In the pulse survey 38 employees said they have children who will need braces soon, which is why orthodontia matters. Sections: \"Plans\", \"Annual premium\", \"Who each plan suits\" and \"Recommendation\". We recommend Premier as the default plan; Family Max costs 264 dollars more a year and only pays off for families with ongoing orthodontia.",
+  "checklist": {
+    "sections": [
+      "Plans",
+      "Annual premium",
+      "Who each plan suits",
+      "Recommendation"
+    ],
+    "visible": [
+      "Basic",
+      "Plus",
+      "Premier",
+      "Family Max",
+      "orthodontia",
+      "deductible",
+      "Dalia Lund"
+    ],
+    "values": [
+      "112",
+      "2026-11-20",
+      "14 dollars",
+      "28 dollars",
+      "41 dollars",
+      "63 dollars",
+      "1000",
+      "1500",
+      "2500",
+      "3000",
+      "75",
+      "168",
+      "336",
+      "492",
+      "756",
+      "38",
+      "264"
+    ]
+  },
+  "needs": [
+    "table",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Premier's premium rose to 44 dollars a month. Update the monthly price and the annual premium (528 dollars) everywhere.",
+    "expect_visible": [],
+    "expect_values": [
+      "44 dollars",
+      "528"
+    ],
+    "expect_absent": [
+      "41 dollars",
+      "492"
+    ]
+  }
+}

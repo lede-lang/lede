@@ -1,0 +1,6 @@
+@title Support volume
+# Support volume
+
+data tix = quarter,tickets; Q1,1240; Q2,1310; Q3,1180; Q4,860; Q1 27,790; Q2 27,810
+
+chart bar tix y=tickets title="Tickets per quarter" mark="Q3 help center redesign" mark="Q4 chat assistant launch"

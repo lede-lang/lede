@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Letter About Elm Street</title>
+<style>
+:root {
+  --bg: #f7f3ec; --card: #fffdf8; --ink: #2a2622; --muted: #6b6259; --rule: #e2d9cb;
+  --accent: #7a3e2b; --soft: #efe6d6;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1a1714; --card: #221e1a; --ink: #eee7dc; --muted: #b2a798; --rule: #3c352d;
+    --accent: #e2a58c; --soft: #2d2720;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1a1714; --card: #221e1a; --ink: #eee7dc; --muted: #b2a798; --rule: #3c352d;
+  --accent: #e2a58c; --soft: #2d2720;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: Georgia, "Iowan Old Style", "Times New Roman", serif; line-height: 1.7; }
+main { max-width: 680px; margin: 0 auto; padding: 28px 18px 56px; }
+.card { background: var(--card); border: 1px solid var(--rule); border-radius: 6px; padding: 28px 26px; }
+.kicker { font-family: system-ui, sans-serif; font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin: 0 0 6px; }
+h1 { font-size: 1.7rem; line-height: 1.25; margin: 0 0 18px; font-weight: 700; }
+h2 { font-size: 1.15rem; color: var(--accent); margin: 26px 0 8px; }
+p { margin: 0 0 14px; }
+.sign { margin-top: 24px; }
+.sign .name { font-style: italic; margin: 0; }
+.sign .role { color: var(--muted); font-size: 0.95rem; margin: 0; }
+.facts { background: var(--soft); border-radius: 6px; padding: 14px 18px; font-family: system-ui, sans-serif; font-size: 0.95rem; }
+.facts ul { margin: 0; padding-left: 18px; }
+.facts li { margin-bottom: 6px; }
+hr { border: 0; border-top: 1px solid var(--rule); margin: 24px 0 0; }
+</style>
+</head>
+<body>
+<main>
+  <article class="card">
+    <p class="kicker">Corbel &amp; Finch Books</p>
+    <h1>A letter about our Elm Street shop</h1>
+
+    <h2>What is changing</h2>
+    <p>After 17 years, we are closing our Elm Street shop for good. It will trade for the last time on 23 December 2026. We know many of you have bought your first books, your children's picture books and your gifts in those rooms, and we are sorry to say goodbye to them.</p>
+    <p>Our Harbor Road shop, our online shop and our school book fairs all continue as before.</p>
+
+    <h2>Why</h2>
+    <p>When the Elm Street lease renews on 1 January 2027, the rent would rise by 70 percent. We also looked honestly at where you are buying from us. More than half of our sales now happen at Harbor Road or online. So we chose to keep the two places that are growing, and to let the one that is not go.</p>
+
+    <h2>What stays the same</h2>
+    <p>Your gift certificates and store credit will be honored at Harbor Road and online until 31 December 2027. Your loyalty points move over to us automatically, so there is nothing you need to do.</p>
+    <p>Our Elm Street team of six booksellers will move to Harbor Road. You will still see the same faces, and we will still know your reading tastes.</p>
+
+    <div class="facts">
+      <ul>
+        <li><strong>From 28 November 2026:</strong> all stock at Elm Street is 20 percent off.</li>
+        <li><strong>19 December 2026, 11:00:</strong> our last Saturday story hour.</li>
+        <li><strong>22 December 2026, 17:00 to 20:00:</strong> a farewell evening with our staff and local authors.</li>
+      </ul>
+    </div>
+
+    <h2>How to say goodbye</h2>
+    <p>Please come and see us before the end. Browse the shelves, bring a friend, and tell us what the shop has meant to you. We would love to hear your stories, whether you have been coming since the first year or since last week.</p>
+    <p>Thank you. Thank you for the conversations, the recommendations, the book clubs and the children who read to us. You made the last 17 years possible, and you will keep the shop's spirit going at Harbor Road and online.</p>
+
+    <hr>
+    <div class="sign">
+      <p class="name">With gratitude,</p>
+      <p class="name">Marguerite Pell</p>
+      <p class="role">Owner, Corbel &amp; Finch Books</p>
+    </div>
+  </article>
+</main>
+</body>
+</html>

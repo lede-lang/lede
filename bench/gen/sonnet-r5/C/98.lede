@@ -1,0 +1,24 @@
+@title Orion 5.0 release readiness
+@subtitle As of 2026-10-16, for the go/no-go meeting on 2026-10-22 at 10:00
+@author Lorenzo Baptiste, Release Manager
+@date 2026-10-16
+
+kpi Criteria met | 5 of 9 | target release 2026-10-27 | bad
+
+kpi Beta testers active | 8,200
+kpi Go/no-go meeting | 2026-10-22
+kpi Target release | 2026-10-27
+
+## Readiness checklist
+
+table = criterion,current,required,status; Feature complete,Yes,Yes,Met; Open P1 bugs,0,0,Met; Open P2 bugs,6,At most 5,Not met; Beta crash-free sessions,99.4%,At least 99.5%,Not met; Accessibility audit,Passed on 2026-10-09,Pass,Met; Languages complete,14 of 16,16 of 16,At risk; Load test at 3 times peak,Passed,Pass,Met; Rollback rehearsed,Yes,Yes,Met; App store submission,Scheduled for 2026-10-20,Submitted by 2026-10-21,On track
+
+## Gaps to close
+
+table = gap,owner,due; Open P2 bugs,Hannah Weiss,2026-10-21; Crash-free sessions,Ibrahim Sesay,2026-10-21; The two missing languages (Thai and Hebrew),Chloe Dubois,2026-10-20
+
+## Decision
+
+! We recommend a conditional go if all three gaps are closed by 2026-10-21.
+
+Otherwise, slip the release by one week to 2026-11-03.

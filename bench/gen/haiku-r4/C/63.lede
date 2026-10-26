@@ -1,0 +1,31 @@
+@title Q3 2026 at Eastside Food Bank
+@subtitle July to September 2026, for the board and donors
+
+## Q3 at a glance
+
+kpi Food distributed | 357,800 lb | July to September
+kpi September distribution | 129,500 lb | up 16.6% on July | good
+kpi Pounds per household | 16.3 | September, steady on July's 16.2
+kpi Volunteer hours | 4,180 | this quarter
+
+Households served grew from 6,840 in July to 7,925 in September, up 15.9 percent. Distribution grew 16.6 percent over the same months, so the amount per household held steady.
+
+## By category
+
+data food = category,July,August,September,Q3 total; Produce,41200,46800,52300,140300; Dairy,12400,13100,14900,40400; Shelf-stable,38600,36900,40200,115700; Protein,18900,20400,22100,61400
+
+table food title="Pounds distributed by category"
+
+chart bar food y=July,August,September unit=lb title="Pounds by category and month"
+
+Monthly totals were 111,100 pounds in July, 117,200 in August and 129,500 in September, a total of 357,800 pounds for the quarter. Produce grew fastest, up 26.9 percent from July to September, after a new partnership with three local farms started on 2026-08-15. Shelf-stable dipped in August, when a delayed shipment came from the regional network.
+
+## What we heard
+
+> "The fresh vegetables made it possible to cook for the whole week."
+> — Tuesday client, Eastside pantry
+
+> "Pickup was faster than last time."
+> — Saturday client, Eastside pantry
+
+Thank you to our volunteers, who gave 4,180 hours this quarter.

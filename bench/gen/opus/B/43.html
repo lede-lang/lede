@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tidebreakers Launch Week</title>
+<style>
+:root{
+  --bg:#f5f4fb;--surface:#ffffff;--text:#1a1830;--muted:#5d5a78;--border:#e2e0ef;
+  --accent:#5b3fd6;--accent-2:#0d9fb0;--accent-soft:#ede9ff;--grid:#e7e5f2;
+  --good:#18794e;--good-soft:#e4f4eb;--warn:#9a5800;--warn-soft:#fff1d9;--bad:#b42318;--bad-soft:#fdeceb;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0f0e19;--surface:#18172a;--text:#ebe9f7;--muted:#a19dbd;--border:#2d2b45;
+  --accent:#a693ff;--accent-2:#4fd3e3;--accent-soft:#272250;--grid:#28263d;
+  --good:#4cc38a;--good-soft:#10281c;--warn:#f2b15a;--warn-soft:#302310;--bad:#ff7d73;--bad-soft:#3a1715;
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:28px 16px 56px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 6px}
+h1{font-size:1.9rem;line-height:1.15;margin:0 0 8px;letter-spacing:-.015em}
+.meta{color:var(--muted);font-size:.95rem;margin:0}
+.lede{font-size:1.05rem;margin:14px 0 0;max-width:62ch}
+section{margin-top:34px}
+h2{font-size:1.2rem;margin:0 0 12px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:22px}
+.kpi{padding:14px 14px}
+.kpi .label{font-size:.8rem;color:var(--muted);font-weight:500}
+.kpi .value{font-size:1.7rem;font-weight:800;line-height:1.1;margin:6px 0 2px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.kpi .value small{font-size:.95rem;font-weight:700;color:var(--muted)}
+.kpi .note{font-size:.78rem;color:var(--muted)}
+.kpi.lead{background:var(--accent);border-color:var(--accent);color:#fff}
+.kpi.lead .label,.kpi.lead .note,.kpi.lead .value small{color:rgba(255,255,255,.82)}
+@media (prefers-color-scheme:dark){.kpi.lead{color:#15122b}.kpi.lead .label,.kpi.lead .note,.kpi.lead .value small{color:rgba(21,18,43,.78)}}
+.chart svg{display:block;width:100%;height:auto}
+.caption{font-size:.85rem;color:var(--muted);margin:8px 0 0}
+svg .grid{stroke:var(--grid)}
+svg .axis{fill:var(--muted);font-size:12px}
+svg .bar{fill:var(--accent-2)}
+svg .bar.peak{fill:var(--accent)}
+svg .val{font-size:12.5px;font-weight:700;fill:var(--text)}
+.timeline{list-style:none;margin:0;padding:0;position:relative}
+.timeline::before{content:"";position:absolute;left:58px;top:8px;bottom:8px;width:2px;background:var(--border)}
+.timeline li{display:grid;grid-template-columns:48px 1fr;gap:22px;padding:0 0 18px;position:relative}
+.timeline li:last-child{padding-bottom:0}
+.day{text-align:right;font-weight:800;font-size:.95rem;line-height:1.2}
+.day span{display:block;font-weight:500;font-size:.72rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.timeline li::after{content:"";position:absolute;left:53px;top:5px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:3px solid var(--accent)}
+.ev h3{margin:0 0 3px;font-size:1rem}
+.ev p{margin:0;font-size:.95rem}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;border-radius:6px;padding:1px 7px;margin-top:6px;background:var(--accent-soft);color:var(--accent)}
+.issues{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.issue{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center}
+.prio{font-weight:800;font-size:.85rem;border-radius:8px;padding:6px 10px;min-width:42px;text-align:center}
+.p1{background:var(--bad);color:var(--surface)}
+.p2{background:var(--warn);color:var(--surface)}
+.p3{background:var(--border);color:var(--text)}
+.issue h3{margin:0;font-size:1rem;font-weight:650}
+.issue .owner{font-size:.88rem;color:var(--muted)}
+.due{text-align:right;font-size:.85rem;color:var(--muted);white-space:nowrap}
+.due b{display:block;color:var(--text);font-size:.95rem;font-variant-numeric:tabular-nums}
+footer{margin-top:40px;color:var(--muted);font-size:.82rem}
+@media (max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}.kpi.lead{grid-column:1 / -1}}
+@media (max-width:480px){
+  body{font-size:15px}
+  h1{font-size:1.55rem}
+  .issue{grid-template-columns:auto 1fr}
+  .due{grid-column:2;text-align:left}
+  .due b{display:inline;margin-left:4px}
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <p class="eyebrow">Starlark Games &middot; Launch status</p>
+    <h1>Tidebreakers: week one</h1>
+    <p class="meta">Launched Monday 2026-10-12, 09:00 Pacific, in 38 countries &middot; Numbers through Friday 2026-10-16</p>
+    <p class="lede">Big first week. We cleared a login queue, shipped a hotfix, doubled server capacity and got featured in 14 countries. One matchmaking issue in Asia-Pacific is still the top thing on our plate.</p>
+  </header>
+
+  <div class="kpis">
+    <div class="card kpi lead">
+      <div class="label">Installs</div>
+      <div class="value">1.38<small>M</small></div>
+      <div class="note">Through Fri 10-16</div>
+    </div>
+    <div class="card kpi">
+      <div class="label">Peak daily active users</div>
+      <div class="value">412,000</div>
+      <div class="note">Thursday</div>
+    </div>
+    <div class="card kpi">
+      <div class="label">Day-1 retention</div>
+      <div class="value">41.3<small>%</small></div>
+      <div class="note">Players back next day</div>
+    </div>
+    <div class="card kpi">
+      <div class="label">Crash-free sessions</div>
+      <div class="value">99.2<small>%</small></div>
+      <div class="note">Up from 97.6% at launch</div>
+    </div>
+    <div class="card kpi">
+      <div class="label">Store rating</div>
+      <div class="value">4.4<small>&#9733;</small></div>
+      <div class="note">Out of 5</div>
+    </div>
+  </div>
+
+  <section>
+    <h2>Daily active users</h2>
+    <div class="card chart">
+      <svg viewBox="0 0 480 236" role="img" aria-label="Daily active users: Monday 268,000; Tuesday 331,000; Wednesday 369,000; Thursday 412,000 (peak); Friday 398,000.">
+        <line class="grid" x1="48" y1="43.6" x2="472" y2="43.6"/>
+        <line class="grid" x1="48" y1="82.7" x2="472" y2="82.7"/>
+        <line class="grid" x1="48" y1="121.8" x2="472" y2="121.8"/>
+        <line class="grid" x1="48" y1="160.9" x2="472" y2="160.9"/>
+        <line x1="48" y1="200" x2="472" y2="200" style="stroke:var(--muted)"/>
+        <text class="axis" x="40" y="47.6" text-anchor="end">400k</text>
+        <text class="axis" x="40" y="86.7" text-anchor="end">300k</text>
+        <text class="axis" x="40" y="125.8" text-anchor="end">200k</text>
+        <text class="axis" x="40" y="164.9" text-anchor="end">100k</text>
+        <text class="axis" x="40" y="204" text-anchor="end">0</text>
+        <rect class="bar" x="64.2" y="95.2" width="52" height="104.8" rx="4"/>
+        <rect class="bar" x="148.6" y="70.5" width="52" height="129.5" rx="4"/>
+        <rect class="bar" x="233" y="55.7" width="52" height="144.3" rx="4"/>
+        <rect class="bar peak" x="317.4" y="38.9" width="52" height="161.1" rx="4"/>
+        <rect class="bar" x="401.8" y="44.3" width="52" height="155.7" rx="4"/>
+        <text class="val" x="90.2" y="89" text-anchor="middle">268k</text>
+        <text class="val" x="174.6" y="64.3" text-anchor="middle">331k</text>
+        <text class="val" x="259" y="49.5" text-anchor="middle">369k</text>
+        <text class="val" x="343.4" y="32.7" text-anchor="middle" style="fill:var(--accent)">412k peak</text>
+        <text class="val" x="427.8" y="38.1" text-anchor="middle">398k</text>
+        <text class="axis" x="90.2" y="222" text-anchor="middle">Mon</text>
+        <text class="axis" x="174.6" y="222" text-anchor="middle">Tue</text>
+        <text class="axis" x="259" y="222" text-anchor="middle">Wed</text>
+        <text class="axis" x="343.4" y="222" text-anchor="middle">Thu</text>
+        <text class="axis" x="427.8" y="222" text-anchor="middle">Fri</text>
+      </svg>
+      <p class="caption">Daily active users, Monday 2026-10-12 to Friday 2026-10-16. Thursday's peak lines up with the store feature.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Launch week</h2>
+    <div class="card">
+      <ol class="timeline">
+        <li>
+          <div class="day">Mon<span>10-12</span></div>
+          <div class="ev">
+            <h3>Launch day, and a login queue</h3>
+            <p>The login queue peaked at 22,000 players at 14:20. The team added auth capacity to work it down.</p>
+            <span class="tag">Queue peak 22,000</span>
+          </div>
+        </li>
+        <li>
+          <div class="day">Tue<span>10-13</span></div>
+          <div class="ev">
+            <h3>Hotfix 1.0.1 ships</h3>
+            <p>Fixed a launch crash on Android 12 devices. Crash-free sessions went from 97.6% to 99.0%.</p>
+            <span class="tag">Crash-free 97.6% &rarr; 99.0%</span>
+          </div>
+        </li>
+        <li>
+          <div class="day">Wed<span>10-14</span></div>
+          <div class="ev">
+            <h3>Server capacity doubled</h3>
+            <p>We're now running 120 game servers.</p>
+            <span class="tag">120 servers</span>
+          </div>
+        </li>
+        <li>
+          <div class="day">Thu<span>10-15</span></div>
+          <div class="ev">
+            <h3>Featured in 14 countries</h3>
+            <p>The store featured Tidebreakers, and daily players hit the week's high of 412,000.</p>
+            <span class="tag">Peak DAU 412,000</span>
+          </div>
+        </li>
+        <li>
+          <div class="day">Fri<span>10-16</span></div>
+          <div class="ev">
+            <h3>First weekend event announced</h3>
+            <p>It kicks off Saturday 2026-10-17.</p>
+            <span class="tag">Event 10-17</span>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <h2>Open issues</h2>
+    <ul class="issues">
+      <li class="card issue">
+        <span class="prio p1">P1</span>
+        <div><h3>Matchmaking timeouts in Asia-Pacific</h3><span class="owner">Owner: Keiko Arai</span></div>
+        <div class="due">Target<b>2026-10-19</b></div>
+      </li>
+      <li class="card issue">
+        <span class="prio p2">P2</span>
+        <div><h3>Purchase restore failing on some iOS devices</h3><span class="owner">Owner: Dan Whitaker</span></div>
+        <div class="due">Target<b>2026-10-23</b></div>
+      </li>
+      <li class="card issue">
+        <span class="prio p3">P3</span>
+        <div><h3>Leaderboard shows stale ranks after midnight UTC</h3><span class="owner">Owner: Samira Boateng</span></div>
+        <div class="due">Target<b>2026-10-30</b></div>
+      </li>
+    </ul>
+  </section>
+
+  <footer>Starlark Games &middot; Tidebreakers launch status, as of 2026-10-16</footer>
+</main>
+</body>
+</html>

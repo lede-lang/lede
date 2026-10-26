@@ -1,0 +1,41 @@
+@title Heat-wave demand emergency runbook
+@subtitle For the on-duty system operator, Northgrid Electric System Operations
+@author System Operations, Northgrid Electric
+@date 2026-10-10
+
+kpi Stage 1 | 92% | 4784 MW
+kpi Stage 2 | 97% | 5044 MW
+kpi Stage 3 | 100% | 5200 MW
+
+!!! Hospitals, the 911 center and water pumping stations must never be switched off. Not in any block, not for any reason.
+
+## When to use
+
+Use this runbook when the day-ahead forecast or live demand reaches 92% of available supply (5200 MW).
+
+! A stage is declared by the Duty Director, never by a single operator.
+
+## Stages
+
+table = stage,demand level,actions; Stage 1,"92% of supply (4784 MW)","Issue a conservation alert by text and app to 380,000 customers; ask large industrial customers on interruptible contracts to get ready to reduce load on 30 minutes of notice; confirm that standby generation at 3 peaking plants can start within 20 minutes"; Stage 2,"97% of supply (5044 MW)","Call the demand response program (about 210 MW); start buying emergency imports from the neighboring utility; brief the regulator by phone"; Stage 3,"100% of supply (5200 MW)","Begin rotating outages in blocks A to L, each block off for at most 60 minutes, in order; never repeat a block before all twelve have been used"
+
+## Steps for rotating outages
+
+1. Get approval
+-- The Duty Director approves in the log.
+-- The regulator is told within 30 minutes.
+2. Protect critical sites
+-- Confirm that hospitals, the 911 center and water pumping stations are excluded.
+-- Check that the exclusion list was updated this month.
+3. Run the blocks
+-- Open the first block's feeders.
+-- Restore it after 60 minutes at most and open the next.
+-- Update the public outage map every 15 minutes.
+4. Stand down
+-- End rotating outages when demand stays below 95% for 60 minutes.
+-- Restore all blocks.
+-- File the event report within 24 hours.
+
+## Contacts
+
+table = role,name; Duty Director,Lorenzo Baptiste; Regulator liaison,Dagny Holt; Communications on call,Femi Adeyemi

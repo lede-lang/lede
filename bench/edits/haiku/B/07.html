@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atlas 4.2.0 Go/No-Go</title>
+<style>
+:root{--page:#f4f5f7;--panel:#fff;--ink:#1b1f27;--mute:#5f6674;--edge:#d8dce4;--blue:#2d5bd1;--green:#1f8a4c;--red:#c23b2b;--amber-bg:#fff4dc;--amber:#b76e00;--amber-ink:#543300;}
+@media (prefers-color-scheme: dark){
+:root:not([data-theme="light"]){--page:#0f1115;--panel:#181b22;--ink:#e7eaf0;--mute:#9aa2b1;--edge:#2a2f3a;--blue:#7d9fff;--green:#4cc57f;--red:#ff7d6b;--amber-bg:#352606;--amber:#e9a53b;--amber-ink:#ffdd9e;}
+}
+:root[data-theme="dark"]{--page:#0f1115;--panel:#181b22;--ink:#e7eaf0;--mute:#9aa2b1;--edge:#2a2f3a;--blue:#7d9fff;--green:#4cc57f;--red:#ff7d6b;--amber-bg:#352606;--amber:#e9a53b;--amber-ink:#ffdd9e;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.page{max-width:900px;margin:0 auto;padding:22px 16px 52px}
+.meta{color:var(--mute);font-size:.9rem;margin:0}
+h1{font-size:1.6rem;margin:4px 0 14px}
+.rec{background:var(--amber-bg);border:1px solid var(--amber);border-radius:12px;padding:16px 18px;color:var(--amber-ink);margin-bottom:18px}
+.rec .big{font-size:1.35rem;font-weight:800;margin:0 0 4px;color:var(--amber)}
+.rec p{margin:0}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media (min-width:700px){.tiles{grid-template-columns:repeat(4,1fr)}}
+.tile{background:var(--panel);border:1px solid var(--edge);border-radius:10px;padding:14px}
+.tile .num{font-size:1.7rem;font-weight:700;font-variant-numeric:tabular-nums}
+.tile .cap{color:var(--mute);font-size:.84rem}
+h2{font-size:1.12rem;margin:30px 0 10px}
+.card{background:var(--panel);border:1px solid var(--edge);border-radius:10px;padding:12px;overflow-x:auto}
+table{width:100%;min-width:540px;border-collapse:collapse;font-size:.94rem}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--edge);vertical-align:top}
+th{color:var(--mute);font-size:.82rem;font-weight:600}
+.ok{color:var(--green);font-weight:700}
+.no{color:var(--red);font-weight:700}
+ol{padding-left:22px;margin:8px 0}
+li{margin:8px 0}
+svg{display:block;width:100%;height:auto}
+svg text{fill:var(--mute);font-size:12px}
+svg .g{stroke:var(--edge)}
+svg .a{stroke:var(--mute)}
+svg .ln{fill:none;stroke:var(--blue);stroke-width:2.5;stroke-linejoin:round}
+svg .pt{fill:var(--blue)}
+svg .vl{fill:var(--ink)}
+</style>
+</head>
+<body>
+<main class="page">
+  <p class="meta">Release Council · Target release 2026-10-22 · Blocker deadline 2026-10-20</p>
+  <h1>Atlas Mobile 4.2.0: Go/No-Go</h1>
+
+  <section class="rec" role="note" aria-label="Recommendation">
+    <p class="big">Recommendation: Go</p>
+    <p>Proceed with the 4.2.0 release.</p>
+  </section>
+
+  <section class="tiles" aria-label="Release status">
+    <div class="tile"><div class="num">1</div><div class="cap">Open blockers</div></div>
+    <div class="tile"><div class="num">99.71%</div><div class="cap">Crash-free sessions (beta)</div></div>
+    <div class="tile"><div class="num">96.4%</div><div class="cap">Test pass rate</div></div>
+    <div class="tile"><div class="num">6</div><div class="cap">Days to release</div></div>
+  </section>
+
+  <h2>Readiness checklist</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>Area</th><th>Owner</th><th>Status</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Feature complete</td><td>Ana Brooks</td><td class="ok">Ready</td><td>All 12 epics merged</td></tr>
+        <tr><td>Regression suite</td><td>QA Guild</td><td class="ok">Ready</td><td>1842 of 1911 tests passing</td></tr>
+        <tr><td>Accessibility audit</td><td>Kofi Mensah</td><td class="ok">Ready</td><td>contrast issues resolved</td></tr>
+        <tr><td>Localization</td><td>Ines Duarte</td><td class="ok">Ready</td><td>14 languages signed off</td></tr>
+        <tr><td>Store listing</td><td>Growth team</td><td class="no">Not ready</td><td>Tablet screenshots pending</td></tr>
+        <tr><td>Rollback plan</td><td>Ana Brooks</td><td class="ok">Ready</td><td>Staged rollout starting at 5 percent</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Bug burndown</h2>
+  <div class="card">
+    <svg viewBox="0 0 600 240" role="img" aria-label="Line chart of open release bugs per day from October 7 to October 16, falling from 41 to 7.">
+      <line class="g" x1="60" y1="20" x2="580" y2="20"/>
+      <line class="g" x1="60" y1="60" x2="580" y2="60"/>
+      <line class="g" x1="60" y1="100" x2="580" y2="100"/>
+      <line class="g" x1="60" y1="140" x2="580" y2="140"/>
+      <line class="g" x1="60" y1="180" x2="580" y2="180"/>
+      <line class="a" x1="60" y1="220" x2="580" y2="220"/>
+      <text x="50" y="24" text-anchor="end">50</text>
+      <text x="50" y="64" text-anchor="end">40</text>
+      <text x="50" y="104" text-anchor="end">30</text>
+      <text x="50" y="144" text-anchor="end">20</text>
+      <text x="50" y="184" text-anchor="end">10</text>
+      <text x="50" y="224" text-anchor="end">0</text>
+      <polyline class="ln" points="60,56 117.78,72 175.56,84 233.33,100 291.11,116 348.89,136 406.67,152 464.44,172 522.22,184 580,192"/>
+      <circle class="pt" cx="60" cy="56" r="4"/>
+      <circle class="pt" cx="117.78" cy="72" r="4"/>
+      <circle class="pt" cx="175.56" cy="84" r="4"/>
+      <circle class="pt" cx="233.33" cy="100" r="4"/>
+      <circle class="pt" cx="291.11" cy="116" r="4"/>
+      <circle class="pt" cx="348.89" cy="136" r="4"/>
+      <circle class="pt" cx="406.67" cy="152" r="4"/>
+      <circle class="pt" cx="464.44" cy="172" r="4"/>
+      <circle class="pt" cx="522.22" cy="184" r="4"/>
+      <circle class="pt" cx="580" cy="192" r="4"/>
+      <text class="vl" x="60" y="46" text-anchor="middle">41</text>
+      <text class="vl" x="580" y="182" text-anchor="middle">7</text>
+      <text x="60" y="236" text-anchor="middle">Oct 7</text>
+      <text x="117.78" y="236" text-anchor="middle">8</text>
+      <text x="175.56" y="236" text-anchor="middle">9</text>
+      <text x="233.33" y="236" text-anchor="middle">10</text>
+      <text x="291.11" y="236" text-anchor="middle">11</text>
+      <text x="348.89" y="236" text-anchor="middle">12</text>
+      <text x="406.67" y="236" text-anchor="middle">13</text>
+      <text x="464.44" y="236" text-anchor="middle">14</text>
+      <text x="522.22" y="236" text-anchor="middle">15</text>
+      <text x="580" y="236" text-anchor="middle">16</text>
+    </svg>
+  </div>
+
+  <h2>Blockers</h2>
+  <div class="card">
+    <ol>
+      <li>Missing store screenshots for tablets.</li>
+    </ol>
+  </div>
+</main>
+</body>
+</html>

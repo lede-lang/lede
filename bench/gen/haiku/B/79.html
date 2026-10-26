@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Message backbone for settlement</title>
+<style>
+:root{--bg:#f6f5f1;--fg:#1c1c1a;--muted:#5f5d57;--card:#ffffff;--line:#d8d5cb;--accent:#1d5c74;--accent-bg:#e4eff3;--warn:#8c2a1c;--warn-bg:#fbe9e5}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#131416;--fg:#ebeae6;--muted:#a4a29b;--card:#1d1f22;--line:#3a3c38;--accent:#86c3da;--accent-bg:#1c2d35;--warn:#f2a797;--warn-bg:#3b211c}}
+:root[data-theme="dark"]{--bg:#131416;--fg:#ebeae6;--muted:#a4a29b;--card:#1d1f22;--line:#3a3c38;--accent:#86c3da;--accent-bg:#1c2d35;--warn:#f2a797;--warn-bg:#3b211c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+main{max-width:820px;margin:0 auto;padding:24px 16px 56px}
+header{border-bottom:2px solid var(--fg);padding-bottom:14px;margin-bottom:6px}
+h1{font-size:1.65rem;line-height:1.2;margin:0 0 6px}
+h2{font-size:1.15rem;margin:34px 0 10px;padding-top:4px}
+p{margin:0 0 12px}
+.meta{color:var(--muted);font-size:.9rem;margin:0}
+.note{color:var(--muted);font-size:.9rem}
+.wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.78rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:0 0 10px}
+.card h3{font-size:1rem;margin:0 0 6px}
+.card ul{margin:0;padding-left:18px}
+.card li{margin-bottom:4px}
+.callout{border-left:4px solid var(--accent);background:var(--accent-bg);padding:12px 14px;border-radius:6px;margin:14px 0}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>Message backbone for the settlement service</h1>
+<p class="meta">Fernhill Payments &middot; For Ewan Calloway, platform lead &middot; Architecture review on 2026-11-09</p>
+</header>
+
+<h2>Requirements</h2>
+<div class="card">
+<ul>
+  <li>4,200 messages per second at peak</li>
+  <li>6 consuming services</li>
+  <li>Ordering per customer account</li>
+  <li>Replay of the last 7 days, for audits</li>
+</ul>
+</div>
+
+<h2>Comparison</h2>
+<div class="wrap">
+<table>
+  <thead><tr><th>Requirement</th><th>Managed Kafka</th><th>SQS with SNS</th><th>Self-run RabbitMQ</th></tr></thead>
+  <tbody>
+    <tr><td>Ordering per account</td><td>Yes, through partition keys</td><td>Yes, through FIFO queues; each queue is capped near 3,000 messages per second, so we would need two</td><td>Yes, through queue sharding that we would build ourselves</td></tr>
+    <tr><td>Replay of 7 days</td><td>Built in</td><td>Not available; we would archive to storage ourselves</td><td>Possible only with the streams plugin, which the team has not used</td></tr>
+    <tr><td>Operations effort</td><td class="num">12 hours a month</td><td class="num">3 hours a month</td><td class="num">30 hours a month</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Monthly cost</h2>
+<div class="wrap">
+<table>
+  <thead><tr><th>Option</th><th class="num">Per month</th><th class="num">Per year</th></tr></thead>
+  <tbody>
+    <tr><td>Managed Kafka</td><td class="num">$5,850</td><td class="num">$70,200</td></tr>
+    <tr><td>SQS with SNS</td><td class="num">$2,100</td><td class="num">$25,200</td></tr>
+    <tr><td>Self-run RabbitMQ</td><td class="num">$3,400</td><td class="num">$40,800</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="note" style="margin-top:10px">Managed Kafka costs $3,750 a month more than SQS with SNS.</p>
+
+<h2>Risks</h2>
+<div class="card">
+  <h3>Team experience</h3>
+  <p style="margin:0">Only 2 of our 9 engineers have run Kafka before. We budget 5 days of training.</p>
+</div>
+<div class="card">
+  <h3>Cost</h3>
+  <p style="margin:0">Kafka is the most expensive option, at $3,750 a month more than SQS with SNS.</p>
+</div>
+
+<h2>Recommendation</h2>
+<div class="callout">
+  <p style="margin:0 0 8px"><strong>We recommend Managed Kafka.</strong></p>
+  <p style="margin:0">It costs $3,750 a month more than SQS with SNS, but replay is an audit requirement, and only Kafka has it built in. The main risk is the team's limited experience with Kafka, so we budget 5 days of training.</p>
+</div>
+</main>
+</body>
+</html>

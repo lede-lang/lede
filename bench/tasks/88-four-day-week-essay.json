@@ -1,0 +1,53 @@
+{
+  "id": "88-four-day-week-essay",
+  "category": "prose",
+  "title": "What eighteen months of four-day weeks did to our support team",
+  "brief": "Write a long-form essay for the Halden Cartography blog by Priscilla Adeyemi-Koh, head of customer support, titled \"What Eighteen Months of Four-Day Weeks Did to Our Support Team\". Aim for 800 to 1000 words, first person, candid and curious, with the headings \"Why we tried it\", \"How the schedule works\", \"What happened to the numbers\", \"What got harder\" and \"If you try it\", and no charts or tables. The story: the support team has 23 people; in 2024 annual attrition was 21 percent and burnout was the top reason people gave for leaving. The pilot began on 2025-04-07 and ended on 2026-10-02 with the decision to make it permanent. Schedule: everyone works Monday to Thursday, 9 hours a day, 36 hours a week at full pay; Friday coverage comes from a rotating on-call group of 4 people who take Monday off instead. Results: median first response time fell from 3.4 hours to 2.9 hours; customer satisfaction rose from 4.3 to 4.5 out of 5; annual attrition fell from 21 percent to 9 percent; sick days fell by 31 percent. What got harder: handoffs on Thursday evening, two enterprise customers who wanted guaranteed Friday phone support so the team hired 2 more people to cover it, and a few people who found 9-hour days tiring in winter. Close with three pieces of advice: pilot for at least 6 months, write the coverage rules before the first week, and measure customer metrics alongside team morale.",
+  "checklist": {
+    "sections": [
+      "Why we tried it",
+      "How the schedule works",
+      "What happened to the numbers",
+      "What got harder",
+      "If you try it"
+    ],
+    "visible": [
+      "What Eighteen Months of Four-Day Weeks Did to Our Support Team",
+      "Priscilla Adeyemi-Koh",
+      "Halden Cartography",
+      "on-call"
+    ],
+    "values": [
+      "23",
+      "21 percent",
+      "2025-04-07",
+      "2026-10-02",
+      "9 hours",
+      "36 hours",
+      "4 people",
+      "3.4 hours",
+      "2.9 hours",
+      "4.3",
+      "4.5",
+      "9 percent",
+      "31 percent",
+      "2 more people",
+      "6 months"
+    ]
+  },
+  "needs": [
+    "list"
+  ],
+  "edit": {
+    "request": "Change the satisfaction result to rising from 4.3 to 4.6 instead of 4.5, and the attrition result to falling from 21 percent to 8 percent instead of 9.",
+    "expect_visible": [],
+    "expect_values": [
+      "4.6",
+      "8 percent"
+    ],
+    "expect_absent": [
+      "4.5",
+      "9 percent"
+    ]
+  }
+}

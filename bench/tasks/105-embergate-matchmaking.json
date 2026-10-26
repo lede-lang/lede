@@ -1,0 +1,55 @@
+{
+  "id": "105-embergate-matchmaking",
+  "category": "architecture",
+  "title": "Embergate matchmaking and game servers",
+  "brief": "Embergate Online, a multiplayer game studio, needs an architecture page for matchmaking and game servers, owned by Backend Services and reviewed 2026-09-22, for engineers joining the live team. \"Overview\": two sentences, players are matched into 10-player games and placed on the nearest regional server fleet, and each region can run alone if another region fails. Under \"Architecture\", show the \"Players\" outside the system and a \"Global Edge\" that routes each player to the closest region. Inside the \"Regional Stack\" (the same in each of three regions) are a \"Matchmaker\", a \"Session Allocator\", a \"Game Server Fleet\" and a \"Regional Cache\"; shared across regions sit the \"Player Profile Database\" and the \"Leaderboard Service\". Flows: Players to Global Edge \"connect\"; Global Edge to Matchmaker \"queue request\"; Matchmaker to Regional Cache \"skill ratings\"; Matchmaker to Player Profile Database \"load profile\"; Matchmaker to Session Allocator \"match of 10 players\"; Session Allocator to Game Server Fleet \"start session\"; Players to Game Server Fleet \"UDP game traffic\"; Game Server Fleet to Leaderboard Service \"match results\". Under \"Regions and capacity\" cover the three regions, us-east, eu-central and ap-southeast, each with 150 game servers, each server running 6 matches of 10 players, so 9000 concurrent players per region; the median matchmaking time target is 10 seconds and the 95th percentile target is 30 seconds; servers scale up to 400 per region when more than 2000 players are waiting in the queue. Make clear that the Player Profile Database and the Leaderboard Service are the only shared parts, so they are the ones to watch in a regional failover.",
+  "checklist": {
+    "sections": [
+      "Overview",
+      "Architecture",
+      "Regions and capacity"
+    ],
+    "visible": [
+      "Players",
+      "Global Edge",
+      "Regional Stack",
+      "Matchmaker",
+      "Session Allocator",
+      "Game Server Fleet",
+      "Regional Cache",
+      "Player Profile Database",
+      "Leaderboard Service"
+    ],
+    "values": [
+      "2026-09-22",
+      "us-east",
+      "eu-central",
+      "ap-southeast",
+      "150",
+      "9000",
+      "10 seconds",
+      "30 seconds",
+      "400",
+      "2000",
+      "UDP"
+    ]
+  },
+  "needs": [
+    "diagram",
+    "table",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the game servers per region from 150 to 200, so each region holds 12000 concurrent players, and add an arrow from Matchmaker to Leaderboard Service labeled \"ranked queue only\".",
+    "expect_visible": [
+      "ranked queue only"
+    ],
+    "expect_values": [
+      "200",
+      "12000"
+    ],
+    "expect_absent": [
+      "9000 concurrent players"
+    ]
+  }
+}

@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Member Portal Login Flow</title>
+<style>
+:root{--page:#f4f6f8;--card:#ffffff;--ink:#192231;--mute:#5a6578;--edge:#d6dce5;--link:#2857b8;--tint:#e9f0fb;--warn-bg:#fdecea;--warn-bd:#b8322a;--warn-ink:#5c1812;}
+@media (prefers-color-scheme: dark){
+:root:not([data-theme="light"]){--page:#0d1117;--card:#151b24;--ink:#e2e8f1;--mute:#97a2b5;--edge:#26303d;--link:#8bb0ff;--tint:#18233a;--warn-bg:#3b1715;--warn-bd:#e5685e;--warn-ink:#ffd0cb;}
+}
+:root[data-theme="dark"]{--page:#0d1117;--card:#151b24;--ink:#e2e8f1;--mute:#97a2b5;--edge:#26303d;--link:#8bb0ff;--tint:#18233a;--warn-bg:#3b1715;--warn-bd:#e5685e;--warn-ink:#ffd0cb;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px 60px}
+h1{font-size:1.6rem;margin:0 0 4px}
+.meta{color:var(--mute);margin:0 0 6px;font-size:.92rem}
+h2{font-size:1.15rem;margin:32px 0 10px}
+.card{background:var(--card);border:1px solid var(--edge);border-radius:10px;padding:10px;overflow-x:auto}
+svg{display:block;width:100%;min-width:680px;height:auto}
+svg text{font-size:11.5px;fill:var(--ink)}
+svg .who{font-size:13px;font-weight:700;fill:var(--ink)}
+svg .life{stroke:var(--edge);stroke-width:1.5;stroke-dasharray:4 4}
+svg .box{fill:var(--tint);stroke:var(--link);stroke-width:1.3}
+svg .msg{stroke:var(--link);stroke-width:1.4;fill:none}
+svg .ah{fill:var(--link)}
+svg .cap{fill:var(--mute)}
+table{width:100%;border-collapse:collapse;font-size:.94rem;min-width:460px}
+th,td{padding:9px 8px;border-bottom:1px solid var(--edge);text-align:left}
+th{color:var(--mute);font-weight:600;font-size:.84rem}
+ul{padding-left:20px}
+li{margin:6px 0}
+.warn{margin:18px 0 0;background:var(--warn-bg);border-left:4px solid var(--warn-bd);color:var(--warn-ink);padding:14px 16px;border-radius:8px}
+.warn strong{display:block;margin-bottom:2px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Member Portal Login</h1>
+  <p class="meta">Identity team · Pinecrest Credit Union · Draft dated 2026-10-08</p>
+
+  <h2>Login flow</h2>
+  <div class="card">
+  <svg viewBox="0 0 760 550" role="img" aria-label="Sequence diagram of member login across User, Browser, Web App, Auth Server and Profile API. The user clicks Sign in, the browser follows a redirect to authorize with a PKCE challenge, the user enters credentials and an MFA code, the auth server redirects back with a code, the web app exchanges the code for tokens and fetches the profile, then sets a session cookie. Finally, the web app sends a refresh_token grant to the auth server, which replies with a new access token.">
+    <defs>
+      <marker id="seqArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path class="ah" d="M0,0 L10,5 L0,10 z"/>
+      </marker>
+    </defs>
+
+    <!-- lifelines -->
+    <line class="life" x1="80" y1="56" x2="80" y2="538"/>
+    <line class="life" x1="230" y1="56" x2="230" y2="538"/>
+    <line class="life" x1="380" y1="56" x2="380" y2="538"/>
+    <line class="life" x1="530" y1="56" x2="530" y2="538"/>
+    <line class="life" x1="680" y1="56" x2="680" y2="538"/>
+
+    <!-- participants -->
+    <rect class="box" x="20" y="16" width="120" height="36" rx="6"/>
+    <text class="who" x="80" y="39" text-anchor="middle">User</text>
+    <rect class="box" x="170" y="16" width="120" height="36" rx="6"/>
+    <text class="who" x="230" y="39" text-anchor="middle">Browser</text>
+    <rect class="box" x="320" y="16" width="120" height="36" rx="6"/>
+    <text class="who" x="380" y="39" text-anchor="middle">Web App</text>
+    <rect class="box" x="470" y="16" width="120" height="36" rx="6"/>
+    <text class="who" x="530" y="39" text-anchor="middle">Auth Server</text>
+    <rect class="box" x="620" y="16" width="120" height="36" rx="6"/>
+    <text class="who" x="680" y="39" text-anchor="middle">Profile API</text>
+
+    <!-- 1 -->
+    <line class="msg" x1="80" y1="96" x2="230" y2="96" marker-end="url(#seqArrow)"/>
+    <text x="155" y="90" text-anchor="middle">click Sign in</text>
+    <!-- 2 -->
+    <line class="msg" x1="230" y1="126" x2="380" y2="126" marker-end="url(#seqArrow)"/>
+    <text x="305" y="120" text-anchor="middle">GET /login</text>
+    <!-- 3 -->
+    <line class="msg" x1="380" y1="156" x2="230" y2="156" marker-end="url(#seqArrow)"/>
+    <text x="305" y="150" text-anchor="middle">302 to /authorize with PKCE challenge</text>
+    <!-- 4 -->
+    <line class="msg" x1="230" y1="186" x2="530" y2="186" marker-end="url(#seqArrow)"/>
+    <text x="380" y="180" text-anchor="middle">GET /authorize</text>
+    <!-- 5 -->
+    <line class="msg" x1="530" y1="216" x2="80" y2="216" marker-end="url(#seqArrow)"/>
+    <text x="305" y="210" text-anchor="middle">show login and MFA prompt</text>
+    <!-- 6 -->
+    <line class="msg" x1="80" y1="246" x2="530" y2="246" marker-end="url(#seqArrow)"/>
+    <text x="305" y="240" text-anchor="middle">credentials + MFA code</text>
+    <!-- 7 -->
+    <line class="msg" x1="530" y1="276" x2="230" y2="276" marker-end="url(#seqArrow)"/>
+    <text x="380" y="270" text-anchor="middle">302 to /callback with code</text>
+    <!-- 8 -->
+    <line class="msg" x1="230" y1="306" x2="380" y2="306" marker-end="url(#seqArrow)"/>
+    <text x="305" y="300" text-anchor="middle">GET /callback with code</text>
+    <!-- 9 -->
+    <line class="msg" x1="380" y1="336" x2="530" y2="336" marker-end="url(#seqArrow)"/>
+    <text x="455" y="330" text-anchor="middle">POST /token with code verifier</text>
+    <!-- 10 -->
+    <line class="msg" x1="530" y1="366" x2="380" y2="366" marker-end="url(#seqArrow)"/>
+    <text x="455" y="360" text-anchor="middle">access + ID + refresh tokens</text>
+    <!-- 11 -->
+    <line class="msg" x1="380" y1="396" x2="680" y2="396" marker-end="url(#seqArrow)"/>
+    <text x="530" y="390" text-anchor="middle">GET /me with bearer token</text>
+    <!-- 12 -->
+    <line class="msg" x1="680" y1="426" x2="380" y2="426" marker-end="url(#seqArrow)"/>
+    <text x="530" y="420" text-anchor="middle">profile JSON</text>
+    <!-- 13 -->
+    <line class="msg" x1="380" y1="456" x2="230" y2="456" marker-end="url(#seqArrow)"/>
+    <text x="305" y="450" text-anchor="middle">set session cookie, render dashboard</text>
+    <!-- 14 -->
+    <line class="msg" x1="380" y1="486" x2="530" y2="486" marker-end="url(#seqArrow)"/>
+    <text x="455" y="480" text-anchor="middle">refresh_token grant</text>
+    <!-- 15 -->
+    <line class="msg" x1="530" y1="516" x2="380" y2="516" marker-end="url(#seqArrow)"/>
+    <text x="455" y="510" text-anchor="middle">new access token</text>
+  </svg>
+  </div>
+
+  <h2>Tokens</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>Token</th><th>Lifetime</th><th>Stored where</th></tr></thead>
+      <tbody>
+        <tr><td>Access token</td><td>15 minutes</td><td>Server-side session</td></tr>
+        <tr><td>ID token</td><td>15 minutes</td><td>Server-side session</td></tr>
+        <tr><td>Refresh token</td><td>30 days</td><td>Encrypted session store</td></tr>
+        <tr><td>Session cookie</td><td>12 hours</td><td>Browser (HttpOnly, Secure)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Security notes</h2>
+  <ul>
+    <li>PKCE is mandatory for every login.</li>
+    <li>MFA is required for every member.</li>
+    <li>Failed logins lock the account after 5 attempts.</li>
+  </ul>
+  <div class="warn" role="note">
+    <strong>Never expose tokens to the browser</strong>
+    Tokens must never be exposed to browser JavaScript or kept in browser storage.
+  </div>
+</main>
+</body>
+</html>

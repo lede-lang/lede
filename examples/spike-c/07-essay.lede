@@ -1,0 +1,29 @@
+@title Write It Down Before You Build It
+@subtitle Short design notes save more time than they cost
+@author Daniel Reyes, Staff Engineer, Thornbury Labs
+@date 2026-10-14
+
+Last spring six of us spent an hour in a room arguing about how a new export job should handle partial failures. Halfway through, someone asked what the job was supposed to do when the upstream API returned an empty page. Nobody knew.
+
+## The meeting that should have been a page
+Two people had assumed an empty page meant "done", one had assumed it meant "retry", and the person who had already started writing the code had assumed it could not happen. We left the room with a decision, but also with the uncomfortable sense that we had found the question by luck.
+
+If nobody had happened to ask, we would have shipped three different mental models in one service. The hour was not wasted, but most of it was spent getting six people to the same starting line. A single page, written by one person before the meeting, would have put us there in ten minutes of reading.
+
+## What a design note is
+A design note is one to two pages, written before code, and read asynchronously. Each of those three properties matters. One to two pages keeps it honest: length is where vague thinking hides, and a short note forces the author to say what they actually intend rather than describe every option they once considered.
+
+Before code means the note is about the decision, not a record of it. Once the code exists, the note turns into documentation, and documentation is read by people who can no longer change the outcome.
+
+> The page is where you find out what you do not know.
+> — Margaret Ito, Principal Engineer
+
+The surprising benefit falls to the author. Writing a paragraph that explains why the export job retries forces you to decide what it retries, how many times, and what happens after the last one. Gaps that survive a conversation rarely survive a sentence.
+
+## What it costs
+Writing costs time, and engineers are right to be suspicious of process that eats it. So we measured. At Thornbury, the median design note took three hours to write, and in 2026 the team counted eleven projects where a note caught a wrong assumption before any code was written.
+
+Some of those catches were small: a field that turned out to be optional, a rate limit nobody had checked. Others would have meant rewriting a service after launch. Even if each catch saved only a few days of rework, three hours a note is a bargain.
+
+## Start small
+You do not need a template committee or a new tool to begin. Pick the next piece of work that will take more than a week, open a blank document, and write one page before you write any code. Share it with the two or three people most likely to know something you do not, and give them a day.

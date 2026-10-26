@@ -1,0 +1,25 @@
+@title Copperline Cafe: Quarterly Results
+@subtitle Q4 2025 to Q3 2026, for franchise owners
+
+# Headline
+kpi Revenue, last four quarters | $7,700,000
+kpi Operating profit, last four quarters | $1,117,000
+kpi Margin, last four quarters | 14.5%
+
+Q3 2026 was our strongest quarter. Revenue rose 8.4 percent on Q2 and 15.9 percent on Q4 2025, and operating profit reached $375,000, a margin of 17.6 percent.
+
+# Quarterly results
+data pl = Line item,Q4 2025,Q1 2026,Q2 2026,Q3 2026; Revenue,"$1,842,000","$1,756,000","$1,968,000","$2,134,000"; Cost of goods,"$589,000","$561,000","$618,000","$662,000"; Labor,"$612,000","$598,000","$631,000","$676,000"; Rent and other,"$398,000","$405,000","$412,000","$421,000"; Operating profit,"$243,000","$192,000","$307,000","$375,000"; Margin,13.2%,10.9%,15.6%,17.6%
+table pl title="Quarterly results, in dollars"
+
+# Margin trend
+data margin = quarter,margin; Q4 2025,13.2; Q1 2026,10.9; Q2 2026,15.6; Q3 2026,17.6
+chart line margin x=quarter y=margin unit=% labels min=0 title="Operating margin by quarter"
+
+Q1 is the seasonal low. Margin recovered through Q2 and Q3.
+
+# Notes
+- Q1 is the seasonal low.
+- Two new locations opened on 2026-05-18, which explains part of the growth in Q2 and Q3.
+
+! The Q3 2026 figures are unaudited.

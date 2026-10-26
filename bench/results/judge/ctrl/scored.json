@@ -1,0 +1,282 @@
+[
+ {
+  "pair": "P010",
+  "id": "10",
+  "cat": "architecture",
+  "o": "C",
+  "reason": "Right has the clearer desktop sequence diagram, but at phone width its diagram and tokens table are both clipped, while left only clips the diagram and keeps the table readable."
+ },
+ {
+  "pair": "P019",
+  "id": "19",
+  "cat": "runbook",
+  "o": "other",
+  "reason": "Left's flowchart is large, clean and legible on desktop, whereas right's diagram is small with crossing connector lines and tiny labels."
+ },
+ {
+  "pair": "P023",
+  "id": "23",
+  "cat": "comparison",
+  "o": "C",
+  "reason": "Both desktop pages are solid, but on phone left's comparison table is cut off and its chart is tiny and overlapping, while right reflows into readable cards."
+ },
+ {
+  "pair": "P025",
+  "id": "25",
+  "cat": "comparison",
+  "o": "C",
+  "reason": "Left's value-labelled bar chart is nice on desktop, but its phone table is clipped and chart tiny, while right stays fully readable at phone width."
+ },
+ {
+  "pair": "P026",
+  "id": "26",
+  "cat": "comparison",
+  "o": "C",
+  "reason": "Left has a well-labelled chart on desktop, but its phone table loses columns and the chart is microscopic; right's phone layout is complete and legible."
+ },
+ {
+  "pair": "P028",
+  "id": "28",
+  "cat": "data",
+  "o": "C",
+  "reason": "Right has a nicer desktop line chart, but on phone its revenue table is clipped and the chart is tiny, while left's table and layout fit cleanly."
+ },
+ {
+  "pair": "P032",
+  "id": "32",
+  "cat": "data",
+  "o": "C",
+  "reason": "Left's desktop charts are well labelled, but on phone its charts are tiny and the CSAT table is cut off; right's charts and table remain legible."
+ },
+ {
+  "pair": "P038",
+  "id": "38",
+  "cat": "prose",
+  "o": "other",
+  "reason": "Both are clean, but right has stronger hierarchy with numbered principles, a wider layout and clearer do/avoid labels."
+ },
+ {
+  "pair": "P039",
+  "id": "39",
+  "cat": "prose",
+  "o": "other",
+  "reason": "Left adds stat cards, a clear intro, and a tinted call-to-action for better polish, while right is a plainer text page; both read well in dark mode."
+ },
+ {
+  "pair": "P040",
+  "id": "40",
+  "cat": "prose",
+  "o": "other",
+  "reason": "Right has bolder sans headings, a clear red warning and emphasized extension number, giving slightly stronger hierarchy than left's otherwise similar FAQ."
+ },
+ {
+  "pair": "P008",
+  "id": "08",
+  "cat": "architecture",
+  "o": "C",
+  "reason": "Left has the clearer desktop diagram, but at phone width its diagram and components table are clipped, while the right fits everything."
+ },
+ {
+  "pair": "P009",
+  "id": "09",
+  "cat": "architecture",
+  "o": "C",
+  "reason": "Left's phone diagram and datasets table are cut off, while the right's tall diagram and table fit and stay legible."
+ },
+ {
+  "pair": "P012",
+  "id": "12",
+  "cat": "architecture",
+  "o": "other",
+  "reason": "Right's desktop sequence diagram and chart are much larger and clearer, with over-budget values highlighted, despite some phone clipping that the left also has."
+ },
+ {
+  "pair": "P015",
+  "id": "15",
+  "cat": "runbook",
+  "o": "other",
+  "reason": "Right is more polished, with the stop callout placed inline at step 4 and well-structured cards, and both pages hold up on phone."
+ },
+ {
+  "pair": "P018",
+  "id": "18",
+  "cat": "runbook",
+  "o": "C",
+  "reason": "Left's phone pipeline is cut off before the failed Spark Job, while the right's vertical pipeline is fully visible and legible."
+ },
+ {
+  "pair": "P020",
+  "id": "20",
+  "cat": "runbook",
+  "o": "other",
+  "reason": "Right's annotated, larger chart with KPI tiles reads better on desktop, though its phone chart text is small."
+ },
+ {
+  "pair": "P022",
+  "id": "22",
+  "cat": "comparison",
+  "o": "C",
+  "reason": "Left restacks the comparison table into cards on phone, while the right's table is cut off, and the desktop pages are otherwise comparable."
+ },
+ {
+  "pair": "P027",
+  "id": "27",
+  "cat": "comparison",
+  "o": "C",
+  "reason": "Right turns the comparison into cards on phone, while the left's table clips the targeting and audit columns."
+ },
+ {
+  "pair": "P030",
+  "id": "30",
+  "cat": "data",
+  "o": "C",
+  "reason": "Right has a legible full-width chart and a card layout for the department table on phone, while the left's phone chart is tiny and its table is clipped."
+ },
+ {
+  "pair": "P037",
+  "id": "37",
+  "cat": "prose",
+  "o": "other",
+  "reason": "Right is a more polished letter, with a card container, a day-by-day layout and people cards, and it holds up well on phone."
+ },
+ {
+  "pair": "P003",
+  "id": "03",
+  "cat": "status",
+  "o": "C",
+  "reason": "Left's phone chart is tiny and its top-deals table is cut off, while right's phone layout reflows into readable cards despite a plainer chart."
+ },
+ {
+  "pair": "P004",
+  "id": "04",
+  "cat": "status",
+  "o": "tie",
+  "reason": "Left has the stronger hero and streaks panel but a tiny phone chart, while right has the more legible labeled chart with a smaller hero."
+ },
+ {
+  "pair": "P007",
+  "id": "07",
+  "cat": "status",
+  "o": "C",
+  "reason": "Left's phone checklist table truncates the status column and drops notes with a tiny chart, while right reflows into clear cards with a legible chart."
+ },
+ {
+  "pair": "P013",
+  "id": "13",
+  "cat": "architecture",
+  "o": "C",
+  "reason": "Left's phone diagram and table are cut off and its chart is tiny, while right fits the full diagram and table at phone width despite a narrow desktop diagram."
+ },
+ {
+  "pair": "P014",
+  "id": "14",
+  "cat": "architecture",
+  "o": "C",
+  "reason": "Left's phone layout is intact with a full table, while right's phone diagram needs sideways scrolling and its table is cut off, outweighing right's nicer desktop diagram."
+ },
+ {
+  "pair": "P021",
+  "id": "21",
+  "cat": "runbook",
+  "o": "C",
+  "reason": "Right's bar chart clips the longest bar and drops its label, with a tiny phone chart and cramped wrapping, while left is clean on both widths."
+ },
+ {
+  "pair": "P024",
+  "id": "24",
+  "cat": "comparison",
+  "o": "C",
+  "reason": "Left's phone comparison table is cut off, while right reflows it into cards with clear pros and cons icons and a polished desktop."
+ },
+ {
+  "pair": "P034",
+  "id": "34",
+  "cat": "data",
+  "o": "C",
+  "reason": "Right's phone table is cut off and its chart is tiny, while left reflows to cards and keeps a legible chart despite right's nicer desktop chart."
+ },
+ {
+  "pair": "P035",
+  "id": "35",
+  "cat": "prose",
+  "o": "other",
+  "reason": "Right has the more polished header, wider readable measure and nicer pull quote, with both holding up on phone."
+ },
+ {
+  "pair": "P036",
+  "id": "36",
+  "cat": "prose",
+  "o": "other",
+  "reason": "Left's card sections, chips and tinted note give more structure and polish than right's plain stacked headings, with both fine on phone."
+ },
+ {
+  "pair": "P001",
+  "id": "01",
+  "cat": "status",
+  "o": "other",
+  "reason": "Right's directly labeled, larger line chart and cleaner desktop polish outweigh its small phone chart."
+ },
+ {
+  "pair": "P002",
+  "id": "02",
+  "cat": "status",
+  "o": "C",
+  "reason": "Right has stronger desktop charts but its phone SLO table is cut off and charts shrink to tiny text, while left holds up at phone width."
+ },
+ {
+  "pair": "P005",
+  "id": "05",
+  "cat": "status",
+  "o": "tie",
+  "reason": "Left has the better desktop charts but a clipped phone table and tiny charts, while right has broken KPI numbers on desktop but a cleaner phone layout."
+ },
+ {
+  "pair": "P006",
+  "id": "06",
+  "cat": "status",
+  "o": "C",
+  "reason": "Left has nice desktop charts but on phone its table is clipped and the funnel is tiny, while right stacks cleanly with legible charts."
+ },
+ {
+  "pair": "P011",
+  "id": "11",
+  "cat": "architecture",
+  "o": "C",
+  "reason": "Right's diagram is clean with no overlaps on desktop, while left has label collisions and a cut-off diagram and table on phone."
+ },
+ {
+  "pair": "P016",
+  "id": "16",
+  "cat": "runbook",
+  "o": "C",
+  "reason": "Right's annotated chart is richer but the peak label collides with the line and the phone chart is tiny, while left is clean and legible at both widths."
+ },
+ {
+  "pair": "P017",
+  "id": "17",
+  "cat": "runbook",
+  "o": "other",
+  "reason": "Right has a clearer hierarchy with day-count pills, a strong red do-not-remove callout and numbered steps that read well at both widths."
+ },
+ {
+  "pair": "P029",
+  "id": "29",
+  "cat": "data",
+  "o": "other",
+  "reason": "Right's desktop chart is clearly better with direct labels and an annotated SLO breach, and its phone layout has nothing clipped."
+ },
+ {
+  "pair": "P031",
+  "id": "31",
+  "cat": "data",
+  "o": "other",
+  "reason": "Right's large colored bars, labeled trend lines and decision callout look more finished on desktop, outweighing its clipped phone results table."
+ },
+ {
+  "pair": "P033",
+  "id": "33",
+  "cat": "data",
+  "o": "other",
+  "reason": "Right's larger chart, surplus pills and cleaner KPI row beat left's wrapped KPI values and very long phone cards, despite right's clipped phone table."
+ }
+]

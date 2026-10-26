@@ -1,0 +1,73 @@
+@title Week 41 port status
+@subtitle Weekly status for the board, 6 to 12 Oct
+@date Week 41, 6 to 12 Oct
+@width wide
+
+# Headline
+
+kpi Berth revenue | $1,284,500 | -4.9% vs $1,350,000 plan | bad
+
+Week 41 handled 32,693 TEU across 13 vessel calls and missed every finance and productivity measure we were given. Berth revenue was $65,500 under plan, gate throughput reached 94.2% of target, trucks averaged 41 minutes against a 35-minute target, and overtime ran $9,350 over budget. Four vessels generated $136,600 in demurrage between them; the other nine calls generated none.
+
+kpi Gate throughput | 94.2% | of target | bad
+kpi Truck turn time | 41 min | +6 min vs 35 min target | bad
+kpi Overtime | $71,350 | +$9,350 (+15.1%) vs $62,000 | bad
+kpi Demurrage | $136,600 | 4 of 13 calls | bad
+
+table = measure,plan or target,actual,gap; Berth revenue,"$1,350,000","$1,284,500","-$65,500 (-4.9%)"; Gate throughput,target (value not given),94.2% of target,-5.8 pts of target; Truck turn time,35 min,41 min,+6 min (+17.1%); Overtime,"$62,000","$71,350","+$9,350 (+15.1%)"; Demurrage,not planned in what we have,"$136,600",n/a
+
+# What went well
+
+- 7 of 13 vessels arrived within 1 hour of ETA, and Yang Ming Wellness arrived 10 minutes early.
+- Berth B3 ran cleanly: three calls, 10,965 TEU (34% of the week), 3.8 hours of total delay, no demurrage.
+- The two biggest calls, Cosco Pearl of Taipei (4,120 TEU) and MSC Aurelia Rose (3,812 TEU), arrived 0.2 h and 0.7 h late and cost nothing.
+- Delays were concentrated: 9 of 13 calls incurred no demurrage.
+
+# What did not go well
+
+- Four vessels were 5.4 to 12.0 hours late. They account for 39.9 of the 45.3 hours of logged delay (88%) and all of the demurrage.
+- Berth B4 handled two small calls (1,450 TEU, 4.4% of the week's volume) that were both more than 11 hours late and produced $69,000, half of all demurrage.
+- Every finance and productivity measure we were given missed its plan or target (table above).
+
+# The delays that cost real money
+
+data costly = cause,vessel,berth,hours late,demurrage,implied $/h; Fog,Evergreen Ever Gentle,B2,11.5,46000,4000; Missed tide,PIL Kota Harum,B4,12.0,36000,3000; Berth held for earlier vessel overrun,ZIM St. Lawrence,B4,11.0,33000,3000; Crane 3 hydraulic fault,Maersk Stavanger,B1,5.4,21600,4000
+
+chart hbar costly x=cause y=demurrage unit=$ labels title="Demurrage by cause, week 41"
+
+table costly
+
+- Fog and the missed tide: $82,000 (60% of demurrage, 23.5 hours). Outside the terminal's control, on the officers' notes.
+- Berth held for an earlier vessel's overrun: $33,000 (24%), 11.0 hours. Planning and berth management.
+- Crane 3 hydraulic fault: $21,600 (16%), 5.4 hours. Equipment.
+
+The grouping into outside and inside our control is my reading of the duty officers' notes, not a classification recorded in the log.
+
+data berths = berth,calls,TEU,delay (h),demurrage ($); B1,4,9721,5.7,21600; B2,4,10557,12.8,46000; B3,3,10965,3.8,0; B4,2,1450,23.0,69000
+
+table berths heat title="By berth"
+
+# What does not add up
+
+!! Treat these totals as provisional until the points below are confirmed.
+
+- **Yang Ming Wellness has no delay or demurrage entered.** It arrived 10 minutes early, so totals treat its delay as 0. The 45.3 hours of delay is the sum of the 12 vessels that have a value.
+- **The demurrage rule is not in the data.** Charges equal the full delay at $4,000/h on B1 and B2 (Maersk Stavanger 5.4 h, Evergreen Ever Gentle 11.5 h) and $3,000/h on B4 (ZIM St. Lawrence, PIL Kota Harum). Delays up to 0.7 h on B1 and B2 and up to 2.3 h on B3 were not charged. Those rates and a free-time threshold somewhere between 0.7 h and 5.4 h are inferred from the figures; finance should confirm them.
+- **Direction of the money is not stated.** The log does not say whether demurrage is paid by the terminal or to it. This report treats it as a cost to the terminal; please confirm before the board sees it.
+- **Finance totals cannot be tied to the vessel log.** The log has TEU but no revenue per vessel and no TEU plan, so I cannot say whether the $65,500 revenue gap comes from volume, price or the delays. Demurrage ($136,600) is more than double the revenue shortfall, but nothing here shows they are linked.
+- **Gate throughput, truck turn time and overtime have no cause attached.** The 94.2% is a share of a target whose value and period are not given.
+- **The ZIM St. Lawrence note mentions an earlier vessel's overrun on B4.** No earlier B4 call appears in this week's log, so that vessel is not identified.
+- **What does reconcile:** the delay column matches ETA against actual arrival for all 12 vessels that have one, to rounding. It measures lateness of arrival, not time spent waiting for a berth.
+
+# Decisions for the board
+
+1. **B4 berth holds (decide).** One hold for an earlier vessel's overrun cost $33,000, and B4 produced half of the week's demurrage. Ask the board to commission a review of the rule for holding a berth versus reassigning it. No costed option exists yet.
+2. **Crane 3 (decide).** A single hydraulic fault cost $21,600 over 5.4 hours. Ask the board to authorise an inspection of crane 3 and its spares. The log does not show whether this is a repeat fault.
+3. **Fog and tide exposure (decide).** $82,000, 60% of demurrage, came from fog and a missed tide. Ask the board whether to seek commercial terms that treat these as non-chargeable. This depends on who pays demurrage; see above.
+4. **Overtime and truck turn time (note, with a request).** Overtime was $9,350 over budget and trucks were 6 minutes over target. Ask the board to note the variance and request a cause breakdown for next week, since the data we have does not explain either.
+
+# Appendix: full vessel log
+
+data log = vessel,berth,ETA,actual arrival,TEU handled,delay (h),demurrage ($),notes; MSC Aurelia Rose,B2,Mon 06:00,Mon 06:40,"3,812",0.7,0,; Maersk Stavanger,B1,Mon 14:00,Mon 19:25,"2,904",5.4,"21,600",crane 3 hydraulic fault; Cosco Pearl of Taipei,B3,Tue 02:00,Tue 02:10,"4,120",0.2,0,; Evergreen Ever Gentle,B2,Tue 20:00,Wed 07:30,"1,775",11.5,"46,000","fog; pilots stood down"; Hapag "Bremen Express",B1,Wed 10:00,Wed 10:00,"2,266",0,0,; CMA CGM Jean-Baptiste,B3,Wed 23:00,Thu 01:15,"3,540",2.3,0,; ONE Harmony,B2,Thu 12:00,Thu 12:30,"2,980",0.5,0,; ZIM St. Lawrence,B4,Thu 18:00,Fri 05:00,610,11.0,"33,000",berth held for earlier vessel overrun; Yang Ming Wellness,B1,Fri 04:00,Fri 03:50,"2,431",,,"early; no one logged delay"; MSC Brianna,B3,Fri 15:00,Fri 16:20,"3,305",1.3,0,; NYK Swan,B2,Sat 08:00,Sat 08:05,"1,990",0.1,0,; PIL Kota Harum,B4,Sat 21:00,Sun 09:00,840,12.0,"36,000","missed tide; anchored off"; Wan Hai 316,B1,Sun 11:00,Sun 11:20,"2,120",0.3,0,
+
+table log title="Vessel log with duty officers' notes"

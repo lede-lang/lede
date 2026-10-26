@@ -1,0 +1,43 @@
+@title Cold Room B temperature alarm
+@subtitle What to do when the alarm goes off
+@author Depot Operations, Marlowe Vaccine Depot
+
+kpi Safe range | 2 to 8 degrees C | Cold Room B
+kpi Cold Room B | 12400 doses | must stay in range
+kpi Backup Cold Room C | 9000 doses | room for stock moved from B
+kpi Polar Service | 555-0190 | responds within 4 hours
+
+!!! **Nobody discards anything.** Only the Quality Manager decides what happens to any lot.
+
+# Alarm levels
+
+- **Warning:** the temperature is above 8 degrees for 10 minutes.
+- **Critical:** the temperature is above 12 degrees or below 0 degrees.
+
+# First 15 minutes
+
+1. **Acknowledge the alarm** on the monitoring panel within 5 minutes.
+2. **Check the door and seal.** Confirm the door is fully shut and the seal is intact.
+3. **Check the compressor.** Confirm it has power, and note the temperature shown on the data logger.
+4. **Call Polar Service** on 555-0190. They respond within 4 hours.
+
+# Moving stock
+
+If the temperature is still above 8 degrees after 15 minutes, move the doses to backup Cold Room C, which holds 9000 doses.
+
+- The remaining 3400 doses go into the 6 validated transport boxes with ice packs.
+- Log every box on the transfer sheet.
+
+# Quarantine and escalation
+
+!!! **Nobody discards anything.** Do not throw away, destroy or return any dose. Only the Quality Manager decides.
+
+- Any lot out of range for more than 30 minutes in total is quarantined.
+- Tell the Quality Manager immediately.
+- If the alarm is not resolved within 2 hours, call the Operations Director.
+
+# Contacts
+
+- Night supervisor: Gabriela Nunez, 555-0187
+- Quality Manager: Peter Aldous, 555-0152
+- Polar Service: 555-0190

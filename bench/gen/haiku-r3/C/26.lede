@@ -1,0 +1,61 @@
+@title CI Provider for Firmware and Cloud Repos
+@subtitle Replacing Jenkins, Developer Experience at Ridgeback Robotics
+@author Developer Experience
+
+We run roughly 38000 build minutes a month for 120 engineers. Some jobs need ARM runners, and the hardware-in-the-loop lab needs self-hosted agents. Three providers are in the running: GitHub Actions, CircleCI and Buildkite.
+
+## Comparison
+
+table = Provider,Median build time (min),ARM runners,Self-hosted agents,Monthly cost; GitHub Actions,14.2,yes,yes,"$2,860"; CircleCI,11.8,yes,yes,"$3,420"; Buildkite,9.6,via our own agents,yes (required),"$2,150 plus our compute"
+
+## Benchmarks
+
+Median build time in minutes for our three reference pipelines on each provider.
+
+data bench = Pipeline,GitHub Actions,CircleCI,Buildkite; firmware-build,21.4,17.9,13.2; cloud-api-tests,9.8,8.1,7.4; docs-site,3.1,2.7,2.9
+
+chart bar bench y=GitHub Actions,CircleCI,Buildkite unit=min labels title="Median build time by pipeline"
+
+## Pros and cons
+
+### GitHub Actions
+
+**Pros**
+
+- Supports ARM runners and self-hosted agents.
+- Lowest monthly cost of the two hosted options.
+
+**Cons**
+
+- Slowest median build time of the three.
+- Firmware build takes 21.4 minutes.
+
+### CircleCI
+
+**Pros**
+
+- Supports ARM runners and self-hosted agents.
+- Faster than GitHub Actions on every reference pipeline.
+
+**Cons**
+
+- Highest monthly cost, at $3,420.
+- Slower than Buildkite on firmware-build and cloud-api-tests.
+
+### Buildkite
+
+**Pros**
+
+- Fastest median build time, at 9.6 minutes.
+- Fastest on firmware-build and cloud-api-tests.
+
+**Cons**
+
+- Self-hosted agents are required, so we run the compute.
+- Runner patching moves to the DevEx on-call.
+
+## Recommendation
+
+! Buildkite, because the hardware-in-the-loop lab needs self-hosted agents anyway.
+
+!! Buildkite moves runner patching onto the DevEx on-call, estimated at 6 hours a month.

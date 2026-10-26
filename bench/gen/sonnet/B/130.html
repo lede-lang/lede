@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moonlit Harbor Alpha Status - Lanternfish Games</title>
+<style>
+:root{color-scheme:light dark;--bg:#f2f5f9;--surface:#fff;--text:#16202e;--muted:#566377;--border:#d9e0ea;--accent:#1f6f8b;--on-accent:#fff;--accent-soft:#e0f0f6;--track:#e2e8f0;--g:#17784a;--g-soft:#e3f5ec;--a:#a85a00;--a-soft:#fff2dc;--r:#b42318;--r-soft:#fdecea}
+@media (prefers-color-scheme:dark){:root{--bg:#0c1219;--surface:#141c27;--text:#e6edf5;--muted:#97a6ba;--border:#263445;--accent:#5cc0e3;--on-accent:#0c1219;--accent-soft:#12303c;--track:#243040;--g:#54c88a;--g-soft:#11301f;--a:#f3a84b;--a-soft:#35260f;--r:#ff8b80;--r-soft:#3a1a1a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 48px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+h1{font-size:1.7rem;line-height:1.2;margin:.25rem 0 .4rem}
+.sub{color:var(--muted);font-size:.92rem;margin:0}
+h2{font-size:1.2rem;margin:2rem 0 .75rem;padding-bottom:.35rem;border-bottom:2px solid var(--border)}
+h3{margin:0 0 .35rem;font-size:1.02rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.card p{margin:.3rem 0}
+.status{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;background:var(--a-soft);border:2px solid var(--a);border-radius:14px;padding:10px 14px;margin:14px 0 12px}
+.status b{color:var(--a);font-size:1.1rem;text-transform:uppercase;letter-spacing:.05em}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px}
+.kpi .v{font-size:1.6rem;font-weight:800;line-height:1.15}
+.kpi .v small{font-size:.9rem;font-weight:600;color:var(--muted)}
+.kpi .l{color:var(--muted);font-size:.85rem;margin-top:2px}
+.bar{height:10px;border-radius:99px;background:var(--track);overflow:hidden;margin:.5rem 0 .1rem}
+.bar>i{display:block;height:100%;background:var(--accent)}
+svg{width:100%;height:auto;display:block}
+svg text{fill:var(--text);font-family:inherit}
+svg .m{fill:var(--muted)}
+.pill{display:inline-block;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:2px 9px;border-radius:99px;white-space:nowrap}
+.pill.g{background:var(--g-soft);color:var(--g)}
+.pill.a{background:var(--a-soft);color:var(--a)}
+.pill.r{background:var(--r-soft);color:var(--r)}
+.pill.p{background:var(--track);color:var(--muted)}
+.fgroup{border-left:6px solid var(--border)}
+.fgroup.prog{border-left-color:var(--accent)}
+.fgroup.ns{border-left-color:var(--muted)}
+.fgroup.cut{border-left-color:var(--a)}
+.fgroup .hd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:.3rem}
+.fgroup .hd b{font-size:1.05rem}
+.fgroup ul{margin:0;padding-left:1.2rem}
+.fgroup li{margin:.2rem 0}
+.risk{border-left:6px solid var(--a)}
+.risk.hi{border-left-color:var(--r)}
+.risk p{font-size:.95rem}
+.risk .when{color:var(--muted);font-size:.88rem}
+footer{margin-top:2rem;color:var(--muted);font-size:.85rem}
+@media (min-width:560px){.kpis{grid-template-columns:repeat(4,1fr)}}
+@media (max-width:400px){h1{font-size:1.45rem}.wrap{padding:16px 12px 40px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="eyebrow">Lanternfish Games &middot; Moonlit Harbor</div>
+<h1>Alpha Status</h1>
+<p class="sub">Week 42 (ending 2026-10-16) &middot; For the publisher &middot; Alpha review on 2026-11-20 &middot; Producer: Zuri Okonkwo-Hale</p>
+
+<div class="status" role="status"><b>&#9650; Overall: Amber</b><span class="sub">Alpha review is 5 weeks away.</span></div>
+
+<h2>Alpha at a glance</h2>
+<div class="kpis">
+  <div class="kpi"><div class="v">31 <small>of 40</small></div><div class="l">planned features complete &middot; 77.5%</div>
+    <div class="bar" role="img" aria-label="77.5 percent"><i style="width:77.5%"></i></div></div>
+  <div class="kpi"><div class="v">14 <small>of 18</small></div><div class="l">levels playable</div>
+    <div class="bar" role="img" aria-label="77.8 percent"><i style="width:77.8%"></i></div></div>
+  <div class="kpi"><div class="v">212</div><div class="l">open bugs, of which <b>9 are priority 1</b></div></div>
+  <div class="kpi"><div class="v">58 <small>fps</small></div><div class="l">average on minimum-spec console; target 60</div></div>
+</div>
+
+<h2>Bug trend</h2>
+<div class="card">
+  <b>Open bugs by week</b>
+  <svg viewBox="0 0 420 226" role="img" aria-label="Open bugs by week: W37 340, W38 318, W39 291, W40 264, W41 238, W42 212. Falling about 26 a week, a projection of about 80 open by W47, 2026-11-20.">
+    <g stroke="var(--border)" stroke-width="1">
+      <line x1="50" y1="190" x2="400" y2="190"/><line x1="50" y1="147.5" x2="400" y2="147.5"/>
+      <line x1="50" y1="105" x2="400" y2="105"/><line x1="50" y1="62.5" x2="400" y2="62.5"/><line x1="50" y1="20" x2="400" y2="20"/>
+    </g>
+    <g font-size="11" text-anchor="end" class="m">
+      <text x="44" y="194">0</text><text x="44" y="151">100</text><text x="44" y="109">200</text><text x="44" y="66">300</text><text x="44" y="24">400</text>
+    </g>
+    <polyline points="225,99.9 260,111 295,122 330,133.1 365,144.1 400,155.2" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-dasharray="6 5"/>
+    <polyline points="50,45.5 85,54.9 120,66.3 155,77.8 190,88.9 225,99.9" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+    <g fill="var(--accent)">
+      <circle cx="50" cy="45.5" r="4"/><circle cx="85" cy="54.9" r="4"/><circle cx="120" cy="66.3" r="4"/>
+      <circle cx="155" cy="77.8" r="4"/><circle cx="190" cy="88.9" r="4"/><circle cx="225" cy="99.9" r="4.5"/>
+    </g>
+    <circle cx="400" cy="155.2" r="4.5" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.5"/>
+    <g font-size="12" font-weight="700" text-anchor="middle">
+      <text x="50" y="36">340</text><text x="85" y="45">318</text><text x="120" y="57">291</text>
+      <text x="155" y="68">264</text><text x="190" y="79">238</text><text x="225" y="90">212</text>
+    </g>
+    <text x="400" y="145" font-size="12" font-weight="700" text-anchor="end">about 80</text>
+    <g font-size="11" text-anchor="middle" class="m">
+      <text x="50" y="208">W37</text><text x="85" y="208">W38</text><text x="120" y="208">W39</text><text x="155" y="208">W40</text><text x="190" y="208">W41</text><text x="225" y="208">W42</text><text x="400" y="208">W47</text>
+    </g>
+    <text x="312" y="208" font-size="11" text-anchor="middle" class="m">projected</text>
+    <text x="400" y="221" font-size="11" text-anchor="end" class="m">2026-11-20</text>
+  </svg>
+  <p class="sub">Falling by about 26 a week. At that rate, about 80 bugs would be open by the alpha review on 2026-11-20 (solid line: actual; dashed: projection).</p>
+</div>
+
+<h2>Features</h2>
+<p class="sub" style="margin-bottom:10px">31 of 40 are complete. The 9 remaining, by status:</p>
+<div class="card fgroup prog">
+  <div class="hd"><b>In progress</b><span class="pill g">4</span></div>
+  <ul><li>Fishing mini-game</li><li>Ship customization</li><li>Co-op invites</li><li>Photo mode</li></ul>
+</div>
+<div class="card fgroup ns">
+  <div class="hd"><b>Not started</b><span class="pill p">3</span></div>
+  <ul><li>Harbor festival events</li><li>Achievements</li><li>Accessibility options</li></ul>
+</div>
+<div class="card fgroup cut">
+  <div class="hd"><b>Cut candidates</b><span class="pill a">2</span></div>
+  <ul><li>Weather-driven trading</li><li>Pet companion</li></ul>
+</div>
+
+<h2>Risks</h2>
+<div class="card risk">
+  <h3>Performance is below target in the busiest scene</h3>
+  <p>The busiest harbor scene runs 2 frames per second below the 60 fps target. The optimization sprint is booked for <b>2026-11-02 to 2026-11-13</b>.</p>
+</div>
+<div class="card risk hi">
+  <h3>Accessibility options have not started</h3>
+  <p>They are required for the console certification submission on <b>2027-02-08</b>.</p>
+</div>
+<div class="card risk">
+  <h3>Decision needed on the two cut candidates</h3>
+  <p>Dropping weather-driven trading and the pet companion would save about <b>6 weeks</b> of work.</p>
+  <p class="when">Decision needed by <b>2026-10-30</b>.</p>
+</div>
+<footer>Lanternfish Games &middot; Moonlit Harbor status, week 42 (ending 2026-10-16)</footer>
+</div>
+</body>
+</html>

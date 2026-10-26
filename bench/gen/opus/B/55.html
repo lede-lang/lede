@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lost or Stolen Laptop</title>
+<style>
+:root{
+  --bg:#f5f5f7;--surface:#ffffff;--surface-2:#f0f0f3;--text:#17171c;--muted:#5c5c68;--border:#dfdfe6;
+  --accent:#6b2142;--accent-soft:#f6e9ef;
+  --bad:#b42318;--bad-soft:#fdeceb;--warn:#9a5800;--warn-soft:#fff1d9;--good:#18794e;--good-soft:#e4f4eb;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0f0f12;--surface:#18181d;--surface-2:#202027;--text:#ececf2;--muted:#a3a3b2;--border:#2e2e38;
+  --accent:#f08ab4;--accent-soft:#3a1828;
+  --bad:#ff7d73;--bad-soft:#3a1715;--warn:#f2b15a;--warn-soft:#302310;--good:#4cc38a;--good-soft:#10281c;
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:28px 16px 56px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 6px}
+h1{font-size:1.8rem;line-height:1.15;margin:0 0 10px;letter-spacing:-.01em}
+.meta{display:flex;flex-wrap:wrap;gap:4px 16px;color:var(--muted);font-size:.9rem;margin:0;padding:0;list-style:none}
+.meta b{color:var(--text);font-weight:600}
+section{margin-top:28px}
+h2{font-size:1.15rem;margin:0 0 12px}
+p{margin:0}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+.rule{margin-top:20px;border-radius:14px;background:var(--accent);color:#fff;padding:20px 22px;display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+@media (prefers-color-scheme:dark){.rule{color:#1a0d13}}
+.rule .big{font-size:2.6rem;font-weight:900;line-height:1;text-align:center;font-variant-numeric:tabular-nums}
+.rule .big small{display:block;font-size:.8rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-top:4px;opacity:.85}
+.rule h2{margin:0 0 4px;font-size:1.15rem;color:inherit}
+.rule p{font-size:1rem}
+.rule .call{display:inline-block;margin-top:10px;font-weight:800;font-size:1.05rem;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4);border-radius:8px;padding:4px 12px}
+@media (prefers-color-scheme:dark){.rule .call{background:rgba(0,0,0,.12);border-color:rgba(0,0,0,.3)}}
+.rule .not{display:block;margin-top:6px;font-size:.9rem;font-weight:700;opacity:.9}
+.enc{display:flex;gap:14px;align-items:flex-start;border:1px solid var(--good);border-left:5px solid var(--good);background:var(--good-soft);border-radius:12px;padding:14px 18px}
+.enc svg{flex:0 0 30px;height:30px}
+.enc strong{display:block;margin-bottom:2px}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s}
+.steps li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:12px;padding:14px 18px;border-top:1px solid var(--border)}
+.steps li:first-child{border-top:0}
+.steps li::before{content:counter(s);width:30px;height:30px;border-radius:50%;background:var(--surface-2);border:2px solid var(--accent);color:var(--accent);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.steps h3{margin:0 0 2px;font-size:1rem}
+.steps p{font-size:.93rem;color:var(--muted)}
+.steps .clock{display:inline-block;font-size:.75rem;font-weight:800;border-radius:999px;padding:0 9px;margin-left:6px;vertical-align:2px;white-space:nowrap;background:var(--surface-2);border:1px solid var(--border);color:var(--text)}
+.steps li.urgent{background:var(--warn-soft)}
+.steps li.urgent::before{background:var(--warn);border-color:var(--warn);color:var(--surface)}
+.steps li.urgent .clock{background:var(--warn);border-color:var(--warn);color:var(--surface)}
+.steps li.check .note{display:block;margin-top:4px;font-size:.85rem;color:var(--warn);font-weight:600}
+.list-card{padding:0;overflow:hidden}
+.qr{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.qr .card{padding:12px 14px}
+.qr .k{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.qr .v{font-size:1.4rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.25}
+.qr .s{font-size:.8rem;color:var(--muted)}
+footer{margin-top:32px;color:var(--muted);font-size:.82rem}
+@media (max-width:560px){.qr{grid-template-columns:1fr}.qr .card{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}}
+@media (max-width:480px){
+  body{font-size:15px}
+  h1{font-size:1.5rem}
+  .rule{grid-template-columns:1fr;gap:10px;padding:18px}
+  .rule .big{text-align:left}
+  .rule .big small{display:inline;margin-left:6px}
+  .steps li{padding:12px 14px;grid-template-columns:30px 1fr}
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <p class="eyebrow">Wexford Legal &middot; IT response card</p>
+    <h1>Lost or stolen laptop</h1>
+    <ul class="meta">
+      <li>Effective <b>2026-11-01</b></li>
+      <li>Owner <b>IT Security</b></li>
+    </ul>
+  </header>
+
+  <div class="rule" role="note">
+    <div class="big">15<small>minutes</small></div>
+    <div>
+      <h2>First rule: report it within 15 minutes of noticing</h2>
+      <p>Call the service desk as soon as you realise the laptop is missing.</p>
+      <span class="call">Call extension 4100</span>
+      <span class="not">Phone only. Do not report it by email.</span>
+    </div>
+  </div>
+
+  <section>
+    <div class="enc">
+      <svg viewBox="0 0 30 30" aria-hidden="true"><rect x="6" y="13" width="18" height="13" rx="2.5" fill="none" stroke-width="2.4" style="stroke:var(--good)"/><path d="M10 13 V9.5 a5 5 0 0 1 10 0 V13" fill="none" stroke-width="2.4" style="stroke:var(--good)"/><circle cx="15" cy="19.5" r="1.9" style="fill:var(--good)"/></svg>
+      <p><strong>Full-disk encryption is enforced on all laptops.</strong>A lost device is not automatically a data breach, but it must still be reported, every time.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Service desk steps</h2>
+    <div class="card list-card">
+      <ol class="steps">
+        <li>
+          <div><h3>Mark the device as lost in the device manager</h3><p>This locks it and starts a remote wipe the next time it connects.</p></div>
+        </li>
+        <li>
+          <div><h3>Disable the user's sessions and revoke their VPN certificate</h3></div>
+        </li>
+        <li class="check">
+          <div><h3>Check whether the laptop held client files outside the document management system</h3><p>This is not allowed, but it does happen. Ask the user and check before moving on.<span class="note">If it did, go straight to step 4.</span></p></div>
+        </li>
+        <li class="urgent">
+          <div><h3>If it did, notify the General Counsel's office <span class="clock">within 1 hour</span></h3><p>Client confidentiality rules may require telling the client.</p></div>
+        </li>
+        <li>
+          <div><h3>Order a replacement <span class="clock">1 business day</span></h3><p>Standard turnaround.</p></div>
+        </li>
+        <li>
+          <div><h3>File the report in the incident log <span class="clock">within 24 hours</span></h3></div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <h2>Quick reference</h2>
+    <div class="qr">
+      <div class="card"><div><div class="k">Service desk</div><div class="s">Report a lost laptop</div></div><div class="v">4100</div></div>
+      <div class="card"><div><div class="k">Security hotline</div><div class="s">After hours</div></div><div class="v">4199</div></div>
+      <div class="card"><div><div class="k">Chat</div><div class="s">IT Security channel</div></div><div class="v">#it-security</div></div>
+    </div>
+  </section>
+
+  <footer>Wexford Legal IT Security &middot; Lost or stolen laptop response card &middot; Effective 2026-11-01</footer>
+</main>
+</body>
+</html>

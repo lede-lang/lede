@@ -1,0 +1,40 @@
+@title Checkout Payment Flow
+@subtitle Tidewater Grocers in-app checkout, design v2
+@author Payments Engineering
+@date 2026-09-22
+
+## Payment sequence
+
+diagram pay sequence title="In-app checkout payment"
+pay: app "Mobile App" user
+pay: api "Checkout API" svc
+pay: fraud "Risk Engine" svc
+pay: gw "Payment Gateway" ext
+pay: ledger "Ledger" db
+pay: app -> api : POST /checkout with cart and card token
+pay: api -> fraud : score order
+pay: fraud --> api : risk score
+pay: note api : alt: risk score above 80
+pay: api --> app : step-up verification required
+pay: note api : else: risk score 80 or below
+pay: api -> gw : authorize amount
+pay: gw --> api : auth code
+pay: api -> ledger : record pending charge
+pay: ledger --> api : entry id
+pay: api --> app : order confirmed
+
+! If the risk score is above 80, Checkout API replies "step-up verification required" and never calls the Payment Gateway.
+
+## Latency budget
+
+data latency = Step,p95 budget (ms),Measured p95 (ms); Fraud scoring,120,88; Authorization,450,512; Ledger write,40,31; Total checkout,800,811
+table latency
+chart bar latency x=Step unit=ms title="p95 budget vs measured"
+
+## Open issues
+
+!! Authorization is over budget by 62 ms because the gateway's us-east endpoint is called from us-west-2.
+
+- Move to the gateway's regional endpoint.
+- Add a 2 second timeout with one retry.
+- Alert when total checkout p95 exceeds 800 ms.

@@ -1,0 +1,35 @@
+@title Prescription refill flow
+@subtitle From the patient app to the pharmacy
+@author Integrations team
+@date 2026-09-30
+
+!!! Controlled substances are never refilled through the app.
+
+## Refill sequence
+
+diagram refill sequence title="Refill request"
+refill: app "Patient App" user
+refill: svc "Refill Service" svc
+refill: ehr "Clinic EHR" ext
+refill: rx "Pharmacy Portal" ext
+refill: app -> svc : request refill
+refill: svc -> ehr : check active prescription and refills left
+refill: alt "Clinic approves"
+refill: ehr --> svc : approved, 2 refills remaining
+refill: svc -> rx : e-prescription, NCPDP SCRIPT
+refill: rx --> svc : accepted, ready in 2 hours
+refill: svc --> app : refill confirmed
+refill: else "Clinic declines"
+refill: ehr --> svc : denied, visit needed
+refill: svc --> app : book a visit
+refill: end
+
+## Service targets
+
+table = call,target; EHR check,within 3 s; Pharmacy acknowledgement,within 30 s; Confirmation shown in the app,within 10 s of the request
+
+## Rules
+
+1. **Controlled substances are never refilled through the app.**
+2. A refill covers at most a 90-day supply.
+3. Requests made after 21:00 wait in a queue until 07:00.

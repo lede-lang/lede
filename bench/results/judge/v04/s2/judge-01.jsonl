@@ -1,0 +1,10 @@
+{"pair":"P001","winner":"RIGHT","reason":"RIGHT draws the pipeline as a real branching diagram with a legend that holds up on phone, while LEFT stacks everything into a linear list with a misleading nesting."}
+{"pair":"P002","winner":"RIGHT","reason":"RIGHT renders an actual sequence diagram with an alt/else block that stays legible on phone, whereas LEFT is a plain numbered list."}
+{"pair":"P003","winner":"RIGHT","reason":"RIGHT's flowchart with decision diamonds and yes/no branches shows the routing clearly and scales to phone, while LEFT flattens the branches into a linear chain plus a text box."}
+{"pair":"P004","winner":"RIGHT","reason":"RIGHT is clean, readable and fits phone width without overlaps, while LEFT's diagram has connector lines running through subnet labels and large empty areas."}
+{"pair":"P005","winner":"RIGHT","reason":"RIGHT shows a true sequence diagram on desktop and a tidy readable fallback on phone, with polished tables and a warning callout, while LEFT is a long numbered list."}
+{"pair":"P006","winner":"LEFT","reason":"LEFT's bar chart is clean and consistent, while RIGHT's chart has oversized text and value labels clipped (349,60 and 367,2) on both desktop and phone."}
+{"pair":"P007","winner":"LEFT","reason":"LEFT is polished on both viewports, while RIGHT's phone table is cut off on the right edge."}
+{"pair":"P008","winner":"LEFT","reason":"LEFT has a clear zero-based column chart and a card layout for the plan table on phone, while RIGHT's phone table is cut off and it has no chart."}
+{"pair":"P009","winner":"LEFT","reason":"LEFT's desktop comparison table is clean and correct, while RIGHT's table and phone cards are mangled, with a stray 'we would archive ourselves' row and missing data, though LEFT's phone table is cropped."}
+{"pair":"P010","winner":"RIGHT","reason":"RIGHT is consistently polished with a well-scaled chart and card layout on phone, while LEFT has oversized chart text and a clipped table on phone."}

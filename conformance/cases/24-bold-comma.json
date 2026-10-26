@@ -1,0 +1,58 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "data",
+      "name": "kinds",
+      "line": 1
+    },
+    {
+      "type": "table",
+      "data": "_table1",
+      "cols": null,
+      "sort": null,
+      "limit": null,
+      "title": null,
+      "line": 2
+    }
+  ],
+  "data": {
+    "kinds": {
+      "name": "kinds",
+      "columns": [
+        "kind",
+        "count"
+      ],
+      "rows": [
+        [
+          "**Mixed: 12 electric, 6 hybrid**",
+          "18"
+        ],
+        [
+          "Plain",
+          "4"
+        ]
+      ],
+      "line": 1
+    },
+    "_table1": {
+      "name": "_table1",
+      "columns": [
+        "kind",
+        "count"
+      ],
+      "rows": [
+        [
+          "**Mixed: 12 electric, 6 hybrid**",
+          "18"
+        ],
+        [
+          "Plain",
+          "4"
+        ]
+      ],
+      "line": 2
+    }
+  },
+  "diagnostics": []
+}

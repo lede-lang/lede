@@ -1,0 +1,31 @@
+@title Electric reliability, January to September 2026
+@subtitle Northwind Utilities, system and district summary
+@author Sven Lindqvist, Reliability Engineer
+
+## Reliability at a glance
+kpi Average outage per customer | 99.6 min | regulator target 105 | good
+kpi Customers served | 412,000 | across five districts | neutral
+kpi Outage events | 177 | year to date | neutral
+
+The system as a whole meets the regulator target of 105 minutes, at 99.6 minutes per customer. Three districts are above the target: Hills, Plains and Coastal. Hills is the worst by a wide margin.
+
+## By district
+data districts = district,customers,outage events,avg minutes; Coastal,98000,41,112; Valley,142000,58,84; Hills,61000,37,176; Metro,87000,22,49; Plains,24000,19,131
+
+chart hbar districts y=avg minutes target=105 labels title="Average outage minutes per customer, against the 105 target"
+
+table = District,Customers,Outage events,Avg minutes,vs 105 target; Valley (largest),142000,58,84,-21; Coastal,98000,41,**112**,**+7**; Metro,87000,22,49,-56; Hills,61000,37,**176**,**+71**; Plains,24000,19,**131**,**+26**
+
+Bold figures are above the 105-minute target. The two largest districts by customers are Valley and Coastal. Valley is comfortably within target. Coastal is just above it. Metro, the third largest, is well within target because its cables are underground.
+
+## Causes
+kpi Storms | 46% | of outage minutes | bad
+kpi Equipment failure | 27% | of outage minutes | neutral
+kpi Vegetation | 15% | of outage minutes | neutral
+kpi Other | 12% | of outage minutes | neutral
+
+## Next steps
+step Start the Hills tree-trimming program: 210 line miles, $1.8M budget | by 2026-11-02
+
+- The Hills tree-trimming program was approved to start on 2026-11-02, with a budget of $1.8M covering 210 line miles.
+- Metro's low figure reflects its underground cables, so it is not a model for the overhead districts.

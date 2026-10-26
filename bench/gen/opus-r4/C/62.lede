@@ -1,0 +1,33 @@
+@title Campus energy, FY2026
+@subtitle Lakewood University Facilities summary for the sustainability committee, fiscal year ending 2026-06-30
+@date 2026-10-17
+
+## Summary
+
+kpi Electricity use | 12,050 MWh | -5.7% | good
+kpi Electricity cost | $1,349,600 | at $0.112 per kWh
+kpi Campus intensity | 19.1 kWh/sq ft | per year
+
+Campus electricity use fell from 12,780 MWh in FY2025 to 12,050 MWh in FY2026, 5.7 percent lower. At an average of $0.112 per kWh, the year's electricity cost $1,349,600.
+
+## By building
+
+data bldg = building,floor area sq ft,MWh,kWh per sq ft; Science Hall,182000,4210,23.1; Library,96000,1520,15.8; Student Center,128000,2380,18.6; Engineering Annex,74000,2050,27.7; Residence Hall North,150000,1890,12.6
+
+grid 2
+chart hbar bldg y=MWh unit=" MWh" labels title="Total use"
+chart hbar bldg y=kWh per sq ft unit=" kWh/sq ft" labels target="19.1 Campus average" title="Use per square foot"
+
+table bldg sort=-kWh per sq ft title="Buildings by intensity"
+
+The biggest user and the least efficient building are not the same:
+- **Science Hall uses the most electricity**, 4,210 MWh, about 35 percent of the campus total, but it is also the largest building.
+- **The Engineering Annex is the least efficient**, at 27.7 kWh per square foot, nearly half again the campus average, even though it is the smallest building.
+- Residence Hall North is the most efficient at 12.6 kWh per square foot.
+
+## What is changing
+
+- **Library LED retrofit, completed October 2025.** The Library's lighting was replaced with LEDs part way through the year, so FY2027 will be its first full year with the new lighting.
+- **HVAC controls upgrade for Science Hall and the Engineering Annex, planned for FY2027.** Budgeted at $640,000 and expected to save about 9 percent in those two buildings.
+
+! The two buildings in the HVAC upgrade used 6,260 MWh in FY2026. A 9 percent saving would be roughly 560 MWh a year, or about $63,000 at this year's average price. This is an estimate, not a measured result.

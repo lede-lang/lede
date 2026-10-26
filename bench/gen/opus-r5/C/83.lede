@@ -1,0 +1,45 @@
+@title Harvest 2026 Summary
+@subtitle Marlow Valley Extension Service, survey of 214 farms
+@author Marlow Valley Extension Service
+@date 2026-10-10
+
+Results from our harvest survey of 214 farms across five counties, completed on 2026-10-10. Rainfall tracked yield closely this season: the wettest county led every crop and the driest trailed in every crop.
+
+## Harvest at a glance
+
+kpi Farms surveyed | 214 | completed 2026-10-10
+
+kpi Region rainfall | 601 mm | season average
+kpi Wheat | 7.2 t/ha | region average
+kpi Corn | 10.0 t/ha | region average
+kpi Soybeans | 3.3 t/ha | region average
+kpi Barley | 5.9 t/ha | region average
+
+## Yields by county
+
+Yields are in tonnes per hectare; rainfall is season total in millimetres. Calder had the best yield in every crop and Dunmore the lowest.
+
+data harvest = county,rain mm,wheat,corn,soybeans,barley; Calder,701,8.1,11.4,3.7,6.6; Elmstead,655,7.7,10.8,3.5,6.3; Alder,612,7.4,10.2,3.4,6.1; Brennan,548,6.8,9.1,3.1,5.7; Dunmore,489,5.9,8.3,2.8,4.9
+data avg = measure,value; Rain mm,601; Wheat,7.2; Corn,10.0; Soybeans,3.3; Barley,5.9
+
+table harvest heat=wheat,corn,soybeans,barley title="Yield by county (t/ha), wettest first"
+
+On a narrow screen, the charts below show one crop at a time so nothing has to scroll sideways.
+
+grid 2 count=4
+chart hbar harvest y=wheat focus="Calder" unit=t/ha title="Wheat"
+chart hbar harvest y=corn focus="Calder" unit=t/ha title="Corn"
+chart hbar harvest y=soybeans focus="Calder" unit=t/ha title="Soybeans"
+chart hbar harvest y=barley focus="Calder" unit=t/ha title="Barley"
+
+Region averages across the five counties:
+
+table avg title="Region averages"
+
+## Rainfall and yield
+
+The counties line up the same way on rainfall as on yield. Dunmore, the driest at 489 mm, produced 5.9 t/ha of wheat, 2.2 t/ha below Calder, the wettest at 701 mm.
+
+chart hbar harvest y=rain mm unit=mm target="601 region avg" title="Season rainfall by county"
+
+! Rainfall is one factor among many. Soil, planting dates and inputs also differ between counties, so treat this as a strong pattern, not proof of cause.

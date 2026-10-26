@@ -1,0 +1,45 @@
+@title Online ticketing platform architecture
+@subtitle Tidewater Ferries, Azure
+@author Digital Channels
+@date 2026-09-22
+
+kpi Owner | Digital Channels
+kpi Region | North Europe
+kpi Last reviewed | 2026-09-22
+
+## Overview
+
+Passengers book through Azure Front Door. Every booking is written to one database and announced as an event, so the scanners at the terminals stay in step.
+
+## Diagram
+
+diagram ticketing dir=TB title="Ticketing platform on Azure"
+ticketing: pax "Passengers" user
+ticketing: fd "Front Door" ext
+ticketing: pay "Payment Provider" ext
+ticketing: scan "Port Terminal Scanners" ext
+ticketing: web "Booking Web App" svc
+ticketing: api "Ticketing API" svc focus
+ticketing: db "Reservations DB" db "Azure SQL"
+ticketing: events "Booking Events" queue "Service Bus"
+ticketing: pax -> fd : HTTPS
+ticketing: fd -> web : origin request
+ticketing: web -> api : REST
+ticketing: api -> db : SQL, port 1433
+ticketing: api -> pay : card authorization
+ticketing: api -> events : ticket issued
+ticketing: events -> scan : sync every 30 s
+ticketing: group appnet "App subnet (10.50.1.0/24)" web, api
+ticketing: group datanet "Data subnet (10.50.2.0/24)" db, events
+ticketing: group vnet "Ticketing VNet (10.50.0.0/16)" appnet, datanet
+ticketing: group sub "Ticketing subscription" vnet
+
+## Capacity
+
+table = component,capacity; Booking Web App,"3 to 10 instances, scaling at 60 percent CPU"; Ticketing API,4 to 16 pods; Reservations DB,"8 vCores, with a read replica in the paired region"
+
+## Recovery targets
+
+kpi Recovery point objective | 5 minutes
+kpi Recovery time objective | 1 hour
+kpi Last tested | 2026-08-19

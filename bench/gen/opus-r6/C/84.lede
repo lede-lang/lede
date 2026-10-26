@@ -1,0 +1,37 @@
+@title 2026 Engagement Survey Results
+@subtitle Northwind Freight · shared with all staff
+@author HR Team, Northwind Freight
+
+data results = statement,favorable,neutral,unfavorable; Company goals,78,15,7; Manager feedback,64,22,14; Tools to do my job,71,18,11; Path to grow,49,27,24; Would recommend,69,20,11
+data change = statement,favorable 2025,favorable 2026; Company goals,76,78; Manager feedback,61,64; Tools to do my job,70,71; Path to grow,52,49; Would recommend,66,69
+
+## Response
+
+kpi Average favorable | 66.2% | +1.2 pts vs 2025 | good
+
+kpi Responses | 842 | of 1,060 employees
+kpi Response rate | 79.4% | of staff | bar
+
+Thank you to everyone who took part. Four of the five statements improved on last year.
+
+## Results by statement
+
+chart hbar results y=favorable,neutral,unfavorable stack unit=% title="Share of responses by statement"
+
+table = statement,favorable,neutral,unfavorable; I understand how my work supports company goals,78%,15%,7%; My manager gives me useful feedback,64%,22%,14%; I have the tools I need to do my job,71%,18%,11%; I see a path to grow here,49%,27%,24%; I would recommend this company as a place to work,69%,20%,11%
+
+## Change since 2025
+
+chart bar change unit=% focus="Path to grow" title="Favorable score, 2025 vs 2026"
+
+table = statement,2025,2026,change; Company goals,76%,78%,+2 pts; Manager feedback,61%,64%,**+3 pts**; Tools to do my job,70%,71%,+1 pt; Path to grow,52%,49%,**−3 pts**; Would recommend,66%,69%,**+3 pts**
+
+The biggest gains are manager feedback and recommendation, up 3 points each.
+
+!! "I see a path to grow here" is the only statement that declined, down 3 points to 49%, and it is our lowest score.
+
+## What we will do
+
+step Publish the career framework | by 2027-02-28 | HR
+step Train 90 managers on giving feedback | from 2026-12-01 | HR
+step Run a short pulse check | April 2027 | HR

@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>How to Read Your Water Bill | Tarn Valley Water</title>
+<style>
+:root{
+  --bg:#f3f8f9; --surface:#ffffff; --ink:#142631; --muted:#51656f; --line:#d8e5e9;
+  --water:#0f6f8f; --water-soft:#e0f0f5; --t1:#7cc3d9; --t2:#2f95b8; --t3:#0c5470;
+  --usage:#0f6f8f; --sewer:#6a8a3a; --fixed:#b0791c; --on-dark:#ffffff; --on-light:#0b2430;
+  --warn:#a5461a; --warn-soft:#fbebe2;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0c1519; --surface:#142027; --ink:#e6f0f3; --muted:#9bb0b8; --line:#243842;
+    --water:#6cc6e3; --water-soft:#152b34; --t1:#2d6c80; --t2:#3f93b2; --t3:#8fd4ea;
+    --usage:#4fb0d0; --sewer:#9fc66a; --fixed:#e0aa55; --on-dark:#06161c; --on-light:#06161c;
+    --warn:#f0a07a; --warn-soft:#33211a;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--water);font-weight:600}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px 56px}
+header{padding:32px 0 4px}
+.eyebrow{font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;color:var(--water);font-weight:700;margin:0 0 6px}
+h1{font-size:clamp(1.8rem,7vw,2.6rem);line-height:1.12;margin:0 0 8px;letter-spacing:-.015em}
+.lede{color:var(--muted);margin:0}
+section{margin-top:34px}
+h2{font-size:1.3rem;margin:0 0 10px}
+h3{font-size:1rem;margin:18px 0 6px}
+p{margin:0 0 12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0 0}
+.fact{background:var(--water-soft);border-radius:12px;padding:12px}
+.fact .n{font-size:1.4rem;font-weight:750;line-height:1.15}
+.fact .l{font-size:.84rem;color:var(--muted);line-height:1.35;margin-top:3px}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:.95rem}
+th,td{padding:9px 6px;text-align:left;border-bottom:1px solid var(--line)}
+th{font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+td.r,th.r{text-align:right}
+tr.total td{font-weight:750;border-bottom:0;border-top:2px solid var(--ink)}
+tr.sub td{font-weight:650}
+.tierbar{display:flex;height:40px;border-radius:8px;overflow:hidden;margin:10px 0 6px}
+.tierbar span{flex:var(--v) 1 0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;min-width:0}
+.tb1{background:var(--t1);color:var(--on-light)}
+.tb2{background:var(--t2);color:var(--on-dark)}
+.tb3{background:var(--t3);color:var(--on-dark)}
+.tierlabels{display:flex;font-size:.78rem;color:var(--muted)}
+.tierlabels span{flex:var(--v) 1 0;text-align:center;min-width:0;line-height:1.3}
+.split{display:flex;height:36px;border-radius:8px;overflow:hidden;margin:12px 0 8px}
+.split span{flex:var(--v) 1 0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;min-width:0;color:var(--on-dark)}
+.sp1{background:var(--usage)}.sp2{background:var(--sewer);color:var(--on-light)!important}.sp3{background:var(--fixed);color:var(--on-light)!important}
+.key{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.84rem;color:var(--muted)}
+.key i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.ways{display:grid;gap:10px;list-style:none;margin:0;padding:0}
+.ways li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.ways b{display:block}
+.ways .d{color:var(--muted);font-size:.95rem}
+.save{margin-top:12px;background:var(--water-soft);border-radius:12px;padding:12px 14px}
+.warn{background:var(--warn-soft);border-radius:12px;padding:14px 16px;margin-top:12px}
+.warn b{color:var(--warn)}
+.call{font-size:1.3rem;font-weight:750}
+@media (max-width:440px){.facts{grid-template-columns:1fr 1fr}.facts .fact:last-child{grid-column:1 / -1}}
+@media print{
+  body{background:#fff;color:#000;font-size:11pt}
+  .card,.ways li,.fact,.save,.warn{break-inside:avoid;box-shadow:none}
+  .wrap{padding-bottom:0}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Tarn Valley Water</p>
+  <h1>How to read your water bill</h1>
+  <p class="lede">Your bill has three parts: what you used, what it costs to take the water away, and a fixed charge. Here is what each one means.</p>
+</header>
+
+<section aria-labelledby="glance">
+  <h2 id="glance">Your bill at a glance</h2>
+  <div class="card">
+    <p>We send a bill <strong>every 3 months</strong>. Each bill adds up three things:</p>
+    <ul style="margin:0 0 8px;padding-left:1.2em">
+      <li><strong>Usage charge:</strong> the water you used, measured in cubic meters (m<sup>3</sup>).</li>
+      <li><strong>Sewer charge:</strong> 80 percent of your usage charge.</li>
+      <li><strong>Fixed service charge:</strong> $38.40 every quarter, however much you use.</li>
+    </ul>
+    <h3>Example: a household that used 72 m<sup>3</sup></h3>
+    <div class="split" role="img" aria-label="Of a $362.94 bill, usage is $180.30, sewer $144.24 and service charge $38.40">
+      <span class="sp1" style="--v:180.30">$180.30</span><span class="sp2" style="--v:144.24">$144.24</span><span class="sp3" style="--v:38.40">$38.40</span>
+    </div>
+    <p class="key"><span><i style="background:var(--usage)"></i>Usage</span><span><i style="background:var(--sewer)"></i>Sewer</span><span><i style="background:var(--fixed)"></i>Service charge</span></p>
+    <p style="margin:10px 0 0"><strong>Total: $362.94</strong></p>
+  </div>
+</section>
+
+<section aria-labelledby="usage">
+  <h2 id="usage">Usage charges</h2>
+  <p>We charge for water in three tiers. The more you use, the more each extra cubic meter costs. Each rate only applies to the water inside its tier.</p>
+  <div class="card">
+    <table>
+      <thead><tr><th>Tier</th><th>Water used</th><th class="r">Price per m<sup>3</sup></th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>First 30 m<sup>3</sup></td><td class="r">$1.85</td></tr>
+        <tr><td>2</td><td>Next 30 m<sup>3</sup></td><td class="r">$2.60</td></tr>
+        <tr><td>3</td><td>Above 60 m<sup>3</sup></td><td class="r">$3.90</td></tr>
+      </tbody>
+    </table>
+    <h3>Worked example: 72 m<sup>3</sup></h3>
+    <div class="tierbar" role="img" aria-label="72 cubic meters split into 30 in tier 1, 30 in tier 2 and 12 in tier 3">
+      <span class="tb1" style="--v:30">30</span><span class="tb2" style="--v:30">30</span><span class="tb3" style="--v:12">12</span>
+    </div>
+    <div class="tierlabels"><span style="--v:30">Tier 1</span><span style="--v:30">Tier 2</span><span style="--v:12">Tier 3</span></div>
+    <table style="margin-top:12px">
+      <tbody>
+        <tr><td>30 m<sup>3</sup> &times; $1.85</td><td class="r">$55.50</td></tr>
+        <tr><td>30 m<sup>3</sup> &times; $2.60</td><td class="r">$78.00</td></tr>
+        <tr><td>12 m<sup>3</sup> &times; $3.90</td><td class="r">$46.80</td></tr>
+        <tr class="sub"><td>Usage charge</td><td class="r">$180.30</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="fixed">
+  <h2 id="fixed">Fixed charges</h2>
+  <p>Two more lines are added on top of your usage.</p>
+  <div class="card">
+    <table>
+      <tbody>
+        <tr><td><strong>Sewer charge</strong><br><span style="color:var(--muted);font-size:.9rem">80 percent of the usage charge: 0.80 &times; $180.30</span></td><td class="r">$144.24</td></tr>
+        <tr><td><strong>Fixed service charge</strong><br><span style="color:var(--muted);font-size:.9rem">Per quarter</span></td><td class="r">$38.40</td></tr>
+      </tbody>
+    </table>
+    <h3>Putting it together</h3>
+    <table>
+      <tbody>
+        <tr><td>Usage</td><td class="r">$180.30</td></tr>
+        <tr><td>Sewer</td><td class="r">$144.24</td></tr>
+        <tr><td>Service charge</td><td class="r">$38.40</td></tr>
+        <tr class="total"><td>Total for 72 m<sup>3</sup></td><td class="r">$362.94</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="pay">
+  <h2 id="pay">Ways to pay</h2>
+  <p>Payment is due <strong>21 days after the issue date</strong>.</p>
+  <ul class="ways">
+    <li><b>Online</b><span class="d"><a href="https://tarnvalleywater.example/pay">tarnvalleywater.example/pay</a></span></li>
+    <li><b>By phone</b><span class="d"><a href="tel:5550121">555-0121</a></span></li>
+    <li><b>In person</b><span class="d">Main Street office, weekdays from 8:30 to 16:30</span></li>
+  </ul>
+  <div class="save"><strong>Save $2 on every bill</strong> by signing up for autopay.</div>
+</section>
+
+<section aria-labelledby="late">
+  <h2 id="late">If you cannot pay on time</h2>
+  <div class="card">
+    <p>Please talk to us before the due date. We can set up a payment plan.</p>
+    <p class="call">Call <a href="tel:5550133" style="text-decoration:none">555-0133</a></p>
+    <div class="warn"><b>Good to know:</b> a late fee of 5 percent is added after 30 days.</div>
+  </div>
+</section>
+</div>
+</body>
+</html>

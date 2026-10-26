@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>INC-3107 Postmortem: EU Matchmaking DNS Failure</title>
+<style>
+:root{--page:#f4f5f8;--card:#ffffff;--ink:#1a1d28;--mute:#5d6375;--edge:#d8dce6;--magenta:#b4316b;--magenta-soft:#fbe9f0;--blue:#3050b8;--warn-bg:#fff3e0;--warn-bd:#d17a18;--warn-ink:#5a3200;}
+@media (prefers-color-scheme: dark){
+:root:not([data-theme="light"]){--page:#0d0f16;--card:#161923;--ink:#e3e6f0;--mute:#9ba2b8;--edge:#2a2f3f;--magenta:#ff7fb0;--magenta-soft:#3a1828;--blue:#8fa8ff;--warn-bg:#352508;--warn-bd:#e09a3c;--warn-ink:#ffdca8;}
+}
+:root[data-theme="dark"]{--page:#0d0f16;--card:#161923;--ink:#e3e6f0;--mute:#9ba2b8;--edge:#2a2f3f;--magenta:#ff7fb0;--magenta-soft:#3a1828;--blue:#8fa8ff;--warn-bg:#352508;--warn-bd:#e09a3c;--warn-ink:#ffdca8;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px 56px}
+.kick{color:var(--mute);font-size:.82rem;text-transform:uppercase;letter-spacing:.07em;margin:0}
+h1{font-size:1.6rem;line-height:1.25;margin:4px 0 6px}
+.meta{color:var(--mute);font-size:.92rem;margin:0}
+h2{font-size:1.12rem;margin:32px 0 10px;padding-bottom:4px;border-bottom:1px solid var(--edge)}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:18px}
+@media (min-width:720px){.tiles{grid-template-columns:repeat(4,1fr)}}
+.tile{background:var(--card);border:1px solid var(--edge);border-radius:10px;padding:14px}
+.tile .v{font-size:1.5rem;font-weight:700;color:var(--magenta);font-variant-numeric:tabular-nums}
+.tile .l{color:var(--mute);font-size:.84rem}
+.card{background:var(--card);border:1px solid var(--edge);border-radius:10px;padding:12px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.94rem;min-width:360px}
+th,td{padding:9px 8px;text-align:left;border-bottom:1px solid var(--edge)}
+th{color:var(--mute);font-weight:600;font-size:.84rem}
+td.t{white-space:nowrap;font-variant-numeric:tabular-nums}
+svg{display:block;width:100%;height:auto}
+svg text{font-size:12px;fill:var(--mute)}
+svg .k{fill:var(--ink)}
+svg .gl{stroke:var(--edge)}
+svg .ax{stroke:var(--mute)}
+svg .ln{fill:none;stroke:var(--magenta);stroke-width:2.4;stroke-linejoin:round}
+svg .pt{fill:var(--magenta)}
+svg .low{fill:var(--ink);font-weight:600}
+ul{padding-left:22px}
+li{margin:7px 0}
+.warn{margin:18px 0;padding:14px 16px;background:var(--warn-bg);border-left:4px solid var(--warn-bd);color:var(--warn-ink);border-radius:8px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="kick">Postmortem · Network team</p>
+  <h1>INC-3107: DNS misconfiguration broke EU matchmaking</h1>
+  <p class="meta">Alder Cloud Games · Incident on 2026-08-19</p>
+
+  <section class="tiles" aria-label="Incident headline numbers">
+    <div class="tile"><div class="v">1 h 52 min</div><div class="l">Duration</div></div>
+    <div class="tile"><div class="v">61.3%</div><div class="l">Lowest success rate</div></div>
+    <div class="tile"><div class="v">48,200</div><div class="l">Matches failed</div></div>
+    <div class="tile"><div class="v">EU-West</div><div class="l">Region</div></div>
+  </section>
+
+  <h2>What happened</h2>
+  <p>A Terraform change replaced the weighted DNS records for match.eu with a single record. That record pointed at a decommissioned load balancer, so matchmaking requests for players in Europe failed. Negative caching with a TTL of 3600 seconds then kept the failures going after the bad record was restored, because resolvers kept the failed answer for up to an hour.</p>
+
+  <h2>Timeline</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>Time (UTC)</th><th>Event</th></tr></thead>
+      <tbody>
+        <tr><td class="t">09:12</td><td>Terraform apply</td></tr>
+        <tr><td class="t">09:15</td><td>Success rate drops</td></tr>
+        <tr><td class="t">09:31</td><td>Player reports spike on social media</td></tr>
+        <tr><td class="t">09:40</td><td>Incident declared</td></tr>
+        <tr><td class="t">10:05</td><td>Bad record identified</td></tr>
+        <tr><td class="t">10:11</td><td>Record restored</td></tr>
+        <tr><td class="t">11:04</td><td>Success rate back above 99 percent and incident resolved</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Request success rate</h2>
+  <div class="card">
+    <svg viewBox="0 0 600 250" role="img" aria-label="Line chart of matchmaking success rate percent every 15 minutes from 09:00 to 11:15 UTC. It falls from 99.6 to a low of 61.3 at 09:45, then recovers to 99.5 by 11:15.">
+      <line class="gl" x1="60" y1="20" x2="580" y2="20"/>
+      <line class="gl" x1="60" y1="60" x2="580" y2="60"/>
+      <line class="gl" x1="60" y1="100" x2="580" y2="100"/>
+      <line class="gl" x1="60" y1="140" x2="580" y2="140"/>
+      <line class="gl" x1="60" y1="180" x2="580" y2="180"/>
+      <line class="ax" x1="60" y1="220" x2="580" y2="220"/>
+      <text x="50" y="24" text-anchor="end">100%</text>
+      <text x="50" y="64" text-anchor="end">90%</text>
+      <text x="50" y="104" text-anchor="end">80%</text>
+      <text x="50" y="144" text-anchor="end">70%</text>
+      <text x="50" y="184" text-anchor="end">60%</text>
+      <text x="50" y="224" text-anchor="end">50%</text>
+      <polyline class="ln" points="60,21.6 117.78,83.2 175.56,168 233.33,174.8 291.11,168.8 348.89,138.4 406.67,92.4 464.44,46 522.22,25.2 580,22"/>
+      <circle class="pt" cx="60" cy="21.6" r="3.5"/>
+      <circle class="pt" cx="117.78" cy="83.2" r="3.5"/>
+      <circle class="pt" cx="175.56" cy="168" r="3.5"/>
+      <circle class="pt" cx="233.33" cy="174.8" r="5"/>
+      <circle class="pt" cx="291.11" cy="168.8" r="3.5"/>
+      <circle class="pt" cx="348.89" cy="138.4" r="3.5"/>
+      <circle class="pt" cx="406.67" cy="92.4" r="3.5"/>
+      <circle class="pt" cx="464.44" cy="46" r="3.5"/>
+      <circle class="pt" cx="522.22" cy="25.2" r="3.5"/>
+      <circle class="pt" cx="580" cy="22" r="3.5"/>
+      <text class="low" x="244" y="196">Low 61.3% at 09:45</text>
+      <text x="60" y="242" text-anchor="middle">09:00</text>
+      <text x="175.56" y="242" text-anchor="middle">09:30</text>
+      <text x="291.11" y="242" text-anchor="middle">10:00</text>
+      <text x="406.67" y="242" text-anchor="middle">10:30</text>
+      <text x="522.22" y="242" text-anchor="middle">11:00</text>
+      <text x="580" y="242" text-anchor="middle">11:15</text>
+    </svg>
+  </div>
+
+  <h2>Action items</h2>
+  <ul>
+    <li>Require a plan review for DNS changes.</li>
+    <li>Lower the negative cache TTL to 300 seconds.</li>
+    <li>Add synthetic matchmaking checks from three EU cities.</li>
+  </ul>
+
+  <div class="warn" role="note">
+    Until the negative cache TTL is lowered, a DNS fix can take up to an hour to reach players.
+  </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,61 @@
+@title Database for Member Profiles
+@subtitle Decision due 2026-11-04, Accounts team at Lattice Fitness
+
+The member-profile service holds 9 million profiles of about 2 KB each. At peak it serves 3500 reads per second and 220 writes per second, mostly key lookups plus a few admin searches by email and gym.
+
+## Comparison
+
+table = Option,Query flexibility,Scaling model,Ops effort,Multi-region; PostgreSQL (RDS),high,vertical plus read replicas,medium,read replicas only; DynamoDB,low,automatic,low,global tables; MongoDB Atlas,medium,sharding,medium,global clusters
+
+## Cost at scale
+
+data scale = Traffic,PostgreSQL,DynamoDB,MongoDB Atlas; Today,780,540,910; 3x traffic,1640,1420,1870; 10x traffic,4300,4650,5200
+
+chart bar scale y=PostgreSQL,DynamoDB,MongoDB Atlas unit=$ labels title="Estimated monthly cost by traffic level"
+
+At 10x traffic, DynamoDB costs more than PostgreSQL. Our realistic horizon is 3x, where the gap is small.
+
+## Pros and cons
+
+### PostgreSQL (RDS)
+
+**Pros**
+
+- Flexible queries for admin search.
+- Cheaper than MongoDB Atlas at every traffic level.
+
+**Cons**
+
+- Scales vertically, with read replicas for reads.
+- Multi-region is read replicas only.
+
+### DynamoDB
+
+**Pros**
+
+- Scales automatically.
+- Low ops effort.
+- Global tables for multi-region.
+
+**Cons**
+
+- Low query flexibility, so admin searches need extra indexes.
+- Costs more than PostgreSQL at 10x traffic.
+
+### MongoDB Atlas
+
+**Pros**
+
+- Medium query flexibility.
+- Global clusters for multi-region.
+
+**Cons**
+
+- Most expensive option at every traffic level.
+- Scaling depends on sharding.
+
+## Recommendation
+
+! PostgreSQL, because admin search needs flexible queries and its cost stays within $220 a month of DynamoDB at our realistic 3x horizon.
+
+!! Write volume above 2000 per second would force us to revisit sharding.

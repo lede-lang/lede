@@ -1,0 +1,59 @@
+{
+  "id": "02-slo-dashboard",
+  "category": "status",
+  "title": "Payments API SLO dashboard",
+  "brief": "I need an SLO dashboard page for the Payments API, covering the 30-day window ending 2026-10-15, for the Payments Reliability team. Top row of three metric tiles: Availability 99.95 percent (target 99.9), Error budget remaining 62 percent, p99 latency 412 ms (target 500 ms). Under a section titled \"Daily availability\", show a line chart of availability for the last ten days: Oct 6 99.98, Oct 7 99.97, Oct 8 99.91, Oct 9 99.99, Oct 10 99.96, Oct 11 99.82, Oct 12 99.94, Oct 13 99.97, Oct 14 99.99, Oct 15 99.98. Draw the 99.9 target as a reference so it is obvious that Oct 11 dipped below it. Then a section titled \"Service SLOs\" with a table of columns Service, SLO target, Current, Budget consumed: payments-api, 99.9, 99.95, 38 percent; ledger-writer, 99.95, 99.97, 41 percent; card-tokenizer, 99.99, 99.993, 70 percent; refunds-worker, 99.5, 99.71, 22 percent; payout-scheduler, 99.9, 99.86, 140 percent. Also add a bar chart comparing budget consumed across those five services. Close with a warning callout titled \"Budget exhausted\" saying payout-scheduler has burned 140 percent of its error budget and feature deploys to it are frozen until 2026-10-29 per the error budget policy.",
+  "checklist": {
+    "sections": [
+      "Daily availability",
+      "Service SLOs"
+    ],
+    "visible": [
+      "Availability",
+      "Error budget remaining",
+      "p99 latency",
+      "Budget exhausted",
+      "payout-scheduler",
+      "card-tokenizer",
+      "refunds-worker",
+      "Budget consumed",
+      "SLO target"
+    ],
+    "values": [
+      "99.95",
+      "62",
+      "412",
+      "99.82",
+      "99.91",
+      "99.94",
+      "99.993",
+      "140",
+      "38",
+      "41",
+      "70",
+      "22",
+      "99.86",
+      "99.71",
+      "2026-10-29"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "callout"
+  ],
+  "edit": {
+    "request": "payout-scheduler has recovered: change its Current to 99.92 and its Budget consumed to 85 percent, update the bar chart, and remove the \"Budget exhausted\" warning.",
+    "expect_visible": [
+      "payout-scheduler"
+    ],
+    "expect_values": [
+      "99.92",
+      "85"
+    ],
+    "expect_absent": [
+      "Budget exhausted"
+    ]
+  }
+}

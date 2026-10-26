@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lakeshore Marathon 2026 results</title>
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#f3f6f9; --surface:#ffffff; --surface-2:#ecf1f6; --text:#152030; --muted:#566377; --border:#d8e0ea; --grid:#e2e8ef;
+  --accent:#0a6bb5; --accent-soft:#e1effa; --gold:#b7791f; --gold-soft:#fbf1df;
+  --bar:#8fb3d3; --barhi:#0a6bb5;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0d1218; --surface:#151c24; --surface-2:#1c242e; --text:#e4eaf1; --muted:#97a4b5; --border:#28323e; --grid:#222b36;
+    --accent:#5fb4f5; --accent-soft:#142a3d; --gold:#f2c06b; --gold-soft:#33280f;
+    --bar:#3a5f80; --barhi:#5fb4f5;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.hero{background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 55%,#0b1f33));color:#fff}
+.hero .in{max-width:920px;margin:0 auto;padding:48px 24px 40px}
+.hero .eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.1em;font-weight:700;opacity:.85;margin:0}
+.hero h1{font-size:clamp(1.8rem,5vw,2.6rem);line-height:1.12;margin:.3em 0 .3em;letter-spacing:-.015em}
+.hero p{margin:0;opacity:.92;font-size:1.05rem;max-width:62ch}
+.wrap{max-width:920px;margin:0 auto;padding:8px 24px 64px}
+h2{font-size:1.3rem;margin:0 0 .8rem}
+p{margin:0 0 .9rem}
+section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:26px;margin:20px 0}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi{background:var(--surface-2);border-radius:12px;padding:14px 16px}
+.kpi .k{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;line-height:1.3}
+.kpi .v{font-size:1.6rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.3;margin-top:4px}
+.kpi .s{font-size:.84rem;color:var(--muted)}
+.weather{display:flex;gap:10px;align-items:center;margin-top:14px;font-size:.95rem;color:var(--muted)}
+.weather b{color:var(--text)}
+.chart{width:100%;max-width:640px;height:auto;display:block}
+.chart .grid{stroke:var(--grid);stroke-width:1}
+.chart .axis{fill:var(--muted);font-size:12px}
+.chart .xl{fill:var(--text);font-size:11.5px}
+.chart .val{fill:var(--text);font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
+.chart .b{fill:var(--bar)} .chart .bh{fill:var(--barhi)}
+.cap{font-size:.92rem;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left}
+thead th{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-bottom:2px solid var(--border)}
+tr:last-child th,tr:last-child td{border-bottom:0}
+.r{text-align:right;font-variant-numeric:tabular-nums}
+.t{font-variant-numeric:tabular-nums;white-space:nowrap}
+td .t{display:block;color:var(--muted);font-size:.88em}
+.hl{background:var(--accent-soft)}
+.podium{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px}
+.champ{background:var(--gold-soft);border-radius:12px;padding:18px 20px}
+.champ .k{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--gold);font-weight:700}
+.champ .n{font-size:1.25rem;font-weight:700;margin-top:2px}
+.champ .tm{font-size:1.6rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.2}
+h3{font-size:1rem;margin:0 0 .5rem}
+.hlist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.hlist li{background:var(--surface-2);border-radius:12px;padding:16px}
+.hlist .v{font-size:1.6rem;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums;line-height:1.2}
+.notice{border-left:4px solid var(--gold);background:var(--gold-soft);border-radius:0 10px 10px 0;padding:14px 16px;font-size:.95rem}
+footer{color:var(--muted);font-size:.85rem;margin-top:28px}
+@media (max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}.hlist{grid-template-columns:1fr}}
+@media (max-width:480px){
+  .hero .in{padding:36px 16px 30px}
+  .wrap{padding:4px 16px 48px}
+  section{padding:18px 14px;border-radius:12px}
+  th,td{padding:8px 5px}
+  table{font-size:.86rem}
+  thead th{font-size:.7rem}
+  .podium{grid-template-columns:1fr}
+  .kpi .v{font-size:1.35rem}
+}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="in">
+    <p class="eyebrow">Results &middot; Sunday, October 11, 2026</p>
+    <h1>Lakeshore Marathon 2026</h1>
+    <p>3,412 runners crossed the finish line. Here is how the day went, who won, and the numbers behind it.</p>
+  </div>
+</header>
+<div class="wrap">
+
+<section id="race-at-a-glance">
+  <h2>Race at a glance</h2>
+  <div class="kpis">
+    <div class="kpi"><div class="k">Starters</div><div class="v">3,499</div></div>
+    <div class="kpi"><div class="k">Finishers</div><div class="v">3,412</div><div class="s">97.5% of starters</div></div>
+    <div class="kpi"><div class="k">Did not finish</div><div class="v">87</div></div>
+    <div class="kpi"><div class="k">Median finish</div><div class="v">4:21:08</div></div>
+  </div>
+  <p class="weather"><span aria-hidden="true">&#9728;</span><span><b>14 &deg;C</b> at the start, with a light headwind on the lakefront stretch.</span></p>
+</section>
+
+<section id="finish-times">
+  <h2>Finish times</h2>
+  <p class="cap">Finishers by finish-time band. The median, 4:21:08, falls in the highlighted band.</p>
+  <svg class="chart" viewBox="0 0 480 272" role="img" aria-labelledby="fTitle fDesc">
+    <title id="fTitle">Finishers by finish-time band</title>
+    <desc id="fDesc">Under 3:00: 118. 3:00 to 3:29: 304. 3:30 to 3:59: 612. 4:00 to 4:29: 891. 4:30 to 4:59: 703. 5:00 to 5:29: 489. 5:30 and over: 295.</desc>
+    <line class="grid" x1="40" y1="230" x2="470" y2="230"/>
+    <line class="grid" x1="40" y1="180" x2="470" y2="180"/>
+    <line class="grid" x1="40" y1="130" x2="470" y2="130"/>
+    <line class="grid" x1="40" y1="80" x2="470" y2="80"/>
+    <line class="grid" x1="40" y1="30" x2="470" y2="30"/>
+    <g class="axis" text-anchor="end">
+      <text x="34" y="234">0</text><text x="34" y="184">250</text><text x="34" y="134">500</text><text x="34" y="84">750</text><text x="34" y="34">1,000</text>
+    </g>
+    <rect class="b" x="46.7" y="206.4" width="48" height="23.6" rx="2"/>
+    <rect class="b" x="108.1" y="169.2" width="48" height="60.8" rx="2"/>
+    <rect class="b" x="169.6" y="107.6" width="48" height="122.4" rx="2"/>
+    <rect class="bh" x="231" y="51.8" width="48" height="178.2" rx="2"/>
+    <rect class="b" x="292.4" y="89.4" width="48" height="140.6" rx="2"/>
+    <rect class="b" x="353.9" y="132.2" width="48" height="97.8" rx="2"/>
+    <rect class="b" x="415.3" y="171" width="48" height="59" rx="2"/>
+    <g class="val" text-anchor="middle">
+      <text x="70.7" y="200">118</text><text x="132.1" y="163">304</text><text x="193.6" y="101">612</text><text x="255" y="45">891</text><text x="316.4" y="83">703</text><text x="377.9" y="126">489</text><text x="439.3" y="165">295</text>
+    </g>
+    <g class="xl" text-anchor="middle">
+      <text x="70.7" y="248">Under</text><text x="70.7" y="263">3:00</text>
+      <text x="132.1" y="248">3:00 to</text><text x="132.1" y="263">3:29</text>
+      <text x="193.6" y="248">3:30 to</text><text x="193.6" y="263">3:59</text>
+      <text x="255" y="248">4:00 to</text><text x="255" y="263">4:29</text>
+      <text x="316.4" y="248">4:30 to</text><text x="316.4" y="263">4:59</text>
+      <text x="377.9" y="248">5:00 to</text><text x="377.9" y="263">5:29</text>
+      <text x="439.3" y="248">5:30 and</text><text x="439.3" y="263">over</text>
+    </g>
+  </svg>
+  <table style="margin-top:14px">
+    <thead><tr><th scope="col">Finish time</th><th scope="col" class="r">Finishers</th><th scope="col" class="r">Share</th></tr></thead>
+    <tbody>
+      <tr><td>Under 3:00</td><td class="r">118</td><td class="r">3.5%</td></tr>
+      <tr><td>3:00 to 3:29</td><td class="r">304</td><td class="r">8.9%</td></tr>
+      <tr><td>3:30 to 3:59</td><td class="r">612</td><td class="r">17.9%</td></tr>
+      <tr class="hl"><td>4:00 to 4:29 <span style="color:var(--muted);font-size:.88em">(median)</span></td><td class="r">891</td><td class="r">26.1%</td></tr>
+      <tr><td>4:30 to 4:59</td><td class="r">703</td><td class="r">20.6%</td></tr>
+      <tr><td>5:00 to 5:29</td><td class="r">489</td><td class="r">14.3%</td></tr>
+      <tr><td>5:30 and over</td><td class="r">295</td><td class="r">8.6%</td></tr>
+      <tr><th scope="row">All finishers</th><td class="r"><strong>3,412</strong></td><td class="r">100%</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="winners">
+  <h2>Winners</h2>
+  <div class="podium">
+    <div class="champ"><div class="k">Men's winner</div><div class="n">Daniel Kiprop</div><div class="tm">2:19:44</div></div>
+    <div class="champ"><div class="k">Women's winner</div><div class="n">Elena Moretti</div><div class="tm">2:38:12</div></div>
+  </div>
+  <h3>Age-group winners</h3>
+  <table>
+    <thead><tr><th scope="col">Age group</th><th scope="col">Men</th><th scope="col">Women</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">18 to 29</th><td>Mateus Oliveira<span class="t">2:31:55</span></td><td>Hannah Berg<span class="t">2:54:30</span></td></tr>
+      <tr><th scope="row">30 to 39</th><td>Samuel Adeyemi<span class="t">2:28:02</span></td><td>Ines Duarte<span class="t">2:49:18</span></td></tr>
+      <tr><th scope="row">40 to 49</th><td>Rolf Jansen<span class="t">2:41:37</span></td><td>Corinne Leclerc<span class="t">3:01:44</span></td></tr>
+      <tr><th scope="row">50 and over</th><td>Tadashi Mori<span class="t">2:58:09</span></td><td>Margaret O'Hara<span class="t">3:12:51</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="highlights">
+  <h2>Highlights</h2>
+  <ul class="hlist">
+    <li><div class="v">41%</div>of finishers were running their first marathon.</li>
+    <li><div class="v">23</div>countries were represented.</li>
+    <li><div class="v">1,180</div>volunteers, a record, staffed 14 aid stations.</li>
+  </ul>
+</section>
+
+<p class="notice"><strong>Results status:</strong> official chip times are final. Results may still change if a protest is upheld before October 25, 2026.</p>
+
+<footer>Lakeshore Marathon, Sunday, October 11, 2026. Published by the race director.</footer>
+</div>
+</body>
+</html>

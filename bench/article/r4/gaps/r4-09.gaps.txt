@@ -1,0 +1,7 @@
+Mostly expressible, with these limits:
+- Loops and skips: a flow diagram shows the resubmit loop (dashed back-edge to step 2) and skips (dashed edges), but cannot show percentages on a path other than in edge labels, and cannot show that steps 6, 7, 8 are independent conditional checks rather than a sequence; I grouped them as "only if triggered" with no edges between them. The data does not say where the 12% who skip steps 4 and 5 go, so the dashed edge sends them to the review group.
+- Step 13 (rejected or withdrawn) has only one drawn entry edge (from heritage); the data says only "most" are withdrawn after heritage and gives no other exit points.
+- The quote “waiting on the phone company” uses curly quotes inside a data field because the reference does not say how embedded straight quotes are escaped.
+- No table heat/bar on the appendix table: the column names with spaces and "%" were not documented for heat=/bar=, so I left it plain.
+- The application-days chart is my own derived figure (median days x applications reaching), which Lede cannot label as an estimate except in the title and prose.
+- Proposed fixes are shown in a plain inline table; there is no way to mark them as proposals rather than data.

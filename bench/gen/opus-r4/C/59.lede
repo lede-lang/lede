@@ -1,0 +1,33 @@
+@title Login platform: build or buy
+@subtitle Keycloak self-hosted, Authly or Gatepost, for the architecture council. Decision on 2026-11-04.
+@date 2026-10-17
+
+Meadowbrook Learning has 250,000 monthly active learners, growing about 40 percent a year. Our home-grown login system has become a maintenance burden, so we compared keeping it in-house on open-source Keycloak with buying Authly or Gatepost.
+
+kpi Monthly active learners | 250,000 | +40% a year
+kpi Decision date | 2026-11-04
+
+## Cost
+
+data cost = monthly active users,Keycloak self-hosted,Authly,Gatepost; 100k,210000,66000,54000; 250k,240000,151000,108000; 500k,330000,288000,192000
+chart line cost unit=$ title="Annual cost by monthly active users"
+table cost title="Annual cost in dollars"
+
+Keycloak's cost is mostly infrastructure plus 1.5 engineers, so it stays high even at small scale. Gatepost is the cheapest at every size shown, but its price steps up sharply above 400,000 users, and bot protection costs an extra $18,000 a year on top of these figures.
+
+## Capabilities
+
+table = Capability,Keycloak self-hosted,Authly,Gatepost; SSO for schools (SAML and OIDC),Yes,Yes,Yes; Managed bot protection,No (we build it),Included,"Extra, $18,000 a year"; Adaptive MFA,No,Included,Included; EU learner data in Frankfurt,Yes,Yes,Highest plan only
+
+## Risks
+
+- **Keycloak self-hosted:** we keep the maintenance burden we are trying to escape, and we would have to build and run bot protection ourselves.
+- **Authly:** cost rises steeply with growth, from $151,000 at 250,000 users to $288,000 at 500,000.
+- **Gatepost:** sharp price steps above 400,000 users, bot protection as a paid add-on, and EU data residency only on the highest plan, which may change the price we actually pay.
+- **All options:** migrating learners and school SSO connections off the current system carries risk whichever vendor we choose.
+
+## Recommendation
+
+**We recommend buying Authly.** It is the middle option on cost, and the only one that covers bot protection, adaptive MFA and EU data residency in Frankfurt without add-ons or plan upgrades.
+
+! We would revisit the decision at 500,000 monthly active users. At 40 percent growth a year we could reach that in about two years.

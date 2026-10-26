@@ -1,0 +1,28 @@
+@title Support desk status, week 42
+@subtitle Pinecrest Software, week ending 2026-10-16
+@author Adaeze Nwosu, Support lead
+@date 2026-10-16
+
+kpi Received | 2,486 | tickets
+kpi Solved | 2,391 | tickets
+kpi Open backlog | 612 | +14 vs W41 | bad
+kpi Median first response | 2.7 h | target 2.0 h | bad
+kpi Satisfaction | 91.2%
+
+# Backlog trend
+data backlog = week,open backlog; W33,410; W34,425; W35,438; W36,470; W37,505; W38,531; W39,556; W40,579; W41,598; W42,612
+chart line backlog y=open backlog labels=end title="Open backlog, last 10 weeks"
+
+# By category
+data categories = category,received,hours; Billing,702,3.4; Login and access,548,1.6; Bugs,497,3.1; How-to,421,2.2; Feature requests,318,3.0
+table categories bar=received heat=hours title="Tickets received and median first response (h)"
+Billing (3.4 h) and Bugs (3.1 h) are the slowest to get a first response, against a 2.0 h target.
+
+# Needs attention
+!! The backlog has grown every week since W33, from 410 to 612.
+- 3 agents are on leave until 2026-10-30.
+- The billing queue lost the most capacity.
+
+# Next week
+step Saturday coverage added | from 2026-10-24
+step 2 new agents start | 2026-11-02

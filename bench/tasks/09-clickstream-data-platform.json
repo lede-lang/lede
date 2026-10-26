@@ -1,0 +1,59 @@
+{
+  "id": "09-clickstream-data-platform",
+  "category": "architecture",
+  "title": "Clickstream data platform",
+  "brief": "Please write up the clickstream data platform for the Data Engineering team at Harbor Media, as of 2026-09-30. Section titled \"Overview\": one paragraph explaining that we collect about 1800 million events per day from our apps and land them in a lake that analysts query. Section titled \"Architecture diagram\" with nested groups. Group \"Ingest account\" contains \"Clickstream Stream\" (Kinesis) and \"Firehose\". Group \"Analytics account\" contains \"Raw Bucket\", \"Curated Bucket\" and \"Glue Catalog\", plus a nested group \"Lake VPC\" (10.40.0.0/16) containing \"EMR Cluster\" and \"Redshift Cluster\". Outside both accounts put \"Web and Mobile Apps\" and \"Looker\". Connections: Web and Mobile Apps to Clickstream Stream labeled \"events\"; Clickstream Stream to Firehose labeled \"batch\"; Firehose to Raw Bucket labeled \"parquet every 5 min\"; Raw Bucket to EMR Cluster labeled \"nightly ETL\"; EMR Cluster to Curated Bucket labeled \"cleaned tables\"; Curated Bucket to Redshift Cluster labeled \"COPY\"; Glue Catalog to EMR Cluster labeled \"schemas\"; Redshift Cluster to Looker labeled \"SQL\". Section titled \"Datasets\" with a table of columns Dataset, Daily volume (GB), Retention (days), Owner: raw_events, 940, 30, Ingest squad; sessions, 120, 400, Analytics Eng; page_views, 310, 400, Analytics Eng; ad_impressions, 260, 90, Ad Tech. Section titled \"Known limits\" with a bulleted list: Firehose buffering means data arrives up to 5 minutes late; the nightly ETL finishes around 03:40 UTC; Redshift is a 4-node ra3.4xlarge cluster that queues queries above 50 concurrent users.",
+  "checklist": {
+    "sections": [
+      "Overview",
+      "Architecture diagram",
+      "Datasets",
+      "Known limits"
+    ],
+    "visible": [
+      "Ingest account",
+      "Analytics account",
+      "Lake VPC",
+      "Clickstream Stream",
+      "Firehose",
+      "Raw Bucket",
+      "Curated Bucket",
+      "Glue Catalog",
+      "EMR Cluster",
+      "Redshift Cluster",
+      "Looker",
+      "Web and Mobile Apps",
+      "nightly ETL",
+      "Daily volume"
+    ],
+    "values": [
+      "1800",
+      "10.40.0.0/16",
+      "940",
+      "120",
+      "310",
+      "260",
+      "400",
+      "03:40",
+      "ra3.4xlarge",
+      "50"
+    ]
+  },
+  "needs": [
+    "diagram",
+    "table",
+    "list"
+  ],
+  "edit": {
+    "request": "Replace Looker with \"Superset\" everywhere, and add a \"Feature Store\" node inside the Lake VPC fed by EMR Cluster with an arrow labeled \"features\".",
+    "expect_visible": [
+      "Superset",
+      "Feature Store",
+      "features"
+    ],
+    "expect_values": [],
+    "expect_absent": [
+      "Looker"
+    ]
+  }
+}

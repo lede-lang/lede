@@ -1,0 +1,3 @@
+Could not do: review the branch itself. The brief says it is checked out, but I was told not to read anything except the reference and briefs, so I could not cite files, lines or interrupt-handler code. The review is built only from the change summary, comments and CI status, and says so at the top. The interrupt explanation is general, not tied to the actual code.
+Lede could not express: links or anchors to file and line, or a diff view. Substituted: file paths as plain text and a checklist (- [ ]) of things for the reviewer to look up in the code.
+Substituted for exactness: typographic quotes were not needed; comments are quoted or lightly shortened in the table (Tobias's battery comment is shortened to the question).

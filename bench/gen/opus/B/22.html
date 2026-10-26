@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Order-Routing Queue Decision</title>
+<style>
+:root{--bg:#f6f7f4;--surface:#ffffff;--text:#1d2420;--muted:#5d6862;--border:#dfe3dc;--accent:#2b7a5e;--accent-soft:#e3f2eb;--bar:#8aa59a;--bar-hi:#2b7a5e;--pro:#2b7a5e;--con:#b04a2f}
+@media (prefers-color-scheme:dark){:root{--bg:#121614;--surface:#1b201d;--text:#e5ebe7;--muted:#9aa69f;--border:#2d3530;--accent:#5cc49c;--accent-soft:#183027;--bar:#5b7369;--bar-hi:#5cc49c;--pro:#5cc49c;--con:#ef8a6e}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:900px;margin:0 auto;padding:32px 16px 64px}
+.eyebrow{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+h1{font-size:clamp(26px,5vw,34px);line-height:1.2;margin:0 0 10px}
+.lede{color:var(--muted);margin:0 0 20px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:0 0 28px;padding:0;list-style:none}
+.facts li{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.facts b{display:block;font-size:20px}
+.facts span{font-size:13px;color:var(--muted)}
+section{margin:0 0 32px}
+h2{font-size:21px;margin:0 0 12px;padding-bottom:6px;border-bottom:2px solid var(--border)}
+.opts{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.opts li{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px}
+.table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--border);border-radius:10px}
+table{width:100%;border-collapse:collapse;min-width:620px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+tbody tr:last-child td{border-bottom:0}
+th{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+th.num{text-align:right}
+tbody th{text-transform:none;letter-spacing:0;font-size:16px;color:var(--text)}
+.chart{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:16px}
+.chart h3{margin:0 0 8px;font-size:16px}
+svg{display:block;width:100%;height:auto}
+.pc{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.card h3{margin:0 0 8px;font-size:17px}
+.card h4{margin:10px 0 4px;font-size:13px;text-transform:uppercase;letter-spacing:.05em}
+.card h4.p{color:var(--pro)}.card h4.c{color:var(--con)}
+.card ul{margin:0;padding-left:20px}
+.callout{background:var(--accent-soft);border:1px solid var(--accent);border-left:6px solid var(--accent);border-radius:10px;padding:16px 18px}
+.callout p{margin:0}
+.callout .tag{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);font-weight:700;margin-bottom:4px}
+.note{color:var(--muted);margin-top:12px}
+</style>
+</head>
+<body>
+<main>
+<p class="eyebrow">Saltmarsh Foods · Fulfillment</p>
+<h1>Message queue for the order-routing service</h1>
+<p class="lede">Decision page for the architecture review on 2026-10-21.</p>
+<ul class="facts" aria-label="Expected load">
+<li><b>1,800/s</b><span>peak messages</span></li>
+<li><b>400/s</b><span>average messages</span></li>
+<li><b>&lt; 8 KB</b><span>message size</span></li>
+<li><b>At-least-once</b><span>delivery is acceptable</span></li>
+<li><b>Per order</b><span>ordering required</span></li>
+</ul>
+
+<section>
+<h2>Options</h2>
+<ul class="opts">
+<li><strong>SQS</strong> — AWS's fully managed queue, using FIFO queues with message groups for ordering.</li>
+<li><strong>Kafka (Amazon MSK)</strong> — a managed, partitioned commit log with replayable retention.</li>
+<li><strong>RabbitMQ (Amazon MQ)</strong> — a managed broker with exchange-based routing.</li>
+</ul>
+</section>
+
+<section>
+<h2>Comparison</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Option</th><th>Ordering</th><th>Throughput ceiling</th><th>Ops burden</th><th>Replay</th><th class="num">Monthly cost</th></tr></thead>
+<tbody>
+<tr><th scope="row">SQS</th><td>FIFO per message group</td><td>Very high</td><td>None</td><td>No</td><td class="num">$310</td></tr>
+<tr><th scope="row">Kafka</th><td>Per partition</td><td>Very high</td><td>High</td><td>Yes, up to retention</td><td class="num">$1,450</td></tr>
+<tr><th scope="row">RabbitMQ</th><td>Per queue</td><td>Medium</td><td>Medium</td><td>No</td><td class="num">$690</td></tr>
+</tbody>
+</table>
+</div>
+<div class="chart">
+<h3>Estimated monthly cost (USD)</h3>
+<svg viewBox="0 0 600 300" role="img" aria-label="Bar chart of estimated monthly cost: SQS 310 dollars, Kafka 1450 dollars, RabbitMQ 690 dollars">
+<g stroke="var(--border)" stroke-width="1">
+<line x1="60" y1="250" x2="580" y2="250"/><line x1="60" y1="192.5" x2="580" y2="192.5"/><line x1="60" y1="135" x2="580" y2="135"/><line x1="60" y1="77.5" x2="580" y2="77.5"/><line x1="60" y1="20" x2="580" y2="20"/>
+</g>
+<g fill="var(--muted)" font-size="12" text-anchor="end">
+<text x="52" y="254">$0</text><text x="52" y="196.5">$400</text><text x="52" y="139">$800</text><text x="52" y="81.5">$1,200</text><text x="52" y="24">$1,600</text>
+</g>
+<rect x="97" y="205.44" width="100" height="44.56" rx="3" fill="var(--bar-hi)"/>
+<rect x="270" y="41.56" width="100" height="208.44" rx="3" fill="var(--bar)"/>
+<rect x="443" y="150.81" width="100" height="99.19" rx="3" fill="var(--bar)"/>
+<g fill="var(--text)" font-size="14" font-weight="600" text-anchor="middle">
+<text x="147" y="198">$310</text><text x="320" y="34">$1,450</text><text x="493" y="143">$690</text>
+</g>
+<g fill="var(--text)" font-size="14" text-anchor="middle">
+<text x="147" y="274">SQS</text><text x="320" y="274">Kafka</text><text x="493" y="274">RabbitMQ</text>
+</g>
+</svg>
+</div>
+</section>
+
+<section>
+<h2>Pros and cons</h2>
+<div class="pc">
+<div class="card"><h3>SQS</h3>
+<h4 class="p">Pros</h4><ul><li>Fully managed</li><li>Scales automatically</li></ul>
+<h4 class="c">Cons</h4><ul><li>No replay</li><li>256 KB message limit</li></ul></div>
+<div class="card"><h3>Kafka (MSK)</h3>
+<h4 class="p">Pros</h4><ul><li>Replay up to retention</li><li>Supports stream processing</li></ul>
+<h4 class="c">Cons</h4><ul><li>Needs partition planning</li><li>We handle broker upgrades</li></ul></div>
+<div class="card"><h3>RabbitMQ (Amazon MQ)</h3>
+<h4 class="p">Pros</h4><ul><li>Flexible routing</li></ul>
+<h4 class="c">Cons</h4><ul><li>We would own capacity planning</li></ul></div>
+</div>
+</section>
+
+<section>
+<h2>Recommendation</h2>
+<div class="callout">
+<div class="tag">Recommended</div>
+<p><strong>Use SQS with FIFO queues keyed by order ID.</strong> It gives per-order ordering through message groups, needs no operations work, and is the cheapest option at an estimated $310 per month.</p>
+</div>
+<p class="note">We will revisit this choice if the analytics team needs event replay in 2027.</p>
+</section>
+</main>
+</body>
+</html>

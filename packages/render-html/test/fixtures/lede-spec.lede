@@ -1,0 +1,85 @@
+@title Lede Format
+
+# Lede
+
+### A line-oriented document format for AI-written web artifacts. Compiles to HTML.
+
+> One line is one block. Indentation never matters. The compiler owns the design.
+
+Markdown can't carry data, charts or diagrams. HTML can, but the model spends most of its output on styling and structure instead of content. Lede sits between them: the writer states **what** to show, and the compiler decides **how** it looks, in light and dark, at phone and desktop widths.
+
+kpi Source on this page | 3.1 KB
+kpi Compiled HTML | 17.4 KB | 5.7× larger
+kpi Block types | 14
+
+## The rules
+
+- Every line starts with what it is: `#`, `-`, `!`, `>`, or a keyword like `chart` or `diagram`.
+- Nothing nests and nothing needs closing, so a model can stream it and a parser can render it mid-generation.
+- Data is declared once with `data`, then charts and tables reference it by name.
+- Diagram lines are prefixed with the diagram's name, so they can appear anywhere after it.
+- `html:` is the escape hatch for anything the vocabulary doesn't cover.
+
+## A whole section, as written
+
+```
+data runs = week,deploys,rollbacks; W1,14,2; W2,19,1; W3,23,3; W4,31,1
+chart line runs x=week y=deploys,rollbacks title="Deploys per week"
+table runs sort=-deploys
+
+diagram flow dir=LR
+flow: commit -> build -> test -> deploy : on green
+flow: deploy "Prod" svc
+```
+
+## Charts
+
+data runs = week,deploys,rollbacks; W1,14,2; W2,19,1; W3,23,3; W4,31,1; W5,28,2; W6,36,1; W7,41,0; W8,44,1
+chart line runs x=week y=deploys,rollbacks title="Deploys per week (sample data)"
+
+data size = format,KB; Lede source,3.1; HTML body,11.9; Full page,17.4
+chart bar size x=format y=KB title="This page, measured"
+
+table runs sort=-deploys limit=4 title="Busiest weeks"
+
+## Diagrams
+
+Diagrams are laid out by Graphviz, the same engine behind Python's `diagrams` package, then drawn by the compiler in the page's own type and colors. Kinds like `svc`, `db` and `queue` set the color and a small label.
+
+diagram pipeline dir=TB title="How the compiler works"
+pipeline: src ".lede source" user
+pipeline: lex "Line classifier" fn
+pipeline: data "Data registry" store
+pipeline: gv "Graphviz layout" ext
+pipeline: emit "HTML + theme" svc
+pipeline: src -> lex
+pipeline: lex -> data : data
+pipeline: lex -> gv : diagram
+pipeline: data -> emit : chart, table
+pipeline: gv -> emit : svg coords
+pipeline: lex -> emit : text blocks
+
+Groups draw dashed boundaries, which covers accounts, VPCs and regions:
+
+diagram ca dir=TB title="CodeArtifact org registry"
+ca: dev "Developer" user
+ca: npm "npmjs.com" ext
+ca: team-dev "team-repo (dev)" db
+ca: team-prod "team-repo (prod)" db
+ca: shared "shared-org-repo" db
+ca: upstream "npm-store" db
+ca: group "Producer accounts" team-dev, team-prod
+ca: group "Shared prod account" shared, upstream
+ca: team-dev -> team-prod : promote
+ca: team-prod -> shared : copy
+ca: npm -> upstream -> shared : upstream
+ca: shared -> dev : pull (org policy)
+
+## Callouts and quotes
+
+! Notes use one bang. Warnings use two.
+!! Diagram blocks need Graphviz `dot` on the machine that compiles.
+
+---
+
+Compile with `python3 lede.py page.lede > page.html`.

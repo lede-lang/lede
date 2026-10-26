@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Build or Buy: Feature Flags</title>
+<style>
+:root{--bg:#fafaf7;--fg:#1c1e21;--muted:#5d636b;--accent:#1d6fa3;--card:#ffffff;--border:#e2e0d9;--warn:#9a4a00;--warn-bg:#fff3e0;--note:#e9f2f8;--c1:#1d6fa3;--c2:#d9822b;--c3:#6b5bb5;--good:#2e7d4f}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121316;--fg:#e9e9ec;--muted:#9ea4ad;--accent:#6cb8e6;--card:#1b1d22;--border:#2e3138;--warn:#f2b35e;--warn-bg:#2b2112;--note:#152731;--c1:#6cb8e6;--c2:#eba45a;--c3:#a996e8;--good:#6cc08f}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:820px;margin:0 auto;padding:32px 16px 56px}
+h1{font-size:clamp(1.55rem,4.5vw,2.1rem);line-height:1.2;margin:.2em 0 .3em}
+.dek{color:var(--muted);margin:0 0 1.5em}
+h2{font-size:1.25rem;margin:2.1em 0 .6em;padding-bottom:.3em;border-bottom:1px solid var(--border)}
+p,ul,ol{margin:.7em 0}
+li{margin:.25em 0}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.95rem;margin:1em 0}
+th,td{padding:.55em .65em;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+th{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.callout{border-left:4px solid var(--accent);background:var(--note);padding:12px 16px;border-radius:6px;margin:1.3em 0}
+.callout strong{display:block;margin-bottom:.15em}
+@media (max-width:480px){body{font-size:15px}.wrap{padding:24px 16px 48px}th,td{padding:.45em .4em;font-size:.88rem}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>Build or buy feature flags</h1>
+<p class="dek">Growth team, Pebble Bank. Decision page.</p>
+
+<p>We keep 140 feature flags in a config file. Flipping one takes a full deploy, which currently takes 40 minutes. We need a flag system with targeting rules and an audit log. This page compares three options.</p>
+
+<h2>Comparison</h2>
+<div class="scroll">
+<table>
+<thead><tr><th>Option</th><th>Annual cost</th><th>Setup time</th><th>Targeting rules</th><th>Audit log</th></tr></thead>
+<tbody>
+<tr><td>LaunchDarkly</td><td>$54,000</td><td>1 week</td><td>Advanced</td><td>Yes</td></tr>
+<tr><td>Unleash (self-hosted)</td><td>$9,000 hosting</td><td>3 weeks</td><td>Good</td><td>Yes</td></tr>
+<tr><td>In-house</td><td>No license cost</td><td>10 weeks</td><td>Basic</td><td>Would need building</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>Recommendation</h2>
+<div class="callout">
+<strong>Recommended: LaunchDarkly</strong>
+LaunchDarkly covers our targeting needs with advanced rules and an audit log, and it has the shortest setup at one week. Finance approved the $54,000 annual budget on 2026-10-14.
+</div>
+
+<h2>Risks</h2>
+<ul>
+<li>We would depend on LaunchDarkly's hosted service for flag uptime.</li>
+<li>None of the options has an SDK for our COBOL batch jobs.</li>
+</ul>
+</main>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{
+  "id": "27-feature-flags-build-vs-buy",
+  "category": "comparison",
+  "title": "Feature flags: build or buy",
+  "brief": "Quick decision page for the Growth team at Pebble Bank: build or buy feature flags. Today we keep 140 flags in a config file and a deploy takes 40 minutes just to flip one. Options: LaunchDarkly, Unleash (self-hosted), In-house. Section titled \"Comparison\" as a table with columns Option, Annual cost, Setup time, Targeting rules, Audit log: LaunchDarkly, 54000 dollars, 1 week, advanced, yes; Unleash, 9000 dollars hosting, 3 weeks, good, yes; In-house, no license cost, 10 weeks, basic, would need building. Section titled \"Recommendation\": Unleash, in a callout, because it covers our targeting needs and its audit log satisfies the compliance team at a sixth of the cost of LaunchDarkly. Section titled \"Risks\" with a bulleted list: we own Unleash upgrades and uptime; none of the options has an SDK for our COBOL batch jobs.",
+  "checklist": {
+    "sections": [
+      "Comparison",
+      "Recommendation",
+      "Risks"
+    ],
+    "visible": [
+      "LaunchDarkly",
+      "Unleash",
+      "In-house",
+      "Targeting rules",
+      "Audit log",
+      "Setup time"
+    ],
+    "values": [
+      "140",
+      "40",
+      "54000",
+      "9000"
+    ]
+  },
+  "needs": [
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the recommendation to LaunchDarkly, and add a note that finance approved the 54000 dollar budget on 2026-10-14.",
+    "expect_visible": [
+      "finance approved"
+    ],
+    "expect_values": [
+      "2026-10-14"
+    ],
+    "expect_absent": []
+  }
+}

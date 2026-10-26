@@ -1,0 +1,48 @@
+{
+  "id": "123-sunset-valley-fridge-alarm",
+  "category": "runbook",
+  "title": "Sunset Valley refrigerator alarm runbook",
+  "brief": "Sunset Valley Food Share needs a short runbook for volunteers when the walk-in refrigerator alarm sounds or the display reads above 41 degrees Fahrenheit, to be read on phones in the warehouse; owned by the Operations Manager, effective 2026-11-01. Section \"First two minutes\": silence the alarm, check the door is fully closed, read the display and the backup thermometer inside, and write the time on the log sheet. Section \"Decide what to do\": if the temperature is 41 to 45 degrees and has been above 41 for less than 2 hours, move dairy, eggs, meat and prepared meals into the backup chest freezers right away, keep produce in place, and call the refrigeration technician; if it is above 45 degrees, or has been above 41 for 2 hours or more, or nobody knows how long, the dairy, eggs, meat and prepared meals must be thrown away with a second volunteer present to confirm; produce, canned and packaged goods can stay. Section \"Steps in order\": 1 call ChillRight, the refrigeration vendor, on 555-0134 (open 24 hours) and ask for a 4-hour response; 2 message the Operations Manager; 3 move or discard items as above; 4 record each item thrown away on the waste log with its weight in pounds; 5 after the repair, run the refrigerator for 4 hours below 38 degrees before restocking. Make sure nobody ever tastes or sniffs food to decide whether it is safe. Finish with \"Contacts\": Operations Manager, Delphine Okonkwo; ChillRight on-call line, 555-0134; Food safety lead, Bram Verhoeven.",
+  "checklist": {
+    "sections": [
+      "First two minutes",
+      "Decide what to do",
+      "Steps in order",
+      "Contacts"
+    ],
+    "visible": [
+      "ChillRight",
+      "backup chest freezers",
+      "waste log",
+      "Delphine Okonkwo",
+      "Bram Verhoeven",
+      "Operations Manager"
+    ],
+    "values": [
+      "41 degrees",
+      "45 degrees",
+      "2 hours",
+      "4-hour response",
+      "4 hours below 38 degrees",
+      "555-0134",
+      "2026-11-01"
+    ]
+  },
+  "needs": [
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the warning threshold from 41 to 40 degrees and the restock rule to 6 hours below 38 degrees, and add a contact: Facilities volunteer, Anika Rao.",
+    "expect_visible": [
+      "Anika Rao"
+    ],
+    "expect_values": [
+      "40 degrees",
+      "6 hours"
+    ],
+    "expect_absent": [
+      "41 degrees"
+    ]
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "id": "63-food-bank-quarter",
+  "category": "data",
+  "title": "Eastside Food Bank Q3 distribution",
+  "brief": "Eastside Food Bank's director, Camille Ferreira, needs a Q3 2026 (July to September) summary for the board and for donors. Pounds of food distributed by category and month. Produce: Jul 41200, Aug 46800, Sep 52300. Dairy: 12400, 13100, 14900. Shelf-stable: 38600, 36900, 40200. Protein: 18900, 20400, 22100. Monthly totals 111100, 117200 and 129500 pounds, which is 357800 for the quarter. Households served: Jul 6840, Aug 7310, Sep 7925. That works out to 16.2, 16.0 and 16.3 pounds per household. Points worth drawing out: September distribution is up 16.6 percent on July while households served grew 15.9 percent, so the amount per household held steady; produce grew fastest, up 26.9 percent from July to September, thanks to the new partnership with three local farms that started on 2026-08-15; shelf-stable dipped in August because of a delayed shipment from the regional network. Open with \"Q3 at a glance\" for the headline numbers, then \"By category\" with how distribution changed month by month and the figures with totals, and \"What we heard\", a short block with two quotes from clients: \"The fresh vegetables made it possible to cook for the whole week.\" (Tuesday client, Eastside pantry) and \"Pickup was faster than last time.\" (Saturday client, Eastside pantry). End with a thank-you to volunteers, who gave 4180 hours this quarter.",
+  "checklist": {
+    "sections": [
+      "Q3 at a glance",
+      "By category",
+      "What we heard"
+    ],
+    "visible": [
+      "Produce",
+      "Dairy",
+      "Shelf-stable",
+      "Protein",
+      "Households served",
+      "Camille Ferreira",
+      "three local farms",
+      "volunteers"
+    ],
+    "values": [
+      "111100",
+      "117200",
+      "129500",
+      "357800",
+      "6840",
+      "7310",
+      "7925",
+      "16.2",
+      "16.0",
+      "16.3",
+      "16.6",
+      "15.9",
+      "26.9",
+      "41200",
+      "52300",
+      "38600",
+      "36900",
+      "40200",
+      "2026-08-15",
+      "4180"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list"
+  ],
+  "edit": {
+    "request": "Add a fourth category, Bakery, with 3200 pounds in July, 3600 in August and 4100 in September, and update the monthly totals and the quarter total to include it.",
+    "expect_visible": [
+      "Bakery"
+    ],
+    "expect_values": [
+      "3200",
+      "3600",
+      "4100",
+      "114300",
+      "120800",
+      "133600",
+      "368700"
+    ],
+    "expect_absent": []
+  }
+}

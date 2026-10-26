@@ -1,0 +1,59 @@
+{
+  "id": "59-learner-login-build-vs-buy",
+  "category": "comparison",
+  "title": "Meadowbrook learner login: build or buy",
+  "brief": "Meadowbrook Learning has 250000 monthly active learners, growing about 40 percent a year, and our home-grown login system is a maintenance burden. The platform lead wants a build-versus-buy page for the architecture council. The options: keep building on the open-source Keycloak (self-hosted), buy Authly, or buy Gatepost. Annual cost at 100000, 250000 and 500000 monthly active users: Keycloak self-hosted, 210000, 240000, 330000 dollars (infrastructure plus 1.5 engineers); Authly, 66000, 151000, 288000 dollars; Gatepost, 54000, 108000, 192000 dollars but its price steps up sharply above 400000. Capabilities: all three support SSO for schools via SAML and OIDC; Keycloak has no managed bot protection and we would add it ourselves; Authly includes bot protection and adaptive MFA; Gatepost has adaptive MFA but bot protection costs extra, 18000 dollars a year. Data residency: all three can keep EU learner data in Frankfurt; Gatepost only on the highest plan. Use the sections \"Cost\", \"Capabilities\", \"Risks\" and \"Recommendation\", and the recommendation is Authly because it is the middle option on cost but the only one that covers bot protection, adaptive MFA and EU residency without add-ons, and say we would revisit at 500000 users. Decision date is 2026-11-04.",
+  "checklist": {
+    "sections": [
+      "Cost",
+      "Capabilities",
+      "Risks",
+      "Recommendation"
+    ],
+    "visible": [
+      "Keycloak",
+      "Authly",
+      "Gatepost",
+      "SAML",
+      "OIDC",
+      "bot protection",
+      "adaptive MFA",
+      "Frankfurt"
+    ],
+    "values": [
+      "250000",
+      "40",
+      "100000",
+      "500000",
+      "210000",
+      "240000",
+      "330000",
+      "66000",
+      "151000",
+      "288000",
+      "54000",
+      "108000",
+      "192000",
+      "400000",
+      "18000",
+      "1.5",
+      "2026-11-04"
+    ]
+  },
+  "needs": [
+    "table",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Gatepost now includes bot protection in the base price. Remove the 18000 dollar add-on everywhere, and change the recommendation to Gatepost for the first two years with a clear warning about the price step above 400000 users.",
+    "expect_visible": [
+      "two years"
+    ],
+    "expect_values": [],
+    "expect_absent": [
+      "18000"
+    ]
+  }
+}

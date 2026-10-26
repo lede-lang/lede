@@ -1,0 +1,39 @@
+@title Write It Down Before You Build It
+@author Daniel Reyes, Staff Engineer at Thornbury Labs
+
+## The meeting that should have been a page
+
+Most of the expensive meetings I have sat through shared a shape. Someone opens with a slide, a dozen people study a diagram nobody has read, and forty minutes later we discover that two people in the room have been building against different assumptions. The meeting was not wrong to happen. It was late. The thinking it needed had never been written down, so it was done live, in front of an audience, at the price of everyone's calendar.
+
+A written design note fixes most of that. It moves the thinking to the place where thinking is cheapest, which is a blank page before anyone has written code. The rest of this piece is about what that page should contain, what it should not, and why the time spent on it pays back.
+
+## What a design note is
+
+A design note is one to two pages. It is written before code exists, and it is read asynchronously, by the people who will be affected, on their own time. It describes the problem, the options we considered, the one we are leaning toward, and the ways we would know it had worked.
+
+Writing it forces an order on the thinking. You cannot describe the approach until you have named the problem clearly, and you cannot defend the approach until you have looked at the alternatives. Most of the value comes from that ordering, not from the document itself. The document is just the evidence that the ordering happened.
+
+## What it is not
+
+A design note is not a specification. A spec tries to pin down every behavior before anyone builds anything, and it tends to be wrong in exactly the places that matter most, because those are the places nobody knew enough to write down. A note makes claims that a reader can challenge, and it is expected to be wrong in small ways that the reader corrects.
+
+It is also not a permission slip. Nobody approves a note by signing it, and a note that is accepted without comment has not done its job. Its purpose is to surface disagreement early, while changing course is still cheap, and then to get out of the way so the work can start.
+
+## The cost
+
+At Thornbury the median design note took about three hours to write. That is not nothing. Across a team it adds up, and some people will reasonably ask whether a three-hour document is worth it for a project that will take two weeks.
+
+We counted. In 2026 there were eleven projects where a note caught a wrong assumption before any code was written. In most of those cases the wrong assumption was about data. A dependency behaved differently than we believed, or a customer segment did not exist in the form we had planned around. Finding that out in a document cost a few hours. Finding it out after a sprint would have cost weeks, and in two of the eleven cases it would have meant rebuilding something that had already shipped to a partner.
+
+> The page is where you find out what you do not know.
+
+## Start small
+
+You do not need a template or a review board to begin. Pick the next project that will take more than a week, and write one page before anyone opens an editor. Share it with the two people most likely to disagree with you, and ask them to find the weakest sentence. Expect them to find it.
+
+If the note takes much longer than three hours, that is also useful information. It usually means the problem is not yet clear, and it is better to learn that on a page than in a code review. Every note should answer four questions:
+
+- What problem are we solving?
+- Why now?
+- What did we consider?
+- How will we know it worked?

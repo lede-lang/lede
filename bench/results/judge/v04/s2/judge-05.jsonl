@@ -1,0 +1,10 @@
+{"pair":"P041","winner":"LEFT","reason":"Left's stacked chart stays legible on phone and its table reflows into cards, while right's phone chart is tiny and its table is clipped at the right edge."}
+{"pair":"P042","winner":"RIGHT","reason":"Right has a clear bar chart with a target line and reflows the district table into readable cards on phone, whereas left's phone table is cut off."}
+{"pair":"P043","winner":"RIGHT","reason":"Right's line and bar charts stay large and readable on phone with tables that fit, while left's phone charts are tiny and its tables are clipped."}
+{"pair":"P044","winner":"LEFT","reason":"Left's phone layout keeps its chart legible and its table fits the width, while right's phone table is badly clipped."}
+{"pair":"P045","winner":"RIGHT","reason":"Right's grouped bar chart is large and readable on phone and its table becomes cards, while left's phone chart is tiny and its table is clipped, even though right's phone chart drops one category label."}
+{"pair":"P046","winner":"RIGHT","reason":"Right leads with a highlighted callout on the fine change and breaks the answers into scannable bullets, with a consistent hierarchy on both widths."}
+{"pair":"P047","winner":"RIGHT","reason":"Right reads as a polished, cohesive letter with warm serif typography and a highlighted dates callout, while left is a generic stack of cards."}
+{"pair":"P048","winner":"RIGHT","reason":"Right is cleaner, with one clear warning callout and a well-spaced hierarchy, while left repeats the warning and its amber-on-peach callout is lower contrast."}
+{"pair":"P049","winner":"LEFT","reason":"Left has a clean date list, a readable progress bar with a formatted 21,400 and a tidy card layout, while right shows raw ISO dates and an unformatted 60000."}
+{"pair":"P050","winner":"RIGHT","reason":"Right is clean and readable with a proper table and no defects, while left's time-of-use bar has illegible labels inside its segments, especially on phone."}

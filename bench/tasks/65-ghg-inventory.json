@@ -1,0 +1,69 @@
+{
+  "id": "65-ghg-inventory",
+  "category": "data",
+  "title": "Pelham greenhouse gas inventory",
+  "brief": "Pelham Furniture's sustainability manager, Odalys Brandt, needs the greenhouse gas inventory summary for 2023 to 2025 for the annual report, in tonnes of CO2e. Scope 1: 2023 1840, 2024 1720, 2025 1590. Scope 2 (market-based): 3260, 2610, 1480. Scope 3: 21400, 20900, 19800. Totals: 26500, 25230, 22870. Emissions are down 3630 tonnes or 13.7 percent since 2023; scope 2 fell 54.6 percent as we moved 6 of our 8 sites to renewable electricity contracts; scope 3 is now 86.6 percent of the total, which is the real challenge. Our target is a 30 percent cut against 2023 by 2030, which means reaching 18550 tonnes or lower, so we have 4320 tonnes to go from 2025. Sections: \"Headline\" for the headline numbers, \"Emissions by scope\" for how the mix changed year by year plus the figures, and a short \"Method and caveats\" list: scope 3 covers purchased materials, upstream transport and business travel only (not use of sold products); the 2023 baseline was restated in 2025 after supplier data improved; the inventory follows the GHG Protocol and has not been externally assured yet. Keep a measured tone; no greenwashing.",
+  "checklist": {
+    "sections": [
+      "Headline",
+      "Emissions by scope",
+      "Method and caveats"
+    ],
+    "visible": [
+      "Scope 1",
+      "Scope 2",
+      "Scope 3",
+      "market-based",
+      "GHG Protocol",
+      "not been externally assured",
+      "renewable electricity"
+    ],
+    "values": [
+      "1840",
+      "1720",
+      "1590",
+      "3260",
+      "2610",
+      "1480",
+      "21400",
+      "20900",
+      "19800",
+      "26500",
+      "25230",
+      "22870",
+      "3630",
+      "13.7",
+      "54.6",
+      "86.6",
+      "30",
+      "18550",
+      "4320",
+      "8",
+      "6"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Scope 2 for 2025 has been corrected to 1580 tonnes, so the 2025 total is 22970 and the reduction since 2023 is 3530 tonnes (13.3 percent). Update everything that depends on it. Recompute the tonnes still to go to the 2030 target, scope 2's reduction since 2023 and scope 3's share.",
+    "expect_visible": [
+      "1580 tonnes"
+    ],
+    "expect_values": [
+      "22970",
+      "3530",
+      "13.3",
+      "4420",
+      "51.5",
+      "86.2"
+    ],
+    "expect_absent": [
+      "22870"
+    ]
+  }
+}

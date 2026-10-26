@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Route 9 Transit Options</title>
+<style>
+:root{--bg:#f6f5f1;--card:#ffffff;--fg:#1c1f24;--muted:#5d6470;--line:#d8dbe0;--accent:#2a5d9f}
+@media (prefers-color-scheme: dark){:root{--bg:#101215;--card:#181b20;--fg:#e7e9ee;--muted:#9aa2ad;--line:#2d333b;--accent:#8db6ef}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+main{max-width:900px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:1.75rem;line-height:1.2;margin:0 0 6px}
+h2{font-size:1.25rem;margin:34px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+p{margin:0 0 12px}
+.meta{color:var(--muted);font-size:.9rem;margin:0 0 20px}
+.lead{font-size:1.05rem;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:640px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.card h3{margin:0 0 8px;font-size:1.05rem}
+.card dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:.95rem}
+.card dt{color:var(--muted)}
+.card dd{margin:0;font-weight:600}
+.card p{margin:10px 0 0;font-size:.93rem}
+.chart{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0}
+.chart svg{display:block;width:100%;height:auto}
+svg text{fill:var(--fg);font-size:14px}
+svg .lab{fill:var(--muted);font-size:12px}
+.rec{border:2px solid var(--accent);background:var(--card);border-radius:12px;padding:16px}
+.note{border-left:4px solid var(--accent);padding:10px 14px;background:var(--card);border-radius:8px;margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{text-align:left;vertical-align:top;padding:8px 6px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:600;font-size:.82rem;text-transform:uppercase;letter-spacing:.04em}
+.tw{overflow-x:auto}
+</style>
+</head>
+<body>
+<main>
+<h1>Route 9 Transit Options</h1>
+<p class="meta">Riverbend City Council decision page &middot; Council vote 2026-12-02 &middot; Transportation Department</p>
+
+<p class="lead">Three ways to improve the Route 9 transit corridor. The department recommends bus rapid transit, and needs the council to approve an option on <strong>2026-12-02</strong> to meet the federal grant deadline.</p>
+
+<h2>Options</h2>
+<div class="grid">
+<div class="card">
+<h3>Enhanced bus</h3>
+<dl>
+<dt>Capital cost</dt><dd>$85 million</dd>
+<dt>Time to build</dt><dd>2 years</dd>
+<dt>Weekday riders, 2035</dt><dd>14,000</dd>
+<dt>Operating cost</dt><dd>$22 million a year</dd>
+</dl>
+<p>More frequent buses and signal priority at lights.</p>
+</div>
+<div class="card">
+<h3>Bus rapid transit</h3>
+<dl>
+<dt>Capital cost</dt><dd>$310 million</dd>
+<dt>Time to build</dt><dd>4 years</dd>
+<dt>Weekday riders, 2035</dt><dd>26,000</dd>
+<dt>Operating cost</dt><dd>$31 million a year</dd>
+</dl>
+<p>Dedicated lanes and stations.</p>
+</div>
+<div class="card">
+<h3>Light rail</h3>
+<dl>
+<dt>Capital cost</dt><dd>$940 million</dd>
+<dt>Time to build</dt><dd>8 years</dd>
+<dt>Weekday riders, 2035</dt><dd>38,000</dd>
+<dt>Operating cost</dt><dd>$44 million a year</dd>
+</dl>
+<p>Rail on its own right-of-way.</p>
+</div>
+</div>
+
+<h2>Capital cost per rider</h2>
+<p>Capital cost divided by expected weekday riders.</p>
+<div class="chart">
+<svg viewBox="0 0 600 200" role="img" aria-label="Bar chart of capital cost per weekday rider: enhanced bus about 6,100 dollars, bus rapid transit about 11,900 dollars, light rail about 24,700 dollars.">
+<text x="0" y="50" style="font-weight:600">Enhanced bus</text>
+<rect x="170" y="26" width="94" height="36" rx="4" style="fill:var(--accent)"/>
+<text x="272" y="50">$6,100</text>
+<text x="0" y="110" style="font-weight:600">Bus rapid transit</text>
+<rect x="170" y="86" width="183" height="36" rx="4" style="fill:var(--accent)"/>
+<text x="361" y="110">$11,900</text>
+<text x="0" y="170" style="font-weight:600">Light rail</text>
+<rect x="170" y="146" width="380" height="36" rx="4" style="fill:var(--accent)"/>
+<text x="558" y="170" text-anchor="end">$24,700</text>
+</svg>
+</div>
+<p class="lab" style="color:var(--muted);font-size:.9rem">Light rail buys the most riders but costs about four times as much per rider as enhanced bus.</p>
+
+<h2>Trade-offs</h2>
+<div class="tw">
+<table>
+<thead><tr><th>Option</th><th>What you get</th><th>What it costs you</th></tr></thead>
+<tbody>
+<tr><td>Enhanced bus</td><td>Cheapest and fastest to deliver.</td><td>Carries the fewest riders, and still shares congested lanes.</td></tr>
+<tr><td>Bus rapid transit</td><td>The middle path. Could be upgraded to rail later.</td><td>Mid-range cost and a 4-year build.</td></tr>
+<tr><td>Light rail</td><td>Carries the most riders and tends to attract development.</td><td>Takes 8 years, and the city could not fund its share without a bond measure.</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>Recommendation</h2>
+<div class="rec">
+<p><strong>The department recommends bus rapid transit.</strong></p>
+<p>The council needs to approve bus rapid transit on <strong>2026-12-02</strong>. The federal grant can cover up to 50 percent of capital cost, but the application is due <strong>2027-01-31</strong> and requires a council-approved option. Without the vote on 2026-12-02, the city cannot meet the grant deadline.</p>
+</div>
+</main>
+</body>
+</html>

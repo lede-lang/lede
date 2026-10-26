@@ -1,0 +1,20 @@
+[
+  {
+    "severity": "error",
+    "code": "chart-kind",
+    "line": 2,
+    "col": 7
+  },
+  {
+    "severity": "error",
+    "code": "unknown-column",
+    "line": 3,
+    "col": 7
+  },
+  {
+    "severity": "error",
+    "code": "missing-data",
+    "line": 4,
+    "col": 11
+  }
+]

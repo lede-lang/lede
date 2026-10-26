@@ -1,0 +1,54 @@
+{
+  "id": "50-greenhouse-device-provisioning",
+  "category": "architecture",
+  "title": "Brightleaf sensor provisioning",
+  "brief": "Brightleaf Greenhouses is rolling out soil sensors to 31 sites and the field engineers need a page on how a sensor gets provisioned, written by the IoT platform team and dated 2026-10-14. Section \"Provisioning sequence\": five participants, named exactly Sensor, Gateway, Provisioning Service, Certificate Authority, Device Registry. In order: Sensor to Gateway \"BLE pairing request with serial\"; Gateway to Provisioning Service \"claim device with one-time token\"; Provisioning Service to Device Registry \"look up serial and token\"; Device Registry to Provisioning Service \"record, status unclaimed\"; Provisioning Service to Certificate Authority \"certificate signing request\"; Certificate Authority to Provisioning Service \"signed certificate, valid 365 days\"; Provisioning Service to Device Registry \"mark device active\"; Provisioning Service to Gateway \"certificate and MQTT endpoint\"; Gateway to Sensor \"install certificate\"; Sensor to Gateway \"first telemetry over TLS\". Section \"Limits and timeouts\" listing each item and its value: one-time token validity, 24 hours; pairing window on the sensor, 90 seconds; signing key type, ECDSA P-256; claim attempts before the token is locked, 3; certificate lifetime, 365 days. Section \"When provisioning fails\": three cases (token expired, so request a new token from the dashboard; pairing window closed, so press and hold the button for 5 seconds; token locked after 3 attempts, so contact IoT support at #iot-support) and a clear reminder for engineers never to photograph the one-time token QR code.",
+  "checklist": {
+    "sections": [
+      "Provisioning sequence",
+      "Limits and timeouts",
+      "When provisioning fails"
+    ],
+    "visible": [
+      "Sensor",
+      "Gateway",
+      "Provisioning Service",
+      "Certificate Authority",
+      "Device Registry",
+      "BLE pairing request with serial",
+      "claim device with one-time token",
+      "mark device active",
+      "certificate and MQTT endpoint",
+      "first telemetry over TLS",
+      "ECDSA P-256",
+      "#iot-support"
+    ],
+    "values": [
+      "365",
+      "24 hours",
+      "90 seconds",
+      "3",
+      "5 seconds",
+      "31",
+      "2026-10-14"
+    ]
+  },
+  "needs": [
+    "sequence",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Extend the sequence: after the first telemetry message, Gateway sends \"report online\" to Device Registry. Also change the pairing window from 90 seconds to 120 seconds.",
+    "expect_visible": [
+      "report online"
+    ],
+    "expect_values": [
+      "120 seconds"
+    ],
+    "expect_absent": [
+      "90 seconds"
+    ]
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "id": "110-fieldstone-spring-freight",
+  "category": "comparison",
+  "title": "Fieldstone spring freight options",
+  "brief": "Fieldstone Outdoor has to move 400 pallets of spring inventory from its overseas manufacturer to U.S. stores, and the supply chain planner, Mateo Brandt, needs a page comparing three shipping modes for the leadership meeting on 2026-11-12. The goods must be in stores by 2027-03-01, and we allow 7 days for handling after arrival. Ranges, because rates move. Standard ocean: 28 to 35 days transit, 180 to 240 dollars per pallet. Expedited ocean on a priority vessel service: 18 to 22 days, 310 to 380 dollars per pallet. Air freight: 2 to 3 days, 1350 to 1600 dollars per pallet. For 400 pallets that is 72000 to 96000 dollars by standard ocean, 124000 to 152000 by expedited ocean and 540000 to 640000 by air. The latest departure date to be in stores by 2027-03-01, using the longest transit plus handling, is 2027-01-18 for standard ocean, 2027-01-31 for expedited ocean and 2027-02-19 for air. Sections: \"Options\", \"Total cost for 400 pallets\" (so the ranges are easy to compare), \"Timing\" and \"Recommendation\". Our recommendation is standard ocean for the whole order, booked to depart by 2027-01-18, with expedited ocean as the fallback if departure slips, and air only in an emergency. Say plainly that standard ocean's top-of-range price is still less than one fifth of air's lowest estimate.",
+  "checklist": {
+    "sections": [
+      "Options",
+      "Total cost for 400 pallets",
+      "Timing",
+      "Recommendation"
+    ],
+    "visible": [
+      "Standard ocean",
+      "Expedited ocean",
+      "Air freight",
+      "Mateo Brandt"
+    ],
+    "values": [
+      "2026-11-12",
+      "400",
+      "2027-03-01",
+      "7 days",
+      "28 to 35",
+      "180 to 240",
+      "18 to 22",
+      "310 to 380",
+      "2 to 3",
+      "1350 to 1600",
+      "72000 to 96000",
+      "124000 to 152000",
+      "540000 to 640000",
+      "2027-01-18",
+      "2027-01-31",
+      "2027-02-19"
+    ]
+  },
+  "needs": [
+    "table",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the standard ocean transit to 30 to 38 days and its latest departure date to 2027-01-15.",
+    "expect_visible": [],
+    "expect_values": [
+      "30 to 38",
+      "2027-01-15"
+    ],
+    "expect_absent": [
+      "28 to 35"
+    ]
+  }
+}

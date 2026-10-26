@@ -1,0 +1,39 @@
+@title Lab Result Routing
+@subtitle Calder Valley Hospital laboratory informatics: who gets told and when
+@date 2026-10-02
+
+!!! Critical values are urgent: phone the ordering clinician within 10 minutes of verification, and get read-back within 15 minutes of the call. Everything else is routine.
+
+# Routing flow
+diagram route dir=TB title="How a verified result is routed"
+route: start "Result verified in lab system" svc
+route: crit "Critical value?" decision focus
+route: phone "Phone the ordering clinician" team focus
+route: rb "Read back confirmed within 15 minutes?" decision
+route: log "Log the read-back" store
+route: esc "Escalate to department head" team
+route: abn "Flagged abnormal?" decision
+route: inbox "Add to clinician inbox" svc
+route: file "File without alert" store
+route: portal "Release to patient portal" svc
+route: start -> crit
+route: crit -> phone : yes
+route: crit -> abn : no
+route: phone -> rb
+route: rb -> log : yes
+route: rb -> esc : no
+route: esc -> log
+route: abn -> inbox : yes
+route: abn -> file : no
+route: inbox -> portal
+route: file -> portal
+route: group urgent "Urgent: critical values" phone, rb, esc, log
+route: group routine "Routine" abn, inbox, file, portal
+
+# Time limits
+table = step,limit,priority; Phone call for a critical value,within 10 minutes of verification,**Urgent**; Read-back confirmation,within 15 minutes of the call,**Urgent**; Abnormal result review in clinician inbox,within 1 business day,Routine; Routine result release to patient portal,after 24 hours,Routine; Abnormal result release to patient portal,held 72 hours so the clinician can speak to the patient first,Routine
+
+# Who is called
+kpi Weekdays 07:00–19:00 | Ordering clinician
+kpi Nights and weekends | Covering physician | via hospital operator
+kpi Escalation | Dr. Naomi Eze | department head

@@ -1,0 +1,75 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "data",
+      "name": "m",
+      "line": 1
+    },
+    {
+      "type": "kpis",
+      "items": [
+        {
+          "label": "Revenue",
+          "value": "120.25",
+          "delta": "+19.75",
+          "tone": null,
+          "note": "",
+          "ref": "m.revenue"
+        },
+        {
+          "label": "Uptime",
+          "value": "99.9%",
+          "delta": "+0.1",
+          "tone": "good",
+          "note": "",
+          "ref": null
+        },
+        {
+          "label": "Incidents",
+          "value": "3",
+          "delta": "",
+          "tone": null,
+          "note": "down from 5",
+          "ref": null
+        }
+      ],
+      "line": 2
+    },
+    {
+      "type": "kpis",
+      "items": [
+        {
+          "label": "Alone",
+          "value": "1",
+          "delta": "",
+          "tone": null,
+          "note": "",
+          "ref": null
+        }
+      ],
+      "line": 6
+    }
+  ],
+  "data": {
+    "m": {
+      "name": "m",
+      "columns": [
+        "month",
+        "revenue"
+      ],
+      "rows": [
+        [
+          "Jan",
+          "100.5"
+        ],
+        [
+          "Feb",
+          "120.25"
+        ]
+      ],
+      "line": 1
+    }
+  },
+  "diagnostics": []
+}

@@ -1,0 +1,19 @@
+@title Claims system migration status
+@subtitle Cordova Mutual, steering committee, as of 2026-10-16
+kpi Policy records moved | 1.89M of 3.00M | 63% | neutral
+kpi Budget spent | $5.7M of $8.4M | 68% | neutral
+kpi Go-live target | 2027-02-15 | unchanged | neutral
+kpi Overall status | Amber | program level | neutral
+
+## Workstreams
+table = workstream,owner,percent complete,status; Data migration,Sunita Rao,63,Amber; Claims UI rebuild,Oliver Grant,78,Green; **Payments integration**,Fatima Aziz,45,Red; Document archive,Leo Park,90,Green; Staff training,Chen Wei,20,Green; Regulatory sign-off,Ingrid Solheim,35,Amber
+
+Payments integration is red. The payment processor's test environment has been five weeks late. The fallback is to build against recorded responses, which costs about 3 weeks of extra effort.
+
+## Decision needed
+**The committee must decide by 2026-11-06 how to cut over all states.**
+
+- **Option A, all states at once:** one cutover for every state.
+- **Option B, two waves (recommended):** the 14 smaller states go first in January, and the rest go in February.
+
+**Our recommendation is Option B.** Two waves halve the number of simultaneous agent re-trainings.

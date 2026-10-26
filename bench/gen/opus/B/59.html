@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Login platform: build or buy</title>
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#f4f6f8; --surface:#ffffff; --surface-2:#eef1f5; --text:#18202a; --muted:#576373; --border:#dbe1e8; --grid:#e6eaef;
+  --accent:#5b45c2; --accent-soft:#ece8fb;
+  --good:#1d7a4a; --good-soft:#e3f3ea; --mid:#8f5600; --mid-soft:#fbf0dc; --bad:#b42318; --bad-soft:#fde8e6;
+  --c1:#7a8597; --c2:#5b45c2; --c3:#1f8f86;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0f1216; --surface:#171b21; --surface-2:#1e232b; --text:#e6e9ee; --muted:#9aa4b1; --border:#2a3039; --grid:#252b33;
+    --accent:#a996ff; --accent-soft:#251f45;
+    --good:#5fd09a; --good-soft:#15301f; --mid:#f2b155; --mid-soft:#33270f; --bad:#ff8a7e; --bad-soft:#3a1a17;
+    --c1:#a3adbd; --c2:#a996ff; --c3:#4fd1bd;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:920px;margin:0 auto;padding:44px 24px 64px}
+.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;color:var(--accent);font-weight:700;margin:0}
+h1{font-size:clamp(1.7rem,4.5vw,2.35rem);line-height:1.15;margin:.3em 0 .35em;letter-spacing:-.015em}
+h2{font-size:1.3rem;margin:0 0 .8rem}
+h3{font-size:1.02rem;margin:0 0 .35rem}
+p{margin:0 0 .9rem}
+.lede{color:var(--muted);font-size:1.08rem;max-width:68ch}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0;padding:0;list-style:none}
+.facts li{background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:5px 12px;font-size:.88rem;color:var(--muted)}
+.facts strong{color:var(--text)}
+section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:26px;margin:20px 0}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+thead th{font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-bottom:2px solid var(--border)}
+tbody th{font-weight:600}
+tr:last-child td,tr:last-child th{border-bottom:0}
+.r{text-align:right;font-variant-numeric:tabular-nums}
+.lean{background:var(--accent-soft)}
+.muted{color:var(--muted)}
+.pill{display:inline-block;font-size:.82rem;font-weight:600;padding:1px 8px;border-radius:999px}
+.ok{background:var(--good-soft);color:var(--good)}
+.part{background:var(--mid-soft);color:var(--mid)}
+.no{background:var(--bad-soft);color:var(--bad)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.88rem;margin:0 0 8px;padding:0;list-style:none}
+.legend li{display:flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:3px}
+.k1{background:var(--c1)} .k2{background:var(--c2)} .k3{background:var(--c3)}
+.chart{width:100%;max-width:620px;height:auto;display:block}
+.chart .grid{stroke:var(--grid);stroke-width:1}
+.chart .axis{fill:var(--muted);font-size:12px}
+.chart .xl{fill:var(--text);font-size:13px;font-weight:600}
+.chart .val{fill:var(--text);font-size:11px;font-variant-numeric:tabular-nums}
+.chart .b1{fill:var(--c1)} .chart .b2{fill:var(--c2)} .chart .b3{fill:var(--c3)}
+.note{font-size:.92rem;color:var(--muted)}
+.risks{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.risk{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:16px}
+.risk ul{margin:0;padding-left:18px;font-size:.94rem}
+.risk li{margin-bottom:5px}
+.rec{border:2px solid var(--accent)}
+.rec .big{font-size:1.25rem;font-weight:700;margin-bottom:.6rem}
+.rec ul{padding-left:20px}
+.revisit{background:var(--surface-2);border-radius:10px;padding:12px 16px}
+footer{color:var(--muted);font-size:.85rem;margin-top:28px}
+@media (max-width:760px){.risks{grid-template-columns:1fr}}
+@media (max-width:480px){
+  .wrap{padding:28px 16px 48px}
+  section{padding:18px 14px;border-radius:12px}
+  th,td{padding:8px 5px}
+  table{font-size:.84rem}
+  thead th{font-size:.68rem;letter-spacing:.02em}
+  .pill{font-size:.74rem;padding:1px 6px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Meadowbrook Learning &middot; Architecture council</p>
+  <h1>Replacing our home-grown login: build or buy?</h1>
+  <p class="lede">Our home-grown login system has become a maintenance burden. We compared keeping the build in-house on open-source Keycloak (self-hosted) with buying Authly or Gatepost. We recommend Authly.</p>
+  <ul class="facts">
+    <li><strong>250,000</strong> monthly active learners</li>
+    <li>Growing about <strong>40%</strong> a year</li>
+    <li>Decision: <strong>November 4, 2026</strong></li>
+  </ul>
+</header>
+
+<section id="cost">
+  <h2>Cost</h2>
+  <p>Annual cost at three sizes, in monthly active users (MAU).</p>
+  <ul class="legend" aria-hidden="true">
+    <li><i class="k1"></i>Keycloak (self-hosted)</li>
+    <li><i class="k2"></i>Authly</li>
+    <li><i class="k3"></i>Gatepost</li>
+  </ul>
+  <svg class="chart" viewBox="0 0 480 262" role="img" aria-labelledby="cTitle cDesc">
+    <title id="cTitle">Annual cost by monthly active users</title>
+    <desc id="cDesc">At 100,000 MAU: Keycloak $210,000, Authly $66,000, Gatepost $54,000. At 250,000 MAU: Keycloak $240,000, Authly $151,000, Gatepost $108,000. At 500,000 MAU: Keycloak $330,000, Authly $288,000, Gatepost $192,000.</desc>
+    <line class="grid" x1="50" y1="230" x2="470" y2="230"/>
+    <line class="grid" x1="50" y1="170" x2="470" y2="170"/>
+    <line class="grid" x1="50" y1="110" x2="470" y2="110"/>
+    <line class="grid" x1="50" y1="50" x2="470" y2="50"/>
+    <g class="axis" text-anchor="end">
+      <text x="44" y="234">$0</text><text x="44" y="174">$100k</text><text x="44" y="114">$200k</text><text x="44" y="54">$300k</text>
+    </g>
+    <rect class="b1" x="66" y="104" width="32" height="126"/>
+    <rect class="b2" x="104" y="190.4" width="32" height="39.6"/>
+    <rect class="b3" x="142" y="197.6" width="32" height="32.4"/>
+    <rect class="b1" x="206" y="86" width="32" height="144"/>
+    <rect class="b2" x="244" y="139.4" width="32" height="90.6"/>
+    <rect class="b3" x="282" y="165.2" width="32" height="64.8"/>
+    <rect class="b1" x="346" y="32" width="32" height="198"/>
+    <rect class="b2" x="384" y="57.2" width="32" height="172.8"/>
+    <rect class="b3" x="422" y="114.8" width="32" height="115.2"/>
+    <g class="val" text-anchor="middle">
+      <text x="82" y="99">$210k</text><text x="120" y="185">$66k</text><text x="158" y="192">$54k</text>
+      <text x="222" y="81">$240k</text><text x="260" y="134">$151k</text><text x="298" y="160">$108k</text>
+      <text x="362" y="27">$330k</text><text x="400" y="52">$288k</text><text x="438" y="109">$192k</text>
+    </g>
+    <g class="xl" text-anchor="middle">
+      <text x="120" y="252">100k MAU</text><text x="260" y="252">250k MAU (today)</text><text x="400" y="252">500k MAU</text>
+    </g>
+  </svg>
+  <table style="margin-top:16px">
+    <thead><tr><th scope="col">Annual cost</th><th scope="col" class="r">100k MAU</th><th scope="col" class="r">250k MAU</th><th scope="col" class="r">500k MAU</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Keycloak (self-hosted)</th><td class="r">$210,000</td><td class="r">$240,000</td><td class="r">$330,000</td></tr>
+      <tr class="lean"><th scope="row">Authly</th><td class="r">$66,000</td><td class="r">$151,000</td><td class="r">$288,000</td></tr>
+      <tr><th scope="row">Gatepost</th><td class="r">$54,000</td><td class="r">$108,000</td><td class="r">$192,000</td></tr>
+      <tr><th scope="row" class="muted">Gatepost + bot protection</th><td class="r muted">$72,000</td><td class="r muted">$126,000</td><td class="r muted">$210,000</td></tr>
+    </tbody>
+  </table>
+  <p class="note" style="margin-top:12px">Keycloak cost is infrastructure plus 1.5 engineers. Gatepost's bot protection is an $18,000-a-year add-on, and its EU data residency is only on its highest plan, which these figures may not reflect. Gatepost's price steps up sharply above 400,000 MAU.</p>
+</section>
+
+<section id="capabilities">
+  <h2>Capabilities</h2>
+  <table>
+    <thead><tr><th scope="col">Capability</th><th scope="col">Keycloak</th><th scope="col" class="lean">Authly</th><th scope="col">Gatepost</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">SSO for schools (SAML and OIDC)</th><td><span class="pill ok">Yes</span></td><td class="lean"><span class="pill ok">Yes</span></td><td><span class="pill ok">Yes</span></td></tr>
+      <tr><th scope="row">Bot protection</th><td><span class="pill no">Not managed</span><br><span class="muted" style="font-size:.85em">We would add it ourselves</span></td><td class="lean"><span class="pill ok">Included</span></td><td><span class="pill part">Extra</span><br><span class="muted" style="font-size:.85em">$18,000 a year</span></td></tr>
+      <tr><th scope="row">Adaptive MFA</th><td><span class="muted">Not assessed</span></td><td class="lean"><span class="pill ok">Included</span></td><td><span class="pill ok">Included</span></td></tr>
+      <tr><th scope="row">EU learner data in Frankfurt</th><td><span class="pill ok">Yes</span></td><td class="lean"><span class="pill ok">Yes</span></td><td><span class="pill part">Highest plan only</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="risks">
+  <h2>Risks</h2>
+  <div class="risks">
+    <div class="risk">
+      <h3>Keycloak (self-hosted)</h3>
+      <ul>
+        <li>Most expensive option at every size we priced.</li>
+        <li>Ties up about 1.5 engineers, so we keep much of the maintenance burden we are trying to shed.</li>
+        <li>No managed bot protection; we would build and run it ourselves.</li>
+      </ul>
+    </div>
+    <div class="risk">
+      <h3>Authly</h3>
+      <ul>
+        <li>Cost rises steeply with usage: $288,000 at 500k MAU, close to Keycloak's $330,000.</li>
+        <li>At 500k MAU it costs $96,000 a year more than Gatepost's base price.</li>
+      </ul>
+    </div>
+    <div class="risk">
+      <h3>Gatepost</h3>
+      <ul>
+        <li>Price steps up sharply above 400k MAU. At 40% growth a year we would pass that in roughly a year and a half.</li>
+        <li>Bot protection is an extra $18,000 a year.</li>
+        <li>EU residency in Frankfurt only on the highest plan.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="recommendation" class="rec">
+  <h2>Recommendation</h2>
+  <p class="big">Buy Authly.</p>
+  <p>Authly sits in the middle on cost ($151,000 a year at today's 250,000 MAU), but it is the only option that covers all three of our must-haves without add-ons:</p>
+  <ul>
+    <li>bot protection,</li>
+    <li>adaptive MFA,</li>
+    <li>EU learner data kept in Frankfurt.</li>
+  </ul>
+  <p class="revisit"><strong>Revisit at 500,000 users.</strong> At about 40% growth a year we would reach that in roughly two years, when Authly's cost ($288,000 a year) approaches self-hosting.</p>
+</section>
+
+<footer>Prepared by the platform lead for the Meadowbrook Learning architecture council. Decision date November 4, 2026.</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,3349 @@
+{
+  "countedAt": "2026-10-24",
+  "overhead": {
+    "claude-opus-5-5": 8,
+    "claude-sonnet-5-5": 8,
+    "claude-haiku-5-5": 8
+  },
+  "tokensPerSecond": 60,
+  "summary": {
+    "opus": {
+      "model": "claude-opus-5-5",
+      "pages": {
+        "html": 60,
+        "lede": 60
+      },
+      "meanTokens": {
+        "html": 5068,
+        "lede": 713
+      },
+      "legacyMeanTokens": {
+        "html": 4035,
+        "lede": 502
+      },
+      "ratio": 7.1,
+      "dollarsPer1000Pages": {
+        "html": 101.36366666666667,
+        "lede": 14.263333333333332
+      },
+      "secondsPerPage": {
+        "html": 84.46972222222222,
+        "lede": 11.886111111111111
+      },
+      "contextTokensForTenPages": {
+        "html": 50682,
+        "lede": 7132
+      }
+    },
+    "sonnet": {
+      "model": "claude-sonnet-5-5",
+      "pages": {
+        "html": 60,
+        "lede": 60
+      },
+      "meanTokens": {
+        "html": 4501,
+        "lede": 625
+      },
+      "legacyMeanTokens": {
+        "html": 3554,
+        "lede": 443
+      },
+      "ratio": 7.2,
+      "dollarsPer1000Pages": {
+        "html": 45.00866666666667,
+        "lede": 6.2475
+      },
+      "secondsPerPage": {
+        "html": 75.01444444444445,
+        "lede": 10.4125
+      },
+      "contextTokensForTenPages": {
+        "html": 45009,
+        "lede": 6248
+      }
+    },
+    "haiku": {
+      "model": "claude-haiku-5-5",
+      "pages": {
+        "html": 60,
+        "lede": 60
+      },
+      "meanTokens": {
+        "html": 2770,
+        "lede": 598
+      },
+      "legacyMeanTokens": {
+        "html": 2188,
+        "lede": 418
+      },
+      "ratio": 4.6,
+      "dollarsPer1000Pages": {
+        "html": 1.3851333333333335,
+        "lede": 0.29905000000000004
+      },
+      "secondsPerPage": {
+        "html": 46.17111111111112,
+        "lede": 9.968333333333334
+      },
+      "contextTokensForTenPages": {
+        "html": 27703,
+        "lede": 5981
+      }
+    }
+  },
+  "reference": {
+    "spec/model-spec.md": {
+      "opus": 2908,
+      "sonnet": 2908,
+      "haiku": 2908
+    },
+    "skill/lede/SKILL.md": {
+      "opus": 3294,
+      "sonnet": 3294,
+      "haiku": 3294
+    }
+  },
+  "rows": [
+    {
+      "key": "haiku/B/100",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "100",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2226,
+      "legacyTokens": 1776
+    },
+    {
+      "key": "haiku/B/101",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "101",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 3625,
+      "legacyTokens": 2865
+    },
+    {
+      "key": "haiku/B/102",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "102",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 3445,
+      "legacyTokens": 2723
+    },
+    {
+      "key": "haiku/B/103",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "103",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 3489,
+      "legacyTokens": 2785
+    },
+    {
+      "key": "haiku/B/104",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "104",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 3670,
+      "legacyTokens": 2876
+    },
+    {
+      "key": "haiku/B/105",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "105",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 3548,
+      "legacyTokens": 2795
+    },
+    {
+      "key": "haiku/B/106",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "106",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2666,
+      "legacyTokens": 2068
+    },
+    {
+      "key": "haiku/B/107",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "107",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2822,
+      "legacyTokens": 2250
+    },
+    {
+      "key": "haiku/B/108",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "108",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2205,
+      "legacyTokens": 1714
+    },
+    {
+      "key": "haiku/B/109",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "109",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2558,
+      "legacyTokens": 1994
+    },
+    {
+      "key": "haiku/B/110",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "110",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2359,
+      "legacyTokens": 1867
+    },
+    {
+      "key": "haiku/B/111",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "111",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 3584,
+      "legacyTokens": 2897
+    },
+    {
+      "key": "haiku/B/112",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "112",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 3765,
+      "legacyTokens": 3058
+    },
+    {
+      "key": "haiku/B/113",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "113",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 3349,
+      "legacyTokens": 2688
+    },
+    {
+      "key": "haiku/B/114",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "114",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2946,
+      "legacyTokens": 2364
+    },
+    {
+      "key": "haiku/B/115",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "115",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 3639,
+      "legacyTokens": 2925
+    },
+    {
+      "key": "haiku/B/116",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "116",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 1618,
+      "legacyTokens": 1266
+    },
+    {
+      "key": "haiku/B/117",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "117",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 1784,
+      "legacyTokens": 1373
+    },
+    {
+      "key": "haiku/B/118",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "118",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 1927,
+      "legacyTokens": 1484
+    },
+    {
+      "key": "haiku/B/119",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "119",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2152,
+      "legacyTokens": 1674
+    },
+    {
+      "key": "haiku/B/120",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "120",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 3225,
+      "legacyTokens": 2528
+    },
+    {
+      "key": "haiku/B/121",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "121",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 3409,
+      "legacyTokens": 2570
+    },
+    {
+      "key": "haiku/B/122",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "122",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 3327,
+      "legacyTokens": 2548
+    },
+    {
+      "key": "haiku/B/123",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "123",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2579,
+      "legacyTokens": 1967
+    },
+    {
+      "key": "haiku/B/124",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "124",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2685,
+      "legacyTokens": 2067
+    },
+    {
+      "key": "haiku/B/125",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "125",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2494,
+      "legacyTokens": 1915
+    },
+    {
+      "key": "haiku/B/126",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "126",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 3166,
+      "legacyTokens": 2532
+    },
+    {
+      "key": "haiku/B/127",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "127",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 3055,
+      "legacyTokens": 2462
+    },
+    {
+      "key": "haiku/B/128",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "128",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 3246,
+      "legacyTokens": 2602
+    },
+    {
+      "key": "haiku/B/129",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "129",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 3480,
+      "legacyTokens": 2770
+    },
+    {
+      "key": "haiku/B/130",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "130",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 3761,
+      "legacyTokens": 2959
+    },
+    {
+      "key": "haiku/B/71",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "71",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2243,
+      "legacyTokens": 1743
+    },
+    {
+      "key": "haiku/B/72",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "72",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2340,
+      "legacyTokens": 1876
+    },
+    {
+      "key": "haiku/B/73",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "73",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2130,
+      "legacyTokens": 1682
+    },
+    {
+      "key": "haiku/B/74",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "74",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2565,
+      "legacyTokens": 2001
+    },
+    {
+      "key": "haiku/B/75",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "75",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2469,
+      "legacyTokens": 1986
+    },
+    {
+      "key": "haiku/B/76",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "76",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2403,
+      "legacyTokens": 1888
+    },
+    {
+      "key": "haiku/B/77",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "77",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2742,
+      "legacyTokens": 2239
+    },
+    {
+      "key": "haiku/B/78",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "78",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2174,
+      "legacyTokens": 1732
+    },
+    {
+      "key": "haiku/B/79",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "79",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2171,
+      "legacyTokens": 1715
+    },
+    {
+      "key": "haiku/B/80",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "80",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2562,
+      "legacyTokens": 2087
+    },
+    {
+      "key": "haiku/B/81",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "81",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2070,
+      "legacyTokens": 1671
+    },
+    {
+      "key": "haiku/B/82",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "82",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 3762,
+      "legacyTokens": 3032
+    },
+    {
+      "key": "haiku/B/83",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "83",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 3657,
+      "legacyTokens": 2964
+    },
+    {
+      "key": "haiku/B/84",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "84",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 4160,
+      "legacyTokens": 3399
+    },
+    {
+      "key": "haiku/B/85",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "85",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 3702,
+      "legacyTokens": 2987
+    },
+    {
+      "key": "haiku/B/86",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "86",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 1750,
+      "legacyTokens": 1291
+    },
+    {
+      "key": "haiku/B/87",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "87",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 1541,
+      "legacyTokens": 1219
+    },
+    {
+      "key": "haiku/B/88",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "88",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2321,
+      "legacyTokens": 1733
+    },
+    {
+      "key": "haiku/B/89",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "89",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 3075,
+      "legacyTokens": 2444
+    },
+    {
+      "key": "haiku/B/90",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "90",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 1759,
+      "legacyTokens": 1370
+    },
+    {
+      "key": "haiku/B/91",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "91",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2141,
+      "legacyTokens": 1617
+    },
+    {
+      "key": "haiku/B/92",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "92",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2418,
+      "legacyTokens": 1904
+    },
+    {
+      "key": "haiku/B/93",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "93",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2250,
+      "legacyTokens": 1682
+    },
+    {
+      "key": "haiku/B/94",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "94",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2177,
+      "legacyTokens": 1682
+    },
+    {
+      "key": "haiku/B/95",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "95",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2053,
+      "legacyTokens": 1551
+    },
+    {
+      "key": "haiku/B/96",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "96",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2930,
+      "legacyTokens": 2339
+    },
+    {
+      "key": "haiku/B/97",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "97",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 3406,
+      "legacyTokens": 2735
+    },
+    {
+      "key": "haiku/B/98",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "98",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2500,
+      "legacyTokens": 1986
+    },
+    {
+      "key": "haiku/B/99",
+      "writer": "haiku",
+      "arm": "B",
+      "id": "99",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 2941,
+      "legacyTokens": 2369
+    },
+    {
+      "key": "haiku-r6/C/100",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "100",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 362,
+      "legacyTokens": 268
+    },
+    {
+      "key": "haiku-r6/C/101",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "101",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 662,
+      "legacyTokens": 431
+    },
+    {
+      "key": "haiku-r6/C/102",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "102",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 591,
+      "legacyTokens": 377
+    },
+    {
+      "key": "haiku-r6/C/103",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "103",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 657,
+      "legacyTokens": 447
+    },
+    {
+      "key": "haiku-r6/C/104",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "104",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 684,
+      "legacyTokens": 453
+    },
+    {
+      "key": "haiku-r6/C/105",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "105",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 679,
+      "legacyTokens": 437
+    },
+    {
+      "key": "haiku-r6/C/106",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "106",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 589,
+      "legacyTokens": 412
+    },
+    {
+      "key": "haiku-r6/C/107",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "107",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 589,
+      "legacyTokens": 443
+    },
+    {
+      "key": "haiku-r6/C/108",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "108",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 606,
+      "legacyTokens": 397
+    },
+    {
+      "key": "haiku-r6/C/109",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "109",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 598,
+      "legacyTokens": 409
+    },
+    {
+      "key": "haiku-r6/C/110",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "110",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 599,
+      "legacyTokens": 416
+    },
+    {
+      "key": "haiku-r6/C/111",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "111",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 723,
+      "legacyTokens": 533
+    },
+    {
+      "key": "haiku-r6/C/112",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "112",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 736,
+      "legacyTokens": 521
+    },
+    {
+      "key": "haiku-r6/C/113",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "113",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 596,
+      "legacyTokens": 430
+    },
+    {
+      "key": "haiku-r6/C/114",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "114",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 713,
+      "legacyTokens": 495
+    },
+    {
+      "key": "haiku-r6/C/115",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "115",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 719,
+      "legacyTokens": 530
+    },
+    {
+      "key": "haiku-r6/C/116",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "116",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 501,
+      "legacyTokens": 368
+    },
+    {
+      "key": "haiku-r6/C/117",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "117",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 481,
+      "legacyTokens": 360
+    },
+    {
+      "key": "haiku-r6/C/118",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "118",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 557,
+      "legacyTokens": 388
+    },
+    {
+      "key": "haiku-r6/C/119",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "119",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 546,
+      "legacyTokens": 384
+    },
+    {
+      "key": "haiku-r6/C/120",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "120",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 660,
+      "legacyTokens": 469
+    },
+    {
+      "key": "haiku-r6/C/121",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "121",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 847,
+      "legacyTokens": 558
+    },
+    {
+      "key": "haiku-r6/C/122",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "122",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 643,
+      "legacyTokens": 439
+    },
+    {
+      "key": "haiku-r6/C/123",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "123",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 554,
+      "legacyTokens": 370
+    },
+    {
+      "key": "haiku-r6/C/124",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "124",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 622,
+      "legacyTokens": 422
+    },
+    {
+      "key": "haiku-r6/C/125",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "125",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 542,
+      "legacyTokens": 371
+    },
+    {
+      "key": "haiku-r6/C/126",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "126",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 520,
+      "legacyTokens": 390
+    },
+    {
+      "key": "haiku-r6/C/127",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "127",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 459,
+      "legacyTokens": 354
+    },
+    {
+      "key": "haiku-r6/C/128",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "128",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 539,
+      "legacyTokens": 386
+    },
+    {
+      "key": "haiku-r6/C/129",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "129",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 568,
+      "legacyTokens": 422
+    },
+    {
+      "key": "haiku-r6/C/130",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "130",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 626,
+      "legacyTokens": 434
+    },
+    {
+      "key": "haiku-r6/C/71",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "71",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 712,
+      "legacyTokens": 432
+    },
+    {
+      "key": "haiku-r6/C/72",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "72",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 452,
+      "legacyTokens": 315
+    },
+    {
+      "key": "haiku-r6/C/73",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "73",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 434,
+      "legacyTokens": 308
+    },
+    {
+      "key": "haiku-r6/C/74",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "74",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 655,
+      "legacyTokens": 449
+    },
+    {
+      "key": "haiku-r6/C/75",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "75",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 511,
+      "legacyTokens": 339
+    },
+    {
+      "key": "haiku-r6/C/76",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "76",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 461,
+      "legacyTokens": 354
+    },
+    {
+      "key": "haiku-r6/C/77",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "77",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 607,
+      "legacyTokens": 431
+    },
+    {
+      "key": "haiku-r6/C/78",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "78",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 521,
+      "legacyTokens": 355
+    },
+    {
+      "key": "haiku-r6/C/79",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "79",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 557,
+      "legacyTokens": 362
+    },
+    {
+      "key": "haiku-r6/C/80",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "80",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 726,
+      "legacyTokens": 534
+    },
+    {
+      "key": "haiku-r6/C/81",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "81",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 418,
+      "legacyTokens": 300
+    },
+    {
+      "key": "haiku-r6/C/82",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "82",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 541,
+      "legacyTokens": 369
+    },
+    {
+      "key": "haiku-r6/C/83",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "83",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 601,
+      "legacyTokens": 439
+    },
+    {
+      "key": "haiku-r6/C/84",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "84",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 532,
+      "legacyTokens": 374
+    },
+    {
+      "key": "haiku-r6/C/85",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "85",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 650,
+      "legacyTokens": 489
+    },
+    {
+      "key": "haiku-r6/C/86",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "86",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 438,
+      "legacyTokens": 295
+    },
+    {
+      "key": "haiku-r6/C/87",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "87",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 433,
+      "legacyTokens": 314
+    },
+    {
+      "key": "haiku-r6/C/88",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "88",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 1481,
+      "legacyTokens": 1079
+    },
+    {
+      "key": "haiku-r6/C/89",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "89",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 621,
+      "legacyTokens": 459
+    },
+    {
+      "key": "haiku-r6/C/90",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "90",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 422,
+      "legacyTokens": 302
+    },
+    {
+      "key": "haiku-r6/C/91",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "91",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 733,
+      "legacyTokens": 490
+    },
+    {
+      "key": "haiku-r6/C/92",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "92",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 667,
+      "legacyTokens": 461
+    },
+    {
+      "key": "haiku-r6/C/93",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "93",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 614,
+      "legacyTokens": 391
+    },
+    {
+      "key": "haiku-r6/C/94",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "94",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 643,
+      "legacyTokens": 450
+    },
+    {
+      "key": "haiku-r6/C/95",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "95",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 627,
+      "legacyTokens": 396
+    },
+    {
+      "key": "haiku-r6/C/96",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "96",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 555,
+      "legacyTokens": 381
+    },
+    {
+      "key": "haiku-r6/C/97",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "97",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 517,
+      "legacyTokens": 390
+    },
+    {
+      "key": "haiku-r6/C/98",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "98",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 549,
+      "legacyTokens": 371
+    },
+    {
+      "key": "haiku-r6/C/99",
+      "writer": "haiku",
+      "arm": "C",
+      "id": "99",
+      "countModel": "claude-haiku-5-5",
+      "tokens": 440,
+      "legacyTokens": 339
+    },
+    {
+      "key": "opus/B/100",
+      "writer": "opus",
+      "arm": "B",
+      "id": "100",
+      "countModel": "claude-opus-5-5",
+      "tokens": 3274,
+      "legacyTokens": 2641
+    },
+    {
+      "key": "opus/B/101",
+      "writer": "opus",
+      "arm": "B",
+      "id": "101",
+      "countModel": "claude-opus-5-5",
+      "tokens": 5253,
+      "legacyTokens": 4160
+    },
+    {
+      "key": "opus/B/102",
+      "writer": "opus",
+      "arm": "B",
+      "id": "102",
+      "countModel": "claude-opus-5-5",
+      "tokens": 6743,
+      "legacyTokens": 5379
+    },
+    {
+      "key": "opus/B/103",
+      "writer": "opus",
+      "arm": "B",
+      "id": "103",
+      "countModel": "claude-opus-5-5",
+      "tokens": 5192,
+      "legacyTokens": 4199
+    },
+    {
+      "key": "opus/B/104",
+      "writer": "opus",
+      "arm": "B",
+      "id": "104",
+      "countModel": "claude-opus-5-5",
+      "tokens": 5551,
+      "legacyTokens": 4415
+    },
+    {
+      "key": "opus/B/105",
+      "writer": "opus",
+      "arm": "B",
+      "id": "105",
+      "countModel": "claude-opus-5-5",
+      "tokens": 5605,
+      "legacyTokens": 4505
+    },
+    {
+      "key": "opus/B/106",
+      "writer": "opus",
+      "arm": "B",
+      "id": "106",
+      "countModel": "claude-opus-5-5",
+      "tokens": 3994,
+      "legacyTokens": 3174
+    },
+    {
+      "key": "opus/B/107",
+      "writer": "opus",
+      "arm": "B",
+      "id": "107",
+      "countModel": "claude-opus-5-5",
+      "tokens": 4174,
+      "legacyTokens": 3343
+    },
+    {
+      "key": "opus/B/108",
+      "writer": "opus",
+      "arm": "B",
+      "id": "108",
+      "countModel": "claude-opus-5-5",
+      "tokens": 4915,
+      "legacyTokens": 3886
+    },
+    {
+      "key": "opus/B/109",
+      "writer": "opus",
+      "arm": "B",
+      "id": "109",
+      "countModel": "claude-opus-5-5",
+      "tokens": 4343,
+      "legacyTokens": 3419
+    },
+    {
+      "key": "opus/B/110",
+      "writer": "opus",
+      "arm": "B",
+      "id": "110",
+      "countModel": "claude-opus-5-5",
+      "tokens": 5279,
+      "legacyTokens": 4300
+    },
+    {
+      "key": "opus/B/111",
+      "writer": "opus",
+      "arm": "B",
+      "id": "111",
+      "countModel": "claude-opus-5-5",
+      "tokens": 4783,
+      "legacyTokens": 3859
+    },
+    {
+      "key": "opus/B/112",
+      "writer": "opus",
+      "arm": "B",
+      "id": "112",
+      "countModel": "claude-opus-5-5",
+      "tokens": 4892,
+      "legacyTokens": 3975
+    },
+    {
+      "key": "opus/B/113",
+      "writer": "opus",
+      "arm": "B",
+      "id": "113",
+      "countModel": "claude-opus-5-5",
+      "tokens": 4743,
+      "legacyTokens": 3828
+    },
+    {
+      "key": "opus/B/114",
+      "writer": "opus",
+      "arm": "B",
+      "id": "114",
+      "countModel": "claude-opus-5-5",
+      "tokens": 4986,
+      "legacyTokens": 3992
+    },
+    {
+      "key": "opus/B/115",
+      "writer": "opus",
+      "arm": "B",
+      "id": "115",
+      "countModel": "claude-opus-5-5",
+      "tokens": 4874,
+      "legacyTokens": 3994
+    },
+    {
+      "key": "opus/B/116",
+      "writer": "opus",
+      "arm": "B",
+      "id": "116",
+      "countModel": "claude-opus-5-5",
+      "tokens": 2506,
+      "legacyTokens": 1991
+    },
+    {
+      "key": "opus/B/117",
+      "writer": "opus",
+      "arm": "B",
+      "id": "117",
+      "countModel": "claude-opus-5-5",
+      "tokens": 2104,
+      "legacyTokens": 1643
+    },
+    {
+      "key": "opus/B/118",
+      "writer": "opus",
+      "arm": "B",
+      "id": "118",
+      "countModel": "claude-opus-5-5",
+      "tokens": 2456,
+      "legacyTokens": 1898
+    },
+    {
+      "key": "opus/B/119",
+      "writer": "opus",
+      "arm": "B",
+      "id": "119",
+      "countModel": "claude-opus-5-5",
+      "tokens": 3225,
+      "legacyTokens": 2544
+    },
+    {
+      "key": "opus/B/120",
+      "writer": "opus",
+      "arm": "B",
+      "id": "120",
+      "countModel": "claude-opus-5-5",
+      "tokens": 4792,
+      "legacyTokens": 3821
+    },
+    {
+      "key": "opus/B/121",
+      "writer": "opus",
+      "arm": "B",
+      "id": "121",
+      "countModel": "claude-opus-5-5",
+      "tokens": 4697,
+      "legacyTokens": 3625
+    },
+    {
+      "key": "opus/B/122",
+      "writer": "opus",
+      "arm": "B",
+      "id": "122",
+      "countModel": "claude-opus-5-5",
+      "tokens": 4267,
+      "legacyTokens": 3274
+    },
+    {
+      "key": "opus/B/123",
+      "writer": "opus",
+      "arm": "B",
+      "id": "123",
+      "countModel": "claude-opus-5-5",
+      "tokens": 3554,
+      "legacyTokens": 2750
+    },
+    {
+      "key": "opus/B/124",
+      "writer": "opus",
+      "arm": "B",
+      "id": "124",
+      "countModel": "claude-opus-5-5",
+      "tokens": 3683,
+      "legacyTokens": 2830
+    },
+    {
+      "key": "opus/B/125",
+      "writer": "opus",
+      "arm": "B",
+      "id": "125",
+      "countModel": "claude-opus-5-5",
+      "tokens": 3376,
+      "legacyTokens": 2637
+    },
+    {
+      "key": "opus/B/126",
+      "writer": "opus",
+      "arm": "B",
+      "id": "126",
+      "countModel": "claude-opus-5-5",
+      "tokens": 4389,
+      "legacyTokens": 3508
+    },
+    {
+      "key": "opus/B/127",
+      "writer": "opus",
+      "arm": "B",
+      "id": "127",
+      "countModel": "claude-opus-5-5",
+      "tokens": 4578,
+      "legacyTokens": 3741
+    },
+    {
+      "key": "opus/B/128",
+      "writer": "opus",
+      "arm": "B",
+      "id": "128",
+      "countModel": "claude-opus-5-5",
+      "tokens": 4215,
+      "legacyTokens": 3406
+    },
+    {
+      "key": "opus/B/129",
+      "writer": "opus",
+      "arm": "B",
+      "id": "129",
+      "countModel": "claude-opus-5-5",
+      "tokens": 4608,
+      "legacyTokens": 3761
+    },
+    {
+      "key": "opus/B/130",
+      "writer": "opus",
+      "arm": "B",
+      "id": "130",
+      "countModel": "claude-opus-5-5",
+      "tokens": 4922,
+      "legacyTokens": 3930
+    },
+    {
+      "key": "opus/B/71",
+      "writer": "opus",
+      "arm": "B",
+      "id": "71",
+      "countModel": "claude-opus-5-5",
+      "tokens": 7472,
+      "legacyTokens": 5641
+    },
+    {
+      "key": "opus/B/72",
+      "writer": "opus",
+      "arm": "B",
+      "id": "72",
+      "countModel": "claude-opus-5-5",
+      "tokens": 6081,
+      "legacyTokens": 4702
+    },
+    {
+      "key": "opus/B/73",
+      "writer": "opus",
+      "arm": "B",
+      "id": "73",
+      "countModel": "claude-opus-5-5",
+      "tokens": 7113,
+      "legacyTokens": 5645
+    },
+    {
+      "key": "opus/B/74",
+      "writer": "opus",
+      "arm": "B",
+      "id": "74",
+      "countModel": "claude-opus-5-5",
+      "tokens": 6217,
+      "legacyTokens": 4846
+    },
+    {
+      "key": "opus/B/75",
+      "writer": "opus",
+      "arm": "B",
+      "id": "75",
+      "countModel": "claude-opus-5-5",
+      "tokens": 7120,
+      "legacyTokens": 5666
+    },
+    {
+      "key": "opus/B/76",
+      "writer": "opus",
+      "arm": "B",
+      "id": "76",
+      "countModel": "claude-opus-5-5",
+      "tokens": 6599,
+      "legacyTokens": 5278
+    },
+    {
+      "key": "opus/B/77",
+      "writer": "opus",
+      "arm": "B",
+      "id": "77",
+      "countModel": "claude-opus-5-5",
+      "tokens": 7413,
+      "legacyTokens": 5935
+    },
+    {
+      "key": "opus/B/78",
+      "writer": "opus",
+      "arm": "B",
+      "id": "78",
+      "countModel": "claude-opus-5-5",
+      "tokens": 5804,
+      "legacyTokens": 4555
+    },
+    {
+      "key": "opus/B/79",
+      "writer": "opus",
+      "arm": "B",
+      "id": "79",
+      "countModel": "claude-opus-5-5",
+      "tokens": 7090,
+      "legacyTokens": 5612
+    },
+    {
+      "key": "opus/B/80",
+      "writer": "opus",
+      "arm": "B",
+      "id": "80",
+      "countModel": "claude-opus-5-5",
+      "tokens": 8291,
+      "legacyTokens": 6627
+    },
+    {
+      "key": "opus/B/81",
+      "writer": "opus",
+      "arm": "B",
+      "id": "81",
+      "countModel": "claude-opus-5-5",
+      "tokens": 3210,
+      "legacyTokens": 2590
+    },
+    {
+      "key": "opus/B/82",
+      "writer": "opus",
+      "arm": "B",
+      "id": "82",
+      "countModel": "claude-opus-5-5",
+      "tokens": 5736,
+      "legacyTokens": 4631
+    },
+    {
+      "key": "opus/B/83",
+      "writer": "opus",
+      "arm": "B",
+      "id": "83",
+      "countModel": "claude-opus-5-5",
+      "tokens": 8747,
+      "legacyTokens": 7149
+    },
+    {
+      "key": "opus/B/84",
+      "writer": "opus",
+      "arm": "B",
+      "id": "84",
+      "countModel": "claude-opus-5-5",
+      "tokens": 6075,
+      "legacyTokens": 4809
+    },
+    {
+      "key": "opus/B/85",
+      "writer": "opus",
+      "arm": "B",
+      "id": "85",
+      "countModel": "claude-opus-5-5",
+      "tokens": 5876,
+      "legacyTokens": 4789
+    },
+    {
+      "key": "opus/B/86",
+      "writer": "opus",
+      "arm": "B",
+      "id": "86",
+      "countModel": "claude-opus-5-5",
+      "tokens": 4757,
+      "legacyTokens": 3582
+    },
+    {
+      "key": "opus/B/87",
+      "writer": "opus",
+      "arm": "B",
+      "id": "87",
+      "countModel": "claude-opus-5-5",
+      "tokens": 5256,
+      "legacyTokens": 4161
+    },
+    {
+      "key": "opus/B/88",
+      "writer": "opus",
+      "arm": "B",
+      "id": "88",
+      "countModel": "claude-opus-5-5",
+      "tokens": 3689,
+      "legacyTokens": 2800
+    },
+    {
+      "key": "opus/B/89",
+      "writer": "opus",
+      "arm": "B",
+      "id": "89",
+      "countModel": "claude-opus-5-5",
+      "tokens": 7361,
+      "legacyTokens": 5933
+    },
+    {
+      "key": "opus/B/90",
+      "writer": "opus",
+      "arm": "B",
+      "id": "90",
+      "countModel": "claude-opus-5-5",
+      "tokens": 5112,
+      "legacyTokens": 4039
+    },
+    {
+      "key": "opus/B/91",
+      "writer": "opus",
+      "arm": "B",
+      "id": "91",
+      "countModel": "claude-opus-5-5",
+      "tokens": 4832,
+      "legacyTokens": 3827
+    },
+    {
+      "key": "opus/B/92",
+      "writer": "opus",
+      "arm": "B",
+      "id": "92",
+      "countModel": "claude-opus-5-5",
+      "tokens": 4962,
+      "legacyTokens": 3995
+    },
+    {
+      "key": "opus/B/93",
+      "writer": "opus",
+      "arm": "B",
+      "id": "93",
+      "countModel": "claude-opus-5-5",
+      "tokens": 4708,
+      "legacyTokens": 3696
+    },
+    {
+      "key": "opus/B/94",
+      "writer": "opus",
+      "arm": "B",
+      "id": "94",
+      "countModel": "claude-opus-5-5",
+      "tokens": 5241,
+      "legacyTokens": 4208
+    },
+    {
+      "key": "opus/B/95",
+      "writer": "opus",
+      "arm": "B",
+      "id": "95",
+      "countModel": "claude-opus-5-5",
+      "tokens": 4099,
+      "legacyTokens": 3196
+    },
+    {
+      "key": "opus/B/96",
+      "writer": "opus",
+      "arm": "B",
+      "id": "96",
+      "countModel": "claude-opus-5-5",
+      "tokens": 4638,
+      "legacyTokens": 3751
+    },
+    {
+      "key": "opus/B/97",
+      "writer": "opus",
+      "arm": "B",
+      "id": "97",
+      "countModel": "claude-opus-5-5",
+      "tokens": 5108,
+      "legacyTokens": 4205
+    },
+    {
+      "key": "opus/B/98",
+      "writer": "opus",
+      "arm": "B",
+      "id": "98",
+      "countModel": "claude-opus-5-5",
+      "tokens": 4737,
+      "legacyTokens": 3862
+    },
+    {
+      "key": "opus/B/99",
+      "writer": "opus",
+      "arm": "B",
+      "id": "99",
+      "countModel": "claude-opus-5-5",
+      "tokens": 4774,
+      "legacyTokens": 3925
+    },
+    {
+      "key": "opus-r6/C/100",
+      "writer": "opus",
+      "arm": "C",
+      "id": "100",
+      "countModel": "claude-opus-5-5",
+      "tokens": 371,
+      "legacyTokens": 278
+    },
+    {
+      "key": "opus-r6/C/101",
+      "writer": "opus",
+      "arm": "C",
+      "id": "101",
+      "countModel": "claude-opus-5-5",
+      "tokens": 830,
+      "legacyTokens": 528
+    },
+    {
+      "key": "opus-r6/C/102",
+      "writer": "opus",
+      "arm": "C",
+      "id": "102",
+      "countModel": "claude-opus-5-5",
+      "tokens": 640,
+      "legacyTokens": 417
+    },
+    {
+      "key": "opus-r6/C/103",
+      "writer": "opus",
+      "arm": "C",
+      "id": "103",
+      "countModel": "claude-opus-5-5",
+      "tokens": 698,
+      "legacyTokens": 484
+    },
+    {
+      "key": "opus-r6/C/104",
+      "writer": "opus",
+      "arm": "C",
+      "id": "104",
+      "countModel": "claude-opus-5-5",
+      "tokens": 785,
+      "legacyTokens": 483
+    },
+    {
+      "key": "opus-r6/C/105",
+      "writer": "opus",
+      "arm": "C",
+      "id": "105",
+      "countModel": "claude-opus-5-5",
+      "tokens": 682,
+      "legacyTokens": 452
+    },
+    {
+      "key": "opus-r6/C/106",
+      "writer": "opus",
+      "arm": "C",
+      "id": "106",
+      "countModel": "claude-opus-5-5",
+      "tokens": 669,
+      "legacyTokens": 463
+    },
+    {
+      "key": "opus-r6/C/107",
+      "writer": "opus",
+      "arm": "C",
+      "id": "107",
+      "countModel": "claude-opus-5-5",
+      "tokens": 722,
+      "legacyTokens": 535
+    },
+    {
+      "key": "opus-r6/C/108",
+      "writer": "opus",
+      "arm": "C",
+      "id": "108",
+      "countModel": "claude-opus-5-5",
+      "tokens": 722,
+      "legacyTokens": 482
+    },
+    {
+      "key": "opus-r6/C/109",
+      "writer": "opus",
+      "arm": "C",
+      "id": "109",
+      "countModel": "claude-opus-5-5",
+      "tokens": 699,
+      "legacyTokens": 475
+    },
+    {
+      "key": "opus-r6/C/110",
+      "writer": "opus",
+      "arm": "C",
+      "id": "110",
+      "countModel": "claude-opus-5-5",
+      "tokens": 811,
+      "legacyTokens": 583
+    },
+    {
+      "key": "opus-r6/C/111",
+      "writer": "opus",
+      "arm": "C",
+      "id": "111",
+      "countModel": "claude-opus-5-5",
+      "tokens": 902,
+      "legacyTokens": 654
+    },
+    {
+      "key": "opus-r6/C/112",
+      "writer": "opus",
+      "arm": "C",
+      "id": "112",
+      "countModel": "claude-opus-5-5",
+      "tokens": 947,
+      "legacyTokens": 690
+    },
+    {
+      "key": "opus-r6/C/113",
+      "writer": "opus",
+      "arm": "C",
+      "id": "113",
+      "countModel": "claude-opus-5-5",
+      "tokens": 759,
+      "legacyTokens": 554
+    },
+    {
+      "key": "opus-r6/C/114",
+      "writer": "opus",
+      "arm": "C",
+      "id": "114",
+      "countModel": "claude-opus-5-5",
+      "tokens": 1133,
+      "legacyTokens": 808
+    },
+    {
+      "key": "opus-r6/C/115",
+      "writer": "opus",
+      "arm": "C",
+      "id": "115",
+      "countModel": "claude-opus-5-5",
+      "tokens": 884,
+      "legacyTokens": 649
+    },
+    {
+      "key": "opus-r6/C/116",
+      "writer": "opus",
+      "arm": "C",
+      "id": "116",
+      "countModel": "claude-opus-5-5",
+      "tokens": 603,
+      "legacyTokens": 467
+    },
+    {
+      "key": "opus-r6/C/117",
+      "writer": "opus",
+      "arm": "C",
+      "id": "117",
+      "countModel": "claude-opus-5-5",
+      "tokens": 626,
+      "legacyTokens": 476
+    },
+    {
+      "key": "opus-r6/C/118",
+      "writer": "opus",
+      "arm": "C",
+      "id": "118",
+      "countModel": "claude-opus-5-5",
+      "tokens": 641,
+      "legacyTokens": 443
+    },
+    {
+      "key": "opus-r6/C/119",
+      "writer": "opus",
+      "arm": "C",
+      "id": "119",
+      "countModel": "claude-opus-5-5",
+      "tokens": 594,
+      "legacyTokens": 428
+    },
+    {
+      "key": "opus-r6/C/120",
+      "writer": "opus",
+      "arm": "C",
+      "id": "120",
+      "countModel": "claude-opus-5-5",
+      "tokens": 958,
+      "legacyTokens": 700
+    },
+    {
+      "key": "opus-r6/C/121",
+      "writer": "opus",
+      "arm": "C",
+      "id": "121",
+      "countModel": "claude-opus-5-5",
+      "tokens": 1009,
+      "legacyTokens": 674
+    },
+    {
+      "key": "opus-r6/C/122",
+      "writer": "opus",
+      "arm": "C",
+      "id": "122",
+      "countModel": "claude-opus-5-5",
+      "tokens": 762,
+      "legacyTokens": 513
+    },
+    {
+      "key": "opus-r6/C/123",
+      "writer": "opus",
+      "arm": "C",
+      "id": "123",
+      "countModel": "claude-opus-5-5",
+      "tokens": 649,
+      "legacyTokens": 440
+    },
+    {
+      "key": "opus-r6/C/124",
+      "writer": "opus",
+      "arm": "C",
+      "id": "124",
+      "countModel": "claude-opus-5-5",
+      "tokens": 774,
+      "legacyTokens": 512
+    },
+    {
+      "key": "opus-r6/C/125",
+      "writer": "opus",
+      "arm": "C",
+      "id": "125",
+      "countModel": "claude-opus-5-5",
+      "tokens": 670,
+      "legacyTokens": 442
+    },
+    {
+      "key": "opus-r6/C/126",
+      "writer": "opus",
+      "arm": "C",
+      "id": "126",
+      "countModel": "claude-opus-5-5",
+      "tokens": 709,
+      "legacyTokens": 538
+    },
+    {
+      "key": "opus-r6/C/127",
+      "writer": "opus",
+      "arm": "C",
+      "id": "127",
+      "countModel": "claude-opus-5-5",
+      "tokens": 590,
+      "legacyTokens": 454
+    },
+    {
+      "key": "opus-r6/C/128",
+      "writer": "opus",
+      "arm": "C",
+      "id": "128",
+      "countModel": "claude-opus-5-5",
+      "tokens": 520,
+      "legacyTokens": 368
+    },
+    {
+      "key": "opus-r6/C/129",
+      "writer": "opus",
+      "arm": "C",
+      "id": "129",
+      "countModel": "claude-opus-5-5",
+      "tokens": 738,
+      "legacyTokens": 562
+    },
+    {
+      "key": "opus-r6/C/130",
+      "writer": "opus",
+      "arm": "C",
+      "id": "130",
+      "countModel": "claude-opus-5-5",
+      "tokens": 656,
+      "legacyTokens": 452
+    },
+    {
+      "key": "opus-r6/C/71",
+      "writer": "opus",
+      "arm": "C",
+      "id": "71",
+      "countModel": "claude-opus-5-5",
+      "tokens": 862,
+      "legacyTokens": 524
+    },
+    {
+      "key": "opus-r6/C/72",
+      "writer": "opus",
+      "arm": "C",
+      "id": "72",
+      "countModel": "claude-opus-5-5",
+      "tokens": 542,
+      "legacyTokens": 376
+    },
+    {
+      "key": "opus-r6/C/73",
+      "writer": "opus",
+      "arm": "C",
+      "id": "73",
+      "countModel": "claude-opus-5-5",
+      "tokens": 541,
+      "legacyTokens": 390
+    },
+    {
+      "key": "opus-r6/C/74",
+      "writer": "opus",
+      "arm": "C",
+      "id": "74",
+      "countModel": "claude-opus-5-5",
+      "tokens": 646,
+      "legacyTokens": 455
+    },
+    {
+      "key": "opus-r6/C/75",
+      "writer": "opus",
+      "arm": "C",
+      "id": "75",
+      "countModel": "claude-opus-5-5",
+      "tokens": 631,
+      "legacyTokens": 422
+    },
+    {
+      "key": "opus-r6/C/76",
+      "writer": "opus",
+      "arm": "C",
+      "id": "76",
+      "countModel": "claude-opus-5-5",
+      "tokens": 650,
+      "legacyTokens": 481
+    },
+    {
+      "key": "opus-r6/C/77",
+      "writer": "opus",
+      "arm": "C",
+      "id": "77",
+      "countModel": "claude-opus-5-5",
+      "tokens": 724,
+      "legacyTokens": 530
+    },
+    {
+      "key": "opus-r6/C/78",
+      "writer": "opus",
+      "arm": "C",
+      "id": "78",
+      "countModel": "claude-opus-5-5",
+      "tokens": 744,
+      "legacyTokens": 524
+    },
+    {
+      "key": "opus-r6/C/79",
+      "writer": "opus",
+      "arm": "C",
+      "id": "79",
+      "countModel": "claude-opus-5-5",
+      "tokens": 658,
+      "legacyTokens": 440
+    },
+    {
+      "key": "opus-r6/C/80",
+      "writer": "opus",
+      "arm": "C",
+      "id": "80",
+      "countModel": "claude-opus-5-5",
+      "tokens": 859,
+      "legacyTokens": 632
+    },
+    {
+      "key": "opus-r6/C/81",
+      "writer": "opus",
+      "arm": "C",
+      "id": "81",
+      "countModel": "claude-opus-5-5",
+      "tokens": 371,
+      "legacyTokens": 281
+    },
+    {
+      "key": "opus-r6/C/82",
+      "writer": "opus",
+      "arm": "C",
+      "id": "82",
+      "countModel": "claude-opus-5-5",
+      "tokens": 618,
+      "legacyTokens": 423
+    },
+    {
+      "key": "opus-r6/C/83",
+      "writer": "opus",
+      "arm": "C",
+      "id": "83",
+      "countModel": "claude-opus-5-5",
+      "tokens": 727,
+      "legacyTokens": 528
+    },
+    {
+      "key": "opus-r6/C/84",
+      "writer": "opus",
+      "arm": "C",
+      "id": "84",
+      "countModel": "claude-opus-5-5",
+      "tokens": 772,
+      "legacyTokens": 564
+    },
+    {
+      "key": "opus-r6/C/85",
+      "writer": "opus",
+      "arm": "C",
+      "id": "85",
+      "countModel": "claude-opus-5-5",
+      "tokens": 829,
+      "legacyTokens": 639
+    },
+    {
+      "key": "opus-r6/C/86",
+      "writer": "opus",
+      "arm": "C",
+      "id": "86",
+      "countModel": "claude-opus-5-5",
+      "tokens": 590,
+      "legacyTokens": 403
+    },
+    {
+      "key": "opus-r6/C/87",
+      "writer": "opus",
+      "arm": "C",
+      "id": "87",
+      "countModel": "claude-opus-5-5",
+      "tokens": 507,
+      "legacyTokens": 384
+    },
+    {
+      "key": "opus-r6/C/88",
+      "writer": "opus",
+      "arm": "C",
+      "id": "88",
+      "countModel": "claude-opus-5-5",
+      "tokens": 1618,
+      "legacyTokens": 1149
+    },
+    {
+      "key": "opus-r6/C/89",
+      "writer": "opus",
+      "arm": "C",
+      "id": "89",
+      "countModel": "claude-opus-5-5",
+      "tokens": 760,
+      "legacyTokens": 586
+    },
+    {
+      "key": "opus-r6/C/90",
+      "writer": "opus",
+      "arm": "C",
+      "id": "90",
+      "countModel": "claude-opus-5-5",
+      "tokens": 477,
+      "legacyTokens": 349
+    },
+    {
+      "key": "opus-r6/C/91",
+      "writer": "opus",
+      "arm": "C",
+      "id": "91",
+      "countModel": "claude-opus-5-5",
+      "tokens": 749,
+      "legacyTokens": 493
+    },
+    {
+      "key": "opus-r6/C/92",
+      "writer": "opus",
+      "arm": "C",
+      "id": "92",
+      "countModel": "claude-opus-5-5",
+      "tokens": 721,
+      "legacyTokens": 495
+    },
+    {
+      "key": "opus-r6/C/93",
+      "writer": "opus",
+      "arm": "C",
+      "id": "93",
+      "countModel": "claude-opus-5-5",
+      "tokens": 777,
+      "legacyTokens": 489
+    },
+    {
+      "key": "opus-r6/C/94",
+      "writer": "opus",
+      "arm": "C",
+      "id": "94",
+      "countModel": "claude-opus-5-5",
+      "tokens": 750,
+      "legacyTokens": 516
+    },
+    {
+      "key": "opus-r6/C/95",
+      "writer": "opus",
+      "arm": "C",
+      "id": "95",
+      "countModel": "claude-opus-5-5",
+      "tokens": 685,
+      "legacyTokens": 439
+    },
+    {
+      "key": "opus-r6/C/96",
+      "writer": "opus",
+      "arm": "C",
+      "id": "96",
+      "countModel": "claude-opus-5-5",
+      "tokens": 575,
+      "legacyTokens": 411
+    },
+    {
+      "key": "opus-r6/C/97",
+      "writer": "opus",
+      "arm": "C",
+      "id": "97",
+      "countModel": "claude-opus-5-5",
+      "tokens": 569,
+      "legacyTokens": 434
+    },
+    {
+      "key": "opus-r6/C/98",
+      "writer": "opus",
+      "arm": "C",
+      "id": "98",
+      "countModel": "claude-opus-5-5",
+      "tokens": 570,
+      "legacyTokens": 385
+    },
+    {
+      "key": "opus-r6/C/99",
+      "writer": "opus",
+      "arm": "C",
+      "id": "99",
+      "countModel": "claude-opus-5-5",
+      "tokens": 515,
+      "legacyTokens": 403
+    },
+    {
+      "key": "sonnet/B/100",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "100",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 2909,
+      "legacyTokens": 2326
+    },
+    {
+      "key": "sonnet/B/101",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "101",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 5128,
+      "legacyTokens": 3993
+    },
+    {
+      "key": "sonnet/B/102",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "102",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 6176,
+      "legacyTokens": 4844
+    },
+    {
+      "key": "sonnet/B/103",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "103",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 4628,
+      "legacyTokens": 3649
+    },
+    {
+      "key": "sonnet/B/104",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "104",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 4883,
+      "legacyTokens": 3808
+    },
+    {
+      "key": "sonnet/B/105",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "105",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 5667,
+      "legacyTokens": 4448
+    },
+    {
+      "key": "sonnet/B/106",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "106",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 3931,
+      "legacyTokens": 3041
+    },
+    {
+      "key": "sonnet/B/107",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "107",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 4879,
+      "legacyTokens": 3862
+    },
+    {
+      "key": "sonnet/B/108",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "108",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 4854,
+      "legacyTokens": 3790
+    },
+    {
+      "key": "sonnet/B/109",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "109",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 3829,
+      "legacyTokens": 2963
+    },
+    {
+      "key": "sonnet/B/110",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "110",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 5683,
+      "legacyTokens": 4480
+    },
+    {
+      "key": "sonnet/B/111",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "111",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 5845,
+      "legacyTokens": 4688
+    },
+    {
+      "key": "sonnet/B/112",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "112",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 5409,
+      "legacyTokens": 4363
+    },
+    {
+      "key": "sonnet/B/113",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "113",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 5017,
+      "legacyTokens": 4047
+    },
+    {
+      "key": "sonnet/B/114",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "114",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 6240,
+      "legacyTokens": 4975
+    },
+    {
+      "key": "sonnet/B/115",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "115",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 5419,
+      "legacyTokens": 4372
+    },
+    {
+      "key": "sonnet/B/116",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "116",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 2617,
+      "legacyTokens": 2069
+    },
+    {
+      "key": "sonnet/B/117",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "117",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 2316,
+      "legacyTokens": 1772
+    },
+    {
+      "key": "sonnet/B/118",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "118",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 3017,
+      "legacyTokens": 2346
+    },
+    {
+      "key": "sonnet/B/119",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "119",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 3596,
+      "legacyTokens": 2888
+    },
+    {
+      "key": "sonnet/B/120",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "120",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 6012,
+      "legacyTokens": 4803
+    },
+    {
+      "key": "sonnet/B/121",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "121",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 3958,
+      "legacyTokens": 3027
+    },
+    {
+      "key": "sonnet/B/122",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "122",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 3377,
+      "legacyTokens": 2590
+    },
+    {
+      "key": "sonnet/B/123",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "123",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 3011,
+      "legacyTokens": 2320
+    },
+    {
+      "key": "sonnet/B/124",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "124",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 2964,
+      "legacyTokens": 2299
+    },
+    {
+      "key": "sonnet/B/125",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "125",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 3094,
+      "legacyTokens": 2434
+    },
+    {
+      "key": "sonnet/B/126",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "126",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 4794,
+      "legacyTokens": 3892
+    },
+    {
+      "key": "sonnet/B/127",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "127",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 4169,
+      "legacyTokens": 3403
+    },
+    {
+      "key": "sonnet/B/128",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "128",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 4022,
+      "legacyTokens": 3281
+    },
+    {
+      "key": "sonnet/B/129",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "129",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 4094,
+      "legacyTokens": 3364
+    },
+    {
+      "key": "sonnet/B/130",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "130",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 4196,
+      "legacyTokens": 3396
+    },
+    {
+      "key": "sonnet/B/71",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "71",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 5569,
+      "legacyTokens": 4271
+    },
+    {
+      "key": "sonnet/B/72",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "72",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 5569,
+      "legacyTokens": 4262
+    },
+    {
+      "key": "sonnet/B/73",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "73",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 5032,
+      "legacyTokens": 3912
+    },
+    {
+      "key": "sonnet/B/74",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "74",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 4587,
+      "legacyTokens": 3557
+    },
+    {
+      "key": "sonnet/B/75",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "75",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 7122,
+      "legacyTokens": 5524
+    },
+    {
+      "key": "sonnet/B/76",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "76",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 4525,
+      "legacyTokens": 3538
+    },
+    {
+      "key": "sonnet/B/77",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "77",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 6839,
+      "legacyTokens": 5439
+    },
+    {
+      "key": "sonnet/B/78",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "78",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 4889,
+      "legacyTokens": 3781
+    },
+    {
+      "key": "sonnet/B/79",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "79",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 5509,
+      "legacyTokens": 4291
+    },
+    {
+      "key": "sonnet/B/80",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "80",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 6214,
+      "legacyTokens": 4934
+    },
+    {
+      "key": "sonnet/B/81",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "81",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 3630,
+      "legacyTokens": 2909
+    },
+    {
+      "key": "sonnet/B/82",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "82",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 3765,
+      "legacyTokens": 3029
+    },
+    {
+      "key": "sonnet/B/83",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "83",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 5769,
+      "legacyTokens": 4563
+    },
+    {
+      "key": "sonnet/B/84",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "84",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 4949,
+      "legacyTokens": 3969
+    },
+    {
+      "key": "sonnet/B/85",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "85",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 5596,
+      "legacyTokens": 4562
+    },
+    {
+      "key": "sonnet/B/86",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "86",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 3182,
+      "legacyTokens": 2447
+    },
+    {
+      "key": "sonnet/B/87",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "87",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 3656,
+      "legacyTokens": 2929
+    },
+    {
+      "key": "sonnet/B/88",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "88",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 2884,
+      "legacyTokens": 2230
+    },
+    {
+      "key": "sonnet/B/89",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "89",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 4391,
+      "legacyTokens": 3530
+    },
+    {
+      "key": "sonnet/B/90",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "90",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 3083,
+      "legacyTokens": 2455
+    },
+    {
+      "key": "sonnet/B/91",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "91",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 3490,
+      "legacyTokens": 2688
+    },
+    {
+      "key": "sonnet/B/92",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "92",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 3633,
+      "legacyTokens": 2863
+    },
+    {
+      "key": "sonnet/B/93",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "93",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 4011,
+      "legacyTokens": 3068
+    },
+    {
+      "key": "sonnet/B/94",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "94",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 5329,
+      "legacyTokens": 4171
+    },
+    {
+      "key": "sonnet/B/95",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "95",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 3617,
+      "legacyTokens": 2695
+    },
+    {
+      "key": "sonnet/B/96",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "96",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 3885,
+      "legacyTokens": 3146
+    },
+    {
+      "key": "sonnet/B/97",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "97",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 4844,
+      "legacyTokens": 3956
+    },
+    {
+      "key": "sonnet/B/98",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "98",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 3964,
+      "legacyTokens": 3127
+    },
+    {
+      "key": "sonnet/B/99",
+      "writer": "sonnet",
+      "arm": "B",
+      "id": "99",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 4785,
+      "legacyTokens": 3885
+    },
+    {
+      "key": "sonnet-r6/C/100",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "100",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 383,
+      "legacyTokens": 300
+    },
+    {
+      "key": "sonnet-r6/C/101",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "101",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 724,
+      "legacyTokens": 480
+    },
+    {
+      "key": "sonnet-r6/C/102",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "102",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 624,
+      "legacyTokens": 405
+    },
+    {
+      "key": "sonnet-r6/C/103",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "103",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 699,
+      "legacyTokens": 468
+    },
+    {
+      "key": "sonnet-r6/C/104",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "104",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 741,
+      "legacyTokens": 451
+    },
+    {
+      "key": "sonnet-r6/C/105",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "105",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 699,
+      "legacyTokens": 450
+    },
+    {
+      "key": "sonnet-r6/C/106",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "106",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 658,
+      "legacyTokens": 457
+    },
+    {
+      "key": "sonnet-r6/C/107",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "107",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 675,
+      "legacyTokens": 501
+    },
+    {
+      "key": "sonnet-r6/C/108",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "108",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 545,
+      "legacyTokens": 371
+    },
+    {
+      "key": "sonnet-r6/C/109",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "109",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 629,
+      "legacyTokens": 435
+    },
+    {
+      "key": "sonnet-r6/C/110",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "110",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 600,
+      "legacyTokens": 419
+    },
+    {
+      "key": "sonnet-r6/C/111",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "111",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 768,
+      "legacyTokens": 547
+    },
+    {
+      "key": "sonnet-r6/C/112",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "112",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 692,
+      "legacyTokens": 500
+    },
+    {
+      "key": "sonnet-r6/C/113",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "113",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 603,
+      "legacyTokens": 447
+    },
+    {
+      "key": "sonnet-r6/C/114",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "114",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 1049,
+      "legacyTokens": 735
+    },
+    {
+      "key": "sonnet-r6/C/115",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "115",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 680,
+      "legacyTokens": 510
+    },
+    {
+      "key": "sonnet-r6/C/116",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "116",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 498,
+      "legacyTokens": 386
+    },
+    {
+      "key": "sonnet-r6/C/117",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "117",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 550,
+      "legacyTokens": 425
+    },
+    {
+      "key": "sonnet-r6/C/118",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "118",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 586,
+      "legacyTokens": 407
+    },
+    {
+      "key": "sonnet-r6/C/119",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "119",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 512,
+      "legacyTokens": 371
+    },
+    {
+      "key": "sonnet-r6/C/120",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "120",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 687,
+      "legacyTokens": 502
+    },
+    {
+      "key": "sonnet-r6/C/121",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "121",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 783,
+      "legacyTokens": 514
+    },
+    {
+      "key": "sonnet-r6/C/122",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "122",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 682,
+      "legacyTokens": 467
+    },
+    {
+      "key": "sonnet-r6/C/123",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "123",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 609,
+      "legacyTokens": 413
+    },
+    {
+      "key": "sonnet-r6/C/124",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "124",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 667,
+      "legacyTokens": 448
+    },
+    {
+      "key": "sonnet-r6/C/125",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "125",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 576,
+      "legacyTokens": 387
+    },
+    {
+      "key": "sonnet-r6/C/126",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "126",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 528,
+      "legacyTokens": 402
+    },
+    {
+      "key": "sonnet-r6/C/127",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "127",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 513,
+      "legacyTokens": 397
+    },
+    {
+      "key": "sonnet-r6/C/128",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "128",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 501,
+      "legacyTokens": 369
+    },
+    {
+      "key": "sonnet-r6/C/129",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "129",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 589,
+      "legacyTokens": 435
+    },
+    {
+      "key": "sonnet-r6/C/130",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "130",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 592,
+      "legacyTokens": 410
+    },
+    {
+      "key": "sonnet-r6/C/71",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "71",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 829,
+      "legacyTokens": 512
+    },
+    {
+      "key": "sonnet-r6/C/72",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "72",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 472,
+      "legacyTokens": 339
+    },
+    {
+      "key": "sonnet-r6/C/73",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "73",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 494,
+      "legacyTokens": 366
+    },
+    {
+      "key": "sonnet-r6/C/74",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "74",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 618,
+      "legacyTokens": 442
+    },
+    {
+      "key": "sonnet-r6/C/75",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "75",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 582,
+      "legacyTokens": 386
+    },
+    {
+      "key": "sonnet-r6/C/76",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "76",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 572,
+      "legacyTokens": 458
+    },
+    {
+      "key": "sonnet-r6/C/77",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "77",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 653,
+      "legacyTokens": 478
+    },
+    {
+      "key": "sonnet-r6/C/78",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "78",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 578,
+      "legacyTokens": 420
+    },
+    {
+      "key": "sonnet-r6/C/79",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "79",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 712,
+      "legacyTokens": 480
+    },
+    {
+      "key": "sonnet-r6/C/80",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "80",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 721,
+      "legacyTokens": 544
+    },
+    {
+      "key": "sonnet-r6/C/81",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "81",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 381,
+      "legacyTokens": 282
+    },
+    {
+      "key": "sonnet-r6/C/82",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "82",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 609,
+      "legacyTokens": 409
+    },
+    {
+      "key": "sonnet-r6/C/83",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "83",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 760,
+      "legacyTokens": 563
+    },
+    {
+      "key": "sonnet-r6/C/84",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "84",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 541,
+      "legacyTokens": 395
+    },
+    {
+      "key": "sonnet-r6/C/85",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "85",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 726,
+      "legacyTokens": 549
+    },
+    {
+      "key": "sonnet-r6/C/86",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "86",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 511,
+      "legacyTokens": 348
+    },
+    {
+      "key": "sonnet-r6/C/87",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "87",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 388,
+      "legacyTokens": 288
+    },
+    {
+      "key": "sonnet-r6/C/88",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "88",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 1353,
+      "legacyTokens": 1006
+    },
+    {
+      "key": "sonnet-r6/C/89",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "89",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 635,
+      "legacyTokens": 477
+    },
+    {
+      "key": "sonnet-r6/C/90",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "90",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 389,
+      "legacyTokens": 272
+    },
+    {
+      "key": "sonnet-r6/C/91",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "91",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 673,
+      "legacyTokens": 448
+    },
+    {
+      "key": "sonnet-r6/C/92",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "92",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 658,
+      "legacyTokens": 464
+    },
+    {
+      "key": "sonnet-r6/C/93",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "93",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 591,
+      "legacyTokens": 382
+    },
+    {
+      "key": "sonnet-r6/C/94",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "94",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 651,
+      "legacyTokens": 462
+    },
+    {
+      "key": "sonnet-r6/C/95",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "95",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 610,
+      "legacyTokens": 385
+    },
+    {
+      "key": "sonnet-r6/C/96",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "96",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 475,
+      "legacyTokens": 335
+    },
+    {
+      "key": "sonnet-r6/C/97",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "97",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 593,
+      "legacyTokens": 466
+    },
+    {
+      "key": "sonnet-r6/C/98",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "98",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 556,
+      "legacyTokens": 385
+    },
+    {
+      "key": "sonnet-r6/C/99",
+      "writer": "sonnet",
+      "arm": "C",
+      "id": "99",
+      "countModel": "claude-sonnet-5-5",
+      "tokens": 512,
+      "legacyTokens": 408
+    }
+  ]
+}

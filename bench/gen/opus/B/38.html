@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Product Design Principles</title>
+<style>
+:root{--bg:#f5f7fa;--surface:#fff;--text:#14202e;--muted:#566476;--border:#d8e0ea;--accent:#1d5fa8;--do:#1c7a48;--do-bg:#e7f4ec;--avoid:#ad3a26;--avoid-bg:#fbebe7;--note-bg:#eaf1fa}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1218;--surface:#151c25;--text:#e2e8ef;--muted:#98a4b4;--border:#27313d;--accent:#78aef0;--do:#6fd39a;--do-bg:#15291e;--avoid:#f28c76;--avoid-bg:#331c17;--note-bg:#15233a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:17px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:780px;margin:0 auto;padding:36px 16px 64px}
+.eyebrow{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);font-weight:700;margin:0 0 8px}
+h1{font-size:clamp(28px,6vw,38px);line-height:1.15;margin:0 0 14px}
+.intro{color:var(--muted);margin:0 0 30px;font-size:18px}
+.principle{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:16px}
+.principle h2{font-size:21px;margin:0 0 8px;display:flex;gap:12px;align-items:baseline}
+.principle h2 .n{font-size:14px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+.principle p{margin:0 0 12px}
+.ex{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.ex li{border-radius:8px;padding:8px 12px;display:flex;gap:10px;align-items:baseline}
+.ex b{font-size:12px;text-transform:uppercase;letter-spacing:.06em;min-width:48px}
+.ex .do{background:var(--do-bg)}.ex .do b{color:var(--do)}
+.ex .avoid{background:var(--avoid-bg)}.ex .avoid b{color:var(--avoid)}
+blockquote{margin:36px 0 24px;padding:0 0 0 20px;border-left:4px solid var(--accent)}
+blockquote p{margin:0;font-size:clamp(21px,4.5vw,26px);line-height:1.4;font-style:italic}
+blockquote footer{margin-top:8px;color:var(--muted);font-size:15px}
+.note{background:var(--note-bg);border:1px solid var(--accent);border-left-width:6px;border-radius:10px;padding:14px 16px}
+</style>
+</head>
+<body>
+<main>
+<p class="eyebrow">Fathom Bank · Design Systems</p>
+<h1>Product design principles</h1>
+<p class="intro">These principles were agreed in a workshop with 26 designers and engineers on 2026-09-17. They apply to all customer-facing apps, and every design review should check work against them.</p>
+
+<section class="principle">
+<h2><span class="n">01</span>Clarity over cleverness</h2>
+<p>Customers come to us to get something done with their money, not to admire the interface. When a clever pattern and a plain one compete, the plain one wins. Every control should say what it does in words a customer would use.</p>
+<ul class="ex">
+<li class="do"><b>Do</b><span>Label buttons with the action.</span></li>
+<li class="avoid"><b>Avoid</b><span>Icons without text for money movement.</span></li>
+</ul>
+</section>
+
+<section class="principle">
+<h2><span class="n">02</span>Show the money</h2>
+<p>Customers should never be surprised by what something costs. Fees, rates and totals belong in plain view at the point where a customer is deciding, not after they have committed.</p>
+<ul class="ex">
+<li class="do"><b>Do</b><span>Show fees before confirmation.</span></li>
+<li class="avoid"><b>Avoid</b><span>Revealing fees on the final screen.</span></li>
+</ul>
+</section>
+
+<section class="principle">
+<h2><span class="n">03</span>Forgive mistakes</h2>
+<p>People tap the wrong thing, enter the wrong amount and change their minds. Our job is to make recovering from that quick and easy, inside the app, without making the customer feel at fault.</p>
+<ul class="ex">
+<li class="do"><b>Do</b><span>Allow undo for 10 seconds after a transfer is scheduled.</span></li>
+<li class="avoid"><b>Avoid</b><span>Making cancellation a phone call.</span></li>
+</ul>
+</section>
+
+<section class="principle">
+<h2><span class="n">04</span>Accessible by default</h2>
+<p>Accessibility is part of the design from the start, not a fix applied at the end. Every customer should be able to read, understand and operate every screen, whatever their vision, device or abilities.</p>
+<ul class="ex">
+<li class="do"><b>Do</b><span>Meet a contrast ratio of 4.5 to 1.</span></li>
+<li class="avoid"><b>Avoid</b><span>Relying on color alone for status.</span></li>
+</ul>
+</section>
+
+<section class="principle">
+<h2><span class="n">05</span>Calm, not urgent</h2>
+<p>Financial decisions deserve a clear head. We give customers the facts they need, including real deadlines, and then let them decide at their own pace. We never manufacture pressure.</p>
+<ul class="ex">
+<li class="do"><b>Do</b><span>State plain deadlines.</span></li>
+<li class="avoid"><b>Avoid</b><span>Countdown timers that push decisions.</span></li>
+</ul>
+</section>
+
+<blockquote>
+<p>"If a customer has to read it twice, we wrote it wrong."</p>
+<footer>Ines Albrecht, Head of Design</footer>
+</blockquote>
+
+<div class="note" role="note"><strong>Note:</strong> Disagreements with a principle go to the monthly design council, not to individual reviews.</div>
+</main>
+</body>
+</html>

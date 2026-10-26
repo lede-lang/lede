@@ -1,0 +1,172 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "data",
+      "name": "runs",
+      "line": 1
+    },
+    {
+      "type": "chart",
+      "kind": "line",
+      "data": "runs",
+      "x": "week",
+      "y": [
+        "deploys"
+      ],
+      "title": null,
+      "stack": false,
+      "labels": false,
+      "unit": null,
+      "min": null,
+      "max": null,
+      "focus": null,
+      "target": null,
+      "line": 2
+    },
+    {
+      "type": "chart",
+      "kind": "hbar",
+      "data": "runs",
+      "x": "week",
+      "y": [
+        "deploys"
+      ],
+      "title": null,
+      "stack": false,
+      "labels": false,
+      "unit": null,
+      "min": null,
+      "max": null,
+      "focus": null,
+      "target": null,
+      "line": 3
+    },
+    {
+      "type": "diagram",
+      "name": "flow",
+      "kind": "flow",
+      "dir": "TB",
+      "title": null,
+      "nodes": [
+        {
+          "id": "end",
+          "label": "Done",
+          "kind": "store",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "alt",
+          "label": "Fallback",
+          "kind": null,
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "start",
+          "label": "start",
+          "kind": null,
+          "sub": null,
+          "focus": false
+        }
+      ],
+      "edges": [
+        {
+          "from": "start",
+          "to": "end",
+          "label": "",
+          "style": "solid",
+          "both": false,
+          "line": 7
+        },
+        {
+          "from": "alt",
+          "to": "end",
+          "label": "",
+          "style": "solid",
+          "both": false,
+          "line": 8
+        }
+      ],
+      "groups": [],
+      "notes": [],
+      "line": 4
+    },
+    {
+      "type": "diagram",
+      "name": "sess",
+      "kind": "sequence",
+      "dir": "LR",
+      "title": null,
+      "nodes": [
+        {
+          "id": "alt",
+          "label": "alt",
+          "kind": null,
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "end",
+          "label": "end",
+          "kind": null,
+          "sub": null,
+          "focus": false
+        }
+      ],
+      "edges": [
+        {
+          "from": "alt",
+          "to": "end",
+          "label": "edges from participants with these names still parse",
+          "style": "solid",
+          "both": false,
+          "line": 10
+        },
+        {
+          "from": "end",
+          "to": "alt",
+          "label": "",
+          "style": "solid",
+          "both": false,
+          "line": 11
+        }
+      ],
+      "groups": [],
+      "notes": [],
+      "line": 9
+    },
+    {
+      "type": "quote",
+      "text": "a quote",
+      "cite": "Someone",
+      "line": 12
+    },
+    {
+      "type": "rule",
+      "line": 14
+    }
+  ],
+  "data": {
+    "runs": {
+      "name": "runs",
+      "columns": [
+        "week",
+        "deploys"
+      ],
+      "rows": [
+        [
+          "W1",
+          "1"
+        ],
+        [
+          "W2",
+          "3"
+        ]
+      ],
+      "line": 1
+    }
+  },
+  "diagnostics": []
+}

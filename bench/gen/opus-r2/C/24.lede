@@ -1,0 +1,44 @@
+@title Course Scheduling Frontend
+@subtitle Choosing a framework for the admin app rewrite, Internal Tools guild, Wrenfield University IT
+@author Internal Tools guild
+
+The course-scheduling admin app has about 60 screens, mostly forms and tables, and 5 developers will rewrite it.
+
+# Criteria
+
+- Team familiarity
+- Form and table libraries
+- Hiring pool
+- Bundle size
+- Long-term support
+
+# Comparison
+
+table = Framework,Team familiarity,Form/table ecosystem,Bundle size (KB),Hiring pool; React,4 of 5 developers,excellent,142,large; Vue,1 of 5 developers,good,98,medium; Svelte,0 of 5 developers,fair,41,small
+
+# Pros and cons
+
+### React
+- Pro: 4 of 5 developers already know it.
+- Pro: the data grid we need exists today.
+- Con: largest bundle at 142 KB.
+
+### Vue
+- Pro: good form and table ecosystem.
+- Pro: smaller bundle at 98 KB.
+- Con: only 1 developer knows it.
+
+### Svelte
+- Pro: smallest bundle at 41 KB.
+- Pro: favorite in the prototype spike.
+- Con: no one on the team knows it.
+- Con: small hiring pool and a fair ecosystem.
+
+# Recommendation
+
+! Choose **React**, mainly because four of the five developers already know it and the data grid we need exists today.
+
+> We are optimizing for the next five years of maintenance, not the first five weeks of building.
+> — Hannah Osei, guild lead
+
+Svelte was the favorite in the prototype spike, and we will revisit it for smaller tools.

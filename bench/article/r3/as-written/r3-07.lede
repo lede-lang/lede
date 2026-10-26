@@ -1,0 +1,105 @@
+@title Departures Board: Status-Change Motion
+@subtitle Recommended starting timings for delay, platform change, cancellation and new departure, with the reasoning and the values to hand to developers
+@width wide
+
+! This page is a written motion spec with timelines, not a live prototype. Every number marked "proposed" is my recommendation, not a value from your spec sheet. Change any of them in the tables below and the timelines follow.
+
+## The limits the motion has to respect
+
+kpi Viewing distance | 5 to 30 m | text must stay legible mid-motion
+kpi Passengers over 65 | 1 in 4 | slower, calmer motion
+kpi Peak changes | 6 per min | about one every 10 s
+kpi Max rows animating | 3 | more drops frames on the hardware
+
+Two more rules shape every choice. Reduced-motion mode never moves anything; it only changes color or opacity. The boarding dot blinks at 1 Hz (1,000 ms) per the accessibility review, so it stays as it is. Brand colors: deep teal #0E4D5C, signal amber #F2A900, signal red #C8102E.
+
+## What the spec sheet says today
+
+data components = Component,Size (px),Current Motion,Duration (ms),Notes; Row container,1920 x 96,none,0,"14 rows visible, scrolls when more"; Platform badge,72 x 72,instant swap,0,"Needs to draw the eye; “Platform 4” changes most"; Destination text,640 x 56,instant swap,0,"Names such as St. Pancras Int'l, Llanfairpwllgwyngyll (long!)"; Scheduled time,160 x 56,none,0,"24-hour, monospaced digits"; Expected time,160 x 56,fade,150,Turns amber when delayed; Status pill,220 x 48,instant swap,0,On time / Delayed / Cancelled / Boarding; Delay minutes,120 x 48,none,,Shows “+12 min”; Boarding indicator,24 x 24,blink,"1,000","Green dot; 1 Hz per accessibility review"; Cancelled strike-through,1100 x 4,none,0,Draws across the row; Row reorder (new departure inserted),1920 x 96,jump,0,Rows below shift down 96 px; Alert banner,1920 x 140,slide from top,300,Used for platform changes and evacuations
+
+table components title="Component inventory and current motion"
+
+Delay minutes has no duration in the spec sheet. I propose 200 ms (below).
+
+## Recommendation in one paragraph
+
+Change one thing at a time and make the order do the work. The eye goes to what moves first, so the most important element in each change type moves first: the status pill for delays and cancellations, the platform badge for platform changes, the new row for insertions. Keep every sequence under about a second so the board never has more than one or two rows busy at the same moment. Use fades and color changes everywhere except the alert banner, the strike-through and the optional row shift. Cancellation uses no flashing, shaking or banner, so it is unmistakable but not alarming.
+
+## Timelines by change type (all values proposed)
+
+data delay = Step,Start,End,Duration,Easing,Reduced motion; Expected time turns amber,0,300,300,ease-out,Same (color change); Status pill cross-fades to Delayed,0,250,250,ease-out,Same (opacity); Delay minutes fade in (“+12 min”),150,350,200,ease-out,Same (opacity)
+
+data platform = Step,Start,End,Duration,Easing,Reduced motion; Platform badge cross-fades to the new number,0,200,200,ease-out,Same (opacity); Platform badge inverts its colors twice,200,1000,800,ease-in-out,"Inverts once and holds 800 ms, no repeat"; Alert banner slides in from top,0,300,300,ease-out,Fades in instead of sliding
+
+data cancel = Step,Start,End,Duration,Easing,Reduced motion; Status pill swaps to Cancelled (signal red),0,250,250,ease-out,Same (color or opacity); Strike-through draws left to right,150,750,600,ease-out,"Appears by opacity fade, 200 ms, not drawn"; Expected time fades to 40% opacity,300,450,150,ease-out,Same (opacity)
+
+data insert = Step,Start,End,Duration,Easing,Reduced motion; New row fades in (rows below jump 96 px at 0 ms),0,300,300,ease-out,Same (opacity); New row teal tint fades out,300,1300,1000,ease-out,Same (opacity)
+
+grid 2 count=4
+chart range delay from=Start to=End title="Delay (ms)" unit=ms
+chart range platform from=Start to=End title="Platform change (ms)" unit=ms
+chart range cancel from=Start to=End title="Cancellation (ms)" unit=ms
+chart range insert from=Start to=End title="New departure inserted, recommended default (ms)" unit=ms
+
+### Delay
+
+table delay
+
+Why: the amber on Expected time is the existing signal for lateness, so it leads. I lengthen its fade from the current 150 ms to 300 ms so a viewer 30 m away can catch it. The delay minutes arrive 150 ms later so the eye reads "late" first and "by how much" second.
+
+### Platform change
+
+table platform
+
+Why: "Platform 4" changes most, and the badge has to draw the eye. A two-pulse color inversion uses only brand colors. I avoid amber here on purpose, because amber already means "delayed" on the same row. The alert banner is the existing mechanism for platform changes; its hold time is not in the spec sheet, so I have not proposed one.
+
+### Cancellation
+
+table cancel
+
+Why: the red pill and the 1,100 px strike-through carry the message. Drawing the strike-through over 600 ms shows it happening without a snap. No blinking, no shake, no banner: the banner is reserved for platform changes and evacuations, and using it here would make a single cancelled train look like an emergency.
+
+## New departure inserted: the hardware problem
+
+The spec says rows below shift down 96 px. With 14 rows visible, up to 13 rows would move at once, and the screens drop frames above 3 animating rows. So the obvious animation cannot be assumed safe.
+
+cards
+
+### Option A: slide the rows together
+
+Move all rows below the insertion as one grouped layer, one 250 ms transform. Looks the best and keeps passengers oriented. It counts as one animation only if the board's renderer really treats the group as a single layer; this has to be tested on the real hardware first.
+
+### Option B: jump the rows, highlight the new one (recommended default)
+
+Rows below jump 96 px instantly, as they do now. The new row fades in over 300 ms and carries a teal tint that fades over 1,000 ms. Safe on cheap hardware. The jump is the part passengers already miss, so the tint has to do the noticing.
+
+data insertA = Step,Start,End,Duration,Easing,Reduced motion; Rows below slide down 96 px as one group,0,250,250,ease-in-out,"Instant jump, no slide"; New row fades in,200,500,300,ease-out,Same (opacity); New row teal tint fades out,500,1300,800,ease-out,Same (opacity)
+
+chart range insertA from=Start to=End title="Option A timeline (ms)" unit=ms
+table insertA title="Option A values (proposed)"
+
+## Easing curves (proposed)
+
+data easing = Use,Curve,Why; Things that appear or change value,"ease-out, cubic-bezier(0.2, 0, 0, 1)","Fast start so the change registers, soft landing so it does not look jumpy"; Things that move or reverse,"ease-in-out, cubic-bezier(0.4, 0, 0.2, 1)","Symmetrical, suits the slide and the badge inversion"; Banner leaving,"ease-in, cubic-bezier(0.4, 0, 1, 1)","Leaves slowly then clears; only if you add an exit"
+
+table easing
+
+## Orders of events and the 3-row limit
+
+At 6 changes per minute at peak, a change starts about every 10 seconds on average, and the longest proposed sequence is 1,300 ms. Two changes overlapping is rare and three at once should almost never happen, but a burst (one disruption touching many trains) can do it. Proposed rule: queue any change that would make a 4th row animate, and start it when one of the three finishes.
+
+- Delay and cancellation touch one row each.
+- Platform change touches one row plus the banner, which sits outside the row count.
+- New departure touches one row (Option B) or one row plus one grouped layer (Option A).
+- If a train is delayed and its platform changes in the same second, run the platform sequence first; the badge is the more urgent action for the passenger.
+
+## Reduced-motion version
+
+Every table above has a Reduced motion column. The principle: no slide, no scale, no draw. Opacity and color only. Two things to settle with accessibility:
+
+- Inserting a row moves the rows below it by necessity. In reduced-motion mode that is an instant jump, not an animation. Confirm that is acceptable.
+- The 1 Hz boarding blink changes only opacity. I have left it as is; confirm it stays in reduced-motion mode.
+
+## What I did not cover
+
+The destination text (including the long names such as Llanfairpwllgwyngyll) and the scheduled time do not change in any of these four events, so they have no timings. The scrolling of the row container when more than 14 rows are scheduled is not covered either.

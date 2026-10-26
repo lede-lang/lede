@@ -1,0 +1,61 @@
+{
+  "id": "100-arts-center-campaign",
+  "category": "status",
+  "title": "Riverside Arts Center campaign progress",
+  "brief": "The Riverside Arts Center needs a progress page for its capital campaign for the new studio wing, for donors, as of 2026-10-16. Open with \"Progress\" for the headline numbers: the goal is 4.5 million dollars and 3.18 million has been raised (70.7 percent), so 1.32 million is still to go. There are 412 donors and the largest single gift is 500000 dollars. The campaign closes on 2027-03-31. Under \"Gifts by level\", show the number of gifts and the total raised at each level: 100000 and up, 6 gifts, 1.62 million; 25000 to 99999, 18 gifts, 0.84 million; 1000 to 24999, 129 gifts, 0.52 million; under 1000, 259 gifts, 0.20 million. Under \"What comes next\": the Delmar Foundation will match up to 250000 dollars of new gifts if 150 new donors give by 2026-12-15, the donor evening is on 2026-11-21, and 3 naming opportunities (studio rooms) are still open. Short and warm; people will read it on their phones.",
+  "checklist": {
+    "sections": [
+      "Progress",
+      "Gifts by level",
+      "What comes next"
+    ],
+    "visible": [
+      "Riverside Arts Center",
+      "Delmar Foundation",
+      "donors",
+      "naming opportunities"
+    ],
+    "values": [
+      "4.5",
+      "3.18",
+      "70.7",
+      "1.32",
+      "412",
+      "500000",
+      "2027-03-31",
+      "100000",
+      "25000",
+      "99999",
+      "129",
+      "259",
+      "1.62",
+      "0.84",
+      "0.52",
+      "0.20",
+      "250000",
+      "150 new donors",
+      "2026-12-15",
+      "2026-11-21"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "table",
+    "chart",
+    "list"
+  ],
+  "edit": {
+    "request": "Raised is now 3.31 million (73.6 percent of the goal), so 1.19 million is still to go, and there are 421 donors.",
+    "expect_visible": [],
+    "expect_values": [
+      "3.31",
+      "73.6",
+      "1.19",
+      "421"
+    ],
+    "expect_absent": [
+      "3.18",
+      "1.32"
+    ]
+  }
+}

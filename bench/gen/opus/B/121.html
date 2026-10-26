@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Heat-Wave Demand Emergency Runbook · Northgrid Electric</title>
+<style>
+:root{--bg:#f6f6f3;--surface:#ffffff;--ink:#1a1c20;--muted:#5a606a;--line:#e1e2e6;--accent:#1d5fbf;--danger:#b42318;--danger-bg:#fdecea;--warn:#9a5800;--warn-bg:#fff3dc;--ok:#1d7745;--ok-bg:#e6f4ec;--s1:#e8b33a;--s2:#e0782c;--s3:#c7362b;--normal:#9cc7a8}
+@media (prefers-color-scheme:dark){:root{--bg:#111316;--surface:#1a1d22;--ink:#e8eaee;--muted:#9da3ad;--line:#2d313a;--accent:#7eabff;--danger:#ff8f85;--danger-bg:#3a1c1a;--warn:#f2b55c;--warn-bg:#35280f;--ok:#72d39c;--ok-bg:#15301f;--s1:#d6a02b;--s2:#d46d22;--s3:#d24a3e;--normal:#3f7a52}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:28px 16px 64px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:650}
+h1{font-size:clamp(1.65rem,4.6vw,2.3rem);line-height:1.15;margin:.35rem 0 .7rem}
+h2{font-size:1.22rem;margin:0 0 .85rem;line-height:1.3}
+h3{font-size:1rem;margin:0 0 .4rem}
+.meta{display:flex;flex-wrap:wrap;gap:6px 20px;color:var(--muted);font-size:.9rem;margin:0;padding:0;list-style:none}
+.meta b{color:var(--ink);font-weight:600}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;margin-top:18px}
+.alert{display:flex;gap:14px;align-items:flex-start;background:var(--danger-bg);border:1px solid var(--danger);border-left-width:6px;border-radius:12px;padding:16px 18px;margin-top:22px}
+.alert svg{flex:none;margin-top:2px}
+.alert strong{display:block;color:var(--danger);font-size:1.05rem;margin-bottom:2px}
+.alert p{margin:0}
+p{margin:.2rem 0 .8rem}
+.note{color:var(--muted);font-size:.92rem}
+.scale{margin:6px 0 4px}
+.bar{display:flex;height:22px;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.bar span{display:block;height:100%}
+.ticks{position:relative;height:24px;font-size:.78rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.ticks div{position:absolute;top:4px;transform:translateX(-50%);text-align:center;white-space:nowrap;line-height:1.2}
+.ticks div:first-child{transform:none}
+.ticks div:last-child{transform:translateX(-100%);text-align:right}
+.stages{display:grid;gap:12px;margin-top:10px}
+.stage{border:1px solid var(--line);border-radius:12px;padding:14px 16px;border-top:5px solid var(--c)}
+.stage header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px;margin-bottom:6px}
+.stage .lvl{font-weight:700;font-size:1.05rem}
+.stage .thr{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.92rem}
+.stage ul{margin:0;padding-left:1.15rem}
+.stage li{margin:.25rem 0}
+ol.steps{list-style:none;counter-reset:s;margin:0;padding:0}
+ol.steps>li{counter-increment:s;position:relative;padding:0 0 18px 48px}
+ol.steps>li:last-child{padding-bottom:0}
+ol.steps>li::before{content:counter(s);position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--surface);font-weight:700;display:grid;place-items:center}
+ol.steps>li::after{content:"";position:absolute;left:16px;top:38px;bottom:4px;width:2px;background:var(--line)}
+ol.steps>li:last-child::after{display:none}
+ol.steps h3{padding-top:5px}
+ol.sub{list-style:lower-alpha;margin:0;padding-left:1.2rem}
+ol.sub li{margin:.25rem 0}
+.mark{background:var(--danger-bg);color:var(--danger);font-weight:600;padding:0 4px;border-radius:4px}
+.when{display:grid;gap:10px}
+.when div{display:flex;gap:10px;align-items:flex-start}
+.when .ic{flex:none;width:26px;height:26px;border-radius:50%;background:var(--warn-bg);color:var(--warn);display:grid;place-items:center;font-weight:700;font-size:.85rem}
+dl.contacts{display:grid;grid-template-columns:1fr;gap:10px;margin:0}
+dl.contacts div{border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+dl.contacts dt{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+dl.contacts dd{margin:2px 0 0;font-weight:600;font-size:1.05rem}
+footer{margin-top:26px;color:var(--muted);font-size:.85rem;text-align:center}
+@media (min-width:700px){.stages{grid-template-columns:repeat(3,1fr)}dl.contacts{grid-template-columns:repeat(3,1fr)}.card{padding:24px 26px}}
+@media print{body{background:#fff}.card{break-inside:avoid}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="eyebrow">Northgrid Electric · System Operations · Runbook</div>
+  <h1>Heat-wave demand emergencies</h1>
+  <ul class="meta">
+    <li>For: <b>On-duty system operator</b></li>
+    <li>Version: <b>2026-10-10</b></li>
+    <li>Available supply: <b>5,200 MW</b></li>
+  </ul>
+
+  <div class="alert" role="alert">
+    <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 1 21h22L12 2z" fill="var(--danger)"/><path d="M12 9v5" stroke="var(--surface)" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17.5" r="1.3" fill="var(--surface)"/></svg>
+    <div>
+      <strong>Never switch off critical sites</strong>
+      <p>Hospitals, the 911 center and water pumping stations must <b>never</b> be switched off, at any stage, in any block. Confirm they are excluded before opening a single feeder.</p>
+    </div>
+  </div>
+
+  <section class="card" id="when">
+    <h2>When to use</h2>
+    <div class="when">
+      <div><span class="ic">!</span><p style="margin:0">Use this runbook when the <b>day-ahead forecast or live demand reaches 92% of available supply</b> (4,784 MW).</p></div>
+      <div><span class="ic">✓</span><p style="margin:0">A stage is declared by the <b>Duty Director</b>, never by a single operator.</p></div>
+    </div>
+  </section>
+
+  <section class="card" id="stages">
+    <h2>Stages</h2>
+    <div class="scale" role="img" aria-label="Demand scale from 4,000 to 5,200 megawatts: normal below 4,784, Stage 1 from 4,784, Stage 2 from 5,044, Stage 3 at 5,200.">
+      <div class="bar">
+        <span style="width:65.33%;background:var(--normal)"></span>
+        <span style="width:21.67%;background:var(--s1)"></span>
+        <span style="width:13%;background:var(--s2)"></span>
+      </div>
+      <div class="ticks" aria-hidden="true">
+        <div style="left:0">4,000 MW</div>
+        <div style="left:65.33%">4,784</div>
+        <div style="left:100%">5,200 MW</div>
+      </div>
+    </div>
+    <p class="note"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--normal)"></span> Normal &nbsp; <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--s1)"></span> Stage 1 from 4,784 MW &nbsp; <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--s2)"></span> Stage 2 from 5,044 MW &nbsp; Stage 3 at 5,200 MW, when demand reaches all available supply.</p>
+
+    <div class="stages">
+      <article class="stage" style="--c:var(--s1)">
+        <header><span class="lvl">Stage 1</span><span class="thr">92% · 4,784 MW</span></header>
+        <ul>
+          <li>Issue a conservation alert by text and app to <b>380,000 customers</b>.</li>
+          <li>Ask large industrial customers on interruptible contracts to get ready to reduce load on <b>30 minutes'</b> notice.</li>
+          <li>Confirm standby generation at <b>3 peaking plants</b> can start within <b>20 minutes</b>.</li>
+        </ul>
+      </article>
+      <article class="stage" style="--c:var(--s2)">
+        <header><span class="lvl">Stage 2</span><span class="thr">97% · 5,044 MW</span></header>
+        <ul>
+          <li>Call the demand response program (delivers about <b>210 MW</b>).</li>
+          <li>Start buying emergency imports from the neighboring utility.</li>
+          <li>Brief the regulator by phone.</li>
+        </ul>
+      </article>
+      <article class="stage" style="--c:var(--s3)">
+        <header><span class="lvl">Stage 3</span><span class="thr">100% · 5,200 MW</span></header>
+        <ul>
+          <li>Begin rotating outages in <b>blocks A to L</b>, in order.</li>
+          <li>Each block is off for at most <b>60 minutes</b>.</li>
+          <li>Never repeat a block before all <b>twelve</b> have been used.</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="card" id="rotating">
+    <h2>Steps for rotating outages</h2>
+    <ol class="steps">
+      <li>
+        <h3>Get approval</h3>
+        <ol class="sub">
+          <li>The Duty Director approves in the log.</li>
+          <li>The regulator is told within <b>30 minutes</b>.</li>
+        </ol>
+      </li>
+      <li>
+        <h3>Protect critical sites</h3>
+        <ol class="sub">
+          <li>Confirm that <span class="mark">hospitals, the 911 center and water pumping stations</span> are excluded.</li>
+          <li>Check that the exclusion list was updated this month.</li>
+        </ol>
+      </li>
+      <li>
+        <h3>Run the blocks</h3>
+        <ol class="sub">
+          <li>Open the first block's feeders.</li>
+          <li>Restore it after <b>60 minutes</b> at most and open the next.</li>
+          <li>Update the public outage map every <b>15 minutes</b>.</li>
+        </ol>
+      </li>
+      <li>
+        <h3>Stand down</h3>
+        <ol class="sub">
+          <li>End rotating outages when demand stays below <b>95%</b> for <b>60 minutes</b>.</li>
+          <li>Restore all blocks.</li>
+          <li>File the event report within <b>24 hours</b>.</li>
+        </ol>
+      </li>
+    </ol>
+  </section>
+
+  <section class="card" id="contacts">
+    <h2>Contacts</h2>
+    <dl class="contacts">
+      <div><dt>Duty Director</dt><dd>Lorenzo Baptiste</dd></div>
+      <div><dt>Regulator liaison</dt><dd>Dagny Holt</dd></div>
+      <div><dt>Communications on call</dt><dd>Femi Adeyemi</dd></div>
+    </dl>
+  </section>
+
+  <footer>Northgrid Electric System Operations · Heat-wave demand emergency runbook · Version 2026-10-10</footer>
+</main>
+</body>
+</html>

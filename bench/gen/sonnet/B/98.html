@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orion 5.0 Release Readiness</title>
+<style>
+:root{
+  --bg:#f5f6f9;--surface:#ffffff;--ink:#181c27;--muted:#5a6272;--line:#dde1ea;
+  --accent:#2750c7;--accent-soft:#e8edfb;--track:#e4e8ef;
+  --met:#1b7a46;--met-bg:#e4f4ea;
+  --no:#b3261e;--no-bg:#fdeceb;
+  --risk:#8a5a00;--risk-bg:#fff1cc;
+  --track-ok:#2f9e63;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1118;--surface:#161a23;--ink:#e8ebf3;--muted:#9ba3b4;--line:#272c39;
+    --accent:#8fa8f5;--accent-soft:#1a2340;--track:#262c3a;
+    --met:#6fd498;--met-bg:#12281b;
+    --no:#ff9a94;--no-bg:#331614;
+    --risk:#f2c25b;--risk-bg:#2c2410;
+    --track-ok:#4fbf82;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:18px 16px 48px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:8px 0 4px}
+h1{font-size:1.6rem;line-height:1.2;margin:0 0 4px}
+.asof{color:var(--muted);margin:0 0 16px;font-size:.92rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 14px}
+.hero .big{font-size:2.8rem;font-weight:800;line-height:1;color:var(--accent);font-variant-numeric:tabular-nums}
+.hero .big small{font-size:1.2rem;font-weight:700;color:var(--muted)}
+.hero .lbl{color:var(--muted);font-size:.95rem;margin:2px 0 0}
+.segs{display:grid;grid-template-columns:repeat(9,1fr);gap:4px;margin:12px 0 0}
+.segs i{height:14px;border-radius:4px;background:var(--track)}
+.segs i.m{background:var(--track-ok)}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 14px}
+.facts div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+.facts .k{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700}
+.facts .v{font-size:1.2rem;font-weight:800;line-height:1.25;font-variant-numeric:tabular-nums}
+@media (max-width:480px){.facts{grid-template-columns:1fr}.facts div{display:flex;justify-content:space-between;align-items:baseline;gap:10px}}
+h2{font-size:1.2rem;margin:26px 0 10px;line-height:1.3}
+.cl{list-style:none;margin:0;padding:0}
+.cl li{background:var(--surface);border:1px solid var(--line);border-left-width:6px;border-radius:12px;padding:12px 14px;margin:0 0 10px}
+.cl li.met{border-left-color:var(--met)}
+.cl li.not{border-left-color:var(--no)}
+.cl li.risk{border-left-color:var(--risk)}
+.cl li.track{border-left-color:var(--met)}
+.cl .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.cl .n{font-weight:700}
+.pill{flex:none;font-size:.72rem;font-weight:800;border-radius:999px;padding:2px 10px;text-transform:uppercase;letter-spacing:.04em}
+.pill.met{background:var(--met-bg);color:var(--met)}
+.pill.not{background:var(--no-bg);color:var(--no)}
+.pill.risk{background:var(--risk-bg);color:var(--risk)}
+.pill.track{background:var(--accent-soft);color:var(--accent)}
+.cl dl{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin:8px 0 0;font-size:.92rem}
+.cl dt{color:var(--muted)}
+.cl dd{margin:0;font-weight:600}
+.cl li.not dd.cur{color:var(--no)}
+.cl li.risk dd.cur{color:var(--risk)}
+.gap{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 10px}
+.gap .n{font-weight:700;display:block}
+.gap .m{font-size:.92rem;color:var(--muted)}
+.gap .due{display:inline-block;margin-top:4px;font-size:.8rem;font-weight:800;background:var(--accent-soft);color:var(--accent);border-radius:6px;padding:1px 8px}
+.dec{border:2px solid var(--accent);background:var(--accent-soft);border-radius:14px;padding:16px;margin:0 0 14px}
+.dec .opt{background:var(--surface);border-radius:10px;padding:12px 14px;margin:10px 0 0}
+.dec .opt b{display:block}
+.dec .go b{color:var(--met)}
+.dec .slip b{color:var(--risk)}
+.dec p{margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Orion mobile app &middot; Release manager: Lorenzo Baptiste</p>
+  <h1>Orion 5.0 release readiness</h1>
+  <p class="asof">As of 2026-10-16, for the go/no-go meeting on 2026-10-22 at 10:00. Target release: 2026-10-27.</p>
+
+  <div class="card hero">
+    <div class="big">5 <small>of 9 criteria met</small></div>
+    <div class="segs" role="img" aria-label="5 of 9 release criteria met">
+      <i class="m"></i><i class="m"></i><i class="m"></i><i class="m"></i><i class="m"></i><i></i><i></i><i></i><i></i>
+    </div>
+    <p class="lbl" style="margin-top:8px">Two are not met, one is at risk, one is on track.</p>
+  </div>
+
+  <div class="facts">
+    <div><div class="k">Beta testers active</div><div class="v">8,200</div></div>
+    <div><div class="k">Go/no-go meeting</div><div class="v">2026-10-22</div></div>
+    <div><div class="k">Target release</div><div class="v">2026-10-27</div></div>
+  </div>
+
+  <h2>Readiness checklist</h2>
+  <ul class="cl">
+    <li class="met">
+      <div class="row"><span class="n">Feature complete</span><span class="pill met">Met</span></div>
+      <dl><dt>Current</dt><dd class="cur">Yes</dd><dt>Required</dt><dd>Yes</dd></dl>
+    </li>
+    <li class="met">
+      <div class="row"><span class="n">Open P1 bugs</span><span class="pill met">Met</span></div>
+      <dl><dt>Current</dt><dd class="cur">0</dd><dt>Required</dt><dd>0</dd></dl>
+    </li>
+    <li class="not">
+      <div class="row"><span class="n">Open P2 bugs</span><span class="pill not">Not met</span></div>
+      <dl><dt>Current</dt><dd class="cur">6</dd><dt>Required</dt><dd>At most 5</dd></dl>
+    </li>
+    <li class="not">
+      <div class="row"><span class="n">Beta crash-free sessions</span><span class="pill not">Not met</span></div>
+      <dl><dt>Current</dt><dd class="cur">99.4%</dd><dt>Required</dt><dd>At least 99.5%</dd></dl>
+    </li>
+    <li class="met">
+      <div class="row"><span class="n">Accessibility audit</span><span class="pill met">Met</span></div>
+      <dl><dt>Current</dt><dd class="cur">Passed on 2026-10-09</dd><dt>Required</dt><dd>Pass</dd></dl>
+    </li>
+    <li class="risk">
+      <div class="row"><span class="n">Languages complete</span><span class="pill risk">At risk</span></div>
+      <dl><dt>Current</dt><dd class="cur">14 of 16</dd><dt>Required</dt><dd>16 of 16</dd></dl>
+    </li>
+    <li class="met">
+      <div class="row"><span class="n">Load test at 3 times peak</span><span class="pill met">Met</span></div>
+      <dl><dt>Current</dt><dd class="cur">Passed</dd><dt>Required</dt><dd>Pass</dd></dl>
+    </li>
+    <li class="met">
+      <div class="row"><span class="n">Rollback rehearsed</span><span class="pill met">Met</span></div>
+      <dl><dt>Current</dt><dd class="cur">Yes</dd><dt>Required</dt><dd>Yes</dd></dl>
+    </li>
+    <li class="track">
+      <div class="row"><span class="n">App store submission</span><span class="pill track">On track</span></div>
+      <dl><dt>Current</dt><dd class="cur">Scheduled for 2026-10-20</dd><dt>Required</dt><dd>Submitted by 2026-10-21</dd></dl>
+    </li>
+  </ul>
+
+  <h2>Gaps to close</h2>
+  <div class="gap">
+    <span class="n">Open P2 bugs</span>
+    <span class="m">Owner: Hannah Weiss</span><br>
+    <span class="due">Due 2026-10-21</span>
+  </div>
+  <div class="gap">
+    <span class="n">Crash-free sessions</span>
+    <span class="m">Owner: Ibrahim Sesay</span><br>
+    <span class="due">Due 2026-10-21</span>
+  </div>
+  <div class="gap">
+    <span class="n">The two missing languages (Thai and Hebrew)</span>
+    <span class="m">Owner: Chloe Dubois</span><br>
+    <span class="due">Due 2026-10-20</span>
+  </div>
+
+  <h2>Decision</h2>
+  <div class="dec">
+    <p><strong>We recommend a conditional go</strong>, depending on whether all three gaps are closed by 2026-10-21.</p>
+    <div class="opt go"><b>If all three gaps are closed by 2026-10-21</b>Go, and release on 2026-10-27.</div>
+    <div class="opt slip"><b>Otherwise</b>Slip the release by one week to 2026-11-03.</div>
+  </div>
+</div>
+</body>
+</html>

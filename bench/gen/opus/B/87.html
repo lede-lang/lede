@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Home-Office Stipend Policy</title>
+<style>
+:root{
+  --bg:#f6f5fa;--surface:#ffffff;--text:#1e1d2b;--muted:#5f5d72;--line:#e4e2ee;
+  --accent:#6a4bc4;--accent-soft:#efeafc;--ok:#23845a;--ok-soft:#e4f4ec;--no:#c2453a;--no-soft:#fbe9e7;--warn:#9a6a00;--warn-soft:#fdf3d8;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#121119;--surface:#1b1a25;--text:#ebeaf3;--muted:#a9a6bd;--line:#2d2b3c;
+    --accent:#a993f2;--accent-soft:#272140;--ok:#5fcf98;--ok-soft:#173226;--no:#f08378;--no-soft:#3a1d1b;--warn:#f0c55a;--warn-soft:#352b12;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:26px 16px 56px}
+.kicker{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 6px}
+h1{font-size:clamp(1.7rem,6vw,2.4rem);line-height:1.15;margin:0 0 10px}
+.dek{color:var(--muted);margin:0 0 14px}
+.effective{display:inline-flex;align-items:center;gap:8px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:.88rem;border-radius:999px;padding:5px 12px;margin:0 0 22px}
+.summary{display:grid;grid-template-columns:1fr;gap:10px;margin:0 0 22px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.card .n{display:block;font-size:1.8rem;font-weight:750;line-height:1.1;color:var(--accent);font-variant-numeric:tabular-nums}
+.card .n small{font-size:1rem;font-weight:600;color:var(--muted)}
+.card .l{display:block;font-size:.92rem;margin-top:4px}
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:0 0 18px}
+nav.toc p{margin:0 0 6px;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+nav.toc ol{margin:0;padding-left:20px;columns:1}
+nav.toc a{color:var(--accent);text-decoration:none}
+nav.toc a:hover{text-decoration:underline}
+section{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 18px;margin:0 0 16px;scroll-margin-top:12px}
+h2{font-size:1.25rem;margin:0 0 12px;display:flex;align-items:center;gap:10px}
+h2 .num{flex:none;width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:.9rem;display:inline-flex;align-items:center;justify-content:center}
+p{margin:0 0 12px}
+section p:last-child{margin-bottom:0}
+.checks{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-direction:column;gap:10px}
+.checks li{display:flex;gap:10px;align-items:flex-start}
+.ic{flex:none;width:22px;height:22px;margin-top:2px}
+.ic.ok circle{fill:var(--ok-soft)}.ic.ok path{stroke:var(--ok)}
+.ic.no circle{fill:var(--no-soft)}.ic.no path{stroke:var(--no)}
+.ic path{fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.callout{border-radius:10px;padding:12px 14px;font-size:.95rem;margin:12px 0 0}
+.callout.info{background:var(--accent-soft)}
+.callout.warn{background:var(--warn-soft)}
+.callout b{color:inherit}
+.amounts{width:100%;border-collapse:collapse;font-size:.95rem;margin:4px 0 0;font-variant-numeric:tabular-nums}
+.amounts th,.amounts td{padding:10px 6px;border-bottom:1px solid var(--line);text-align:left}
+.amounts th{font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.amounts td.r,.amounts th.r{text-align:right}
+.amounts tr:last-child td{border-bottom:0}
+.items{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.items li{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-weight:600}
+.items svg{flex:none;width:26px;height:26px}
+.items svg *{fill:none;stroke:var(--accent);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s}
+.steps li{position:relative;padding:0 0 18px 44px;counter-increment:s}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.92rem}
+@media (prefers-color-scheme:dark){.steps li::before{color:#1b1a25}}
+.steps li::after{content:"";position:absolute;left:14px;top:34px;bottom:4px;width:2px;background:var(--line)}
+.steps li:last-child{padding-bottom:0}
+.steps li:last-child::after{display:none}
+.steps b{display:block}
+.steps span{color:var(--muted);font-size:.95rem}
+.help{background:var(--accent);color:#fff;border-radius:14px;padding:20px 18px;margin-top:22px}
+@media (prefers-color-scheme:dark){.help{background:#2c2550;color:#ebeaf3}}
+.help h2{color:inherit;margin-bottom:6px}
+.help a{color:inherit;font-weight:700}
+.help p{margin:0}
+footer{color:var(--muted);font-size:.82rem;text-align:center;margin-top:20px}
+@media (min-width:600px){
+  .summary{grid-template-columns:repeat(3,minmax(0,1fr))}
+  section{padding:24px 26px}
+  .items{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="kicker">Larkspur Analytics &middot; People Operations</p>
+  <h1>Home-office stipend</h1>
+  <p class="dek">Everything you need to know about getting your home workspace set up and paid for &mdash; no ticket required.</p>
+  <span class="effective">Effective 1 January 2027</span>
+</header>
+
+<div class="summary" aria-label="Summary">
+  <div class="card"><span class="n">$500</span><span class="l">one-time setup stipend, available again after 3 years</span></div>
+  <div class="card"><span class="n">$40 <small>/ month</small></span><span class="l">toward your internet and phone</span></div>
+  <div class="card"><span class="n">50%</span><span class="l">of these amounts for part-time employees</span></div>
+</div>
+
+<nav class="toc" aria-label="On this page">
+  <p>On this page</p>
+  <ol>
+    <li><a href="#who">Who is covered</a></li>
+    <li><a href="#what-you-get">What you get</a></li>
+    <li><a href="#buy">What you can buy</a></li>
+    <li><a href="#claim">How to claim</a></li>
+    <li><a href="#not-covered">What is not covered</a></li>
+  </ol>
+</nav>
+
+<section id="who" aria-labelledby="h-who">
+  <h2 id="h-who"><span class="num">1</span>Who is covered</h2>
+  <p>You can use the stipend if both of these are true:</p>
+  <ul class="checks">
+    <li><svg class="ic ok" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="11"/><path d="M6.5 11.5l3 3 6-6.5"/></svg><span>You work from home <b>at least 3 days a week</b>.</span></li>
+    <li><svg class="ic ok" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="11"/><path d="M6.5 11.5l3 3 6-6.5"/></svg><span>You have completed <b>90 days of service</b>.</span></li>
+  </ul>
+  <p class="callout info"><b>Part-time?</b> You&rsquo;re covered too. Part-time employees receive 50 percent of the amounts below.</p>
+</section>
+
+<section id="what-you-get" aria-labelledby="h-get">
+  <h2 id="h-get"><span class="num">2</span>What you get</h2>
+  <table class="amounts">
+    <thead><tr><th>Stipend</th><th class="r">Full-time</th><th class="r">Part-time</th></tr></thead>
+    <tbody>
+      <tr><td>One-time setup</td><td class="r">$500</td><td class="r">$250</td></tr>
+      <tr><td>Internet and phone</td><td class="r">$40 / month</td><td class="r">$20 / month</td></tr>
+    </tbody>
+  </table>
+  <p class="callout info">The setup stipend can be used again <b>after 3 years</b>, so you can refresh worn-out equipment.</p>
+</section>
+
+<section id="buy" aria-labelledby="h-buy">
+  <h2 id="h-buy"><span class="num">3</span>What you can buy</h2>
+  <p>Use your setup stipend for the things that make a good workspace:</p>
+  <ul class="items">
+    <li><svg viewBox="0 0 26 26" aria-hidden="true"><path d="M3 9h20M5 9v12M21 9v12M5 14h16"/></svg>Desk</li>
+    <li><svg viewBox="0 0 26 26" aria-hidden="true"><path d="M8 3h10v10H8zM7 13h12v3H7zM9 16l-2 7M17 16l2 7"/></svg>Chair</li>
+    <li><svg viewBox="0 0 26 26" aria-hidden="true"><rect x="3" y="4" width="20" height="13" rx="1.5"/><path d="M13 17v4M8 22h10"/></svg>Monitor</li>
+    <li><svg viewBox="0 0 26 26" aria-hidden="true"><rect x="2" y="8" width="22" height="11" rx="2"/><path d="M6 12h1M10 12h1M14 12h1M18 12h1M8 15.5h10"/></svg>Keyboard</li>
+    <li><svg viewBox="0 0 26 26" aria-hidden="true"><path d="M5 16v-3a8 8 0 0 1 16 0v3M5 15h3v6H5zM18 15h3v6h-3z"/></svg>Headset</li>
+    <li><svg viewBox="0 0 26 26" aria-hidden="true"><path d="M9 3l8 0 3 8H6zM13 11v9M8 23h10"/></svg>Lighting</li>
+  </ul>
+</section>
+
+<section id="claim" aria-labelledby="h-claim">
+  <h2 id="h-claim"><span class="num">4</span>How to claim</h2>
+  <ol class="steps">
+    <li><b>Spending over $250 on one purchase? Ask first.</b><span>Get written approval from your manager before you buy.</span></li>
+    <li><b>Buy your item and keep the receipt.</b><span>You&rsquo;ll need it to claim.</span></li>
+    <li><b>Submit your receipts in the expense portal.</b><span>Do this within 60 days of the purchase date.</span></li>
+    <li><b>Get reimbursed.</b><span>Your money arrives within 10 business days.</span></li>
+  </ol>
+  <p class="callout warn"><b>Don&rsquo;t miss the 60-day window.</b> Receipts need to be in the expense portal within 60 days of purchase.</p>
+</section>
+
+<section id="not-covered" aria-labelledby="h-no">
+  <h2 id="h-no"><span class="num">5</span>What is not covered</h2>
+  <ul class="checks">
+    <li><svg class="ic no" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="11"/><path d="M7.5 7.5l7 7M14.5 7.5l-7 7"/></svg><span>Gaming equipment</span></li>
+    <li><svg class="ic no" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="11"/><path d="M7.5 7.5l7 7M14.5 7.5l-7 7"/></svg><span>Furniture for non-work use</span></li>
+    <li><svg class="ic no" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="11"/><path d="M7.5 7.5l7 7M14.5 7.5l-7 7"/></svg><span>Software subscriptions</span></li>
+    <li><svg class="ic no" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="11"/><path d="M7.5 7.5l7 7M14.5 7.5l-7 7"/></svg><span>Anything the company already supplies</span></li>
+  </ul>
+</section>
+
+<div class="help">
+  <h2>Still have a question?</h2>
+  <p>Email <a href="mailto:finance-help@larkspur.example">finance-help@larkspur.example</a> or ask in the <b>#finance-help</b> channel.</p>
+</div>
+
+<footer>Larkspur Analytics &middot; People Operations &middot; Home-office stipend policy, effective 1 January 2027</footer>
+</div>
+</body>
+</html>

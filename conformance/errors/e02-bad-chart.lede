@@ -1,0 +1,4 @@
+data d = x,y; a,1
+chart pie d
+chart line d y=z
+chart line

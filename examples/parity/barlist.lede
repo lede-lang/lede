@@ -1,0 +1,9 @@
+@title Bar list
+# Bar list
+
+data stores = store,sales; Harbor,109200; Hillside,87500; Midtown,64310; Airport,41980; Mill Road,22040
+data many = item,count; a,1; b,2; c,3; d,4; e,5; f,6; g,7; h,8; i,9
+
+chart hbar stores unit=$ title="Sales by store"
+chart hbar stores unit=$ focus="Harbor" title="Sales, Harbor highlighted"
+chart hbar many title="Nine categories"

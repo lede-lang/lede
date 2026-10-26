@@ -1,0 +1,137 @@
+@title Checkout Outage on October 18
+@subtitle Incident report: 47 minutes on Sunday morning
+@author Incident review team, Customer Platform
+@date 2026-10-19
+
+!!! Customers could not complete a purchase on our website or app for 47 minutes, from 10:12 AM to 10:59 AM Eastern on Sunday, October 18. No customer was charged twice and no payment data was exposed.
+
+kpi Outage length | 47 min | longest this year | bad
+kpi Failed checkout attempts | 27,900 | 67% of attempts | bad
+kpi Orders lost (estimate) | 10,500 | about $672,000 | bad
+kpi Customers charged twice | 0 | confirmed by Finance | good
+
+## In plain terms
+
+Every time a customer clicks Pay, our checkout service borrows one of a fixed number of shared lines to the orders database, saves the order, and hands the line back. We normally allow 200 lines at once. A routine settings change on Sunday morning cut that number to 20. Sunday morning is one of our busiest times, so the 20 lines were used up within minutes and everyone else got an error.
+
+The change was meant for our test environment, which has very little traffic. It was copied into the live settings by mistake. Fixing it took 47 minutes because our usual way of undoing a change refused to run while checkout was unhealthy.
+
+diagram flow dir=LR title="What happens when a customer clicks Pay"
+flow: cust "Customer" user
+flow: site "Website or app" svc
+flow: co "Checkout service" svc
+flow: pool "Shared database lines" svc "Limit was 200, became 20" focus
+flow: db "Orders database" db
+flow: cust -> site : clicks Pay
+flow: site -> co
+flow: co -> pool : needs a line
+flow: pool -> db : saves order
+
+## Impact
+
+data impact = measure,value,note
+data impact += Checkout attempts during the outage,"41,800","Normal Sunday-morning volume"
+data impact += Attempts that failed,"27,900","67%; the rest got through as lines were freed up"
+data impact += Customers who gave up,"10,500","Did not complete an order within 24 hours"
+data impact += Estimated lost sales,"$672,000","10,500 orders at the $64 average order"
+data impact += Support tickets opened,"1,860","Mostly 'my payment failed'; 94% answered within 4 hours"
+data impact += Customers charged twice,0,"Failed attempts never reached the payment step"
+data impact += Payment card data exposed,0,"Not involved in this incident"
+
+table impact
+
+The chart shows the share of checkout attempts that succeeded. It dropped from 99% to about 30% within minutes of the change and stayed there until engineers fixed the setting by hand.
+
+data success = time,rate
+data success += 10:00,99.4
+data success += 10:04,99.3
+data success += 10:08,99.4
+data success += 10:12,99.2
+data success += 10:16,42.0
+data success += 10:20,31.0
+data success += 10:24,30.0
+data success += 10:28,32.0
+data success += 10:32,31.0
+data success += 10:36,33.0
+data success += 10:40,30.0
+data success += 10:44,32.0
+data success += 10:48,31.0
+data success += 10:52,34.0
+data success += 10:56,81.0
+data success += 11:00,99.1
+data success += 11:04,99.4
+
+chart line success x=time y=rate unit=% min=0 max=100 target="99 usual" mark="10:12 Change live" mark="10:52 Fix applied" title="Checkout attempts that succeeded"
+
+## Timeline
+
+All times are Eastern, Sunday October 18.
+
+data timeline = time,what happened,who
+data timeline += 10:12 AM,"A routine settings change is released to all customers at once","Automated release system"
+data timeline += 10:16 AM,"Checkout failures climb as Sunday-morning shoppers arrive","n/a"
+data timeline += 10:19 AM,"Alert fires after failures stay high for 5 minutes; the on-call engineer is paged","Nia Osei"
+data timeline += 10:24 AM,"Incident declared; an incident commander and 4 engineers join","Rafael Mendes"
+data timeline += 10:31 AM,"First fix, undoing the change, is blocked by the release system's safety check","Rafael Mendes"
+data timeline += 10:38 AM,"Cause found: the database line limit is 20, not 200","Nia Osei"
+data timeline += 10:52 AM,"Engineers set the limit back to 200 by hand, bypassing the release system","Nia Osei and Rafael Mendes"
+data timeline += 10:59 AM,"Checkout success is back to 99%; incident closed at 11:30 AM after monitoring","Rafael Mendes"
+
+table timeline
+
+data phases = phase,start,end
+data phases += Not yet noticed,0,7
+data phases += Finding the cause,7,26
+data phases += Fixing,26,40
+data phases += Recovering,40,47
+
+chart range phases from=start to=end unit=min title="Where the 47 minutes went (minutes after 10:12 AM)"
+
+## Why it happened
+
+Three things lined up. Any one of them alone would likely have limited the damage.
+
+1. A test-environment value was copied into the live settings file. The value, 20, is correct for the test environment but far too small for live traffic.
+2. Review did not catch it. The reviewer saw a one-line change and the tool did not show what the live value had been before.
+3. There was no gradual rollout, and no easy undo. The change reached every customer at once, and the release system will not undo a change while checkout is unhealthy, which is exactly when an undo is needed.
+
+Detection was also slower than it should be: the alert waits for 5 minutes of sustained failures, so 7 minutes passed before anyone was paged.
+
+### For engineers: the change
+
+```diff
+# config/prod/checkout-service.yaml
+ database:
+-  pool_max_connections: 200
++  pool_max_connections: 20
+```
+
+```yaml
+# release gate that blocked the rollback
+post_deploy_gate:
+  require: checkout_success_rate >= 95
+  applies_to: [deploy, rollback]
+```
+
+## What we are changing
+
+data actions = action,owner,due,status
+data actions += Live setting restored to 200 and locked against edits outside the release system,Rafael Mendes,Oct 18,Done
+data actions += Page the on-call engineer after 2 minutes of failures instead of 5,Nia Osei,Oct 19,Done
+data actions += Show old and new live values side by side in every settings review,Tessa Lindqvist,Oct 23,In progress
+data actions += Automatically block any setting that cuts a live limit by more than half unless a second person approves,Tessa Lindqvist,Oct 30,In progress
+data actions += Allow an undo even when checkout is unhealthy,Rafael Mendes,Oct 27,In progress
+data actions += Roll out settings to 5% of customers first and to everyone after 10 healthy minutes,Jun Park,Nov 13,In progress
+data actions += Email and a $10 credit to the 10,500 customers who did not complete an order,Customer Support,Oct 22,In progress
+
+table actions
+
+! Progress on every action above is reviewed at the Thursday reliability meeting until all are Done.
+
+## Words used in this report
+
+- **Database lines (connection pool):** the fixed number of simultaneous links between checkout and the orders database.
+- **Release system:** the tool that delivers code and settings changes to the live site.
+- **Rollback (undo):** returning to the previous version of a change.
+- **On-call engineer:** the person who is responsible for answering alerts outside office hours.
+- **Alert:** an automatic message that tells on-call something is wrong.

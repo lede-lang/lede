@@ -1,0 +1,56 @@
+{
+  "id": "76-press-lease-or-buy",
+  "category": "comparison",
+  "title": "Orchard Press: lease or buy the new press",
+  "brief": "Orchard Press has to decide whether to lease or buy a new digital press for its commercial print shop, and the owner, Lucinda Marsh, wants a decision page for the meeting on 2026-11-12. The press prints about 2.4 million pages a month. Two options over a four-year horizon. Buy: purchase price 412000 dollars, service contract 14400 dollars a year (57600 over four years), expected resale value after four years 120000 dollars, so the net four-year cost is 349600 dollars. Lease: 7650 dollars a month for 48 months, which is 367200 dollars, with service included, a deposit of two monthly payments (15300 dollars) and an optional buyout at the end for 95000 dollars. The lease costs 17600 dollars more over four years but needs no large cash outlay. Use the sections \"Options\", \"Four-year cost\", \"Risks\" and \"Recommendation\". Risks: buying ties up cash we need for the new bindery and the resale value is a guess; the lease locks us in for 48 months, although the buyout price is fixed today. We recommend the lease, and the page should say honestly that it costs 17600 dollars more.",
+  "checklist": {
+    "sections": [
+      "Options",
+      "Four-year cost",
+      "Risks",
+      "Recommendation"
+    ],
+    "visible": [
+      "Buy",
+      "Lease",
+      "service contract",
+      "deposit",
+      "buyout",
+      "Lucinda Marsh"
+    ],
+    "values": [
+      "2.4 million",
+      "412000",
+      "14400",
+      "57600",
+      "120000",
+      "349600",
+      "7650",
+      "48 months",
+      "367200",
+      "15300",
+      "95000",
+      "17600",
+      "2026-11-12"
+    ]
+  },
+  "needs": [
+    "table",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "The lessor cut the monthly payment to 7200 dollars. Update the monthly payment and the four-year lease total (345600) everywhere, and the difference, since the lease is now cheaper than buying by 4000 dollars.",
+    "expect_visible": [],
+    "expect_values": [
+      "7200",
+      "345600",
+      "4000"
+    ],
+    "expect_absent": [
+      "367200",
+      "7650"
+    ]
+  }
+}

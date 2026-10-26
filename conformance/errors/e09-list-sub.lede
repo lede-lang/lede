@@ -1,0 +1,7 @@
+Some prose.
+-- orphan after a paragraph
+- parent
+-- fine
+
+-- orphan after a blank line
+\-- escaped is prose

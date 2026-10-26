@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checkout Page Weight, Halved</title>
+<style>
+:root{--bg:#faf7f3;--text:#2a221b;--muted:#74685c;--border:#e8dfd4;--accent:#8a4b22;--accent-soft:#f3e8dd;--stat-bg:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#16120e;--text:#ede5dc;--muted:#ab9e90;--border:#362d24;--accent:#e2a06d;--accent-soft:#2a2018;--stat-bg:#1f1a14}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:18px/1.75 Charter,"Iowan Old Style",Georgia,serif}
+article{max-width:680px;margin:0 auto;padding:48px 16px 72px}
+.kicker{font:700 13px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;text-transform:uppercase;letter-spacing:.09em;color:var(--accent);margin:0 0 12px}
+h1{font-size:clamp(30px,7vw,44px);line-height:1.12;margin:0 0 16px}
+.byline{font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--muted);margin:0 0 32px;padding-bottom:22px;border-bottom:1px solid var(--border)}
+.byline strong{color:var(--text)}
+h2{font-size:24px;line-height:1.3;margin:40px 0 10px}
+p{margin:0 0 18px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:24px 0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.stat{background:var(--stat-bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+.stat .k{font-size:13px;color:var(--muted)}
+.stat .v{font-size:22px;font-weight:700;line-height:1.3}
+.stat .v span{color:var(--muted);font-weight:400;margin:0 4px}
+ol.wins{margin:0 0 18px;padding-left:26px}
+ol.wins li{margin:8px 0;padding-left:4px}
+ol.wins li::marker{color:var(--accent);font-weight:700}
+.cta{margin-top:40px;padding:18px 20px;background:var(--accent-soft);border-radius:10px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px}
+.cta a{color:var(--accent);font-weight:700}
+@media (max-width:420px){.stats{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<article>
+<p class="kicker">Kiln Coffee Roasters Engineering</p>
+<h1>How We Cut Our Checkout Page Weight in Half</h1>
+<p class="byline">By <strong>Sam Whitlock</strong></p>
+
+<p>Checkout is the last page between someone and a bag of fresh coffee, so it should be the fastest page we have. For a long time it was the opposite. This is the story of how we slimmed it down, what worked, and the one idea we had to throw away.</p>
+
+<h2>Where we started</h2>
+<p>When we finally measured it properly, the numbers were a little embarrassing. Our checkout page weighed 1.9 MB, and on a mid-range phone it took 4.8 seconds to become interactive. That is almost five seconds of someone staring at a payment form they can't use yet.</p>
+<p>None of it came from one bad decision. It was years of reasonable additions, each one small on its own, piling up into something heavy. So rather than look for a single culprit, we went through the page piece by piece and asked what each part was costing us.</p>
+
+<div class="stats">
+<div class="stat"><div class="k">Page weight</div><div class="v">1.9 MB<span>→</span>0.9 MB</div></div>
+<div class="stat"><div class="k">Time to interactive</div><div class="v">4.8 s<span>→</span>2.1 s</div></div>
+</div>
+
+<h2>The three big wins</h2>
+<p>Most of the savings came from three changes:</p>
+<ol class="wins">
+<li><strong>We replaced a 310 KB date picker with the native one.</strong> We only used it to choose a delivery date, and the browser's built-in picker does that job well on every device we care about.</li>
+<li><strong>We lazy-loaded the reviews widget.</strong> Reviews are nice to have on checkout, but nobody needs them before the form works. Now they load after the parts people actually came for.</li>
+<li><strong>We served product photos at the size they are displayed.</strong> We had been sending large images and letting the browser shrink them into small thumbnails. Sizing them properly on the server cut a lot of bytes for no visible difference.</li>
+</ol>
+<p>Together with some smaller cleanup, those changes brought the page down to 0.9 MB, and it now becomes interactive in 2.1 seconds on the same mid-range phone.</p>
+
+<h2>What did not work</h2>
+<p>Not every idea survived. We tried inlining all of our styles into the page, on the theory that skipping a separate stylesheet request would speed up the first render. It did help a first visit a little, but it made repeat visits slower. Inlined styles can't be cached on their own, so returning customers downloaded the same CSS every single time. Since a lot of our customers are regulars reordering their favorite beans, that was the wrong trade, and we rolled it back.</p>
+
+<h2>What is next</h2>
+<p>We launched the lighter checkout on 2026-08-04. In the four weeks after launch, mobile conversion rose from 2.6 percent to 3.1 percent. We'd love to say the speedup did all of that, but we can't prove it. Other things change in four weeks too, from seasonal demand to marketing campaigns, so we're treating the result as encouraging rather than conclusive.</p>
+<p>What we are confident about is that a faster checkout is a better checkout. Next, we want to apply the same piece-by-piece review to the rest of the shop, and to keep an eye on page weight so it doesn't creep back up.</p>
+
+<p class="cta">Like this kind of work? <a href="/careers">Come build with us on the Kiln careers page.</a></p>
+</article>
+</body>
+</html>

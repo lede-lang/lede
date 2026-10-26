@@ -1,0 +1,10860 @@
+[
+ {
+  "key": "haiku/C/01",
+  "model": "haiku",
+  "arm": "C",
+  "id": "01",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 939,
+  "tokens": 308,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 17922,
+  "ttfmrTokens": 59,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/02",
+  "model": "haiku",
+  "arm": "C",
+  "id": "02",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1213,
+  "tokens": 430,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 27012,
+  "ttfmrTokens": 78,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9615384615384616,
+   "missSections": [],
+   "missVisible": [
+    "SLO target"
+   ],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/03",
+  "model": "haiku",
+  "arm": "C",
+  "id": "03",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1029,
+  "tokens": 354,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 18734,
+  "ttfmrTokens": 75,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/04",
+  "model": "haiku",
+  "arm": "C",
+  "id": "04",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 558,
+  "tokens": 214,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 23005,
+  "ttfmrTokens": 148,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/05",
+  "model": "haiku",
+  "arm": "C",
+  "id": "05",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1019,
+  "tokens": 324,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 23211,
+  "ttfmrTokens": 73,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/06",
+  "model": "haiku",
+  "arm": "C",
+  "id": "06",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 964,
+  "tokens": 323,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24605,
+  "ttfmrTokens": 58,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/07",
+  "model": "haiku",
+  "arm": "C",
+  "id": "07",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1127,
+  "tokens": 333,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 18436,
+  "ttfmrTokens": 107,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/08",
+  "model": "haiku",
+  "arm": "C",
+  "id": "08",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1574,
+  "tokens": 456,
+  "errors": [
+   "33:168 data-row-width row \"Orders DB,RDS PostgreSQL 16 on db.r6g.xlarge\" has 2 fields; _table1 has 3 columns (Component,Runtime,Purpose)",
+   "33:214 data-row-width row \"Multi-AZ,Stores orders\" has 2 fields; _table1 has 3 columns (Component,Runtime,Purpose)"
+  ],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 25496,
+  "ttfmrTokens": 62,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/09",
+  "model": "haiku",
+  "arm": "C",
+  "id": "09",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1474,
+  "tokens": 445,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 25350,
+  "ttfmrTokens": 53,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/10",
+  "model": "haiku",
+  "arm": "C",
+  "id": "10",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1383,
+  "tokens": 363,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 17921,
+  "ttfmrTokens": 43,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/11",
+  "model": "haiku",
+  "arm": "C",
+  "id": "11",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1534,
+  "tokens": 501,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 18723,
+  "ttfmrTokens": 44,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/12",
+  "model": "haiku",
+  "arm": "C",
+  "id": "12",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1346,
+  "tokens": 388,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24737,
+  "ttfmrTokens": 49,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/13",
+  "model": "haiku",
+  "arm": "C",
+  "id": "13",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "chart",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1277,
+  "tokens": 400,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 29743,
+  "ttfmrTokens": 44,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/14",
+  "model": "haiku",
+  "arm": "C",
+  "id": "14",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1467,
+  "tokens": 399,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 23814,
+  "ttfmrTokens": 54,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/15",
+  "model": "haiku",
+  "arm": "C",
+  "id": "15",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1363,
+  "tokens": 372,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12049,
+  "ttfmrTokens": 43,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/16",
+  "model": "haiku",
+  "arm": "C",
+  "id": "16",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 1368,
+  "tokens": 442,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 19346,
+  "ttfmrTokens": 75,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/17",
+  "model": "haiku",
+  "arm": "C",
+  "id": "17",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 775,
+  "tokens": 217,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11426,
+  "ttfmrTokens": 90,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/18",
+  "model": "haiku",
+  "arm": "C",
+  "id": "18",
+  "category": "runbook",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1688,
+  "tokens": 477,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 18202,
+  "ttfmrTokens": 52,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/19",
+  "model": "haiku",
+  "arm": "C",
+  "id": "19",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "diagram",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1347,
+  "tokens": 357,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 16239,
+  "ttfmrTokens": 87,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/20",
+  "model": "haiku",
+  "arm": "C",
+  "id": "20",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list"
+  ],
+  "srcBytes": 1181,
+  "tokens": 369,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 18134,
+  "ttfmrTokens": 74,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/21",
+  "model": "haiku",
+  "arm": "C",
+  "id": "21",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 1180,
+  "tokens": 342,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 17303,
+  "ttfmrTokens": 60,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/22",
+  "model": "haiku",
+  "arm": "C",
+  "id": "22",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1477,
+  "tokens": 413,
+  "errors": [],
+  "warnings": [
+   "16:126 csv-thousands read \"$1,450\" as one number each; quote numbers that contain commas"
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 16324,
+  "ttfmrTokens": 74,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/23",
+  "model": "haiku",
+  "arm": "C",
+  "id": "23",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1543,
+  "tokens": 458,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 18929,
+  "ttfmrTokens": 83,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/24",
+  "model": "haiku",
+  "arm": "C",
+  "id": "24",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1351,
+  "tokens": 356,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12232,
+  "ttfmrTokens": 70,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/25",
+  "model": "haiku",
+  "arm": "C",
+  "id": "25",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1530,
+  "tokens": 397,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 18726,
+  "ttfmrTokens": 90,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/26",
+  "model": "haiku",
+  "arm": "C",
+  "id": "26",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1610,
+  "tokens": 449,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 19703,
+  "ttfmrTokens": 77,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/27",
+  "model": "haiku",
+  "arm": "C",
+  "id": "27",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 764,
+  "tokens": 213,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11365,
+  "ttfmrTokens": 67,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/28",
+  "model": "haiku",
+  "arm": "C",
+  "id": "28",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1040,
+  "tokens": 346,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24199,
+  "ttfmrTokens": 98,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/29",
+  "model": "haiku",
+  "arm": "C",
+  "id": "29",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1026,
+  "tokens": 393,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 29777,
+  "ttfmrTokens": 109,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/30",
+  "model": "haiku",
+  "arm": "C",
+  "id": "30",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1065,
+  "tokens": 308,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 20736,
+  "ttfmrTokens": 69,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/31",
+  "model": "haiku",
+  "arm": "C",
+  "id": "31",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 1163,
+  "tokens": 419,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24353,
+  "ttfmrTokens": 95,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/32",
+  "model": "haiku",
+  "arm": "C",
+  "id": "32",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1163,
+  "tokens": 371,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24961,
+  "ttfmrTokens": 80,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/33",
+  "model": "haiku",
+  "arm": "C",
+  "id": "33",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1133,
+  "tokens": 357,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 21806,
+  "ttfmrTokens": 98,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/34",
+  "model": "haiku",
+  "arm": "C",
+  "id": "34",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1360,
+  "tokens": 512,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 21080,
+  "ttfmrTokens": 100,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/35",
+  "model": "haiku",
+  "arm": "C",
+  "id": "35",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 2977,
+  "tokens": 665,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 13377,
+  "ttfmrTokens": 114,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/36",
+  "model": "haiku",
+  "arm": "C",
+  "id": "36",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 846,
+  "tokens": 219,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11186,
+  "ttfmrTokens": 45,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9285714285714286,
+   "missSections": [],
+   "missVisible": [
+    "Grace Mbeki"
+   ],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/37",
+  "model": "haiku",
+  "arm": "C",
+  "id": "37",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1506,
+  "tokens": 369,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11915,
+  "ttfmrTokens": 94,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/38",
+  "model": "haiku",
+  "arm": "C",
+  "id": "38",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1749,
+  "tokens": 415,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12254,
+  "ttfmrTokens": 75,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/39",
+  "model": "haiku",
+  "arm": "C",
+  "id": "39",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 2092,
+  "tokens": 501,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12376,
+  "ttfmrTokens": 102,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/40",
+  "model": "haiku",
+  "arm": "C",
+  "id": "40",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1180,
+  "tokens": 293,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11643,
+  "ttfmrTokens": 100,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/01",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "01",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 924,
+  "tokens": 310,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 17965,
+  "ttfmrTokens": 56,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/02",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "02",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1283,
+  "tokens": 452,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 27153,
+  "ttfmrTokens": 76,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/03",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "03",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 996,
+  "tokens": 344,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 18666,
+  "ttfmrTokens": 70,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/04",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "04",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 568,
+  "tokens": 217,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 20546,
+  "ttfmrTokens": 45,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/05",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "05",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1070,
+  "tokens": 334,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 23773,
+  "ttfmrTokens": 76,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/06",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "06",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 970,
+  "tokens": 320,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24709,
+  "ttfmrTokens": 58,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/07",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "07",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1094,
+  "tokens": 331,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 18382,
+  "ttfmrTokens": 105,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/08",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "08",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1448,
+  "tokens": 402,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 24742,
+  "ttfmrTokens": 58,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/09",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "09",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1427,
+  "tokens": 418,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 24971,
+  "ttfmrTokens": 51,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/10",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "10",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1367,
+  "tokens": 359,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 17878,
+  "ttfmrTokens": 39,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/11",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "11",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1479,
+  "tokens": 494,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 18598,
+  "ttfmrTokens": 39,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/12",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "12",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1335,
+  "tokens": 376,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24609,
+  "ttfmrTokens": 47,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/13",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "13",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "chart",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1265,
+  "tokens": 393,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 30013,
+  "ttfmrTokens": 44,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/14",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "14",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1408,
+  "tokens": 400,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 23762,
+  "ttfmrTokens": 53,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/15",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "15",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1346,
+  "tokens": 363,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12024,
+  "ttfmrTokens": 82,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/16",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "16",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 1451,
+  "tokens": 463,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 19429,
+  "ttfmrTokens": 74,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/17",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "17",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 763,
+  "tokens": 214,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11411,
+  "ttfmrTokens": 86,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/18",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "18",
+  "category": "runbook",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1595,
+  "tokens": 462,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 18146,
+  "ttfmrTokens": 38,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/19",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "19",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "diagram",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1297,
+  "tokens": 356,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 16284,
+  "ttfmrTokens": 78,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9473684210526316,
+   "missSections": [],
+   "missVisible": [
+    "payments-events"
+   ],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/20",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "20",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list"
+  ],
+  "srcBytes": 1159,
+  "tokens": 363,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 18739,
+  "ttfmrTokens": 77,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/21",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "21",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 1264,
+  "tokens": 368,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 17409,
+  "ttfmrTokens": 89,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/22",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "22",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1587,
+  "tokens": 429,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 16304,
+  "ttfmrTokens": 81,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/23",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "23",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1482,
+  "tokens": 459,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 19116,
+  "ttfmrTokens": 70,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/24",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "24",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1505,
+  "tokens": 417,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12433,
+  "ttfmrTokens": 74,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/25",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "25",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1623,
+  "tokens": 432,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 20109,
+  "ttfmrTokens": 81,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/26",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "26",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1548,
+  "tokens": 452,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 20940,
+  "ttfmrTokens": 77,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/27",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "27",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 737,
+  "tokens": 208,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11352,
+  "ttfmrTokens": 66,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/28",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "28",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1082,
+  "tokens": 356,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24557,
+  "ttfmrTokens": 117,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/29",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "29",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1045,
+  "tokens": 397,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 29807,
+  "ttfmrTokens": 134,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/30",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "30",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1172,
+  "tokens": 329,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 21033,
+  "ttfmrTokens": 102,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/31",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "31",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 1305,
+  "tokens": 450,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24692,
+  "ttfmrTokens": 146,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/32",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "32",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1290,
+  "tokens": 403,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24601,
+  "ttfmrTokens": 112,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/33",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "33",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1253,
+  "tokens": 428,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 21765,
+  "ttfmrTokens": 128,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/34",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "34",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1501,
+  "tokens": 560,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 21215,
+  "ttfmrTokens": 137,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/35",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "35",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 3454,
+  "tokens": 764,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 13820,
+  "ttfmrTokens": 119,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8461538461538461,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "3 hours",
+    "11 projects"
+   ]
+  }
+ },
+ {
+  "key": "haiku-r2/C/36",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "36",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 981,
+  "tokens": 261,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11341,
+  "ttfmrTokens": 71,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/37",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "37",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1578,
+  "tokens": 383,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11966,
+  "ttfmrTokens": 115,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/38",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "38",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1842,
+  "tokens": 441,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12359,
+  "ttfmrTokens": 65,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/39",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "39",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 1991,
+  "tokens": 482,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12269,
+  "ttfmrTokens": 113,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku-r2/C/40",
+  "model": "haiku-r2",
+  "arm": "C",
+  "id": "40",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1209,
+  "tokens": 300,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11671,
+  "ttfmrTokens": 109,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/01",
+  "model": "opus",
+  "arm": "C",
+  "id": "01",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 969,
+  "tokens": 317,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 17968,
+  "ttfmrTokens": 70,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/02",
+  "model": "opus",
+  "arm": "C",
+  "id": "02",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1376,
+  "tokens": 514,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 27280,
+  "ttfmrTokens": 90,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/03",
+  "model": "opus",
+  "arm": "C",
+  "id": "03",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1045,
+  "tokens": 362,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 18763,
+  "ttfmrTokens": 89,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/04",
+  "model": "opus",
+  "arm": "C",
+  "id": "04",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 548,
+  "tokens": 208,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 20577,
+  "ttfmrTokens": 140,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/05",
+  "model": "opus",
+  "arm": "C",
+  "id": "05",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1033,
+  "tokens": 328,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 23247,
+  "ttfmrTokens": 77,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/06",
+  "model": "opus",
+  "arm": "C",
+  "id": "06",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 987,
+  "tokens": 331,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24488,
+  "ttfmrTokens": 66,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/07",
+  "model": "opus",
+  "arm": "C",
+  "id": "07",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1139,
+  "tokens": 341,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 18314,
+  "ttfmrTokens": 107,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/08",
+  "model": "opus",
+  "arm": "C",
+  "id": "08",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1609,
+  "tokens": 457,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 25524,
+  "ttfmrTokens": 63,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/09",
+  "model": "opus",
+  "arm": "C",
+  "id": "09",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1665,
+  "tokens": 484,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 25235,
+  "ttfmrTokens": 98,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/10",
+  "model": "opus",
+  "arm": "C",
+  "id": "10",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1403,
+  "tokens": 371,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 17938,
+  "ttfmrTokens": 51,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/11",
+  "model": "opus",
+  "arm": "C",
+  "id": "11",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1624,
+  "tokens": 528,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 18807,
+  "ttfmrTokens": 49,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/12",
+  "model": "opus",
+  "arm": "C",
+  "id": "12",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1394,
+  "tokens": 389,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 23612,
+  "ttfmrTokens": 56,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/13",
+  "model": "opus",
+  "arm": "C",
+  "id": "13",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "chart",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1315,
+  "tokens": 406,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 30109,
+  "ttfmrTokens": 54,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/14",
+  "model": "opus",
+  "arm": "C",
+  "id": "14",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1731,
+  "tokens": 440,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 24042,
+  "ttfmrTokens": 87,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/15",
+  "model": "opus",
+  "arm": "C",
+  "id": "15",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1395,
+  "tokens": 379,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12132,
+  "ttfmrTokens": 88,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/16",
+  "model": "opus",
+  "arm": "C",
+  "id": "16",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 1842,
+  "tokens": 542,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 19811,
+  "ttfmrTokens": 88,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/17",
+  "model": "opus",
+  "arm": "C",
+  "id": "17",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 830,
+  "tokens": 229,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11467,
+  "ttfmrTokens": 103,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/18",
+  "model": "opus",
+  "arm": "C",
+  "id": "18",
+  "category": "runbook",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1964,
+  "tokens": 534,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 18531,
+  "ttfmrTokens": 55,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/19",
+  "model": "opus",
+  "arm": "C",
+  "id": "19",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "diagram",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1348,
+  "tokens": 370,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 15511,
+  "ttfmrTokens": 96,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9473684210526316,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1000000"
+   ]
+  }
+ },
+ {
+  "key": "opus/C/20",
+  "model": "opus",
+  "arm": "C",
+  "id": "20",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list"
+  ],
+  "srcBytes": 1321,
+  "tokens": 404,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 18927,
+  "ttfmrTokens": 87,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.96,
+   "missSections": [],
+   "missVisible": [
+    "negative caching"
+   ],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/21",
+  "model": "opus",
+  "arm": "C",
+  "id": "21",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 1532,
+  "tokens": 442,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 18190,
+  "ttfmrTokens": 110,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/22",
+  "model": "opus",
+  "arm": "C",
+  "id": "22",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1733,
+  "tokens": 492,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 16801,
+  "ttfmrTokens": 119,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/23",
+  "model": "opus",
+  "arm": "C",
+  "id": "23",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1631,
+  "tokens": 503,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 19215,
+  "ttfmrTokens": 104,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/24",
+  "model": "opus",
+  "arm": "C",
+  "id": "24",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1412,
+  "tokens": 384,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12345,
+  "ttfmrTokens": 60,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/25",
+  "model": "opus",
+  "arm": "C",
+  "id": "25",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1580,
+  "tokens": 443,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 19072,
+  "ttfmrTokens": 120,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/26",
+  "model": "opus",
+  "arm": "C",
+  "id": "26",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1807,
+  "tokens": 534,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 20200,
+  "ttfmrTokens": 103,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/27",
+  "model": "opus",
+  "arm": "C",
+  "id": "27",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 825,
+  "tokens": 236,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11677,
+  "ttfmrTokens": 94,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/28",
+  "model": "opus",
+  "arm": "C",
+  "id": "28",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 941,
+  "tokens": 326,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24165,
+  "ttfmrTokens": 93,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/29",
+  "model": "opus",
+  "arm": "C",
+  "id": "29",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 940,
+  "tokens": 367,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 29571,
+  "ttfmrTokens": 86,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9583333333333334,
+   "missSections": [],
+   "missVisible": [
+    "index migration"
+   ],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/30",
+  "model": "opus",
+  "arm": "C",
+  "id": "30",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1143,
+  "tokens": 329,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 22327,
+  "ttfmrTokens": 74,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/31",
+  "model": "opus",
+  "arm": "C",
+  "id": "31",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 1389,
+  "tokens": 480,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24728,
+  "ttfmrTokens": 141,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/32",
+  "model": "opus",
+  "arm": "C",
+  "id": "32",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1141,
+  "tokens": 367,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24347,
+  "ttfmrTokens": 82,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/33",
+  "model": "opus",
+  "arm": "C",
+  "id": "33",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1179,
+  "tokens": 423,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 21709,
+  "ttfmrTokens": 87,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/34",
+  "model": "opus",
+  "arm": "C",
+  "id": "34",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1278,
+  "tokens": 498,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 20637,
+  "ttfmrTokens": 96,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/35",
+  "model": "opus",
+  "arm": "C",
+  "id": "35",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 3981,
+  "tokens": 888,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 14423,
+  "ttfmrTokens": 127,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/36",
+  "model": "opus",
+  "arm": "C",
+  "id": "36",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 962,
+  "tokens": 258,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11351,
+  "ttfmrTokens": 67,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/37",
+  "model": "opus",
+  "arm": "C",
+  "id": "37",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1643,
+  "tokens": 412,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12149,
+  "ttfmrTokens": 110,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/38",
+  "model": "opus",
+  "arm": "C",
+  "id": "38",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1817,
+  "tokens": 437,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12459,
+  "ttfmrTokens": 79,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/39",
+  "model": "opus",
+  "arm": "C",
+  "id": "39",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 3181,
+  "tokens": 749,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 13506,
+  "ttfmrTokens": 132,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/40",
+  "model": "opus",
+  "arm": "C",
+  "id": "40",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1359,
+  "tokens": 329,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11842,
+  "ttfmrTokens": 126,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9375,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2026-11-03"
+   ]
+  }
+ },
+ {
+  "key": "opus-r2/C/01",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "01",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 987,
+  "tokens": 323,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 18030,
+  "ttfmrTokens": 80,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/02",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "02",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1175,
+  "tokens": 429,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 27203,
+  "ttfmrTokens": 90,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/03",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "03",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1061,
+  "tokens": 371,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 18787,
+  "ttfmrTokens": 98,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/04",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "04",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 563,
+  "tokens": 214,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 20621,
+  "ttfmrTokens": 147,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/05",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "05",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1045,
+  "tokens": 331,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 23317,
+  "ttfmrTokens": 79,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/06",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "06",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1033,
+  "tokens": 344,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24587,
+  "ttfmrTokens": 74,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/07",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "07",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1165,
+  "tokens": 346,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 18469,
+  "ttfmrTokens": 112,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/08",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "08",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1607,
+  "tokens": 454,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 25534,
+  "ttfmrTokens": 66,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/09",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "09",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1690,
+  "tokens": 494,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 25394,
+  "ttfmrTokens": 101,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/10",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "10",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1431,
+  "tokens": 374,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 17989,
+  "ttfmrTokens": 56,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/11",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "11",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1545,
+  "tokens": 506,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 18826,
+  "ttfmrTokens": 48,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/12",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "12",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1682,
+  "tokens": 472,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 26546,
+  "ttfmrTokens": 56,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/13",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "13",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "chart",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1309,
+  "tokens": 404,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 30107,
+  "ttfmrTokens": 53,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/14",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "14",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1619,
+  "tokens": 440,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 24002,
+  "ttfmrTokens": 93,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/15",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "15",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1394,
+  "tokens": 375,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12128,
+  "ttfmrTokens": 88,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/16",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "16",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 1872,
+  "tokens": 548,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 19845,
+  "ttfmrTokens": 91,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/17",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "17",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 804,
+  "tokens": 225,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11429,
+  "ttfmrTokens": 97,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/18",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "18",
+  "category": "runbook",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1950,
+  "tokens": 533,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 18530,
+  "ttfmrTokens": 70,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/19",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "19",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "diagram",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1404,
+  "tokens": 378,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 16369,
+  "ttfmrTokens": 97,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9473684210526316,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1000000"
+   ]
+  }
+ },
+ {
+  "key": "opus-r2/C/20",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "20",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list"
+  ],
+  "srcBytes": 1343,
+  "tokens": 404,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 18911,
+  "ttfmrTokens": 87,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.96,
+   "missSections": [],
+   "missVisible": [
+    "negative caching"
+   ],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/21",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "21",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 1552,
+  "tokens": 451,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 18197,
+  "ttfmrTokens": 111,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/22",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "22",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1715,
+  "tokens": 486,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 16746,
+  "ttfmrTokens": 95,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/23",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "23",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1635,
+  "tokens": 515,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 19222,
+  "ttfmrTokens": 74,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/24",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "24",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1396,
+  "tokens": 381,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12310,
+  "ttfmrTokens": 66,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/25",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "25",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1766,
+  "tokens": 496,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 19245,
+  "ttfmrTokens": 97,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/26",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "26",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1778,
+  "tokens": 525,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 20098,
+  "ttfmrTokens": 96,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/27",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "27",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 726,
+  "tokens": 212,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11569,
+  "ttfmrTokens": 59,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/28",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "28",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 943,
+  "tokens": 329,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24143,
+  "ttfmrTokens": 87,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/29",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "29",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 999,
+  "tokens": 394,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 29695,
+  "ttfmrTokens": 95,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/30",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "30",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1074,
+  "tokens": 326,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 20696,
+  "ttfmrTokens": 68,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/31",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "31",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 1408,
+  "tokens": 489,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24601,
+  "ttfmrTokens": 136,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/32",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "32",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1217,
+  "tokens": 391,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24410,
+  "ttfmrTokens": 85,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/33",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "33",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1198,
+  "tokens": 441,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 21760,
+  "ttfmrTokens": 87,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/34",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "34",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1310,
+  "tokens": 506,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 20618,
+  "ttfmrTokens": 92,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/35",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "35",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 3698,
+  "tokens": 836,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 14112,
+  "ttfmrTokens": 138,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/36",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "36",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 938,
+  "tokens": 256,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11351,
+  "ttfmrTokens": 57,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/37",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "37",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1765,
+  "tokens": 435,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12274,
+  "ttfmrTokens": 123,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/38",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "38",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1877,
+  "tokens": 457,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12509,
+  "ttfmrTokens": 74,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/39",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "39",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 3050,
+  "tokens": 718,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 13404,
+  "ttfmrTokens": 118,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus-r2/C/40",
+  "model": "opus-r2",
+  "arm": "C",
+  "id": "40",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1303,
+  "tokens": 317,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11780,
+  "ttfmrTokens": 113,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/01",
+  "model": "haiku",
+  "arm": "A",
+  "id": "01",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1136,
+  "tokens": 377,
+  "pageBytes": 4102,
+  "ttfmrTokens": 15,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/02",
+  "model": "haiku",
+  "arm": "A",
+  "id": "02",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1587,
+  "tokens": 560,
+  "pageBytes": 5009,
+  "ttfmrTokens": 28,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 2,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/03",
+  "model": "haiku",
+  "arm": "A",
+  "id": "03",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1335,
+  "tokens": 458,
+  "pageBytes": 4998,
+  "ttfmrTokens": 25,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/04",
+  "model": "haiku",
+  "arm": "A",
+  "id": "04",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 710,
+  "tokens": 267,
+  "pageBytes": 3120,
+  "ttfmrTokens": 16,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/05",
+  "model": "haiku",
+  "arm": "A",
+  "id": "05",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1312,
+  "tokens": 427,
+  "pageBytes": 4415,
+  "ttfmrTokens": 21,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 2,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/06",
+  "model": "haiku",
+  "arm": "A",
+  "id": "06",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1321,
+  "tokens": 444,
+  "pageBytes": 5229,
+  "ttfmrTokens": 21,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 2,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/07",
+  "model": "haiku",
+  "arm": "A",
+  "id": "07",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1358,
+  "tokens": 419,
+  "pageBytes": 4379,
+  "ttfmrTokens": 28,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/08",
+  "model": "haiku",
+  "arm": "A",
+  "id": "08",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1691,
+  "tokens": 429,
+  "pageBytes": 4325,
+  "ttfmrTokens": 29,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 8,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/09",
+  "model": "haiku",
+  "arm": "A",
+  "id": "09",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1594,
+  "tokens": 436,
+  "pageBytes": 4501,
+  "ttfmrTokens": 22,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 8,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/10",
+  "model": "haiku",
+  "arm": "A",
+  "id": "10",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1427,
+  "tokens": 359,
+  "pageBytes": 3953,
+  "ttfmrTokens": 29,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/11",
+  "model": "haiku",
+  "arm": "A",
+  "id": "11",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1719,
+  "tokens": 477,
+  "pageBytes": 4431,
+  "ttfmrTokens": 27,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 5,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/12",
+  "model": "haiku",
+  "arm": "A",
+  "id": "12",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1747,
+  "tokens": 468,
+  "pageBytes": 4582,
+  "ttfmrTokens": 32,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 2,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/13",
+  "model": "haiku",
+  "arm": "A",
+  "id": "13",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "chart",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1374,
+  "tokens": 440,
+  "pageBytes": 4556,
+  "ttfmrTokens": 27,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 2,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 6,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/14",
+  "model": "haiku",
+  "arm": "A",
+  "id": "14",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1792,
+  "tokens": 427,
+  "pageBytes": 4431,
+  "ttfmrTokens": 27,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 7,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/15",
+  "model": "haiku",
+  "arm": "A",
+  "id": "15",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1482,
+  "tokens": 414,
+  "pageBytes": 4092,
+  "ttfmrTokens": 37,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/16",
+  "model": "haiku",
+  "arm": "A",
+  "id": "16",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 1709,
+  "tokens": 555,
+  "pageBytes": 4864,
+  "ttfmrTokens": 34,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/17",
+  "model": "haiku",
+  "arm": "A",
+  "id": "17",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 858,
+  "tokens": 240,
+  "pageBytes": 3470,
+  "ttfmrTokens": 22,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/18",
+  "model": "haiku",
+  "arm": "A",
+  "id": "18",
+  "category": "runbook",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1856,
+  "tokens": 517,
+  "pageBytes": 4542,
+  "ttfmrTokens": 27,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 1,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/19",
+  "model": "haiku",
+  "arm": "A",
+  "id": "19",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "diagram",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1372,
+  "tokens": 354,
+  "pageBytes": 4102,
+  "ttfmrTokens": 47,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 4,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9473684210526316,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1000000"
+   ]
+  }
+ },
+ {
+  "key": "haiku/A/20",
+  "model": "haiku",
+  "arm": "A",
+  "id": "20",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list"
+  ],
+  "srcBytes": 1435,
+  "tokens": 456,
+  "pageBytes": 4391,
+  "ttfmrTokens": 32,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/21",
+  "model": "haiku",
+  "arm": "A",
+  "id": "21",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 2047,
+  "tokens": 571,
+  "pageBytes": 4851,
+  "ttfmrTokens": 82,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/22",
+  "model": "haiku",
+  "arm": "A",
+  "id": "22",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 2017,
+  "tokens": 555,
+  "pageBytes": 4936,
+  "ttfmrTokens": 51,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/23",
+  "model": "haiku",
+  "arm": "A",
+  "id": "23",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 2257,
+  "tokens": 692,
+  "pageBytes": 5328,
+  "ttfmrTokens": 38,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/24",
+  "model": "haiku",
+  "arm": "A",
+  "id": "24",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1608,
+  "tokens": 434,
+  "pageBytes": 4365,
+  "ttfmrTokens": 59,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/25",
+  "model": "haiku",
+  "arm": "A",
+  "id": "25",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 2326,
+  "tokens": 662,
+  "pageBytes": 5425,
+  "ttfmrTokens": 39,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/26",
+  "model": "haiku",
+  "arm": "A",
+  "id": "26",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 2397,
+  "tokens": 713,
+  "pageBytes": 5490,
+  "ttfmrTokens": 35,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/27",
+  "model": "haiku",
+  "arm": "A",
+  "id": "27",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 798,
+  "tokens": 228,
+  "pageBytes": 3229,
+  "ttfmrTokens": 49,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/28",
+  "model": "haiku",
+  "arm": "A",
+  "id": "28",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1598,
+  "tokens": 541,
+  "pageBytes": 4566,
+  "ttfmrTokens": 44,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/29",
+  "model": "haiku",
+  "arm": "A",
+  "id": "29",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1621,
+  "tokens": 604,
+  "pageBytes": 4619,
+  "ttfmrTokens": 46,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/30",
+  "model": "haiku",
+  "arm": "A",
+  "id": "30",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1564,
+  "tokens": 447,
+  "pageBytes": 4497,
+  "ttfmrTokens": 31,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/31",
+  "model": "haiku",
+  "arm": "A",
+  "id": "31",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 1654,
+  "tokens": 551,
+  "pageBytes": 4483,
+  "ttfmrTokens": 47,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 2,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/32",
+  "model": "haiku",
+  "arm": "A",
+  "id": "32",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1588,
+  "tokens": 532,
+  "pageBytes": 4576,
+  "ttfmrTokens": 35,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 2,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/33",
+  "model": "haiku",
+  "arm": "A",
+  "id": "33",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1477,
+  "tokens": 523,
+  "pageBytes": 4397,
+  "ttfmrTokens": 49,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/34",
+  "model": "haiku",
+  "arm": "A",
+  "id": "34",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1732,
+  "tokens": 610,
+  "pageBytes": 4588,
+  "ttfmrTokens": 43,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/35",
+  "model": "haiku",
+  "arm": "A",
+  "id": "35",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 3416,
+  "tokens": 772,
+  "pageBytes": 5756,
+  "ttfmrTokens": 24,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8461538461538461,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "3 hours",
+    "11 projects"
+   ]
+  }
+ },
+ {
+  "key": "haiku/A/36",
+  "model": "haiku",
+  "arm": "A",
+  "id": "36",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1021,
+  "tokens": 268,
+  "pageBytes": 3364,
+  "ttfmrTokens": 41,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/37",
+  "model": "haiku",
+  "arm": "A",
+  "id": "37",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1582,
+  "tokens": 396,
+  "pageBytes": 4060,
+  "ttfmrTokens": 12,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/38",
+  "model": "haiku",
+  "arm": "A",
+  "id": "38",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1992,
+  "tokens": 481,
+  "pageBytes": 4538,
+  "ttfmrTokens": 27,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/39",
+  "model": "haiku",
+  "arm": "A",
+  "id": "39",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 1818,
+  "tokens": 447,
+  "pageBytes": 4076,
+  "ttfmrTokens": 19,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/A/40",
+  "model": "haiku",
+  "arm": "A",
+  "id": "40",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1205,
+  "tokens": 293,
+  "pageBytes": 3490,
+  "ttfmrTokens": 55,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/01",
+  "model": "opus",
+  "arm": "A",
+  "id": "01",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1151,
+  "tokens": 390,
+  "pageBytes": 4087,
+  "ttfmrTokens": 17,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/02",
+  "model": "opus",
+  "arm": "A",
+  "id": "02",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1514,
+  "tokens": 551,
+  "pageBytes": 5042,
+  "ttfmrTokens": 29,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 2,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/03",
+  "model": "opus",
+  "arm": "A",
+  "id": "03",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1418,
+  "tokens": 496,
+  "pageBytes": 5141,
+  "ttfmrTokens": 26,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/04",
+  "model": "opus",
+  "arm": "A",
+  "id": "04",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 959,
+  "tokens": 370,
+  "pageBytes": 4196,
+  "ttfmrTokens": 15,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/05",
+  "model": "opus",
+  "arm": "A",
+  "id": "05",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1458,
+  "tokens": 508,
+  "pageBytes": 4939,
+  "ttfmrTokens": 22,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 2,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/06",
+  "model": "opus",
+  "arm": "A",
+  "id": "06",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1462,
+  "tokens": 511,
+  "pageBytes": 5834,
+  "ttfmrTokens": 20,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 2,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/07",
+  "model": "opus",
+  "arm": "A",
+  "id": "07",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1397,
+  "tokens": 443,
+  "pageBytes": 4490,
+  "ttfmrTokens": 22,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/08",
+  "model": "opus",
+  "arm": "A",
+  "id": "08",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1874,
+  "tokens": 459,
+  "pageBytes": 4544,
+  "ttfmrTokens": 32,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 8,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/09",
+  "model": "opus",
+  "arm": "A",
+  "id": "09",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1780,
+  "tokens": 491,
+  "pageBytes": 4744,
+  "ttfmrTokens": 25,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 8,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/10",
+  "model": "opus",
+  "arm": "A",
+  "id": "10",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1725,
+  "tokens": 429,
+  "pageBytes": 4286,
+  "ttfmrTokens": 26,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/11",
+  "model": "opus",
+  "arm": "A",
+  "id": "11",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1723,
+  "tokens": 487,
+  "pageBytes": 4496,
+  "ttfmrTokens": 26,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 5,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/12",
+  "model": "opus",
+  "arm": "A",
+  "id": "12",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1819,
+  "tokens": 486,
+  "pageBytes": 4677,
+  "ttfmrTokens": 29,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 2,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/13",
+  "model": "opus",
+  "arm": "A",
+  "id": "13",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "chart",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1467,
+  "tokens": 461,
+  "pageBytes": 4702,
+  "ttfmrTokens": 28,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 2,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 6,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/14",
+  "model": "opus",
+  "arm": "A",
+  "id": "14",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1741,
+  "tokens": 434,
+  "pageBytes": 4416,
+  "ttfmrTokens": 29,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 7,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/15",
+  "model": "opus",
+  "arm": "A",
+  "id": "15",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1577,
+  "tokens": 444,
+  "pageBytes": 4375,
+  "ttfmrTokens": 40,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/16",
+  "model": "opus",
+  "arm": "A",
+  "id": "16",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 2244,
+  "tokens": 673,
+  "pageBytes": 5412,
+  "ttfmrTokens": 43,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/17",
+  "model": "opus",
+  "arm": "A",
+  "id": "17",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 958,
+  "tokens": 270,
+  "pageBytes": 3627,
+  "ttfmrTokens": 27,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/18",
+  "model": "opus",
+  "arm": "A",
+  "id": "18",
+  "category": "runbook",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 2267,
+  "tokens": 625,
+  "pageBytes": 5077,
+  "ttfmrTokens": 32,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 1,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/19",
+  "model": "opus",
+  "arm": "A",
+  "id": "19",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "diagram",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1355,
+  "tokens": 358,
+  "pageBytes": 4139,
+  "ttfmrTokens": 36,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 4,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9473684210526316,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1000000"
+   ]
+  }
+ },
+ {
+  "key": "opus/A/20",
+  "model": "opus",
+  "arm": "A",
+  "id": "20",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list"
+  ],
+  "srcBytes": 1516,
+  "tokens": 484,
+  "pageBytes": 4498,
+  "ttfmrTokens": 36,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/21",
+  "model": "opus",
+  "arm": "A",
+  "id": "21",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 2324,
+  "tokens": 672,
+  "pageBytes": 5278,
+  "ttfmrTokens": 38,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 2,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 2,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/22",
+  "model": "opus",
+  "arm": "A",
+  "id": "22",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 2543,
+  "tokens": 698,
+  "pageBytes": 5661,
+  "ttfmrTokens": 31,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/23",
+  "model": "opus",
+  "arm": "A",
+  "id": "23",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 2306,
+  "tokens": 704,
+  "pageBytes": 5498,
+  "ttfmrTokens": 26,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/24",
+  "model": "opus",
+  "arm": "A",
+  "id": "24",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1849,
+  "tokens": 495,
+  "pageBytes": 4756,
+  "ttfmrTokens": 24,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/25",
+  "model": "opus",
+  "arm": "A",
+  "id": "25",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 2727,
+  "tokens": 774,
+  "pageBytes": 6073,
+  "ttfmrTokens": 28,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/26",
+  "model": "opus",
+  "arm": "A",
+  "id": "26",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 2705,
+  "tokens": 795,
+  "pageBytes": 5993,
+  "ttfmrTokens": 20,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/27",
+  "model": "opus",
+  "arm": "A",
+  "id": "27",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 807,
+  "tokens": 232,
+  "pageBytes": 3290,
+  "ttfmrTokens": 18,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/28",
+  "model": "opus",
+  "arm": "A",
+  "id": "28",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1616,
+  "tokens": 572,
+  "pageBytes": 4844,
+  "ttfmrTokens": 27,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/29",
+  "model": "opus",
+  "arm": "A",
+  "id": "29",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1658,
+  "tokens": 615,
+  "pageBytes": 4810,
+  "ttfmrTokens": 30,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9583333333333334,
+   "missSections": [],
+   "missVisible": [
+    "index migration"
+   ],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/30",
+  "model": "opus",
+  "arm": "A",
+  "id": "30",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1719,
+  "tokens": 534,
+  "pageBytes": 4917,
+  "ttfmrTokens": 27,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/31",
+  "model": "opus",
+  "arm": "A",
+  "id": "31",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 1879,
+  "tokens": 640,
+  "pageBytes": 4937,
+  "ttfmrTokens": 35,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 2,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/32",
+  "model": "opus",
+  "arm": "A",
+  "id": "32",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1565,
+  "tokens": 508,
+  "pageBytes": 4465,
+  "ttfmrTokens": 24,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 2,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/33",
+  "model": "opus",
+  "arm": "A",
+  "id": "33",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1674,
+  "tokens": 576,
+  "pageBytes": 4819,
+  "ttfmrTokens": 34,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/34",
+  "model": "opus",
+  "arm": "A",
+  "id": "34",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1576,
+  "tokens": 611,
+  "pageBytes": 4533,
+  "ttfmrTokens": 21,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 1,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/35",
+  "model": "opus",
+  "arm": "A",
+  "id": "35",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 3996,
+  "tokens": 906,
+  "pageBytes": 6394,
+  "ttfmrTokens": 23,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/36",
+  "model": "opus",
+  "arm": "A",
+  "id": "36",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 942,
+  "tokens": 253,
+  "pageBytes": 3404,
+  "ttfmrTokens": 35,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/37",
+  "model": "opus",
+  "arm": "A",
+  "id": "37",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1845,
+  "tokens": 460,
+  "pageBytes": 4361,
+  "ttfmrTokens": 18,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/38",
+  "model": "opus",
+  "arm": "A",
+  "id": "38",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 2055,
+  "tokens": 519,
+  "pageBytes": 4616,
+  "ttfmrTokens": 16,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/39",
+  "model": "opus",
+  "arm": "A",
+  "id": "39",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 2924,
+  "tokens": 701,
+  "pageBytes": 5330,
+  "ttfmrTokens": 25,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/A/40",
+  "model": "opus",
+  "arm": "A",
+  "id": "40",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1375,
+  "tokens": 338,
+  "pageBytes": 3748,
+  "ttfmrTokens": 32,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/01",
+  "model": "haiku",
+  "arm": "B",
+  "id": "01",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 6201,
+  "tokens": 2530,
+  "pageBytes": 6201,
+  "ttfmrTokens": 1190,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 3,
+  "overflow-light": 0,
+  "contrast-400-light": 3,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.7857142857142857,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "104",
+    "109",
+    "121",
+    "126",
+    "118",
+    "129"
+   ]
+  }
+ },
+ {
+  "key": "haiku/B/02",
+  "model": "haiku",
+  "arm": "B",
+  "id": "02",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 8942,
+  "tokens": 3620,
+  "pageBytes": 8942,
+  "ttfmrTokens": 1289,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9230769230769231,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "99.91",
+    "99.94"
+   ]
+  }
+ },
+ {
+  "key": "haiku/B/03",
+  "model": "haiku",
+  "arm": "B",
+  "id": "03",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 5730,
+  "tokens": 2329,
+  "pageBytes": 5730,
+  "ttfmrTokens": 998,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 1,
+  "overflow-light": 0,
+  "contrast-400-light": 1,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/04",
+  "model": "haiku",
+  "arm": "B",
+  "id": "04",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 5329,
+  "tokens": 2191,
+  "pageBytes": 5329,
+  "ttfmrTokens": 1137,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/05",
+  "model": "haiku",
+  "arm": "B",
+  "id": "05",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 7635,
+  "tokens": 3008,
+  "pageBytes": 7635,
+  "ttfmrTokens": 1096,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8666666666666667,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "158900",
+    "162400",
+    "169800",
+    "173100"
+   ]
+  }
+ },
+ {
+  "key": "haiku/B/06",
+  "model": "haiku",
+  "arm": "B",
+  "id": "06",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 7625,
+  "tokens": 2975,
+  "pageBytes": 7625,
+  "ttfmrTokens": 1133,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/07",
+  "model": "haiku",
+  "arm": "B",
+  "id": "07",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 6831,
+  "tokens": 2656,
+  "pageBytes": 6831,
+  "ttfmrTokens": 1179,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 4,
+  "overflow-light": 0,
+  "contrast-400-light": 4,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9583333333333334,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "37"
+   ]
+  }
+ },
+ {
+  "key": "haiku/B/08",
+  "model": "haiku",
+  "arm": "B",
+  "id": "08",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 7427,
+  "tokens": 2713,
+  "pageBytes": 7427,
+  "ttfmrTokens": 1083,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/09",
+  "model": "haiku",
+  "arm": "B",
+  "id": "09",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 7783,
+  "tokens": 2921,
+  "pageBytes": 7783,
+  "ttfmrTokens": 1126,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/10",
+  "model": "haiku",
+  "arm": "B",
+  "id": "10",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 7272,
+  "tokens": 2726,
+  "pageBytes": 7272,
+  "ttfmrTokens": 949,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/11",
+  "model": "haiku",
+  "arm": "B",
+  "id": "11",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 8177,
+  "tokens": 3037,
+  "pageBytes": 8177,
+  "ttfmrTokens": 1009,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/12",
+  "model": "haiku",
+  "arm": "B",
+  "id": "12",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 10228,
+  "tokens": 3908,
+  "pageBytes": 10228,
+  "ttfmrTokens": 1223,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/13",
+  "model": "haiku",
+  "arm": "B",
+  "id": "13",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "chart",
+   "table",
+   "list"
+  ],
+  "srcBytes": 8690,
+  "tokens": 3330,
+  "pageBytes": 8690,
+  "ttfmrTokens": 1024,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/14",
+  "model": "haiku",
+  "arm": "B",
+  "id": "14",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 7416,
+  "tokens": 2674,
+  "pageBytes": 7416,
+  "ttfmrTokens": 1053,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/15",
+  "model": "haiku",
+  "arm": "B",
+  "id": "15",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 4352,
+  "tokens": 1624,
+  "pageBytes": 4352,
+  "ttfmrTokens": 1001,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/16",
+  "model": "haiku",
+  "arm": "B",
+  "id": "16",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 7426,
+  "tokens": 2867,
+  "pageBytes": 7426,
+  "ttfmrTokens": 1208,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.7407407407407407,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "4.1",
+    "17.8",
+    "29.6",
+    "36.9",
+    "37.2",
+    "33.4",
+    "12.7"
+   ]
+  }
+ },
+ {
+  "key": "haiku/B/17",
+  "model": "haiku",
+  "arm": "B",
+  "id": "17",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 4208,
+  "tokens": 1646,
+  "pageBytes": 4208,
+  "ttfmrTokens": 1211,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/18",
+  "model": "haiku",
+  "arm": "B",
+  "id": "18",
+  "category": "runbook",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 7372,
+  "tokens": 2736,
+  "pageBytes": 7372,
+  "ttfmrTokens": 1313,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/19",
+  "model": "haiku",
+  "arm": "B",
+  "id": "19",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "diagram",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 7084,
+  "tokens": 2707,
+  "pageBytes": 7084,
+  "ttfmrTokens": 1416,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9473684210526316,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1000000"
+   ]
+  }
+ },
+ {
+  "key": "haiku/B/20",
+  "model": "haiku",
+  "arm": "B",
+  "id": "20",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list"
+  ],
+  "srcBytes": 6909,
+  "tokens": 2668,
+  "pageBytes": 6909,
+  "ttfmrTokens": 1194,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.72,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "84.2",
+    "63.0",
+    "62.8",
+    "70.4",
+    "81.9",
+    "93.5",
+    "98.7"
+   ]
+  }
+ },
+ {
+  "key": "haiku/B/21",
+  "model": "haiku",
+  "arm": "B",
+  "id": "21",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 5561,
+  "tokens": 2148,
+  "pageBytes": 5561,
+  "ttfmrTokens": 1070,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/22",
+  "model": "haiku",
+  "arm": "B",
+  "id": "22",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 5467,
+  "tokens": 2100,
+  "pageBytes": 5467,
+  "ttfmrTokens": 965,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/23",
+  "model": "haiku",
+  "arm": "B",
+  "id": "23",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 6702,
+  "tokens": 2709,
+  "pageBytes": 6702,
+  "ttfmrTokens": 1206,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/24",
+  "model": "haiku",
+  "arm": "B",
+  "id": "24",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 4531,
+  "tokens": 1773,
+  "pageBytes": 4531,
+  "ttfmrTokens": 886,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/25",
+  "model": "haiku",
+  "arm": "B",
+  "id": "25",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 6418,
+  "tokens": 2539,
+  "pageBytes": 6418,
+  "ttfmrTokens": 1101,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/26",
+  "model": "haiku",
+  "arm": "B",
+  "id": "26",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 6644,
+  "tokens": 2614,
+  "pageBytes": 6644,
+  "ttfmrTokens": 1120,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/27",
+  "model": "haiku",
+  "arm": "B",
+  "id": "27",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 3014,
+  "tokens": 1223,
+  "pageBytes": 3014,
+  "ttfmrTokens": 824,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/28",
+  "model": "haiku",
+  "arm": "B",
+  "id": "28",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 6405,
+  "tokens": 2715,
+  "pageBytes": 6405,
+  "ttfmrTokens": 1267,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/29",
+  "model": "haiku",
+  "arm": "B",
+  "id": "29",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 6882,
+  "tokens": 2979,
+  "pageBytes": 6882,
+  "ttfmrTokens": 1289,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9583333333333334,
+   "missSections": [],
+   "missVisible": [
+    "SLO compliance"
+   ],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/30",
+  "model": "haiku",
+  "arm": "B",
+  "id": "30",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 6152,
+  "tokens": 2458,
+  "pageBytes": 6152,
+  "ttfmrTokens": 1175,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/31",
+  "model": "haiku",
+  "arm": "B",
+  "id": "31",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 6850,
+  "tokens": 2843,
+  "pageBytes": 6850,
+  "ttfmrTokens": 1248,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9655172413793104,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "4.19"
+   ]
+  }
+ },
+ {
+  "key": "haiku/B/32",
+  "model": "haiku",
+  "arm": "B",
+  "id": "32",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 7430,
+  "tokens": 3065,
+  "pageBytes": 7430,
+  "ttfmrTokens": 1145,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/33",
+  "model": "haiku",
+  "arm": "B",
+  "id": "33",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 6804,
+  "tokens": 2829,
+  "pageBytes": 6804,
+  "ttfmrTokens": 1300,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/34",
+  "model": "haiku",
+  "arm": "B",
+  "id": "34",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 6592,
+  "tokens": 2763,
+  "pageBytes": 6592,
+  "ttfmrTokens": 1189,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/35",
+  "model": "haiku",
+  "arm": "B",
+  "id": "35",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 5029,
+  "tokens": 1555,
+  "pageBytes": 5029,
+  "ttfmrTokens": 710,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8461538461538461,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "3 hours",
+    "11 projects"
+   ]
+  }
+ },
+ {
+  "key": "haiku/B/36",
+  "model": "haiku",
+  "arm": "B",
+  "id": "36",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 2486,
+  "tokens": 964,
+  "pageBytes": 2486,
+  "ttfmrTokens": 621,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/37",
+  "model": "haiku",
+  "arm": "B",
+  "id": "37",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 3396,
+  "tokens": 1163,
+  "pageBytes": 3396,
+  "ttfmrTokens": 563,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/38",
+  "model": "haiku",
+  "arm": "B",
+  "id": "38",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 4393,
+  "tokens": 1513,
+  "pageBytes": 4393,
+  "ttfmrTokens": 780,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/39",
+  "model": "haiku",
+  "arm": "B",
+  "id": "39",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 3146,
+  "tokens": 1072,
+  "pageBytes": 3146,
+  "ttfmrTokens": 598,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/B/40",
+  "model": "haiku",
+  "arm": "B",
+  "id": "40",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 2682,
+  "tokens": 974,
+  "pageBytes": 2682,
+  "ttfmrTokens": 621,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/01",
+  "model": "opus",
+  "arm": "B",
+  "id": "01",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 9362,
+  "tokens": 3481,
+  "pageBytes": 9362,
+  "ttfmrTokens": 1726,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/02",
+  "model": "opus",
+  "arm": "B",
+  "id": "02",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 10004,
+  "tokens": 3791,
+  "pageBytes": 10004,
+  "ttfmrTokens": 1472,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9230769230769231,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "99.91",
+    "99.94"
+   ]
+  }
+ },
+ {
+  "key": "opus/B/03",
+  "model": "opus",
+  "arm": "B",
+  "id": "03",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 7706,
+  "tokens": 2910,
+  "pageBytes": 7706,
+  "ttfmrTokens": 1293,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/04",
+  "model": "opus",
+  "arm": "B",
+  "id": "04",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 6322,
+  "tokens": 2381,
+  "pageBytes": 6322,
+  "ttfmrTokens": 1250,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/05",
+  "model": "opus",
+  "arm": "B",
+  "id": "05",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 9214,
+  "tokens": 3484,
+  "pageBytes": 9214,
+  "ttfmrTokens": 1287,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/06",
+  "model": "opus",
+  "arm": "B",
+  "id": "06",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 9189,
+  "tokens": 3550,
+  "pageBytes": 9189,
+  "ttfmrTokens": 1253,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/07",
+  "model": "opus",
+  "arm": "B",
+  "id": "07",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 8230,
+  "tokens": 3155,
+  "pageBytes": 8230,
+  "ttfmrTokens": 1491,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/08",
+  "model": "opus",
+  "arm": "B",
+  "id": "08",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 10000,
+  "tokens": 3358,
+  "pageBytes": 10000,
+  "ttfmrTokens": 1381,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/09",
+  "model": "opus",
+  "arm": "B",
+  "id": "09",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 9557,
+  "tokens": 3341,
+  "pageBytes": 9557,
+  "ttfmrTokens": 1278,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/10",
+  "model": "opus",
+  "arm": "B",
+  "id": "10",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 10378,
+  "tokens": 3694,
+  "pageBytes": 10378,
+  "ttfmrTokens": 1475,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/11",
+  "model": "opus",
+  "arm": "B",
+  "id": "11",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 9637,
+  "tokens": 3498,
+  "pageBytes": 9637,
+  "ttfmrTokens": 1425,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/12",
+  "model": "opus",
+  "arm": "B",
+  "id": "12",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 11486,
+  "tokens": 4236,
+  "pageBytes": 11486,
+  "ttfmrTokens": 1627,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 1,
+  "overflow-light": 0,
+  "contrast-400-light": 1,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/13",
+  "model": "opus",
+  "arm": "B",
+  "id": "13",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "chart",
+   "table",
+   "list"
+  ],
+  "srcBytes": 10083,
+  "tokens": 3812,
+  "pageBytes": 10083,
+  "ttfmrTokens": 1443,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/14",
+  "model": "opus",
+  "arm": "B",
+  "id": "14",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 8925,
+  "tokens": 3173,
+  "pageBytes": 8925,
+  "ttfmrTokens": 1426,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/15",
+  "model": "opus",
+  "arm": "B",
+  "id": "15",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 6284,
+  "tokens": 2212,
+  "pageBytes": 6284,
+  "ttfmrTokens": 1404,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/16",
+  "model": "opus",
+  "arm": "B",
+  "id": "16",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 9273,
+  "tokens": 3442,
+  "pageBytes": 9273,
+  "ttfmrTokens": 1403,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/17",
+  "model": "opus",
+  "arm": "B",
+  "id": "17",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 6080,
+  "tokens": 2216,
+  "pageBytes": 6080,
+  "ttfmrTokens": 1703,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 1,
+  "overflow-light": 0,
+  "contrast-400-light": 1,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/18",
+  "model": "opus",
+  "arm": "B",
+  "id": "18",
+  "category": "runbook",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 8990,
+  "tokens": 3184,
+  "pageBytes": 8990,
+  "ttfmrTokens": 1509,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 1,
+  "overflow-light": 0,
+  "contrast-400-light": 1,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/19",
+  "model": "opus",
+  "arm": "B",
+  "id": "19",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "diagram",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 9146,
+  "tokens": 3386,
+  "pageBytes": 9146,
+  "ttfmrTokens": 1928,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9473684210526316,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1000000"
+   ]
+  }
+ },
+ {
+  "key": "opus/B/20",
+  "model": "opus",
+  "arm": "B",
+  "id": "20",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list"
+  ],
+  "srcBytes": 8287,
+  "tokens": 3157,
+  "pageBytes": 8287,
+  "ttfmrTokens": 1370,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/21",
+  "model": "opus",
+  "arm": "B",
+  "id": "21",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 6598,
+  "tokens": 2605,
+  "pageBytes": 6598,
+  "ttfmrTokens": 1262,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/22",
+  "model": "opus",
+  "arm": "B",
+  "id": "22",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 7119,
+  "tokens": 2821,
+  "pageBytes": 7119,
+  "ttfmrTokens": 1322,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 1,
+  "overflow-light": 0,
+  "contrast-400-light": 1,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/23",
+  "model": "opus",
+  "arm": "B",
+  "id": "23",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 7669,
+  "tokens": 3167,
+  "pageBytes": 7669,
+  "ttfmrTokens": 1232,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/24",
+  "model": "opus",
+  "arm": "B",
+  "id": "24",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 5356,
+  "tokens": 2052,
+  "pageBytes": 5356,
+  "ttfmrTokens": 1157,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/25",
+  "model": "opus",
+  "arm": "B",
+  "id": "25",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 7511,
+  "tokens": 3037,
+  "pageBytes": 7511,
+  "ttfmrTokens": 1257,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/26",
+  "model": "opus",
+  "arm": "B",
+  "id": "26",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 7112,
+  "tokens": 2917,
+  "pageBytes": 7112,
+  "ttfmrTokens": 1164,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 1,
+  "overflow-light": 0,
+  "contrast-400-light": 1,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/27",
+  "model": "opus",
+  "arm": "B",
+  "id": "27",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 3532,
+  "tokens": 1376,
+  "pageBytes": 3532,
+  "ttfmrTokens": 927,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/28",
+  "model": "opus",
+  "arm": "B",
+  "id": "28",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 7228,
+  "tokens": 3021,
+  "pageBytes": 7228,
+  "ttfmrTokens": 1086,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/29",
+  "model": "opus",
+  "arm": "B",
+  "id": "29",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 7431,
+  "tokens": 3157,
+  "pageBytes": 7431,
+  "ttfmrTokens": 1238,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/30",
+  "model": "opus",
+  "arm": "B",
+  "id": "30",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 6752,
+  "tokens": 2698,
+  "pageBytes": 6752,
+  "ttfmrTokens": 1098,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/31",
+  "model": "opus",
+  "arm": "B",
+  "id": "31",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 8998,
+  "tokens": 3770,
+  "pageBytes": 8998,
+  "ttfmrTokens": 1205,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 1,
+  "overflow-light": 0,
+  "contrast-400-light": 1,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/32",
+  "model": "opus",
+  "arm": "B",
+  "id": "32",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 7673,
+  "tokens": 3189,
+  "pageBytes": 7673,
+  "ttfmrTokens": 1022,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 2,
+  "overflow-light": 0,
+  "contrast-400-light": 2,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/33",
+  "model": "opus",
+  "arm": "B",
+  "id": "33",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 7852,
+  "tokens": 3200,
+  "pageBytes": 7852,
+  "ttfmrTokens": 1238,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/34",
+  "model": "opus",
+  "arm": "B",
+  "id": "34",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 6951,
+  "tokens": 2875,
+  "pageBytes": 6951,
+  "ttfmrTokens": 1117,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/35",
+  "model": "opus",
+  "arm": "B",
+  "id": "35",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 5951,
+  "tokens": 1756,
+  "pageBytes": 5951,
+  "ttfmrTokens": 736,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/36",
+  "model": "opus",
+  "arm": "B",
+  "id": "36",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 3315,
+  "tokens": 1280,
+  "pageBytes": 3315,
+  "ttfmrTokens": 840,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/37",
+  "model": "opus",
+  "arm": "B",
+  "id": "37",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 4690,
+  "tokens": 1654,
+  "pageBytes": 4690,
+  "ttfmrTokens": 1006,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/38",
+  "model": "opus",
+  "arm": "B",
+  "id": "38",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 5150,
+  "tokens": 1800,
+  "pageBytes": 5150,
+  "ttfmrTokens": 970,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/39",
+  "model": "opus",
+  "arm": "B",
+  "id": "39",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 5411,
+  "tokens": 1737,
+  "pageBytes": 5411,
+  "ttfmrTokens": 875,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/B/40",
+  "model": "opus",
+  "arm": "B",
+  "id": "40",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 3256,
+  "tokens": 1171,
+  "pageBytes": 3256,
+  "ttfmrTokens": 752,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ }
+]

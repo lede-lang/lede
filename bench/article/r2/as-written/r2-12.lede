@@ -1,0 +1,41 @@
+@title Supplier invoice number pattern
+@subtitle Expected versus actual for every sample line, starting from INV-\d{4}-\d{6}
+@width wide
+
+! A line counts as matched only when the pattern matches the whole line, because the goal is to accept valid invoice numbers and nothing else. The brief says 11 lines but lists 13 (3 valid, 2 valid with a branch suffix, 8 not valid), so the scores below are out of 13.
+
+kpi Starting pattern | 10 of 13 | right | bad
+kpi Suggested pattern | 13 of 13 | right | good
+
+## Starting pattern
+
+`INV-\d{4}-\d{6}`
+
+It fails three lines: it accepts any four-digit year, and it does not allow the branch suffix.
+
+data cases = line,expected,actual,verdict; `INV-2026-004711`,Valid,Valid,Passed; `INV-2025-000032`,Valid,Valid,Passed; `INV-2026-104711`,Valid,Valid,Passed; `INV-2026-004711/B2`,Valid,Not valid,Failed; `INV-2026-004711/NY`,Valid,Not valid,Failed; `inv-2026-004711` (lowercase),Not valid,Not valid,Passed; `INV-2023-004711` (year too old),Not valid,Valid,Failed; `INV-2026-4711` (sequence too short),Not valid,Not valid,Passed; `INV-2026-0047112` (too long),Not valid,Not valid,Passed; `INV-2026-004711/b2`,Not valid,Not valid,Passed; `INV-2026-004711` plus a trailing space,Not valid,Not valid,Passed; `Ref: INV-2026-004711`,Not valid,Not valid,Passed; `INV 2026 004711`,Not valid,Not valid,Passed
+
+table cases title="Starting pattern, line by line"
+
+## Suggested pattern
+
+`^INV-(?:2024|2025|2026)-\d{6}(?:/(?:B\d|[A-Z]{2}))?$`
+
+- `^` and `$` anchor the whole line, which rejects the prefix, the trailing space and the 7-digit sequence.
+- `(?:2024|2025|2026)` limits the year to 2024 to 2026.
+- `\d{6}` needs exactly six digits.
+- `(?:/(?:B\d|[A-Z]{2}))?` allows an optional branch suffix, either B and a digit (B2) or two capital letters (NY). Lowercase /b2 is rejected.
+
+! The suffix rule is a guess from two examples. If branches can be other shapes, say so and widen it; if only /B2 and /NY exist, `/(?:B2|NY)` is stricter.
+
+table = line,expected,actual,verdict; `INV-2026-004711`,Valid,Valid,Passed; `INV-2025-000032`,Valid,Valid,Passed; `INV-2026-104711`,Valid,Valid,Passed; `INV-2026-004711/B2`,Valid,Valid,Passed; `INV-2026-004711/NY`,Valid,Valid,Passed; `inv-2026-004711`,Not valid,Not valid,Passed; `INV-2023-004711`,Not valid,Not valid,Passed; `INV-2026-4711`,Not valid,Not valid,Passed; `INV-2026-0047112`,Not valid,Not valid,Passed; `INV-2026-004711/b2`,Not valid,Not valid,Passed; `INV-2026-004711` plus a trailing space,Not valid,Not valid,Passed; `Ref: INV-2026-004711`,Not valid,Not valid,Passed; `INV 2026 004711`,Not valid,Not valid,Passed
+
+## Slow patterns
+
+The suggested pattern is safe on long text: it has no nested or repeated groups, so it cannot backtrack catastrophically. Watch for shapes like `(\d+)+`, `(a|aa)*` or `(.*)*`, where a repeated group contains something that can match the same text in several ways. They can freeze a validator on a long non-matching line.
+
+## Copy
+
+```
+^INV-(?:2024|2025|2026)-\d{6}(?:/(?:B\d|[A-Z]{2}))?$
+```

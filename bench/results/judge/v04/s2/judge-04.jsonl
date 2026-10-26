@@ -1,0 +1,10 @@
+{"pair":"P031","winner":"LEFT","reason":"Left stays legible at phone width with a readable step list, while right's phone diagram is microscopic and its desktop diagram has an arrow crossing the Backup Dispatch Center label."}
+{"pair":"P032","winner":"RIGHT","reason":"Right's sequence diagram labels every message and its phone fallback is a readable step list, whereas left's arrows are unlabeled and its phone diagram is tiny."}
+{"pair":"P033","winner":"RIGHT","reason":"Right's flowchart is clean with no overlapping boxes and degrades to a readable step list on phone, while left has touching or overlapping boxes and a tiny phone diagram."}
+{"pair":"P034","winner":"RIGHT","reason":"Right's vertical pipeline diagram is clear and fully readable on both desktop and phone, while left has a wire cutting through the cloud label and a microscopic phone diagram."}
+{"pair":"P035","winner":"LEFT","reason":"Left's vertical architecture diagram is clean and readable on phone, while right has wires crossing the Shared across regions label and a tiny unreadable phone diagram."}
+{"pair":"P036","winner":"LEFT","reason":"Left's bar chart is clean and legible on both viewports, while right has a value label colliding with the end of the Light rail bar and a tiny phone chart."}
+{"pair":"P037","winner":"RIGHT","reason":"Right's range chart is clean and legible on phone, while left truncates the gala label and overlaps the goal line, and its phone chart is tiny."}
+{"pair":"P038","winner":"RIGHT","reason":"Right's bar chart has legible labels and its phone layout uses readable vendor cards, while left's Vantage Shield value is unreadable inside the bar and its phone chart is tiny."}
+{"pair":"P039","winner":"LEFT","reason":"Left's bar chart has clear value labels on both viewports, while right's top bar label is unreadable on the bar and its phone chart is tiny."}
+{"pair":"P040","winner":"LEFT","reason":"Left's range chart has no label collisions and stays legible on phone, while right's Air freight range label overlaps the 600k axis tick and its phone chart is tiny."}

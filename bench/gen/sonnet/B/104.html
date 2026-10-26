@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Tallgrass Telemetry Pipeline</title>
+<style>
+:root{--bg:#f4f6f9;--card:#fff;--ink:#16202b;--mut:#55616e;--line:#d3dae2;--acc:#1d5fbf;--acc-s:#e5eefb;--warn:#b0360a;--warn-s:#fdece3;--ok:#13703e;--ok-s:#e2f3ea;--gold:#7a5200;--gold-s:#fcf1d2}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--card:#171f28;--ink:#e7ecf1;--mut:#9ba8b5;--line:#2c3844;--acc:#7db1ff;--acc-s:#16273d;--warn:#ff9d73;--warn-s:#34201a;--ok:#62d796;--ok-s:#12291c;--gold:#f0c35c;--gold-s:#30260f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:1000px;margin:0 auto;padding:0 16px 56px}
+header{padding:32px 0 14px;border-bottom:1px solid var(--line)}
+.eyebrow{margin:0 0 6px;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:var(--acc);font-weight:700}
+h1{margin:0 0 8px;font-size:clamp(1.6rem,5.5vw,2.5rem);line-height:1.15;letter-spacing:-.01em}
+.meta{margin:0;color:var(--mut);font-size:.92rem}
+h2{margin:40px 0 12px;font-size:1.45rem;line-height:1.25}
+p{margin:0 0 12px}
+.callout{border-left:6px solid var(--warn);background:var(--warn-s);border-radius:10px;padding:16px 18px;margin:20px 0}
+.callout strong{color:var(--warn)}
+.callout ul{margin:8px 0 0;padding-left:1.2rem}
+.diagram{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;overflow-x:auto}
+.diagram svg{display:block;margin:0 auto;width:100%;min-width:700px;max-width:940px;height:auto}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.76rem;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+tr.sat td{background:var(--warn-s)}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.stat{font-size:2.1rem;font-weight:800;line-height:1.1;color:var(--acc);letter-spacing:-.01em}
+.card p{margin:6px 0 0;font-size:.95rem}
+.note{font-size:.88rem;color:var(--mut);margin-top:10px}
+h3{margin:24px 0 10px;font-size:1.05rem}
+/* svg */
+svg text{font-family:inherit;fill:var(--ink)}
+.n{fill:var(--acc-s);stroke:var(--acc);stroke-width:1.6}
+.n.out{fill:var(--card);stroke:var(--ink)}
+.n.gold{fill:var(--gold-s);stroke:var(--gold);stroke-width:2.2}
+.ctr{fill:none;stroke:var(--acc);stroke-width:1.8}
+.e{fill:none;stroke:var(--ink);stroke-width:1.7}
+.e.th{stroke-width:3.2}
+.ah{fill:var(--ink)}
+.t{font-size:14px;font-weight:700;text-anchor:middle}
+.s{font-size:11.5px;text-anchor:middle;fill:var(--mut)}
+.l{font-size:12px;fill:var(--mut);paint-order:stroke;stroke:var(--card);stroke-width:4px;stroke-linejoin:round}
+.lc{text-anchor:middle}
+.ct{font-size:13px;font-weight:700;fill:var(--acc)}
+.lw{font-size:12px;font-weight:700;fill:var(--warn);paint-order:stroke;stroke:var(--card);stroke-width:4px;stroke-linejoin:round;text-anchor:middle}
+.axl{font-size:11.5px;fill:var(--mut)}
+.bar{fill:var(--acc)}
+.bar.w{fill:var(--warn)}
+.rv{font-size:13px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Windspire Energy &middot; Tallgrass wind farm</p>
+  <h1>Telemetry pipeline architecture</h1>
+  <p class="meta">Owner: Asset Performance &middot; Reviewed <time datetime="2026-10-06">2026-10-06</time> &middot; For the control room team</p>
+</header>
+
+<main>
+<section id="overview">
+  <h2>Overview</h2>
+  <p>Turbine data is collected on site and summarized before it is sent over a limited link. The grid operator receives output and availability figures directly from the site.</p>
+</section>
+
+<aside class="callout" role="note">
+  <strong>Satellite fallback changes what you see.</strong>
+  <ul>
+    <li>When the site is on satellite fallback, the Control Room sees <strong>one-minute averages, not full-resolution data</strong>.</li>
+    <li>The Edge Historian can hold <strong>72 hours of full-resolution data</strong> until the fiber link returns.</li>
+  </ul>
+</aside>
+
+<section id="pipeline">
+  <h2>Pipeline</h2>
+  <div class="diagram">
+  <svg viewBox="0 0 820 430" role="img" aria-labelledby="pt pd">
+    <title id="pt">Tallgrass telemetry pipeline</title>
+    <desc id="pd">Within the Tallgrass Site, 62 Turbine Controllers send one sample per second to Site SCADA, which sends buffered storage to the Edge Historian and sends output and availability every 4 seconds to the Grid Operator. The Edge Historian sends compressed batches over satellite or fiber to the Ingest Gateway in the Windspire Operations Cloud, which sends validated samples to the Time-Series Store. The Time-Series Store sends history to the Forecast Service and live and historical views to the Control Room. The Forecast Service sends a 24 hour output forecast to the Control Room.</desc>
+    <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah"/></marker></defs>
+
+    <rect class="ctr" x="200" y="64" width="180" height="340" rx="14"/>
+    <rect class="ctr" x="480" y="64" width="180" height="340" rx="14"/>
+    <text class="ct" x="212" y="86">Tallgrass Site</text>
+    <text class="ct" x="492" y="86">Windspire Operations Cloud</text>
+
+    <rect class="n out" x="6" y="215" width="90" height="60" rx="8"/><text class="t" x="51" y="242">Grid</text><text class="t" x="51" y="260">Operator</text>
+    <rect class="n out" x="722" y="110" width="92" height="160" rx="8"/><text class="t" x="768" y="187">Control</text><text class="t" x="768" y="205">Room</text>
+
+    <rect class="n" x="220" y="110" width="140" height="60" rx="8"/><text class="t" x="290" y="136">Turbine Controllers</text><text class="s" x="290" y="155">62 units</text>
+    <rect class="n" x="220" y="220" width="140" height="50" rx="8"/><text class="t" x="290" y="250">Site SCADA</text>
+    <rect class="n gold" x="220" y="320" width="140" height="50" rx="8"/><text class="t" x="290" y="343">Edge Historian</text><text class="s" x="290" y="360">holds 72 h full-res</text>
+
+    <rect class="n" x="500" y="110" width="140" height="50" rx="8"/><text class="t" x="570" y="140">Forecast Service</text>
+    <rect class="n" x="500" y="220" width="140" height="50" rx="8"/><text class="t" x="570" y="250">Time-Series Store</text>
+    <rect class="n" x="500" y="320" width="140" height="50" rx="8"/><text class="t" x="570" y="350">Ingest Gateway</text>
+
+    <path class="e" d="M250 170V219" marker-end="url(#ar)"/>
+    <path class="e" d="M250 270V319" marker-end="url(#ar)"/>
+    <path class="e" d="M220 245H97" marker-end="url(#ar)"/>
+    <path class="e th" d="M360 345H498" marker-end="url(#ar)"/>
+    <path class="e" d="M530 320V271" marker-end="url(#ar)"/>
+    <path class="e" d="M530 220V161" marker-end="url(#ar)"/>
+    <path class="e" d="M640 135H720" marker-end="url(#ar)"/>
+    <path class="e" d="M640 245H720" marker-end="url(#ar)"/>
+
+    <text class="l" x="258" y="199">1 sample per second</text>
+    <text class="l" x="258" y="299">buffered storage</text>
+    <text class="l" x="103" y="205">output and</text><text class="l" x="103" y="218">availability,</text><text class="l" x="103" y="231">every 4 seconds</text>
+    <text class="l lc" x="430" y="296">compressed</text><text class="l lc" x="430" y="309">batches over</text><text class="l lc" x="430" y="322">satellite or fiber</text>
+    <text class="lw" x="430" y="366">fiber: 100 Mbps</text><text class="lw" x="430" y="381">satellite: 2 Mbps</text>
+    <text class="l" x="538" y="299">validated samples</text>
+    <text class="l" x="538" y="195">history</text>
+    <text class="l" x="666" y="102">24 hour</text><text class="l" x="666" y="114">output</text><text class="l" x="666" y="126">forecast</text>
+    <text class="l" x="666" y="212">live and</text><text class="l" x="666" y="224">historical</text><text class="l" x="666" y="236">views</text>
+  </svg>
+  </div>
+  <p class="note">Heavy arrow: the only limited link in the pipeline. It is fiber in normal operation and satellite when fiber is down.</p>
+</section>
+
+<section id="sizing">
+  <h2>Sizing</h2>
+  <div class="grid">
+    <div class="card"><div class="stat">8,680</div><p>samples per second: 62 turbines with 140 signals each.</p></div>
+    <div class="card"><div class="stat">~750 M</div><p>samples a day (about 750 million).</p></div>
+    <div class="card"><div class="stat">30 days</div><p>of full-resolution data kept.</p></div>
+    <div class="card"><div class="stat">5 years</div><p>of one-minute averages kept.</p></div>
+  </div>
+
+  <h3>Link capacity</h3>
+  <div class="diagram">
+  <svg viewBox="0 0 400 110" role="img" aria-labelledby="lt ld" style="min-width:320px;max-width:640px">
+    <title id="lt">Link capacity in megabits per second</title>
+    <desc id="ld">Fiber is 100 Mbps. The satellite fallback is 2 Mbps, one fiftieth of fiber.</desc>
+    <text class="rv" x="0" y="18">Fiber link: 100 Mbps</text>
+    <rect class="bar" x="0" y="26" width="380" height="22" rx="3"/>
+    <text class="rv" x="0" y="74">Satellite fallback: 2 Mbps (one fiftieth of fiber)</text>
+    <rect class="bar w" x="0" y="82" width="7.6" height="22" rx="2"/>
+  </svg>
+  </div>
+  <p class="note">The satellite link can carry one-minute averages only.</p>
+
+  <h3>What the Control Room sees</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>Link in use</th><th>Capacity</th><th>Data that crosses it</th><th>Control Room sees</th></tr></thead>
+    <tbody>
+      <tr><td>Fiber</td><td>100 Mbps</td><td>Compressed batches of full-resolution data</td><td>Full-resolution data</td></tr>
+      <tr class="sat"><td><strong>Satellite fallback</strong></td><td>2 Mbps</td><td>One-minute averages only</td><td><strong>Averages, not full-resolution data</strong></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="note" style="margin-top:12px">While on satellite, the Edge Historian keeps buffering up to 72 hours of full-resolution data until the fiber link returns.</p>
+</section>
+</main>
+</div>
+</body>
+</html>

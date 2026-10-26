@@ -1,0 +1,77 @@
+{
+  "id": "64-lakeshore-marathon-results",
+  "category": "data",
+  "title": "Lakeshore Marathon 2026 results",
+  "brief": "The race director of the Lakeshore Marathon, held Sunday 2026-10-11, wants a results summary page for the website. 3499 runners started and 3412 finished (97.5 percent), 87 did not finish. Median finish time was 4:21:08. Sections: \"Race at a glance\", \"Finish times\", \"Winners\", \"Highlights\". Weather was 14 degrees Celsius at the start with a light headwind on the lakefront stretch. Overall winners: men's, Daniel Kiprop, 2:19:44; women's, Elena Moretti, 2:38:12. Finishers by finish-time band: under 3:00 118; 3:00 to 3:29 304; 3:30 to 3:59 612; 4:00 to 4:29 891; 4:30 to 4:59 703; 5:00 to 5:29 489; 5:30 and over 295. Age-group winners: 18 to 29, Mateus Oliveira 2:31:55 and Hannah Berg 2:54:30; 30 to 39, Samuel Adeyemi 2:28:02 and Ines Duarte 2:49:18; 40 to 49, Rolf Jansen 2:41:37 and Corinne Leclerc 3:01:44; 50 and over, Tadashi Mori 2:58:09 and Margaret O'Hara 3:12:51. Add a few facts for the highlight list: 41 percent of finishers were running their first marathon, 23 countries were represented, and a record 1180 volunteers staffed 14 aid stations. Include a note that official chip times are final and results may still change if a protest is upheld before 2026-10-25.",
+  "checklist": {
+    "sections": [
+      "Race at a glance",
+      "Finish times",
+      "Winners",
+      "Highlights"
+    ],
+    "visible": [
+      "Daniel Kiprop",
+      "Elena Moretti",
+      "Mateus Oliveira",
+      "Hannah Berg",
+      "Samuel Adeyemi",
+      "Ines Duarte",
+      "Rolf Jansen",
+      "Corinne Leclerc",
+      "Tadashi Mori",
+      "Margaret O'Hara",
+      "aid stations",
+      "chip times"
+    ],
+    "values": [
+      "3499",
+      "3412",
+      "97.5",
+      "87",
+      "4:21:08",
+      "14",
+      "2:19:44",
+      "2:38:12",
+      "118",
+      "304",
+      "612",
+      "891",
+      "703",
+      "489",
+      "295",
+      "2:31:55",
+      "2:54:30",
+      "2:28:02",
+      "2:49:18",
+      "2:41:37",
+      "3:01:44",
+      "2:58:09",
+      "3:12:51",
+      "41",
+      "23",
+      "1180",
+      "2026-10-25"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "A timing error was found: Daniel Kiprop's official time is 2:19:41, not 2:19:44, and the 4:00 to 4:29 band should be 893 finishers with the 4:30 to 4:59 band 701.",
+    "expect_visible": [
+      "2:19:41"
+    ],
+    "expect_values": [
+      "893",
+      "701"
+    ],
+    "expect_absent": [
+      "2:19:44"
+    ]
+  }
+}

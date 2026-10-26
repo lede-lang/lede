@@ -1,0 +1,145 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "data",
+      "name": "uptime",
+      "line": 1
+    },
+    {
+      "type": "chart",
+      "kind": "line",
+      "data": "uptime",
+      "x": "week",
+      "y": [
+        "rate"
+      ],
+      "title": null,
+      "stack": false,
+      "labels": false,
+      "unit": null,
+      "min": null,
+      "max": null,
+      "focus": null,
+      "target": {
+        "value": 99.9,
+        "label": "SLO"
+      },
+      "line": 2,
+      "marks": [
+        {
+          "x": "W2",
+          "label": "deploy v2"
+        },
+        {
+          "x": "Week 3",
+          "label": "incident #41"
+        },
+        {
+          "x": "W10",
+          "label": ""
+        }
+      ]
+    },
+    {
+      "type": "chart",
+      "kind": "bar",
+      "data": "uptime",
+      "x": "week",
+      "y": [
+        "errors"
+      ],
+      "title": null,
+      "stack": false,
+      "labels": false,
+      "unit": null,
+      "min": null,
+      "max": null,
+      "focus": null,
+      "target": null,
+      "line": 3,
+      "marks": [
+        {
+          "x": "W1",
+          "label": "launch"
+        }
+      ]
+    },
+    {
+      "type": "chart",
+      "kind": "area",
+      "data": "uptime",
+      "x": "week",
+      "y": [
+        "rate"
+      ],
+      "title": null,
+      "stack": false,
+      "labels": false,
+      "unit": null,
+      "min": null,
+      "max": null,
+      "focus": null,
+      "target": null,
+      "line": 4,
+      "marks": [
+        {
+          "x": "W10",
+          "label": "rollback"
+        }
+      ]
+    },
+    {
+      "type": "chart",
+      "kind": "line",
+      "data": "uptime",
+      "x": "week",
+      "y": [
+        "rate"
+      ],
+      "title": null,
+      "stack": false,
+      "labels": false,
+      "unit": null,
+      "min": null,
+      "max": null,
+      "focus": null,
+      "target": null,
+      "line": 5
+    }
+  ],
+  "data": {
+    "uptime": {
+      "name": "uptime",
+      "columns": [
+        "week",
+        "rate",
+        "errors"
+      ],
+      "rows": [
+        [
+          "W1",
+          "99.9",
+          "3"
+        ],
+        [
+          "W2",
+          "99.8",
+          "5"
+        ],
+        [
+          "Week 3",
+          "99.95",
+          "1"
+        ],
+        [
+          "W10",
+          "99.7",
+          "9"
+        ]
+      ],
+      "line": 1
+    }
+  },
+  "diagnostics": []
+}

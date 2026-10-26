@@ -1,0 +1,39 @@
+@title Rotterdam 14:00 cutoff: three options
+@subtitle For Monday's planning meeting: compare and pick one
+
+We plan routes once a night from the Rotterdam depot and drive 18,400 km a week. These are three ways to handle the 14:00 order cutoff. Km saved is the estimated percentage applied to today's 18,400 km/week; all other figures are yours.
+
+kpi Driven today | 18,400 km/week | one depot, Rotterdam
+
+## Side by side
+
+table = Option,Effort,Running cost,Up-front,Km saved per week,Cost over 24 months; A. Second batch run at 13:30,3 days,"€400/month",none,0 km,"€9,600"; B. Re-route every 10 minutes,4 weeks,"€2,850/month",none,"about 2,024 km (11%)","€68,400"; C. Vendor dynamic dispatch,6 weeks,"€6,200/month","€15,000 setup","about 2,576 km (14%)","€163,800"
+
+The 24-month cost is running cost plus setup only. It leaves out the value of the km saved and the effort to build.
+
+data saved = option,km saved per week; A. 13:30 run,0; B. 10-minute re-route,2024; C. Vendor module,2576
+chart hbar saved unit=km labels title="Estimated km saved per week"
+
+## Main risk and what we undo if it fails
+
+cards
+
+### A. Second run at 13:30
+- Main risk: orders that miss 13:30 still wait until the next day, so the cutoff problem is only partly fixed.
+- If it fails: switch off the 13:30 run and stop paying the extra €400/month. Nothing else changes.
+
+### B. Re-route every 10 minutes
+- Main risk: drivers see their routes change mid-shift.
+- If it fails: go back to the nightly batch planner. Keep the batch planner working alongside until B has proved itself, or the way back is gone. The 4 weeks of build are lost and drivers need to be told.
+
+### C. Vendor dynamic dispatch
+- Main risk: we are locked into the vendor's API.
+- If it fails: we cannot simply stop. The 24-month contract is about €163,800 including setup, and we would have to remove the API integration and return to the batch planner.
+
+## Recommendation
+
+**Choose B, and keep the nightly batch running next to it for the first weeks.** It saves about 79% of what C saves (2,024 of 2,576 km/week) at under half the monthly cost, with no setup fee, no lock-in and a way back. A saves no km at all, and it leaves the late-order problem in place.
+
+Two things make B safe enough. Keep the batch planner as the fallback. Settle with drivers when a route may change, for example never once a driver has started it.
+
+!! The one number that flips this is what one driven kilometre really costs us (fuel, driver time, refrigeration, wear). B beats A only above about €0.28/km, because B costs €2,450/month more than A and saves about 8,770 km/month. C beats B only above about €1.66/km, because C costs about €3,975/month more than B once the €15,000 setup is spread over 24 months, and saves about 2,390 km/month more. Below €0.28/km take A. Above €1.66/km take C. In between, take B.

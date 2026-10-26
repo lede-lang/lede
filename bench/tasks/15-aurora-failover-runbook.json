@@ -1,0 +1,47 @@
+{
+  "id": "15-aurora-failover-runbook",
+  "category": "runbook",
+  "title": "Aurora manual failover runbook",
+  "brief": "Can you turn this into a proper runbook page for the Database Reliability team at Fenwick Bank? It covers a manual failover of the orders-aurora-prod Aurora PostgreSQL cluster. Section titled \"When to use this runbook\": use it when the writer instance has been unhealthy for more than 5 minutes and automatic failover has not happened, or for a planned failover during the Sunday maintenance window (02:00 to 04:00 UTC). Section titled \"Prerequisites\" as a bulleted list: the break-glass role db-failover-operator, access to the #db-incidents channel, and the replica lag dashboard open. Section titled \"Failover steps\" as a numbered list: 1 announce the failover in #db-incidents; 2 confirm replica lag on the target reader is under 30 seconds; 3 put the orders service into read-only mode with the feature flag orders.readonly; 4 trigger the failover to reader instance orders-aurora-prod-r2; 5 wait for the cluster endpoint to point at the new writer (usually 30 to 60 seconds); 6 turn orders.readonly off; 7 watch the connection count recover to its normal level of about 400. Put a prominent warning before step 4: never fail over to a reader whose lag exceeds 30 seconds, because committed orders will be lost. Section titled \"Verification\": a short table with columns Check, Expected: Writer instance, orders-aurora-prod-r2; Replica lag, under 1 second; Error rate on orders API, under 0.5 percent; Connections, about 400. Section titled \"Rollback\": one paragraph saying that if the new writer is unhealthy, fail back to orders-aurora-prod-r1 using the same steps, and escalate to the on-call DBA lead.",
+  "checklist": {
+    "sections": [
+      "When to use this runbook",
+      "Prerequisites",
+      "Failover steps",
+      "Verification",
+      "Rollback"
+    ],
+    "visible": [
+      "orders-aurora-prod-r2",
+      "orders.readonly",
+      "db-failover-operator",
+      "#db-incidents",
+      "Replica lag",
+      "Expected"
+    ],
+    "values": [
+      "orders-aurora-prod",
+      "30",
+      "400",
+      "02:00",
+      "04:00",
+      "0.5",
+      "orders-aurora-prod-r1"
+    ]
+  },
+  "needs": [
+    "list",
+    "table",
+    "callout"
+  ],
+  "edit": {
+    "request": "Lower the replica lag threshold from 30 seconds to 20 seconds in the steps and the warning, and add a new step right after enabling read-only mode: \"Pause the nightly-reconcile job\".",
+    "expect_visible": [
+      "nightly-reconcile"
+    ],
+    "expect_values": [
+      "20"
+    ],
+    "expect_absent": []
+  }
+}

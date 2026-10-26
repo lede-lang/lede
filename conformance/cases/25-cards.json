@@ -1,0 +1,107 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Intro text before the first section stays outside the cards.",
+      "line": 2
+    },
+    {
+      "type": "data",
+      "name": "inside",
+      "line": 9
+    },
+    {
+      "type": "cards",
+      "items": [
+        {
+          "title": "Option A (recommended)",
+          "blocks": [
+            {
+              "type": "paragraph",
+              "text": "Fast to ship.",
+              "line": 4
+            },
+            {
+              "type": "list",
+              "ordered": false,
+              "start": 1,
+              "items": [
+                {
+                  "text": "one",
+                  "checked": null
+                }
+              ],
+              "line": 5
+            },
+            {
+              "type": "kpis",
+              "items": [
+                {
+                  "label": "Cost",
+                  "value": "$10",
+                  "delta": "",
+                  "tone": null,
+                  "note": "",
+                  "ref": null
+                }
+              ],
+              "line": 6
+            }
+          ],
+          "line": 3
+        },
+        {
+          "title": "Option B",
+          "blocks": [
+            {
+              "type": "note",
+              "tone": "note",
+              "text": "Needs an owner.",
+              "line": 8
+            },
+            {
+              "type": "table",
+              "data": "inside",
+              "cols": null,
+              "sort": null,
+              "limit": null,
+              "title": null,
+              "line": 10
+            }
+          ],
+          "line": 7
+        }
+      ],
+      "line": 1
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "After",
+      "line": 11
+    },
+    {
+      "type": "paragraph",
+      "text": "cards on the table is still prose.",
+      "line": 12
+    }
+  ],
+  "data": {
+    "inside": {
+      "name": "inside",
+      "columns": [
+        "k",
+        "v"
+      ],
+      "rows": [
+        [
+          "a",
+          "1"
+        ]
+      ],
+      "line": 9
+    }
+  },
+  "diagnostics": []
+}

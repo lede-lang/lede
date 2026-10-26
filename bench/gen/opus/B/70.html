@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Customer Advisory Council charter</title>
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#f6f7f9; --surface:#ffffff; --surface-2:#f0f2f5; --text:#1a1f27; --muted:#5b6473; --border:#dde1e7;
+  --accent:#1f4e79; --accent-soft:#e5edf6; --good:#1d7a4a; --good-soft:#e3f3ea; --no:#a3321f; --no-soft:#fbe9e5;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0f1216; --surface:#171b21; --surface-2:#1e232b; --text:#e6e9ee; --muted:#9aa4b1; --border:#2a3039;
+    --accent:#86b6e8; --accent-soft:#18263a; --good:#5fd09a; --good-soft:#15301f; --no:#ff9a86; --no-soft:#3a1c17;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16.5px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:780px;margin:0 auto;padding:48px 24px 64px}
+.doc{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:40px 44px}
+.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);font-weight:700;margin:0}
+h1{font-size:clamp(1.7rem,4.8vw,2.3rem);line-height:1.15;margin:.3em 0 .5em;letter-spacing:-.015em}
+.meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 24px;margin:0 0 8px;padding:16px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.meta dt{font-size:.75rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700}
+.meta dd{margin:0;font-weight:600}
+section{margin-top:30px;counter-increment:sec}
+body{counter-reset:sec}
+h2{font-size:1.2rem;margin:0 0 .6rem;display:flex;gap:10px;align-items:baseline}
+h2::before{content:counter(sec) ".";color:var(--accent);font-variant-numeric:tabular-nums}
+p{margin:0 0 .8rem}
+ul{margin:0 0 .8rem;padding-left:20px}
+li{margin-bottom:5px}
+.dates{list-style:none;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:10px 0 14px}
+.dates li{background:var(--accent-soft);border-radius:10px;padding:10px 12px;text-align:center;margin:0}
+.dates .q{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700}
+.dates time{font-weight:700;font-variant-numeric:tabular-nums}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.col{border-radius:12px;padding:16px 18px}
+.col h3{font-size:.95rem;margin:0 0 .5rem}
+.col ul{margin:0}
+.does{background:var(--good-soft)} .does h3{color:var(--good)}
+.doesnt{background:var(--no-soft)} .doesnt h3{color:var(--no)}
+.sig{margin-top:34px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:.9rem}
+@media (max-width:640px){.dates{grid-template-columns:repeat(2,1fr)}.split{grid-template-columns:1fr}}
+@media (max-width:480px){
+  .wrap{padding:24px 12px 40px}
+  .doc{padding:24px 18px;border-radius:12px}
+  .meta{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<main class="doc">
+<header>
+  <p class="eyebrow">Windrow Software &middot; Charter</p>
+  <h1>Customer Advisory Council</h1>
+  <dl class="meta">
+    <div><dt>Effective</dt><dd><time datetime="2027-01-01">January 1, 2027</time></dd></div>
+    <div><dt>Sponsor</dt><dd>Ines Carvalho, Chief Product Officer</dd></div>
+  </dl>
+</header>
+
+<section id="purpose">
+  <h2>Purpose</h2>
+  <p>The Customer Advisory Council gives customers a structured, regular way to shape the Windrow product roadmap and to tell us plainly what is not working.</p>
+</section>
+
+<section id="membership">
+  <h2>Membership</h2>
+  <ul>
+    <li>The council has <strong>14 seats</strong>: 12 customer members and 2 Windrow product leads.</li>
+    <li>Members are chosen to reflect the customer base by company size and industry.</li>
+    <li>Customer members serve <strong>two-year terms</strong>, renewable once.</li>
+    <li>Half of the customer seats rotate each year, to keep continuity.</li>
+    <li>The chair is Ines Carvalho. The vice chair is elected by the customer members.</li>
+  </ul>
+</section>
+
+<section id="meetings">
+  <h2>Meetings</h2>
+  <p>The council meets quarterly, for two hours. Meetings in 2027:</p>
+  <ul class="dates">
+    <li><span class="q">Q1</span><time datetime="2027-03-10">March 10</time></li>
+    <li><span class="q">Q2</span><time datetime="2027-06-09">June 9</time></li>
+    <li><span class="q">Q3</span><time datetime="2027-09-08">September 8</time></li>
+    <li><span class="q">Q4</span><time datetime="2027-12-08">December 8</time></li>
+  </ul>
+  <ul>
+    <li>The agenda is sent <strong>10 days</strong> before each meeting.</li>
+    <li>Written minutes are shared within <strong>5 business days</strong> after each meeting.</li>
+    <li>A quorum is <strong>8 members</strong>, including at least 6 customer members.</li>
+  </ul>
+</section>
+
+<section id="scope">
+  <h2>What the council does and does not do</h2>
+  <div class="split">
+    <div class="col does">
+      <h3>The council does</h3>
+      <ul>
+        <li>Review roadmap themes.</li>
+        <li>Test early designs.</li>
+        <li>Rank customer-submitted requests.</li>
+      </ul>
+    </div>
+    <div class="col doesnt">
+      <h3>The council does not</h3>
+      <ul>
+        <li>Approve pricing.</li>
+        <li>Commit Windrow to a delivery date.</li>
+        <li>Replace the normal support channel.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="confidentiality">
+  <h2>Confidentiality</h2>
+  <ul>
+    <li>All members sign a mutual non-disclosure agreement before the first meeting.</li>
+    <li>Roadmap material shown to the council is confidential unless marked otherwise.</li>
+  </ul>
+</section>
+
+<p class="sig">Sponsored by Ines Carvalho, Chief Product Officer, Windrow Software. Effective January 1, 2027.</p>
+</main>
+</div>
+</body>
+</html>

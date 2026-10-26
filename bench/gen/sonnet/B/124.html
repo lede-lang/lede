@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EHR Downtime Runbook - Pelican Bay Clinic</title>
+<style>
+:root{color-scheme:light dark;--bg:#f3f7f8;--surface:#fff;--text:#172227;--muted:#546469;--border:#d9e3e6;--accent:#0b7285;--on-accent:#fff;--accent-soft:#e0f2f5;--red:#b42318;--red-soft:#fdecea}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1417;--surface:#152024;--text:#e6eef0;--muted:#97a8ad;--border:#263539;--accent:#5fd0e3;--on-accent:#0d1417;--accent-soft:#12303a;--red:#ff8b80;--red-soft:#3a1a1a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:780px;margin:0 auto;padding:20px 16px 48px}
+.top{padding:4px 0 16px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+h1{font-size:1.75rem;line-height:1.2;margin:.25rem 0 .5rem}
+.meta{display:flex;flex-wrap:wrap;gap:6px 16px;color:var(--muted);font-size:.9rem;margin:0;padding:0;list-style:none}
+h2{font-size:1.25rem;margin:2rem 0 .75rem;padding-bottom:.35rem;border-bottom:2px solid var(--border)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.card p{margin:.2rem 0}
+.callout{border-radius:12px;padding:14px 16px;margin:12px 0;border:2px solid var(--red);background:var(--red-soft)}
+.callout strong.t{display:block;color:var(--red);text-transform:uppercase;letter-spacing:.05em;font-size:.82rem;margin-bottom:2px}
+.callout p{margin:0;font-weight:600}
+.say{display:inline-block;background:var(--accent-soft);border:1px solid var(--border);padding:2px 10px;border-radius:8px;font-weight:700}
+ol.steps{list-style:none;counter-reset:s;padding:0;margin:0}
+ol.steps>li{counter-increment:s;position:relative;padding:14px 14px 14px 58px;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:10px}
+ol.steps>li::before{content:counter(s);position:absolute;left:14px;top:14px;width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--on-accent);font-weight:700;display:flex;align-items:center;justify-content:center}
+ol.steps>li>b{display:block;margin-bottom:2px}
+ol.sub{list-style:lower-alpha;margin:.3rem 0 0;padding-left:1.3rem}
+ol.sub li{margin:.3rem 0}
+.rec{list-style:none;counter-reset:r;padding:0;margin:0}
+.rec li{counter-increment:r;position:relative;padding:12px 14px 12px 50px;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:8px}
+.rec li::before{content:counter(r,lower-alpha);position:absolute;left:14px;top:12px;width:26px;height:26px;border-radius:7px;background:var(--accent-soft);color:var(--accent);font-weight:800;display:flex;align-items:center;justify-content:center}
+.rec .due{display:inline-block;margin-left:6px;font-size:.78rem;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:1px 8px;border-radius:99px;white-space:nowrap}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--border);vertical-align:top}
+th{color:var(--muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.05em}
+tr:last-child td{border-bottom:0}
+footer{margin-top:2rem;color:var(--muted);font-size:.85rem}
+@media (max-width:480px){h1{font-size:1.45rem}.wrap{padding:16px 14px 40px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">Pelican Bay Clinic &middot; Operations</div>
+  <h1>Electronic Health Record Downtime Runbook</h1>
+  <ul class="meta">
+    <li>For: charge nurses and front-desk staff</li>
+    <li>Owner: Clinical Operations</li>
+    <li>Effective 2026-11-15</li>
+  </ul>
+</header>
+
+<div class="callout" role="alert">
+  <strong class="t">Source of truth</strong>
+  <p>During downtime, the allergy list in the downtime binder is the source of truth until the record is back.</p>
+</div>
+
+<h2>Declare downtime</h2>
+<div class="card">
+  <p>Downtime is declared when the record has been <b>unavailable or unusably slow for 10 minutes</b>.</p>
+  <p>The charge nurse:</p>
+  <ul style="margin:.3rem 0 0;padding-left:1.2rem">
+    <li>announces <span class="say">Paper procedures</span> on the overhead page, and</li>
+    <li>calls the IT service desk on <b>extension 5000</b>.</li>
+  </ul>
+</div>
+
+<h2>During downtime</h2>
+<ol class="steps">
+  <li><b>Switch to paper</b>
+    <ol class="sub">
+      <li>Take the downtime binder from each station. It holds the printed schedule (refreshed at 05:00 daily), an allergy list and a medication list for every patient booked that day.</li>
+      <li>Label every paper form with a patient label sheet.</li>
+    </ol>
+  </li>
+  <li><b>Check in patients</b>
+    <ol class="sub">
+      <li>Confirm identity with two identifiers: name and date of birth.</li>
+      <li>Record the arrival time by hand.</li>
+    </ol>
+  </li>
+  <li><b>Orders and medications</b>
+    <ol class="sub">
+      <li>Write down every verbal order and read it back.</li>
+      <li>Never give a high-risk medication without a second nurse's check.</li>
+      <li>Record every dose on the paper medication sheet.</li>
+    </ol>
+  </li>
+  <li><b>Keep care moving</b>
+    <ol class="sub">
+      <li>Do not cancel visits solely because of downtime.</li>
+      <li>Tell patients about any delay beyond 20 minutes.</li>
+    </ol>
+  </li>
+</ol>
+
+<h2>Recovery</h2>
+<ol class="rec">
+  <li>When IT announces restoration, <b>wait for the all-clear</b> before entering anything.</li>
+  <li>Scan paper documents into the record <span class="due">within 4 hours</span></li>
+  <li>Reconcile medication entries <span class="due">within 24 hours</span></li>
+  <li>Report the event on the incident form.</li>
+</ol>
+
+<h2>Contacts</h2>
+<div class="card" style="padding:4px 8px">
+  <table>
+    <thead><tr><th>Role</th><th>Contact</th></tr></thead>
+    <tbody>
+      <tr><td>IT service desk</td><td><b>Extension 5000</b></td></tr>
+      <tr><td>Charge nurse supervisor</td><td><b>Rowena Achterberg</b></td></tr>
+      <tr><td>Privacy officer</td><td><b>Idris Mbeki</b><br><span style="color:var(--muted)">Must be told if any paper forms are lost.</span></td></tr>
+    </tbody>
+  </table>
+</div>
+<footer>Pelican Bay Clinic Clinical Operations &middot; EHR downtime runbook, effective 2026-11-15</footer>
+</div>
+</body>
+</html>

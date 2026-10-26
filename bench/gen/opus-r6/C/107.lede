@@ -1,0 +1,40 @@
+@title Spring 2027 Fundraising Event
+@subtitle Decision for the Summit Youth Mentoring board meeting on 2026-11-17
+@author Priya Venkataraman, Development Director
+@date 2026-11-17
+
+!!! Decision needed on 2026-11-17: approve the $60,000 gala budget for a gala on 2027-04-24.
+
+kpi Goal | $100,000 net
+
+# Options
+cards
+### Spring gala (recommended)
+- Net revenue: $120,000 to $180,000
+- Up-front cost: $60,000
+- Effort: about 400 staff and volunteer hours
+- Risk: depends on a few large sponsors
+### Family walkathon
+- Net revenue: $70,000 to $110,000
+- Up-front cost: $25,000
+- Effort: about 250 hours
+- Risk: weather on the day
+### Online giving campaign
+- Net revenue: $40,000 to $95,000
+- Up-front cost: $8,000
+- Effort: about 120 hours
+- Risk: depends on social media reach
+
+# Net revenue range
+data net = option,low,high; Spring gala,120000,180000; Family walkathon,70000,110000; Online giving campaign,40000,95000
+chart range net from=low to=high unit=$ target="100000 Goal" title="Net revenue range vs the $100,000 goal"
+
+The gala is the only option whose whole range stays above the goal. The walkathon reaches it only at the top of its range, and the online campaign never reaches it on its own.
+
+# Risks
+table = option,main risk,up-front cost,effort; Spring gala,Depends on a few large sponsors,"$60,000",400 hours; Family walkathon,Weather on the day,"$25,000",250 hours; Online giving campaign,Results depend on social media reach,"$8,000",120 hours
+
+# Recommendation
+Hold the **spring gala**, with the **online giving campaign** as a low-cost add-on. The gala needs the most money up front and the most effort, but it is the only option that clears $100,000 across its whole range.
+
+!! The board needs to approve the $60,000 gala budget on 2026-11-17 to hold the gala on 2027-04-24.

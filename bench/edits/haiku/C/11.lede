@@ -1,0 +1,49 @@
+@title AWS landing zone
+@subtitle Meridian Logistics · Cloud Foundations team · as of 2026-10-05
+
+# Account structure
+
+diagram lz dir=LR title="AWS landing zone"
+lz: org "AWS Organizations" svc
+lz: idc "IAM Identity Center" svc
+lz: gd "GuardDuty" svc
+lz: sh "Security Hub" svc
+lz: logb "Log Archive Bucket" store
+lz: tgw "Transit Gateway" svc
+lz: nat "NAT Gateway" svc
+lz: prodapp "Prod App Subnets" subnet
+lz: proddata "Prod Data Subnets" subnet
+lz: devapp "Dev App Subnets" subnet
+lz: stgapp "Staging App Subnets" subnet
+lz: prodvpc -> tgw : attachment
+lz: devvpc -> tgw : attachment
+lz: stgvpc -> tgw : attachment
+lz: tgw -> nat : 0.0.0.0/0
+lz: gd -> sh : findings
+lz: org -> logb : CloudTrail logs
+lz: group egress "Egress VPC" nat
+lz: group network "Network account" tgw, egress
+lz: group prodvpc "Prod VPC" prodapp, proddata
+lz: group prod "Prod workload account" prodvpc
+lz: group devvpc "Dev VPC" devapp
+lz: group dev "Dev workload account" devvpc
+lz: group stgvpc "Staging VPC 10.30.0.0/16" stgapp
+lz: group staging "Staging workload account" stgvpc
+lz: group mgmt "Management account" org, idc
+lz: group sec "Security account" gd, sh
+lz: group logs "Log Archive account" logb
+
+# Network ranges
+
+table = VPC,Account,CIDR,Region; Egress VPC,Network,10.0.0.0/20,us-west-2; Prod VPC,Prod workload,10.10.0.0/16,us-west-2; Dev VPC,Dev workload,10.20.0.0/16,us-west-2; Staging VPC,Staging workload,10.30.0.0/16,us-west-2
+
+# Guardrails
+
+Service control policies in force across the organization:
+
+- Deny leaving the organization.
+- Deny disabling CloudTrail.
+- Deny regions other than us-west-2 and us-east-1.
+- Deny root user access keys.
+
+! Prod and Dev VPCs cannot route to each other. The Transit Gateway uses separate route tables, rt-prod and rt-dev.

@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tidewater Ferries: Online Ticketing Architecture</title>
+<style>
+:root{
+  color-scheme:light dark;
+  --bg:#f2f5f8;--surface:#ffffff;--surface2:#e8eef4;--fg:#13202c;--muted:#556575;--line:#d3dce5;
+  --accent:#0a5fa8;--accent-soft:#e1eefa;
+  --good:#17754a;--good-soft:#e0f3e8;
+  --warn:#9a5200;--warn-soft:#fff1dc;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0d1319;--surface:#151c24;--surface2:#1d2630;--fg:#e6ecf2;--muted:#9aa9b8;--line:#2a3643;
+    --accent:#6cb4f5;--accent-soft:#12293f;
+    --good:#5dd596;--good-soft:#112f20;
+    --warn:#ffb65e;--warn-soft:#33240e;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:22px 16px 56px}
+.eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin:0}
+h1{font-size:clamp(1.55rem,5.5vw,2.15rem);line-height:1.18;margin:.3em 0 .5em}
+h2{font-size:1.25rem;line-height:1.3;margin:2.3rem 0 .7rem;padding-bottom:.4rem;border-bottom:2px solid var(--line)}
+h3{font-size:1rem;margin:0 0 .5rem}
+p{margin:0 0 .8rem}
+.meta{display:flex;flex-wrap:wrap;gap:6px 8px;list-style:none;padding:0;margin:14px 0 0}
+.meta li{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 11px;font-size:.84rem;color:var(--muted)}
+.meta b{color:var(--fg);font-weight:600}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.diagram{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;justify-content:center}
+.diagram svg{width:100%;max-width:480px;height:auto;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.84rem;color:var(--muted);margin:10px 2px 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:16px;height:12px;border-radius:3px;border:1.6px solid var(--accent);background:var(--accent-soft)}
+.sw.out{border-style:dashed;border-color:var(--muted);background:var(--surface2)}
+.sw.data{border-color:var(--good);background:var(--good-soft)}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+dl{margin:0}
+dt{font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:.65rem}
+dt:first-child{margin-top:0}
+dd{margin:.1rem 0 0}
+dd strong{font-size:1.4rem;line-height:1.2}
+.rto{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.rto .card{text-align:left}
+.rto .v{font-size:2rem;font-weight:800;line-height:1.1;color:var(--accent)}
+.rto .v small{font-size:1rem;font-weight:700;margin-left:.2rem}
+.rto .k{font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.rto .d{font-size:.9rem;color:var(--muted);margin-top:.2rem}
+svg text{font-family:inherit}
+.box{stroke-width:1.5}
+.sub{fill:var(--surface2);stroke:var(--accent)}
+.vnet{fill:var(--accent-soft);stroke:var(--accent);stroke-dasharray:6 3}
+.snet{fill:var(--surface);stroke:var(--muted)}
+.bt{font-size:11.5px;font-weight:700;fill:var(--muted);text-anchor:middle}
+.bt tspan.c{font-weight:500}
+.nd{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.6}
+.nd.out{fill:var(--surface2);stroke:var(--muted);stroke-dasharray:4 3}
+.nd.data{fill:var(--good-soft);stroke:var(--good)}
+.nt{font-size:12.5px;font-weight:650;fill:var(--fg);text-anchor:middle}
+.ns{font-size:10.5px;fill:var(--muted);text-anchor:middle}
+.ln{stroke:var(--muted);stroke-width:1.7;fill:none}
+.ah{fill:var(--muted)}
+.fl{font-size:11.5px;fill:var(--muted)}
+footer{margin-top:2.5rem;font-size:.85rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Architecture</p>
+  <h1>Online ticketing platform on Azure</h1>
+  <ul class="meta">
+    <li>Owner <b>Digital Channels</b></li>
+    <li>Region <b>North Europe</b></li>
+    <li>Reviewed <b>2026-09-22</b></li>
+  </ul>
+</header>
+
+<h2>Overview</h2>
+<p>Passengers book through Azure Front Door. Every booking is written to one database and announced as an event so that the scanners at the terminals stay in step.</p>
+
+<h2>Diagram</h2>
+<div class="diagram">
+<svg viewBox="0 0 400 532" role="img" aria-labelledby="dgt dgd">
+  <title id="dgt">Ticketing platform diagram</title>
+  <desc id="dgd">Passengers connect over HTTPS to Front Door, which sends origin requests to the Booking Web App in the App subnet of the Ticketing VNet inside the Ticketing subscription. The Booking Web App calls the Ticketing API over REST. The Ticketing API writes to Reservations DB over SQL on port 1433, requests card authorization from the Payment Provider outside the subscription, and publishes ticket issued events to Booking Events. Booking Events syncs to the Port Terminal Scanners every 30 seconds.</desc>
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah"/></marker>
+  </defs>
+
+  <!-- containers -->
+  <rect class="box sub" x="6" y="146" width="388" height="300" rx="12"/>
+  <text class="bt" x="200" y="165">Ticketing subscription</text>
+  <rect class="box vnet" x="14" y="174" width="372" height="262" rx="10"/>
+  <text class="bt" x="200" y="192">Ticketing VNet <tspan class="c">· 10.50.0.0/16</tspan></text>
+  <rect class="box snet" x="22" y="202" width="356" height="90" rx="8"/>
+  <text class="bt" x="200" y="220">App subnet <tspan class="c">· 10.50.1.0/24</tspan></text>
+  <rect class="box snet" x="22" y="304" width="356" height="124" rx="8"/>
+  <text class="bt" x="200" y="322">Data subnet <tspan class="c">· 10.50.2.0/24</tspan></text>
+
+  <!-- connectors -->
+  <path class="ln" d="M88 44V83" marker-end="url(#ar)"/>
+  <path class="ln" d="M88 120V235" marker-end="url(#ar)"/>
+  <path class="ln" d="M146 257H253" marker-end="url(#ar)"/>
+  <path class="ln" d="M312 236V45" marker-end="url(#ar)"/>
+  <path class="ln" d="M312 278V365" marker-end="url(#ar)"/>
+  <path class="ln" d="M280 278V346H88V365" marker-end="url(#ar)"/>
+  <path class="ln" d="M88 410V479" marker-end="url(#ar)"/>
+
+  <!-- outside nodes -->
+  <rect class="nd out" x="30" y="8" width="116" height="36" rx="8"/>
+  <text class="nt" x="88" y="31">Passengers</text>
+  <rect class="nd out" x="254" y="8" width="116" height="36" rx="8"/>
+  <text class="nt" x="312" y="31">Payment Provider</text>
+  <rect class="nd out" x="30" y="84" width="116" height="36" rx="8"/>
+  <text class="nt" x="88" y="107">Front Door</text>
+  <rect class="nd out" x="13" y="480" width="150" height="40" rx="8"/>
+  <text class="nt" x="88" y="504">Port Terminal Scanners</text>
+
+  <!-- inside nodes -->
+  <rect class="nd" x="30" y="236" width="116" height="42" rx="8"/>
+  <text class="nt" x="88" y="261">Booking Web App</text>
+  <rect class="nd" x="254" y="236" width="116" height="42" rx="8"/>
+  <text class="nt" x="312" y="261">Ticketing API</text>
+  <rect class="nd data" x="30" y="366" width="116" height="44" rx="8"/>
+  <text class="nt" x="88" y="385">Booking Events</text>
+  <text class="ns" x="88" y="400">Service Bus</text>
+  <rect class="nd data" x="254" y="366" width="116" height="44" rx="8"/>
+  <text class="nt" x="312" y="385">Reservations DB</text>
+  <text class="ns" x="312" y="400">Azure SQL</text>
+
+  <!-- flow labels -->
+  <text class="fl" x="96" y="68">HTTPS</text>
+  <text class="fl" x="96" y="137">origin request</text>
+  <text class="fl" x="200" y="251" text-anchor="middle">REST</text>
+  <text class="fl" x="304" y="104" text-anchor="end">card authorization</text>
+  <text class="fl" x="320" y="334">SQL, port</text>
+  <text class="fl" x="320" y="347">1433</text>
+  <text class="fl" x="180" y="341" text-anchor="middle">ticket issued</text>
+  <text class="fl" x="96" y="468">sync every 30 s</text>
+</svg>
+</div>
+<div class="legend" aria-hidden="true">
+  <span><i class="sw out"></i>Outside the subscription</span>
+  <span><i class="sw"></i>Application</span>
+  <span><i class="sw data"></i>Data and events</span>
+</div>
+
+<h2>Capacity</h2>
+<div class="grid">
+  <div class="card">
+    <h3>Booking Web App</h3>
+    <dl>
+      <dt>Instances</dt><dd><strong>3 to 10</strong></dd>
+      <dt>Scales at</dt><dd><strong>60 percent</strong> CPU</dd>
+    </dl>
+  </div>
+  <div class="card">
+    <h3>Ticketing API</h3>
+    <dl>
+      <dt>Pods</dt><dd><strong>4 to 16</strong></dd>
+    </dl>
+  </div>
+  <div class="card">
+    <h3>Reservations DB</h3>
+    <dl>
+      <dt>Compute</dt><dd><strong>8</strong> vCores</dd>
+      <dt>Replica</dt><dd>Read replica in the paired region</dd>
+    </dl>
+  </div>
+</div>
+
+<h2>Recovery targets</h2>
+<div class="rto">
+  <div class="card"><div class="k">Recovery point objective</div><div class="v">5<small>minutes</small></div></div>
+  <div class="card"><div class="k">Recovery time objective</div><div class="v">1<small>hour</small></div></div>
+  <div class="card"><div class="k">Last tested</div><div class="v" style="font-size:1.5rem">2026-08-19</div></div>
+</div>
+
+<footer>Tidewater Ferries · Digital Channels · reviewed 2026-09-22</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,1 @@
+Lower the replica lag threshold from 30 seconds to 20 seconds in the steps and the warning, and add a new step right after enabling read-only mode: "Pause the nightly-reconcile job".

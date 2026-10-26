@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CRM selection: Hartwell Industrial Supply</title>
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#f5f6f8; --surface:#ffffff; --surface-2:#f0f2f6; --text:#1a1e25; --muted:#5a6271; --border:#dde1e8;
+  --accent:#2a55c0; --accent-soft:#e6edfc;
+  --warn:#8f5600; --warn-soft:#fbf0dc;
+  --c1:#2a55c0; --c2:#b23a48; --c3:#2b8a6e;
+  --h1:#e9eefb; --h2:#d3defa; --h3:#b7c9f5; --h4:#94aeee; --h5:#6e90e4;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0f1217; --surface:#171b22; --surface-2:#1e232c; --text:#e6e9ef; --muted:#9ba4b3; --border:#2a313c;
+    --accent:#86a7ff; --accent-soft:#1c2846;
+    --warn:#f2b155; --warn-soft:#33270f;
+    --c1:#86a7ff; --c2:#f08a96; --c3:#5fd0ad;
+    --h1:#1a2134; --h2:#1e2a48; --h3:#24365f; --h4:#2c4580; --h5:#3756a3;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:920px;margin:0 auto;padding:44px 24px 64px}
+.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;color:var(--accent);font-weight:700;margin:0}
+h1{font-size:clamp(1.7rem,4.5vw,2.35rem);line-height:1.15;margin:.3em 0 .35em;letter-spacing:-.015em}
+h2{font-size:1.3rem;margin:0 0 .8rem}
+h3{font-size:1.05rem;margin:0 0 .4rem}
+p{margin:0 0 .9rem}
+.lede{color:var(--muted);font-size:1.08rem;max-width:66ch}
+section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:26px;margin:20px 0}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;vertical-align:middle}
+thead th{font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-bottom:2px solid var(--border)}
+.n{text-align:center;font-variant-numeric:tabular-nums}
+.r{text-align:right;font-variant-numeric:tabular-nums}
+.s1{background:var(--h1)} .s2{background:var(--h2)} .s3{background:var(--h3)} .s4{background:var(--h4)} .s5{background:var(--h5)}
+tfoot td,tfoot th{font-weight:700;border-top:2px solid var(--border);border-bottom:0;font-size:1rem}
+.best{outline:2px solid var(--accent);outline-offset:-2px}
+.wt{color:var(--muted);font-size:.88rem}
+.legend{display:flex;gap:6px;align-items:center;font-size:.82rem;color:var(--muted);margin-top:10px;flex-wrap:wrap}
+.legend span.sw{display:inline-block;width:22px;height:14px;border-radius:3px;border:1px solid var(--border)}
+.chart{width:100%;max-width:620px;height:auto;display:block;margin-top:6px}
+.chart .lbl{fill:var(--text);font-size:15px;font-weight:600}
+.chart .val{fill:var(--text);font-size:15px;font-variant-numeric:tabular-nums}
+.chart .sub{fill:var(--muted);font-size:13px}
+.chart .b1{fill:var(--c1)} .chart .b2{fill:var(--c2)} .chart .b3{fill:var(--c3)}
+.chart .guide{stroke:var(--border);stroke-width:1}
+.subhead{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin:22px 0 4px}
+.risks{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.risk{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:16px}
+.risk p{margin:0;font-size:.95rem}
+.rec{border:2px solid var(--accent)}
+.rec .big{font-size:1.25rem;font-weight:700}
+.pending{display:flex;gap:12px;align-items:flex-start;background:var(--warn-soft);border-radius:10px;padding:14px 16px;margin-top:6px}
+.pending strong{color:var(--warn)}
+.note{font-size:.92rem;color:var(--muted)}
+footer{color:var(--muted);font-size:.85rem;margin-top:28px}
+@media (max-width:760px){.risks{grid-template-columns:1fr}}
+@media (max-width:480px){
+  .wrap{padding:28px 16px 48px}
+  section{padding:18px 14px;border-radius:12px}
+  th,td{padding:8px 4px}
+  table{font-size:.86rem}
+  thead th{font-size:.68rem;letter-spacing:.02em}
+  .wt{font-size:.78rem}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Hartwell Industrial Supply &middot; Sales operations</p>
+  <h1>Choosing a CRM for 140 seats</h1>
+  <p class="lede">We scored Pipeboard, Cardinal CRM and Thistle from 1 to 5 against five weighted criteria and compared list prices for 140 sales and account-management seats. Pipeboard comes out on top, pending one reference call.</p>
+</header>
+
+<section id="scorecard">
+  <h2>Scorecard</h2>
+  <table>
+    <thead>
+      <tr><th scope="col">Criterion</th><th scope="col" class="n">Weight</th><th scope="col" class="n">Pipeboard</th><th scope="col" class="n">Cardinal CRM</th><th scope="col" class="n">Thistle</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">Fit to our workflow</th><td class="n wt">30%</td><td class="n s4">4</td><td class="n s5">5</td><td class="n s3">3</td></tr>
+      <tr><th scope="row">Integration with our ERP</th><td class="n wt">25%</td><td class="n s5">5</td><td class="n s3">3</td><td class="n s4">4</td></tr>
+      <tr><th scope="row">Cost</th><td class="n wt">20%</td><td class="n s3">3</td><td class="n s2">2</td><td class="n s5">5</td></tr>
+      <tr><th scope="row">Admin effort</th><td class="n wt">15%</td><td class="n s4">4</td><td class="n s3">3</td><td class="n s3">3</td></tr>
+      <tr><th scope="row">Support quality</th><td class="n wt">10%</td><td class="n s4">4</td><td class="n s5">5</td><td class="n s3">3</td></tr>
+    </tbody>
+    <tfoot>
+      <tr><th scope="row">Weighted total</th><td class="n wt">100%</td><td class="n best">4.05</td><td class="n">3.60</td><td class="n">3.65</td></tr>
+    </tfoot>
+  </table>
+  <div class="legend" aria-hidden="true">Score: <span class="sw s1"></span>1 <span class="sw s2"></span>2 <span class="sw s3"></span>3 <span class="sw s4"></span>4 <span class="sw s5"></span>5</div>
+
+  <p class="subhead">Weighted total, out of 5</p>
+  <svg class="chart" viewBox="0 0 480 206" role="img" aria-labelledby="sTitle sDesc">
+    <title id="sTitle">Weighted total score out of 5</title>
+    <desc id="sDesc">Pipeboard 4.05, Thistle 3.65, Cardinal CRM 3.60.</desc>
+    <line class="guide" x1="340" y1="28" x2="340" y2="200" stroke-dasharray="3 3"/>
+    <text class="sub" x="340" y="16" text-anchor="middle">5.0</text>
+    <text class="lbl" x="0" y="44">Pipeboard</text>
+    <rect class="b1" x="0" y="52" width="275.4" height="26" rx="3"/>
+    <text class="val" x="284" y="70">4.05</text>
+    <text class="lbl" x="0" y="106">Thistle</text>
+    <rect class="b3" x="0" y="114" width="248.2" height="26" rx="3"/>
+    <text class="val" x="257" y="132">3.65</text>
+    <text class="lbl" x="0" y="168">Cardinal CRM</text>
+    <rect class="b2" x="0" y="176" width="244.8" height="26" rx="3"/>
+    <text class="val" x="254" y="194">3.60</text>
+  </svg>
+  <p class="note">Weighted total = sum of each score times its weight. Cardinal CRM wins on workflow fit and support, but loses ground on ERP integration and cost, the second and third heaviest criteria.</p>
+</section>
+
+<section id="annual-license-cost">
+  <h2>Annual license cost</h2>
+  <p>List price per seat per month, times 140 seats, times 12 months.</p>
+  <svg class="chart" viewBox="0 0 480 196" role="img" aria-labelledby="cTitle cDesc">
+    <title id="cTitle">Annual license cost for 140 seats at list price</title>
+    <desc id="cDesc">Pipeboard $109,200; Cardinal CRM $149,520; Thistle $70,560.</desc>
+    <text class="lbl" x="0" y="24">Pipeboard <tspan class="sub" font-weight="400">$65 / seat / month</tspan></text>
+    <rect class="b1" x="0" y="32" width="232.1" height="26" rx="3"/>
+    <text class="val" x="241" y="50">$109,200</text>
+    <text class="lbl" x="0" y="88">Cardinal CRM <tspan class="sub" font-weight="400">$89 / seat / month</tspan></text>
+    <rect class="b2" x="0" y="96" width="317.7" height="26" rx="3"/>
+    <text class="val" x="326" y="114">$149,520</text>
+    <text class="lbl" x="0" y="152">Thistle <tspan class="sub" font-weight="400">$42 / seat / month</tspan></text>
+    <rect class="b3" x="0" y="160" width="149.9" height="26" rx="3"/>
+    <text class="val" x="159" y="178">$70,560</text>
+  </svg>
+  <table style="margin-top:14px">
+    <thead><tr><th scope="col">Vendor</th><th scope="col" class="r">Per seat / month</th><th scope="col" class="r">140 seats / year</th></tr></thead>
+    <tbody>
+      <tr><td>Pipeboard</td><td class="r">$65</td><td class="r">$109,200</td></tr>
+      <tr><td>Cardinal CRM</td><td class="r">$89</td><td class="r">$149,520</td></tr>
+      <tr><td>Thistle</td><td class="r">$42</td><td class="r">$70,560</td></tr>
+    </tbody>
+  </table>
+  <p class="note" style="margin-top:12px">Pipeboard costs $38,640 a year more than Thistle and $40,320 a year less than Cardinal CRM. List prices only; implementation costs are not included.</p>
+</section>
+
+<section id="risks">
+  <h2>Risks</h2>
+  <div class="risks">
+    <div class="risk"><h3>Pipeboard</h3><p>The ERP connector is certified, but the vendor is a startup founded in 2019, so we are betting on a younger company.</p></div>
+    <div class="risk"><h3>Cardinal CRM</h3><p>The best fit to our workflow, but it needs a 12-week implementation and an implementation partner.</p></div>
+    <div class="risk"><h3>Thistle</h3><p>The cheapest, but its reporting is weak, and two of our dashboards would have to be rebuilt somewhere else.</p></div>
+  </div>
+</section>
+
+<section id="recommendation" class="rec">
+  <h2>Recommendation</h2>
+  <p class="big">Go with Pipeboard.</p>
+  <p>It has the highest weighted score (4.05), the strongest ERP integration, and sits in the middle on cost at $109,200 a year for 140 seats.</p>
+  <div class="pending">
+    <div><strong>Pending:</strong> a reference call with another industrial distributor, scheduled for <time datetime="2026-10-28">October 28, 2026</time>, to check how the vendor holds up for a business like ours.</div>
+  </div>
+</section>
+
+<footer>Scores from the Hartwell sales operations evaluation. Costs at list price for 140 seats.</footer>
+</div>
+</body>
+</html>

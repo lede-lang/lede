@@ -1,0 +1,5 @@
+Visual mockups of the search box states: could not draw UI, so four ASCII wireframes in code fences laid out with grid 2 count=4.
+Interactive or live data-flow animation: used a left-to-right architecture diagram plus a sequence diagram of the overlapping-query race.
+Tabs or collapsible sections to separate snippets: used numbered ### headings with one fence each, in reading order.
+Syntax-highlighted file tree and diff of the planned change: used a Files table with status pills and plain code fences.
+Interactive debounce comparison: used a bar chart and note of requests per search by delay.

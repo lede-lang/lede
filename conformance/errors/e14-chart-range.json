@@ -1,0 +1,44 @@
+[
+  {
+    "severity": "error",
+    "code": "chart-range-kind",
+    "line": 2,
+    "col": 7
+  },
+  {
+    "severity": "error",
+    "code": "chart-range-kind",
+    "line": 4,
+    "col": 7
+  },
+  {
+    "severity": "error",
+    "code": "unknown-column",
+    "line": 6,
+    "col": 7
+  },
+  {
+    "severity": "error",
+    "code": "unknown-column",
+    "line": 7,
+    "col": 7
+  },
+  {
+    "severity": "warning",
+    "code": "bands-limit",
+    "line": 8,
+    "col": 7
+  },
+  {
+    "severity": "warning",
+    "code": "chart-option",
+    "line": 9,
+    "col": 7
+  },
+  {
+    "severity": "error",
+    "code": "chart-option",
+    "line": 10,
+    "col": 7
+  }
+]

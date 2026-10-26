@@ -1,0 +1,1 @@
+Add a token refresh exchange at the end of the sequence: Web App sends "refresh_token grant" to Auth Server, and Auth Server replies "new access token".

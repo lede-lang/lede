@@ -1,0 +1,56 @@
+@title Combat animation timings
+@subtitle Four animations, each with a faster and a slower variant to compare
+
+This page cannot play or replay an animation, and it has no sliders. What it gives you is every timing laid out to scale, a faster and a slower variant of each, and the final numbers in a block you can copy into the game. The variants are my own guess at a useful spread: faster is 75% of your timing and slower is 150%. Change them to suit.
+
+kpi Card draw | 280 ms
+kpi Damage number | 600 ms
+kpi Low-health pulse | 1.2 s
+kpi Card discard | 220 ms
+
+## 1. Card draw
+The card moves from the deck at the bottom right into the hand, easing out, with a 4 degree tilt that settles flat by the end of the move.
+
+data draw = variant,start,end; Faster (210 ms),0,210; Yours (280 ms),0,280; Slower (420 ms),0,420
+chart range draw from=start to=end unit=ms title="Card draw, deck to hand"
+
+## 2. Damage number
+It appears on the monster and rises 40 px. It fades during the last 200 ms of the rise. Normal hits are white. Crits are orange and 1.6x bigger.
+
+data dmg = phase,start,end; Faster: rise,0,450; Faster: fade,300,450; Yours: rise,0,600; Yours: fade,400,600; Slower: rise,0,900; Slower: fade,600,900
+chart range dmg from=start to=end unit=ms title="Damage number, rise and fade"
+
+table = Hit,Colour,Size; Normal,White,1.0x; Crit,Orange,1.6x
+
+## 3. Low-health warning
+The health bar pulses red once every 1.2 s while health is under 25%. It stays gentle: ease the red in and out, do not switch it on and off sharply, and stay far below 3 pulses a second. Offer a reduced-motion setting that holds a steady red instead.
+
+table = Variant,Cycle,Pulses per second; Faster,0.9 s,1.1; Yours,1.2 s,0.8; Slower,1.8 s,0.6
+
+!! Do not speed this up past about 3 pulses a second, and avoid large bright flashes. That is the range that can trigger people who are sensitive to flicker.
+
+## 4. Card discard
+The card shrinks to 60% of its size and fades out together, in 220 ms.
+
+data discard = variant,start,end; Faster (165 ms),0,165; Yours (220 ms),0,220; Slower (330 ms),0,330
+chart range discard from=start to=end unit=ms title="Card discard, shrink and fade"
+
+## Test cards
+Made-up cards for trying each animation.
+
+table = Card,Effect,Shows; Cinder Strike,6 damage,Damage number (normal and crit); Guard Up,Block 5,Draw and discard; Lucky Find,Draw 2,Two card draws in a row
+
+## Compare all variants
+table = Animation,Faster,Yours,Slower; Card draw,210 ms,280 ms,420 ms; Damage number total,450 ms,600 ms,900 ms; Damage number fade,150 ms,200 ms,300 ms; Low-health pulse,0.9 s,1.2 s,1.8 s; Card discard,165 ms,220 ms,330 ms
+
+## Numbers to copy
+These are your current timings. Edit them here as you settle, then paste into the game.
+
+```json
+{
+  "cardDraw":     { "durationMs": 280, "easing": "ease-out", "tiltDeg": 4 },
+  "damageNumber": { "durationMs": 600, "risePx": 40, "fadeMs": 200, "critScale": 1.6, "normalColor": "white", "critColor": "orange" },
+  "lowHealth":    { "thresholdPercent": 25, "pulseCycleMs": 1200, "color": "red" },
+  "cardDiscard":  { "durationMs": 220, "scaleTo": 0.6, "fade": true }
+}
+```

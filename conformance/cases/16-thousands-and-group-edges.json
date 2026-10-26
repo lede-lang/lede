@@ -1,0 +1,115 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "table",
+      "data": "_table1",
+      "cols": null,
+      "sort": null,
+      "limit": null,
+      "title": null,
+      "line": 1
+    },
+    {
+      "type": "diagram",
+      "name": "lz",
+      "kind": "flow",
+      "dir": "LR",
+      "title": null,
+      "nodes": [
+        {
+          "id": "tgw",
+          "label": "Transit Gateway",
+          "kind": "svc",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "app",
+          "label": "App subnets",
+          "kind": null,
+          "sub": null,
+          "focus": false
+        }
+      ],
+      "edges": [
+        {
+          "from": "prodvpc",
+          "to": "tgw",
+          "label": "attachment",
+          "style": "solid",
+          "both": false,
+          "line": 3
+        },
+        {
+          "from": "prod",
+          "to": "tgw",
+          "label": "peering",
+          "style": "solid",
+          "both": false,
+          "line": 8
+        }
+      ],
+      "groups": [
+        {
+          "id": "prodvpc",
+          "label": "Prod VPC",
+          "members": [
+            "app"
+          ]
+        },
+        {
+          "id": "prod",
+          "label": "Prod account",
+          "members": [
+            "prodvpc"
+          ]
+        }
+      ],
+      "notes": [],
+      "line": 2
+    }
+  ],
+  "data": {
+    "_table1": {
+      "name": "_table1",
+      "columns": [
+        "Option",
+        "Monthly cost",
+        "Notes"
+      ],
+      "rows": [
+        [
+          "SQS",
+          "$310",
+          "managed"
+        ],
+        [
+          "Kafka",
+          "$1,450",
+          "self-run"
+        ],
+        [
+          "Big",
+          "$12,000",
+          "quoted"
+        ]
+      ],
+      "line": 1
+    }
+  },
+  "diagnostics": [
+    {
+      "severity": "warning",
+      "code": "csv-thousands",
+      "message": "read \"$1,450\" as one number each; quote numbers that contain commas: \"$1,450\"",
+      "line": 1,
+      "col": 53,
+      "detail": {
+        "fields": 4,
+        "want": 3,
+        "name": "_table1"
+      }
+    }
+  ]
+}

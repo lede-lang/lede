@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Runbook: search-prod Cluster Red</title>
+<style>
+:root{
+  --bg:#f5f6f8;--surface:#ffffff;--surface-2:#f0f2f5;--text:#151a24;--muted:#5a6375;--border:#dce1e8;
+  --accent:#0f6c8c;--accent-soft:#e4f2f7;
+  --bad:#b42318;--bad-soft:#fdeceb;--warn:#9a5800;--warn-soft:#fff1d9;--good:#18794e;
+  --code-bg:#f1f3f6;--code-text:#1d2433;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0e1116;--surface:#161a21;--surface-2:#1d222b;--text:#e6e9ef;--muted:#9aa3b4;--border:#2b313c;
+  --accent:#62c3e3;--accent-soft:#12303a;
+  --bad:#ff7d73;--bad-soft:#3a1715;--warn:#f2b15a;--warn-soft:#302310;--good:#4cc38a;
+  --code-bg:#0b0e13;--code-text:#dce3ee;
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:28px 16px 56px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--bad);font-weight:700;margin:0 0 6px}
+h1{font-size:1.75rem;line-height:1.2;margin:0 0 10px;letter-spacing:-.01em}
+.meta{display:flex;flex-wrap:wrap;gap:4px 16px;color:var(--muted);font-size:.9rem;margin:0;padding:0;list-style:none}
+.meta b{color:var(--text);font-weight:600}
+nav.toc{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px}
+nav.toc a{font-size:.85rem;text-decoration:none;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:3px 12px;font-weight:600}
+section{margin-top:34px;scroll-margin-top:12px}
+h2{font-size:1.25rem;margin:0 0 12px;display:flex;align-items:center;gap:10px}
+h2 .n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;background:var(--text);color:var(--bg);font-size:.85rem}
+h3{font-size:1.05rem;margin:0 0 10px}
+p{margin:0 0 10px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em;background:var(--surface-2);border:1px solid var(--border);border-radius:5px;padding:1px 5px;overflow-wrap:anywhere}
+pre{margin:8px 0 4px;background:var(--code-bg);color:var(--code-text);border:1px solid var(--border);border-radius:8px;padding:10px 12px;overflow-x:auto;font-size:.85rem;line-height:1.5}
+pre code{background:none;border:0;padding:0;font-size:inherit;overflow-wrap:normal}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+.symptoms{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.symptoms li{padding:14px 16px}
+.symptoms b{display:block;margin-bottom:2px}
+.symptoms span{font-size:.92rem;color:var(--muted)}
+.steps{margin:0;padding:0;list-style:none;counter-reset:s}
+.steps > li{counter-increment:s;position:relative;padding-left:40px;margin-bottom:14px}
+.steps > li::before{content:counter(s);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--surface);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.wm{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.wm div{border-radius:8px;padding:8px 10px;font-size:.88rem;border:1px solid var(--border)}
+.wm b{display:block;font-size:1.25rem;font-variant-numeric:tabular-nums}
+.wm .lo{background:var(--surface-2)}
+.wm .hi{background:var(--warn-soft);border-color:var(--warn)}
+.wm .fl{background:var(--bad-soft);border-color:var(--bad)}
+.causes{margin:10px 0 0;padding-left:1.2em}
+.causes li{margin:3px 0}
+.danger{border:2px solid var(--bad);background:var(--bad-soft);border-radius:12px;padding:14px 18px;display:flex;gap:14px;align-items:flex-start}
+.danger .ic{flex:0 0 32px;height:32px;border-radius:8px;background:var(--bad);color:var(--surface);font-weight:900;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.danger p{margin:0}
+.danger strong{color:var(--bad)}
+.danger .head{font-size:1.05rem;font-weight:800;color:var(--bad);margin-bottom:3px;display:block;text-transform:uppercase;letter-spacing:.03em}
+.cause{margin-top:14px}
+.cause h3{display:flex;align-items:baseline;gap:10px}
+.cause h3 .n{flex:0 0 auto;font-size:.8rem;font-weight:800;color:var(--surface);background:var(--accent);border-radius:6px;padding:1px 8px}
+.sub{list-style:none;margin:0;padding:0}
+.sub > li{display:grid;grid-template-columns:26px 1fr;gap:8px;padding:9px 0;border-top:1px solid var(--border)}
+.sub > li:first-child{border-top:0;padding-top:2px}
+.sub .l{font-weight:800;color:var(--accent);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.sub p{margin:0}
+.never{margin-top:6px;font-size:.92rem;color:var(--bad);font-weight:700}
+.time{display:inline-block;font-size:.78rem;font-weight:700;background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:0 8px;margin-left:4px;white-space:nowrap}
+.inline-danger{margin:8px 0 2px;padding:8px 12px;border-left:4px solid var(--bad);background:var(--bad-soft);border-radius:6px;font-size:.92rem}
+.esc{border-left:5px solid var(--warn)}
+.esc ol{margin:0;padding-left:1.3em}
+.esc li{margin:4px 0}
+footer{margin-top:40px;color:var(--muted);font-size:.82rem}
+@media (max-width:680px){.symptoms{grid-template-columns:1fr}}
+@media (max-width:480px){body{font-size:15px}h1{font-size:1.45rem}.card{padding:14px}.steps > li{padding-left:36px}pre{font-size:.8rem}.wm b{font-size:1.1rem}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <p class="eyebrow">On-call runbook &middot; CLUSTER_RED</p>
+    <h1>search-prod cluster is red</h1>
+    <ul class="meta">
+      <li>Cluster <b>search-prod</b> (OpenSearch, 9 nodes)</li>
+      <li>Serves <b>article search</b> and <b>subscriber archive</b></li>
+      <li>Owner <b>Quarry Press</b></li>
+    </ul>
+    <nav class="toc" aria-label="Sections">
+      <a href="#symptoms">Symptoms</a><a href="#triage">Triage</a><a href="#fix">Fix by cause</a><a href="#escalation">Escalation</a>
+    </nav>
+  </header>
+
+  <section id="symptoms">
+    <h2><span class="n">1</span>Symptoms</h2>
+    <ul class="symptoms">
+      <li class="card"><b>CLUSTER_RED alert fires</b><span>The page that brought you here.</span></li>
+      <li class="card"><b>Partial or empty search results</b><span>Article search and the archive return less than they should, or nothing.</span></li>
+      <li class="card"><b>New articles missing</b><span>Editors report that newly published articles do not appear.</span></li>
+    </ul>
+  </section>
+
+  <section id="triage">
+    <h2><span class="n">2</span>Triage</h2>
+    <div class="card">
+      <ol class="steps">
+        <li>
+          <strong>Check cluster health</strong> and note the number of unassigned shards.
+          <pre><code>GET _cluster/health</code></pre>
+        </li>
+        <li>
+          <strong>Ask the cluster why</strong> shards are unassigned.
+          <pre><code>GET _cluster/allocation/explain</code></pre>
+        </li>
+        <li style="margin-bottom:0">
+          <strong>Match the explanation to a cause.</strong> The usual three:
+          <ul class="causes">
+            <li><a href="#cause-disk">Disk watermarks</a> reached</li>
+            <li><a href="#cause-node">A lost data node</a></li>
+            <li><a href="#cause-template">A bad index template</a> after a deploy</li>
+          </ul>
+          <div class="wm" aria-label="Disk watermarks">
+            <div class="lo">Low<b>85%</b></div>
+            <div class="hi">High<b>90%</b></div>
+            <div class="fl">Flood stage<b>95%</b></div>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="fix">
+    <h2><span class="n">3</span>Fix by cause</h2>
+
+    <div class="danger" role="alert">
+      <span class="ic" aria-hidden="true">!</span>
+      <p><span class="head">Before you delete anything</span>Never delete an index without a snapshot taken in the last 24 hours. <strong>The archive cannot be rebuilt.</strong></p>
+    </div>
+
+    <div class="card cause" id="cause-disk">
+      <h3><span class="n">1</span>Disk watermark</h3>
+      <ol class="sub">
+        <li><span class="l">a</span><div><p>Find the fullest nodes.</p><pre><code>GET _cat/allocation?v</code></pre></div></li>
+        <li><span class="l">b</span><div>
+          <p>Delete indices older than 90 days from the <code>logs-*</code> family.</p>
+          <div class="inline-danger"><strong>Snapshot check first:</strong> confirm a snapshot from the last 24 hours exists before deleting any index.</div>
+          <p class="never">Never touch <code>articles-*</code> or <code>archive-*</code>.</p>
+        </div></li>
+        <li><span class="l">c</span><div><p>Once disk is under 80%, clear the read-only block.</p>
+<pre><code>PUT _all/_settings
+{
+  "index.blocks.read_only_allow_delete": null
+}</code></pre></div></li>
+        <li><span class="l">d</span><div><p>Wait for the shards to relocate.</p></div></li>
+      </ol>
+    </div>
+
+    <div class="card cause" id="cause-node">
+      <h3><span class="n">2</span>Lost data node</h3>
+      <ol class="sub">
+        <li><span class="l">a</span><div><p>Check the instance in the AWS console.</p></div></li>
+        <li><span class="l">b</span><div><p>If it is gone, let the autoscaling group replace it. <span class="time">usually 6&ndash;8 min</span></p></div></li>
+        <li><span class="l">c</span><div><p>Shard recovery then runs for the 1.2 TB on each node. <span class="time">about 20 min</span></p></div></li>
+      </ol>
+    </div>
+
+    <div class="card cause" id="cause-template">
+      <h3><span class="n">3</span>Bad index template</h3>
+      <ol class="sub">
+        <li><span class="l">a</span><div><p>Find the last deploy in <code>#deploys</code>.</p></div></li>
+        <li><span class="l">b</span><div><p>Roll the template back using the saved copy in the <code>search-config</code> repository.</p></div></li>
+        <li><span class="l">c</span><div><p>Reindex the affected index.</p></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="escalation">
+    <h2><span class="n">4</span>Escalation</h2>
+    <div class="card esc">
+      <p><strong>Still red after 30 minutes?</strong></p>
+      <ol>
+        <li>Page the <strong>Search Infrastructure lead</strong>.</li>
+        <li>Open an incident in <code>#incidents</code>.</li>
+      </ol>
+    </div>
+  </section>
+
+  <footer>Quarry Press &middot; search-prod on-call runbook &middot; CLUSTER_RED</footer>
+</main>
+</body>
+</html>

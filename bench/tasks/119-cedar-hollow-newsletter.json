@@ -1,0 +1,61 @@
+{
+  "id": "119-cedar-hollow-newsletter",
+  "category": "prose",
+  "title": "Cedar Hollow October family newsletter",
+  "brief": "Dr. Lucia Hernandez, principal of Cedar Hollow Elementary, wants the October family newsletter as a web page, mostly read by parents on their phones. Warm, brief and easy to scan. Headings: \"Dates to remember\", \"Reading challenge\", \"Drop-off and pick-up\" and \"Thank you\". Dates: parent-teacher conferences on 2026-11-05 and 2026-11-06 from 15:30 to 19:00, with online booking opening on 2026-10-26; the Book Fair from 2026-11-09 to 2026-11-13 in the library; no school on 2026-11-11 (Veterans Day) and from 2026-11-25 to 2026-11-27 (Thanksgiving break). Reading challenge: the whole school set a goal of 60000 minutes read by 2026-12-18 and has logged 21400 so far, with Room 12 (Ms. Okafor's class) in the lead at 3150 minutes; reading logs go in the red folder every Friday. Drop-off and pick-up: the lane opens at 07:45 and the bell is at 08:15; no left turns out of the lot onto Alder Street; please use the east lot for pick-up; students must be picked up by 15:45 or they go to the after-school office, which charges 5 dollars per 15 minutes. Thank you: to the 38 volunteers who ran the Fall Fair, which raised 9640 dollars for the library, and to the families who sent in 412 cans of food for the neighborhood pantry.",
+  "checklist": {
+    "sections": [
+      "Dates to remember",
+      "Reading challenge",
+      "Drop-off and pick-up",
+      "Thank you"
+    ],
+    "visible": [
+      "Dr. Lucia Hernandez",
+      "Room 12",
+      "Ms. Okafor",
+      "red folder",
+      "east lot",
+      "Book Fair"
+    ],
+    "values": [
+      "2026-11-05",
+      "2026-11-06",
+      "15:30",
+      "19:00",
+      "2026-10-26",
+      "2026-11-09",
+      "2026-11-13",
+      "60000",
+      "2026-12-18",
+      "21400",
+      "3150",
+      "07:45",
+      "08:15",
+      "15:45",
+      "5 dollars",
+      "38 volunteers",
+      "9640",
+      "412"
+    ]
+  },
+  "needs": [
+    "list"
+  ],
+  "edit": {
+    "request": "Change the reading goal to 75000 minutes and the conference start time to 16:00, and add the line \"Winter concert: 2026-12-10 at 18:30 in the gym\".",
+    "expect_visible": [
+      "Winter concert"
+    ],
+    "expect_values": [
+      "75000",
+      "16:00",
+      "2026-12-10",
+      "18:30"
+    ],
+    "expect_absent": [
+      "60000",
+      "15:30"
+    ]
+  }
+}

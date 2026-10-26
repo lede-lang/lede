@@ -1,0 +1,33 @@
+@title EXP-418 Checkout Button Copy
+@subtitle Experiment results, Growth Analytics, Marigold Home
+@author Growth Analytics
+@date 2026-09-08 to 2026-09-28
+
+kpi Total visitors | 144,607
+kpi Winner | Variant C | "Pay securely now"
+kpi Lift | +12.6% | vs control | good
+kpi Confidence | 99.7% | p = 0.003
+
+The test compared three labels for the checkout button: Control ("Place order"), Variant B ("Complete purchase") and Variant C ("Pay securely now").
+
+# Results
+
+table = Variant,Visitors,Conversions,Conversion rate,Lift vs control,p-value; Control,"48,210","1,832",3.80%,none,none; Variant B,"48,095","1,919",3.99%,+5.0%,0.14; **Variant C**,"48,302","2,068",**4.28%**,**+12.6%**,**0.003**
+
+# Conversion rate
+
+data cr = variant,rate; Control,3.80; Variant B,3.99; Variant C,4.28
+chart bar cr x=variant y=rate unit=% labels min=3 title="Conversion rate by variant"
+
+# Daily trend
+
+data daily = day,Control,Variant C; Sep 22,3.71,4.19; Sep 23,3.85,4.33; Sep 24,3.79,4.24; Sep 25,3.92,4.40; Sep 26,3.68,4.17; Sep 27,3.83,4.31; Sep 28,3.81,4.29
+chart line daily x=day y=Control,Variant C unit=% focus=Variant C title="Daily conversion rate, final week"
+
+Variant C beat Control on every day of the final week.
+
+# Decision
+
+! Ship **Variant C** ("Pay securely now") to 100% of traffic.
+
+Variant B was not significant (p = 0.14). Average order value did not change: $87.40 for Variant C against $87.15 for Control.

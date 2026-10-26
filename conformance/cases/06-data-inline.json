@@ -1,0 +1,39 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "data",
+      "name": "t",
+      "line": 1
+    }
+  ],
+  "data": {
+    "t": {
+      "name": "t",
+      "columns": [
+        "name",
+        "note, with comma",
+        "n"
+      ],
+      "rows": [
+        [
+          "Smith, J",
+          "a;b",
+          "3"
+        ],
+        [
+          "Lee",
+          "say \"hi\"",
+          "4"
+        ],
+        [
+          "Kim",
+          "plain",
+          "5"
+        ]
+      ],
+      "line": 1
+    }
+  },
+  "diagnostics": []
+}

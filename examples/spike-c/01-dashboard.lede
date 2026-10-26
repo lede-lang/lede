@@ -1,0 +1,26 @@
+@title Checkout reliability
+@subtitle Weekly review for the payments council, week 41
+@author Payments SRE
+@date 2026-10-16
+
+kpi Days since last Sev1 | 143 | +7 days this week | good
+
+kpi Uptime | 99.97% | +0.02 pts | good
+kpi p99 latency | 182 ms | -12% | good
+kpi Monthly cost | $41,200 | +8% | bad
+kpi Open incidents | 2 | two Sev3s | neutral
+
+## Trend
+
+data lat = week,p50,p99; W36,64,210; W37,61,204; W38,63,199; W39,60,195; W40,58,188; W41,57,182
+chart line lat x=week y=p50,p99 unit=ms title="Checkout latency, last six weeks"
+
+### Service SLOs
+
+table = Service,SLO target,Current,Budget used (%); payments-api,99.9,99.95,38; ledger-writer,99.95,99.97,41; card-tokenizer,99.99,99.993,70; refunds-worker,99.5,99.71,22; payout-scheduler,99.9,99.86,140
+
+## Workstreams
+
+table = Workstream,Owner,Status,ETA; Postgres 16 upgrade,Priya Nair,Done,2026-10-09; Service mesh rollout,Tomas Ruiz,On track,2026-11-06; Cost tagging,Mei Chen,At risk,2026-10-30; Runner autoscaling,Dev Patel,Blocked,2026-11-20; Retry budget,Ana Souza,In progress,2026-11-13
+
+!! **Runner autoscaling is blocked** on a quota increase from the cloud provider (ticket `CASE-4471`). If it is not approved by 2026-10-23, the November date slips.

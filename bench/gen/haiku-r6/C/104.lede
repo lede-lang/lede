@@ -1,0 +1,38 @@
+@title Tallgrass Telemetry Pipeline
+@subtitle Architecture for the control room
+@author Asset Performance team
+@date 2026-10-06
+
+Owned by Asset Performance. Reviewed 2026-10-06.
+
+## Overview
+Turbine data is collected on site and summarized before it is sent over a limited link. The grid operator receives output and availability figures directly from the site.
+
+## Pipeline
+diagram telem dir=LR title="Telemetry pipeline"
+telem: turbines "Turbine Controllers" svc "62 turbines"
+telem: scada "Site SCADA" svc
+telem: hist "Edge Historian" store
+telem: ingest "Ingest Gateway" svc
+telem: tsdb "Time-Series Store" db
+telem: fc "Forecast Service" svc
+telem: grid "Grid Operator" ext
+telem: room "Control Room" user "tablets" focus
+telem: turbines -> scada : 1 sample per second
+telem: scada -> hist : buffered storage
+telem: scada -> grid : output and availability, every 4 seconds
+telem: hist -> ingest : compressed batches
+telem: ingest -> tsdb : validated samples
+telem: tsdb -> fc : history
+telem: fc -> room : 24 hour output forecast
+telem: tsdb -> room : live and historical views
+telem: group site "Tallgrass Site" turbines, scada, hist
+telem: group cloud "Windspire Operations Cloud" ingest, tsdb, fc
+
+!! On satellite fallback, the Control Room sees one-minute averages, not full-resolution data.
+! The Edge Historian can hold 72 hours of full-resolution data until the fiber link returns.
+
+## Sizing
+- 62 turbines with 140 signals each make 8680 samples per second, or about 750 million samples a day.
+- Full-resolution data is kept 30 days. One-minute averages are kept 5 years.
+- The fiber link is 100 Mbps. The satellite fallback is 2 Mbps and can carry one-minute averages only.

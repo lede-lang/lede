@@ -1,0 +1,35 @@
+name: Bug report
+description: A page compiles wrong, a diagnostic misleads, or the CLI misbehaves.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A suspected security problem (a script or a remote fetch in a compiled page) is not a public issue. Use "Report a vulnerability" on the Security tab; see SECURITY.md.
+  - type: textarea
+    id: source
+    attributes:
+      label: The .lede source
+      description: The smallest source that shows the problem.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected, and what happened
+      description: Paste the diagnostics from `lede check page.lede` and describe the output you saw, or attach a screenshot.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: "`lede --version`, or the commit if you run from a checkout."
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Node version and browser
+      description: Only if the page rendered wrong in a browser.

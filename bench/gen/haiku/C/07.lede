@@ -1,0 +1,23 @@
+@title Atlas 4.2.0 go/no-go
+@subtitle Mobile app release, targeted 2026-10-22 · Owner: Release Council
+
+! **Recommendation: Conditional go**, provided blockers clear by 2026-10-20.
+
+kpi Open blockers | 3 | | bad
+kpi Crash-free sessions (beta) | 99.71%
+kpi Test pass rate | 96.4%
+kpi Days to release | 6
+
+# Readiness checklist
+
+table = Area,Owner,Status,Notes; Feature complete,Ana Brooks,**Ready**,all 12 epics merged; Regression suite,QA Guild,**Ready**,1842 of 1911 tests passing; Accessibility audit,Kofi Mensah,**Not ready**,2 contrast issues open; Localization,Ines Duarte,**Ready**,14 languages signed off; Store listing,Growth team,**Not ready**,tablet screenshots pending; Rollback plan,Ana Brooks,**Ready**,staged rollout starting at 5 percent
+
+# Bug burndown
+
+data burn = day,open bugs; Oct 7,41; Oct 8,37; Oct 9,34; Oct 10,30; Oct 11,26; Oct 12,21; Oct 13,17; Oct 14,12; Oct 15,9; Oct 16,7
+chart line burn x=day y=open bugs title="Open release bugs per day"
+
+# Blockers
+
+1. Two accessibility contrast issues on the checkout screen: the price label and the disabled button.
+2. Missing store screenshots for tablets.

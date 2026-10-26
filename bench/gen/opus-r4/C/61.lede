@@ -1,0 +1,31 @@
+@title Signup cohort retention
+@subtitle How the June to September 2026 cohorts at Mosaic Language Learning keep coming back
+@date 2026-10-17
+
+Month-1 retention rose 7 points from the June cohort to the September cohort, from 46 to 53 percent.
+
+kpi Month-1 retention | 50.0% | all four cohorts
+kpi Month-2 retention | 40.6% | Jun to Aug
+kpi Month-3 retention | 34.1% | Jun and Jul
+kpi New users | 95,200 | Jun to Sep
+
+## Cohort table
+
+Share of each cohort still active, in percent, by months since signup.
+
+table = Cohort,New users,Month 0,Month 1,Month 2,Month 3; Jun 2026,"18,400",100,46,38,33; Jul 2026,"21,700",100,48,40,35; Aug 2026,"25,300",100,51,43,; Sep 2026,"29,800",100,53,,; **Total**,"**95,200**",,,,
+
+! Months a cohort has not reached yet are left blank, not zero.
+
+## Retention by month
+
+data decay = months since signup,Jun,Jul,Aug,Sep; Month 0,100,100,100,100; Month 1,46,48,51,53; Month 2,38,40,43,; Month 3,33,35,,
+chart line decay unit=% min=0 max=100 focus=Sep title="Share of each cohort still active"
+
+Each newer cohort sits a little above the one before it at every month it has reached.
+
+## Takeaways
+
+1. The onboarding changes shipped on 2026-07-20 line up with the jump in month-1 retention from 48 percent (July) to 51 percent (August).
+2. The biggest drop is always between month 0 and month 1, where every cohort loses roughly half its users.
+3. September's cohort is the largest so far, at 29,800 new users, and also the best retaining, at 53 percent in month 1.

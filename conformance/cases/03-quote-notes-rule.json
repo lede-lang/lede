@@ -1,0 +1,34 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "quote",
+      "text": "Make it fast. Then make it safe.",
+      "cite": "Someone",
+      "line": 1
+    },
+    {
+      "type": "note",
+      "tone": "note",
+      "text": "A note.",
+      "line": 4
+    },
+    {
+      "type": "note",
+      "tone": "warn",
+      "text": "A warning.",
+      "line": 5
+    },
+    {
+      "type": "rule",
+      "line": 6
+    },
+    {
+      "type": "paragraph",
+      "text": "!not a note",
+      "line": 7
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

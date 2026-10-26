@@ -1,0 +1,42 @@
+@title Review: scaling ingredient quantities
+@subtitle Notes on scale_ingredient, tied to the lines of the new file
+
+The direction is good. Scaling by a factor, guarding against a zero or negative base, and treating eggs as whole items are all the right ideas. The notes below are about making each of them actually run. One blocks the merge.
+
+kpi Blocker | 1 | line 23 | bad
+kpi Major | 2 | lines 27-28, 29 | bad
+kpi Minor | 1 | line 30 | neutral
+
+## The change
+Line numbers are from the new version of the file.
+
+```python
+22  def scale_ingredient(item, servings_from, servings_to):
+23 +    if servings_from <= 0:
+24 +        raise ValueError("servings_from must be positive")
+25      factor = servings_to / servings_from
+26      qty = item.qty * factor
+27 +    if item.unit in ("tsp", "tbsp") and factor > 3:
+28 +        qty = qty * 0.85  # seasoning doesn't scale linearly
+29 +    if item.unit == "egg":
+30 +        qty = max(1, round(qty))
+31      return Ingredient(item.name, round(qty, 1), item.unit)
+```
+
+## Notes, in line order
+
+!!! Line 23, blocker: the form posts servings as a string, so this comparison throws on the input from bug #311. Convert to a number before it gets here, or at the form boundary, and then check the result is positive.
+
+!! Lines 27-28, major: 0.85 is a magic number. Priya, our test cook, says it is right for salt only, not for cinnamon or chilli. Give the number a name and decide per ingredient, not per unit.
+
+!! Line 29, major: 1,204 of our 3,010 recipes (40%) store the unit as "eggs", so this condition never matches for them and the rounding silently never runs. Match the unit the data really uses.
+
+! Line 30, minor: halving a 1-egg recipe gives 1 egg, which is wrong. Please add a test that pins down what the result should be.
+
+## Working through them
+Do them in this order: the blocker first, then the majors, then the minor.
+
+- [ ] Line 23 (blocker): handle the string input from bug #311
+- [ ] Line 29 (major): make the egg check match "eggs"
+- [ ] Lines 27-28 (major): name the 0.85 and stop applying it to cinnamon and chilli
+- [ ] Line 30 (minor): add a test for halving a 1-egg recipe

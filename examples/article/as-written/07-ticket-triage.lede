@@ -1,0 +1,131 @@
+@title Q4 ticket triage: 30 tickets into Now / Next / Later / Cut
+@subtitle Harbor invoicing, ENG board, proposed ordering for the last six weeks of the quarter
+@author Claude, Engineering planning
+@date 2026-10-19
+@width wide
+
+! This page is a static snapshot, not an editor. The proposed buckets are pre-filled below. To change one, move the ticket line in the export block at the bottom and paste that block back.
+
+## The proposal in numbers
+
+kpi Now | 7 tickets | 24 pts | neutral
+kpi Next | 9 tickets | 50 pts | neutral
+kpi Later | 8 tickets | 92 pts | neutral
+kpi Cut | 6 tickets | 65 pts | bad
+
+data load = bucket,tickets,points; Now,7,24; Next,9,50; Later,8,92; Cut,6,65
+chart bar load y=points labels title="Estimated points per bucket"
+
+Team velocity is about 32 pts per two-week sprint, so Now fits the first sprint with 8 pts of slack for interrupts. Now plus Next (74 pts) fills the quarter at about 2.3 sprints.
+
+## Ticket data
+
+data now = id,title,owner,pts,impact,why; ENG-2041,Fix duplicate invoice emails on retry,Priya,3,5,Customers get two invoice emails and 14 support tickets came in this month
+data now += ENG-2047,Rotate Stripe webhook signing secret,Marcus,2,5,Old secret expires 2026-11-06
+data now += ENG-2052,Invoice PDF renders blank on Safari 17,Lena,3,4,Affects 11% of portal sessions
+data now += ENG-2058,Raise Postgres connection pool ceiling,Marcus,1,4,Pool saturated twice during month-end runs
+data now += ENG-2063,Tax ID validation for EU customers,Priya,8,5,VAT rule change takes effect 2026-11-30
+data now += ENG-2066,CSV export times out above 50k rows,Jonas,5,4,Three enterprise accounts blocked
+data now += ENG-2070,Rate-limit the login endpoint,Lena,2,4,Credential-stuffing spike seen on 2026-10-11
+
+data next = id,title,owner,pts,impact,why; ENG-2075,Recurring invoice scheduler UI,Aiko,8,4,Top-voted request on the roadmap board
+data next += ENG-2079,Bulk-send reminders for overdue invoices,Aiko,5,4,Cuts days-sales-outstanding for pilot customers
+data next += ENG-2083,Audit log for permission changes,Tomas,5,3,Needed for the SOC 2 evidence request in Q1
+data next += ENG-2086,Multi-currency rounding mismatch on credit notes,Priya,3,4,Off by 1 cent on JPY and KWD so finance reconciles by hand
+data next += ENG-2090,SAML SSO for the Team plan,Tomas,13,4,Blocks two deals worth $96k ARR
+data next += ENG-2092,Replace moment.js with date-fns,Jonas,3,2,Cuts 70 KB from the bundle
+data next += ENG-2095,Webhook delivery retries dashboard,Marcus,5,3,Support currently reads logs by hand
+data next += ENG-2098,Portal: download all invoices as ZIP,Lena,3,3,Requested by accountants at year end
+data next += ENG-2101,Onboarding checklist v2,Aiko,5,3,Activation is 41% and the target is 50%
+
+data later = id,title,owner,pts,impact,why; ENG-2104,Dark mode for the customer portal,unassigned,5,2,Nice to have; no revenue link
+data later += ENG-2107,Migrate Sidekiq jobs to Temporal,unassigned,21,3,Pays off only once job volume doubles
+data later += ENG-2110,Quote-to-invoice conversion,unassigned,13,3,Waiting on the quotes beta feedback
+data later += ENG-2113,Slack notification when an invoice is paid,unassigned,3,2,Small but not urgent
+data later += ENG-2116,Localize the UI into German and French,unassigned,13,3,Depends on the EU launch decision
+data later += ENG-2119,Public API v2 cursor pagination,unassigned,8,3,Offset pagination is slow past page 400
+data later += ENG-2122,Accessibility pass on the invoice editor,unassigned,8,3,Schedule with the WCAG audit in Q1
+data later += ENG-2125,Usage-based billing prototype,unassigned,21,3,Strategic bet; needs a product spec first
+
+data cut = id,title,owner,pts,impact,why; ENG-2128,Gantt view of payment timelines,unassigned,13,1,No customer has asked for it
+data cut += ENG-2131,Emoji reactions on invoice comments,unassigned,3,1,Novelty feature
+data cut += ENG-2134,Rewrite the PDF engine in Rust,unassigned,34,2,Cost is far above benefit and ENG-2052 fixes the actual bug
+data cut += ENG-2137,Rounding fix for quotes,unassigned,2,1,Duplicate of ENG-2086
+data cut += ENG-2140,Legacy XML export,unassigned,5,1,Zero uses in 12 months
+data cut += ENG-2143,Blockchain payment rail spike,unassigned,8,1,No demand and a compliance burden
+
+## Now
+
+Customer-facing money bugs, security, and the EU VAT deadline. Everything here has a date or an active complaint behind it.
+
+table now heat=impact
+
+## Next
+
+Revenue and retention work that starts as soon as Now clears. Order within the table is the suggested pick-up order.
+
+table next heat=impact
+
+## Later
+
+Valuable or strategic, but large or waiting on a decision. Revisit at Q1 planning.
+
+table later
+
+## Cut
+
+Close these with a short comment. None has a customer, a deadline, or usage data behind it.
+
+table cut
+
+## Calls worth a second look
+
+table = ticket,placed,alternative,what would flip it; ENG-2090 SAML SSO,Next,Now,Both deals sign before Dec 15 and need SAML in the contract; ENG-2086 credit note rounding,Next,Now,Finance says the monthly manual fix is more than 2 hours; ENG-2092 date-fns,Next,Cut,No bundle-size goal is set this quarter; ENG-2107 Temporal,Later,Cut,Job volume stays flat through Q2
+
+## Export: paste this back
+
+Final ordering as Markdown, one rationale line per bucket, tickets in pick-up order.
+
+```md
+## Now (7 tickets, 24 pts)
+_Customer-facing money bugs, security, and the 2026-11-30 EU VAT deadline; fits one sprint with slack._
+1. ENG-2047 Rotate Stripe webhook signing secret (2 pts, Marcus)
+2. ENG-2041 Fix duplicate invoice emails on retry (3 pts, Priya)
+3. ENG-2070 Rate-limit the login endpoint (2 pts, Lena)
+4. ENG-2058 Raise Postgres connection pool ceiling (1 pt, Marcus)
+5. ENG-2052 Invoice PDF renders blank on Safari 17 (3 pts, Lena)
+6. ENG-2066 CSV export times out above 50k rows (5 pts, Jonas)
+7. ENG-2063 Tax ID validation for EU customers (8 pts, Priya)
+
+## Next (9 tickets, 50 pts)
+_Revenue and retention work that unblocks sales and activation once Now clears._
+1. ENG-2090 SAML SSO for the Team plan (13 pts, Tomas)
+2. ENG-2075 Recurring invoice scheduler UI (8 pts, Aiko)
+3. ENG-2079 Bulk-send reminders for overdue invoices (5 pts, Aiko)
+4. ENG-2086 Multi-currency rounding mismatch on credit notes (3 pts, Priya)
+5. ENG-2101 Onboarding checklist v2 (5 pts, Aiko)
+6. ENG-2083 Audit log for permission changes (5 pts, Tomas)
+7. ENG-2095 Webhook delivery retries dashboard (5 pts, Marcus)
+8. ENG-2098 Portal: download all invoices as ZIP (3 pts, Lena)
+9. ENG-2092 Replace moment.js with date-fns (3 pts, Jonas)
+
+## Later (8 tickets, 92 pts)
+_Valuable or strategic but large or waiting on a decision; revisit at Q1 planning._
+- ENG-2125 Usage-based billing prototype (21 pts)
+- ENG-2110 Quote-to-invoice conversion (13 pts)
+- ENG-2116 Localize the UI into German and French (13 pts)
+- ENG-2119 Public API v2 cursor pagination (8 pts)
+- ENG-2122 Accessibility pass on the invoice editor (8 pts)
+- ENG-2107 Migrate Sidekiq jobs to Temporal (21 pts)
+- ENG-2104 Dark mode for the customer portal (5 pts)
+- ENG-2113 Slack notification when an invoice is paid (3 pts)
+
+## Cut (6 tickets, 65 pts)
+_No customer, deadline, or usage data behind them; close with a comment._
+- ENG-2134 Rewrite the PDF engine in Rust (34 pts)
+- ENG-2128 Gantt view of payment timelines (13 pts)
+- ENG-2143 Blockchain payment rail spike (8 pts)
+- ENG-2140 Legacy XML export (5 pts)
+- ENG-2131 Emoji reactions on invoice comments (3 pts)
+- ENG-2137 Rounding fix for quotes (2 pts, duplicate of ENG-2086)
+```

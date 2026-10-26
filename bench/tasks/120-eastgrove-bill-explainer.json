@@ -1,0 +1,58 @@
+{
+  "id": "120-eastgrove-bill-explainer",
+  "category": "prose",
+  "title": "Eastgrove Power how to read your bill",
+  "brief": "Eastgrove Power wants a plain-language page explaining how to read a residential electricity bill, written for customers by the Customer Education team, for rates effective 2026-11-01. Headings: \"Your bill at a glance\", \"What each charge means\", \"Time-of-use hours\", \"Ways to lower your bill\". The facts: a bill has a fixed monthly service charge of 14.50 dollars, a delivery charge of 0.045 dollars per kilowatt-hour (kWh) and a supply charge that depends on when you use power; supply costs 0.31 dollars per kWh at peak, 0.12 off-peak and 0.08 super off-peak; peak is 16:00 to 21:00 on weekdays, super off-peak is 00:00 to 06:00 every day, and everything else is off-peak; sales tax of 5.2 percent applies to the total; the bill is due 21 days after the bill date, and a late payment fee of 1.5 percent is added to unpaid balances after that; budget billing spreads the year into 12 equal payments reviewed every 6 months; income-qualified households can get a 20 percent discount through the CARE program, and enrolling takes about 10 minutes online. Ways to lower the bill: run the dishwasher and laundry after 21:00, precool the house before 16:00 and set the thermostat 2 degrees higher during peak, and charge electric vehicles after midnight. Explain that peak power costs more than 2.5 times as much as off-peak power. Customers can call 800-555-0166 or use the online account page.",
+  "checklist": {
+    "sections": [
+      "Your bill at a glance",
+      "What each charge means",
+      "Time-of-use hours",
+      "Ways to lower your bill"
+    ],
+    "visible": [
+      "Eastgrove Power",
+      "CARE program",
+      "budget billing",
+      "super off-peak"
+    ],
+    "values": [
+      "2026-11-01",
+      "14.50",
+      "0.045",
+      "0.31",
+      "0.12",
+      "0.08",
+      "16:00",
+      "21:00",
+      "00:00",
+      "06:00",
+      "5.2 percent",
+      "21 days",
+      "1.5 percent",
+      "12 equal payments",
+      "6 months",
+      "20 percent",
+      "10 minutes",
+      "800-555-0166"
+    ]
+  },
+  "needs": [
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the peak supply rate to 0.34 dollars per kWh, the peak window to 17:00 to 21:00, and the late payment fee to 2 percent.",
+    "expect_visible": [],
+    "expect_values": [
+      "0.34",
+      "17:00 to 21:00",
+      "2 percent"
+    ],
+    "expect_absent": [
+      "0.31",
+      "16:00 to 21:00",
+      "1.5 percent"
+    ]
+  }
+}

@@ -1,0 +1,54 @@
+@title Harbor Food Bank design system
+@subtitle One reference for the donation site and the printed flyers
+
+Use this page so the next volunteer designer does not have to reinvent anything. It covers colour, type, spacing, the four components we use, the contrast of every text colour pair, and the few rules that matter most.
+
+kpi Colours | 6
+kpi Type sizes | 6
+kpi Spacing steps | 6
+kpi Logo clear space | 24 px
+
+## Colour
+table = Name,Hex,Used for; Harbor Navy,#1B3A57,Brand colour and headings; Crate Orange,#E8792B,Accent and the primary button fill; Oat,#F6EFE3,Page background; Ink,#1E1E1E,Body text; Success Green,#2F7D4F,Success messages; Alert Red,#B3261E,Alerts and errors
+
+## Contrast of the text pairs we use
+Normal-size text needs a ratio of at least 4.5:1 (WCAG AA). Ratios are rounded to one decimal place. White is not in the palette, so it is not rated.
+
+data contrast = pair,ratio; Ink on Oat,14.6; Navy on Oat,10.3; Oat on Navy,10.3; Alert Red on Oat,5.7; Ink on Crate Orange,5.7; Success Green on Oat,4.4; Navy on Crate Orange,4.0; Oat on Crate Orange,2.6; Crate Orange on Oat,2.6
+chart hbar contrast x=pair y=ratio labels target="4.5 minimum for normal text" title="Contrast ratio by text pair"
+
+table = Text on background,Ratio,Normal-size text; Ink on Oat,14.6:1,Pass; Navy on Oat,10.3:1,Pass; Oat on Navy,10.3:1,Pass; Alert Red on Oat,5.7:1,Pass; Ink on Crate Orange,5.7:1,Pass; Success Green on Oat,4.4:1,Fail; Navy on Crate Orange,4.0:1,Fail; Oat on Crate Orange,2.6:1,Fail; Crate Orange on Oat,2.6:1,Fail
+
+!! Crate Orange on Oat fails at 2.6:1, which is why orange text on oat is banned. Success Green on Oat just misses at 4.4:1, so keep it for large text and icons, not for small copy. Label an orange button with Ink, not Oat.
+
+## Type
+Headings are set in Fraunces. Body text is set in Source Sans 3 with a line height of 1.5.
+
+table = Size,Role; 40 px,Heading 1; 32 px,Heading 2; 24 px,Heading 3; 18 px,Large body; 16 px,Body; 14 px,Small text
+
+## Spacing
+Use only these steps for gaps, padding and margins.
+
+data space = step,px; Step 1,4; Step 2,8; Step 3,12; Step 4,16; Step 5,24; Step 6,40
+chart bar space y=px unit=px labels title="Spacing steps"
+
+## Components
+table = Component,States,Notes; Primary button,"Default, Hover, Disabled","Crate Orange fill, Ink label. One per screen."; Donation amount chips,Amounts in this order,"$25, $50, $100, $250, Other"; Form field,"Default, Error","Error text is Alert Red on Oat (5.7:1), shown under the field"; Alert banner,Default,"Reads: Saturday pickup moved to 9am"
+
+! Hover and disabled colours for the button, and the selected state for the chips, are not defined yet. Add them here when they are decided.
+
+## Do and don't
+cards
+
+### Do
+- Use one primary button per screen
+- Put Ink or Navy text on Oat
+- Label an orange fill with Ink
+
+### Don't
+- Never put orange text on oat
+- Don't use Success Green for small body text on Oat
+- Don't use values outside the spacing steps
+
+## Logo
+!! Keep 24 px of clear space around the logo on every side. Nothing else, including text, edges and other logos, may enter that space.

@@ -1,0 +1,50 @@
+{
+  "id": "95-dispatch-queue-backlog",
+  "category": "runbook",
+  "title": "Dispatch queue backlog runbook",
+  "brief": "Quickpost Couriers' Dispatch team needs an on-call runbook for when the dispatch-jobs queue backs up, owned by Dispatch Engineering. Sections: \"Symptoms\", \"Diagnose\", \"Fix steps\" and \"Escalation\". Symptoms: the QUEUE_DEPTH_HIGH alert fires when depth stays above 5000 for 10 minutes (normal is under 400), and drivers see new jobs arrive late in the app. Diagnose: check the queue depth and consumer count with kubectl -n dispatch get hpa dispatch-consumer, look at the oldest message age on the queue dashboard, and check the database connection pool, which is capped at 200 connections. Fix steps, in order, with sub-steps. 1 Scale the consumers: a) run kubectl -n dispatch scale deploy dispatch-consumer --replicas=24, b) wait 5 minutes and re-check, c) if depth is still rising, scale to 40, which is the maximum the database pool supports. 2 Check for poison messages: a) if one message has been retried more than 10 times, b) move it to dispatch-dlq with the dlq-move tool. 3 Pause the bulk import scheduler in the admin console, because bulk imports add up to 3000 jobs at a time. 4 When depth drops under 400, re-enable the scheduler gradually. Readers must be told firmly never to purge dispatch-jobs, because every message is a real customer delivery. Escalation: if depth is still above 5000 after 20 minutes, page the Dispatch Engineering lead and open an incident in #incidents.",
+  "checklist": {
+    "sections": [
+      "Symptoms",
+      "Diagnose",
+      "Fix steps",
+      "Escalation"
+    ],
+    "visible": [
+      "QUEUE_DEPTH_HIGH",
+      "dispatch-jobs",
+      "dispatch-dlq",
+      "kubectl -n dispatch get hpa dispatch-consumer",
+      "Dispatch Engineering",
+      "#incidents"
+    ],
+    "values": [
+      "5000",
+      "10 minutes",
+      "400",
+      "200 connections",
+      "replicas=24",
+      "5 minutes",
+      "40",
+      "10 times",
+      "3000",
+      "20 minutes"
+    ]
+  },
+  "needs": [
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Scale to 30 replicas instead of 24 in the first step, and raise the alert threshold from 5000 to 8000 everywhere.",
+    "expect_visible": [],
+    "expect_values": [
+      "replicas=30",
+      "8000"
+    ],
+    "expect_absent": [
+      "replicas=24",
+      "5000"
+    ]
+  }
+}

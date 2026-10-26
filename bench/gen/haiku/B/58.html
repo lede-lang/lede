@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tamarind Delivery App: Choosing an Approach</title>
+<style>
+:root{--bg:#f6f5f1;--surface:#ffffff;--ink:#1c1e22;--muted:#5d6370;--line:#dcd9d1;--accent:#2f6b5c;--warm:#b8642e;--blue:#3f6396}
+@media (prefers-color-scheme:dark){:root{--bg:#14161a;--surface:#1d2026;--ink:#eceae4;--muted:#a4a9b4;--line:#353a44;--accent:#6cbba3;--warm:#e39a66;--blue:#8db2e3}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif}
+main{max-width:920px;margin:0 auto;padding:32px 16px 64px}
+.kicker{color:var(--accent);font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;margin:0 0 6px}
+h1{font-size:clamp(26px,5vw,36px);line-height:1.15;margin:0 0 12px}
+h2{font-size:21px;margin:40px 0 14px;padding-top:16px;border-top:1px solid var(--line)}
+h3{font-size:17px;margin:0 0 8px}
+p{margin:0 0 14px}
+.lede{color:var(--muted);font-size:17px}
+.note{color:var(--muted);font-size:14px}
+.table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+tr:last-child td{border-bottom:0}
+.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px}
+svg{display:block;width:100%;height:auto}
+.lbl{font-size:14px;fill:var(--muted)}
+.lbl-strong{font-size:14px;fill:var(--ink);font-weight:600}
+.bar{fill:var(--accent)} .bar2{fill:var(--warm)} .bar3{fill:var(--blue)}
+ul{padding-left:20px;margin:0 0 14px} li{margin:0 0 8px}
+.grid3{display:grid;grid-template-columns:1fr;gap:14px}
+@media (min-width:720px){.grid3{grid-template-columns:repeat(3,1fr)}}
+.pc{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+.rec{background:var(--surface);border-left:4px solid var(--accent);padding:16px 18px;border-radius:8px}
+</style>
+</head>
+<body>
+<main>
+<p class="kicker">Product council, 27 October 2026</p>
+<h1>Relaunching the delivery app: three approaches</h1>
+<p class="lede">Prepared for Wanjiru Kamau, engineering manager. We have 4 mobile developers, and the first release must ship by 15 January 2027 at the latest, ahead of the holiday season.</p>
+
+<h2>Comparison</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Measure</th><th>Fully native</th><th>Flutter</th><th>Progressive web app</th></tr></thead>
+  <tbody>
+    <tr><td>Months to first release</td><td>11</td><td>7</td><td>4</td></tr>
+    <tr><td>Estimated build cost</td><td>$1.45 million</td><td>$0.92 million</td><td>$0.48 million</td></tr>
+    <tr><td>Offline basket and saved lists</td><td>Full</td><td>Full</td><td>Partial</td></tr>
+    <tr><td>Push notifications</td><td>Full</td><td>Full</td><td>Limited on iOS</td></tr>
+    <tr><td>App store presence</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+    <tr><td>Scanning barcodes with the camera</td><td>Smooth</td><td>Good</td><td>Unreliable</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Time to first release</h2>
+<p>Estimated months from start to first release, for each approach.</p>
+<div class="chart">
+  <svg id="months-chart" role="img" aria-label="Bar chart of months to first release: native 11, Flutter 7, progressive web app 4"></svg>
+</div>
+<p class="note">The first release must ship by 15 January 2027 at the latest. Flutter's 7-month estimate misses that date unless we cut scope. The native estimate of 11 months misses it by more.</p>
+
+<h2>Pros and cons</h2>
+<div class="grid3">
+  <div class="pc">
+    <h3>Fully native</h3>
+    <p><strong>For:</strong> full offline and push support, smooth barcode scanning, app store presence.</p>
+    <p><strong>Against:</strong> the longest route to release at 11 months, and the highest cost at $1.45 million. Two separate apps for a team of 4.</p>
+  </div>
+  <div class="pc">
+    <h3>Flutter</h3>
+    <p><strong>For:</strong> one codebase for both platforms. Full offline and push support, app store presence, and good barcode scanning. Seven months and $0.92 million.</p>
+    <p><strong>Against:</strong> 7 months still misses the January date unless we cut scope. Barcode scanning is good, not as smooth as native.</p>
+  </div>
+  <div class="pc">
+    <h3>Progressive web app</h3>
+    <p><strong>For:</strong> the fastest, at 4 months, and the cheapest, at $0.48 million.</p>
+    <p><strong>Against:</strong> offline support is only partial, push is limited on iOS, barcode scanning is unreliable, and there is no app store presence.</p>
+  </div>
+</div>
+
+<h2>Recommendation</h2>
+<div class="rec">
+<p>We lean toward Flutter. It is the middle option on time and cost, and it keeps the offline, push and app store features our customers expect.</p>
+<p>To be plain about it: 7 months misses the 15 January 2027 date unless we cut scope. The two cuts we would make are to drop in-app chat support, and to postpone the recipe feature. We have not yet estimated how much time each cut saves, and that number is what the council needs before choosing.</p>
+</div>
+</main>
+<script>
+(function(){
+  var svg=document.getElementById('months-chart');
+  var rows=[["Fully native",11,"bar"],["Flutter",7,"bar2"],["Progressive web app",4,"bar3"]];
+  var W=560,L=180,R=110,T=8,RH=44,max=11,out='';
+  rows.forEach(function(r,i){
+    var y=T+i*RH, w=(W-L-R)*r[1]/max;
+    out+='<text class="lbl" x="'+(L-10)+'" y="'+(y+19)+'" text-anchor="end">'+r[0]+'</text>';
+    out+='<rect class="'+r[2]+'" x="'+L+'" y="'+y+'" width="'+w.toFixed(1)+'" height="26" rx="4"/>';
+    out+='<text class="lbl-strong" x="'+(L+w+8).toFixed(1)+'" y="'+(y+18)+'">'+r[1]+' months</text>';
+  });
+  svg.setAttribute('viewBox','0 0 '+W+' '+(T+rows.length*RH));
+  svg.innerHTML=out;
+})();
+</script>
+</body>
+</html>

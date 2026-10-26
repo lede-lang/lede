@@ -1,0 +1,4 @@
+Sliders and option controls: not expressible; replaced by a parameter table (default/min/max/step) and an options table, plus three preset cards.
+Live preview of the animation (play, then turn purple): not expressible; replaced by a range timeline chart of the four phases, an easing line chart, and numbered phase descriptions.
+Copy button for parameters: not expressible; replaced by a "Parameters that worked" section with CSS and JSON code fences to select and copy manually.
+Trying options interactively: replaced by a review checklist (task list) to tick off in the user's own prototype.

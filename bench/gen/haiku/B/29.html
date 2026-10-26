@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Search API Latency, Weeks 30 to 41</title>
+<style>
+:root{--bg:#fafaf7;--fg:#1c1e21;--muted:#5d636b;--accent:#1d6fa3;--card:#ffffff;--border:#e2e0d9;--warn:#9a4a00;--warn-bg:#fff3e0;--note:#e9f2f8;--c1:#1d6fa3;--c2:#d9822b;--c3:#6b5bb5;--bad:#b3261e;--good:#2e7d4f}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121316;--fg:#e9e9ec;--muted:#9ea4ad;--accent:#6cb8e6;--card:#1b1d22;--border:#2e3138;--warn:#f2b35e;--warn-bg:#2b2112;--note:#152731;--c1:#6cb8e6;--c2:#eba45a;--c3:#a996e8;--bad:#ff8a80;--good:#6cc08f}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:820px;margin:0 auto;padding:32px 16px 56px}
+h1{font-size:clamp(1.55rem,4.5vw,2.1rem);line-height:1.2;margin:.2em 0 .3em}
+.dek{color:var(--muted);margin:0 0 1.5em}
+h2{font-size:1.25rem;margin:2.1em 0 .6em;padding-bottom:.3em;border-bottom:1px solid var(--border)}
+p,ul,ol{margin:.7em 0}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.95rem;margin:1em 0}
+th,td{padding:.5em .6em;text-align:right;border-bottom:1px solid var(--border);font-variant-numeric:tabular-nums}
+th:first-child,td:first-child{text-align:left}
+th{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:1.4em 0}
+.tile{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.tile b{display:block;font-size:1.5rem;line-height:1.2}
+.tile span{font-size:.82rem;color:var(--muted)}
+.callout{border-left:4px solid var(--accent);background:var(--note);padding:12px 16px;border-radius:6px;margin:1.3em 0}
+.callout.warn{border-color:var(--warn);background:var(--warn-bg)}
+.callout strong{display:block;margin-bottom:.15em}
+figure{margin:1.6em 0}
+figcaption{font-size:.85rem;color:var(--muted);margin-top:.4em}
+svg{display:block;width:100%;height:auto}
+svg text{font-size:14px;fill:var(--muted)}
+.s1{stroke:var(--c1);stroke-width:3;fill:none}
+.s2{stroke:var(--c2);stroke-width:3;fill:none}
+.s3{stroke:var(--c3);stroke-width:3;fill:none}
+.slo{stroke:var(--bad);stroke-width:2;stroke-dasharray:6 5}
+.grid{stroke:var(--border);stroke-width:1}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.88rem;color:var(--muted);margin:.4em 0}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.i1{background:var(--c1)}.i2{background:var(--c2)}.i3{background:var(--c3)}
+@media (max-width:480px){body{font-size:15px}.wrap{padding:24px 16px 48px}th,td{padding:.4em .3em;font-size:.84rem}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>Search API latency, weeks 30 to 41</h1>
+<p class="dek">Search team, Fieldnote Maps. Latency in milliseconds for 2026.</p>
+
+<div class="tiles">
+<div class="tile"><b>38 ms</b><span>p50, latest week (W41)</span></div>
+<div class="tile"><b>161 ms</b><span>p95, latest week</span></div>
+<div class="tile"><b>369 ms</b><span>p99, latest week</span></div>
+<div class="tile"><b>11 of 12</b><span>Weeks within SLO (p99 under 600 ms)</span></div>
+</div>
+
+<h2>Latency trend</h2>
+<figure>
+<div class="legend"><span><i class="i1"></i>p50</span><span><i class="i2"></i>p95</span><span><i class="i3"></i>p99</span><span>Dashed line: SLO, 600 ms</span></div>
+<svg viewBox="0 0 600 320" role="img" aria-labelledby="t29 d29">
+<title id="t29">Search API latency by week, with the 600 ms SLO</title>
+<desc id="d29">Line chart of p50, p95 and p99 latency in milliseconds for weeks 30 to 41. p99 peaks at 688 ms in week 35, the only week above the 600 ms SLO. p50 stays between 38 and 52 ms.</desc>
+<line class="grid" x1="60" y1="280" x2="580" y2="280"/>
+<line class="grid" x1="60" y1="208.57" x2="580" y2="208.57"/>
+<line class="grid" x1="60" y1="137.14" x2="580" y2="137.14"/>
+<text x="50" y="284" text-anchor="end">0</text>
+<text x="50" y="212" text-anchor="end">200</text>
+<text x="50" y="141" text-anchor="end">400</text>
+<text x="50" y="70" text-anchor="end">600</text>
+<line class="slo" x1="60" y1="65.71" x2="580" y2="65.71"/>
+<text x="570" y="58" text-anchor="end">SLO 600 ms</text>
+<polyline class="s3" points="60,133.57 107.27,136.43 154.55,123.93 201.82,127.14 249.09,99.29 296.36,34.29 343.64,75 390.91,117.5 438.18,126.07 485.45,137.86 532.73,142.86 580,148.21"/>
+<polyline class="s2" points="60,215.71 107.27,217.14 154.55,211.79 201.82,212.86 249.09,203.57 296.36,186.07 343.64,197.5 390.91,209.29 438.18,213.21 485.45,218.57 532.73,220 580,222.5"/>
+<polyline class="s1" points="60,265 107.27,265.36 154.55,264.29 201.82,264.64 249.09,263.21 296.36,261.43 343.64,262.5 390.91,263.93 438.18,264.29 485.45,265.71 532.73,266.07 580,266.43"/>
+<text x="60" y="302" text-anchor="middle">W30</text>
+<text x="107" y="302" text-anchor="middle">W31</text>
+<text x="155" y="302" text-anchor="middle">W32</text>
+<text x="202" y="302" text-anchor="middle">W33</text>
+<text x="249" y="302" text-anchor="middle">W34</text>
+<text x="296" y="302" text-anchor="middle">W35</text>
+<text x="344" y="302" text-anchor="middle">W36</text>
+<text x="391" y="302" text-anchor="middle">W37</text>
+<text x="438" y="302" text-anchor="middle">W38</text>
+<text x="485" y="302" text-anchor="middle">W39</text>
+<text x="533" y="302" text-anchor="middle">W40</text>
+<text x="580" y="302" text-anchor="middle">W41</text>
+</svg>
+<figcaption>Weekly p50, p95 and p99 latency in milliseconds.</figcaption>
+</figure>
+
+<h2>Weekly data</h2>
+<div class="scroll">
+<table>
+<thead><tr><th>Week</th><th>p50</th><th>p95</th><th>p99</th></tr></thead>
+<tbody>
+<tr><td>W30</td><td>42</td><td>180</td><td>410</td></tr>
+<tr><td>W31</td><td>41</td><td>176</td><td>402</td></tr>
+<tr><td>W32</td><td>44</td><td>191</td><td>437</td></tr>
+<tr><td>W33</td><td>43</td><td>188</td><td>428</td></tr>
+<tr><td>W34</td><td>47</td><td>214</td><td>506</td></tr>
+<tr><td>W35</td><td>52</td><td>263</td><td>688</td></tr>
+<tr><td>W36</td><td>49</td><td>231</td><td>574</td></tr>
+<tr><td>W37</td><td>45</td><td>198</td><td>455</td></tr>
+<tr><td>W38</td><td>44</td><td>187</td><td>431</td></tr>
+<tr><td>W39</td><td>40</td><td>172</td><td>398</td></tr>
+<tr><td>W40</td><td>39</td><td>168</td><td>384</td></tr>
+<tr><td>W41</td><td>38</td><td>161</td><td>369</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>What changed</h2>
+<p>Week 35 spiked after the index migration to the new cluster. Latency recovered once query caching shipped in week 37, and p50 and p95 have kept improving since.</p>
+
+<div class="callout warn">
+<strong>SLO breach</strong>
+Week 35 is the only week that breached the SLO. Its p99 of 688 ms was above the 600 ms target.
+</div>
+</main>
+</body>
+</html>

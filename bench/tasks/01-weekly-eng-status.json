@@ -1,0 +1,61 @@
+{
+  "id": "01-weekly-eng-status",
+  "category": "status",
+  "title": "Platform Engineering weekly status",
+  "brief": "Can you put together the Platform Engineering weekly status page for the week ending 2026-10-16? Open with four headline metric tiles: Deploys this week: 47, PRs merged: 132, Open incidents: 2, On-call pages: 9. Then a section titled \"Highlights\" with a short bulleted list: the Postgres 16 upgrade finished on all 14 clusters, build cache hit rate climbed to 87 percent, and the new staging environment is live for the Checkout team. Add a line chart of PRs merged per week for the last nine weeks: W33 98, W34 104, W35 117, W36 109, W37 121, W38 126, W39 118, W40 129, W41 132. Next, a section titled \"Workstreams\" with a table using the columns Workstream, Owner, Status, ETA: Postgres upgrade, Priya Nair, Done, 2026-10-09; Service mesh rollout, Tomas Ruiz, On track, 2026-11-06; Cost tagging, Mei Chen, At risk, 2026-10-30; Runner autoscaling, Dev Patel, Blocked, 2026-11-20. Finish with a section titled \"Risks\" and put the main risk in a highlighted warning note: runner autoscaling is blocked on a quota increase from the cloud provider, ticket CASE-4471, and if it is not approved by 2026-10-23 the November date slips. Keep it scannable; leadership reads this on their phones.",
+  "checklist": {
+    "sections": [
+      "Highlights",
+      "Workstreams",
+      "Risks"
+    ],
+    "visible": [
+      "Deploys this week",
+      "PRs merged",
+      "Open incidents",
+      "On-call pages",
+      "Workstream",
+      "Owner",
+      "Status",
+      "ETA",
+      "Service mesh rollout",
+      "Runner autoscaling",
+      "CASE-4471"
+    ],
+    "values": [
+      "47",
+      "132",
+      "98",
+      "104",
+      "117",
+      "109",
+      "121",
+      "126",
+      "118",
+      "129",
+      "W33",
+      "W41",
+      "87",
+      "2026-11-06"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add W42 to the chart with 141 PRs merged, update the PRs merged tile to 141, and mark Cost tagging as On track.",
+    "expect_visible": [
+      "Cost tagging",
+      "On track"
+    ],
+    "expect_values": [
+      "141",
+      "W42"
+    ],
+    "expect_absent": []
+  }
+}

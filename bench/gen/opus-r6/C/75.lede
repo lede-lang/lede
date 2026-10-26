@@ -1,0 +1,37 @@
+@title Course Portal Single Sign-On
+@subtitle How sign-in works for the Kestrel Learning course portal
+@author Platform team
+@date 2026-10-08
+
+!!! A one-time code **expires after 60 seconds** and **works only once**. A second use, or a use after 60 s, must be rejected.
+
+## Sign-in sequence
+diagram sso sequence title="Sign-in"
+sso: browser "Browser" user
+sso: portal "Course Portal" svc
+sso: idp "Identity Provider" svc
+sso: tokens "Token Service" svc
+sso: dir "User Directory" db
+sso: audit "Audit Log" store
+sso: browser -> portal : open /courses
+sso: portal --> browser : redirect to Identity Provider
+sso: browser -> idp : authorization request with PKCE
+sso: idp -> dir : verify credentials and groups
+sso: dir --> idp : verified, groups returned
+sso: idp -> tokens : issue tokens
+sso: tokens --> idp : tokens issued
+sso: idp --> browser : redirect with one-time code
+sso: note browser : code valid 60 s, single use
+sso: browser -> portal : one-time code
+sso: portal -> tokens : exchange code for tokens
+sso: tokens -> audit : record sign-in
+sso: portal --> browser : session cookie, 24 hours
+
+## Token lifetimes
+data life = token,seconds; One-time code,60; ID token,600; Access token,1800; Refresh token,28800; Session cookie,86400
+table = Token,Lifetime; One-time code,**60 seconds, single use**; ID token,10 minutes; Access token,30 minutes; Refresh token,8 hours; Session cookie,24 hours
+
+## Rules
+- Staff accounts must pass **MFA**.
+- A one-time code can be used **once only**.
+- Sign-in events are kept for **400 days**.

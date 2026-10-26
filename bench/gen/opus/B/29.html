@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Search API Latency Report</title>
+<style>
+:root{--bg:#f4f6f8;--surface:#fff;--text:#172029;--muted:#5b6674;--border:#d9e0e7;--p50:#3a8f6a;--p95:#3c6fc4;--p99:#8b47b8;--slo:#c43c2c;--good:#1d7a46;--alert-bg:#fbeae6;--alert:#c43c2c;--alert-text:#7a2214;--breach:#fdf1ef}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1318;--surface:#181e25;--text:#e2e8ee;--muted:#98a3b1;--border:#2a323c;--p50:#5fcf9b;--p95:#79a5f0;--p99:#c18ae6;--slo:#f07462;--good:#6fcf97;--alert-bg:#3a1c17;--alert:#f07462;--alert-text:#f7c1b6;--breach:#2e1c19}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:920px;margin:0 auto;padding:32px 16px 64px}
+.eyebrow{font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 0 6px}
+h1{font-size:clamp(26px,5vw,34px);line-height:1.2;margin:0 0 6px}
+.lede{color:var(--muted);margin:0 0 22px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:34px}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.tile .k{font-size:13px;color:var(--muted)}
+.tile .v{font-size:28px;font-weight:700;line-height:1.2;margin:4px 0 2px;font-variant-numeric:tabular-nums}
+.tile .v small{font-size:15px;font-weight:600;color:var(--muted)}
+.tile .s{font-size:13px;color:var(--muted)}
+section{margin-bottom:34px}
+h2{font-size:21px;margin:0 0 12px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px}
+.chart{padding:18px}
+svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:16px;list-style:none;margin:0 0 8px;padding:0;font-size:14px}
+.legend i{display:inline-block;width:16px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.legend i.dash{background:repeating-linear-gradient(90deg,var(--slo) 0 5px,transparent 5px 8px)}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{padding:8px 14px;border-bottom:1px solid var(--border);text-align:right}
+th:first-child,td:first-child{text-align:left}
+thead th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+tbody tr:last-child td{border-bottom:0}
+tr.breach{background:var(--breach)}
+tr.breach td:last-child{color:var(--alert);font-weight:700}
+caption{caption-side:bottom;text-align:left;color:var(--muted);font-size:13px;padding:8px 14px}
+.callout{background:var(--alert-bg);border:1px solid var(--alert);border-left-width:6px;border-radius:10px;padding:14px 16px;color:var(--alert-text);margin-top:14px}
+</style>
+</head>
+<body>
+<main>
+<p class="eyebrow">Fieldnote Maps · Search team</p>
+<h1>Search API latency, W30 to W41 2026</h1>
+<p class="lede">All figures in milliseconds. The SLO is p99 under 600 ms.</p>
+
+<div class="tiles" aria-label="Latest week, W41">
+<div class="tile"><div class="k">p50, W41</div><div class="v">38 <small>ms</small></div></div>
+<div class="tile"><div class="k">p95, W41</div><div class="v">161 <small>ms</small></div></div>
+<div class="tile"><div class="k">p99, W41</div><div class="v">369 <small>ms</small></div></div>
+<div class="tile"><div class="k">SLO compliance</div><div class="v">11 <small>of 12 weeks</small></div><div class="s">p99 under 600 ms</div></div>
+</div>
+
+<section>
+<h2>Latency trend</h2>
+<div class="panel chart">
+<ul class="legend">
+<li><i style="background:var(--p99)"></i>p99</li>
+<li><i style="background:var(--p95)"></i>p95</li>
+<li><i style="background:var(--p50)"></i>p50</li>
+<li><i class="dash"></i>SLO 600 ms</li>
+</ul>
+<svg viewBox="0 0 600 310" role="img" aria-label="Line chart of weekly p50, p95 and p99 latency, W30 to W41, with the 600 millisecond SLO line. p99 crosses the SLO only in W35 at 688 ms.">
+<g stroke="var(--border)" stroke-width="1">
+<line x1="60" y1="270" x2="540" y2="270"/><line x1="60" y1="210" x2="540" y2="210"/><line x1="60" y1="150" x2="540" y2="150"/><line x1="60" y1="90" x2="540" y2="90"/><line x1="60" y1="30" x2="540" y2="30"/>
+</g>
+<g fill="var(--muted)" font-size="12" text-anchor="end">
+<text x="52" y="274">0</text><text x="52" y="214">200</text><text x="52" y="154">400</text><text x="52" y="94">600</text><text x="52" y="34">800 ms</text>
+</g>
+<g fill="var(--muted)" font-size="11" text-anchor="middle">
+<text x="80" y="290">W30</text><text x="120" y="290">W31</text><text x="160" y="290">W32</text><text x="200" y="290">W33</text><text x="240" y="290">W34</text><text x="280" y="290">W35</text><text x="320" y="290">W36</text><text x="360" y="290">W37</text><text x="400" y="290">W38</text><text x="440" y="290">W39</text><text x="480" y="290">W40</text><text x="520" y="290">W41</text>
+</g>
+<line x1="60" y1="90" x2="540" y2="90" stroke="var(--slo)" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="64" y="84" font-size="12" fill="var(--slo)" font-weight="600">SLO: p99 &lt; 600 ms</text>
+<g fill="none" stroke-width="2.5" stroke-linejoin="round">
+<polyline stroke="var(--p99)" points="80,147 120,149.4 160,138.9 200,141.6 240,118.2 280,63.6 320,97.8 360,133.5 400,140.7 440,150.6 480,154.8 520,159.3"/>
+<polyline stroke="var(--p95)" points="80,216 120,217.2 160,212.7 200,213.6 240,205.8 280,191.1 320,200.7 360,210.6 400,213.9 440,218.4 480,219.6 520,221.7"/>
+<polyline stroke="var(--p50)" points="80,257.4 120,257.7 160,256.8 200,257.1 240,255.9 280,254.4 320,255.3 360,256.5 400,256.8 440,258 480,258.3 520,258.6"/>
+</g>
+<circle cx="280" cy="63.6" r="5" fill="var(--slo)" stroke="var(--surface)" stroke-width="2"/>
+<text x="280" y="52" font-size="12" text-anchor="middle" fill="var(--slo)" font-weight="700">688</text>
+<g font-size="12" font-weight="600">
+<text x="528" y="163" fill="var(--p99)">p99</text>
+<text x="528" y="226" fill="var(--p95)">p95</text>
+<text x="528" y="262" fill="var(--p50)">p50</text>
+</g>
+</svg>
+</div>
+</section>
+
+<section>
+<h2>Weekly data</h2>
+<div class="panel table-wrap">
+<table>
+<caption>Milliseconds. Highlighted row breached the p99 SLO.</caption>
+<thead><tr><th>Week</th><th>p50</th><th>p95</th><th>p99</th></tr></thead>
+<tbody>
+<tr><td>W30</td><td>42</td><td>180</td><td>410</td></tr>
+<tr><td>W31</td><td>41</td><td>176</td><td>402</td></tr>
+<tr><td>W32</td><td>44</td><td>191</td><td>437</td></tr>
+<tr><td>W33</td><td>43</td><td>188</td><td>428</td></tr>
+<tr><td>W34</td><td>47</td><td>214</td><td>506</td></tr>
+<tr class="breach"><td>W35</td><td>52</td><td>263</td><td>688</td></tr>
+<tr><td>W36</td><td>49</td><td>231</td><td>574</td></tr>
+<tr><td>W37</td><td>45</td><td>198</td><td>455</td></tr>
+<tr><td>W38</td><td>44</td><td>187</td><td>431</td></tr>
+<tr><td>W39</td><td>40</td><td>172</td><td>398</td></tr>
+<tr><td>W40</td><td>39</td><td>168</td><td>384</td></tr>
+<tr><td>W41</td><td>38</td><td>161</td><td>369</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section>
+<h2>What changed</h2>
+<p>Latency spiked in W35 after the index migration to the new cluster. It recovered once query caching shipped in W37, and every percentile has kept falling since: W41 is the lowest week in the period.</p>
+<div class="callout" role="note"><strong>SLO breach:</strong> W35 is the only week that breached the SLO, with p99 at 688 ms against the 600 ms limit.</div>
+</section>
+</main>
+</body>
+</html>

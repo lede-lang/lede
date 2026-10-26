@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drift Harbor Client Patch Rollback Runbook</title>
+<style>
+:root{color-scheme:light dark;--bg:#f4f6f9;--surface:#fff;--text:#18212c;--muted:#566474;--border:#dbe1e8;--accent:#5b3fc4;--on-accent:#fff;--accent-soft:#eeeafb;--red:#b42318;--red-soft:#fdecea;--amber:#a85a00;--amber-soft:#fff2dc;--track:#e3e8ee}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1319;--surface:#161d26;--text:#e7ecf2;--muted:#98a5b4;--border:#283240;--accent:#a592ff;--on-accent:#0e1319;--accent-soft:#221d3d;--red:#ff8b80;--red-soft:#3a1a1a;--amber:#f3a84b;--amber-soft:#35260f;--track:#263140}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:780px;margin:0 auto;padding:20px 16px 48px}
+.top{padding:4px 0 16px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+h1{font-size:1.75rem;line-height:1.2;margin:.25rem 0 .5rem}
+.meta{display:flex;flex-wrap:wrap;gap:6px 16px;color:var(--muted);font-size:.9rem;margin:0;padding:0;list-style:none}
+h2{font-size:1.25rem;margin:2rem 0 .75rem;padding-bottom:.35rem;border-bottom:2px solid var(--border)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.card p{margin:.2rem 0}
+.callout{border-radius:12px;padding:14px 16px;margin:12px 0;border:2px solid var(--red);background:var(--red-soft)}
+.callout strong.t{display:block;color:var(--red);text-transform:uppercase;letter-spacing:.05em;font-size:.82rem;margin-bottom:2px}
+.callout p{margin:.2rem 0}
+.trigger{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.trigger .big{font-size:1.5rem;font-weight:800;line-height:1.1}
+.trigger .lbl{color:var(--muted);font-size:.88rem}
+.or{grid-column:1/-1;text-align:center;color:var(--muted);font-weight:700;font-size:.85rem;margin:-4px 0}
+@media (max-width:480px){.trigger{grid-template-columns:1fr}h1{font-size:1.45rem}.wrap{padding:16px 14px 40px}}
+ol.steps{list-style:none;counter-reset:s;padding:0;margin:0}
+ol.steps>li{counter-increment:s;position:relative;padding:14px 14px 14px 58px;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:10px}
+ol.steps>li::before{content:counter(s);position:absolute;left:14px;top:14px;width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--on-accent);font-weight:700;display:flex;align-items:center;justify-content:center}
+ol.steps>li>b{display:block;margin-bottom:2px}
+ol.sub{list-style:lower-alpha;margin:.3rem 0 0;padding-left:1.3rem}
+ol.sub li{margin:.3rem 0}
+.ramp{display:flex;flex-wrap:wrap;align-items:stretch;gap:6px;margin:.6rem 0 .2rem}
+.ramp .st{flex:1 1 90px;background:var(--accent-soft);border:1px solid var(--border);border-radius:10px;padding:8px;text-align:center}
+.ramp .st b{display:block;font-size:1.25rem}
+.ramp .st span{font-size:.8rem;color:var(--muted)}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--border)}
+th{color:var(--muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.05em}
+tr:last-child td{border-bottom:0}
+code{background:var(--accent-soft);padding:1px 6px;border-radius:5px;font-size:.92em}
+footer{margin-top:2rem;color:var(--muted);font-size:.85rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">Quillfeather Interactive &middot; Live Ops</div>
+  <h1>Rolling Back a Bad Client Patch: Drift Harbor</h1>
+  <ul class="meta">
+    <li>Owner: Live Ops</li>
+    <li>Version 2026-10-13</li>
+    <li>Last good build: 4.12.3</li>
+  </ul>
+</header>
+
+<div class="callout" role="alert">
+  <strong class="t">Check this first</strong>
+  <p><b>Rolling back after a database schema migration corrupts player inventories.</b> If the patch contained a migration, do not roll back. See "Do not roll back if" below.</p>
+</div>
+
+<h2>When to roll back</h2>
+<div class="card">
+  <p>After a patch release, roll back if <b>either</b> of these holds:</p>
+  <div class="trigger" style="margin-top:.6rem">
+    <div><div class="big">&gt; 2%</div><div class="lbl">of sessions crash, for 15 minutes</div></div>
+    <div class="or">OR</div>
+    <div><div class="big">&gt; 5%</div><div class="lbl">login failures, for 10 minutes</div></div>
+  </div>
+  <p style="margin-top:.8rem"><b>The Live Ops lead must approve</b> in the <code>#liveops-war-room</code> channel before you start.</p>
+</div>
+
+<h2>Do not roll back if</h2>
+<div class="callout">
+  <strong class="t">Schema migration in the patch</strong>
+  <p>The patch contained a database schema migration, such as migration 0087 in patch 4.13. Older clients cannot read the new schema.</p>
+  <p><b>Go forward with a hotfix instead.</b></p>
+</div>
+
+<h2>Rollback steps</h2>
+<ol class="steps">
+  <li><b>Stop the bleeding</b>
+    <ol class="sub">
+      <li>Pause the deploy pipeline.</li>
+      <li>Set matchmaking to maintenance mode with the in-game message <code>Back soon</code>.</li>
+    </ol>
+  </li>
+  <li><b>Point players to the last good build</b>
+    <ol class="sub">
+      <li>In the release console, set the live manifest to build <b>4.12.3</b>.</li>
+      <li>Invalidate the CDN cache, which takes about 10 minutes.</li>
+    </ol>
+  </li>
+  <li><b>Verify</b>
+    <ol class="sub">
+      <li>Install the build on 3 test accounts, one each on PC, console and mobile.</li>
+      <li>Confirm login and a full match.</li>
+    </ol>
+  </li>
+  <li><b>Reopen in stages</b>
+    <ol class="sub">
+      <li>Let in 10 percent of players.</li>
+      <li>25 percent after 5 minutes.</li>
+      <li>50 percent after 5 more minutes.</li>
+      <li>100 percent after another 5 minutes, if the crash rate stays under 1 percent.</li>
+    </ol>
+    <div class="ramp" role="img" aria-label="Reopening ramp: 10 percent, then 25 percent after 5 minutes, 50 percent after 10 minutes, 100 percent after 15 minutes">
+      <div class="st"><b>10%</b><span>start</span></div>
+      <div class="st"><b>25%</b><span>+5 min</span></div>
+      <div class="st"><b>50%</b><span>+10 min</span></div>
+      <div class="st"><b>100%</b><span>+15 min, if crash rate &lt; 1%</span></div>
+    </div>
+  </li>
+  <li><b>Communicate</b>
+    <ol class="sub">
+      <li>Post a status update within 30 minutes of the decision.</li>
+      <li>Schedule compensation of 500 gems for every active account.</li>
+    </ol>
+  </li>
+</ol>
+
+<h2>Contacts</h2>
+<div class="card" style="padding:4px 8px">
+  <table>
+    <thead><tr><th>Role</th><th>Name</th></tr></thead>
+    <tbody>
+      <tr><td>Live Ops lead</td><td><b>Soledad Ortega</b></td></tr>
+      <tr><td>Release engineer on call</td><td><b>Thabo Mokoena</b></td></tr>
+      <tr><td>Community manager</td><td><b>Ji-ho Han</b></td></tr>
+    </tbody>
+  </table>
+</div>
+<footer>Quillfeather Interactive Live Ops &middot; Drift Harbor rollback runbook, version 2026-10-13</footer>
+</div>
+</body>
+</html>

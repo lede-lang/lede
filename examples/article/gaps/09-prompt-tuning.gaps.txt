@@ -1,0 +1,6 @@
+Editable prompt pane: not expressible; wrote the proposed prompt as a copyable fenced block, so editing happens in the reader's own editor.
+Variable slots highlighted in the editor: partly; a prose copy of the template shows the slots in bold, and a slot table lists source, example and limit, but the fenced paste-ready copy cannot be highlighted.
+Three sample inputs re-rendering live: not expressible; wrote the three filled-in prompts out in full as fenced blocks for the proposed template (they go stale if the template is edited).
+Live character/token counter: not expressible; gave hand-estimated characters and tokens per template and per sample (about 4 characters per token, plus or minus 10%), not measured.
+Copy button: not expressible; the fenced block is the thing to copy.
+Side-by-side layout: not used; `grid 2` can only place whole blocks, and the long prompts read better stacked.

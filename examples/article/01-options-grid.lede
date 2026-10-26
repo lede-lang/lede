@@ -1,0 +1,167 @@
+@title Plotline onboarding: six directions
+@subtitle Six first-run screens that differ in layout, tone and density, each with the tradeoff it makes
+@author Claude, Design exploration
+@date 2026-10-19
+@width wide
+
+Plotline is a project tracker for small agencies. The first-run screen appears right after sign-up and has one job: get a new user to their first real project. The six directions below are deliberately far apart. Each card states the tradeoff it is making, then its layout, tone and density, then a wireframe.
+
+! Seconds, field and screen counts are design-heuristic estimates for comparison, not measured results. Test the top two with five users each before committing.
+
+## The six directions
+
+cards
+
+### 1. One Pass
+**Tradeoff: fastest to finish and easiest to build, but it looks like paperwork.**
+- Layout: one column, every field visible at once
+- Tone: terse and neutral ("Set up Plotline")
+- Density: high, 6 inputs on one screen
+```
++------------------------------+
+| Set up Plotline              |
+| Name      [______________]   |
+| Role      [______________]   |
+| Team size [______]           |
+| Work email [_____________]   |
+| Found us via [___________]   |
+| [x] I agree     [ Create ]   |
++------------------------------+
+```
+
+### 2. Guided Wizard
+**Tradeoff: collects clean profile data and feels supportive, but it delays the product by four screens.**
+- Layout: centered card, stepper at the top, one decision per step
+- Tone: warm and conversational ("What kind of work do you do?")
+- Density: low, about 2 inputs per step
+```
++------------------------------+
+|  (1)--(2)--(3)--(4)          |
+|                              |
+|  What kind of work do you    |
+|  do?                         |
+|    ( ) Agency  ( ) In-house  |
+|                              |
+|  Back                [ Next ]|
++------------------------------+
+```
+
+### 3. Checklist Dashboard
+**Tradeoff: no gate before the app, but a user can ignore the checklist and never reach value.**
+- Layout: the real app shell with a pinned progress panel
+- Tone: task-oriented ("2 of 5 done")
+- Density: medium, 5 actions visible with progress
+```
++------------------------------+
+| Welcome, Sam.    2 of 5 done |
+| [########-----------]  40%   |
+| [x] Create your first project|
+| [x] Add a client             |
+| [ ] Invite a teammate        |
+| [ ] Connect your calendar    |
+| [ ] Send a first update      |
++------------------------------+
+```
+
+### 4. Personalization Quiz
+**Tradeoff: strongest tailoring and a playful first impression, but six screens before any product.**
+- Layout: one big question per screen, large tap targets, full bleed color
+- Tone: playful and chatty ("How do you run your Monday?")
+- Density: very low, 1 question and 2 to 4 answers per screen
+```
++------------------------------+
+|           3 / 6              |
+|   How do you run your        |
+|   Monday?                    |
+|  +-----------+ +-----------+ |
+|  |  Lists    | |  Boards   | |
+|  +-----------+ +-----------+ |
++------------------------------+
+```
+
+### 5. Template First
+**Tradeoff: near-instant time to value, but a user with an unusual workflow sees nothing that fits.**
+- Layout: gallery of 6 starter projects, a single click starts one
+- Tone: minimal, almost no copy
+- Density: medium, 6 visual tiles and one escape hatch
+```
++------------------------------+
+| Start from a template        |
+| +-------+ +-------+ +------+ |
+| | Brief | |Launch | | Audit| |
+| +-------+ +-------+ +------+ |
+| +-------+ +-------+ +------+ |
+| |Retain | |Pitch  | | Event| |
+| +-------+ +-------+ +------+ |
+|          [ Start blank ]     |
++------------------------------+
+```
+
+### 6. Sandbox Tour
+**Tradeoff: teaches by doing and needs no setup, but it is the most work to build and keep current.**
+- Layout: a populated sample project with coach marks over the real UI
+- Tone: instructional ("This is a task. Drag it to Done.")
+- Density: high, a full board plus one tooltip at a time
+```
++------------------------------+
+| Sample: Acme Rebrand         |
+| +-----------+                |
+| | To do|Done|  (1) This is a|
+| | [ ] [ ]   |  task. Drag it|
+| +-----------+  to Done.     |
+| [Skip tour]  [Use my own 1/5]|
++------------------------------+
+```
+
+## Side by side on the three axes
+
+table = direction,layout,tone,density,best when; **1. One Pass**,single column,terse,high,"users arrive with intent, such as invited teammates"; **2. Guided Wizard**,stepper card,warm,low,"you need profile data to route the user"; **3. Checklist Dashboard**,app shell plus panel,task-oriented,medium,"the product explains itself in seconds"; **4. Personalization Quiz**,full-bleed questions,playful,very low,"the audience is mixed and engagement is the risk"; **5. Template First**,tile gallery,minimal,medium,"common workflows cover most of your users"; **6. Sandbox Tour**,coach marks over sample data,instructional,high,"the product is unusual and needs demonstrating"
+
+## What each costs the user
+
+Estimated effort before the user reaches their first project.
+
+data est = direction,seconds,fields,screens; "1 One Pass",75,6,1; "2 Guided Wizard",140,7,4; "3 Checklist",20,2,1; "4 Quiz",95,6,6; "5 Template First",30,1,2; "6 Sandbox Tour",45,0,5
+
+chart hbar est y=seconds unit=s title="Estimated seconds to first project" focus="3 Checklist"
+
+table est heat title="Effort estimates (lower is lighter)"
+
+grid 2
+chart bar est y=fields,screens title="Fields and screens per direction"
+! Two directions look similar on speed and differ on cost. Checklist and Template First both finish under 30 seconds, but Template First asks for a choice up front and Checklist defers all setup. Pick on which failure you can live with: a wrong template pick or an ignored checklist.
+
+## How to choose
+
+One path through the questions below lands on each direction.
+
+diagram pick dir=TB title="Which direction fits"
+pick: d1 "Need profile data on day one?" decision focus
+pick: d2 "Is the product obvious in 30 seconds?" decision
+pick: d3 "Do users arrive with intent?" decision
+pick: d4 "Do reusable starting points exist?" decision
+pick: d5 "Is personalization the hook?" decision
+pick: one "1. One Pass" svc
+pick: wiz "2. Guided Wizard" svc
+pick: chk "3. Checklist" svc
+pick: quiz "4. Quiz" svc
+pick: tpl "5. Template First" svc
+pick: sbx "6. Sandbox Tour" svc
+pick: d1 -> d3 : yes
+pick: d1 -> d2 : no
+pick: d3 -> one : yes
+pick: d3 -> d5 : no
+pick: d5 -> quiz : yes
+pick: d5 -> wiz : no
+pick: d2 -> d4 : yes
+pick: d2 -> sbx : no
+pick: d4 -> tpl : yes
+pick: d4 -> chk : no
+
+## Recommendation
+
+- Ship **3. Checklist Dashboard** as the default: it never blocks the user and costs the least to build.
+- Prototype **5. Template First** as the challenger, since it has the shortest path to a populated first project.
+- Keep **2. Guided Wizard** only if sales needs team size and role on day one.
+
+!! Directions 4 and 6 carry the highest build and maintenance cost. Choose them only if user testing shows the simpler options fail to activate people.

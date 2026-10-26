@@ -1,0 +1,40 @@
+@title Loan Portfolio Quality, Q3 2026
+@subtitle Bluefin Credit Union board meeting, 2026-10-29
+@author Anselm Wachira, Chief Risk Officer
+@date 2026-10-29
+
+# Portfolio at a glance
+
+kpi 30+ day delinquency | 1.4% | +0.1 pts vs Q2 | bad
+
+kpi Total balances | $1,639M
+kpi Q3 charge-offs | $3.9M | +$0.8M vs Q2 | bad
+kpi Allowance for loan losses | $21.3M | 1.3% of loans
+kpi Mortgage share | 60.3% | flat delinquency | good
+
+Weighted across the portfolio, loans 30 or more days delinquent rose from 1.3% in Q2 to 1.4% in Q3. Charge-offs rose from $3.1M to $3.9M.
+
+# Delinquency by loan type
+
+data dq = type,Q2,Q3; Personal,3.4,4.1; Revolving credit,2.8,3.0; Auto,1.9,2.2; Mortgage,0.6,0.6
+
+chart bar dq x=type y=Q2,Q3 unit=% labels title="30+ day delinquency, Q2 vs Q3"
+
+table = Loan type,Balance,Q2,Q3,Change; Personal,$143M,3.4%,4.1%,**+0.7 pts**; Revolving credit,$96M,2.8%,3.0%,+0.2 pts; Auto,$412M,1.9%,2.2%,**+0.3 pts**; Mortgage,$988M,0.6%,0.6%,0.0 pts; **Total**,**$1,639M**,**1.3%**,**1.4%**,**+0.1 pts**
+
+# What changed
+
+- **Personal loans** have the highest delinquency (4.1%) and the largest rise, up 0.7 points in one quarter.
+- **Auto** is rising more slowly, up 0.3 points, but matters more in dollars: at $412M it is nearly three times the personal book.
+- **Mortgages**, 60.3% of balances, were flat at 0.6%.
+- **Revolving credit** edged up 0.2 points to 3.0%.
+
+data bal = type,balance; Mortgage,988; Auto,412; Personal,143; Revolving credit,96
+
+chart hbar bal unit=$M labels title="Balances by loan type ($M)"
+
+# Actions
+
+step Tighten personal loan underwriting for credit scores below 640 | 2026-11-15
+step Add early outreach for auto loans at 15 days past due
+step Review reserve adequacy | January board meeting

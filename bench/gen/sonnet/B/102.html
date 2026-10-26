@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>From Register Sale to Online Stock Count</title>
+<style>
+:root{--bg:#f4f6f9;--card:#fff;--ink:#16202b;--mut:#55616e;--line:#d3dae2;--acc:#1d5fbf;--acc-s:#e5eefb;--warn:#b0360a;--warn-s:#fdece3;--ok:#13703e;--ok-s:#e2f3ea;--gold:#7a5200;--gold-s:#fcf1d2}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--card:#171f28;--ink:#e7ecf1;--mut:#9ba8b5;--line:#2c3844;--acc:#7db1ff;--acc-s:#16273d;--warn:#ff9d73;--warn-s:#34201a;--ok:#62d796;--ok-s:#12291c;--gold:#f0c35c;--gold-s:#30260f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:920px;margin:0 auto;padding:0 16px 56px}
+header{padding:32px 0 14px;border-bottom:1px solid var(--line)}
+.eyebrow{margin:0 0 6px;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:var(--acc);font-weight:700}
+h1{margin:0 0 8px;font-size:clamp(1.6rem,5.5vw,2.4rem);line-height:1.15;letter-spacing:-.01em}
+.meta{margin:0;color:var(--mut);font-size:.92rem}
+h2{margin:40px 0 12px;font-size:1.4rem;line-height:1.25}
+h3{margin:22px 0 8px;font-size:1.05rem}
+p{margin:0 0 12px}
+.callout{border-left:5px solid var(--gold);background:var(--gold-s);border-radius:10px;padding:14px 16px;margin:20px 0}
+.callout strong{color:var(--gold)}
+.diagram{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;overflow-x:auto}
+.diagram svg{display:block;margin:0 auto;width:100%;min-width:620px;max-width:760px;height:auto}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:.94rem}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.76rem;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.card h3{margin:0 0 6px}
+.card p{margin:0;font-size:.95rem}
+.num{display:inline-grid;place-items:center;width:1.6rem;height:1.6rem;border-radius:50%;background:var(--acc);color:var(--card);font-weight:700;font-size:.85rem;margin-right:8px}
+ol.steps{margin:0;padding:0;list-style:none;counter-reset:s}
+ol.steps li{counter-increment:s;display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+ol.steps li:last-child{border-bottom:0}
+ol.steps li::before{content:counter(s);flex:none;display:grid;place-items:center;width:1.6rem;height:1.6rem;border-radius:50%;background:var(--acc);color:var(--card);font-weight:700;font-size:.85rem}
+.note{font-size:.88rem;color:var(--mut);margin-top:10px}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em}
+/* svg */
+svg text{font-family:inherit;fill:var(--ink)}
+.pb{fill:var(--acc-s);stroke:var(--acc);stroke-width:1.5}
+.pb.src{fill:var(--gold-s);stroke:var(--gold);stroke-width:2.5}
+.pt{font-size:13px;font-weight:700;text-anchor:middle}
+.lf{stroke:var(--line);stroke-width:1.5;stroke-dasharray:4 4}
+.m{fill:none;stroke:var(--ink);stroke-width:1.6}
+.m.r{stroke-dasharray:5 4}
+.ah{fill:var(--ink)}
+.ml{font-size:12.5px;text-anchor:middle;paint-order:stroke;stroke:var(--card);stroke-width:4px;stroke-linejoin:round}
+.ms{font-size:12.5px;paint-order:stroke;stroke:var(--card);stroke-width:4px;stroke-linejoin:round}
+.badge{font-size:11.5px;font-weight:700;text-anchor:middle;fill:var(--gold)}
+.fr{fill:none;stroke:var(--warn);stroke-width:1.5;stroke-dasharray:7 5}
+.frt{font-size:12.5px;font-weight:700;fill:var(--warn)}
+.nt{fill:var(--card);stroke:var(--mut);stroke-width:1.2}
+.ntt{font-size:12.5px;text-anchor:middle}
+.bar1{fill:var(--acc)}
+.bar2{fill:var(--mut)}
+.tg{fill:none;stroke:var(--ok);stroke-width:2}
+.axl{font-size:11.5px;fill:var(--mut);text-anchor:middle}
+.rl{font-size:12.5px}
+.rv{font-size:12.5px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Halsted Home Goods &middot; Retail Platform</p>
+  <h1>How a register sale reaches the online stock count</h1>
+  <p class="meta">Written by the Retail Platform team &middot; <time datetime="2026-10-08">2026-10-08</time> &middot; For new engineers</p>
+</header>
+
+<main>
+<div class="callout" role="note">
+  <strong>Remember two things.</strong> The <strong>Stock Ledger is the only source of truth</strong> for stock. The <strong>Storefront count may lag by up to 20 seconds</strong>, so a number that looks stale is usually just in flight.
+</div>
+
+<section id="sequence">
+  <h2>Sale-to-stock sequence</h2>
+  <p>Five participants take part. Solid arrows are requests; dashed arrows are replies. The diagram scrolls sideways on narrow screens, and the same steps are written out below it.</p>
+  <div class="diagram">
+  <svg viewBox="0 0 700 756" role="img" aria-labelledby="st sd">
+    <title id="st">Sale-to-stock sequence diagram</title>
+    <desc id="sd">Store POS tells Edge Sync Agent about a sale. The agent posts batched adjustments to the Inventory API every 5 seconds. The API appends a decrement to the Stock Ledger, gets the new on-hand count back, answers the agent 202 Accepted, and publishes a stock change to the Storefront. In the offline case the agent queues adjustments locally and replays them in order when the link returns.</desc>
+    <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah"/></marker></defs>
+
+    <g>
+      <line class="lf" x1="70" y1="44" x2="70" y2="740"/>
+      <line class="lf" x1="210" y1="44" x2="210" y2="740"/>
+      <line class="lf" x1="350" y1="44" x2="350" y2="740"/>
+      <line class="lf" x1="490" y1="44" x2="490" y2="740"/>
+      <line class="lf" x1="630" y1="44" x2="630" y2="740"/>
+    </g>
+    <rect class="pb" x="8" y="8" width="124" height="36" rx="8"/><text class="pt" x="70" y="31">Store POS</text>
+    <rect class="pb" x="148" y="8" width="124" height="36" rx="8"/><text class="pt" x="210" y="31">Edge Sync Agent</text>
+    <rect class="pb" x="288" y="8" width="124" height="36" rx="8"/><text class="pt" x="350" y="31">Inventory API</text>
+    <rect class="pb src" x="428" y="8" width="124" height="36" rx="8"/><text class="pt" x="490" y="31">Stock Ledger</text>
+    <rect class="pb" x="568" y="8" width="124" height="36" rx="8"/><text class="pt" x="630" y="31">Storefront</text>
+    <text class="badge" x="490" y="60">source of truth</text>
+
+    <!-- normal flow -->
+    <path class="m" d="M70 122H209" marker-end="url(#ar)"/>
+    <text class="ml" x="140" y="96">1. sale recorded,</text><text class="ml" x="140" y="110">2 units of SKU 48113</text>
+
+    <path class="m" d="M210 204H349" marker-end="url(#ar)"/>
+    <text class="ml" x="280" y="166">2. POST /adjustments,</text><text class="ml" x="280" y="180">batched every</text><text class="ml" x="280" y="194">5 seconds</text>
+
+    <path class="m" d="M350 262H489" marker-end="url(#ar)"/>
+    <text class="ml" x="420" y="252">3. append decrement</text>
+
+    <path class="m r" d="M490 310H351" marker-end="url(#ar)"/>
+    <text class="ml" x="420" y="300">4. new on-hand count</text>
+
+    <path class="m r" d="M350 358H211" marker-end="url(#ar)"/>
+    <text class="ml" x="280" y="348">5. 202 Accepted</text>
+
+    <path class="m" d="M350 414H629" marker-end="url(#ar)"/>
+    <text class="ml" x="560" y="404">6. publish stock change</text>
+
+    <!-- offline -->
+    <rect class="fr" x="14" y="440" width="672" height="300" rx="12"/>
+    <text class="frt" x="28" y="462">OFFLINE CASE: the store loses its connection</text>
+
+    <rect class="nt" x="22" y="476" width="250" height="30" rx="6"/><text class="ntt" x="147" y="496">Link down: Store POS keeps selling</text>
+
+    <path class="m" d="M70 548H209" marker-end="url(#ar)"/>
+    <text class="ml" x="140" y="538">7. sale recorded</text>
+
+    <path class="m" d="M210 572H250V598H213" marker-end="url(#ar)"/>
+    <text class="ms" x="258" y="583">8. hold in local</text><text class="ms" x="258" y="597">queue</text>
+
+    <rect class="nt" x="140" y="618" width="280" height="28" rx="6"/><text class="ntt" x="280" y="637">Link returns</text>
+
+    <path class="m" d="M210 706H349" marker-end="url(#ar)"/>
+    <text class="ml" x="280" y="680">9. replay queued</text><text class="ml" x="280" y="694">adjustments, in order</text>
+
+    <rect class="nt" x="372" y="690" width="300" height="30" rx="6"/><text class="ntt" x="522" y="710">then the same path as steps 3 to 6</text>
+  </svg>
+  </div>
+
+  <h3>The same steps in words</h3>
+  <div class="card">
+  <ol class="steps">
+    <li><span>Store POS tells Edge Sync Agent: <em>sale recorded, 2 units of SKU 48113</em>.</span></li>
+    <li><span>Edge Sync Agent calls Inventory API: <span class="mono">POST /adjustments</span>, batched every 5 seconds.</span></li>
+    <li><span>Inventory API tells Stock Ledger: <em>append decrement</em>.</span></li>
+    <li><span>Stock Ledger answers Inventory API: <em>new on-hand count</em>.</span></li>
+    <li><span>Inventory API answers Edge Sync Agent: <em>202 Accepted</em>.</span></li>
+    <li><span>Inventory API tells Storefront: <em>publish stock change</em>.</span></li>
+  </ol>
+  </div>
+
+  <h3>When the store is offline</h3>
+  <p>If the store loses its connection, Store POS keeps selling. Edge Sync Agent keeps the adjustments in a local queue, then sends them in order when the link returns, as <em>replay queued adjustments</em> to Inventory API. From there the path is the same as above.</p>
+</section>
+
+<section id="timing">
+  <h2>Timing budget</h2>
+  <div class="diagram">
+  <svg viewBox="0 0 400 236" role="img" aria-labelledby="tt td" style="min-width:340px;max-width:620px">
+    <title id="tt">Timing budget per hop in seconds</title>
+    <desc id="td">Register to agent under 1 second, agent batch interval 5 seconds, API to ledger under 200 milliseconds, ledger to storefront under 10 seconds, end-to-end target under 20 seconds for 99 percent of sales. If every hop used its full limit the total would be 16.2 seconds.</desc>
+    <g stroke="var(--line)" stroke-width="1">
+      <line x1="140" y1="12" x2="140" y2="190"/><line x1="202.5" y1="12" x2="202.5" y2="190"/><line x1="265" y1="12" x2="265" y2="190"/><line x1="327.5" y1="12" x2="327.5" y2="190"/><line x1="390" y1="12" x2="390" y2="190"/>
+    </g>
+    <text class="rl" x="0" y="34" style="fill:var(--ink)">Register to agent</text>
+    <rect class="bar1" x="140" y="20" width="12.5" height="22" rx="2"/><text class="rv" x="160" y="36">&lt; 1 s</text>
+
+    <text class="rl" x="0" y="72">Agent batch interval</text>
+    <rect class="bar1" x="152.5" y="58" width="62.5" height="22" rx="2"/><text class="rv" x="222" y="74">5 s</text>
+
+    <text class="rl" x="0" y="110">API to ledger</text>
+    <rect class="bar1" x="215" y="96" width="3" height="22" rx="1"/><text class="rv" x="226" y="112">&lt; 200 ms</text>
+
+    <text class="rl" x="0" y="148">Ledger to storefront</text>
+    <rect class="bar1" x="218" y="134" width="125" height="22" rx="2"/><text class="rv" x="349" y="150">&lt; 10 s</text>
+
+    <text class="rl" x="0" y="186" style="font-weight:700">End to end (99% of sales)</text>
+    <rect class="tg" x="140" y="172" width="250" height="22" rx="3"/><text class="rv" x="265" y="188" text-anchor="middle">target: under 20 s</text>
+
+    <text class="axl" x="140" y="214">0 s</text><text class="axl" x="202.5" y="214">5 s</text><text class="axl" x="265" y="214">10 s</text><text class="axl" x="327.5" y="214">15 s</text><text class="axl" x="390" y="214">20 s</text>
+  </svg>
+  </div>
+  <p class="note">Bars are laid end to end. If every hop used its full limit, the total would be about 16.2 seconds, inside the 20-second end-to-end target.</p>
+  <div class="tw">
+  <table>
+    <thead><tr><th>Hop</th><th>Limit</th></tr></thead>
+    <tbody>
+      <tr><td>Register to agent</td><td>under 1 second</td></tr>
+      <tr><td>Agent batch interval</td><td>5 seconds</td></tr>
+      <tr><td>API to ledger</td><td>under 200 milliseconds</td></tr>
+      <tr><td>Ledger to storefront</td><td>under 10 seconds</td></tr>
+      <tr><td><strong>End to end</strong></td><td><strong>under 20 seconds for 99 percent of sales</strong></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="good-to-know">
+  <h2>Good to know</h2>
+  <div class="grid">
+    <div class="card"><h3>The queue is deep</h3><p>The local queue holds up to 4 hours of sales, which is about 3000 adjustments at a busy store.</p></div>
+    <div class="card"><h3>Replays are safe</h3><p>Adjustments carry an idempotency key, so replays never double count.</p></div>
+    <div class="card"><h3>Carts reserve stock</h3><p>Online orders reserve stock for 15 minutes at checkout.</p></div>
+  </div>
+</section>
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2026 Road Resurfacing Status</title>
+<style>
+:root {
+  --bg: #f3f5f4;
+  --card: #ffffff;
+  --text: #1d2521;
+  --muted: #5d6963;
+  --border: #d9e0dc;
+  --track: #e4e9e6;
+  --plan: #c9d3ce;
+  --green: #2e7d4a;
+  --amber: #c98a12;
+  --red: #b83227;
+  --accent: #245e4a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1613;
+    --card: #17201c;
+    --text: #e2ebe6;
+    --muted: #97a79f;
+    --border: #2a3731;
+    --track: #223029;
+    --plan: #3c4b44;
+    --green: #6cc48c;
+    --amber: #f0b74a;
+    --red: #ff7b6e;
+    --accent: #7fc8a8;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1613;
+  --card: #17201c;
+  --text: #e2ebe6;
+  --muted: #97a79f;
+  --border: #2a3731;
+  --track: #223029;
+  --plan: #3c4b44;
+  --green: #6cc48c;
+  --amber: #f0b74a;
+  --red: #ff7b6e;
+  --accent: #7fc8a8;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+.wrap { max-width: 760px; margin: 0 auto; padding: 22px 16px 48px; }
+header { border-bottom: 3px solid var(--accent); padding-bottom: 12px; margin-bottom: 18px; }
+.org { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .07em; }
+h1 { font-size: 26px; margin: 6px 0 4px; line-height: 1.2; }
+.meta { color: var(--muted); font-size: 14px; }
+h2 { font-size: 19px; color: var(--accent); margin: 26px 0 10px; }
+section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; margin-bottom: 14px; }
+.kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.kpi { background: var(--bg); border-radius: 10px; padding: 12px; }
+.kpi b { display: block; font-size: 24px; font-variant-numeric: tabular-nums; }
+.kpi span { color: var(--muted); font-size: 13px; }
+.bar { height: 12px; background: var(--track); border-radius: 999px; overflow: hidden; margin-top: 8px; }
+.bar > span { display: block; height: 100%; background: var(--accent); }
+.district { padding: 12px 0; border-bottom: 1px solid var(--border); }
+.district:last-child { border-bottom: 0; }
+.row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.name { font-weight: 700; font-size: 17px; }
+.pill { font-size: 13px; font-weight: 700; padding: 3px 10px; border-radius: 999px; color: #fff; text-transform: uppercase; letter-spacing: .04em; }
+.pill.green { background: var(--green); }
+.pill.amber { background: var(--amber); color: #1d1600; }
+.pill.red { background: var(--red); }
+.counts { color: var(--muted); font-size: 14px; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.dist-bar { display: flex; height: 10px; border-radius: 999px; overflow: hidden; margin-top: 8px; background: var(--track); }
+.dist-bar span { display: block; height: 100%; }
+.decision { border-left: 5px solid var(--red); padding: 4px 0 4px 14px; }
+.options { margin: 10px 0 0; padding-left: 20px; }
+.upcoming { list-style: none; padding: 0; margin: 0; }
+.upcoming li { display: grid; grid-template-columns: 110px 1fr; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.upcoming li:last-child { border-bottom: 0; }
+.upcoming .d { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--accent); }
+svg text { fill: var(--text); font-size: 13px; }
+svg .mut { fill: var(--muted); }
+@media (max-width: 420px) { .kpis { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="org">City of Alder Falls &middot; Public Works</div>
+  <h1>2026 Road Resurfacing Program</h1>
+  <div class="meta">Status as of 2026-10-16 &middot; For the city manager and council &middot; Paving season ends 2026-11-30</div>
+</header>
+
+<h2>Program at a glance</h2>
+<section>
+  <div class="kpis">
+    <div class="kpi">
+      <b>74 of 120</b><span>lane-miles done (61.7%)</span>
+      <div class="bar"><span style="width:61.7%"></span></div>
+    </div>
+    <div class="kpi">
+      <b>$9.1M of $14.2M</b><span>budget spent (64.1%)</span>
+      <div class="bar"><span style="width:64.1%"></span></div>
+    </div>
+  </div>
+  <p style="margin-bottom:0">At the current pace of 6 lane-miles a week, the program reaches about 110 lane-miles by 2026-11-30, leaving about 10 for spring 2027.</p>
+</section>
+
+<h2>Districts</h2>
+<section>
+  <div class="district">
+    <div class="row"><span class="name">North</span><span class="pill green">Green</span></div>
+    <div class="counts">22 done of 28 planned</div>
+    <div class="dist-bar"><span style="width:78.6%;background:var(--green)"></span></div>
+  </div>
+  <div class="district">
+    <div class="row"><span class="name">Central</span><span class="pill green">Green</span></div>
+    <div class="counts">21 done of 24 planned</div>
+    <div class="dist-bar"><span style="width:87.5%;background:var(--green)"></span></div>
+  </div>
+  <div class="district">
+    <div class="row"><span class="name">East</span><span class="pill amber">Amber</span></div>
+    <div class="counts">15 done of 26 planned</div>
+    <div class="dist-bar"><span style="width:57.7%;background:var(--amber)"></span></div>
+  </div>
+  <div class="district">
+    <div class="row"><span class="name">South</span><span class="pill amber">Amber</span></div>
+    <div class="counts">11 done of 22 planned</div>
+    <div class="dist-bar"><span style="width:50%;background:var(--amber)"></span></div>
+  </div>
+  <div class="district">
+    <div class="row"><span class="name">West</span><span class="pill red">Red</span></div>
+    <div class="counts">5 done of 20 planned</div>
+    <div class="dist-bar"><span style="width:25%;background:var(--red)"></span></div>
+  </div>
+</section>
+
+<h2>Decision needed</h2>
+<section class="decision">
+  <p style="margin-top:0"><strong>West is red.</strong> A water main replacement blocks 8 lane-miles until 2026-11-02, and the contractor's second paving crew is committed elsewhere until 2026-11-09.</p>
+  <p style="margin-bottom:0">Choose one option for the council:</p>
+  <ul class="options">
+    <li><strong>Pay $180,000</strong> for an extra crew in the West district.</li>
+    <li><strong>Carry the leftover miles</strong> into spring 2027.</li>
+  </ul>
+</section>
+
+<h2>Next two weeks</h2>
+<section>
+  <ul class="upcoming">
+    <li><span class="d">2026-10-23</span><span>Central district finishes.</span></li>
+    <li><span class="d">2026-10-26</span><span>Public notices for the West district closures go out.</span></li>
+    <li><span class="d">2026-10-27</span><span>Paving of the Maple Avenue bridge approach in the East district.</span></li>
+  </ul>
+</section>
+</div>
+</body>
+</html>

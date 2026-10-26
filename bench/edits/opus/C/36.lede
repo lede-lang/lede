@@ -1,0 +1,30 @@
+@title Data Reliability Charter
+@subtitle Team charter, effective 2026-11-01
+@author Data Reliability team, Osprey Freight
+@date 2026-11-01
+
+The Data Reliability team is led by Grace Mbeki and has 5 engineers.
+
+# Mission
+Make every dataset the business relies on trustworthy, on time and explained.
+
+# What we own
+- The freshness and quality checks on the 40 tier-1 tables.
+- The data incident process.
+- The lineage catalog.
+- The data contracts registry.
+
+# What we do not own
+- Dashboards and their business logic. Analytics owns them.
+- Source application databases. Product teams own them.
+- Ad-hoc data requests.
+
+# How we work
+- We plan in two-week sprints.
+- A rotating data on-call responds to tier-1 incidents within 15 minutes during business hours.
+- Every incident gets a written review within 5 business days.
+
+# How to reach us
+Post in the `#data-reliability` channel, or file a ticket in the DREL queue.
+
+! Requests sent by direct message will be redirected to the DREL queue.

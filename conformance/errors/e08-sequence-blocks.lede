@@ -1,0 +1,15 @@
+diagram s sequence
+s: a "A"
+s: b "B"
+s: end
+s: else "x"
+s: a -> b : one
+s: opt
+s: a -> b : two
+s: else "no"
+s: alt "inner"
+s: a -> b : three
+s: end
+s: end
+s: alt "never closed"
+s: a -> b : four

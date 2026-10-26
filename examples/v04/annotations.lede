@@ -1,0 +1,13 @@
+@title Support tickets, last six months
+
+data tickets = month,opened,closed; May,410,395; Jun,455,430; Jul,520,470; Aug,610,560; Sep,580,590; Oct,540,530
+
+chart line tickets labels=end title="Tickets opened and closed"
+
+data spend = quarter,cloud; Q1,1.8; Q2,2.1; Q3,2.4; Q4,2.6
+
+chart bar spend labels=all hatch=Q4 unit=$ title="Cloud spend, $M (Q4 is a forecast)"
+
+data checks = result,count; pass,182; fail,9
+
+chart hbar checks labels=all title="Release checks"

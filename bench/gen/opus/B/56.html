@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ardent Bio office decision</title>
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#f5f6f4; --surface:#ffffff; --surface-2:#eef1ee; --text:#1b201d; --muted:#5a645e; --border:#dde2de;
+  --accent:#20785a; --accent-soft:#e2f2ea;
+  --good:#1d7a4a; --good-soft:#e3f3ea; --warn:#8f5600; --warn-soft:#fbf0dc; --bad:#b42318; --bad-soft:#fde8e6;
+  --c1:#6b7a90; --c2:#20785a; --c3:#b5835a;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0f1311; --surface:#171c19; --surface-2:#1e2521; --text:#e5ebe7; --muted:#9aa69f; --border:#2a322e;
+    --accent:#5fcf9f; --accent-soft:#16301f;
+    --good:#5fd09a; --good-soft:#15301f; --warn:#f2b155; --warn-soft:#33270f; --bad:#ff8a7e; --bad-soft:#3a1a17;
+    --c1:#9aa9bf; --c2:#5fcf9f; --c3:#d9a679;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:960px;margin:0 auto;padding:44px 24px 64px}
+.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;color:var(--accent);font-weight:700;margin:0}
+h1{font-size:clamp(1.7rem,4.5vw,2.4rem);line-height:1.15;margin:.3em 0 .35em;letter-spacing:-.015em}
+h2{font-size:1.3rem;margin:0 0 .8rem;letter-spacing:-.005em}
+h3{font-size:1.05rem;margin:0 0 .5rem}
+p{margin:0 0 .9rem}
+.lede{color:var(--muted);font-size:1.08rem;max-width:66ch}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0;padding:0;list-style:none}
+.facts li{background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:5px 12px;font-size:.88rem;color:var(--muted)}
+.facts strong{color:var(--text)}
+section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:26px;margin:20px 0}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+thead th{font-size:.95rem;border-bottom:2px solid var(--border)}
+tbody th{font-weight:600;color:var(--muted);font-size:.85rem;width:22%}
+tr:last-child td,tr:last-child th{border-bottom:0}
+.lean{background:var(--accent-soft)}
+.tag{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:var(--accent);color:var(--surface);padding:1px 7px;border-radius:999px;margin-left:6px;vertical-align:2px}
+.chart{width:100%;max-width:640px;height:auto;display:block}
+.chart .lbl{fill:var(--text);font-size:15px;font-weight:600}
+.chart .val{fill:var(--text);font-size:15px;font-variant-numeric:tabular-nums}
+.chart .b1{fill:var(--c1)} .chart .b2{fill:var(--c2)} .chart .b3{fill:var(--c3)}
+.note{font-size:.92rem;color:var(--muted);border-left:3px solid var(--border);padding:2px 0 2px 12px;margin-top:16px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{border:1px solid var(--border);border-radius:12px;padding:18px;background:var(--surface-2)}
+.card.lean{background:var(--accent-soft);border-color:var(--accent)}
+.card h3{display:flex;align-items:center;flex-wrap:wrap;gap:4px}
+.pc{margin:0 0 12px;padding:0;list-style:none}
+.pc li{position:relative;padding-left:22px;margin:0 0 6px;font-size:.95rem}
+.pc li::before{position:absolute;left:0;top:0;font-weight:800}
+.pros li::before{content:"+";color:var(--good)}
+.cons li::before{content:"\2212";color:var(--bad)}
+.pclabel{font-size:.75rem;text-transform:uppercase;letter-spacing:.07em;font-weight:700;color:var(--muted);margin:0 0 6px}
+.rec{border:2px solid var(--accent)}
+.rec .big{font-size:1.25rem;font-weight:700;margin-bottom:.6rem}
+.callout{background:var(--warn-soft);border-radius:10px;padding:14px 16px;margin-top:14px}
+.callout h3{color:var(--warn);font-size:.95rem;text-transform:uppercase;letter-spacing:.05em}
+.callout ul{margin:0;padding-left:20px}
+.callout li{margin-bottom:6px}
+.num{font-variant-numeric:tabular-nums}
+footer{color:var(--muted);font-size:.85rem;margin-top:28px}
+@media (max-width:760px){.cards{grid-template-columns:1fr}}
+@media (max-width:480px){
+  .wrap{padding:28px 16px 48px}
+  section{padding:18px 14px;border-radius:12px}
+  th,td{padding:8px 5px}
+  table{font-size:.84rem}
+  thead th{font-size:.84rem}
+  tbody th{font-size:.76rem;width:24%}
+  .tag{display:block;width:max-content;margin:3px 0 0}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Ardent Bio &middot; Office decision</p>
+  <h1>Where Ardent Bio moves next</h1>
+  <p class="lede">Our current lease ends on <strong>March 31, 2027</strong>. Leadership decides on <strong>November 13, 2026</strong>. Three buildings are on the table; we lean toward Mill District, and this page sets out why, including the parts of that choice that are genuinely costly.</p>
+  <ul class="facts">
+    <li><strong>96</strong> people</li>
+    <li>About <strong>24,000</strong> sq ft needed</li>
+    <li>Wet lab: about <strong>a third</strong> (~8,000 sq ft)</li>
+  </ul>
+</header>
+
+<section id="options">
+  <h2>Options</h2>
+  <table>
+    <thead>
+      <tr><th scope="col"><span class="sr" aria-hidden="true"></span></th><th scope="col">Harbor Point</th><th scope="col" class="lean">Mill District<span class="tag">Leaning</span></th><th scope="col">Northgate Park</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">Base rent</th><td class="num">$58 / sq ft / yr</td><td class="num lean">$46 / sq ft / yr</td><td class="num">$38 / sq ft / yr</td></tr>
+      <tr><th scope="row">Lease term</th><td>10 years</td><td class="lean">7 years</td><td>10 years</td></tr>
+      <tr><th scope="row">Lab space</th><td>Lab-ready now</td><td class="lean">Partly lab-ready; we pay about $1.1M fit-out</td><td>None; needs a separate lab lease nearby</td></tr>
+      <tr><th scope="row">Median commute</th><td class="num">24 min</td><td class="num lean">31 min</td><td class="num">42 min</td></tr>
+      <tr><th scope="row">Move-in</th><td>Feb 1, 2027</td><td class="lean">Mar 1, 2027</td><td>Jan 15, 2027</td></tr>
+    </tbody>
+  </table>
+  <p class="note">All three move-in dates fall before our lease ends on March 31, 2027. Mill District leaves the least room: one month.</p>
+</section>
+
+<section id="annual-rent">
+  <h2>Annual rent</h2>
+  <p>Annual base rent at 24,000 sq ft. This is base rent only: it excludes Mill District's fit-out and Northgate Park's separate lab lease.</p>
+  <svg class="chart" viewBox="0 0 480 206" role="img" aria-labelledby="rentTitle rentDesc">
+    <title id="rentTitle">Annual base rent at 24,000 square feet</title>
+    <desc id="rentDesc">Harbor Point $1,392,000; Mill District $1,104,000; Northgate Park $912,000.</desc>
+    <text class="lbl" x="0" y="24">Harbor Point</text>
+    <rect class="b1" x="0" y="32" width="295.8" height="28" rx="3"/>
+    <text class="val" x="304" y="51">$1,392,000</text>
+    <text class="lbl" x="0" y="92">Mill District</text>
+    <rect class="b2" x="0" y="100" width="234.6" height="28" rx="3"/>
+    <text class="val" x="243" y="119">$1,104,000</text>
+    <text class="lbl" x="0" y="160">Northgate Park</text>
+    <rect class="b3" x="0" y="168" width="193.8" height="28" rx="3"/>
+    <text class="val" x="202" y="187">$912,000</text>
+  </svg>
+  <table style="margin-top:14px">
+    <thead><tr><th scope="col">Building</th><th scope="col" class="num" style="text-align:right">Rate</th><th scope="col" class="num" style="text-align:right">Annual base rent</th></tr></thead>
+    <tbody>
+      <tr><td>Harbor Point</td><td class="num" style="text-align:right">$58</td><td class="num" style="text-align:right">$1,392,000</td></tr>
+      <tr class="lean"><td>Mill District</td><td class="num" style="text-align:right">$46</td><td class="num" style="text-align:right">$1,104,000</td></tr>
+      <tr><td>Northgate Park</td><td class="num" style="text-align:right">$38</td><td class="num" style="text-align:right">$912,000</td></tr>
+    </tbody>
+  </table>
+  <p class="note">Harbor Point costs <strong>$288,000 a year more</strong> than Mill District. Northgate Park is $192,000 a year less than Mill District, before the cost of a second lease for lab space. If Mill District's ~$1.1M fit-out is spread evenly over its 7-year term, it adds about $157,000 a year (about $1,261,000 in total), which is still about $131,000 a year below Harbor Point. That is a simple straight-line split with no financing costs.</p>
+</section>
+
+<section id="pros-cons">
+  <h2>Pros and cons</h2>
+  <div class="cards">
+    <div class="card">
+      <h3>Harbor Point</h3>
+      <p class="pclabel">Pros</p>
+      <ul class="pc pros">
+        <li>Lab-ready now: no fit-out bill and no construction to manage.</li>
+        <li>Shortest commute, 24 minutes at the median.</li>
+        <li>Move-in on Feb 1 leaves two months of slack before our lease ends.</li>
+      </ul>
+      <p class="pclabel">Cons</p>
+      <ul class="pc cons">
+        <li>Most expensive: $1,392,000 a year, $288,000 more than Mill District.</li>
+        <li>Locks in the highest rate for 10 years.</li>
+      </ul>
+    </div>
+    <div class="card lean">
+      <h3>Mill District <span class="tag">Leaning</span></h3>
+      <p class="pclabel">Pros</p>
+      <ul class="pc pros">
+        <li>$288,000 a year less base rent than Harbor Point.</li>
+        <li>Offices and lab under one roof, so the team stays together.</li>
+        <li>Commute is 31 minutes at the median, 11 minutes shorter than Northgate Park.</li>
+      </ul>
+      <p class="pclabel">Cons</p>
+      <ul class="pc cons">
+        <li>We pay about $1.1M to finish the lab, and fit-outs can run over in cost and time.</li>
+        <li>A 7-year term means we face this decision again sooner, and we recover the fit-out over 7 years rather than 10.</li>
+        <li>Move-in on Mar 1 leaves only one month before our lease ends, so a delay would hurt.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Northgate Park</h3>
+      <p class="pclabel">Pros</p>
+      <ul class="pc pros">
+        <li>Lowest base rent: $912,000 a year.</li>
+        <li>Earliest move-in, Jan 15, 2027.</li>
+      </ul>
+      <p class="pclabel">Cons</p>
+      <ul class="pc cons">
+        <li>No lab space: we would need a second lease nearby, at a cost not included here.</li>
+        <li>Splits the team across two sites.</li>
+        <li>Longest commute, 42 minutes at the median, 18 minutes more than Harbor Point.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="recommendation" class="rec">
+  <h2>Recommendation</h2>
+  <p class="big">We lean toward Mill District.</p>
+  <p>Harbor Point is the easiest move, but it costs $288,000 a year more in base rent than Mill District, and it commits us to that rate for 10 years. Northgate Park looks cheapest on paper, but it has no lab, so it splits the team across two sites and adds a second lease we have not priced. Mill District keeps everyone in one building at a rent well below Harbor Point.</p>
+  <div class="callout">
+    <h3>What we are accepting with Mill District</h3>
+    <ul>
+      <li><strong>The fit-out is a real cost.</strong> About $1.1M is ours to pay, and it narrows the gap with Harbor Point to roughly $131,000 a year once spread over the term.</li>
+      <li><strong>The 7-year term is a real downside.</strong> We would be looking for space again around 2034, with less time to recover what we put into the lab.</li>
+      <li><strong>The timeline is tight.</strong> Move-in on March 1, 2027 leaves one month before our current lease ends on March 31.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>Prepared for the Ardent Bio leadership decision on November 13, 2026. Rent figures are base rent at 24,000 sq ft.</footer>
+</div>
+</body>
+</html>

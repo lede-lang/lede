@@ -1,0 +1,8 @@
+@title Incident timeline
+# Incident timeline
+
+table = time,event; 16:04,Alert fires for the order queue; 16:09,**Primary on-call acknowledges**; 16:21,Consumer restarted; 16:40,**Backlog cleared**; 16:55,Alert resolves
+
+table = day,milestone; Day 1,Kickoff; Day 3,Draft review; Day 7,**Ship**
+
+table = item,owner; Alpha,Ana; Beta,Bo

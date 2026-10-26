@@ -1,0 +1,5 @@
+Could not express: sent-back loops returning to their actual earlier step (destination is not in the data anyway), and parallel lanes or timing to scale on the diagram. Substituted dashed edges into one "Sent back for rework" node for the three biggest sources, and a note that the whole table of send-backs follows.
+Charts need plain numbers, so the data was declared twice: strings with thousands separators and % in the table, plain numbers for the charts. No values were changed.
+Inner double quotes in a note ("non-owner occupied") became curly quotes because the field syntax has no escape for them.
+No way to show the total claim wait to scale (the data has no whole-claim percentile); said so in text instead.
+Rework totals (about 1,725 loops, about $366,000) are my own arithmetic from entering x sent-back % x $212 and are labelled as estimates.

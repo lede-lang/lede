@@ -1,0 +1,12 @@
+s1 180 pairs judged
+s2 180 pairs judged
+judge self-agreement 168 / 180
+haiku-r6 regress {'s1': (23, 0, 30), 's2': (24, 0, 30)} mean win-or-tie 78.3%
+haiku-r6 gate {'s1': (18, 0, 30), 's2': (18, 0, 30)} mean win-or-tie 60.0%
+   per category (mean of samples): {'architecture': '100%', 'comparison': '100%', 'data': '100%', 'prose': '40%', 'runbook': '0%', 'status': '20%'}
+opus-r6 regress {'s1': (0, 0, 30), 's2': (1, 0, 30)} mean win-or-tie 1.7%
+opus-r6 gate {'s1': (5, 0, 30), 's2': (8, 0, 30)} mean win-or-tie 21.7%
+   per category (mean of samples): {'architecture': '0%', 'comparison': '30%', 'data': '40%', 'prose': '20%', 'runbook': '20%', 'status': '20%'}
+sonnet-r6 regress {'s1': (1, 0, 30), 's2': (2, 0, 30)} mean win-or-tie 5.0%
+sonnet-r6 gate {'s1': (3, 0, 30), 's2': (3, 0, 30)} mean win-or-tie 10.0%
+   per category (mean of samples): {'architecture': '0%', 'comparison': '20%', 'data': '20%', 'prose': '0%', 'runbook': '20%', 'status': '0%'}

@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Harvest 2026 Summary | Marlow Valley Extension Service</title>
+<style>
+:root{
+  --bg:#f8f6ef; --surface:#ffffff; --ink:#212619; --muted:#5d6455; --line:#e1ddcf;
+  --accent:#5a7a1f; --accent-soft:#eaf0d9; --hi:#e3efcf; --lo:#f8e3d6; --lo-ink:#8a3b10; --hi-ink:#3c5712;
+  --warn:#b4531c; --rain:#2b6a9a;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#12150e; --surface:#1b2015; --ink:#ebeee3; --muted:#a2aa94; --line:#2d3524;
+    --accent:#a9cf5a; --accent-soft:#232c15; --hi:#2a3a15; --lo:#43251a; --lo-ink:#f0a982; --hi-ink:#c6e68a;
+    --warn:#ee9a68; --rain:#7fb6e0;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:0 14px 56px}
+header{padding:30px 0 4px}
+.eyebrow{font-size:.76rem;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 6px}
+h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(1.9rem,7.5vw,2.8rem);line-height:1.1;margin:0 0 8px}
+.lede{color:var(--muted);margin:0}
+section{margin-top:34px}
+h2{font-family:Georgia,"Times New Roman",serif;font-size:1.4rem;margin:0 0 12px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+.tile .n{font-family:Georgia,serif;font-size:1.6rem;font-weight:700;line-height:1.1}
+.tile .u{font-size:.85rem;font-weight:500;color:var(--muted);font-family:system-ui,sans-serif}
+.tile .l{font-size:.82rem;color:var(--muted);margin-top:4px;line-height:1.3}
+.tile.full{grid-column:1 / -1}
+.avgs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px;text-align:center}
+.avgs div{background:var(--accent-soft);border-radius:8px;padding:6px 2px;font-size:.78rem;color:var(--muted);line-height:1.25}
+.avgs b{display:block;font-size:1.05rem;color:var(--ink)}
+.callout{margin-top:12px;padding:12px 14px;border-radius:12px;background:var(--accent-soft);font-size:.95rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+.hint{font-size:.8rem;color:var(--muted);margin:0 0 8px}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:separate;border-spacing:0;width:100%;min-width:520px;font-size:.92rem;font-variant-numeric:tabular-nums}
+th,td{padding:9px 10px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+thead th{font-size:.76rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);background:var(--surface);font-weight:700;line-height:1.2}
+thead th small{display:block;text-transform:none;letter-spacing:0;font-weight:500}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--surface);z-index:1;border-right:1px solid var(--line);font-weight:650}
+tbody tr:last-child td{border-bottom:0}
+tr.avg td{background:var(--accent-soft);font-weight:650}
+tr.avg td:first-child{background:var(--accent-soft)}
+td.hi{background:var(--hi);color:var(--hi-ink);font-weight:700}
+td.lo{background:var(--lo);color:var(--lo-ink);font-weight:700}
+td.hi::after{content:" \25B2";font-size:.65em}
+td.lo::after{content:" \25BC";font-size:.65em}
+.key{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.82rem;color:var(--muted);margin:10px 0 0}
+.key span{display:inline-flex;align-items:center;gap:6px}
+.sw{display:inline-block;padding:1px 7px;border-radius:5px;font-weight:700;font-size:.8rem}
+.sw.hi{background:var(--hi);color:var(--hi-ink)}
+.sw.lo{background:var(--lo);color:var(--lo-ink)}
+.grid{display:grid;grid-template-columns:1fr;gap:14px}
+@media (min-width:620px){.grid{grid-template-columns:1fr 1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 12px 6px}
+.panel h3{margin:0 0 2px;font-size:1rem}
+.panel svg{display:block;width:100%;height:auto}
+.panel svg text{fill:var(--muted);font:10.5px system-ui,sans-serif}
+.panel svg .name{fill:var(--ink);font-weight:600}
+.panel svg .axis{stroke:var(--muted);stroke-width:1}
+.panel svg .gl{stroke:var(--line);stroke-width:1}
+.panel svg .avgl{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 3}
+.panel svg .pt{fill:var(--accent);stroke:var(--surface);stroke-width:2}
+.panel svg .pt.best{fill:var(--accent)}
+.panel svg .pt.worst{fill:var(--warn)}
+.panel svg .ttl{fill:var(--muted);font-size:10px}
+.cap{font-size:.85rem;color:var(--muted);margin:10px 0 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Marlow Valley Extension Service</p>
+  <h1>Harvest 2026 summary</h1>
+  <p class="lede">Results from a survey of 214 farms, completed on October 10, 2026. For farmers and the county boards.</p>
+</header>
+
+<section aria-labelledby="glance">
+  <h2 id="glance">Harvest at a glance</h2>
+  <div class="tiles">
+    <div class="tile"><div class="n">214</div><div class="l">farms surveyed across five counties</div></div>
+    <div class="tile"><div class="n">601 <span class="u">mm</span></div><div class="l">average season rainfall in the region</div></div>
+    <div class="tile full">
+      <div class="l" style="margin:0">Region average yields, tonnes per hectare</div>
+      <div class="avgs">
+        <div><b>7.2</b>Wheat</div>
+        <div><b>10.0</b>Corn</div>
+        <div><b>3.3</b>Soy</div>
+        <div><b>5.9</b>Barley</div>
+        <div><b>601</b>Rain, mm</div>
+      </div>
+    </div>
+  </div>
+  <div class="callout"><strong>Calder</strong>, the wettest county at 701 mm, had the best yield in every crop. <strong>Dunmore</strong>, the driest at 489 mm, had the lowest in every crop. Dunmore's wheat yield of 5.9 t/ha is 2.2 below Calder's 8.1.</div>
+</section>
+
+<section aria-labelledby="yields">
+  <h2 id="yields">Yields by county</h2>
+  <div class="card">
+    <p class="hint">Yields in tonnes per hectare (t/ha); rainfall in millimetres. On a narrow screen, swipe the table sideways. The county names stay in view.</p>
+    <div class="scroll" tabindex="0" role="region" aria-label="Yields by county table, scrollable">
+      <table>
+        <thead>
+          <tr><th scope="col">County</th><th scope="col">Rainfall<small>mm</small></th><th scope="col">Wheat<small>t/ha</small></th><th scope="col">Corn<small>t/ha</small></th><th scope="col">Soybeans<small>t/ha</small></th><th scope="col">Barley<small>t/ha</small></th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Alder</td><td>612</td><td>7.4</td><td>10.2</td><td>3.4</td><td>6.1</td></tr>
+          <tr><td>Brennan</td><td>548</td><td>6.8</td><td>9.1</td><td>3.1</td><td>5.7</td></tr>
+          <tr><td>Calder</td><td>701</td><td class="hi">8.1</td><td class="hi">11.4</td><td class="hi">3.7</td><td class="hi">6.6</td></tr>
+          <tr><td>Dunmore</td><td>489</td><td class="lo">5.9</td><td class="lo">8.3</td><td class="lo">2.8</td><td class="lo">4.9</td></tr>
+          <tr><td>Elmstead</td><td>655</td><td>7.7</td><td>10.8</td><td>3.5</td><td>6.3</td></tr>
+          <tr class="avg"><td>Region average</td><td>601</td><td>7.2</td><td>10.0</td><td>3.3</td><td>5.9</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="key"><span><span class="sw hi">&#9650;</span>Best in region</span><span><span class="sw lo">&#9660;</span>Lowest in region</span></p>
+  </div>
+</section>
+
+<section aria-labelledby="rain">
+  <h2 id="rain">Rainfall and yield</h2>
+  <p style="margin:0 0 14px">Each dot is one county. Across all four crops, the wetter the county, the higher its yield: the counties line up in the same order by rainfall as by yield.</p>
+  <div class="grid" id="charts"></div>
+  <p class="cap">Dashed lines mark the region averages. Five counties is a small sample, and rainfall is not the only difference between them, so treat this as a pattern, not proof of cause.</p>
+  <noscript><p class="cap">Charts need JavaScript. The same figures are in the table above.</p></noscript>
+</section>
+</div>
+
+<script>
+(function(){
+  var counties=[
+    {n:"Alder",r:612,wheat:7.4,corn:10.2,soy:3.4,barley:6.1},
+    {n:"Brennan",r:548,wheat:6.8,corn:9.1,soy:3.1,barley:5.7},
+    {n:"Calder",r:701,wheat:8.1,corn:11.4,soy:3.7,barley:6.6},
+    {n:"Dunmore",r:489,wheat:5.9,corn:8.3,soy:2.8,barley:4.9},
+    {n:"Elmstead",r:655,wheat:7.7,corn:10.8,soy:3.5,barley:6.3}
+  ];
+  var crops=[["wheat","Wheat",7.2],["corn","Corn",10.0],["soy","Soybeans",3.3],["barley","Barley",5.9]];
+  var RAVG=601, X0=450, X1=750;
+  var W=320,H=250,L=40,R=16,T=14,B=44;
+  var NS="http://www.w3.org/2000/svg";
+  function el(n,a,t){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);if(t!=null)e.textContent=t;return e;}
+  function nice(lo,hi){
+    var steps=[0.1,0.2,0.25,0.5,1,2],s=1;
+    for(var i=0;i<steps.length;i++){if((hi-lo)/steps[i]<=5){s=steps[i];break;}}
+    return {lo:Math.floor(lo/s)*s,hi:Math.ceil(hi/s)*s,s:s};
+  }
+  var host=document.getElementById("charts");
+  crops.forEach(function(c){
+    var vals=counties.map(function(k){return k[c[0]];});
+    var mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals),pad=(mx-mn)*0.2;
+    var sc=nice(Math.min(mn-pad,c[2]),Math.max(mx+pad,c[2]));
+    var px=function(x){return L+(x-X0)/(X1-X0)*(W-L-R);};
+    var py=function(y){return T+(sc.hi-y)/(sc.hi-sc.lo)*(H-T-B);};
+    var panel=document.createElement("div");panel.className="panel";
+    var h=document.createElement("h3");h.textContent=c[1];panel.appendChild(h);
+    var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":c[1]+" yield in tonnes per hectare against season rainfall in millimetres, one dot per county"});
+    var dec=sc.s<1?(sc.s===0.25?2:1):(sc.s%1?1:0);
+    for(var v=sc.lo;v<=sc.hi+1e-9;v+=sc.s){
+      svg.appendChild(el("line",{x1:L,x2:W-R,y1:py(v),y2:py(v),class:"gl"}));
+      svg.appendChild(el("text",{x:L-6,y:py(v)+3.5,"text-anchor":"end"},v.toFixed(dec)));
+    }
+    [450,525,600,675,750].forEach(function(x){
+      svg.appendChild(el("line",{x1:px(x),x2:px(x),y1:H-B,y2:H-B+4,class:"axis"}));
+      svg.appendChild(el("text",{x:px(x),y:H-B+16,"text-anchor":"middle"},x));
+    });
+    svg.appendChild(el("line",{x1:L,x2:W-R,y1:H-B,y2:H-B,class:"axis"}));
+    svg.appendChild(el("line",{x1:L,x2:L,y1:T,y2:H-B,class:"axis"}));
+    svg.appendChild(el("line",{x1:L,x2:W-R,y1:py(c[2]),y2:py(c[2]),class:"avgl"}));
+    svg.appendChild(el("line",{x1:px(RAVG),x2:px(RAVG),y1:T,y2:H-B,class:"avgl"}));
+    svg.appendChild(el("text",{x:(L+W-R)/2,y:H-8,"text-anchor":"middle",class:"ttl"},"Season rainfall (mm)"));
+    svg.appendChild(el("text",{x:10,y:(T+H-B)/2,"text-anchor":"middle",class:"ttl",transform:"rotate(-90 10 "+((T+H-B)/2)+")"},"Yield (t/ha)"));
+    counties.forEach(function(k){
+      var x=px(k.r),y=py(k[c[0]]);
+      var cls="pt"+(k.n==="Calder"?" best":(k.n==="Dunmore"?" worst":""));
+      var left=(k.r-X0)/(X1-X0)>0.72;
+      svg.appendChild(el("circle",{cx:x,cy:y,r:5.5,class:cls}));
+      svg.appendChild(el("text",{x:left?x-9:x+9,y:y+3.5,"text-anchor":left?"end":"start",class:"name"},k.n));
+    });
+    panel.appendChild(svg);
+    host.appendChild(panel);
+  });
+})();
+</script>
+</body>
+</html>

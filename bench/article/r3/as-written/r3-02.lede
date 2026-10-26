@@ -1,0 +1,111 @@
+@title Harvest plans compared: three ways to get the fruit in
+@subtitle Labor days, machine rental, pick windows and the Riesling gamble for each plan, plus what the numbers cannot decide.
+@width wide
+
+! Basis for every figure here: one person hand-picks 1.2 t per day, so a crew of 14 picks 16.8 t per day and two crews pick 33.6 t per day. The machine harvester is rented Sep 15-22 at $1,350 per day and cannot touch N1, N2 or E5. A third hand crew costs $4,100 per week. The sorting table runs at 6 t per day. Anything derived from these is marked as such.
+
+## The blocks
+
+kpi Total estimated yield | 130.0 t | 10 blocks
+kpi Contract value at estimate | $272,893.50 | derived: yield x $/t
+kpi Hand-pick effort, all blocks | 108.3 person-days | derived: 130.0 t / 1.2
+kpi Riesling at stake | $32,472 | 19.8 t at $1,640 per t
+
+data harvest = Block,Variety,Area (ha),Brix (deg),Est. Yield (t),Pick Window,Contract ($/t),Notes; N1,Pinot Noir,2.4,23.1,11.5,Sep 14-18,"$2,850","Sparkling base; must be hand-picked"; N2,Pinot Noir,1.8,22.4,8.2,Sep 16-21,"$2,850",Mildew pressure on east rows
+data harvest += S3,Chardonnay,3.1,21.8,19.0,Sep 12-17,"$2,100",
+data harvest += S4,Chardonnay,2.2,22.9,13.4,Sep 15-20,"$2,100",Machine OK
+data harvest += E5,Syrah,4.0,24.6,22.8,Sep 28-Oct 6,"$1,975","“Dad's block”: oldest vines, planted 1987"
+data harvest += E6,Syrah,1.6,,7.9,Sep 30-Oct 7,"$1,975","Sunburn on west face; needs sorting table"
+data harvest += W7,Riesling,2.7,20.3,14.6,Sep 20-27,"$1,640",Late-harvest option (ask Priya)
+data harvest += W8,Riesling,1.1,20.9,5.2,Sep 21-28,"$1,640",
+data harvest += M9,Merlot,3.3,23.7,18.1,Oct 2-10,"$1,880","Birds; netting torn in 3 rows"
+data harvest += M10,Cabernet Franc,1.9,24.0,9.3,Oct 4-12,"$2,320",Reserve label (single-vineyard)
+
+table harvest title="Block inventory as supplied"
+
+### Pick windows against the machine rental
+
+The years are not given; the chart assumes 2026 only so the dates can be drawn to scale.
+
+data win = Block,start,end; N1 Pinot Noir,2026-09-14,2026-09-18; N2 Pinot Noir,2026-09-16,2026-09-21; S3 Chardonnay,2026-09-12,2026-09-17; S4 Chardonnay,2026-09-15,2026-09-20; E5 Syrah,2026-09-28,2026-10-06; E6 Syrah,2026-09-30,2026-10-07; W7 Riesling,2026-09-20,2026-09-27; W8 Riesling,2026-09-21,2026-09-28; M9 Merlot,2026-10-02,2026-10-10; M10 Cabernet Franc,2026-10-04,2026-10-12; Machine rental,2026-09-15,2026-09-22
+
+chart range win from=start to=end title="Pick windows and the machine rental (year assumed)"
+
+Only S3, S4, W7 and W8 overlap the machine dates at all. N1, N2 and E5 are excluded by hand-pick or machine limits, and everything else is picked after the machine is gone. S3 has just three machine days inside its window (Sep 15-17).
+
+data labor = Block,Hand-pick person-days (derived); N1,9.6; N2,6.8; S3,15.8; S4,11.2; E5,19.0; E6,6.6; W7,12.2; W8,4.3; M9,15.1; M10,7.8
+
+chart bar labor labels unit=" days" title="Person-days to hand-pick each block (tonnes / 1.2)"
+
+## The three plans side by side
+
+table = Plan,Hand-picked (t),Machine-picked (t),Hand person-days,Third crew,Machine rental,Blocks picked outside their window; "1. Hand-pick everything, third crew for 3 weeks",130.0,0.0,108.3,"$12,300",$0,"None, on these numbers"; "2. Machine for Chardonnay and Riesling that fit, hand for the rest",77.8,52.2,64.8,$0,"$10,800 if the full Sep 15-22 is charged","None, if the machine keeps pace; S3 is the tight one"; "3. Hold the Riesling for late harvest, labor into the reds",77.8 plus 19.8 late,32.4 (Chardonnay),64.8 now plus 16.5 later,$0,"$8,100 to $10,800 (see assumptions)","None in September; the Riesling date is open"
+
+Derived costs: plan 1 is 3 weeks x $4,100. Plan 2 is 8 rental days (Sep 15 to Sep 22) x $1,350. Plan 3 is 6 days (Sep 15-20) if only the Chardonnay days are charged, 8 days if the whole rental period is. Hand crew wages are not given, so the cost of labor days themselves is not in these dollar columns.
+
+!! The headline finding: labor is not the binding constraint in any plan. The four blocks that ripen first (N1, N2, S3, S4) need 43.4 person-days by hand, and two crews supply 28 person-days every day, so that is under two crew-days of effort inside a 5 to 6 day window. By the numbers given, the third crew in plan 1 buys capacity that is not needed. If it is needed, the reason is not in the data (see "What stays undecidable").
+
+## Plan 1: hand-pick everything, hire a third crew for three weeks
+
+- Labor: 108.3 person-days (130.0 t / 1.2).
+- Rental: none. Third crew: 3 x $4,100 = $12,300.
+- Windows: no block goes outside its window on the stated capacity; two crews alone would cover it.
+- N1, N2 and E5 are hand-picked in every plan. This is the only plan where the Chardonnay and Riesling are hand-picked too.
+- E6 needs the sorting table: 7.9 t at 6 t per day is 1.3 days, inside its Sep 30-Oct 7 window.
+
+### Where it breaks
+- The third crew is optional ("if I can get one"). If it cannot be hired, the plan still works on two crews.
+- Third crew size is not given. The 3-week hire may not line up with the busiest dates, and nothing says which three weeks.
+- If the sorting table has to take more than E6, 6 t per day becomes the real limit: at 130 t it would be 21.7 days.
+
+## Plan 2: machine for the Chardonnay and Riesling that fit its dates, hand crews for the rest
+
+- Machine blocks: S3, S4, W7, W8 = 19.0 + 13.4 + 14.6 + 5.2 = 52.2 t. Machine days inside each window: S3 Sep 15-17, S4 Sep 15-20, W7 Sep 20-22, W8 Sep 21-22.
+- Hand blocks: N1, N2, E5, E6, M9, M10 = 77.8 t = 64.8 person-days. The machine saves 43.5 person-days versus plan 1.
+- Rental: 8 days x $1,350 = $10,800 if the whole Sep 15-22 period is charged. Cheaper than plan 1's $12,300, but only if wages for hand crews are already paid either way.
+
+### Where it breaks
+- The machine's tonnes per day are not given. S3 needs 19.0 t picked in three days (Sep 15-17), about 6.3 t per day, so S3 is where a slow machine or a rain day pushes fruit outside its window. The hand crews have capacity to rescue it, but S3 would then be picked by hand before or after the machine days.
+- Only S4 is marked "Machine OK". S3, W7 and W8 are assumed to be machine-pickable because the machine is only barred from N1, N2 and E5.
+- W7 and W8 have a hand fallback until Sep 27 and Sep 28, after the rental ends.
+- If the rental can be booked by the day, the cost could be less than $10,800.
+
+## Plan 3: hold the Riesling for late harvest, push all the labor into the reds
+
+This plan does not say how the Chardonnay is picked. I assumed machine, since the labor is going to the reds. If the Chardonnay is hand-picked instead, add 27.0 person-days and drop the rental.
+
+- Now: S3 and S4 by machine (32.4 t, 6 to 8 rental days), N1, N2, E5, E6, M9, M10 by hand (77.8 t, 64.8 person-days).
+- Later: W7 and W8, 19.8 t, 16.5 person-days by hand once the machine is gone. The late-harvest date is not given.
+- The reds are not labor-limited in the first place. E5, E6, M9 and M10 together need 48.4 person-days; even if all four were crammed into Oct 4-7 (4 days) that is about 12 people a day against 28 available. So extra labor "pushed into the reds" buys no more fruit picked in window.
+
+### Where it breaks
+- The whole Riesling crop is exposed: 19.8 t at $1,640 is $32,472, 11.9% of the contract value, to weather and rot for an unknown number of extra weeks.
+- Brix at harvest is 20.3 (W7) and 20.9 (W8), the lowest on the farm. The target Brix and price for late harvest are not given.
+- Priya's answer on the late-harvest option is the missing input for this entire plan.
+
+## The Riesling gamble
+
+If late harvest loses yield, the price per tonne has to rise for the 19.8 t to earn the same $32,472. Derived break-even, before extra labor or sorting costs:
+
+data gamble = Yield lost,Break-even price ($/t),Revenue at that price ($); 0%,1640,32472; 10%,1822,32472; 20%,2050,32472; 30%,2343,32472; 40%,2733,32472; 50%,3280,32472
+
+chart line gamble x=Yield lost y=Break-even price ($/t) target="1640 contract" unit=$ labels title="Price per tonne needed to match the $1,640 contract"
+
+- Downside: lose the crop outright and the exposure is $32,472.
+- Upside: not computable. No late-harvest price, premium or yield estimate was given.
+- The extra hand-picking is 16.5 person-days, small next to the stake.
+
+## What stays undecidable from these numbers
+
+!! Hand-crew wages and any per-day cost of the two existing crews are not given, so labor days cannot be turned into dollars. Plans 2 and 3 only look cheaper than plan 1 if the existing crews are paid regardless.
+
+- Machine throughput (tonnes per day) is missing, so plan 2 and plan 3 cannot be shown to finish in window.
+- Whether the rental is charged for every day of Sep 15-22 or only the days used is not stated ($10,800 versus as low as $8,100).
+- Size of the third crew, and which three weeks, are not stated.
+- How long a hand crew can work per day and how many days per week are not stated; the 1.2 t per person-day figure is the only productivity input.
+- E6 has no Brix reading, so its readiness cannot be judged.
+- Whether Chardonnay is machine-picked in plan 3 is not stated.
+- Late-harvest price, yield loss, date and Brix target are not given, so the Riesling gamble has a computable downside and a break-even table but no upside.
+- Pick windows are treated as hard limits. Whether they are is not stated, and no cost of picking out of window is given.
+- Sorting table demand beyond E6 is not given (M9 has torn netting and bird damage; M10 is a reserve label).
+- Yield figures are estimates; no range is given.

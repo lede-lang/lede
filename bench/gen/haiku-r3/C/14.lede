@@ -1,0 +1,43 @@
+@title Real-time quote pricing model
+@subtitle ML Platform, Orchard Insurance, reviewed 2026-10-12
+@date 2026-10-12
+
+## Overview
+
+The service prices about 450 quotes per second at peak, with a p99 target of 250 ms.
+
+## Architecture diagram
+
+diagram price dir=LR title="Quote pricing"
+
+price: portal "Agent Portal" user
+price: api "API Gateway" lb
+price: lambda "Inference Lambda" fn
+price: endpoint "SageMaker Endpoint" svc
+price: cache "Feature Cache" cache
+price: bucket "Model Bucket" store
+price: pipe "Training Pipeline" svc
+price: registry "Model Registry" store
+price: group vpc "Inference VPC" lambda, endpoint, cache
+price: group prod "Prod account" api, bucket, vpc
+price: group ml "ML account" pipe, registry
+price: portal -> api : quote request
+price: api -> lambda : invoke
+price: lambda -> cache : get features
+price: lambda -> endpoint : predict
+price: pipe -> registry : register model
+price: registry -> bucket : approved artifact
+price: bucket -> endpoint : load model
+
+## Capacity
+
+table = Component,Size,Scaling; SageMaker Endpoint,ml.c6i.2xlarge,4 to 12 instances on invocations per instance; Inference Lambda,1024 MB,200 reserved concurrency; Feature Cache,cache.r7g.large,2 replicas
+
+## Deployment
+
+1. Register the model.
+2. Approve it in Model Registry.
+3. Blue/green deploy, shifting 10% of traffic every 5 minutes.
+4. Roll back automatically if p99 exceeds 250 ms.
+
+!! The Feature Cache is not a source of truth. A cache miss falls back to the policy database and adds about 90 ms.

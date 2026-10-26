@@ -1,0 +1,64 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "list",
+      "ordered": false,
+      "start": 1,
+      "items": [
+        {
+          "text": "one",
+          "checked": null
+        },
+        {
+          "text": "two",
+          "checked": null
+        }
+      ],
+      "line": 1
+    },
+    {
+      "type": "list",
+      "ordered": true,
+      "start": 1,
+      "items": [
+        {
+          "text": "first",
+          "checked": null
+        },
+        {
+          "text": "second",
+          "checked": null
+        },
+        {
+          "text": "third",
+          "checked": null
+        }
+      ],
+      "line": 3
+    },
+    {
+      "type": "list",
+      "ordered": false,
+      "start": 1,
+      "items": [
+        {
+          "text": "open task",
+          "checked": false
+        },
+        {
+          "text": "done task",
+          "checked": true
+        }
+      ],
+      "line": 6
+    },
+    {
+      "type": "paragraph",
+      "text": "After the list.",
+      "line": 8
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

@@ -1,0 +1,30 @@
+@title CRM selection for Hartwell Industrial Supply
+@subtitle 140 sales and account-management seats, three shortlisted vendors
+
+Our sales operations lead is choosing a CRM for 140 sales and account-management seats. We scored each vendor from 1 to 5 against five weighted criteria.
+
+## Scorecard
+
+data scores = criterion,weight %,Pipeboard,Cardinal CRM,Thistle; Fit to our workflow,30,4,5,3; Integration with our ERP,25,5,3,4; Cost,20,3,2,5; Admin effort,15,4,3,3; Support quality,10,4,5,3; Weighted total,100,4.05,3.60,3.65
+
+table scores title="Scores from 1 to 5, with weights"
+
+## Annual license cost
+
+At list prices, 140 seats cost:
+
+data cost = vendor,list price per seat per month,annual cost; Pipeboard,65,109200; Cardinal CRM,89,149520; Thistle,42,70560
+
+chart hbar cost y=annual cost unit=$ labels title="Annual license cost for 140 seats"
+
+Thistle is the cheapest, at $70,560 a year. Cardinal CRM is the most expensive, at $149,520 a year.
+
+## Risks
+
+- **Pipeboard.** The ERP connector is certified, but the vendor is a 2019 startup.
+- **Cardinal CRM.** Best fit for our workflow, but it needs a 12-week implementation and a partner.
+- **Thistle.** Cheapest, but its reporting is weak, and two of our dashboards would have to be rebuilt elsewhere.
+
+## Recommendation
+
+We go with Pipeboard, pending a reference call with another industrial distributor, scheduled for 2026-10-28. Pipeboard has the highest weighted total, at 4.05, and costs $109,200 a year at list price. The reference call is the check that could change this decision.

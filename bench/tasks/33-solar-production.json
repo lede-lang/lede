@@ -1,0 +1,58 @@
+{
+  "id": "33-solar-production",
+  "category": "data",
+  "title": "Co-op rooftop solar report",
+  "brief": "The facilities team at the Brookfield Community Co-op wants a page on our rooftop solar array for the first nine months of 2026, in kWh. Produced: Jan 3120, Feb 4080, Mar 5960, Apr 7340, May 8810, Jun 9470, Jul 9620, Aug 8730, Sep 6890. Consumed: Jan 7940, Feb 7410, Mar 7020, Apr 6650, May 6480, Jun 7210, Jul 7860, Aug 7590, Sep 6720. Tiles: Total produced 64020 kWh, Total consumed 64880 kWh, Self-sufficiency 98.7 percent, Grid credits earned 1184 dollars. Section titled \"Production vs consumption\": a line chart with both series by month. Section titled \"Monthly detail\": a table with columns Month, Produced, Consumed, Net (produced minus consumed), and mark the months with a surplus. Section titled \"Notes\": a short paragraph saying the inverter was down for 4 days in March, and a callout that the board will vote on adding battery storage on 2026-11-12.",
+  "checklist": {
+    "sections": [
+      "Production vs consumption",
+      "Monthly detail",
+      "Notes"
+    ],
+    "visible": [
+      "Total produced",
+      "Total consumed",
+      "Self-sufficiency",
+      "Grid credits earned",
+      "Net",
+      "Produced",
+      "Consumed",
+      "battery storage"
+    ],
+    "values": [
+      "3120",
+      "4080",
+      "9620",
+      "6890",
+      "7940",
+      "6480",
+      "64020",
+      "64880",
+      "98.7",
+      "1184",
+      "5960",
+      "7340",
+      "9470",
+      "2026-11-12"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add October: produced 4910 and consumed 7130. Update the chart and table, and change the tiles to 68930 kWh produced and 72010 kWh consumed.",
+    "expect_visible": [
+      "October"
+    ],
+    "expect_values": [
+      "4910",
+      "7130",
+      "68930",
+      "72010"
+    ],
+    "expect_absent": []
+  }
+}

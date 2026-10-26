@@ -1,0 +1,3026 @@
+[
+ {
+  "key": "haiku/C/01",
+  "model": "haiku",
+  "arm": "C",
+  "id": "01",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 939,
+  "tokens": 308,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 17922,
+  "ttfmrTokens": 59,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/02",
+  "model": "haiku",
+  "arm": "C",
+  "id": "02",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1213,
+  "tokens": 430,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 27012,
+  "ttfmrTokens": 78,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9615384615384616,
+   "missSections": [],
+   "missVisible": [
+    "SLO target"
+   ],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/03",
+  "model": "haiku",
+  "arm": "C",
+  "id": "03",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1029,
+  "tokens": 354,
+  "errors": [
+   "13:7 unknown-column stages has no column Value (columns: Stage, Deals, Value ($K))"
+  ],
+  "warnings": [
+   "13:7 chart-option ignored chart option \"($K)\""
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12408,
+  "ttfmrTokens": 75,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/04",
+  "model": "haiku",
+  "arm": "C",
+  "id": "04",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 558,
+  "tokens": 214,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 23005,
+  "ttfmrTokens": 148,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/05",
+  "model": "haiku",
+  "arm": "C",
+  "id": "05",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1019,
+  "tokens": 324,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 23211,
+  "ttfmrTokens": 73,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/06",
+  "model": "haiku",
+  "arm": "C",
+  "id": "06",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 964,
+  "tokens": 323,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24605,
+  "ttfmrTokens": 58,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/07",
+  "model": "haiku",
+  "arm": "C",
+  "id": "07",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1127,
+  "tokens": 333,
+  "errors": [
+   "18:7 unknown-column burn has no column open (columns: day, open bugs)"
+  ],
+  "warnings": [
+   "18:7 chart-option ignored chart option \"bugs\""
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11963,
+  "ttfmrTokens": 107,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/08",
+  "model": "haiku",
+  "arm": "C",
+  "id": "08",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1574,
+  "tokens": 456,
+  "errors": [
+   "33:168 data-row-width row \"Orders DB,RDS PostgreSQL 16 on db.r6g.xlarge\" has 2 fields; _table1 has 3 columns (Component,Runtime,Purpose)",
+   "33:214 data-row-width row \"Multi-AZ,Stores orders\" has 2 fields; _table1 has 3 columns (Component,Runtime,Purpose)"
+  ],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 25496,
+  "ttfmrTokens": 62,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/09",
+  "model": "haiku",
+  "arm": "C",
+  "id": "09",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1474,
+  "tokens": 445,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 25350,
+  "ttfmrTokens": 53,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/10",
+  "model": "haiku",
+  "arm": "C",
+  "id": "10",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1383,
+  "tokens": 363,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 17921,
+  "ttfmrTokens": 43,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/11",
+  "model": "haiku",
+  "arm": "C",
+  "id": "11",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1534,
+  "tokens": 501,
+  "errors": [
+   "24:5 diagram-syntax group id prodvpc is already used",
+   "26:5 diagram-syntax group id devvpc is already used"
+  ],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 18533,
+  "ttfmrTokens": 44,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/12",
+  "model": "haiku",
+  "arm": "C",
+  "id": "12",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1346,
+  "tokens": 388,
+  "errors": [
+   "31:7 unknown-column latency has no column p95 (columns: step, p95 budget (ms), measured p95 (ms))"
+  ],
+  "warnings": [
+   "31:7 chart-option ignored chart option \"budget\"",
+   "31:7 chart-option ignored chart option \"(ms),measured\"",
+   "31:7 chart-option ignored chart option \"p95\"",
+   "31:7 chart-option ignored chart option \"(ms)\""
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 17133,
+  "ttfmrTokens": 49,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/13",
+  "model": "haiku",
+  "arm": "C",
+  "id": "13",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "chart",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1277,
+  "tokens": 400,
+  "errors": [
+   "31:7 unknown-column stages has no column Median (columns: Stage, Median (min), p90 (min))"
+  ],
+  "warnings": [
+   "31:7 chart-option ignored chart option \"(min)\""
+  ],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 22844,
+  "ttfmrTokens": 44,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/14",
+  "model": "haiku",
+  "arm": "C",
+  "id": "14",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1467,
+  "tokens": 399,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 23814,
+  "ttfmrTokens": 54,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/15",
+  "model": "haiku",
+  "arm": "C",
+  "id": "15",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1363,
+  "tokens": 372,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12049,
+  "ttfmrTokens": 43,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/16",
+  "model": "haiku",
+  "arm": "C",
+  "id": "16",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 1368,
+  "tokens": 442,
+  "errors": [
+   "20:7 unknown-column errs has no column error (columns: time, error rate)"
+  ],
+  "warnings": [
+   "20:7 chart-option ignored chart option \"rate\""
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12308,
+  "ttfmrTokens": 75,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/17",
+  "model": "haiku",
+  "arm": "C",
+  "id": "17",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 775,
+  "tokens": 217,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11426,
+  "ttfmrTokens": 90,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/18",
+  "model": "haiku",
+  "arm": "C",
+  "id": "18",
+  "category": "runbook",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1688,
+  "tokens": 477,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 18202,
+  "ttfmrTokens": 52,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/19",
+  "model": "haiku",
+  "arm": "C",
+  "id": "19",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "diagram",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1347,
+  "tokens": 357,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 16239,
+  "ttfmrTokens": 87,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/20",
+  "model": "haiku",
+  "arm": "C",
+  "id": "20",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list"
+  ],
+  "srcBytes": 1181,
+  "tokens": 369,
+  "errors": [
+   "20:7 unknown-column succ has no column success (columns: time, success rate)"
+  ],
+  "warnings": [
+   "20:7 chart-option ignored chart option \"rate\""
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11762,
+  "ttfmrTokens": 74,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/21",
+  "model": "haiku",
+  "arm": "C",
+  "id": "21",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 1180,
+  "tokens": 342,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 17303,
+  "ttfmrTokens": 60,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/22",
+  "model": "haiku",
+  "arm": "C",
+  "id": "22",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1477,
+  "tokens": 413,
+  "errors": [
+   "16:126 data-row-width row \"Kafka,per partition,very high,high,yes up to retention,$1,450\" has 7 fields; _table1 has 6 columns (Option,Ordering,Throughput ceiling,Ops burden,Replay,Monthly cost)"
+  ],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 16320,
+  "ttfmrTokens": 74,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/23",
+  "model": "haiku",
+  "arm": "C",
+  "id": "23",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1543,
+  "tokens": 458,
+  "errors": [
+   "16:7 unknown-column cum has no column Grafana (columns: year, Datadog, Grafana Cloud, Self-hosted)"
+  ],
+  "warnings": [
+   "16:7 chart-option ignored chart option \"Cloud,Self-hosted\""
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12157,
+  "ttfmrTokens": 83,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/24",
+  "model": "haiku",
+  "arm": "C",
+  "id": "24",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1351,
+  "tokens": 356,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12232,
+  "ttfmrTokens": 70,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/25",
+  "model": "haiku",
+  "arm": "C",
+  "id": "25",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1530,
+  "tokens": 397,
+  "errors": [
+   "14:7 unknown-column cost has no column MongoDB (columns: traffic, PostgreSQL, DynamoDB, MongoDB Atlas)"
+  ],
+  "warnings": [
+   "14:7 chart-option ignored chart option \"Atlas\""
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12107,
+  "ttfmrTokens": 90,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/26",
+  "model": "haiku",
+  "arm": "C",
+  "id": "26",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1610,
+  "tokens": 449,
+  "errors": [
+   "14:7 unknown-column bench has no column GitHub (columns: pipeline, GitHub Actions, CircleCI, Buildkite)"
+  ],
+  "warnings": [
+   "14:7 chart-option ignored chart option \"Actions,CircleCI,Buildkite\""
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12216,
+  "ttfmrTokens": 77,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8888888888888888,
+   "missSections": [],
+   "missVisible": [
+    "firmware-build",
+    "cloud-api-tests",
+    "docs-site"
+   ],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/27",
+  "model": "haiku",
+  "arm": "C",
+  "id": "27",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 764,
+  "tokens": 213,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11365,
+  "ttfmrTokens": 67,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/28",
+  "model": "haiku",
+  "arm": "C",
+  "id": "28",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1040,
+  "tokens": 346,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24199,
+  "ttfmrTokens": 98,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/29",
+  "model": "haiku",
+  "arm": "C",
+  "id": "29",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1026,
+  "tokens": 393,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 29777,
+  "ttfmrTokens": 109,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/30",
+  "model": "haiku",
+  "arm": "C",
+  "id": "30",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1065,
+  "tokens": 308,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 20736,
+  "ttfmrTokens": 69,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/31",
+  "model": "haiku",
+  "arm": "C",
+  "id": "31",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 1163,
+  "tokens": 419,
+  "errors": [
+   "23:7 unknown-column daily has no column Variant (columns: day, Control, Variant C)"
+  ],
+  "warnings": [
+   "23:7 chart-option ignored chart option \"C\""
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 16170,
+  "ttfmrTokens": 95,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/32",
+  "model": "haiku",
+  "arm": "C",
+  "id": "32",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1163,
+  "tokens": 371,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24961,
+  "ttfmrTokens": 80,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/33",
+  "model": "haiku",
+  "arm": "C",
+  "id": "33",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1133,
+  "tokens": 357,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 21806,
+  "ttfmrTokens": 98,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/34",
+  "model": "haiku",
+  "arm": "C",
+  "id": "34",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1360,
+  "tokens": 512,
+  "errors": [
+   "13:7 unknown-column stab has no column Crash-free (columns: version, Crash-free sessions, Target)"
+  ],
+  "warnings": [
+   "13:7 chart-option ignored chart option \"sessions,Target\""
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12344,
+  "ttfmrTokens": 100,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/35",
+  "model": "haiku",
+  "arm": "C",
+  "id": "35",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 2977,
+  "tokens": 665,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 13377,
+  "ttfmrTokens": 114,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/36",
+  "model": "haiku",
+  "arm": "C",
+  "id": "36",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 846,
+  "tokens": 219,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11186,
+  "ttfmrTokens": 45,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9285714285714286,
+   "missSections": [],
+   "missVisible": [
+    "Grace Mbeki"
+   ],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/37",
+  "model": "haiku",
+  "arm": "C",
+  "id": "37",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1506,
+  "tokens": 369,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11915,
+  "ttfmrTokens": 94,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/38",
+  "model": "haiku",
+  "arm": "C",
+  "id": "38",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1749,
+  "tokens": 415,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12254,
+  "ttfmrTokens": 75,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/39",
+  "model": "haiku",
+  "arm": "C",
+  "id": "39",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 2092,
+  "tokens": 501,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12376,
+  "ttfmrTokens": 102,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "haiku/C/40",
+  "model": "haiku",
+  "arm": "C",
+  "id": "40",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1180,
+  "tokens": 293,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11643,
+  "ttfmrTokens": 100,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/01",
+  "model": "opus",
+  "arm": "C",
+  "id": "01",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 969,
+  "tokens": 317,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 17968,
+  "ttfmrTokens": 70,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/02",
+  "model": "opus",
+  "arm": "C",
+  "id": "02",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1376,
+  "tokens": 514,
+  "errors": [
+   "21:7 unknown-column slos has no column Budget (columns: Service, SLO target, Current, Budget consumed)"
+  ],
+  "warnings": [
+   "21:7 chart-option ignored chart option \"consumed\""
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 21571,
+  "ttfmrTokens": 90,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/03",
+  "model": "opus",
+  "arm": "C",
+  "id": "03",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1045,
+  "tokens": 362,
+  "errors": [
+   "14:7 unknown-column stages has no column Value (columns: Stage, Deals, Value ($K))"
+  ],
+  "warnings": [
+   "14:7 chart-option ignored chart option \"($K)\""
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12452,
+  "ttfmrTokens": 89,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/04",
+  "model": "opus",
+  "arm": "C",
+  "id": "04",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 548,
+  "tokens": 208,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 20577,
+  "ttfmrTokens": 140,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/05",
+  "model": "opus",
+  "arm": "C",
+  "id": "05",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1033,
+  "tokens": 328,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 23247,
+  "ttfmrTokens": 77,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/06",
+  "model": "opus",
+  "arm": "C",
+  "id": "06",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 987,
+  "tokens": 331,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24488,
+  "ttfmrTokens": 66,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/07",
+  "model": "opus",
+  "arm": "C",
+  "id": "07",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1139,
+  "tokens": 341,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 18314,
+  "ttfmrTokens": 107,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/08",
+  "model": "opus",
+  "arm": "C",
+  "id": "08",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1609,
+  "tokens": 457,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 25524,
+  "ttfmrTokens": 63,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/09",
+  "model": "opus",
+  "arm": "C",
+  "id": "09",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1665,
+  "tokens": 484,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 25235,
+  "ttfmrTokens": 98,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/10",
+  "model": "opus",
+  "arm": "C",
+  "id": "10",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1403,
+  "tokens": 371,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 17938,
+  "ttfmrTokens": 51,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/11",
+  "model": "opus",
+  "arm": "C",
+  "id": "11",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1624,
+  "tokens": 528,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 18110,
+  "ttfmrTokens": 49,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/12",
+  "model": "opus",
+  "arm": "C",
+  "id": "12",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1394,
+  "tokens": 389,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 23612,
+  "ttfmrTokens": 56,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/13",
+  "model": "opus",
+  "arm": "C",
+  "id": "13",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "chart",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1315,
+  "tokens": 406,
+  "errors": [
+   "32:7 unknown-column stages has no column Median (columns: Stage, Median (min), p90 (min))"
+  ],
+  "warnings": [
+   "32:7 chart-option ignored chart option \"(min)\""
+  ],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 22938,
+  "ttfmrTokens": 54,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/14",
+  "model": "opus",
+  "arm": "C",
+  "id": "14",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1731,
+  "tokens": 440,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 24042,
+  "ttfmrTokens": 87,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/15",
+  "model": "opus",
+  "arm": "C",
+  "id": "15",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1395,
+  "tokens": 379,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12132,
+  "ttfmrTokens": 88,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/16",
+  "model": "opus",
+  "arm": "C",
+  "id": "16",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 1842,
+  "tokens": 542,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 19811,
+  "ttfmrTokens": 88,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/17",
+  "model": "opus",
+  "arm": "C",
+  "id": "17",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 830,
+  "tokens": 229,
+  "errors": [
+   "8:7 unknown-column certs has no column Days (columns: Domain, Expires, Days left)"
+  ],
+  "warnings": [
+   "8:7 table-option ignored table option \"left\""
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 10982,
+  "ttfmrTokens": 120,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8571428571428572,
+   "missSections": [],
+   "missVisible": [
+    "api.sycamoretravel.example",
+    "Days left"
+   ],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/18",
+  "model": "opus",
+  "arm": "C",
+  "id": "18",
+  "category": "runbook",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1964,
+  "tokens": 534,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 18531,
+  "ttfmrTokens": 55,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/19",
+  "model": "opus",
+  "arm": "C",
+  "id": "19",
+  "category": "runbook",
+  "needs": [
+   "table",
+   "diagram",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1348,
+  "tokens": 370,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 15511,
+  "ttfmrTokens": 96,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9473684210526316,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1000000"
+   ]
+  }
+ },
+ {
+  "key": "opus/C/20",
+  "model": "opus",
+  "arm": "C",
+  "id": "20",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list"
+  ],
+  "srcBytes": 1321,
+  "tokens": 404,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 18927,
+  "ttfmrTokens": 87,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.96,
+   "missSections": [],
+   "missVisible": [
+    "negative caching"
+   ],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/21",
+  "model": "opus",
+  "arm": "C",
+  "id": "21",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 1532,
+  "tokens": 442,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 18190,
+  "ttfmrTokens": 110,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/22",
+  "model": "opus",
+  "arm": "C",
+  "id": "22",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1733,
+  "tokens": 492,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 16801,
+  "ttfmrTokens": 119,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/23",
+  "model": "opus",
+  "arm": "C",
+  "id": "23",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1631,
+  "tokens": 503,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 19215,
+  "ttfmrTokens": 104,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/24",
+  "model": "opus",
+  "arm": "C",
+  "id": "24",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1412,
+  "tokens": 384,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12345,
+  "ttfmrTokens": 60,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/25",
+  "model": "opus",
+  "arm": "C",
+  "id": "25",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1580,
+  "tokens": 443,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 19072,
+  "ttfmrTokens": 120,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/26",
+  "model": "opus",
+  "arm": "C",
+  "id": "26",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1807,
+  "tokens": 534,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 20200,
+  "ttfmrTokens": 103,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/27",
+  "model": "opus",
+  "arm": "C",
+  "id": "27",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 825,
+  "tokens": 236,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11677,
+  "ttfmrTokens": 94,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/28",
+  "model": "opus",
+  "arm": "C",
+  "id": "28",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 941,
+  "tokens": 326,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24165,
+  "ttfmrTokens": 93,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/29",
+  "model": "opus",
+  "arm": "C",
+  "id": "29",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 940,
+  "tokens": 367,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 29571,
+  "ttfmrTokens": 86,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9583333333333334,
+   "missSections": [],
+   "missVisible": [
+    "index migration"
+   ],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/30",
+  "model": "opus",
+  "arm": "C",
+  "id": "30",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1143,
+  "tokens": 329,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 22327,
+  "ttfmrTokens": 74,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/31",
+  "model": "opus",
+  "arm": "C",
+  "id": "31",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "callout"
+  ],
+  "srcBytes": 1389,
+  "tokens": 480,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24728,
+  "ttfmrTokens": 141,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/32",
+  "model": "opus",
+  "arm": "C",
+  "id": "32",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1141,
+  "tokens": 367,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 24347,
+  "ttfmrTokens": 82,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/33",
+  "model": "opus",
+  "arm": "C",
+  "id": "33",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1179,
+  "tokens": 423,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 21709,
+  "ttfmrTokens": 87,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/34",
+  "model": "opus",
+  "arm": "C",
+  "id": "34",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1278,
+  "tokens": 498,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 20637,
+  "ttfmrTokens": 96,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/35",
+  "model": "opus",
+  "arm": "C",
+  "id": "35",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 3981,
+  "tokens": 888,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 14423,
+  "ttfmrTokens": 127,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/36",
+  "model": "opus",
+  "arm": "C",
+  "id": "36",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 962,
+  "tokens": 258,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11351,
+  "ttfmrTokens": 67,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/37",
+  "model": "opus",
+  "arm": "C",
+  "id": "37",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1643,
+  "tokens": 412,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12149,
+  "ttfmrTokens": 110,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/38",
+  "model": "opus",
+  "arm": "C",
+  "id": "38",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1817,
+  "tokens": 437,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 12459,
+  "ttfmrTokens": 79,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/39",
+  "model": "opus",
+  "arm": "C",
+  "id": "39",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 3181,
+  "tokens": 749,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 13506,
+  "ttfmrTokens": 132,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "opus/C/40",
+  "model": "opus",
+  "arm": "C",
+  "id": "40",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1359,
+  "tokens": 329,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 11842,
+  "ttfmrTokens": 126,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9375,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2026-11-03"
+   ]
+  }
+ }
+]

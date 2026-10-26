@@ -1,0 +1,47 @@
+@title Order Routing Queue Choice
+@subtitle Message queue decision for the order-routing service, Fulfillment team, Saltmarsh Foods
+@author Fulfillment team
+@date 2026-10-21
+
+kpi Peak load | 1,800 msg/s
+kpi Average load | 400 msg/s
+kpi Message size | < 8 KB
+kpi Delivery | At-least-once | ordering per order only
+
+# Options
+
+- **SQS**: fully managed AWS queue, with FIFO queues ordering within a message group.
+- **Kafka (Amazon MSK)**: managed Kafka brokers with partitioned, replayable logs.
+- **RabbitMQ (Amazon MQ)**: managed RabbitMQ brokers with flexible exchange routing.
+
+# Comparison
+
+table = Option,Ordering,Throughput ceiling,Ops burden,Replay,Monthly cost; SQS,FIFO per message group,very high,none,no,$310; Kafka,per partition,very high,high,yes up to retention,"$1,450"; RabbitMQ,per queue,medium,medium,no,$690
+
+data cost = option,usd; SQS,310; Kafka,1450; RabbitMQ,690
+chart bar cost x=option y=usd unit=$ labels focus=usd title="Estimated monthly cost"
+
+# Pros and cons
+
+### SQS
+- Pro: fully managed, nothing to operate.
+- Pro: scales automatically past our peak.
+- Con: no replay.
+- Con: 256 KB message limit.
+
+### Kafka (Amazon MSK)
+- Pro: replay up to the retention window.
+- Pro: supports stream processing.
+- Con: needs partition planning.
+- Con: we own broker upgrades.
+
+### RabbitMQ (Amazon MQ)
+- Pro: flexible routing through exchanges.
+- Con: we would own capacity planning.
+- Con: throughput ceiling is the lowest of the three.
+
+# Recommendation
+
+! Use **SQS with FIFO queues keyed by order ID**. It meets per-order ordering, handles 1,800 msg/s with no operational work, and is the cheapest option at $310 a month.
+
+We will revisit this if the analytics team needs event replay in 2027.

@@ -1,0 +1,37 @@
+@title AWS landing zone network, us-east-2
+@subtitle Alderwood Health Analytics cloud team, last reviewed 2026-10-09
+
+## Overview
+Three accounts are joined by a transit gateway. All internet-bound traffic is inspected before it leaves. A Direct Connect link runs back to our Columbus data center.
+
+## Network diagram
+diagram lz dir=LR title="Landing zone network, us-east-2"
+lz: tgw "Transit Gateway" svc focus
+lz: fw "Network Firewall" svc focus
+lz: nat "NAT Gateway" svc
+lz: api "Claims API" svc "ECS"
+lz: db "Claims DB" db "Aurora"
+lz: stg "Claims API Staging" svc
+lz: col "Columbus Data Center" ext
+lz: net "Internet" ext
+lz: group insp "Inspection VPC 10.0.0.0/16" fw, nat
+lz: group netacct "Network account" tgw, insp
+lz: group prodvpc "Claims VPC 10.10.0.0/16" api, db
+lz: group prod "Prod account" prodvpc
+lz: group stgvpc "Staging VPC 10.20.0.0/16" stg
+lz: group stgacct "Staging account" stgvpc
+lz: prodvpc -> tgw : attachment
+lz: stgvpc -> tgw : attachment
+lz: tgw -> insp : egress inspection
+lz: insp -> net : via NAT
+lz: col -> tgw : Direct Connect, 2 x 1 Gbps
+lz: api -> db : port 5432
+
+## Address plan
+table = VPC,account,CIDR,subnet layout; Inspection VPC,Network,10.0.0.0/16,2 firewall subnets and 2 NAT subnets; Claims VPC,Prod,10.10.0.0/16,3 private app subnets and 3 data subnets; Staging VPC,Staging,10.20.0.0/16,2 private app subnets and 2 data subnets
+
+## Routing rules
+!! Staging may never route to prod. This is the rule auditors ask about, so check it first.
+
+- No internet gateways in workload VPCs.
+- The Direct Connect link reaches prod only.

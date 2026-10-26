@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Postmortem: Late Daily Sales Dashboards, 2026-10-02</title>
+<style>
+:root{--page:#f7f6f2;--card:#fff;--ink:#222019;--mute:#645f55;--edge:#dedad0;--gold:#8a6410;--gold-soft:#f7efd9;--red:#b3331f;--red-soft:#fbe6e1;--ok:#2f7040;--note-bg:#f1f4fa;--note-bd:#4a67a8;--note-ink:#1f3462;}
+@media (prefers-color-scheme: dark){
+:root:not([data-theme="light"]){--page:#100f0c;--card:#191814;--ink:#ebe7dc;--mute:#a7a091;--edge:#34312a;--gold:#e8b75a;--gold-soft:#2c2412;--red:#ff8a74;--red-soft:#3d1d17;--ok:#7ccb8f;--note-bg:#162036;--note-bd:#7d9be0;--note-ink:#d8e3ff;}
+}
+:root[data-theme="dark"]{--page:#100f0c;--card:#191814;--ink:#ebe7dc;--mute:#a7a091;--edge:#34312a;--gold:#e8b75a;--gold-soft:#2c2412;--red:#ff8a74;--red-soft:#3d1d17;--ok:#7ccb8f;--note-bg:#162036;--note-bd:#7d9be0;--note-ink:#d8e3ff;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:16px/1.6 Georgia,"Iowan Old Style","Palatino Linotype",serif}
+.wrap{max-width:860px;margin:0 auto;padding:24px 16px 56px}
+.kick{font:600 .8rem system-ui,-apple-system,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin:0}
+h1{font-size:1.65rem;line-height:1.25;margin:6px 0 4px}
+.meta{font:.92rem system-ui,-apple-system,sans-serif;color:var(--mute);margin:0}
+h2{font:700 1.08rem system-ui,-apple-system,sans-serif;margin:32px 0 10px;padding-bottom:4px;border-bottom:1px solid var(--edge)}
+p{margin:8px 0}
+ul,ol{padding-left:22px}
+li{margin:6px 0}
+.card{background:var(--card);border:1px solid var(--edge);border-radius:10px;padding:12px;overflow-x:auto}
+.two{display:grid;grid-template-columns:1fr;gap:12px}
+@media (min-width:640px){.two{grid-template-columns:1fr 1fr}}
+.two h3{font:700 .98rem system-ui,-apple-system,sans-serif;margin:0 0 6px}
+table{width:100%;border-collapse:collapse;font:.95rem system-ui,-apple-system,sans-serif;min-width:380px}
+th,td{padding:9px 8px;text-align:left;border-bottom:1px solid var(--edge);vertical-align:top}
+th{color:var(--mute);font-weight:600;font-size:.84rem}
+td.t{white-space:nowrap;font-variant-numeric:tabular-nums}
+svg{display:block;width:100%;min-width:620px;height:auto}
+svg text{font:12.5px system-ui,-apple-system,sans-serif;fill:var(--ink)}
+svg .m{fill:var(--mute);font-size:11.5px}
+svg .box{fill:var(--card);stroke:var(--gold);stroke-width:1.3}
+svg .bad{fill:var(--red-soft);stroke:var(--red);stroke-width:2}
+svg .ln{fill:none;stroke:var(--mute);stroke-width:1.5}
+svg .ah{fill:var(--mute)}
+svg .failtag{fill:var(--red);font-weight:700}
+.note{margin:18px 0;padding:14px 16px;background:var(--note-bg);border-left:4px solid var(--note-bd);color:var(--note-ink);border-radius:8px;font:.95rem system-ui,-apple-system,sans-serif}
+.note strong{display:block;margin-bottom:2px}
+ol.act li{margin:8px 0}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="kick">Postmortem · Analytics Platform</p>
+  <h1>Daily sales dashboards were 9 hours late on 2026-10-02</h1>
+  <p class="meta">Juniper Retail · Analytics Platform team</p>
+
+  <h2>Impact</h2>
+  <ul>
+    <li>9 hours of delay to the daily sales dashboards, which are normally ready by 02:00.</li>
+    <li>23 dashboards were stale for the morning.</li>
+    <li>The 08:00 executive sales report went out with the previous day's numbers.</li>
+  </ul>
+
+  <h2>Pipeline</h2>
+  <div class="card">
+  <svg viewBox="0 0 820 124" role="img" aria-label="Flow diagram of the sales data pipeline: Orders DB, CDC Connector, Kafka, Spark Job, Warehouse, Data Quality Check, Dashboards, left to right. The arrow from Kafka to Spark Job is labeled orders topic. Spark Job is marked as failed.">
+    <defs>
+      <marker id="pipeFail" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path class="ah" d="M0,0 L10,5 L0,10 z"/>
+      </marker>
+    </defs>
+
+    <text class="m" x="351" y="28" text-anchor="middle">orders topic</text>
+
+    <rect class="box" x="8" y="40" width="96" height="56" rx="8"/>
+    <text x="56" y="73" text-anchor="middle">Orders DB</text>
+    <rect class="box" x="126" y="40" width="96" height="56" rx="8"/>
+    <text x="174" y="73" text-anchor="middle">CDC Connector</text>
+    <rect class="box" x="244" y="40" width="96" height="56" rx="8"/>
+    <text x="292" y="73" text-anchor="middle">Kafka</text>
+    <rect class="bad" x="362" y="40" width="96" height="56" rx="8"/>
+    <text x="410" y="73" text-anchor="middle">Spark Job</text>
+    <text class="failtag" x="410" y="116" text-anchor="middle">Failed: out of memory</text>
+    <rect class="box" x="480" y="40" width="96" height="56" rx="8"/>
+    <text x="528" y="73" text-anchor="middle">Warehouse</text>
+    <rect class="box" x="598" y="40" width="96" height="56" rx="8"/>
+    <text x="646" y="66" text-anchor="middle">Data Quality</text>
+    <text x="646" y="82" text-anchor="middle">Check</text>
+    <rect class="box" x="716" y="40" width="96" height="56" rx="8"/>
+    <text x="764" y="73" text-anchor="middle">Dashboards</text>
+
+    <line class="ln" x1="104" y1="68" x2="126" y2="68" marker-end="url(#pipeFail)"/>
+    <line class="ln" x1="222" y1="68" x2="244" y2="68" marker-end="url(#pipeFail)"/>
+    <line class="ln" x1="340" y1="68" x2="362" y2="68" marker-end="url(#pipeFail)"/>
+    <line class="ln" x1="458" y1="68" x2="480" y2="68" marker-end="url(#pipeFail)"/>
+    <line class="ln" x1="576" y1="68" x2="598" y2="68" marker-end="url(#pipeFail)"/>
+    <line class="ln" x1="694" y1="68" x2="716" y2="68" marker-end="url(#pipeFail)"/>
+  </svg>
+  </div>
+
+  <h2>Timeline</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>Time</th><th>Event</th></tr></thead>
+      <tbody>
+        <tr><td class="t">01:00</td><td>Nightly Spark Job starts</td></tr>
+        <tr><td class="t">01:47</td><td>Spark Job fails with out-of-memory on the orders partition for 2026-10-01</td></tr>
+        <tr><td class="t">02:30</td><td>Automatic retry also fails</td></tr>
+        <tr><td class="t">07:55</td><td>Analyst reports stale dashboards</td></tr>
+        <tr><td class="t">08:20</td><td>On-call doubles executor memory to 16 GB and reruns</td></tr>
+        <tr><td class="t">10:05</td><td>Spark Job succeeds</td></tr>
+        <tr><td class="t">10:58</td><td>Dashboards refreshed</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Root cause</h2>
+  <p>A promotion produced 3.4 times the normal order volume: 4.1 million orders against a typical 1.2 million. The executors still had 8 GB each, which was not enough to hold the orders partition in memory, so the job ran out of memory on both attempts.</p>
+
+  <h2>Lessons learned</h2>
+  <div class="two">
+    <div class="card">
+      <h3>What went well</h3>
+      <ul>
+        <li>The analyst reported the stale dashboards quickly.</li>
+        <li>The rerun with more memory finished the same morning.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>What did not go well</h3>
+      <ul>
+        <li>The failed nightly job did not page anyone.</li>
+        <li>Dashboards gave no warning that their data was stale.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Action items</h2>
+  <div class="card">
+    <ol class="act">
+      <li>Page on-call when the nightly job fails twice.</li>
+      <li>Size executor memory from the input volume.</li>
+      <li>Add a data freshness banner to dashboards.</li>
+      <li>Alert when the job input exceeds 2.5 times the 30-day average.</li>
+    </ol>
+  </div>
+
+  <aside class="note" role="note">
+    <strong>Context</strong>
+    The fix that worked was manual. The automatic retry used the same memory settings, so it failed the same way.
+  </aside>
+</main>
+</body>
+</html>

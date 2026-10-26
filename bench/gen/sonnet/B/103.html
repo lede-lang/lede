@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>How a Lab Result Is Routed</title>
+<style>
+:root{--bg:#f4f6f9;--card:#fff;--ink:#16202b;--mut:#55616e;--line:#d3dae2;--acc:#1d5fbf;--acc-s:#e5eefb;--warn:#b0360a;--warn-s:#fdece3;--ok:#13703e;--ok-s:#e2f3ea;--gold:#7a5200;--gold-s:#fcf1d2}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141a;--card:#171f28;--ink:#e7ecf1;--mut:#9ba8b5;--line:#2c3844;--acc:#7db1ff;--acc-s:#16273d;--warn:#ff9d73;--warn-s:#34201a;--ok:#62d796;--ok-s:#12291c;--gold:#f0c35c;--gold-s:#30260f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px 56px}
+header{padding:32px 0 14px;border-bottom:1px solid var(--line)}
+.eyebrow{margin:0 0 6px;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:var(--acc);font-weight:700}
+h1{margin:0 0 8px;font-size:clamp(1.6rem,5.5vw,2.4rem);line-height:1.15;letter-spacing:-.01em}
+.meta{margin:0;color:var(--mut);font-size:.92rem}
+h2{margin:40px 0 12px;font-size:1.4rem;line-height:1.25}
+p{margin:0 0 12px}
+.diagram{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;overflow-x:auto}
+.diagram svg{display:block;margin:0 auto;width:100%;min-width:400px;max-width:560px;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:8px 20px;margin:12px 2px 0;font-size:.9rem}
+.tag{display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.08em;padding:2px 8px;border-radius:999px;vertical-align:middle;white-space:nowrap}
+.tag.u{background:var(--warn);color:var(--card)}
+.tag.r{background:var(--acc-s);color:var(--acc);border:1px solid var(--acc)}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.76rem;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+tr.u td:first-child{box-shadow:inset 5px 0 0 var(--warn)}
+tr.r td:first-child{box-shadow:inset 5px 0 0 var(--acc)}
+.lim{font-weight:800;white-space:nowrap}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.card h3{margin:0 0 6px;font-size:.8rem;text-transform:uppercase;letter-spacing:.07em;color:var(--mut)}
+.card .who{font-size:1.15rem;font-weight:700;margin:0 0 4px}
+.card p{margin:0;font-size:.94rem}
+/* svg */
+svg text{font-family:inherit;fill:var(--ink)}
+.laneU{fill:var(--warn-s);stroke:var(--warn);stroke-width:1;stroke-dasharray:5 4}
+.laneR{fill:var(--acc-s);stroke:var(--acc);stroke-width:1;stroke-dasharray:5 4}
+.lt{font-size:11.5px;font-weight:800;letter-spacing:.07em}
+.lt.u{fill:var(--warn)}
+.lt.r{fill:var(--acc)}
+.st{fill:var(--card);stroke:var(--ink);stroke-width:1.6}
+.nu{fill:var(--card);stroke:var(--warn);stroke-width:2}
+.nr{fill:var(--card);stroke:var(--acc);stroke-width:1.6}
+.dm{fill:var(--card);stroke:var(--ink);stroke-width:1.6}
+.dm.u{stroke:var(--warn);stroke-width:2}
+.dm.r{stroke:var(--acc)}
+.tx{font-size:13px;font-weight:600;text-anchor:middle}
+.e{fill:none;stroke:var(--ink);stroke-width:1.6}
+.ah{fill:var(--ink)}
+.yn{font-size:12px;font-weight:800;fill:var(--ink)}
+.end{fill:var(--ok-s);stroke:var(--ok);stroke-width:1.8}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Calder Valley Hospital &middot; Laboratory Informatics</p>
+  <h1>How a finished lab result is routed</h1>
+  <p class="meta">For new unit clerks and nurses &middot; Current as of <time datetime="2026-10-02">2026-10-02</time></p>
+</header>
+
+<main>
+<section id="routing-flow">
+  <h2>Routing flow</h2>
+  <p>Start at the top. A critical value takes the <span class="tag u">URGENT</span> path on the left, with a phone call and a read-back. Everything else takes the <span class="tag r">ROUTINE</span> path on the right.</p>
+  <div class="diagram">
+  <svg viewBox="0 0 480 560" role="img" aria-labelledby="ft fd">
+    <title id="ft">Lab result routing flowchart</title>
+    <desc id="fd">A verified result first asks whether the value is critical. If yes, the ordering clinician is phoned, then the flow asks whether the read-back was confirmed within 15 minutes. Yes goes to Log the read-back. No escalates to the department head, then goes to Log the read-back. If not critical, the flow asks whether the result is flagged abnormal. Yes adds it to the clinician inbox, no files it without alert, and both end at Release to patient portal.</desc>
+    <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="ah"/></marker></defs>
+
+    <rect class="laneU" x="4" y="160" width="256" height="394" rx="12"/>
+    <rect class="laneR" x="266" y="160" width="210" height="394" rx="12"/>
+    <text class="lt u" x="16" y="180">URGENT</text>
+    <text class="lt r" x="278" y="180">ROUTINE</text>
+
+    <rect class="st" x="140" y="8" width="220" height="36" rx="18"/><text class="tx" x="250" y="31">Result verified in lab system</text>
+    <path class="e" d="M250 44V76" marker-end="url(#ar)"/>
+
+    <path class="dm" d="M250 76L340 113L250 150L160 113Z"/><text class="tx" x="250" y="118">Critical value?</text>
+    <path class="e" d="M160 113H140V201" marker-end="url(#ar)"/><text class="yn" x="118" y="106">Yes</text>
+    <path class="e" d="M340 113H360V201" marker-end="url(#ar)"/><text class="yn" x="368" y="106">No</text>
+
+    <!-- urgent column -->
+    <rect class="nu" x="45" y="202" width="190" height="40" rx="8"/><text class="tx" x="140" y="227">Phone the ordering clinician</text>
+    <path class="e" d="M140 242V272" marker-end="url(#ar)"/>
+    <path class="dm u" d="M140 272L250 322L140 372L30 322Z"/>
+    <text class="tx" x="140" y="318">Read back confirmed</text><text class="tx" x="140" y="335">within 15 minutes?</text>
+    <path class="e" d="M30 322H14V518H49" marker-end="url(#ar)"/><text class="yn" x="18" y="314">Yes</text>
+    <path class="e" d="M140 372V416" marker-end="url(#ar)"/><text class="yn" x="148" y="396">No</text>
+    <rect class="nu" x="45" y="417" width="190" height="40" rx="8"/><text class="tx" x="140" y="442">Escalate to department head</text>
+    <path class="e" d="M140 457V499" marker-end="url(#ar)"/>
+    <rect class="end" x="50" y="500" width="180" height="36" rx="18"/><text class="tx" x="140" y="523">Log the read-back</text>
+
+    <!-- routine column -->
+    <path class="dm r" d="M360 202L452 247L360 292L268 247Z"/><text class="tx" x="360" y="252">Flagged abnormal?</text>
+    <path class="e" d="M360 292V310H312V326" marker-end="url(#ar)"/><text class="yn" x="318" y="306">Yes</text>
+    <path class="e" d="M360 292V310H414V326" marker-end="url(#ar)"/><text class="yn" x="420" y="306">No</text>
+    <rect class="nr" x="270" y="327" width="86" height="58" rx="8"/><text class="tx" x="313" y="351" style="font-size:12px">Add to</text><text class="tx" x="313" y="366" style="font-size:12px">clinician</text><text class="tx" x="313" y="381" style="font-size:12px">inbox</text>
+    <rect class="nr" x="371" y="327" width="98" height="58" rx="8"/><text class="tx" x="420" y="351" style="font-size:12px">File without</text><text class="tx" x="420" y="366" style="font-size:12px">alert</text>
+    <path class="e" d="M313 385V410H360V438" marker-end="url(#ar)"/>
+    <path class="e" d="M420 385V410H360"/>
+    <rect class="end" x="266" y="439" width="188" height="40" rx="20"/><text class="tx" x="360" y="464">Release to patient portal</text>
+  </svg>
+  </div>
+  <div class="legend">
+    <span><span class="tag u">URGENT</span> act now, phone-based, timed in minutes</span>
+    <span><span class="tag r">ROUTINE</span> no phone call, timed in hours or days</span>
+  </div>
+</section>
+
+<section id="time-limits">
+  <h2>Time limits</h2>
+  <div class="tw">
+  <table>
+    <thead><tr><th>Step</th><th>Limit</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr class="u"><td>Phone call for a critical value</td><td class="lim">within 10 minutes of verification</td><td><span class="tag u">URGENT</span></td></tr>
+      <tr class="u"><td>Read-back confirmation</td><td class="lim">within 15 minutes of the call</td><td><span class="tag u">URGENT</span></td></tr>
+      <tr class="r"><td>Abnormal results reviewed in the clinician inbox</td><td class="lim">within 1 business day</td><td><span class="tag r">ROUTINE</span></td></tr>
+      <tr class="r"><td>Routine results released to the patient portal</td><td class="lim">after 24 hours</td><td><span class="tag r">ROUTINE</span></td></tr>
+      <tr class="r"><td>Abnormal results held before portal release, so the clinician can speak to the patient first</td><td class="lim">held for 72 hours</td><td><span class="tag r">ROUTINE</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="who-is-called">
+  <h2>Who is called</h2>
+  <div class="grid">
+    <div class="card"><h3>Weekdays, 07:00 to 19:00</h3><p class="who">The ordering clinician</p><p>Phone them directly.</p></div>
+    <div class="card"><h3>Nights and weekends</h3><p class="who">The covering physician</p><p>Reached through the hospital operator.</p></div>
+    <div class="card"><h3>If there is no read-back</h3><p class="who">Dr. Naomi Eze</p><p>The department head, who receives the escalation.</p></div>
+  </div>
+</section>
+</main>
+</div>
+</body>
+</html>

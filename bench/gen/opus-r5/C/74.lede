@@ -1,0 +1,37 @@
+@title Ferry Ticketing Platform
+@subtitle Online ticketing on Azure, North Europe
+@author Digital Channels, Owner
+@date Reviewed 2026-09-22
+
+# Overview
+Passengers book through Azure Front Door. Every booking is written to one database and announced as an event, so the scanners at the terminals stay in step.
+
+# Diagram
+diagram azure dir=TB title="Ticketing platform, North Europe"
+azure: pax "Passengers" user
+azure: fd "Front Door" lb
+azure: web "Booking Web App" svc
+azure: api "Ticketing API" svc focus
+azure: db "Reservations DB" db "Azure SQL"
+azure: bus "Booking Events" queue "Service Bus"
+azure: scan "Port Terminal Scanners" ext
+azure: pay "Payment Provider" ext
+azure: pax -> fd : HTTPS
+azure: fd -> web : origin request
+azure: web -> api : REST
+azure: api -> db : SQL, port 1433
+azure: api -> pay : card authorization
+azure: api -> bus : ticket issued
+azure: bus -> scan : sync every 30 s
+azure: group appsn "App subnet 10.50.1.0/24" web, api
+azure: group datasn "Data subnet 10.50.2.0/24" db, bus
+azure: group vnet "Ticketing VNet 10.50.0.0/16" appsn, datasn
+azure: group sub "Ticketing subscription" vnet
+
+# Capacity
+table = Component,Capacity; Booking Web App,"3 to 10 instances, scales at 60% CPU"; Ticketing API,4 to 16 pods; Reservations DB,"8 vCores, read replica in the paired region"
+
+# Recovery targets
+kpi Recovery point objective | 5 min | max data loss | neutral
+kpi Recovery time objective | 1 hour | max downtime | neutral
+kpi Last tested | 2026-08-19 | recovery drill | neutral

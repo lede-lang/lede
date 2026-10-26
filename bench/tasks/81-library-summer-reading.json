@@ -1,0 +1,53 @@
+{
+  "id": "81-library-summer-reading",
+  "category": "data",
+  "title": "Hollis library summer reading wrap-up",
+  "brief": "The Hollis Public Library wants a short summer reading wrap-up for the town newsletter, covering June to August 2026. 1248 children and teens registered, and 683 of them (54.7 percent) finished the program. Books logged by month: Jun 2340, Jul 3115, Aug 2870, which is 8325 in total, or 6.7 books per registered reader. Registered readers by age group: under 8, 402; 8 to 12, 561; 13 to 17, 285. The closing party on 2026-09-12 drew 310 people. Sections: \"Summer at a glance\", \"Books logged by month\" and \"Readers by age group\". July was the busiest month. People will read it on their phones.",
+  "checklist": {
+    "sections": [
+      "Summer at a glance",
+      "Books logged by month",
+      "Readers by age group"
+    ],
+    "visible": [
+      "Hollis Public Library",
+      "Registered",
+      "Jun",
+      "Jul",
+      "Aug"
+    ],
+    "values": [
+      "1248",
+      "683",
+      "54.7",
+      "2340",
+      "3115",
+      "2870",
+      "8325",
+      "6.7",
+      "402",
+      "561",
+      "285",
+      "2026-09-12",
+      "310"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table"
+  ],
+  "edit": {
+    "request": "Correct July to 3215 books logged and update the total to 8425 and the average to 6.8 books per registered reader.",
+    "expect_visible": [],
+    "expect_values": [
+      "3215",
+      "8425",
+      "6.8"
+    ],
+    "expect_absent": [
+      "3115",
+      "8325"
+    ]
+  }
+}

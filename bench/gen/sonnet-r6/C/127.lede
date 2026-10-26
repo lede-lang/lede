@@ -1,0 +1,40 @@
+@title 2026 road resurfacing program status
+@subtitle City of Alder Falls Public Works, for the city manager and council
+@author Public Works
+@date 2026-10-16
+
+## Program at a glance
+
+kpi Lane-miles done | 74 of 120 | 61.7% | bar
+kpi Budget spent | $9.1M of $14.2M | 64.1% | bar
+kpi Paving season ends | 2026-11-30 | asphalt plants close
+
+At the current pace of 6 lane-miles a week, the program reaches about 110 lane-miles by 2026-11-30, leaving about 10 for spring 2027.
+
+## Districts
+
+data districts = district,planned,done,status; North,28,22,Green; Central,24,21,Green; East,26,15,Amber; South,22,11,Amber; West,20,5,Red
+
+table districts bar=done target=planned title="Lane-miles done against planned"
+
+!! West is red. A water main replacement blocks 8 lane-miles until 2026-11-02, and the contractor's second paving crew is committed elsewhere until 2026-11-09.
+
+## Decision needed
+
+The council chooses how to handle the West district.
+
+cards
+
+### Pay for an extra crew
+
+$180,000 for an extra crew in the West district.
+
+### Carry into spring
+
+Carry the leftover miles into spring 2027.
+
+## Next two weeks
+
+step Central district finishes | 2026-10-23 | Central
+step Public notices for West district closures go out | 2026-10-26 | West
+step Maple Avenue bridge approach paving | 2026-10-27 | East

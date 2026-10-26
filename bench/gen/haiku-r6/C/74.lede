@@ -1,0 +1,37 @@
+@title Ticketing platform architecture
+@subtitle Azure, North Europe · Owner: Digital Channels · Reviewed 2026-09-22
+
+## Overview
+Passengers book through Azure Front Door. Every booking is written to one database and announced as an event, so that the scanners at the terminals stay in step.
+
+## Diagram
+diagram tix dir=LR title="Ticketing on Azure"
+tix: pass "Passengers" user
+tix: fd "Front Door" lb
+tix: web "Booking Web App" svc
+tix: api "Ticketing API" svc focus
+tix: db "Reservations DB" db "Azure SQL"
+tix: ev "Booking Events" queue "Service Bus"
+tix: scan "Port Terminal Scanners" ext
+tix: pay "Payment Provider" ext
+tix: group appsn "App subnet 10.50.1.0/24" web, api
+tix: group datasn "Data subnet 10.50.2.0/24" db, ev
+tix: group vnet "Ticketing VNet 10.50.0.0/16" appsn, datasn
+tix: group sub "Ticketing subscription" vnet
+tix: pass -> fd : HTTPS
+tix: fd -> web : origin request
+tix: web -> api : REST
+tix: api -> db : SQL, port 1433
+tix: api -> pay : card authorization
+tix: api -> ev : ticket issued
+tix: ev -> scan : sync every 30 s
+
+## Capacity
+- **Booking Web App**: 3 to 10 instances at 60 percent CPU
+- **Ticketing API**: 4 to 16 pods
+- **Reservations DB**: 8 vCores, with a read replica in the paired region
+
+## Recovery targets
+kpi Recovery point objective | 5 minutes | maximum data loss | neutral
+kpi Recovery time objective | 1 hour | maximum downtime | neutral
+kpi Last tested | 2026-08-19 | | neutral

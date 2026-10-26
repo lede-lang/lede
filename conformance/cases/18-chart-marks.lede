@@ -1,0 +1,5 @@
+data uptime = week,rate,errors; W1,99.9,3; W2,99.8,5; Week 3,99.95,1; W10,99.7,9
+chart line uptime y=rate target="99.9 SLO" mark="W2 deploy v2" mark="Week 3 incident #41" mark=W10
+chart bar uptime y=errors mark="W1 launch"
+chart area uptime y=rate mark="W10 rollback"
+chart line uptime y=rate

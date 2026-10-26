@@ -1,0 +1,46 @@
+@title Peak-Season Capacity Summary
+@subtitle Peak window 2026-11-23 to 2026-12-23
+@author Rafael Ostrowski, Network Planning Lead
+
+# Network at a glance
+
+kpi Network utilization | 91.8% | 166,100 of 181,000 parcels a day | neutral
+kpi Network headroom | 14,900 | parcels a day | good
+kpi Over capacity | Memphis | by 2,200 parcels a day | bad
+kpi Seasonal hires | 640 | 210 for Memphis | neutral
+
+Memphis is the one depot over capacity. Tulsa has only 2,400 parcels of headroom. The plan reroutes 2,200 Memphis parcels a day to Tulsa, which leaves both at their limit.
+
+# Depot capacity
+
+Daily capacity and forecast peak daily volume, in parcels.
+
+data depots = depot,capacity,forecast,utilization; Tulsa,42000,39600,94.3; Omaha,36000,28800,80.0; Memphis,55000,57200,104.0; Denver,30000,26100,87.0; Boise,18000,14400,80.0
+
+chart bar depots x=depot y=capacity,forecast title="Daily capacity vs forecast peak volume" unit=" parcels"
+
+chart hbar depots x=depot y=utilization target="100 capacity" unit=% labels title="Forecast utilization"
+
+table = depot,capacity,forecast,utilization; Tulsa,42000,39600,94.3%; Omaha,36000,28800,80.0%; Memphis,55000,57200,**104.0%**; Denver,30000,26100,87.0%; Boise,18000,14400,80.0%; **Network**,**181000**,**166100**,**91.8%**
+
+# Memphis and Tulsa plan
+
+diagram reroute dir=LR title="Reroute from 2026-11-23"
+reroute: memphis "Memphis" svc "104.0% now, 100.0% after" focus
+reroute: tulsa "Tulsa" svc "94.3% now, 99.5% after" focus
+reroute: omaha "Omaha" svc "up to 7,200 spare"
+reroute: memphis -> tulsa : 2,200 a day
+reroute: memphis --> omaha : adds a day
+
+From 2026-11-23, 2,200 Memphis parcels a day move to Tulsa. Memphis lands at exactly 100.0% and Tulsa at 99.5%. Both would be at their limit with no slack.
+
+Omaha could take up to 7,200 more parcels a day, but rerouting there adds a day of transit.
+
+step Reroute 2,200 Memphis parcels a day to Tulsa | 2026-11-23
+step All 640 seasonal workers start (210 for Memphis) | by 2026-11-16
+
+# Risks
+
+!! Any outage or weather delay at Memphis or Tulsa during the window has nowhere to go except Omaha, which adds a day of transit.
+
+!! The plan relies on all 640 seasonal workers starting by 2026-11-16. A late start leaves Memphis and Tulsa short with no headroom to absorb it.

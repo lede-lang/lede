@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>INC-3017 Postmortem</title>
+<style>
+:root{
+  --bg:#f6f6f4;--surface:#ffffff;--surface-2:#f0f0ec;--text:#1a1a18;--muted:#5f5f58;--border:#e0dfd8;
+  --accent:#1e5aa8;--accent-soft:#e8eff9;
+  --bad:#b42318;--bad-soft:#fdeceb;--good:#18794e;--good-soft:#e4f4eb;--warn:#9a5800;--warn-soft:#fff1d9;
+  --code-bg:#f0f0ec;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#111110;--surface:#1a1a18;--surface-2:#232320;--text:#ecebe6;--muted:#a6a59c;--border:#33322d;
+  --accent:#86b3f0;--accent-soft:#1a2740;
+  --bad:#ff7d73;--bad-soft:#3a1715;--good:#4cc38a;--good-soft:#10281c;--warn:#f2b15a;--warn-soft:#302310;
+  --code-bg:#262622;
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:28px 16px 56px}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 6px}
+h1{font-size:1.75rem;line-height:1.2;margin:0 0 10px;letter-spacing:-.01em}
+.meta{display:flex;flex-wrap:wrap;gap:4px 16px;color:var(--muted);font-size:.9rem;margin:0;padding:0;list-style:none}
+.meta b{color:var(--text);font-weight:600}
+.blameless{display:inline-block;margin-top:12px;font-size:.82rem;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:2px 12px;background:var(--surface)}
+section{margin-top:34px}
+h2{font-size:1.2rem;margin:0 0 12px}
+p{margin:0 0 12px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em;background:var(--code-bg);border-radius:4px;padding:1px 5px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:22px}
+.kpi .label{font-size:.82rem;color:var(--muted)}
+.kpi .value{font-size:1.9rem;font-weight:800;line-height:1.1;margin:4px 0 2px;font-variant-numeric:tabular-nums}
+.kpi .value small{font-size:.95rem;font-weight:700;color:var(--muted)}
+.kpi .note{font-size:.8rem;color:var(--muted)}
+.summary p:last-child{margin-bottom:0}
+.strip svg{display:block;width:100%;height:auto}
+svg text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+svg .axis{stroke:var(--border);stroke-width:2}
+svg .band{fill:var(--bad);opacity:.18}
+svg .bandl{fill:var(--bad);font-size:11px;font-weight:700}
+svg .tick{stroke:var(--muted);stroke-width:1.5}
+svg .mk{fill:var(--surface);stroke:var(--text);stroke-width:2}
+svg .mk.key{fill:var(--bad);stroke:var(--bad)}
+svg .mk.ok{fill:var(--good);stroke:var(--good)}
+svg .tl{fill:var(--muted);font-size:11px;font-variant-numeric:tabular-nums}
+.timeline{list-style:none;margin:0;padding:0;position:relative}
+.timeline::before{content:"";position:absolute;left:84px;top:10px;bottom:10px;width:2px;background:var(--border)}
+.timeline li{display:grid;grid-template-columns:70px 1fr;gap:30px;padding:0 0 18px;position:relative}
+.timeline li:last-child{padding-bottom:0}
+.timeline li::after{content:"";position:absolute;left:79px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2.5px solid var(--muted)}
+.timeline li.key::after{background:var(--bad);border-color:var(--bad)}
+.timeline li.ok::after{background:var(--good);border-color:var(--good)}
+.time{text-align:right;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.3}
+.time span{display:block;font-size:.75rem;color:var(--muted);font-weight:500}
+.ev p{margin:0}
+.ev .why{font-size:.88rem;color:var(--muted);margin-top:3px}
+.ev .why b{color:var(--text)}
+.list{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.list li{display:flex;gap:12px;align-items:flex-start}
+.list .ic{flex:0 0 26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;margin-top:1px}
+.list.gap .ic{background:var(--warn-soft);color:var(--warn)}
+.list.well .ic{background:var(--good-soft);color:var(--good)}
+.list p{margin:0}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:11px 8px;border-bottom:1px solid var(--border);vertical-align:top}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+tbody tr:last-child td{border-bottom:0}
+.table-card{padding:4px 10px}
+td.due{white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:600}
+td .owner{display:none}
+footer{margin-top:40px;color:var(--muted);font-size:.82rem}
+@media (max-width:700px){.kpis{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:480px){
+  body{font-size:15px}
+  h1{font-size:1.45rem}
+  .kpi .value{font-size:1.6rem}
+  .timeline::before{left:62px}
+  .timeline li{grid-template-columns:50px 1fr;gap:28px}
+  .timeline li::after{left:57px}
+  th,td{padding:10px 5px}
+  th.ownercol,td.ownercol{display:none}
+  td .owner{display:block;font-size:.85rem;color:var(--muted);margin-top:2px}
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <p class="eyebrow">Stonebridge Realty &middot; Incident postmortem</p>
+    <h1>INC-3017: listing photo upload outage</h1>
+    <ul class="meta">
+      <li>Date <b>2026-08-27</b></li>
+      <li>Owner <b>Listings Platform</b></li>
+      <li>Severity <b>Sev2</b></li>
+    </ul>
+    <span class="blameless">Blameless review: we look at systems and process, not individuals.</span>
+  </header>
+
+  <div class="kpis">
+    <div class="card kpi"><div class="label">Duration</div><div class="value">112<small> min</small></div><div class="note">10:15 to 12:07 UTC</div></div>
+    <div class="card kpi"><div class="label">Peak upload failures</div><div class="value" style="color:var(--bad)">100<small>%</small></div><div class="note">Every mobile upload got 403</div></div>
+    <div class="card kpi"><div class="label">Listings missing photos</div><div class="value">8,340</div></div>
+    <div class="card kpi"><div class="label">Support tickets</div><div class="value">412</div></div>
+  </div>
+
+  <section class="summary">
+    <h2>Summary</h2>
+    <div class="card">
+      <p>A storage policy change was applied to restrict bucket access to our VPC endpoint. It worked as intended for traffic through the endpoint, but it also blocked uploads made with pre-signed URLs from agents' phones, which do not come through the VPC endpoint. From that point every mobile photo upload returned <code>403</code>.</p>
+      <p>The incident was declared Sev2, the policy diff was identified as the cause, and a hotfix removed the deny statement. Uploads recovered at 12:07 UTC, 112 minutes after the change was applied. By then 8,340 listings were missing photos and support had received 412 tickets.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Timeline</h2>
+    <div class="card strip" style="margin-bottom:12px">
+      <svg viewBox="0 0 480 92" role="img" aria-label="Timeline from 10:15 to 12:07 UTC. Uploads failing from 10:22 to 12:07.">
+        <rect class="band" x="47.5" y="36" width="412.5" height="18" rx="3"/>
+        <text class="bandl" x="253.8" y="49" text-anchor="middle">uploads failing with 403</text>
+        <line class="axis" x1="20" y1="45" x2="460" y2="45"/>
+        <line class="tick" x1="20" y1="45" x2="20" y2="64"/>
+        <line class="tick" x1="47.5" y1="26" x2="47.5" y2="45"/>
+        <line class="tick" x1="82.9" y1="45" x2="82.9" y2="64"/>
+        <line class="tick" x1="149.6" y1="26" x2="149.6" y2="45"/>
+        <line class="tick" x1="275.4" y1="45" x2="275.4" y2="64"/>
+        <line class="tick" x1="424.6" y1="26" x2="424.6" y2="45"/>
+        <line class="tick" x1="460" y1="45" x2="460" y2="64"/>
+        <circle class="mk key" cx="20" cy="45" r="5"/>
+        <circle class="mk key" cx="47.5" cy="45" r="5"/>
+        <circle class="mk" cx="82.9" cy="45" r="4.5"/>
+        <circle class="mk" cx="149.6" cy="45" r="4.5"/>
+        <circle class="mk key" cx="275.4" cy="45" r="5"/>
+        <circle class="mk" cx="424.6" cy="45" r="4.5"/>
+        <circle class="mk ok" cx="460" cy="45" r="5"/>
+        <text class="tl" x="20" y="78" text-anchor="middle">10:15</text>
+        <text class="tl" x="47.5" y="20" text-anchor="middle">10:22</text>
+        <text class="tl" x="82.9" y="78" text-anchor="middle">10:31</text>
+        <text class="tl" x="149.6" y="20" text-anchor="middle">10:48</text>
+        <text class="tl" x="275.4" y="78" text-anchor="middle">11:20</text>
+        <text class="tl" x="424.6" y="20" text-anchor="middle">11:58</text>
+        <text class="tl" x="460" y="78" text-anchor="end">12:07</text>
+      </svg>
+    </div>
+    <div class="card">
+      <ol class="timeline">
+        <li class="key">
+          <div class="time">10:15<span>T+0</span></div>
+          <div class="ev"><p>Storage policy change applied through Terraform.</p><p class="why"><b>Trigger.</b> The change restricts bucket access to the VPC endpoint.</p></div>
+        </li>
+        <li class="key">
+          <div class="time">10:22<span>T+7 min</span></div>
+          <div class="ev"><p>Uploads begin failing with 403.</p><p class="why"><b>Impact starts.</b> Pre-signed URL uploads from agents' phones are now blocked.</p></div>
+        </li>
+        <li>
+          <div class="time">10:31<span>T+16 min</span></div>
+          <div class="ev"><p>First customer ticket reaches support.</p><p class="why">A customer report arrived before any alert.</p></div>
+        </li>
+        <li>
+          <div class="time">10:48<span>T+33 min</span></div>
+          <div class="ev"><p>Incident declared Sev2.</p><p class="why">26 minutes after failures began.</p></div>
+        </li>
+        <li class="key">
+          <div class="time">11:20<span>T+65 min</span></div>
+          <div class="ev"><p>The policy diff is identified as the cause.</p><p class="why"><b>Turning point.</b> From here the fix is known.</p></div>
+        </li>
+        <li>
+          <div class="time">11:58<span>T+103 min</span></div>
+          <div class="ev"><p>Hotfix applied, removing the deny statement.</p></div>
+        </li>
+        <li class="ok">
+          <div class="time">12:07<span>T+112 min</span></div>
+          <div class="ev"><p>Uploads recover.</p><p class="why"><b>Impact ends.</b></p></div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <h2>Why it was not caught</h2>
+    <div class="card">
+      <ul class="list gap">
+        <li><span class="ic">1</span><p>The change was tested only from the office network, where traffic does not depend on pre-signed URLs from phones.</p></li>
+        <li><span class="ic">2</span><p>Staging has no mobile upload test.</p></li>
+        <li><span class="ic">3</span><p>The policy linter does not model pre-signed URLs, so it could not flag the deny.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>What went well</h2>
+    <div class="card">
+      <ul class="list well">
+        <li><span class="ic">&#10003;</span><p>Once declared, the incident had a clear commander within 17 minutes.</p></li>
+        <li><span class="ic">&#10003;</span><p>The rollback itself took under 10 minutes once the cause was known.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Action items</h2>
+    <div class="card table-card">
+      <table>
+        <thead><tr><th>Action</th><th class="ownercol">Owner</th><th>Due</th></tr></thead>
+        <tbody>
+          <tr><td>Alert when upload 403s exceed 2% for 5 minutes<span class="owner">Listings on-call</span></td><td class="ownercol">Listings on-call</td><td class="due">2026-09-11</td></tr>
+          <tr><td>Add a pre-signed URL upload test to staging<span class="owner">Greta Lindqvist</span></td><td class="ownercol">Greta Lindqvist</td><td class="due">2026-09-18</td></tr>
+          <tr><td>Require policy changes to be applied to staging first<span class="owner">Omar Haddad</span></td><td class="ownercol">Omar Haddad</td><td class="due">2026-09-25</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>Stonebridge Realty &middot; Listings Platform &middot; INC-3017 postmortem &middot; All times UTC</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eastside Food Bank Q3 2026</title>
+<style>
+:root{--bg:#f6f5f1;--surface:#ffffff;--ink:#1c1e22;--muted:#5d6370;--line:#dcd9d1;--accent:#2f6b5c;--warm:#b8642e;--blue:#3f6396;--grey:#8a7f6a}
+@media (prefers-color-scheme:dark){:root{--bg:#14161a;--surface:#1d2026;--ink:#eceae4;--muted:#a4a9b4;--line:#353a44;--accent:#6cbba3;--warm:#e39a66;--blue:#8db2e3;--grey:#b5a98f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif}
+main{max-width:920px;margin:0 auto;padding:32px 16px 64px}
+.kicker{color:var(--accent);font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;margin:0 0 6px}
+h1{font-size:clamp(26px,5vw,36px);line-height:1.15;margin:0 0 12px}
+h2{font-size:21px;margin:40px 0 14px;padding-top:16px;border-top:1px solid var(--line)}
+p{margin:0 0 14px}
+.lede{color:var(--muted);font-size:17px}
+.note{color:var(--muted);font-size:14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+.card .big{font-size:24px;font-weight:650;line-height:1.2}
+.card .small{color:var(--muted);font-size:14px;margin-top:6px}
+.table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.total td{font-weight:600;background:var(--bg)}
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px}
+svg{display:block;width:100%;height:auto}
+.axis{stroke:var(--line);stroke-width:1}
+.lbl{font-size:14px;fill:var(--muted)}
+.lbl-strong{font-size:14px;fill:var(--ink);font-weight:600}
+.bar{fill:var(--accent)} .bar2{fill:var(--warm)} .bar3{fill:var(--blue)} .bar4{fill:var(--grey)}
+.key{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:14px;color:var(--muted);margin:10px 0 0}
+.key span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:12px;height:12px;border-radius:2px;display:inline-block}
+blockquote{margin:0 0 16px;padding:4px 0 4px 16px;border-left:3px solid var(--accent);font-size:18px}
+blockquote footer{font-size:14px;color:var(--muted);margin-top:4px}
+</style>
+</head>
+<body>
+<main>
+<p class="kicker">Board and donors, Q3 2026 (July to September)</p>
+<h1>Eastside Food Bank: quarter three summary</h1>
+<p class="lede">Prepared for the board and donors by Camille Ferreira, director.</p>
+
+<h2>Q3 at a glance</h2>
+<div class="cards">
+  <div class="card"><div class="big">357,800 lb</div><div class="small">Food distributed in the quarter</div></div>
+  <div class="card"><div class="big">129,500 lb</div><div class="small">Distributed in September, up 16.6 percent on July</div></div>
+  <div class="card"><div class="big">7,925</div><div class="small">Households served in September</div></div>
+  <div class="card"><div class="big">16.3 lb</div><div class="small">Per household in September, about the same as July and August</div></div>
+</div>
+
+<h2>By category</h2>
+<p>Pounds distributed each month, by category.</p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Category</th><th class="num">July</th><th class="num">August</th><th class="num">September</th><th class="num">Quarter total</th><th class="num">July to September</th></tr></thead>
+  <tbody>
+    <tr><td>Produce</td><td class="num">41,200</td><td class="num">46,800</td><td class="num">52,300</td><td class="num">140,300</td><td class="num">+26.9%</td></tr>
+    <tr><td>Dairy</td><td class="num">12,400</td><td class="num">13,100</td><td class="num">14,900</td><td class="num">40,400</td><td class="num">+20.2%</td></tr>
+    <tr><td>Shelf-stable</td><td class="num">38,600</td><td class="num">36,900</td><td class="num">40,200</td><td class="num">115,700</td><td class="num">+4.1%</td></tr>
+    <tr><td>Protein</td><td class="num">18,900</td><td class="num">20,400</td><td class="num">22,100</td><td class="num">61,400</td><td class="num">+16.9%</td></tr>
+    <tr class="total"><td>Total</td><td class="num">111,100</td><td class="num">117,200</td><td class="num">129,500</td><td class="num">357,800</td><td class="num">+16.6%</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="chart" style="margin-top:16px">
+  <svg id="cat-chart" role="img" aria-label="Stacked column chart of pounds distributed per month by category: produce, dairy, shelf-stable and protein"></svg>
+  <div class="key">
+    <span><i class="sw" style="background:var(--accent)"></i>Produce</span>
+    <span><i class="sw" style="background:var(--warm)"></i>Dairy</span>
+    <span><i class="sw" style="background:var(--blue)"></i>Shelf-stable</span>
+    <span><i class="sw" style="background:var(--grey)"></i>Protein</span>
+  </div>
+</div>
+
+<p style="margin-top:20px">Households served were 6,840 in July, 7,310 in August and 7,925 in September. That is 16.2, 16.0 and 16.3 pounds per household.</p>
+<ul style="padding-left:20px">
+  <li>September distribution was up 16.6 percent on July, while households served grew 15.9 percent. The amount per household held steady.</li>
+  <li>Produce grew fastest, up 26.9 percent from July to September. The new partnership with three local farms started on 15 August 2026.</li>
+  <li>Shelf-stable dipped in August, because of a delayed shipment from the regional network.</li>
+</ul>
+
+<h2>What we heard</h2>
+<blockquote>
+  <p>"The fresh vegetables made it possible to cook for the whole week."</p>
+  <footer>Tuesday client, Eastside pantry</footer>
+</blockquote>
+<blockquote>
+  <p>"Pickup was faster than last time."</p>
+  <footer>Saturday client, Eastside pantry</footer>
+</blockquote>
+
+<p style="margin-top:32px">Thank you to our volunteers, who gave 4,180 hours this quarter. Every pound on this page passed through their hands.</p>
+</main>
+<script>
+(function(){
+  var svg=document.getElementById('cat-chart');
+  var W=560,H=320,base=270,top=28,max=129500,bw=120;
+  var months=[["July",[41200,12400,38600,18900],111100],["August",[46800,13100,36900,20400],117200],["September",[52300,14900,40200,22100],129500]];
+  var cls=["bar","bar2","bar3","bar4"];
+  var cw=(W-40)/months.length, out='';
+  out+='<line class="axis" x1="20" y1="'+base+'" x2="'+(W-20)+'" y2="'+base+'"/>';
+  months.forEach(function(m,i){
+    var x=20+i*cw+(cw-bw)/2, y=base;
+    m[1].forEach(function(val,k){
+      var h=(base-top)*val/max; y-=h;
+      out+='<rect class="'+cls[k]+'" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw+'" height="'+h.toFixed(1)+'"/>';
+    });
+    out+='<text class="lbl-strong" x="'+(x+bw/2).toFixed(1)+'" y="'+(y-8).toFixed(1)+'" text-anchor="middle">'+m[2].toLocaleString('en-US')+' lb</text>';
+    out+='<text class="lbl" x="'+(x+bw/2).toFixed(1)+'" y="'+(base+22)+'" text-anchor="middle">'+m[0]+'</text>';
+  });
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  svg.innerHTML=out;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+diagram login sequence
+login: browser "Browser" user
+login: app "App" svc
+login: browser -> app : GET /me
+login: alt "session valid"
+login: app --> browser : 200
+login: note app : cache hit
+login: else "no session"
+login: app --> browser : 401
+login: browser -> app : POST /login
+login: else
+login: app -> app : audit
+login: end
+login: opt cookie banner
+login: browser -> browser : dismiss
+login: end
+login: browser -> app : GET /home

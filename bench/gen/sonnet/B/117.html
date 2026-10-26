@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>A Letter About Elm Street - Corbel &amp; Finch Books</title>
+<style>
+:root{
+  --bg:#f6f0e4; --paper:#fffdf8; --text:#2b231b; --muted:#6d6254; --line:#e3d8c3; --accent:#8a3b22; --soft:#f4e9d6;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#15110d; --paper:#1d1812; --text:#efe6d6; --muted:#b5a893; --line:#3a3125; --accent:#e59a7a; --soft:#2a2118;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:18px/1.7 Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Times New Roman",serif}
+.wrap{max-width:680px;margin:0 auto;padding:20px 14px 56px}
+.paper{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:28px 22px 30px;box-shadow:0 1px 0 var(--line)}
+.brand{font:700 .8rem/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 4px}
+h1{font-size:1.9rem;line-height:1.2;margin:0 0 6px;font-weight:700}
+.date{font:.9rem/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--muted);margin:0 0 22px}
+h2{font:700 1.15rem/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--accent);margin:34px 0 8px;letter-spacing:.01em}
+p{margin:0 0 14px}
+.salutation{margin-top:0}
+.dates{list-style:none;padding:0;margin:14px 0 18px;border-top:1px solid var(--line)}
+.dates li{display:grid;grid-template-columns:104px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:1rem;line-height:1.5}
+.dates .d{font:700 .92rem/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--accent)}
+.dates small{display:block;color:var(--muted);font-size:.9rem}
+.keep{background:var(--soft);border-radius:6px;padding:14px 18px 14px 38px;margin:14px 0 18px}
+.keep li{margin:4px 0}
+.sign{margin-top:28px}
+.sign .name{font-size:1.5rem;font-style:italic;margin:2px 0 0;color:var(--text)}
+.sign .role{font:.88rem/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--muted);margin:0}
+@media (min-width:640px){
+  .wrap{padding:44px 20px 80px}
+  .paper{padding:48px 52px 52px}
+  h1{font-size:2.3rem}
+  .dates li{grid-template-columns:150px 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<article class="paper">
+  <p class="brand">Corbel &amp; Finch Books</p>
+  <h1>A letter about Elm Street</h1>
+  <p class="date">To our customers, from Marguerite Pell</p>
+
+  <p class="salutation">Dear friends,</p>
+  <p>We have some hard news, and we would rather you heard it from us than from a sign in the window. Here it is plainly, and then the rest of what we want to say.</p>
+
+  <h2>What is changing</h2>
+  <p>Our Elm Street shop, open for 17 years, will close for good after we trade on 23 December 2026.</p>
+  <p>Everything else carries on. Our Harbor Road shop, our online shop and our school book fairs all continue.</p>
+
+  <h2>Why</h2>
+  <p>Two things came together. The rent on Elm Street will rise 70 percent when the lease renews on 1 January 2027. And more than half of our sales now happen at Harbor Road or online.</p>
+  <p>We looked at those numbers for a long time. In the end, we chose to keep the two places that are growing. It was not an easy choice, and we did not make it lightly. We will miss Elm Street very much.</p>
+
+  <h2>What stays the same</h2>
+  <p>You can still find us at Harbor Road, online and at your child's school book fair. And you will find the same people.</p>
+  <ul class="keep" style="list-style:disc">
+    <li><strong>Our booksellers.</strong> The Elm Street team of 6 booksellers will move to Harbor Road. The faces will be the same.</li>
+    <li><strong>Gift certificates and store credit.</strong> We will honor them at Harbor Road and online until 31 December 2027.</li>
+    <li><strong>Loyalty points.</strong> They move over automatically. There is nothing for you to do.</li>
+  </ul>
+
+  <h2>How to say goodbye</h2>
+  <p>We would love to see you before we close. Here is what we have planned.</p>
+  <ul class="dates">
+    <li><span class="d">From 28 November</span><span>Everything in the Elm Street shop is 20 percent off.</span></li>
+    <li><span class="d">Saturday 19 December, 11:00</span><span>The last Saturday story hour.</span></li>
+    <li><span class="d">22 December, 17:00 to 20:00</span><span>A farewell evening with our staff and local authors.</span></li>
+    <li><span class="d">23 December</span><span>Our last day of trading at Elm Street.</span></li>
+  </ul>
+  <p>If you cannot make it, we understand. Come to Harbor Road, or order online, and tell us a story about the shop. We would like to hear it.</p>
+  <p>Thank you. For 17 years you have trusted us with your shelves, your gifts, your children's first books and your Saturday mornings. We have been lucky to be part of that, and we are grateful for every one of you.</p>
+
+  <div class="sign">
+    <p>With warmth and thanks,</p>
+    <p class="name">Marguerite Pell</p>
+  </div>
+</article>
+</div>
+</body>
+</html>

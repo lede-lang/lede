@@ -1,0 +1,24 @@
+@title Claims system migration status
+@subtitle Cordova Mutual, program status for the steering committee
+@date 2026-10-16
+
+kpi Records migrated | 1.89M of 3.00M | 63%
+kpi Budget spent | $5.7M of $8.4M | 68%
+kpi Go-live target | 2027-02-15 | unchanged
+kpi Overall status | Amber | at risk | bad
+
+## Workstreams
+
+data ws = workstream,owner,percent complete,status; Data migration,Sunita Rao,63,Amber; Claims UI rebuild,Oliver Grant,78,Green; Payments integration,Fatima Aziz,45,Red; Document archive,Leo Park,90,Green; Staff training,Chen Wei,20,Green; Regulatory sign-off,Ingrid Solheim,35,Amber
+chart hbar ws y=percent complete unit=% max=100 title="Percent complete by workstream"
+table ws
+
+!! **Payments integration is red.** The payment processor's test environment is five weeks late. The fallback is to build against recorded responses, which costs about 3 weeks of extra effort.
+
+## Decision needed
+
+! **Decision for the steering committee by 2026-11-06:** cut over all states at once, or in two waves. **We recommend two waves.**
+
+table = option,what happens,effect; **Two waves (recommended)**,"The 14 smaller states cut over in January, the rest in February","Halves the number of agent re-trainings happening at the same time"; Single cutover,All states cut over at once,"Every agent is re-trained at the same time"
+
+Why two waves: it halves the number of agent re-trainings happening at the same time, so a problem in the first wave affects only the 14 smaller states. The go-live target of 2027-02-15 holds either way.

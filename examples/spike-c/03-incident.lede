@@ -1,0 +1,18 @@
+@title Release 4.18 readiness
+@subtitle Go / no-go review, Thursday 14:00 UTC
+@author Release management
+@date 2026-10-15
+
+Two checks are failing and one is at risk. The release stays on hold until both failures are fixed or waived by the release owner.
+
+data checks = Check,Owner,Status,Last run,Notes; Unit tests,CI,Passed,13:42,"4,812 tests"; Integration tests,CI,Passed,13:55,"312 tests"; Load test at 2x peak,Perf team,Failed,12:10,p99 hit 940 ms on /cart; Database migration dry run,DBA on-call,Passed,11:30,6 min on prod snapshot; Security scan,AppSec,Failed,10:05,1 high CVE in image-resize; Feature flags reviewed,Product,At risk,—,2 owners not yet signed off; Rollback rehearsal,SRE,Passed,09:20,Rolled back in 4 min; Docs and release notes,Tech writing,Done,Yesterday,Published to staging
+
+table checks title="Release checks"
+
+## Decision
+
+kpi Checks passing | 5 of 8 | | neutral
+kpi Failing | 2 | load test, CVE | bad
+kpi Hold since | 12:10 UTC | 2 h | neutral
+
+!!! **No-go for 14:00.** Re-run the load test after the `/cart` cache fix lands, and patch `image-resize` to 2.4.1. Target the 18:00 window.

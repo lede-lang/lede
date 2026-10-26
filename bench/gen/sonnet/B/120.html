@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>How to Read Your Electricity Bill - Eastgrove Power</title>
+<style>
+:root{
+  --bg:#f5f6f4; --surface:#ffffff; --text:#1a2420; --muted:#56635d; --line:#dce2dd;
+  --accent:#0d5c63; --accent-bg:#e1f0f1;
+  --peak:#c2410c; --on-peak:#ffffff; --off:#e8c15a; --on-off:#2b2100; --super:#1f7a5c; --on-super:#ffffff;
+  --tip-bg:#fff6dd; --tip-line:#e0b33f;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0d1311; --surface:#161e1b; --text:#e6eeea; --muted:#9bada5; --line:#27332e;
+    --accent:#6fd0d8; --accent-bg:#133236;
+    --peak:#ff9162; --on-peak:#1a0c05; --off:#d9b350; --on-off:#1f1800; --super:#52c9a1; --on-super:#06150f;
+    --tip-bg:#302810; --tip-line:#a98427;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:740px;margin:0 auto;padding:20px 16px 56px}
+.eyebrow{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 6px}
+h1{font-size:1.75rem;line-height:1.2;margin:0 0 10px}
+.lead{color:var(--muted);margin:0;font-size:1rem}
+h2{font-size:1.3rem;margin:38px 0 12px;padding-bottom:6px;border-bottom:2px solid var(--line)}
+h3{font-size:1.02rem;margin:20px 0 6px}
+.parts{display:grid;grid-template-columns:1fr;gap:8px;margin:14px 0}
+.part{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.part .ic{width:40px;height:40px;border-radius:50%;background:var(--accent-bg);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800}
+.part b{display:block}
+.part .amt{color:var(--accent);font-weight:800}
+.part span.d{font-size:.92rem;color:var(--muted);display:block;line-height:1.4}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.fact{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.fact b{display:block;font-size:1.3rem;line-height:1.25;color:var(--accent)}
+.fact span{font-size:.84rem;color:var(--muted);line-height:1.3;display:block}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0}
+svg{display:block;width:100%;height:auto;max-width:620px;margin:0 auto}
+svg text{font-family:inherit}
+.ax{fill:var(--muted);font-size:11px}
+.lbl{fill:var(--text);font-size:12.5px;font-weight:700}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.88rem;margin:0 0 8px;padding:0;list-style:none}
+.legend li{display:flex;align-items:center;gap:6px}
+.sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+.sw.pk{background:var(--peak)}.sw.of{background:var(--off)}.sw.su{background:var(--super)}
+.cap{font-size:.88rem;color:var(--muted);margin:8px 0 0}
+.tablewrap{overflow-x:auto;border-radius:12px;margin:10px 0}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;background:var(--surface);border:1px solid var(--line)}
+th,td{padding:9px 8px;text-align:right;font-size:.92rem;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left;padding-left:12px}
+thead th{font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+tbody tr:last-child td{border-bottom:0}
+td.t{font-weight:800}
+.callout{background:var(--accent-bg);border-radius:12px;padding:12px 14px;margin:14px 0;color:var(--text)}
+.callout p{margin:3px 0}
+dl.defs{margin:8px 0}
+dl.defs dt{font-weight:800;margin-top:16px}
+dl.defs dd{margin:3px 0 0}
+.tips{list-style:none;padding:0;margin:12px 0;counter-reset:t}
+.tips li{counter-increment:t;position:relative;background:var(--tip-bg);border:1px solid var(--tip-line);border-radius:12px;padding:12px 14px 12px 50px;margin:10px 0}
+.tips li::before{content:counter(t);position:absolute;left:14px;top:12px;width:26px;height:26px;border-radius:50%;background:var(--tip-line);color:#1d1600;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem}
+.contact{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:24px}
+.contact p{margin:3px 0}
+a{color:var(--accent);font-weight:700}
+footer{margin-top:28px;color:var(--muted);font-size:.85rem}
+@media (min-width:640px){
+  .wrap{padding:40px 24px 72px}
+  h1{font-size:2.15rem}
+  .parts{grid-template-columns:1fr 1fr 1fr}
+  .part{grid-template-columns:1fr;text-align:left}
+  .facts{grid-template-columns:repeat(4,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Eastgrove Power - Customer Education</p>
+  <h1>How to read your electricity bill</h1>
+  <p class="lead">A plain-language guide for residential customers. Rates on this page are effective 2026-11-01. A kilowatt-hour (kWh) is the unit we use to measure the power you use.</p>
+</header>
+
+<h2>Your bill at a glance</h2>
+<p>Your bill adds up three charges, then tax.</p>
+<div class="parts">
+  <div class="part"><div class="ic">1</div><div><b>Service charge</b><span class="amt">$14.50 a month</span><span class="d">Fixed. You pay it whatever you use.</span></div></div>
+  <div class="part"><div class="ic">2</div><div><b>Delivery charge</b><span class="amt">$0.045 per kWh</span><span class="d">The same price at every hour.</span></div></div>
+  <div class="part"><div class="ic">3</div><div><b>Supply charge</b><span class="amt">$0.08 to $0.31 per kWh</span><span class="d">Depends on when you use power.</span></div></div>
+</div>
+<div class="callout"><p><strong>Then add sales tax of 5.2 percent</strong> on the total.</p></div>
+<div class="facts">
+  <div class="fact"><b>21 days</b><span>to pay, from the bill date</span></div>
+  <div class="fact"><b>1.5%</b><span>late payment fee on unpaid balances after that</span></div>
+  <div class="fact"><b>2.5x+</b><span>peak supply costs more than 2.5 times off-peak</span></div>
+  <div class="fact"><b>20%</b><span>CARE discount for income-qualified households</span></div>
+</div>
+
+<h2>What each charge means</h2>
+<dl class="defs">
+  <dt>Service charge: $14.50 a month</dt>
+  <dd>A fixed monthly charge for being connected to the grid. It does not change with how much power you use.</dd>
+  <dt>Delivery charge: $0.045 per kWh</dt>
+  <dd>The cost of bringing power to your home. You pay this for every kWh, at any time of day.</dd>
+  <dt>Supply charge: depends on the time</dt>
+  <dd>The cost of the power itself. The price changes through the day. The next chart shows the three prices.</dd>
+  <dt>Sales tax: 5.2 percent</dt>
+  <dd>Applied to the total of your charges.</dd>
+  <dt>Paying your bill</dt>
+  <dd>Your bill is due 21 days after the bill date. After that, we add a late payment fee of 1.5 percent to unpaid balances.</dd>
+</dl>
+
+<h3>Supply price per kWh</h3>
+<div class="card">
+  <svg viewBox="0 0 400 168" role="img" aria-label="Bar chart of supply price per kilowatt-hour: peak 31 cents, off-peak 12 cents, super off-peak 8 cents.">
+    <!-- 900 px per dollar from x=104; 0.31 -> 279 -->
+    <g class="lbl" text-anchor="end">
+      <text x="96" y="35">Peak</text><text x="96" y="83">Off-peak</text><text x="96" y="131">Super off-peak</text>
+    </g>
+    <rect x="104" y="14" width="279" height="32" rx="4" fill="var(--peak)"><title>Peak: $0.31 per kWh</title></rect>
+    <rect x="104" y="62" width="108" height="32" rx="4" fill="var(--off)"><title>Off-peak: $0.12 per kWh</title></rect>
+    <rect x="104" y="110" width="72" height="32" rx="4" fill="var(--super)"><title>Super off-peak: $0.08 per kWh</title></rect>
+    <g style="font-size:13px;font-weight:800" text-anchor="end">
+      <text x="374" y="35" fill="var(--on-peak)">$0.31</text>
+    </g>
+    <g style="font-size:13px;font-weight:800;fill:var(--text)">
+      <text x="220" y="83">$0.12</text><text x="184" y="131">$0.08</text>
+    </g>
+  </svg>
+  <p class="cap">Supply charge per kWh. Peak power costs more than 2.5 times as much as off-peak power ($0.31 against $0.12).</p>
+</div>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>When</th><th>Supply</th><th>Delivery</th><th>Together</th></tr></thead>
+  <tbody>
+    <tr><td>Peak</td><td>$0.310</td><td>$0.045</td><td class="t">$0.355</td></tr>
+    <tr><td>Off-peak</td><td>$0.120</td><td>$0.045</td><td class="t">$0.165</td></tr>
+    <tr><td>Super off-peak</td><td>$0.080</td><td>$0.045</td><td class="t">$0.125</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="cap">Per kWh, before sales tax and the fixed service charge.</p>
+
+<h2>Time-of-use hours</h2>
+<div class="card">
+  <ul class="legend">
+    <li><span class="sw pk"></span>Peak</li>
+    <li><span class="sw of"></span>Off-peak</li>
+    <li><span class="sw su"></span>Super off-peak</li>
+  </ul>
+  <svg viewBox="0 0 400 168" role="img" aria-label="Timeline of a day on a 24-hour clock. Weekdays: super off-peak from 00:00 to 06:00, off-peak from 06:00 to 16:00, peak from 16:00 to 21:00, off-peak from 21:00 to 24:00. Weekends: super off-peak from 00:00 to 06:00 and off-peak for the rest of the day.">
+    <!-- 13.333 px per hour from x=70 -->
+    <g class="lbl" text-anchor="end">
+      <text x="62" y="60">Weekdays</text><text x="62" y="114">Weekends</text>
+    </g>
+    <g>
+      <rect x="70" y="36" width="80" height="38" fill="var(--super)"/>
+      <rect x="150" y="36" width="133.3" height="38" fill="var(--off)"/>
+      <rect x="283.3" y="36" width="66.7" height="38" fill="var(--peak)"/>
+      <rect x="350" y="36" width="40" height="38" fill="var(--off)"/>
+      <rect x="70" y="90" width="80" height="38" fill="var(--super)"/>
+      <rect x="150" y="90" width="240" height="38" fill="var(--off)"/>
+    </g>
+    <g style="font-size:10.5px;font-weight:700" text-anchor="middle">
+      <text x="110" y="52" fill="var(--on-super)">Super</text><text x="110" y="65" fill="var(--on-super)">off-peak</text>
+      <text x="216" y="59" fill="var(--on-off)" style="font-size:12px">Off-peak</text>
+      <text x="316" y="59" fill="var(--on-peak)" style="font-size:12px">Peak</text>
+      <text x="110" y="106" fill="var(--on-super)">Super</text><text x="110" y="119" fill="var(--on-super)">off-peak</text>
+      <text x="270" y="113" fill="var(--on-off)" style="font-size:12px">Off-peak all day</text>
+    </g>
+    <g stroke="var(--muted)" stroke-width="1">
+      <line x1="70" y1="132" x2="70" y2="138"/><line x1="150" y1="132" x2="150" y2="138"/><line x1="230" y1="132" x2="230" y2="138"/>
+      <line x1="283.3" y1="132" x2="283.3" y2="138"/><line x1="350" y1="132" x2="350" y2="138"/><line x1="390" y1="132" x2="390" y2="138"/>
+    </g>
+    <g class="ax" text-anchor="middle">
+      <text x="70" y="151">0</text><text x="150" y="151">6</text><text x="230" y="151">12</text><text x="283.3" y="151">16</text><text x="350" y="151">21</text><text x="388" y="151">24</text>
+    </g>
+    <text class="ax" x="230" y="165" text-anchor="middle">Hour of the day, 24-hour clock</text>
+  </svg>
+</div>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Period</th><th>Hours</th><th>Days</th></tr></thead>
+  <tbody>
+    <tr><td>Peak</td><td>16:00 to 21:00</td><td>Weekdays</td></tr>
+    <tr><td>Super off-peak</td><td>00:00 to 06:00</td><td>Every day</td></tr>
+    <tr><td>Off-peak</td><td>All other hours</td><td>Every day</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Ways to lower your bill</h2>
+<ol class="tips">
+  <li><strong>Run the dishwasher and laundry after 21:00.</strong> You move that use out of peak hours.</li>
+  <li><strong>Precool the house before 16:00,</strong> then set the thermostat 2 degrees higher during peak.</li>
+  <li><strong>Charge electric vehicles after midnight.</strong> From 00:00 to 06:00 you pay the lowest supply price, $0.08.</li>
+</ol>
+<div class="callout">
+  <p><strong>A quick example.</strong> Moving 10 kWh from peak to off-peak saves $1.90 in supply charges, before tax. Moving it to super off-peak saves $2.30.</p>
+</div>
+
+<h3>Help with your bill</h3>
+<dl class="defs">
+  <dt>Budget billing</dt>
+  <dd>Spreads the year into 12 equal payments. We review the amount every 6 months.</dd>
+  <dt>CARE discount</dt>
+  <dd>Income-qualified households can get a 20 percent discount through the CARE program. Enrolling takes about 10 minutes online.</dd>
+</dl>
+
+<div class="contact">
+  <p><strong>Questions about your bill?</strong></p>
+  <p>Call <a href="tel:8005550166">800-555-0166</a> or use the online account page.</p>
+</div>
+
+<footer>Eastgrove Power, Customer Education. Residential rates effective 2026-11-01.</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+@title Loan Portfolio Quality, Q3 2026
+@subtitle Board meeting of 2026-10-29
+@author Anselm Wachira, Chief Risk Officer
+@date 2026-10-29
+
+# Portfolio at a glance
+
+kpi Total balances | $1,639M | 4 loan types | neutral
+kpi Delinquency (30+ days) | 1.4% | +0.1 pts from 1.3% in Q2 | bad
+kpi Charge-offs | $3.9M | up from $3.1M in Q2 | bad
+kpi Loan loss allowance | $21.3M | 1.3% of loans | neutral
+
+# Delinquency by loan type
+
+Share of loans 30 or more days delinquent, Q2 beside Q3.
+
+data loans = type,balance,Q2,Q3,change; Personal,143,3.4,4.1,0.7; Revolving credit,96,2.8,3.0,0.2; Auto,412,1.9,2.2,0.3; Mortgage,988,0.6,0.6,0.0
+
+chart bar loans x=type y=Q2,Q3 unit=% labels title="Delinquency rate by loan type"
+
+table loans cols=type,balance,Q2,Q3,change heat=Q3 title="Balances in $M, delinquency in %, change in points"
+
+# What changed
+
+- **Personal** loans have the highest delinquency (4.1%) and the largest rise, up 0.7 points.
+- **Auto** is rising more slowly, up 0.3 points, but matters more in dollars because it is $412M.
+- **Revolving credit** rose 0.2 points to 3.0%.
+- **Mortgages** are 60.3% of balances and were flat at 0.6%.
+
+Weighted across the portfolio, delinquency rose from 1.3% to 1.4%.
+
+# Actions
+
+1. Tighten personal loan underwriting for credit scores below 640, starting 2026-11-15.
+2. Add early outreach for auto loans at 15 days past due.
+3. Review reserve adequacy at the January meeting.

@@ -1,0 +1,36 @@
+@title Sequencing Core Weekly Status
+@subtitle Week ending 2026-10-16
+@date 2026-10-16
+
+## Needs action
+!!! Library prep kits: 3 left. Reorder PO #4471 arrives Oct 22. If it slips past Oct 25, we stop accepting new plates.
+!! Backlog is 214 samples. The oldest has waited 9 days; our target is nothing over 5 days.
+
+step PO #4471 due to arrive | Oct 22
+step Last day the PO can arrive before we stop accepting new plates | Oct 25
+
+kpi Avg turnaround | 4.8 days | -0.8 days vs last week | good
+kpi Backlog | 214 samples | oldest 9 days, target 5 | bad
+kpi Prep kits left | 3 | PO #4471 due Oct 22 | bad
+kpi Samples processed | 3,060 | 68 runs | neutral
+
+## Turnaround
+Average turnaround of 4.8 days beat the 5-day target and improved from 5.6 days last week. The average hides a tail: the oldest waiting sample is 9 days old, well past the 5-day limit.
+
+data tat = week,days; Last week,5.6; This week,4.8
+chart bar tat y=days unit=days target="5-day target" labels title="Average turnaround"
+
+## Instruments
+data instruments = Instrument,Runs completed,Samples processed,Failed QC,Failed QC (%),Downtime (hrs); NovaSeq 6000,7,1296,41,3.2,6.5; MiSeq,12,288,9,3.1,0; Bioanalyzer,31,372,14,3.8,2.0; Qubit,18,1104,3,0.3,0; **Total**,**68**,**3060**,**67**,**2.2**,**8.5**
+table instruments
+
+Failed QC rate is computed from the columns above (failed QC divided by samples processed).
+
+## Incidents
+! NovaSeq 6000, Tuesday: lane 3 flow cell error. We reran it, and there was no data loss per the vendor.
+! Freezer B, Thursday 02:10: alarm raised. Temperature reached -62°C and was back to -80°C by 05:40 (3.5 hours). Samples are intact, confirmed by Dr. Okafor.
+
+## Next week
+- MiSeq maintenance on Tuesday (4 hrs of downtime).
+- Onboarding two new users from the Hartwell group.
+- Prep kit PO #4471 expected Oct 22; we will report whether it arrived.

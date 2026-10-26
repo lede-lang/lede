@@ -1,0 +1,66 @@
+{
+  "id": "126-riverside-shelter-campaign",
+  "category": "status",
+  "title": "Riverside shelter campaign status",
+  "brief": "Riverside Animal Rescue's executive director, Henrietta Voss, wants a campaign status page on the new shelter for the board and major donors, as of 2026-10-16, mostly read on phones. The headline: 3.42 million dollars raised toward a 5.0 million goal, which is 68.4 percent, from 1860 donors, with 1.58 million to go. By gift level, with the number of gifts and the amount: Lead gifts over 100000 dollars, 6 gifts, 2.10 million; Major gifts of 10000 to 100000, 74 gifts, 0.93 million; Community gifts under 10000, 1780 gifts, 0.39 million. A matching challenge is open: an anonymous donor will match up to 250000 dollars of new gifts through 2026-12-31, and 96000 dollars has been matched so far. Under \"Construction milestones\" show progress: land purchase, done 2026-03-14; permits approved, done 2026-07-22; groundbreaking, 2026-11-08, upcoming; framing complete, planned 2027-03-19; opening day, planned 2027-09-15. Under \"Needs attention\": construction starts only when 4.0 million is in hand or pledged, and the campaign is 0.58 million short of that, so the groundbreaking depends on two pending lead gift proposals worth 0.5 million together, due for decision by 2026-10-30. Sections: \"Campaign at a glance\", \"Gifts by level\", \"Construction milestones\" and \"Needs attention\".",
+  "checklist": {
+    "sections": [
+      "Campaign at a glance",
+      "Gifts by level",
+      "Construction milestones",
+      "Needs attention"
+    ],
+    "visible": [
+      "Henrietta Voss",
+      "Lead gifts",
+      "Major gifts",
+      "Community gifts",
+      "groundbreaking",
+      "matching challenge"
+    ],
+    "values": [
+      "3.42 million",
+      "5.0 million",
+      "68.4",
+      "1860",
+      "1.58 million",
+      "2.10 million",
+      "0.93 million",
+      "0.39 million",
+      "74",
+      "1780",
+      "250000",
+      "2026-12-31",
+      "96000",
+      "2026-03-14",
+      "2026-07-22",
+      "2026-11-08",
+      "2027-03-19",
+      "2027-09-15",
+      "4.0 million",
+      "0.58 million",
+      "0.5 million",
+      "2026-10-30"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Update the total raised to 3.61 million dollars, which is 72.2 percent, and move the groundbreaking to 2026-11-15.",
+    "expect_visible": [],
+    "expect_values": [
+      "3.61 million",
+      "72.2",
+      "2026-11-15"
+    ],
+    "expect_absent": [
+      "3.42 million",
+      "2026-11-08"
+    ]
+  }
+}

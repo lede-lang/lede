@@ -1,0 +1,20 @@
+@title Harvest 2026 Summary
+@subtitle Marlow Valley Extension Service, from a survey of 214 farms completed October 10, 2026
+
+# Harvest at a glance
+kpi Average rainfall | 601 mm | across five counties | neutral
+kpi Average wheat | 7.2 t/ha | five-county average | neutral
+kpi Average corn | 10.0 t/ha | five-county average | neutral
+kpi Average soybeans | 3.3 t/ha | five-county average | neutral
+kpi Average barley | 5.9 t/ha | five-county average | neutral
+
+Calder, the wettest county at 701 mm, had the best yield in every crop. Dunmore, the driest at 489 mm, had the lowest in every crop. Its wheat yield of 5.9 t/ha is 2.2 t/ha below Calder's 8.1.
+
+# Yields by county
+data harvest = county,rainfall mm,wheat,corn,soybeans,barley; Alder,612,7.4,10.2,3.4,6.1; Brennan,548,6.8,9.1,3.1,5.7; Calder,701,8.1,11.4,3.7,6.6; Dunmore,489,5.9,8.3,2.8,4.9; Elmstead,655,7.7,10.8,3.5,6.3
+table harvest cols=county,wheat,corn,soybeans,barley heat title="Yields by county (t/ha)"
+
+# Rainfall and yield
+chart bar harvest x=county y=rainfall mm unit=mm labels title="Season rainfall by county"
+
+Across the five counties, yields in every crop rose in step with rainfall. Dunmore, with the least rain, had the lowest yields, and Calder, with the most, had the highest. This shows how the counties compare, not what caused the difference.

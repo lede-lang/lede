@@ -1,0 +1,69 @@
+{
+  "id": "82-bike-share-two-weeks",
+  "category": "data",
+  "title": "Portside bike share two-week demand",
+  "brief": "Portside Bike Share's operations team wants a two-week demand page for 2026-10-05 to 2026-10-18 (Monday to Sunday, twice) to decide where to put extra rebalancing crews. Daily rides: Mon 05 3120, Tue 06 3340, Wed 07 3510, Thu 08 2280, Fri 09 3690, Sat 10 5120, Sun 11 4980, Mon 12 3250, Tue 13 3460, Wed 14 3580, Thu 15 3720, Fri 16 3810, Sat 17 5340, Sun 18 5210. Totals: 54410 rides in 14 days, an average of 3886 a day; week 1 was 26040 and week 2 was 28370, up 8.9 percent. The busiest day was Saturday 2026-10-17 with 5340 rides and the quietest was Thursday 2026-10-08 with 2280, a rainy day with 31 mm of rain. Weekend days averaged 5162.5 rides against 3376 for weekdays. The system has 86 stations and 1100 bikes. Sections: \"Two weeks at a glance\", \"Daily rides\" and \"Weekdays and weekends\". Phone-first, please.",
+  "checklist": {
+    "sections": [
+      "Two weeks at a glance",
+      "Daily rides",
+      "Weekdays and weekends"
+    ],
+    "visible": [
+      "Portside Bike Share",
+      "rides",
+      "stations",
+      "bikes"
+    ],
+    "values": [
+      "3120",
+      "3340",
+      "3510",
+      "2280",
+      "3690",
+      "5120",
+      "4980",
+      "3250",
+      "3460",
+      "3580",
+      "3720",
+      "3810",
+      "5340",
+      "5210",
+      "54410",
+      "3886",
+      "26040",
+      "28370",
+      "8.9",
+      "5162.5",
+      "3376",
+      "31 mm",
+      "86",
+      "1100",
+      "2026-10-17",
+      "2026-10-08"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "callout"
+  ],
+  "edit": {
+    "request": "Sunday 2026-10-18 was revised to 5410 rides. Update that day, the total (54610), week 2 (28570), the week-over-week change (9.7 percent), the weekend average (5212.5) and the daily average (3901).",
+    "expect_visible": [],
+    "expect_values": [
+      "5410",
+      "54610",
+      "28570",
+      "9.7",
+      "5212.5",
+      "3901"
+    ],
+    "expect_absent": [
+      "54410",
+      "5210"
+    ]
+  }
+}

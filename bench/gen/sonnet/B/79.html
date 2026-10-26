@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fernhill Payments: Settlement Message Backbone</title>
+<style>
+:root{
+  color-scheme:light dark;
+  --bg:#f3f5f9;--surface:#ffffff;--surface2:#e9eef5;--fg:#141d2b;--muted:#57647a;--line:#d6deea;
+  --accent:#1f5fd1;--accent-soft:#e2ecfc;
+  --good:#17754a;--good-soft:#e0f3e8;
+  --warn:#9a5200;--warn-soft:#fff0d9;
+  --bad:#b3261e;--bad-soft:#fde8e6;
+  --bar:#8a9ab4;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e131b;--surface:#161d28;--surface2:#1f2835;--fg:#e8edf5;--muted:#9eacc2;--line:#2b3646;
+    --accent:#7aa8fa;--accent-soft:#16294a;
+    --good:#5dd596;--good-soft:#112f20;
+    --warn:#ffb65e;--warn-soft:#35260f;
+    --bad:#ff8c82;--bad-soft:#3b1815;
+    --bar:#6f7f9c;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:780px;margin:0 auto;padding:22px 16px 56px}
+.eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin:0}
+h1{font-size:clamp(1.55rem,5.5vw,2.15rem);line-height:1.18;margin:.3em 0 .5em}
+h2{font-size:1.25rem;line-height:1.3;margin:2.3rem 0 .7rem;padding-bottom:.4rem;border-bottom:2px solid var(--line)}
+h3{font-size:1.05rem;margin:0}
+h4{font-size:.95rem;margin:1.2rem 0 .4rem}
+p{margin:0 0 .8rem}
+.meta{display:flex;flex-wrap:wrap;gap:6px 8px;list-style:none;padding:0;margin:14px 0 0}
+.meta li{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 11px;font-size:.84rem;color:var(--muted)}
+.meta b{color:var(--fg);font-weight:600}
+.verdict{margin-top:18px;padding:16px;border-radius:14px;background:var(--accent-soft);border:2px solid var(--accent)}
+.verdict .k{font-size:.74rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+.verdict p{margin:.2rem 0 0;font-size:1.08rem;font-weight:650}
+.reqs{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin:0 0 14px;padding:0;list-style:none}
+.reqs li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.reqs .v{font-size:1.45rem;font-weight:800;line-height:1.15;color:var(--accent)}
+.reqs .l{font-size:.84rem;color:var(--muted)}
+.opts{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.opt{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:2px}
+.opt.rec{border:2px solid var(--accent)}
+.opt .top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:.4rem}
+.pick{font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:var(--accent);color:var(--surface);padding:2px 8px;border-radius:999px;white-space:nowrap}
+.row{padding:8px 0;border-top:1px solid var(--line)}
+.row .k{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.row .t{margin-top:3px;font-size:.95rem}
+.chip{font-size:.68rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:1px 8px;border-radius:999px;white-space:nowrap}
+.chip.ok{background:var(--good-soft);color:var(--good)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.bad{background:var(--bad-soft);color:var(--bad)}
+.cost{font-size:1.35rem;font-weight:800}
+.cost small{font-size:.82rem;font-weight:600;color:var(--muted)}
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.chart svg{width:100%;max-width:560px;height:auto;display:block;margin:0 auto}
+.cap{font-size:.88rem;color:var(--muted);margin:.7rem 0 0}
+.risks{display:grid;gap:10px}
+.risk{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--bar);border-radius:12px;padding:12px 14px}
+.risk.main{border-left-color:var(--warn);background:var(--warn-soft)}
+.risk strong{display:block}
+.risk p{margin:0}
+.rec-box{background:var(--surface);border:2px solid var(--accent);border-radius:14px;padding:16px}
+.rec-box ul{margin:.6rem 0 0;padding-left:1.2rem}
+.rec-box li{margin:.4rem 0}
+.honest{margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--warn-soft);border-left:5px solid var(--warn)}
+.honest b{color:var(--warn)}
+svg text{font-family:inherit}
+.rl{font-size:13px;font-weight:650;fill:var(--fg)}
+.ry{font-size:12px;fill:var(--muted);text-anchor:end}
+.rv{font-size:13px;font-weight:800;fill:var(--fg)}
+.b0{fill:var(--bar)}
+.b1{fill:var(--accent)}
+.bx{fill:var(--warn)}
+.bl{font-size:11.5px;font-weight:800;fill:var(--surface);text-anchor:middle}
+.px{stroke:var(--fg);stroke-width:1.3;stroke-dasharray:3 3}
+footer{margin-top:2.5rem;font-size:.85rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Decision page</p>
+  <h1>Message backbone for the new settlement service</h1>
+  <ul class="meta">
+    <li>Platform lead <b>Ewan Calloway</b></li>
+    <li>Architecture review <b>2026-11-09</b></li>
+  </ul>
+  <div class="verdict">
+    <div class="k">We recommend</div>
+    <p>Managed Kafka. It costs $3,750 a month more than SQS with SNS, because replaying the last 7 days is an audit requirement.</p>
+  </div>
+</header>
+
+<h2>Comparison</h2>
+<p>Three options against four requirements.</p>
+<ul class="reqs">
+  <li><div class="v">4,200</div><div class="l">messages per second at peak</div></li>
+  <li><div class="v">6</div><div class="l">consuming services</div></li>
+  <li><div class="v">Per account</div><div class="l">message ordering</div></li>
+  <li><div class="v">7 days</div><div class="l">replay, for audits</div></li>
+</ul>
+<div class="opts">
+  <div class="opt rec">
+    <div class="top"><h3>Managed Kafka</h3><span class="pick">Recommended</span></div>
+    <div class="row"><div class="k">Ordering per account <span class="chip ok">Yes</span></div><div class="t">Through partition keys.</div></div>
+    <div class="row"><div class="k">Replay of 7 days <span class="chip ok">Yes</span></div><div class="t">Built in.</div></div>
+    <div class="row"><div class="k">Operations effort</div><div class="t"><strong>12</strong> hours a month</div></div>
+    <div class="row"><div class="k">Monthly cost</div><div class="cost">$5,850 <small>$70,200 a year</small></div></div>
+  </div>
+  <div class="opt">
+    <div class="top"><h3>SQS with SNS</h3></div>
+    <div class="row"><div class="k">Ordering per account <span class="chip warn">Yes, with a cap</span></div><div class="t">Through FIFO queues. Each queue is capped near 3,000 messages per second, so we would need two.</div></div>
+    <div class="row"><div class="k">Replay of 7 days <span class="chip bad">Not available</span></div><div class="t">We would have to archive to storage ourselves.</div></div>
+    <div class="row"><div class="k">Operations effort</div><div class="t"><strong>3</strong> hours a month</div></div>
+    <div class="row"><div class="k">Monthly cost</div><div class="cost">$2,100 <small>$25,200 a year</small></div></div>
+  </div>
+  <div class="opt">
+    <div class="top"><h3>Self-run RabbitMQ cluster</h3></div>
+    <div class="row"><div class="k">Ordering per account <span class="chip warn">Yes, we build it</span></div><div class="t">Through queue sharding that we would build ourselves.</div></div>
+    <div class="row"><div class="k">Replay of 7 days <span class="chip warn">Possible</span></div><div class="t">Only with the streams plugin, which the team has not used.</div></div>
+    <div class="row"><div class="k">Operations effort</div><div class="t"><strong>30</strong> hours a month</div></div>
+    <div class="row"><div class="k">Monthly cost</div><div class="cost">$3,400 <small>$40,800 a year</small></div></div>
+  </div>
+</div>
+
+<h2>Monthly cost</h2>
+<div class="chart">
+<svg viewBox="0 0 400 176" role="img" aria-labelledby="ct cd">
+  <title id="ct">Monthly cost by option</title>
+  <desc id="cd">Managed Kafka 5,850 dollars a month, 70,200 a year. SQS with SNS 2,100 dollars a month, 25,200 a year. Self-run RabbitMQ 3,400 dollars a month, 40,800 a year. Kafka costs 3,750 dollars a month more than SQS with SNS.</desc>
+  <text class="rl" x="0" y="14" style="fill:var(--accent)">Managed Kafka</text><text class="ry" x="400" y="14">$70,200 a year</text>
+  <rect class="b0" x="0" y="22" width="93.3" height="26" rx="0" style="fill:var(--accent)"/>
+  <rect class="bx" x="93.3" y="22" width="166.7" height="26"/>
+  <text class="bl" x="176.7" y="39">+$3,750</text>
+  <text class="rv" x="268" y="40">$5,850 a month</text>
+  <path class="px" d="M93.3 17V54"/>
+
+  <text class="rl" x="0" y="76">SQS with SNS</text><text class="ry" x="400" y="76">$25,200 a year</text>
+  <rect class="b0" x="0" y="84" width="93.3" height="26" rx="3"/>
+  <text class="rv" x="101" y="102">$2,100 a month</text>
+
+  <text class="rl" x="0" y="138">Self-run RabbitMQ</text><text class="ry" x="400" y="138">$40,800 a year</text>
+  <rect class="b0" x="0" y="146" width="151.1" height="26" rx="3"/>
+  <text class="rv" x="159" y="164">$3,400 a month</text>
+</svg>
+</div>
+<p class="cap">The highlighted part of the Kafka bar is the $3,750 a month ($45,000 a year) it costs more than SQS with SNS. Kafka costs $2,450 a month more than RabbitMQ.</p>
+
+<h4>Operations effort, hours a month</h4>
+<div class="chart">
+<svg viewBox="0 0 400 170" role="img" aria-labelledby="ot od">
+  <title id="ot">Operations effort in hours per month</title>
+  <desc id="od">Managed Kafka 12 hours, SQS with SNS 3 hours, self-run RabbitMQ 30 hours per month.</desc>
+  <text class="rl" x="0" y="14">Managed Kafka</text>
+  <rect class="b0" x="0" y="22" width="104" height="22" rx="3" style="fill:var(--accent)"/>
+  <text class="rv" x="112" y="38">12 hours</text>
+  <text class="rl" x="0" y="72">SQS with SNS</text>
+  <rect class="b0" x="0" y="80" width="26" height="22" rx="3"/>
+  <text class="rv" x="34" y="96">3 hours</text>
+  <text class="rl" x="0" y="130">Self-run RabbitMQ</text>
+  <rect class="b0" x="0" y="138" width="260" height="22" rx="3"/>
+  <text class="rv" x="268" y="154">30 hours</text>
+</svg>
+</div>
+
+<h2>Risks</h2>
+<div class="risks">
+  <div class="risk main"><strong>Managed Kafka: team experience</strong><p>Only 2 of our 9 engineers have run Kafka before, so we budget 5 days of training.</p></div>
+  <div class="risk"><strong>SQS with SNS: no replay</strong><p>Replay of 7 days is not available, so we would have to build and run an archive to storage ourselves to meet the audit requirement. The 3,000 messages per second cap on each FIFO queue means two queues for our 4,200 at peak.</p></div>
+  <div class="risk"><strong>Self-run RabbitMQ: effort and unfamiliar parts</strong><p>It needs 30 hours of operations a month, we would build ordering ourselves, and replay depends on the streams plugin, which the team has not used.</p></div>
+</div>
+
+<h2>Recommendation</h2>
+<div class="rec-box">
+  <h3>Choose Managed Kafka</h3>
+  <ul>
+    <li>It is the only option that meets both ordering per account and 7-day replay without extra building.</li>
+    <li>Replay is an audit requirement, and SQS with SNS cannot provide it.</li>
+    <li>We budget 5 days of training to cover the experience gap: 2 of 9 engineers have run Kafka.</li>
+  </ul>
+  <p class="honest"><b>The honest cost:</b> Managed Kafka costs $3,750 a month more than SQS with SNS, which is $45,000 a year more ($70,200 against $25,200).</p>
+</div>
+
+<footer>Fernhill Payments · architecture review on 2026-11-09 · platform lead Ewan Calloway</footer>
+</div>
+</body>
+</html>

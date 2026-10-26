@@ -1,0 +1,154 @@
+@title Wayfinding and Signage Design Tokens
+@subtitle One reference for new hires and the sign vendor: the values, how they combine, and what is still unresolved.
+@width wide
+
+! How to read this page. Values in the token tables come straight from the shared document with nothing added. Anything marked "calculated" is my arithmetic from those values, not from the document. Anything marked "proposal" is a suggestion that is not part of the system until you accept it. Colours are shown as hex text, not swatches.
+
+kpi Tokens | 18 | 8 colour, 4 type, 2 spacing, 2 size, 2 material
+kpi Missing values | 1 | color.accessible-focus | bad
+kpi Colours under 4.5:1 against paper | 2 | hazard 4.2:1, ochre 2.7:1 (calculated) | bad
+
+## Colour
+
+data colors = Token,Value,Used For,Notes
+data colors += color.ink,#1B1F23,Body text on light signs,
+data colors += color.paper,#F7F3EA,Sign backgrounds (warm white),"Vendor calls this “Bone 04”"
+data colors += color.wayfind-blue,#0B5FA5,Primary route markers,Fails contrast on color.paper at small sizes?
+data colors += color.hazard,#D93A00,"Exits, warnings",Never use for decoration
+data colors += color.gallery-green,#2E7D4F,Natural history wing,
+data colors += color.gallery-violet,#6A3FA0,Space and physics wing,
+data colors += color.gallery-ochre,#C98A16,Ancient worlds wing,"Text on ochre must be ink, not paper"
+data colors += color.accessible-focus,,Tactile and large-print signs,TBD with the accessibility consultant
+table colors
+
+!! color.accessible-focus has no value yet. Tactile and large-print signs cannot be fully specified until the accessibility consultant decides it.
+
+## Type
+
+data type = Token,Value,Used For,Notes
+data type += type.display,"“Alder Grotesk” Bold, 120 mm cap height",Gallery entrance signs,Max 22 characters
+data type += type.wayfind,"“Alder Grotesk” Medium, 60 mm",Directional signs,
+data type += type.label,"“Alder Grotesk” Regular, 24 mm",Exhibit labels,Viewing distance 1.2 m
+data type += type.braille-caption,"Grade 2 braille, 4.8 mm dot pitch",Tactile panels,Placement per ADA reach range
+table type
+
+## Spacing and size
+
+data sizes = Token,Value,Used For,Notes
+data sizes += space.margin-sign,40 mm,Inside edge of any sign,
+data sizes += space.icon-gap,18 mm,Between icon and text,
+data sizes += size.icon-std,90 x 90 mm,Pictograms,Stroke 6 mm
+data sizes += size.icon-large,150 x 150 mm,Lobby maps,
+table sizes
+
+## Material
+
+data material = Token,Value,Used For,Notes
+data material += material.panel,3 mm powder-coated aluminum,Hung signs,"Matte only, 8% gloss max"
+data material += material.floor-graphic,"Vinyl, slip rating R10",Floor arrows,"Replace every 18 months; about $42.50 per arrow"
+table material
+
+## How the tokens combine
+
+### Contrast between the colours (calculated)
+
+Contrast is the same whichever colour is the text and whichever is the background, so each row reads both ways. Ratios use the WCAG 2.x formula on the hex values above and should be rechecked with a tool before anything is printed. 4.5:1 is the usual minimum for small text and 3:1 for large text.
+
+data contrast = Colour,Against paper,Against ink,Reads best with
+data contrast += color.ink,15.0,,Paper behind it
+data contrast += color.wayfind-blue,5.9,2.5,Paper text or paper behind it
+data contrast += color.hazard,4.2,3.6,Neither passes 4.5:1. Large text only
+data contrast += color.gallery-green,4.6,3.3,Paper text (only just passes)
+data contrast += color.gallery-violet,6.7,2.2,Paper text
+data contrast += color.gallery-ochre,2.7,5.6,Ink text
+chart hbar contrast y=Against paper unit=":1" target="4.5 small text" labels title="Contrast of each colour against color.paper"
+table contrast heat=Against paper,Against ink
+
+Only ochre has a text rule in the document, and the numbers back it up: ink on ochre is 5.6:1 and paper on ochre is 2.7:1.
+
+### Which tokens build which sign
+
+Entries marked "proposed" are my assumption about where a token would apply. The document only lists a "used for" for each token.
+
+data signs = Sign,Colour,Type,Spacing and size,Material
+data signs += Gallery entrance sign,"color.paper; the wing colour; color.ink (proposed)",type.display,space.margin-sign,material.panel (proposed)
+data signs += Directional sign,"color.paper; color.wayfind-blue; color.ink (proposed)",type.wayfind,"space.margin-sign; space.icon-gap; size.icon-std",material.panel (proposed)
+data signs += Exit sign,"color.hazard; color.paper (proposed)",type.wayfind (proposed),"space.margin-sign; size.icon-std (proposed)",material.panel (proposed)
+data signs += Exhibit label,"color.paper; color.ink",type.label,space.margin-sign,Not specified
+data signs += Tactile and large-print panel,"color.accessible-focus (no value); color.paper; color.ink (proposed)",type.braille-caption,space.margin-sign,Not specified
+data signs += Lobby map,"color.paper; color.wayfind-blue (proposed)",Not specified,size.icon-large,Not specified
+data signs += Floor arrow,Not specified,Not specified,Not specified,material.floor-graphic
+table signs
+
+## Example signs
+
+These are examples assembled from your tokens. The sign copy is sample text. The layouts are proposals.
+
+cards
+
+### Gallery entrance: Space and physics wing
+- Documented: type.display, color.gallery-violet for this wing, color.paper background, 40 mm margin.
+- Proposal: ink text on paper, with the wing colour as a band or field. The document does not say how wing colours are applied.
+- "Space and physics wing" is 22 characters, exactly the type.display limit.
+- If violet is a field behind text, the text must be paper (6.7:1). Ink fails (2.2:1).
+- One line of display type needs at least 120 mm plus 2 x 40 mm of margin, so 200 mm tall (calculated).
+
+### Directional sign: Natural history wing
+- Documented: type.wayfind (60 mm), color.wayfind-blue for the route marker, size.icon-std (90 mm), 18 mm icon gap, 40 mm margin.
+- Calculated minimum: 170 mm tall (90 mm icon plus two margins), and 188 mm wide plus the text (40 + 90 + 18 + 40).
+- The blue marker on paper is 5.9:1, which passes for small text.
+
+### Exit sign
+- Documented: color.hazard for exits, never for decoration.
+- Hazard against paper is 4.2:1, under the 4.5:1 for small text and over the 3:1 for large text. Exit text must be large, and the document gives no minimum size.
+- Ink on hazard is 3.6:1, so switching text colour does not fix it.
+
+### Exhibit label
+- Documented: type.label (24 mm) at a 1.2 m viewing distance, color.ink on color.paper.
+- Ink on paper is 15.0:1, the strongest pair in the system.
+- Material and mounting are not specified.
+
+### Tactile and large-print panel
+- Documented: type.braille-caption, color.accessible-focus.
+- Cannot be completed: the focus colour has no value.
+- "Placement per ADA reach range" gives the vendor no mounting height.
+
+### Lobby map
+- Documented: size.icon-large (150 x 150 mm).
+- No stroke is given for the large icon. Scaling the 6 mm stroke of the standard icon proportionally gives 10 mm (calculated, proposal).
+- Colours and type for map labels are not specified.
+
+### Floor arrow
+- Documented: vinyl, slip rating R10, replace every 18 months, about $42.50 per arrow.
+- That is about $28.33 per arrow per year (calculated: $42.50 over 1.5 years).
+- No colour is specified for floor graphics.
+
+## Gaps and contradictions
+
+data gaps = Item,What the document says,Why it matters,Status
+data gaps += Blank focus colour,"color.accessible-focus has no value. Note: TBD with the accessibility consultant.","Tactile and large-print signs cannot be specified or ordered without it.",Blocked
+data gaps += Two names for the paper colour,"color.paper in the system, “Bone 04” at the vendor.","The vendor orders by their name. Nothing records that Bone 04 matches #F7F3EA, and if it does not, signs come out a different colour.",Conflict
+data gaps += Blue on paper,"Note asks whether color.wayfind-blue fails contrast on color.paper at small sizes.","My calculation is 5.9:1, which passes the usual 4.5:1 for small text and misses the stricter 7:1. The doubt may come from another standard, lighting or gloss. No size defines small.",Check
+data gaps += Hazard on paper,"#D93A00 is for exits and warnings.","Calculated 4.2:1 against paper, below 4.5:1 for small text, on the signs where legibility matters most.",At risk
+data gaps += Incomplete text-colour rules,"Only ochre says which text colour to use.","Green and violet pass only with paper text. Hazard passes with neither at small sizes. Blue works with paper text.",Gap
+data gaps += Type sizes are given two ways,"type.display says cap height. type.wayfind and type.label give 60 mm and 24 mm with no label.","The vendor cannot tell whether 60 mm and 24 mm are cap heights or font sizes.",Conflict
+data gaps += Braille dot pitch,"type.braille-caption says 4.8 mm dot pitch.","This does not match the ADA dot spacing as I remember it (about 2.5 mm between dots in a cell, 6.1 to 7.6 mm between cells). I have not verified that, and 4.8 mm may mean a different measure. Ask the consultant.",Check
+data gaps += No mounting values,"Braille note says placement per ADA reach range.","There is no height or position token for any sign.",Gap
+data gaps += Material for most signs,"material.panel is for hung signs only.","Exhibit labels, tactile panels and lobby maps have no material.",Gap
+data gaps += Wing colours,"Three wing colours: green, violet, ochre.","Confirm there are no other wings.",Gap
+data gaps += Large icon stroke and floor colour,"size.icon-large has no stroke. material.floor-graphic has no colour.","Both are needed to build the item.",Gap
+table gaps
+
+!! Beyond the paper-colour naming and the two ways of giving type sizes, I found no other entries that contradict each other. The rest are gaps. If you know of other contradictions, add them here.
+
+## Proposals
+
+None of these are in the system until you accept them. I have not invented any new token values.
+
+data proposals = Area,Proposal,Basis,Status
+data proposals += color.accessible-focus,"Leave blank. In the meantime, use color.ink on color.paper for tactile and large-print signs.","Existing tokens, 15.0:1 (calculated). The consultant still decides the real value.",Proposal
+data proposals += color.paper naming,"Add a Vendor name column to the colour table and record Bone 04 against color.paper once the vendor confirms it from a physical swatch.","Removes the two-name conflict.",Proposal
+data proposals += Text on colour,"Ink text on paper and ochre. Paper text on blue, green and violet. Hazard: large text only, with a minimum size for you to set.","Calculated contrast table above.",Proposal
+data proposals += Type sizes,"State for every type token whether the size is cap height or font size.","type.display already says cap height.",Proposal
+data proposals += size.icon-large stroke,"10 mm, if the stroke scales with the icon.","6 mm x 150 / 90 (calculated).",Proposal
+table proposals

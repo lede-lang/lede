@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Harvest 2026 Summary</title>
+<style>
+:root{
+  --bg:#f6f4ee;--surface:#ffffff;--text:#1e2420;--muted:#5d665f;--line:#e2ded2;--grid:#ebe8df;
+  --accent:#4f7a2e;--best:#2e7d4f;--best-bg:#e5f2ea;--low:#b5651d;--low-bg:#fbeedf;--rain:#3a78a8;--soft:#eef3e6;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#121512;--surface:#1b1f1b;--text:#e8ece7;--muted:#a1aba2;--line:#2d332d;--grid:#283028;
+    --accent:#9bcf6e;--best:#6fd39a;--best-bg:#183026;--low:#f0a35e;--low-bg:#36281a;--rain:#7cb6e3;--soft:#1f2a1a;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:26px 16px 56px}
+.kicker{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 6px}
+h1{font-size:clamp(1.7rem,5.5vw,2.4rem);line-height:1.15;margin:0 0 10px}
+.dek{color:var(--muted);margin:0 0 26px;max-width:62ch}
+section{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 16px;margin:0 0 16px}
+h2{font-size:1.25rem;margin:0 0 4px}
+h3{font-size:1rem;margin:0 0 4px}
+.sub{color:var(--muted);font-size:.9rem;margin:0 0 16px}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.kpi{background:var(--bg);border-radius:10px;padding:12px}
+.kpi .n{display:block;font-size:1.45rem;font-weight:750;line-height:1.15;font-variant-numeric:tabular-nums}
+.kpi .n small{font-size:.85rem;font-weight:600;color:var(--muted)}
+.kpi .l{display:block;color:var(--muted);font-size:.84rem;margin-top:2px}
+.findings{display:grid;gap:10px;margin-top:12px}
+.finding{border-radius:10px;padding:12px 14px;font-size:.94rem}
+.finding.best{background:var(--best-bg);border-left:4px solid var(--best)}
+.finding.low{background:var(--low-bg);border-left:4px solid var(--low)}
+.finding b{display:block;margin-bottom:2px}
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:10px}
+table{width:100%;min-width:340px;border-collapse:collapse;font-size:.9rem;font-variant-numeric:tabular-nums}
+caption{text-align:left;color:var(--muted);font-size:.84rem;padding:0 0 8px;caption-side:top}
+th,td{padding:9px 7px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--surface);z-index:1}
+thead th{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:700;vertical-align:bottom}
+thead th span{display:block;text-transform:none;letter-spacing:0;font-weight:500;font-size:.72rem}
+tbody tr.best td{background:var(--best-bg)}
+tbody tr.best td:first-child{box-shadow:inset 4px 0 0 var(--best)}
+tbody tr.low td{background:var(--low-bg)}
+tbody tr.low td:first-child{box-shadow:inset 4px 0 0 var(--low)}
+tfoot td{font-weight:700;border-bottom:0;background:var(--soft)}
+tfoot td:first-child{background:var(--soft)}
+.rain-col{color:var(--rain)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.84rem;color:var(--muted);margin-top:10px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+.sw.best{background:var(--best)}.sw.low{background:var(--low)}
+.hint{font-size:.8rem;color:var(--muted);margin:8px 0 0}
+.multiples{display:grid;grid-template-columns:1fr;gap:18px;margin-top:6px}
+.mini{border:1px solid var(--line);border-radius:10px;padding:12px 10px 6px}
+svg{display:block;overflow:visible}
+.gl{stroke:var(--grid);stroke-width:1}
+.axl{stroke:var(--muted);stroke-width:1}
+.ax{fill:var(--muted);font-size:10px}
+.axt{fill:var(--muted);font-size:10px;font-weight:600}
+.pt{fill:var(--accent)}
+.pt.best{fill:var(--best)}
+.pt.low{fill:var(--low)}
+.pl{fill:var(--text);font-size:11px;font-weight:700}
+.avg{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 3}
+.avgt{fill:var(--muted);font-size:9.5px}
+.key{font-size:.84rem;color:var(--muted);margin:12px 0 0}
+.rows{display:flex;flex-direction:column;gap:12px;margin-top:4px}
+.row-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:4px;font-size:.94rem}
+.row-head .v{font-variant-numeric:tabular-nums;white-space:nowrap}
+.row-head .v b{color:var(--rain)}
+.bar-rain{fill:var(--rain)}
+.callout{margin:18px 0 0;padding:12px 14px;background:var(--bg);border-radius:10px;font-size:.94rem}
+.callout p{margin:0 0 6px}.callout p:last-child{margin:0}
+footer{color:var(--muted);font-size:.82rem;text-align:center;margin-top:20px}
+@media (min-width:620px){
+  section{padding:26px}
+  .kpis{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .findings{grid-template-columns:1fr 1fr}
+  .multiples{grid-template-columns:1fr 1fr}
+  th,td{padding:10px 12px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="kicker">Marlow Valley Extension Service</p>
+  <h1>Harvest 2026 summary</h1>
+  <p class="dek">Season rainfall and crop yields across the five counties, from a survey of 214 farms completed on 10 October 2026. Prepared for farmers and the county boards.</p>
+</header>
+
+<section aria-labelledby="glance">
+  <h2 id="glance">Harvest at a glance</h2>
+  <p class="sub">Region averages across Alder, Brennan, Calder, Dunmore and Elmstead</p>
+  <div class="kpis">
+    <div class="kpi"><span class="n">214</span><span class="l">farms surveyed</span></div>
+    <div class="kpi"><span class="n">601 <small>mm</small></span><span class="l">average season rainfall</span></div>
+    <div class="kpi"><span class="n">7.2 <small>t/ha</small></span><span class="l">average wheat yield</span></div>
+    <div class="kpi"><span class="n">10.0 <small>t/ha</small></span><span class="l">average corn yield</span></div>
+    <div class="kpi"><span class="n">3.3 <small>t/ha</small></span><span class="l">average soybean yield</span></div>
+    <div class="kpi"><span class="n">5.9 <small>t/ha</small></span><span class="l">average barley yield</span></div>
+    <div class="kpi"><span class="n">489&ndash;701 <small>mm</small></span><span class="l">rainfall range by county</span></div>
+    <div class="kpi"><span class="n">2.2 <small>t/ha</small></span><span class="l">wheat gap, Calder vs Dunmore</span></div>
+  </div>
+  <div class="findings">
+    <div class="finding best"><b>Calder led in every crop</b>The wettest county, with 701 mm of rain, had the highest wheat, corn, soybean and barley yields.</div>
+    <div class="finding low"><b>Dunmore trailed in every crop</b>The driest county, with 489 mm, had the lowest yield in all four crops. Its wheat yield of 5.9 t/ha is 2.2 below Calder&rsquo;s 8.1.</div>
+  </div>
+</section>
+
+<section aria-labelledby="yields">
+  <h2 id="yields">Yields by county</h2>
+  <p class="sub">Season rainfall in millimetres; yields in tonnes per hectare (t/ha)</p>
+  <div class="tablewrap" role="region" aria-label="Yields by county table" tabindex="0">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">County</th>
+          <th scope="col" class="rain-col">Rain<span>mm</span></th>
+          <th scope="col">Wheat<span>t/ha</span></th>
+          <th scope="col">Corn<span>t/ha</span></th>
+          <th scope="col">Soy<span>t/ha</span></th>
+          <th scope="col">Barley<span>t/ha</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row" style="font-weight:600">Alder</th><td class="rain-col">612</td><td>7.4</td><td>10.2</td><td>3.4</td><td>6.1</td></tr>
+        <tr><th scope="row" style="font-weight:600">Brennan</th><td class="rain-col">548</td><td>6.8</td><td>9.1</td><td>3.1</td><td>5.7</td></tr>
+        <tr class="best"><th scope="row" style="font-weight:600;background:var(--best-bg);box-shadow:inset 4px 0 0 var(--best)">Calder</th><td class="rain-col">701</td><td>8.1</td><td>11.4</td><td>3.7</td><td>6.6</td></tr>
+        <tr class="low"><th scope="row" style="font-weight:600;background:var(--low-bg);box-shadow:inset 4px 0 0 var(--low)">Dunmore</th><td class="rain-col">489</td><td>5.9</td><td>8.3</td><td>2.8</td><td>4.9</td></tr>
+        <tr><th scope="row" style="font-weight:600">Elmstead</th><td class="rain-col">655</td><td>7.7</td><td>10.8</td><td>3.5</td><td>6.3</td></tr>
+      </tbody>
+      <tfoot>
+        <tr><td>Region avg</td><td class="rain-col">601</td><td>7.2</td><td>10.0</td><td>3.3</td><td>5.9</td></tr>
+      </tfoot>
+    </table>
+  </div>
+  <div class="legend" aria-hidden="true">
+    <span><i class="sw best"></i>Highest in every crop</span>
+    <span><i class="sw low"></i>Lowest in every crop</span>
+  </div>
+  <p class="hint">On a narrow screen, swipe the table sideways if any column is cut off; the county name stays in view.</p>
+</section>
+
+<section aria-labelledby="rain">
+  <h2 id="rain">Rainfall and yield</h2>
+  <p class="sub">Each dot is one county. Wetter counties sit further right; higher yields sit higher up.</p>
+
+  <h3>Season rainfall, wettest to driest</h3>
+  <div class="rows">
+    <div><div class="row-head"><span>Calder</span><span class="v"><b>701 mm</b></span></div>
+      <svg width="100%" height="12" aria-hidden="true"><rect class="bar-rain" x="0" y="0" width="100%" height="12" rx="3"/></svg></div>
+    <div><div class="row-head"><span>Elmstead</span><span class="v"><b>655 mm</b></span></div>
+      <svg width="100%" height="12" aria-hidden="true"><rect class="bar-rain" x="0" y="0" width="93.44%" height="12" rx="3"/></svg></div>
+    <div><div class="row-head"><span>Alder</span><span class="v"><b>612 mm</b></span></div>
+      <svg width="100%" height="12" aria-hidden="true"><rect class="bar-rain" x="0" y="0" width="87.3%" height="12" rx="3"/></svg></div>
+    <div><div class="row-head"><span>Brennan</span><span class="v"><b>548 mm</b></span></div>
+      <svg width="100%" height="12" aria-hidden="true"><rect class="bar-rain" x="0" y="0" width="78.17%" height="12" rx="3"/></svg></div>
+    <div><div class="row-head"><span>Dunmore</span><span class="v"><b>489 mm</b></span></div>
+      <svg width="100%" height="12" aria-hidden="true"><rect class="bar-rain" x="0" y="0" width="69.76%" height="12" rx="3"/></svg></div>
+  </div>
+
+  <h3 style="margin-top:24px">Yield against rainfall, by crop</h3>
+  <div class="multiples">
+    <div class="mini">
+      <h3>Wheat</h3>
+      <svg viewBox="0 0 260 190" width="100%" role="img" aria-label="Wheat yield against rainfall: Dunmore 489 mm, 5.9 t/ha; Brennan 548 mm, 6.8; Alder 612 mm, 7.4; Elmstead 655 mm, 7.7; Calder 701 mm, 8.1.">
+        <line class="gl" x1="40" y1="20" x2="245" y2="20"/><line class="gl" x1="40" y1="52.5" x2="245" y2="52.5"/><line class="gl" x1="40" y1="85" x2="245" y2="85"/><line class="gl" x1="40" y1="117.5" x2="245" y2="117.5"/>
+        <line class="axl" x1="40" y1="150" x2="245" y2="150"/>
+        <g class="ax" text-anchor="end"><text x="34" y="23.5">9</text><text x="34" y="56">8</text><text x="34" y="88.5">7</text><text x="34" y="121">6</text><text x="34" y="153.5">5</text></g>
+        <g class="ax" text-anchor="middle"><text x="40" y="164">450</text><text x="108.33" y="164">550</text><text x="176.67" y="164">650</text><text x="245" y="164">750</text></g>
+        <text class="axt" x="142.5" y="182" text-anchor="middle">Season rainfall (mm)</text>
+        <text class="axt" x="6" y="12">t/ha</text>
+        <line class="avg" x1="40" y1="78.5" x2="245" y2="78.5"/><text class="avgt" x="44" y="74.5">Region 7.2</text>
+        <circle class="pt low" cx="66.65" cy="120.75" r="5"/><text class="pl" x="74.65" y="124.75">D</text>
+        <circle class="pt" cx="106.97" cy="91.5" r="5"/><text class="pl" x="114.97" y="95.5">B</text>
+        <circle class="pt" cx="150.7" cy="72" r="5"/><text class="pl" x="158.7" y="76">A</text>
+        <circle class="pt" cx="180.08" cy="62.25" r="5"/><text class="pl" x="188.08" y="66.25">E</text>
+        <circle class="pt best" cx="211.52" cy="49.25" r="5"/><text class="pl" x="219.52" y="53.25">C</text>
+      </svg>
+    </div>
+    <div class="mini">
+      <h3>Corn</h3>
+      <svg viewBox="0 0 260 190" width="100%" role="img" aria-label="Corn yield against rainfall: Dunmore 8.3 t/ha; Brennan 9.1; Alder 10.2; Elmstead 10.8; Calder 11.4.">
+        <line class="gl" x1="40" y1="20" x2="245" y2="20"/><line class="gl" x1="40" y1="46" x2="245" y2="46"/><line class="gl" x1="40" y1="72" x2="245" y2="72"/><line class="gl" x1="40" y1="98" x2="245" y2="98"/><line class="gl" x1="40" y1="124" x2="245" y2="124"/>
+        <line class="axl" x1="40" y1="150" x2="245" y2="150"/>
+        <g class="ax" text-anchor="end"><text x="34" y="23.5">12</text><text x="34" y="49.5">11</text><text x="34" y="75.5">10</text><text x="34" y="101.5">9</text><text x="34" y="127.5">8</text><text x="34" y="153.5">7</text></g>
+        <g class="ax" text-anchor="middle"><text x="40" y="164">450</text><text x="108.33" y="164">550</text><text x="176.67" y="164">650</text><text x="245" y="164">750</text></g>
+        <text class="axt" x="142.5" y="182" text-anchor="middle">Season rainfall (mm)</text>
+        <text class="axt" x="6" y="12">t/ha</text>
+        <line class="avg" x1="40" y1="72" x2="245" y2="72"/><text class="avgt" x="44" y="68">Region 10.0</text>
+        <circle class="pt low" cx="66.65" cy="116.2" r="5"/><text class="pl" x="74.65" y="120.2">D</text>
+        <circle class="pt" cx="106.97" cy="95.4" r="5"/><text class="pl" x="114.97" y="99.4">B</text>
+        <circle class="pt" cx="150.7" cy="66.8" r="5"/><text class="pl" x="158.7" y="70.8">A</text>
+        <circle class="pt" cx="180.08" cy="51.2" r="5"/><text class="pl" x="188.08" y="55.2">E</text>
+        <circle class="pt best" cx="211.52" cy="35.6" r="5"/><text class="pl" x="219.52" y="39.6">C</text>
+      </svg>
+    </div>
+    <div class="mini">
+      <h3>Soybeans</h3>
+      <svg viewBox="0 0 260 190" width="100%" role="img" aria-label="Soybean yield against rainfall: Dunmore 2.8 t/ha; Brennan 3.1; Alder 3.4; Elmstead 3.5; Calder 3.7.">
+        <line class="gl" x1="40" y1="20" x2="245" y2="20"/><line class="gl" x1="40" y1="63.33" x2="245" y2="63.33"/><line class="gl" x1="40" y1="106.67" x2="245" y2="106.67"/>
+        <line class="axl" x1="40" y1="150" x2="245" y2="150"/>
+        <g class="ax" text-anchor="end"><text x="34" y="23.5">4.0</text><text x="34" y="66.83">3.5</text><text x="34" y="110.17">3.0</text><text x="34" y="153.5">2.5</text></g>
+        <g class="ax" text-anchor="middle"><text x="40" y="164">450</text><text x="108.33" y="164">550</text><text x="176.67" y="164">650</text><text x="245" y="164">750</text></g>
+        <text class="axt" x="142.5" y="182" text-anchor="middle">Season rainfall (mm)</text>
+        <text class="axt" x="6" y="12">t/ha</text>
+        <line class="avg" x1="40" y1="80.67" x2="245" y2="80.67"/><text class="avgt" x="44" y="76.67">Region 3.3</text>
+        <circle class="pt low" cx="66.65" cy="124" r="5"/><text class="pl" x="74.65" y="128">D</text>
+        <circle class="pt" cx="106.97" cy="98" r="5"/><text class="pl" x="114.97" y="102">B</text>
+        <circle class="pt" cx="150.7" cy="72" r="5"/><text class="pl" x="158.7" y="76">A</text>
+        <circle class="pt" cx="180.08" cy="63.33" r="5"/><text class="pl" x="188.08" y="67.33">E</text>
+        <circle class="pt best" cx="211.52" cy="46" r="5"/><text class="pl" x="219.52" y="50">C</text>
+      </svg>
+    </div>
+    <div class="mini">
+      <h3>Barley</h3>
+      <svg viewBox="0 0 260 190" width="100%" role="img" aria-label="Barley yield against rainfall: Dunmore 4.9 t/ha; Brennan 5.7; Alder 6.1; Elmstead 6.3; Calder 6.6.">
+        <line class="gl" x1="40" y1="20" x2="245" y2="20"/><line class="gl" x1="40" y1="46" x2="245" y2="46"/><line class="gl" x1="40" y1="72" x2="245" y2="72"/><line class="gl" x1="40" y1="98" x2="245" y2="98"/><line class="gl" x1="40" y1="124" x2="245" y2="124"/>
+        <line class="axl" x1="40" y1="150" x2="245" y2="150"/>
+        <g class="ax" text-anchor="end"><text x="34" y="23.5">7.0</text><text x="34" y="49.5">6.5</text><text x="34" y="75.5">6.0</text><text x="34" y="101.5">5.5</text><text x="34" y="127.5">5.0</text><text x="34" y="153.5">4.5</text></g>
+        <g class="ax" text-anchor="middle"><text x="40" y="164">450</text><text x="108.33" y="164">550</text><text x="176.67" y="164">650</text><text x="245" y="164">750</text></g>
+        <text class="axt" x="142.5" y="182" text-anchor="middle">Season rainfall (mm)</text>
+        <text class="axt" x="6" y="12">t/ha</text>
+        <line class="avg" x1="40" y1="77.2" x2="245" y2="77.2"/><text class="avgt" x="44" y="73.2">Region 5.9</text>
+        <circle class="pt low" cx="66.65" cy="129.2" r="5"/><text class="pl" x="74.65" y="133.2">D</text>
+        <circle class="pt" cx="106.97" cy="87.6" r="5"/><text class="pl" x="114.97" y="91.6">B</text>
+        <circle class="pt" cx="150.7" cy="66.8" r="5"/><text class="pl" x="158.7" y="70.8">A</text>
+        <circle class="pt" cx="180.08" cy="56.4" r="5"/><text class="pl" x="188.08" y="60.4">E</text>
+        <circle class="pt best" cx="211.52" cy="40.8" r="5"/><text class="pl" x="219.52" y="44.8">C</text>
+      </svg>
+    </div>
+  </div>
+  <p class="key"><b>Key:</b> A Alder &middot; B Brennan &middot; C Calder &middot; D Dunmore &middot; E Elmstead. Dashed line: region average. Yield axes start above zero so the differences between counties are visible.</p>
+  <div class="callout">
+    <p><b>The pattern held in all four crops.</b> Ranked from wettest to driest &mdash; Calder, Elmstead, Alder, Brennan, Dunmore &mdash; the counties fall in exactly the same order for wheat, corn, soybean and barley yield.</p>
+    <p>This survey shows that rainfall and yield moved together this season; soil, planting dates and other factors also differ between counties, so it does not on its own show how much of the gap rainfall caused.</p>
+  </div>
+</section>
+
+<footer>Marlow Valley Extension Service &middot; Harvest 2026 survey of 214 farms, completed 10 October 2026</footer>
+</div>
+</body>
+</html>

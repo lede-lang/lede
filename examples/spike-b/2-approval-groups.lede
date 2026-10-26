@@ -1,0 +1,24 @@
+# Purchase approval in the cloud
+diagram appr dir=TB title="Purchase request approval"
+appr: user "Requester" user
+appr: api "Request API" svc "API Gateway"
+appr: amt "Amount over $10,000?" decision
+appr: mgr "Manager approval" fn "Lambda"
+appr: fin "Finance review" fn "Lambda"
+appr: ok "Budget available?" decision
+appr: po "Issue PO" svc "Step Functions" focus
+appr: rej "Notify requester" fn "SNS"
+appr: db "Requests table" db "DynamoDB"
+appr: user -> api : submit
+appr: api -> amt
+appr: amt -> mgr : no
+appr: amt -> fin : yes
+appr: fin -> ok
+appr: mgr -> po
+appr: ok -> po : yes
+appr: ok -> rej : no
+appr: po --> db : record
+appr: group edge "Edge" api
+appr: group wf "Approval workflow" amt, mgr, fin, ok, po, rej
+appr: group data "Data tier" db
+appr: group acct "Prod account" edge, wf, data

@@ -1,0 +1,53 @@
+{
+  "id": "66-lantern-release-notes",
+  "category": "prose",
+  "title": "Lantern Notes 3.8 release notes",
+  "brief": "Please write the release notes page for Lantern Notes 3.8.0, released 2026-10-14, for the customer-facing changelog. Use the headings \"New\", \"Improved\", \"Fixed\", \"Known issues\" and \"Deprecations\". New: shared folders, where you can invite up to 25 collaborators to a folder and choose view or edit access for each; scheduled dark mode that follows sunset or a time range you set; and import from Evernote ENEX files, including attachments up to 50 MB each. Improved: search is about twice as fast, with the median query dropping from 410 ms to 190 ms on a library of 10000 notes, and background sync on Android uses about 18 percent less battery. Fixed: tables no longer lose column widths when exported to PDF; the app no longer freezes when opening a note with more than 200 images; reminders now fire at the right time after a daylight saving change; pasted web links keep their titles; dragging a note onto a folder in the sidebar works with a trackpad on Windows; and the word count includes text inside tables. Known issues: shared folders cannot yet be used with end-to-end encrypted notebooks (planned for 3.9), and ENEX import drops nested tags beyond three levels. Deprecations: Windows 8.1 support ends on 2027-01-31, and from version 3.9 the minimum Android version will be Android 10. Friendly but concise; users skim these.",
+  "checklist": {
+    "sections": [
+      "New",
+      "Improved",
+      "Fixed",
+      "Known issues",
+      "Deprecations"
+    ],
+    "visible": [
+      "Lantern Notes 3.8.0",
+      "shared folders",
+      "dark mode",
+      "Evernote ENEX",
+      "Windows 8.1",
+      "Android 10",
+      "end-to-end encrypted"
+    ],
+    "values": [
+      "2026-10-14",
+      "25",
+      "50 MB",
+      "410 ms",
+      "190 ms",
+      "10000",
+      "18",
+      "200",
+      "3.9",
+      "2027-01-31",
+      "three levels"
+    ]
+  },
+  "needs": [
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add a fixed item \"Pasted images no longer lose their captions\", and change the search result to a median of 175 ms instead of 190 ms.",
+    "expect_visible": [
+      "Pasted images no longer lose their captions"
+    ],
+    "expect_values": [
+      "175 ms"
+    ],
+    "expect_absent": [
+      "190 ms"
+    ]
+  }
+}

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>INC-2291 Postmortem: Billing API Outage</title>
+<style>
+:root{--page:#f6f6f8;--card:#ffffff;--ink:#1d1f27;--mute:#5f6372;--edge:#dadce4;--red:#b93a2e;--red-soft:#fbeae7;--blue:#2e4fb0;--note-bg:#fff4e2;--note-bd:#d1861a;--note-ink:#5a3600;}
+@media (prefers-color-scheme: dark){
+:root:not([data-theme="light"]){--page:#0e0f14;--card:#171922;--ink:#e5e6ee;--mute:#9fa3b5;--edge:#2b2e3b;--red:#ff8a7c;--red-soft:#3a1c19;--blue:#9db3ff;--note-bg:#352708;--note-bd:#e0a04a;--note-ink:#ffdfae;}
+}
+:root[data-theme="dark"]{--page:#0e0f14;--card:#171922;--ink:#e5e6ee;--mute:#9fa3b5;--edge:#2b2e3b;--red:#ff8a7c;--red-soft:#3a1c19;--blue:#9db3ff;--note-bg:#352708;--note-bd:#e0a04a;--note-ink:#ffdfae;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px 56px}
+.kick{color:var(--mute);font-size:.82rem;text-transform:uppercase;letter-spacing:.07em;margin:0}
+h1{font-size:1.6rem;margin:4px 0 6px;line-height:1.25}
+.meta{color:var(--mute);font-size:.92rem;margin:0}
+h2{font-size:1.12rem;margin:32px 0 10px;padding-bottom:4px;border-bottom:1px solid var(--edge)}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media (min-width:720px){.tiles{grid-template-columns:repeat(4,1fr)}}
+.tile{background:var(--card);border:1px solid var(--edge);border-radius:10px;padding:14px}
+.tile .v{font-size:1.5rem;font-weight:700;color:var(--red);font-variant-numeric:tabular-nums}
+.tile .l{color:var(--mute);font-size:.84rem}
+.card{background:var(--card);border:1px solid var(--edge);border-radius:10px;padding:12px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.94rem;min-width:420px}
+th,td{padding:9px 8px;text-align:left;border-bottom:1px solid var(--edge);vertical-align:top}
+th{color:var(--mute);font-weight:600;font-size:.84rem}
+td.t{white-space:nowrap;font-variant-numeric:tabular-nums}
+svg{display:block;width:100%;height:auto}
+svg text{font-size:12px;fill:var(--mute)}
+svg .k{fill:var(--ink)}
+svg .gl{stroke:var(--edge)}
+svg .ax{stroke:var(--mute)}
+svg .ln{fill:none;stroke:var(--red);stroke-width:2.4;stroke-linejoin:round}
+svg .pt{fill:var(--red)}
+svg .peak{fill:var(--ink);font-size:12px;font-weight:600}
+.callout{margin:18px 0;padding:14px 16px;background:var(--note-bg);border-left:4px solid var(--note-bd);color:var(--note-ink);border-radius:8px}
+.callout strong{display:block;margin-bottom:2px}
+p{margin:8px 0}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="kick">Postmortem · Billing Platform</p>
+  <h1>INC-2291: Billing API outage, 2026-09-03</h1>
+  <p class="meta">Owner: Billing Platform team · Brightwave Telecom</p>
+
+  <section class="tiles" aria-label="Incident headline numbers" style="margin-top:18px">
+    <div class="tile"><div class="v">47 min</div><div class="l">Duration</div></div>
+    <div class="tile"><div class="v">38.5%</div><div class="l">Peak error rate</div></div>
+    <div class="tile"><div class="v">182,400</div><div class="l">Failed requests</div></div>
+    <div class="tile"><div class="v">13,150</div><div class="l">Customers affected</div></div>
+  </section>
+
+  <h2>Summary</h2>
+  <p>A config change lowered the database connection pool from 200 to 20. Incoming requests queued behind the small pool and then timed out. The change was rolled back, and error rates returned to baseline.</p>
+
+  <h2>Timeline</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>Time (UTC)</th><th>Event</th></tr></thead>
+      <tbody>
+        <tr><td class="t">14:02</td><td>Config change merged and deployed</td></tr>
+        <tr><td class="t">14:06</td><td>Error rate alert fires</td></tr>
+        <tr><td class="t">14:09</td><td>On-call acknowledges</td></tr>
+        <tr><td class="t">14:21</td><td>Incident declared Sev2</td></tr>
+        <tr><td class="t">14:33</td><td>Connection pool exhaustion identified</td></tr>
+        <tr><td class="t">14:41</td><td>Rollback started</td></tr>
+        <tr><td class="t">14:49</td><td>Errors return to baseline</td></tr>
+        <tr><td class="t">14:53</td><td>Incident resolved</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Error rate</h2>
+  <div class="card">
+    <svg viewBox="0 0 600 250" role="img" aria-label="Line chart of error rate percent at 5 minute intervals from 14:00 to 14:55. It climbs from 0.2 to a peak of 38.5 at 14:20, stays near 35 until 14:40, then falls back to 0.3 by 14:55.">
+      <line class="gl" x1="60" y1="20" x2="580" y2="20"/>
+      <line class="gl" x1="60" y1="70" x2="580" y2="70"/>
+      <line class="gl" x1="60" y1="120" x2="580" y2="120"/>
+      <line class="gl" x1="60" y1="170" x2="580" y2="170"/>
+      <line class="ax" x1="60" y1="220" x2="580" y2="220"/>
+      <text x="50" y="24" text-anchor="end">40%</text>
+      <text x="50" y="74" text-anchor="end">30%</text>
+      <text x="50" y="124" text-anchor="end">20%</text>
+      <text x="50" y="174" text-anchor="end">10%</text>
+      <text x="50" y="224" text-anchor="end">0%</text>
+      <polyline class="ln" points="60,219 107.27,199.5 154.55,131 201.82,72 249.09,27.5 296.36,35.5 343.64,34 390.91,45 438.18,53 485.45,156.5 532.73,217 580,218.5"/>
+      <circle class="pt" cx="60" cy="219" r="3.5"/>
+      <circle class="pt" cx="107.27" cy="199.5" r="3.5"/>
+      <circle class="pt" cx="154.55" cy="131" r="3.5"/>
+      <circle class="pt" cx="201.82" cy="72" r="3.5"/>
+      <circle class="pt" cx="249.09" cy="27.5" r="5"/>
+      <circle class="pt" cx="296.36" cy="35.5" r="3.5"/>
+      <circle class="pt" cx="343.64" cy="34" r="3.5"/>
+      <circle class="pt" cx="390.91" cy="45" r="3.5"/>
+      <circle class="pt" cx="438.18" cy="53" r="3.5"/>
+      <circle class="pt" cx="485.45" cy="156.5" r="3.5"/>
+      <circle class="pt" cx="532.73" cy="217" r="3.5"/>
+      <circle class="pt" cx="580" cy="218.5" r="3.5"/>
+      <text class="peak" x="256" y="22">Peak 38.5% at 14:20</text>
+      <text x="60" y="240" text-anchor="middle">14:00</text>
+      <text x="154.55" y="240" text-anchor="middle">14:10</text>
+      <text x="249.09" y="240" text-anchor="middle">14:20</text>
+      <text x="343.64" y="240" text-anchor="middle">14:30</text>
+      <text x="438.18" y="240" text-anchor="middle">14:40</text>
+      <text x="532.73" y="240" text-anchor="middle">14:50</text>
+    </svg>
+  </div>
+
+  <h2>Root cause</h2>
+  <p>The pool size was changed from 200 to 20 in a single config change. Requests then queued for connections until they timed out, which turned into failed requests across the Billing API.</p>
+  <aside class="callout" role="note">
+    <strong>Gap found in review</strong>
+    The config linter did not validate pool size bounds, so the bad value passed every check before deploy.
+  </aside>
+
+  <h2>Action items</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>Action</th><th>Owner</th><th>Due</th></tr></thead>
+      <tbody>
+        <tr><td>Add bounds validation for pool settings</td><td>Marta Kowalski</td><td>2026-09-24</td></tr>
+        <tr><td>Canary config changes to 5 percent of pods first</td><td>Ravi Shah</td><td>2026-10-08</td></tr>
+        <tr><td>Alert on pool saturation above 80 percent</td><td>Billing on-call</td><td>2026-09-17</td></tr>
+        <tr><td>Write a runbook for connection pool exhaustion</td><td>Lena Fischer</td><td>2026-10-15</td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+</body>
+</html>

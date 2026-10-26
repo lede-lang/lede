@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>2026 Engagement Survey Results | Northwind Freight</title>
+<style>
+:root{
+  --bg:#f5f6f8; --surface:#ffffff; --ink:#1a2230; --muted:#586274; --line:#dfe3ea;
+  --brand:#1b4f8f; --brand-soft:#e6eef8;
+  --fav:#1b7a6b; --on-fav:#ffffff; --neu:#6b7585; --on-neu:#ffffff; --unf:#b8501a; --on-unf:#ffffff;
+  --up:#1b7a6b; --down:#b8501a; --track:#e9edf2;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0f141b; --surface:#171e28; --ink:#e8ecf2; --muted:#9aa5b5; --line:#283140;
+    --brand:#7fb0ea; --brand-soft:#172636;
+    --fav:#4fb8a5; --on-fav:#0b1714; --neu:#5a6678; --on-neu:#ffffff; --unf:#e88c5a; --on-unf:#1a0e07;
+    --up:#4fb8a5; --down:#e88c5a; --track:#222c39;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px 56px}
+header{padding:30px 0 4px}
+.eyebrow{font-size:.76rem;letter-spacing:.09em;text-transform:uppercase;color:var(--brand);font-weight:700;margin:0 0 6px}
+h1{font-size:clamp(1.8rem,7vw,2.6rem);line-height:1.12;margin:0 0 8px;letter-spacing:-.015em}
+.lede{color:var(--muted);margin:0}
+section{margin-top:36px}
+h2{font-size:1.3rem;margin:0 0 12px;letter-spacing:-.005em}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.resp{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.resp .n{font-size:2.3rem;font-weight:750;line-height:1;letter-spacing:-.02em}
+.resp .n span{font-size:1rem;color:var(--muted);font-weight:500;letter-spacing:0}
+.resp .grow{flex:1 1 220px}
+.meter{height:14px;background:var(--track);border-radius:99px;overflow:hidden;margin-top:8px}
+.meter i{display:block;height:100%;width:calc(var(--p) * 1%);background:var(--brand);border-radius:99px}
+.small{font-size:.86rem;color:var(--muted);margin:6px 0 0}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.86rem;color:var(--muted);margin:0 0 14px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.legend .tick{display:inline-block;width:3px;height:14px;background:var(--ink);margin-right:6px;vertical-align:-3px;border-radius:2px}
+.stmt{padding:14px 0;border-top:1px solid var(--line)}
+.stmt:first-of-type{border-top:0;padding-top:0}
+.stmt h3{font-size:1rem;font-weight:600;margin:0 0 8px;line-height:1.35}
+.bar{position:relative;display:flex;height:34px;border-radius:7px;overflow:visible}
+.seg{display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.88rem;font-variant-numeric:tabular-nums;width:calc(var(--v) * 1%)}
+.seg:first-child{border-radius:7px 0 0 7px}
+.seg.unf{border-radius:0 7px 7px 0}
+.fav{background:var(--fav);color:var(--on-fav)}
+.neu{background:var(--neu);color:var(--on-neu)}
+.unf{background:var(--unf);color:var(--on-unf)}
+.mark{position:absolute;top:-5px;bottom:-5px;left:calc(var(--p) * 1%);width:3px;margin-left:-1.5px;background:var(--ink);border-radius:2px;box-shadow:0 0 0 1.5px var(--surface)}
+.meta{display:flex;justify-content:space-between;gap:10px;font-size:.84rem;color:var(--muted);margin-top:8px}
+.avgcard{margin-top:12px;background:var(--brand-soft);border-radius:12px;padding:12px 14px;font-size:.95rem}
+.delta{display:grid;grid-template-columns:1fr;gap:2px;padding:9px 0;border-top:1px solid var(--line)}
+.delta:first-of-type{border-top:0}
+.delta .nm{font-size:.94rem}
+.delta .nm small{color:var(--muted)}
+.dchart{position:relative;height:26px;display:flex;align-items:center}
+.dchart::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--muted)}
+.db{position:absolute;height:18px;top:4px;width:calc(var(--d) / 4 * 50%)}
+.db.pos{left:50%;background:var(--up);border-radius:0 5px 5px 0}
+.db.neg{right:50%;background:var(--down);border-radius:5px 0 0 5px}
+.dv{position:absolute;top:2px;font-weight:700;font-size:.9rem;font-variant-numeric:tabular-nums;line-height:22px}
+.dv.pos{left:calc(50% + var(--d) / 4 * 50% + 8px);color:var(--up)}
+.dv.neg{right:calc(50% + var(--d) / 4 * 50% + 8px);color:var(--down)}
+.axis{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin-top:6px}
+.plan{counter-reset:p;list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.plan li{counter-increment:p;position:relative;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 14px 14px 52px}
+.plan li::before{content:counter(p);position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--brand);color:var(--surface);font-weight:700;display:grid;place-items:center;font-size:.9rem}
+.plan b{display:block}
+.plan .when{color:var(--brand);font-weight:650;font-size:.9rem}
+@media (min-width:600px){
+  .delta{grid-template-columns:240px 1fr;align-items:center;gap:12px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Northwind Freight, People Team</p>
+  <h1>2026 engagement survey results</h1>
+  <p class="lede">What you told us, what changed since last year, and what we will do about it. Thank you to everyone who took part.</p>
+</header>
+
+<section aria-labelledby="response">
+  <h2 id="response">Response</h2>
+  <div class="card resp">
+    <div class="n">79.4%<br><span>response rate</span></div>
+    <div class="grow">
+      <div><strong>842 of 1,060</strong> employees responded.</div>
+      <div class="meter" role="img" aria-label="79.4 percent of employees responded"><i style="--p:79.4"></i></div>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="results">
+  <h2 id="results">Results by statement</h2>
+  <div class="card">
+    <p class="legend"><span><i style="background:var(--fav)"></i>Favorable</span><span><i style="background:var(--neu)"></i>Neutral</span><span><i style="background:var(--unf)"></i>Unfavorable</span><span><span class="tick"></span>Last year, favorable</span></p>
+
+    <div class="stmt">
+      <h3>I understand how my work supports company goals</h3>
+      <div class="bar" role="img" aria-label="78 percent favorable, 15 neutral, 7 unfavorable; last year 76 favorable">
+        <div class="seg fav" style="--v:78">78</div><div class="seg neu" style="--v:15">15</div><div class="seg unf" style="--v:7">7</div>
+        <span class="mark" style="--p:76"></span>
+      </div>
+      <div class="meta"><span>Favorable 78%</span><span>2025: 76%</span></div>
+    </div>
+
+    <div class="stmt">
+      <h3>My manager gives me useful feedback</h3>
+      <div class="bar" role="img" aria-label="64 percent favorable, 22 neutral, 14 unfavorable; last year 61 favorable">
+        <div class="seg fav" style="--v:64">64</div><div class="seg neu" style="--v:22">22</div><div class="seg unf" style="--v:14">14</div>
+        <span class="mark" style="--p:61"></span>
+      </div>
+      <div class="meta"><span>Favorable 64%</span><span>2025: 61%</span></div>
+    </div>
+
+    <div class="stmt">
+      <h3>I have the tools I need to do my job</h3>
+      <div class="bar" role="img" aria-label="71 percent favorable, 18 neutral, 11 unfavorable; last year 70 favorable">
+        <div class="seg fav" style="--v:71">71</div><div class="seg neu" style="--v:18">18</div><div class="seg unf" style="--v:11">11</div>
+        <span class="mark" style="--p:70"></span>
+      </div>
+      <div class="meta"><span>Favorable 71%</span><span>2025: 70%</span></div>
+    </div>
+
+    <div class="stmt">
+      <h3>I see a path to grow here</h3>
+      <div class="bar" role="img" aria-label="49 percent favorable, 27 neutral, 24 unfavorable; last year 52 favorable">
+        <div class="seg fav" style="--v:49">49</div><div class="seg neu" style="--v:27">27</div><div class="seg unf" style="--v:24">24</div>
+        <span class="mark" style="--p:52"></span>
+      </div>
+      <div class="meta"><span>Favorable 49%, our lowest score</span><span>2025: 52%</span></div>
+    </div>
+
+    <div class="stmt">
+      <h3>I would recommend this company as a place to work</h3>
+      <div class="bar" role="img" aria-label="69 percent favorable, 20 neutral, 11 unfavorable; last year 66 favorable">
+        <div class="seg fav" style="--v:69">69</div><div class="seg neu" style="--v:20">20</div><div class="seg unf" style="--v:11">11</div>
+        <span class="mark" style="--p:66"></span>
+      </div>
+      <div class="meta"><span>Favorable 69%</span><span>2025: 66%</span></div>
+    </div>
+    <p class="small">All numbers are percentages of responses. Each bar adds up to 100.</p>
+  </div>
+  <div class="avgcard"><strong>Average favorable score: 66.2%</strong>, up from 65.0% last year.</div>
+</section>
+
+<section aria-labelledby="change">
+  <h2 id="change">Change since 2025</h2>
+  <div class="card">
+    <p class="small" style="margin:0 0 8px">Change in favorable score, in percentage points.</p>
+
+    <div class="delta">
+      <div class="nm">Manager gives useful feedback <small>(61 to 64)</small></div>
+      <div class="dchart"><div class="db pos" style="--d:3"></div><span class="dv pos" style="--d:3">+3</span></div>
+    </div>
+    <div class="delta">
+      <div class="nm">Would recommend this company <small>(66 to 69)</small></div>
+      <div class="dchart"><div class="db pos" style="--d:3"></div><span class="dv pos" style="--d:3">+3</span></div>
+    </div>
+    <div class="delta">
+      <div class="nm">Work supports company goals <small>(76 to 78)</small></div>
+      <div class="dchart"><div class="db pos" style="--d:2"></div><span class="dv pos" style="--d:2">+2</span></div>
+    </div>
+    <div class="delta">
+      <div class="nm">Have the tools I need <small>(70 to 71)</small></div>
+      <div class="dchart"><div class="db pos" style="--d:1"></div><span class="dv pos" style="--d:1">+1</span></div>
+    </div>
+    <div class="delta">
+      <div class="nm">See a path to grow here <small>(52 to 49)</small></div>
+      <div class="dchart"><div class="db neg" style="--d:3"></div><span class="dv neg" style="--d:3">&minus;3</span></div>
+    </div>
+    <div class="axis" aria-hidden="true"><span>&larr; Lower</span><span>No change</span><span>Higher &rarr;</span></div>
+    <p class="small">The biggest gains are manager feedback and recommendation, at 3 points each. Growth is the only decline, down 3 points, and it is also the lowest score.</p>
+  </div>
+</section>
+
+<section aria-labelledby="plan">
+  <h2 id="plan">What we will do</h2>
+  <ol class="plan">
+    <li><b>Publish the career framework</b><span class="when">By February 28, 2027</span></li>
+    <li><b>Train 90 managers on giving feedback</b><span class="when">Starting December 1, 2026</span></li>
+    <li><b>Run a short pulse check</b><span class="when">April 2027</span></li>
+  </ol>
+</section>
+</div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+@title Runbook: settlement-consumer lag alert
+@subtitle Streaming team · Corvid Payments · settlement-consumer group on payments-events
+
+# Alert thresholds
+
+table = Severity,Lag (messages),Duration,Action; Warning,50000,10 minutes,Slack only; Critical,250000,5 minutes,page on-call; Emergency,1000000,any,page on-call and the Streaming lead
+
+# Triage flow
+
+diagram triage title="Consumer lag triage"
+triage: alert "Lag alert fires" ext
+triage: running "Consumers running?" svc
+triage: restart "Restart consumers" svc
+triage: skew "Partition skew?" svc
+triage: rebal "Rebalance partitions" svc
+triage: scale "Scale out consumers" svc
+triage: recover "Lag recovering" svc
+triage: alert -> running
+triage: running -> restart : no
+triage: running -> skew : yes
+triage: skew -> rebal : yes
+triage: skew -> scale : no
+triage: restart -> recover
+triage: rebal -> recover
+triage: scale -> recover
+
+# Steps
+
+1. Check the consumer pods in the streaming namespace.
+2. Check per-partition lag.
+3. If one partition holds more than 40 percent of the lag, treat it as skew.
+4. Scale the deployment to at most 24 replicas, because the topic has 24 partitions.
+
+!! Never reset consumer offsets to latest. Unprocessed settlements would be skipped and would have to be reconciled by hand.
+
+If lag is still growing after 30 minutes, escalate to the Streaming lead.

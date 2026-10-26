@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rooftop Solar, January to October 2026</title>
+<style>
+:root{--bg:#fafaf7;--fg:#1c1e21;--muted:#5d636b;--accent:#1d6fa3;--card:#ffffff;--border:#e2e0d9;--warn:#9a4a00;--warn-bg:#fff3e0;--note:#e9f2f8;--c1:#1d6fa3;--c2:#d9822b;--c3:#6b5bb5;--good:#2e7d4f}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121316;--fg:#e9e9ec;--muted:#9ea4ad;--accent:#6cb8e6;--card:#1b1d22;--border:#2e3138;--warn:#f2b35e;--warn-bg:#2b2112;--note:#152731;--c1:#6cb8e6;--c2:#eba45a;--c3:#a996e8;--good:#6cc08f}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:820px;margin:0 auto;padding:32px 16px 56px}
+h1{font-size:clamp(1.55rem,4.5vw,2.1rem);line-height:1.2;margin:.2em 0 .3em}
+.dek{color:var(--muted);margin:0 0 1.5em}
+h2{font-size:1.25rem;margin:2.1em 0 .6em;padding-bottom:.3em;border-bottom:1px solid var(--border)}
+p,ul,ol{margin:.7em 0}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.95rem;margin:1em 0}
+th,td{padding:.5em .6em;text-align:right;border-bottom:1px solid var(--border);font-variant-numeric:tabular-nums}
+th:first-child,td:first-child{text-align:left}
+th{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+tr.surplus td{color:var(--good)}
+.tag{font-size:.78rem;border:1px solid var(--good);color:var(--good);border-radius:4px;padding:0 5px;margin-left:6px;white-space:nowrap}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:1.4em 0}
+.tile{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.tile b{display:block;font-size:1.5rem;line-height:1.2}
+.tile span{font-size:.82rem;color:var(--muted)}
+.callout{border-left:4px solid var(--accent);background:var(--note);padding:12px 16px;border-radius:6px;margin:1.3em 0}
+.callout.warn{border-color:var(--warn);background:var(--warn-bg)}
+.callout strong{display:block;margin-bottom:.15em}
+figure{margin:1.6em 0}
+figcaption{font-size:.85rem;color:var(--muted);margin-top:.4em}
+svg{display:block;width:100%;height:auto}
+svg text{font-size:14px;fill:var(--muted)}
+.s1{stroke:var(--c2);stroke-width:3;fill:none}
+.s2{stroke:var(--c1);stroke-width:3;fill:none}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.88rem;color:var(--muted);margin:.4em 0}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.i1{background:var(--c2)}.i2{background:var(--c1)}
+.grid{stroke:var(--border);stroke-width:1}
+@media (max-width:480px){body{font-size:15px}.wrap{padding:24px 16px 48px}th,td{padding:.4em .3em;font-size:.84rem}.tag{display:inline-block;margin:2px 0 0 0}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1>Rooftop solar: January to October 2026</h1>
+<p class="dek">Facilities, Brookfield Community Co-op. Energy in kWh.</p>
+
+<div class="tiles">
+<div class="tile"><b>68,930 kWh</b><span>Total produced</span></div>
+<div class="tile"><b>72,010 kWh</b><span>Total consumed</span></div>
+<div class="tile"><b>95.7%</b><span>Self-sufficiency</span></div>
+<div class="tile"><b>$1,184</b><span>Grid credits earned</span></div>
+</div>
+
+<h2>Production vs consumption</h2>
+<figure>
+<div class="legend"><span><i class="i1"></i>Produced</span><span><i class="i2"></i>Consumed</span></div>
+<svg viewBox="0 0 600 320" role="img" aria-labelledby="t33 d33">
+<title id="t33">Solar production and consumption by month, 2026</title>
+<desc id="d33">Line chart in kWh. Produced rises from 3,120 in January to a peak of 9,620 in July, then falls to 6,890 in September and 4,910 in October. Consumed stays between 6,480 and 7,940, highest in January.</desc>
+<line class="grid" x1="60" y1="280" x2="580" y2="280"/>
+<line class="grid" x1="60" y1="217.5" x2="580" y2="217.5"/>
+<line class="grid" x1="60" y1="155" x2="580" y2="155"/>
+<line class="grid" x1="60" y1="92.5" x2="580" y2="92.5"/>
+<line class="grid" x1="60" y1="30" x2="580" y2="30"/>
+<text x="50" y="284" text-anchor="end">0</text>
+<text x="50" y="221" text-anchor="end">2,500</text>
+<text x="50" y="159" text-anchor="end">5,000</text>
+<text x="50" y="96" text-anchor="end">7,500</text>
+<text x="50" y="34" text-anchor="end">10,000</text>
+<polyline class="s1" points="60,202 117.78,178 175.56,131 233.33,96.5 291.11,59.75 348.89,43.25 406.67,39.5 464.44,61.75 522.22,107.75 580,157.25"/>
+<polyline class="s2" points="60,81.5 117.78,94.75 175.56,104.5 233.33,113.75 291.11,118 348.89,99.75 406.67,83.5 464.44,90.25 522.22,112 580,101.75"/>
+<text x="60" y="302" text-anchor="middle">Jan</text>
+<text x="118" y="302" text-anchor="middle">Feb</text>
+<text x="176" y="302" text-anchor="middle">Mar</text>
+<text x="233" y="302" text-anchor="middle">Apr</text>
+<text x="291" y="302" text-anchor="middle">May</text>
+<text x="349" y="302" text-anchor="middle">Jun</text>
+<text x="407" y="302" text-anchor="middle">Jul</text>
+<text x="464" y="302" text-anchor="middle">Aug</text>
+<text x="522" y="302" text-anchor="middle">Sep</text>
+<text x="580" y="302" text-anchor="middle">Oct</text>
+</svg>
+<figcaption>Monthly production and consumption, in kWh.</figcaption>
+</figure>
+
+<h2>Monthly detail</h2>
+<p>Months with a surplus, where production exceeded consumption, are marked.</p>
+<div class="scroll">
+<table>
+<thead><tr><th>Month</th><th>Produced</th><th>Consumed</th><th>Net</th></tr></thead>
+<tbody>
+<tr><td>January</td><td>3,120</td><td>7,940</td><td>&minus;4,820</td></tr>
+<tr><td>February</td><td>4,080</td><td>7,410</td><td>&minus;3,330</td></tr>
+<tr><td>March</td><td>5,960</td><td>7,020</td><td>&minus;1,060</td></tr>
+<tr class="surplus"><td>April<span class="tag">surplus</span></td><td>7,340</td><td>6,650</td><td>+690</td></tr>
+<tr class="surplus"><td>May<span class="tag">surplus</span></td><td>8,810</td><td>6,480</td><td>+2,330</td></tr>
+<tr class="surplus"><td>June<span class="tag">surplus</span></td><td>9,470</td><td>7,210</td><td>+2,260</td></tr>
+<tr class="surplus"><td>July<span class="tag">surplus</span></td><td>9,620</td><td>7,860</td><td>+1,760</td></tr>
+<tr class="surplus"><td>August<span class="tag">surplus</span></td><td>8,730</td><td>7,590</td><td>+1,140</td></tr>
+<tr class="surplus"><td>September<span class="tag">surplus</span></td><td>6,890</td><td>6,720</td><td>+170</td></tr>
+<tr><td>October</td><td>4,910</td><td>7,130</td><td>&minus;2,220</td></tr>
+<tr><td><strong>Total</strong></td><td><strong>68,930</strong></td><td><strong>72,010</strong></td><td><strong>&minus;3,080</strong></td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>Notes</h2>
+<p>The inverter was down for 4 days in March, which explains the low production that month.</p>
+
+<div class="callout warn">
+<strong>Board vote on battery storage</strong>
+The board will vote on adding battery storage on 2026-11-12.
+</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,20 @@
+# Login sequence
+diagram login sequence title="Session check and sign-in"
+login: browser "Browser" user
+login: app "Web app" svc
+login: idp "Identity provider" ext
+login: browser -> app : GET /me
+login: alt "session valid"
+login: app --> browser : 200 profile
+login: else "no session"
+login: app --> browser : 401
+login: end
+login: browser -> idp : POST /login
+login: alt "password ok"
+login: idp --> browser : 302 + cookie
+login: else "account locked"
+login: idp --> browser : 423
+login: else
+login: idp --> browser : 401
+login: end
+login: browser -> app : GET /home
