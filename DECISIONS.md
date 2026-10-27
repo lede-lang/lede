@@ -568,3 +568,16 @@ included. The first release after D58 (v0.1.2) was tagged and no run started. `r
 the guard (the tag is on `main` and names the packages' version) and the `npm` environment's `v0.*` tag rule apply unchanged. The
 run summary names the version being staged. Everything else in D58 stands, including that nothing reaches npm without a person
 approving the `npm` environment.
+
+## D61. The npm release is staged with `npm stage publish` and approved on npm with 2FA
+
+The owner requires releases to be staged, not published directly. npm's staged publishing (npm 11.15.0 or later) uploads a version
+without making it public until a maintainer approves it with 2FA. `release.yml` now runs `npm stage publish` in place of
+`npm publish`, still behind the approval of the `npm` environment, with npm pinned at 11.21.1 in the publish job (Node 24 bundles an
+older npm), and lists the stage ids in the run summary. The first direct publish, of 0.1.5, had failed with a 404 for a token that
+authenticated; npm has also announced that tokens that bypass 2FA lose direct publishing (January 2027) and keep only staging.
+Two approvals now stand between a release and the registry: the `npm` environment on the run, then each package on npm with 2FA,
+on npmjs.com or with `npm stage approve <stage-id>`, core and html before cli. Staging a package that does not exist yet makes npm
+publish a public placeholder, `0.0.0-stage`. A version already staged is not detected on a rerun and has to be rejected first. The
+`NPM_TOKEN` bootstrap and the move to trusted publishing (D48) are unchanged. Not yet run end to end: the first staged release shows
+whether the token can stage a new package.
