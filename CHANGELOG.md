@@ -1,5 +1,10 @@
 # Changelog
 
+## <small>0.1.9 (2026-10-27)</small>
+
+* Merge pull request #14 from lede-lang/docs/fix-install-accuracy ([d46d7e4](https://github.com/lede-lang/lede/commit/d46d7e4)), closes [#14](https://github.com/lede-lang/lede/issues/14)
+* docs: correct the install steps for the plugin, the team setup, claude.ai and Codex ([5b233e8](https://github.com/lede-lang/lede/commit/5b233e8))
+
 ## <small>0.1.8 (2026-10-27)</small>
 
 * Merge pull request #13 from lede-lang/docs/plugin-not-in-directory ([c845493](https://github.com/lede-lang/lede/commit/c845493)), closes [#13](https://github.com/lede-lang/lede/issues/13)
