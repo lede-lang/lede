@@ -547,3 +547,12 @@ The `npm` environment gets a `v0.*` tag rule beside its `main` rule (it refused 
 `main`. The first release uses the `NPM_TOKEN` bootstrap of D48; after trusted publishing is set up the token is deleted and the
 approval is the only gate. Not changed: the packages stay on 0.x, and every commit type still releases a patch (D54), so each merge
 stages a release the owner may leave unapproved.
+
+## D60. The GitHub release starts the staged npm release, not the tag push (correction to D58)
+D58 started `release.yml` on a `v0.*` tag push. It never ran: semantic-release tags the release commit, whose message ends `[skip ci]`
+(so that the release commit does not start CI), and GitHub skips the workflows of a push whose head commit says that, a tag push
+included. The first release after D58 (v0.1.2) was tagged and no run started. `release.yml` now starts on `release: published`, which
+`changelog.yml` creates with the same GitHub App token and which `[skip ci]` does not affect; the ref of that run is still the tag, so
+the guard (the tag is on `main` and names the packages' version) and the `npm` environment's `v0.*` tag rule apply unchanged. The
+run summary names the version being staged. Everything else in D58 stands, including that nothing reaches npm without a person
+approving the `npm` environment.
