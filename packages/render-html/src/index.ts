@@ -26,6 +26,11 @@ export interface RenderOptions {
   allowRemote?: boolean;
   /** Emit only the <main> body, no page shell. */
   fragment?: boolean;
+  /**
+   * Emit what the Claude Artifact tool wraps in a page of its own: `<title>`, `<style>` and `<main>`, with no doctype, html, head
+   * or body, and no meta tags or content security policy (the host sets them). The style and the main are the full page's, byte for byte.
+   */
+  artifact?: boolean;
 }
 
 const WIDE = new Set(['grid', 'diagram']);
@@ -69,6 +74,8 @@ export async function render(doc: LedeDocument, opts: RenderOptions = {}): Promi
   }
   const main = `<main class="doc${prose ? ' prose' : ''}">\n${body.filter(Boolean).join('\n')}\n</main>`;
   if (opts.fragment) return main;
+  const style = `<style>${css({ accent: doc.meta.accent, theme: doc.meta.theme, wide: doc.meta.width === 'wide' })}</style>`;
+  if (opts.artifact) return `<title>${esc(title)}</title>\n${style}\n${main}\n`;
   const desc = doc.meta.description ? `\n<meta name="description" content="${esc(doc.meta.description)}">` : '';
   const lang = /^[a-z]{2,3}(-[A-Za-z0-9]+)*$/.test(doc.meta.lang ?? '') ? doc.meta.lang : 'en';
   return `<!doctype html>
@@ -79,7 +86,7 @@ export async function render(doc: LedeDocument, opts: RenderOptions = {}): Promi
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src ${opts.allowRemote ? "'self' data: https:" : "'self' data:"}; base-uri 'none'; form-action 'none'">
 <meta name="generator" content="lede 0.1">
 <title>${esc(title)}</title>${desc}
-<style>${css({ accent: doc.meta.accent, theme: doc.meta.theme, wide: doc.meta.width === 'wide' })}</style>
+${style}
 </head>
 <body>
 ${main}

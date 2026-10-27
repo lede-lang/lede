@@ -548,6 +548,18 @@ The `npm` environment gets a `v0.*` tag rule beside its `main` rule (it refused 
 approval is the only gate. Not changed: the packages stay on 0.x, and every commit type still releases a patch (D54), so each merge
 stages a release the owner may leave unapproved.
 
+## D59. `lede build --artifact` writes the part of a page the Claude Artifact tool does not supply
+The Artifact tool publishes an HTML file as a page of its own: it adds the doctype, `html`, `head` (charset, viewport, a reset) and
+`body`, asks for a `<title>` and a `<style>` at the top of the file, and sets the content security policy itself. A complete Lede page
+inside that wrapper nests a second `html` and `head` in the body and carries a CSP `meta` that browsers ignore there. `--artifact`
+writes only `<title>`, the page's `<style>` and its `<main>`. The style and the main are the full page's, byte for byte, so nothing
+about the page changes: the same tokens, the `prefers-color-scheme` block guarded by `:root:not([data-theme="light"])` and the
+`:root[data-theme="dark"]` block (which is the shape the Artifact tool's theme contract asks for), the 16px side gutter, and no script.
+The `lang` and `description` meta tags and the generator tag are dropped; the tool takes the description as a publish parameter. This is
+output for one host, not a new format, and it does not change how an ordinary `build` page looks. It does not make Lede suitable for
+the Artifact tool's runtime features (a shared database, asking Claude from the page, saved state): those need script, and ordinary
+`build` pages have none (D10). The skill's text and trigger are unchanged until a published artifact has been seen to render.
+
 ## D60. The GitHub release starts the staged npm release, not the tag push (correction to D58)
 D58 started `release.yml` on a `v0.*` tag push. It never ran: semantic-release tags the release commit, whose message ends `[skip ci]`
 (so that the release commit does not start CI), and GitHub skips the workflows of a push whose head commit says that, a tag push
