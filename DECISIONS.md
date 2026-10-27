@@ -523,3 +523,16 @@ showed (n = 3, one model tier, so a smoke test and not a benchmark; nothing here
    read as blocking that edge. It now goes at the middle of the route's longest straight stretch, which is the same point on a straight edge.
 The `SKILL.md` gaps the writers also found (approximate values, a fan-out label that repeats on every target, nodes with no kind) need
 words in the model reference, which sits at its 2,910-token cap (D55); they are not changed here.
+
+## D58. A release tag stages the npm release; the owner's approval of the `npm` environment publishes it
+D48 made `release.yml` `workflow_dispatch` only, so every release needed someone to start it and then approve it. The start was
+not a check: the owner checks the tag, the notes and the tarballs, then approves, and that approval is the gate. The workflow now
+also runs on a `v0.*` tag push (`changelog.yml` pushes one per release, with the GitHub App's token, which unlike `GITHUB_TOKEN`
+starts other workflows), so by the time the owner looks, the build job has tested and packed and written the packages, their sizes,
+hashes and file lists to the run summary. The publish job is unchanged: it runs no repository code, uses the `npm` environment, and
+waits for its reviewer, so nothing reaches npm without a person approving that run. A tag-triggered build first requires the tag to be
+reachable from `main` and to name the version in the packages, because tags have no ruleset and anyone with write access can push one.
+The `npm` environment gets a `v0.*` tag rule beside its `main` rule (it refused any other ref). A run started by hand still works, from
+`main`. The first release uses the `NPM_TOKEN` bootstrap of D48; after trusted publishing is set up the token is deleted and the
+approval is the only gate. Not changed: the packages stay on 0.x, and every commit type still releases a patch (D54), so each merge
+stages a release the owner may leave unapproved.
