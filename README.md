@@ -52,7 +52,7 @@ too (next section).
 
 ## Install the CLI and libraries
 
-Needs Node 22.12+. Once published:
+Needs Node 22.12+:
 
 ```sh
 npm install -g @lede-lang/cli      # the lede command
@@ -64,7 +64,7 @@ import { compile } from '@lede-lang/html';
 const { html, doc } = await compile('# Hello\n\nkpi Uptime | 99.97% | +0.02 pts | good');
 ```
 
-The three packages share one version. Before they are published, use a checkout: after `pnpm install` (below),
+The three packages share one version. To run from a checkout instead: after `pnpm install` (below),
 `alias lede="node $PWD/packages/cli/src/cli.ts"`.
 
 ## Use
