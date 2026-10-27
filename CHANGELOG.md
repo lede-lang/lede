@@ -1,5 +1,10 @@
 # Changelog
 
+## <small>0.1.6 (2026-10-27)</small>
+
+* Merge pull request #10 from lede-lang/ci/stage-npm-publish ([535aaef](https://github.com/lede-lang/lede/commit/535aaef)), closes [#10](https://github.com/lede-lang/lede/issues/10)
+* ci(release): stage the npm release with npm stage publish, approved on npm with 2FA (D61) ([960d117](https://github.com/lede-lang/lede/commit/960d117))
+
 ## <small>0.1.5 (2026-10-27)</small>
 
 * Merge pull request #5 from lede-lang/feat/build-artifact ([e46644c](https://github.com/lede-lang/lede/commit/e46644c)), closes [#5](https://github.com/lede-lang/lede/issues/5)
