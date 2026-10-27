@@ -39,7 +39,7 @@ aws: group vpc "VPC 10.20.0.0/16" api, db
 
 ## Install the skill
 
-The skill is `skill/lede/SKILL.md`. Lede is not in Claude Code's plugin directory yet, so `/plugin install lede` alone finds
+The skill is `skill/lede/SKILL.md`. Lede is not listed in Anthropic's plugin directory yet, so `/plugin install lede` alone finds
 nothing. This repository is its own plugin marketplace: add it, then install from it.
 
 ```sh
@@ -50,15 +50,15 @@ nothing. This repository is its own plugin marketplace: add it, then install fro
 The same two steps work from a terminal as `claude plugin marketplace add lede-lang/lede` and
 `claude plugin install lede@lede`. Check the result with `/plugin` or `claude plugin list`, which shows `lede@lede` enabled.
 
-To update, run `claude plugin marketplace update lede`, then `claude plugin update lede@lede`; a running session needs a
-restart to apply it. Or turn on auto-update once in `/plugin` → Marketplaces.
+To update, run `claude plugin marketplace update lede`, then `claude plugin update lede@lede`, and restart Claude Code or run
+`/reload-plugins`. Auto-update is off for a marketplace like this one; turn it on in `/plugin` → Marketplaces.
 
-To give a whole team the skill, commit this to a project's `.claude/settings.json`; it registers the marketplace and enables
-the plugin for everyone who works in that project:
+To give a whole team the skill, commit this to a project's `.claude/settings.json`. Once a teammate trusts the folder, Claude
+Code adds the marketplace and installs the plugin in the background; `/reload-plugins` or a restart activates it.
 
 ```json
 {
-  "extraKnownMarketplaces": { "lede": { "source": { "source": "github", "repo": "lede-lang/lede" } } },
+  "extraKnownMarketplaces": { "lede": { "source": { "source": "github", "repo": "lede-lang/lede" }, "autoUpdate": true } },
   "enabledPlugins": { "lede@lede": true }
 }
 ```
@@ -67,12 +67,12 @@ Other hosts, and installs with no plugin system:
 
 ```sh
 npx skills add lede-lang/lede                      # any host the skills CLI supports
-codex plugin marketplace add lede-lang/lede        # Codex, then install Lede from the Plugins directory
+codex plugin marketplace add lede-lang/lede        # Codex, then run /plugins and install Lede
 cp -r skill/lede ~/.claude/skills/lede             # from a clone: Claude Code, every project
 ```
 
-For Claude.ai and Claude Desktop, upload [`lede-skill.zip`](https://ledelang.dev/skill/lede-skill.zip) under Settings →
-Capabilities → Skills.
+For Claude.ai and Claude Desktop, upload [`lede-skill.zip`](https://ledelang.dev/skill/lede-skill.zip) under Customize →
+Skills (+ → Upload a skill). Skills need code execution ("Create and edit files") turned on in Settings.
 
 The skill tells the agent to run `lede`, so install the CLI too (next section); if it is missing, the agent asks before
 installing it.
