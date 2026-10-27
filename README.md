@@ -39,16 +39,43 @@ aws: group vpc "VPC 10.20.0.0/16" api, db
 
 ## Install the skill
 
-The skill is `skill/lede/SKILL.md`. The repository is also a plugin marketplace for hosts that install from one:
+The skill is `skill/lede/SKILL.md`. Lede is not in Claude Code's plugin directory yet, so `/plugin install lede` alone finds
+nothing. This repository is its own plugin marketplace: add it, then install from it.
+
+```sh
+/plugin marketplace add lede-lang/lede             # Claude Code, inside a session
+/plugin install lede@lede
+```
+
+The same two steps work from a terminal as `claude plugin marketplace add lede-lang/lede` and
+`claude plugin install lede@lede`. Check the result with `/plugin` or `claude plugin list`, which shows `lede@lede` enabled.
+
+To update, run `claude plugin marketplace update lede`, then `claude plugin update lede@lede`; a running session needs a
+restart to apply it. Or turn on auto-update once in `/plugin` → Marketplaces.
+
+To give a whole team the skill, commit this to a project's `.claude/settings.json`; it registers the marketplace and enables
+the plugin for everyone who works in that project:
+
+```json
+{
+  "extraKnownMarketplaces": { "lede": { "source": { "source": "github", "repo": "lede-lang/lede" } } },
+  "enabledPlugins": { "lede@lede": true }
+}
+```
+
+Other hosts, and installs with no plugin system:
 
 ```sh
 npx skills add lede-lang/lede                      # any host the skills CLI supports
-/plugin marketplace add lede-lang/lede             # Claude Code, then: /plugin install lede@lede
 codex plugin marketplace add lede-lang/lede        # Codex, then install Lede from the Plugins directory
+cp -r skill/lede ~/.claude/skills/lede             # from a clone: Claude Code, every project
 ```
 
-Or copy the folder: `cp -r skill/lede ~/.claude/skills/lede`. The skill tells the agent to run `lede`, so install the CLI
-too (next section); if it is missing, the agent asks before installing it.
+For Claude.ai and Claude Desktop, upload [`lede-skill.zip`](https://ledelang.dev/skill/lede-skill.zip) under Settings →
+Capabilities → Skills.
+
+The skill tells the agent to run `lede`, so install the CLI too (next section); if it is missing, the agent asks before
+installing it.
 
 ## Install the CLI and libraries
 
