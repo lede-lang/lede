@@ -21,7 +21,7 @@ aws: api -> db : sql
 aws: group vpc "VPC 10.20.0.0/16" api, db
 ```
 
-> **Status:** pre-release (0.x). The npm packages below are not published yet; until they are, run from a checkout (Use, below).
+> **Status:** pre-release (0.x), on npm as `@lede-lang/cli`, `@lede-lang/html` and `@lede-lang/core` (install, below). It will change.
 
 ## Layout
 
@@ -48,7 +48,7 @@ codex plugin marketplace add lede-lang/lede        # Codex, then install Lede fr
 ```
 
 Or copy the folder: `cp -r skill/lede ~/.claude/skills/lede`. The skill tells the agent to run `lede`, so install the CLI
-too (next section).
+too (next section); if it is missing, the agent asks before installing it.
 
 ## Install the CLI and libraries
 

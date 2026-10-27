@@ -58,6 +58,17 @@ minor bump, never a major.
 Sign off every commit (`git commit -s`) to certify the [Developer Certificate of Origin](https://developercertificate.org/). There is
 no contributor agreement to sign.
 
+Two limits catch people out. Body lines in a commit message are at most 100 characters. And a message must not contain the skip-CI
+marker (the words "skip ci" in square brackets): GitHub then runs no checks on the pull request, and the required check `test` never
+reports. Dependabot's own "Bump ..." subjects are exempt from the subject-case rule.
+
+## Releases
+
+Merging to `main` releases the next patch version (every commit type does, D54): `changelog.yml` tags it, writes `CHANGELOG.md` and
+a GitHub release, and commits the version into the packages and plugin manifests. The release starts `release.yml`, which tests and
+packs the three npm packages and stages them on npm (D61). A maintainer approves the `npm` environment, then each staged version on
+npm with 2FA. Contributors do nothing here.
+
 ## Licences
 
 Code is Apache-2.0 ([LICENSE](LICENSE)). The full specification, `spec/lede-0.1.md`, is CC BY 4.0, and the model reference

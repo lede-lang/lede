@@ -68,8 +68,10 @@ test('packed manifests point at dist/, and the tarballs hold the build, the sour
     const m = JSON.parse(tarText(p.filename, 'package.json')) as Record<string, unknown>;
     const files = tarList(p.filename);
     assert.ok(files.includes('LICENSE'), `${p.name} ships LICENSE`);
+    assert.ok(files.includes('README.md'), `${p.name} ships a README, which is the npm package page`);
     assert.equal(m.license, 'Apache-2.0');
-    for (const f of files) assert.match(f, /^(LICENSE|package\.json|src\/[\w-]+\.ts|dist\/[\w-]+\.(js|d\.ts)(\.map)?)$/, `${p.name}: ${f}`);
+    for (const f of files)
+      assert.match(f, /^(LICENSE|README\.md|package\.json|src\/[\w-]+\.ts|dist\/[\w-]+\.(js|d\.ts)(\.map)?)$/, `${p.name}: ${f}`);
     if (p.name === '@lede-lang/cli') {
       assert.deepEqual(m.bin, { lede: './dist/cli.js' });
       assert.match(tarText(p.filename, 'dist/cli.js'), /^#!\/usr\/bin\/env node\n/);
