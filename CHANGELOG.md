@@ -1,5 +1,12 @@
 # Changelog
 
+## <small>0.1.8 (2026-10-27)</small>
+
+* Merge pull request #13 from lede-lang/docs/plugin-not-in-directory ([c845493](https://github.com/lede-lang/lede/commit/c845493)), closes [#13](https://github.com/lede-lang/lede/issues/13)
+* revert: restore the Codex install line ([93da77c](https://github.com/lede-lang/lede/commit/93da77c))
+* docs: drop the Codex install line ([5dd10de](https://github.com/lede-lang/lede/commit/5dd10de))
+* docs: say the plugin is not in Claude Code's directory yet and show the manual install ([72cf7b2](https://github.com/lede-lang/lede/commit/72cf7b2))
+
 ## <small>0.1.7 (2026-10-27)</small>
 
 * Merge pull request #1 from lede-lang/dependabot/npm_and_yarn/dev-tooling-dbc8674130 ([e363a40](https://github.com/lede-lang/lede/commit/e363a40)), closes [#1](https://github.com/lede-lang/lede/issues/1)
