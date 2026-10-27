@@ -117,3 +117,7 @@ grid 2            (the next 2 blocks sit side by side; `grid 3`, or `grid 2 coun
 ```
 
 Rules: keywords (`data chart table kpi diagram image grid cards step`) are lowercase and start the line. Declare every data name and diagram above its first use. Charts for trends, tables for exact values, kpi tiles for headline numbers, diagrams for structure. `bar` for up to 12 points of one series, `line` for longer trends. The one headline number goes on a lone kpi line; a runbook opens with a kpi row of thresholds or contacts. Repeat a chart's data in a table only when exact values matter. `heat` for scorecards, `bar=` for progress or share columns. Write numbers with their unit: 54.7%, $17.2M, 182 ms, never "percent" or "million". `cards` compare options side by side, `step` lists dated actions, `chart range` shows spans on a scale. Lede only: no HTML unless unavoidable, no Markdown tables, no Mermaid.
+
+## Setup
+
+`lede` is the compiler, from the npm package `@lede-lang/cli` (needs Node 22.12 or later). If `lede` is not found, ask the user before installing anything. With their go-ahead run `npm install -g @lede-lang/cli` (`pnpm add -g @lede-lang/cli` if they use pnpm), or for one build without installing, `npx @lede-lang/cli build page.lede -o page.html`. If Node is missing or older, tell the user and stop; do not install Node.

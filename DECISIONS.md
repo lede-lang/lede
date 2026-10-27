@@ -581,3 +581,12 @@ on npmjs.com or with `npm stage approve <stage-id>`, core and html before cli. S
 publish a public placeholder, `0.0.0-stage`. A version already staged is not detected on a rerun and has to be rejected first. The
 `NPM_TOKEN` bootstrap and the move to trusted publishing (D48) are unchanged. Not yet run end to end: the first staged release shows
 whether the token can stage a new package.
+
+## D62. The skill tells the agent how to get the compiler, and to ask first
+
+The skill is text; the compiler is the npm package `@lede-lang/cli`, so a host with the skill and no `lede` on the path could write a
+page and not build it, and `SKILL.md` did not say how to get it. A Setup section now follows the model reference (which is
+unchanged, so D55's cap and the verbatim test still hold): if `lede` is not found, ask the user before installing anything, then
+`npm install -g @lede-lang/cli` (or `pnpm add -g`), or `npx @lede-lang/cli build` for one build; if Node 22.12 or later is missing,
+say so and stop. Only npm, pnpm and npx are named because those are the routes tried against the published 0.1.6 packages; bun,
+yarn and deno are not listed until they are tried. A test keeps the package name in the section equal to the CLI's.

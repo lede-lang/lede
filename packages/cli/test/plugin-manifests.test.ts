@@ -36,3 +36,12 @@ test('the Claude plugin manifest links its documentation, support, privacy and t
   for (const key of ['documentationUrl', 'supportUrl', 'privacyPolicyUrl', 'termsOfServiceUrl'])
     assert.match(manifest[key], /^https:\/\//, key);
 });
+
+// The skill is text; the compiler is the CLI package. SKILL.md has to name that package, or an agent has no way to get `lede`.
+test('SKILL.md says how to get the compiler, and names the CLI package', () => {
+  const name = json('packages/cli/package.json').name;
+  const skill = readFileSync(join(root, 'skill/lede/SKILL.md'), 'utf8');
+  assert.ok(skill.includes(`npm install -g ${name}`), 'the npm install line');
+  assert.ok(skill.includes(`npx ${name} build`), 'the npx line');
+  assert.match(skill, /ask the user before installing/);
+});
