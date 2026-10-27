@@ -523,3 +523,14 @@ showed (n = 3, one model tier, so a smoke test and not a benchmark; nothing here
    read as blocking that edge. It now goes at the middle of the route's longest straight stretch, which is the same point on a straight edge.
 The `SKILL.md` gaps the writers also found (approximate values, a fan-out label that repeats on every target, nodes with no kind) need
 words in the model reference, which sits at its 2,910-token cap (D55); they are not changed here.
+
+## D57. The plugin folder carries its own Claude manifest and icon; the marketplace entry declares nothing
+Anthropic's plugin directory checks a plugin folder (`claude plugin validate <dir> --profile directory`), and `skill/` had no
+`.claude-plugin/plugin.json`: the marketplace entry (`strict: false` with its own `skills`) was the whole definition, so the check
+could not run. `skill/.claude-plugin/plugin.json` now holds the manifest, with `skills: ["./lede"]` because the skill stays at
+`skill/lede/` (D46), and `skill/.claude-plugin/icon.png` is the site's L mark at 1024 px. The marketplace entry keeps only its
+catalogue fields. Declaring components in both makes Claude Code refuse the plugin ("conflicting manifests"), which `plugin validate`
+does not report and a local install does, so a test holds the entry to no components and no `strict`. `set-version.ts` and the release
+commit's assets cover the new manifest, so all three carry the CLI version. Verified with `claude plugin validate . --strict`,
+`claude plugin validate skill --profile directory --strict` (no findings; the repository README stands in for the plugin's own) and an
+install from the local marketplace into a scratch config directory (enabled, one skill).
