@@ -1,5 +1,13 @@
 # Changelog
 
+## <small>0.1.5 (2026-10-27)</small>
+
+* Merge pull request #5 from lede-lang/feat/build-artifact ([e46644c](https://github.com/lede-lang/lede/commit/e46644c)), closes [#5](https://github.com/lede-lang/lede/issues/5)
+* Merge remote-tracking branch 'origin/main' into feat/build-artifact ([22dd1cd](https://github.com/lede-lang/lede/commit/22dd1cd))
+* Merge remote-tracking branch 'origin/ci/release-on-github-release' into feat/build-artifact ([f1a1314](https://github.com/lede-lang/lede/commit/f1a1314))
+* Merge remote-tracking branch 'origin/main' into feat/build-artifact ([5c75f4c](https://github.com/lede-lang/lede/commit/5c75f4c))
+* feat(cli): add build --artifact for the Claude Artifact tool (D59) ([a96ab90](https://github.com/lede-lang/lede/commit/a96ab90))
+
 ## <small>0.1.4 (2026-10-27)</small>
 
 * Merge pull request #9 from lede-lang/feat/plugin-links ([8fa4b5f](https://github.com/lede-lang/lede/commit/8fa4b5f)), closes [#9](https://github.com/lede-lang/lede/issues/9)
