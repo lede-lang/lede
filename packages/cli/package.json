@@ -15,7 +15,11 @@
     "url": "git+https://github.com/lede-lang/lede.git",
     "directory": "packages/cli"
   },
-  "homepage": "https://github.com/lede-lang/lede#readme",
+  "homepage": "https://ledelang.dev",
+  "author": {
+    "name": "Andrew Chemis",
+    "url": "https://andrewchemis.dev"
+  },
   "engines": {
     "node": ">=22.12"
   },
