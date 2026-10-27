@@ -1,7 +1,7 @@
 name: changelog
 
 # Tags a version, writes CHANGELOG.md and the GitHub release from the conventional commits on main, and commits the new version
-# into the packages and plugin manifests (D54). It does not publish to npm: release.yml does that by hand, on the tag.
+# into the packages and plugin manifests (D54). It does not publish to npm: the tag it pushes starts release.yml, which stages the tarballs and waits for approval (D58).
 #
 # Public repository only; in a private one the job is skipped. It needs a v0.* tag on main (tag the first release commit v0.1.0):
 # with no tag semantic-release would start at 1.0.0, and every package stays on 0.x.

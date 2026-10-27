@@ -2,8 +2,10 @@ name: release
 
 # Publishes @lede-lang/core, @lede-lang/html and @lede-lang/cli to npm, with provenance (D48).
 #
-# Manual only, and only from a public repository. Nothing is published before the public repository exists (D45), and
-# npm provenance needs a public repository anyway; in a private one both jobs are skipped.
+# Started by a v0.* tag (changelog.yml pushes one for every release) or by hand, and only from a public repository. Nothing is
+# published before the public repository exists (D45), and npm provenance needs a public repository anyway; in a private one both
+# jobs are skipped. Staging is automatic and publishing is not (D58): the build job tests and packs on its own, and writes what it
+# packed to the run summary; the publish job waits for a reviewer to approve the `npm` environment, which is the manual check.
 #
 # Authentication is npm trusted publishing (OIDC): each package on npmjs.com names this repository, this file
 # (release.yml) and the `npm` environment. npm configures a trusted publisher on a package that already exists, so the
@@ -15,6 +17,8 @@ name: release
 # A version already on npm is skipped, so a run that failed halfway can be rerun.
 
 on:
+  push:
+    tags: ['v0.*']
   workflow_dispatch:
 
 permissions: {}
@@ -34,7 +38,16 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          fetch-depth: 0
           persist-credentials: false
+      # Anyone with write access can push a tag, and tags have no ruleset: only a tag that is on main and names the version in the
+      # packages is staged.
+      - name: Require a release tag on main
+        if: ${{ github.ref_type == 'tag' }}
+        run: |
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main || { echo "::error::$GITHUB_REF_NAME is not on main"; exit 1; }
+          version="$(node -p "require('./packages/cli/package.json').version")"
+          [ "v$version" = "$GITHUB_REF_NAME" ] || { echo "::error::tag $GITHUB_REF_NAME, but the packages are at $version"; exit 1; }
       - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
         with:
           version: 11
@@ -51,6 +64,31 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/release"
           node scripts/pack.ts "$RUNNER_TEMP/release" > "$RUNNER_TEMP/release/packed.tsv"
+      # What the reviewer checks before approving the `npm` environment: the exact tarballs the publish job will upload.
+      - name: Summarise what is staged
+        run: |
+          {
+            echo "## Staged for npm: $GITHUB_REF_NAME"
+            echo
+            echo "Commit \`$GITHUB_SHA\`. Approve the \`npm\` environment on this run to publish these tarballs; reject it to publish nothing."
+            echo
+            echo "| Package | On npm | Files | Bytes | sha256 |"
+            echo "| --- | --- | --- | --- | --- |"
+            while IFS=$'\t' read -r spec file; do
+              tgz="$RUNNER_TEMP/release/$(basename "$file")"
+              if [ -n "$(npm view "$spec" version 2>/dev/null)" ]; then onnpm='yes (skipped)'; else onnpm='no (will publish)'; fi
+              echo "| \`$spec\` | $onnpm | $(tar -tzf "$tgz" | wc -l | tr -d ' ') | $(wc -c < "$tgz" | tr -d ' ') | \`$(shasum -a 256 "$tgz" | cut -c1-16)\` |"
+            done < "$RUNNER_TEMP/release/packed.tsv"
+            while IFS=$'\t' read -r spec file; do
+              echo
+              echo "<details><summary>Files in <code>$spec</code></summary>"
+              echo
+              echo '```'
+              tar -tzf "$RUNNER_TEMP/release/$(basename "$file")"
+              echo '```'
+              echo "</details>"
+            done < "$RUNNER_TEMP/release/packed.tsv"
+          } >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: tarballs

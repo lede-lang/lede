@@ -6,6 +6,8 @@ no JavaScript.
 
 Site, reference, gallery and a playground that compiles Lede in your browser: [ledelang.dev](https://ledelang.dev/).
 
+Made by [Andrew Chemis](https://andrewchemis.dev), who writes about it on the blog.
+
 ```
 @title Payments platform review
 kpi Uptime | 99.97% | +0.02 pts | good
