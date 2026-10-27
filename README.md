@@ -67,7 +67,6 @@ Other hosts, and installs with no plugin system:
 
 ```sh
 npx skills add lede-lang/lede                      # any host the skills CLI supports
-codex plugin marketplace add lede-lang/lede        # Codex, then install Lede from the Plugins directory
 cp -r skill/lede ~/.claude/skills/lede             # from a clone: Claude Code, every project
 ```
 
