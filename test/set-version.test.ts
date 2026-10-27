@@ -32,6 +32,7 @@ test('the plugin manifests end up at the CLI version, as plugin-manifests.test.t
   const json = (path: string) => JSON.parse(read(dest, path));
   assert.equal(json('packages/cli/package.json').version, '0.4.7');
   assert.equal(json('.claude-plugin/marketplace.json').plugins[0].version, '0.4.7');
+  assert.equal(json('skill/.claude-plugin/plugin.json').version, '0.4.7');
   assert.equal(json('skill/.codex-plugin/plugin.json').version, '0.4.7');
 });
 

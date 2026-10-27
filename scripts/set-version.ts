@@ -1,4 +1,4 @@
-// Writes one version into everything that carries it (D54): the three published packages, and the two plugin manifests that
+// Writes one version into everything that carries it (D54): the three published packages, and the plugin manifests that
 // hosts cache an installed plugin by (packages/cli/test/plugin-manifests.test.ts pins them to the CLI version). semantic-release
 // runs it as its prepare step, so the tag, the changelog and these files agree; the packages move in lockstep because pnpm packs
 // `workspace:*` as an exact pin (D48).
@@ -11,6 +11,7 @@ import { PACKAGES, root as REPO_ROOT } from './pack.ts';
 export const VERSION_FILES = [
   ...PACKAGES.map((name) => `packages/${name}/package.json`),
   '.claude-plugin/marketplace.json',
+  'skill/.claude-plugin/plugin.json',
   'skill/.codex-plugin/plugin.json',
 ];
 

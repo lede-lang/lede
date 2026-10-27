@@ -12,12 +12,10 @@
       "name": "lede",
       "source": "./skill",
       "description": "Write a styled, phone-ready, safe web page as a .lede file instead of HTML, then compile it to one self-contained HTML file with no JavaScript.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "license": "CC0-1.0",
       "homepage": "https://ledelang.dev",
-      "repository": "https://github.com/lede-lang/lede",
-      "strict": false,
-      "skills": ["./lede"]
+      "repository": "https://github.com/lede-lang/lede"
     }
   ]
 }
