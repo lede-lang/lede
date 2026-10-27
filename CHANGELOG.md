@@ -1,5 +1,10 @@
 # Changelog
 
+## <small>0.1.3 (2026-10-27)</small>
+
+* Merge pull request #6 from lede-lang/docs/readme-author ([aaf33de](https://github.com/lede-lang/lede/commit/aaf33de)), closes [#6](https://github.com/lede-lang/lede/issues/6)
+* docs(readme): name the author ([9156311](https://github.com/lede-lang/lede/commit/9156311))
+
 ## <small>0.1.2 (2026-10-27)</small>
 
 * Merge pull request #4 from lede-lang/ci/stage-release-on-tag ([32ac51a](https://github.com/lede-lang/lede/commit/32ac51a)), closes [#4](https://github.com/lede-lang/lede/issues/4)
