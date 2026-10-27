@@ -29,3 +29,10 @@ test('the marketplace entry declares no components and does not switch the plugi
   for (const key of ['skills', 'agents', 'commands', 'hooks', 'mcpServers', 'strict']) assert.equal(entry[key], undefined, key);
   assert.ok(existsSync(join(root, 'skill/.claude-plugin/icon.png')), 'the plugin directory wants a square icon beside the manifest');
 });
+
+// The plugin directory lists these four links and shows "Not set" for any that is missing.
+test('the Claude plugin manifest links its documentation, support, privacy and terms pages', () => {
+  const manifest = json('skill/.claude-plugin/plugin.json');
+  for (const key of ['documentationUrl', 'supportUrl', 'privacyPolicyUrl', 'termsOfServiceUrl'])
+    assert.match(manifest[key], /^https:\/\//, key);
+});

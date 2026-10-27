@@ -1,13 +1,17 @@
 {
   "name": "lede",
   "description": "Write a styled, phone-ready, safe web page as a .lede file instead of HTML, then compile it to one self-contained HTML file with no JavaScript.",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "author": {
     "name": "Andrew Chemis",
     "url": "https://andrewchemis.dev"
   },
   "homepage": "https://ledelang.dev",
   "repository": "https://github.com/lede-lang/lede",
+  "documentationUrl": "https://ledelang.dev/reference/",
+  "supportUrl": "https://github.com/lede-lang/lede/issues",
+  "privacyPolicyUrl": "https://ledelang.dev/privacy.html",
+  "termsOfServiceUrl": "https://ledelang.dev/terms.html",
   "license": "CC0-1.0",
   "keywords": ["pages", "html", "charts", "diagrams", "reports"],
   "skills": ["./lede"]

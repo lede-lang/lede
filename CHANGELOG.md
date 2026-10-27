@@ -1,5 +1,14 @@
 # Changelog
 
+## <small>0.1.4 (2026-10-27)</small>
+
+* Merge pull request #9 from lede-lang/feat/plugin-links ([8fa4b5f](https://github.com/lede-lang/lede/commit/8fa4b5f)), closes [#9](https://github.com/lede-lang/lede/issues/9)
+* Merge pull request #8 from lede-lang/ci/commitlint-skip-dependabot ([da8d3e2](https://github.com/lede-lang/lede/commit/da8d3e2)), closes [#8](https://github.com/lede-lang/lede/issues/8)
+* Merge pull request #7 from lede-lang/ci/release-on-github-release ([6fd855e](https://github.com/lede-lang/lede/commit/6fd855e)), closes [#7](https://github.com/lede-lang/lede/issues/7)
+* build(plugin): link documentation, support, privacy and terms pages in the Claude manifest ([c100901](https://github.com/lede-lang/lede/commit/c100901))
+* ci(commitlint): let Dependabot's "Bump" commits through the subject-case rule ([7f30631](https://github.com/lede-lang/lede/commit/7f30631))
+* ci(release): start the staged release from the GitHub release, not the tag push (D60) ([f2a1ad2](https://github.com/lede-lang/lede/commit/f2a1ad2))
+
 ## <small>0.1.3 (2026-10-27)</small>
 
 * Merge pull request #6 from lede-lang/docs/readme-author ([aaf33de](https://github.com/lede-lang/lede/commit/aaf33de)), closes [#6](https://github.com/lede-lang/lede/issues/6)
