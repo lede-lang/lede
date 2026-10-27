@@ -6,7 +6,7 @@ import { parse, fix, type Diagnostic, type LedeDocument } from '@lede-lang/core'
 import { render } from '@lede-lang/html';
 
 const USAGE = `usage:
-  lede build <file.lede> [-o out.html] [--force] [--unsafe-html] [--allow-remote]
+  lede build <file.lede> [-o out.html] [--force] [--unsafe-html] [--allow-remote] [--artifact]
   lede watch <file.lede> [-o out.html]
   lede check <file.lede>... [--json] [--fix [--dry-run]]
   lede ast   <file.lede>
@@ -26,6 +26,7 @@ options:
   --force         build: write the page even if it has errors
   --unsafe-html   build: keep raw \`html\` blocks unsanitized (local files only)
   --allow-remote  build: load remote images (links never need it)
+  --artifact      build: write only <title>, <style> and <main>, for the Claude Artifact tool, which wraps them in its own page
   --json          check: print diagnostics as JSON, keyed by file; each has severity, code, message,
                   line, col and, for some codes, a machine-readable \`detail\` object
   --fix           check: rewrite the file to repair mechanical slips (unquoted , or ; in cells,
@@ -81,7 +82,11 @@ async function build(file: string, out: string | null, flags: Set<string>): Prom
     process.stderr.write(`${file}: ${errors} error(s); not written (use --force to render anyway)\n`);
     return false;
   }
-  const html = await render(doc, { unsafeHtml: flags.has('--unsafe-html'), allowRemote: flags.has('--allow-remote') });
+  const html = await render(doc, {
+    unsafeHtml: flags.has('--unsafe-html'),
+    allowRemote: flags.has('--allow-remote'),
+    artifact: flags.has('--artifact'),
+  });
   if (out) writeFileSync(out, html);
   else process.stdout.write(html);
   if (out)

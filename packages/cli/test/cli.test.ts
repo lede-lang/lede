@@ -127,3 +127,18 @@ test('check --fix repairs the three quoting slips of the v0.4 benchmark end to e
   assert.ok(repairs.length >= 3 && repairs.every((l) => l.endsWith('(a guess: check it)')), r.stderr);
   assert.equal(run(['check', ...names], dir).status, 0);
 });
+
+test('build --artifact writes the title, the style and the main, with no page shell', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  writeFileSync(join(dir, 'p.lede'), '@title Checkout & cart, week 42\n## Latency\nkpi p99 | 182 ms | -38% | good\n');
+  const full = run(['build', 'p.lede'], dir).stdout;
+  const r = run(['build', 'p.lede', '--artifact'], dir);
+  assert.equal(r.status, 0);
+  assert.match(r.stdout, /^<title>Checkout &amp; cart, week 42<\/title>\n<style>/);
+  assert.doesNotMatch(r.stdout, /<!doctype|<(html|head|body|meta|script)[\s>]/i); // `<header>` is page content, not the shell
+  const style = /<style>[\s\S]*?<\/style>/.exec(full)?.[0];
+  const main = /<main[\s\S]*<\/main>/.exec(full)?.[0];
+  assert.ok(style && main);
+  assert.equal(r.stdout, `<title>Checkout &amp; cart, week 42</title>\n${style}\n${main}\n`);
+  assert.match(run(['--help'], dir).stdout, /--artifact\s+build:/);
+});

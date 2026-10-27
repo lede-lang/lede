@@ -523,3 +523,15 @@ showed (n = 3, one model tier, so a smoke test and not a benchmark; nothing here
    read as blocking that edge. It now goes at the middle of the route's longest straight stretch, which is the same point on a straight edge.
 The `SKILL.md` gaps the writers also found (approximate values, a fan-out label that repeats on every target, nodes with no kind) need
 words in the model reference, which sits at its 2,910-token cap (D55); they are not changed here.
+
+## D59. `lede build --artifact` writes the part of a page the Claude Artifact tool does not supply
+The Artifact tool publishes an HTML file as a page of its own: it adds the doctype, `html`, `head` (charset, viewport, a reset) and
+`body`, asks for a `<title>` and a `<style>` at the top of the file, and sets the content security policy itself. A complete Lede page
+inside that wrapper nests a second `html` and `head` in the body and carries a CSP `meta` that browsers ignore there. `--artifact`
+writes only `<title>`, the page's `<style>` and its `<main>`. The style and the main are the full page's, byte for byte, so nothing
+about the page changes: the same tokens, the `prefers-color-scheme` block guarded by `:root:not([data-theme="light"])` and the
+`:root[data-theme="dark"]` block (which is the shape the Artifact tool's theme contract asks for), the 16px side gutter, and no script.
+The `lang` and `description` meta tags and the generator tag are dropped; the tool takes the description as a publish parameter. This is
+output for one host, not a new format, and it does not change how an ordinary `build` page looks. It does not make Lede suitable for
+the Artifact tool's runtime features (a shared database, asking Claude from the page, saved state): those need script, and ordinary
+`build` pages have none (D10). The skill's text and trigger are unchanged until a published artifact has been seen to render.

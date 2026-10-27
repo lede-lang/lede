@@ -300,12 +300,15 @@ otherwise it is the counts summed over every file: `1 warning(s)`, `2 error(s)` 
 code at 0 but never gets `ok`: read the diagnostics above that line, since the exit code does not carry them. With `--json` there is no
 such line. `lede --help` lists every command and flag.
 
-`lede build FILE [-o OUT] [--force] [--unsafe-html] [--allow-remote]` compiles the first FILE to one page. Diagnostics go to stderr as
+`lede build FILE [-o OUT] [--force] [--unsafe-html] [--allow-remote] [--artifact]` compiles the first FILE to one page. Diagnostics go to stderr as
 for `check`. With `-o` the page is written to OUT and a size line goes to stderr; without it the page goes to stdout. A document with
 an error is not written and exits 1, unless `--force`, which renders it anyway and exits 0. `--unsafe-html` keeps `html` blocks
 unsanitized (§4.10); `--help` marks it for local files only, but nothing checks that. `--allow-remote` lets images load from remote
 URLs (§4.16), in `image` blocks and as `<img>` in `html` blocks. Links render the same with or without it. It adds `https:`, and only
-`https:`, to the page CSP's `img-src`, so an `http:` image is written into the page and the browser then blocks it. Exit codes for every
+`https:`, to the page CSP's `img-src`, so an `http:` image is written into the page and the browser then blocks it. `--artifact` writes
+only `<title>`, the page's `<style>` and its `<main>`, in that order: no doctype, `html`, `head` or `body`, and no `meta` tags or CSP. The
+Claude Artifact tool wraps a file in a page of its own and sets those itself. The style and the main are the full page's, byte for byte, so
+the light and dark tokens, the `data-theme` override and the zero-script output are the same; only the shell differs. Exit codes for every
 command: 0 on success; 1 for `build` on errors without `--force` and for `check` on errors; 2 for a usage error (no command, an
 unknown command, no FILE) or a missing file; 70 for an internal error, such as OUT not being writable, printed to stderr. Flags a
 command does not know are ignored. `--help`, `-h` or `help` prints the help to stdout and exits 0.
