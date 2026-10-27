@@ -559,3 +559,12 @@ The `lang` and `description` meta tags and the generator tag are dropped; the to
 output for one host, not a new format, and it does not change how an ordinary `build` page looks. It does not make Lede suitable for
 the Artifact tool's runtime features (a shared database, asking Claude from the page, saved state): those need script, and ordinary
 `build` pages have none (D10). The skill's text and trigger are unchanged until a published artifact has been seen to render.
+
+## D60. The GitHub release starts the staged npm release, not the tag push (correction to D58)
+D58 started `release.yml` on a `v0.*` tag push. It never ran: semantic-release tags the release commit, whose message ends `[skip ci]`
+(so that the release commit does not start CI), and GitHub skips the workflows of a push whose head commit says that, a tag push
+included. The first release after D58 (v0.1.2) was tagged and no run started. `release.yml` now starts on `release: published`, which
+`changelog.yml` creates with the same GitHub App token and which `[skip ci]` does not affect; the ref of that run is still the tag, so
+the guard (the tag is on `main` and names the packages' version) and the `npm` environment's `v0.*` tag rule apply unchanged. The
+run summary names the version being staged. Everything else in D58 stands, including that nothing reaches npm without a person
+approving the `npm` environment.

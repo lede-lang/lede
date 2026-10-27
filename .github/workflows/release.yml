@@ -2,10 +2,11 @@ name: release
 
 # Publishes @lede-lang/core, @lede-lang/html and @lede-lang/cli to npm, with provenance (D48).
 #
-# Started by a v0.* tag (changelog.yml pushes one for every release) or by hand, and only from a public repository. Nothing is
-# published before the public repository exists (D45), and npm provenance needs a public repository anyway; in a private one both
-# jobs are skipped. Staging is automatic and publishing is not (D58): the build job tests and packs on its own, and writes what it
-# packed to the run summary; the publish job waits for a reviewer to approve the `npm` environment, which is the manual check.
+# Started by the GitHub release that changelog.yml publishes for every version (D60), or by hand, and only from a public repository.
+# Nothing is published before the public repository exists (D45), and npm provenance needs a public repository anyway; in a private
+# one both jobs are skipped. Staging is automatic and publishing is not (D58): the build job tests and packs on its own, and writes
+# what it packed to the run summary; the publish job waits for a reviewer to approve the `npm` environment, which is the manual check.
+# A tag push does not start it: the release commit says [skip ci], and GitHub applies that to the push of a tag on that commit too.
 #
 # Authentication is npm trusted publishing (OIDC): each package on npmjs.com names this repository, this file
 # (release.yml) and the `npm` environment. npm configures a trusted publisher on a package that already exists, so the
@@ -17,8 +18,8 @@ name: release
 # A version already on npm is skipped, so a run that failed halfway can be rerun.
 
 on:
-  push:
-    tags: ['v0.*']
+  release:
+    types: [published]
   workflow_dispatch:
 
 permissions: {}
@@ -40,8 +41,8 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      # Anyone with write access can push a tag, and tags have no ruleset: only a tag that is on main and names the version in the
-      # packages is staged.
+      # Anyone with write access can publish a release for any tag, and tags have no ruleset: only a tag that is on main and names
+      # the version in the packages is staged.
       - name: Require a release tag on main
         if: ${{ github.ref_type == 'tag' }}
         run: |
@@ -68,9 +69,9 @@ jobs:
       - name: Summarise what is staged
         run: |
           {
-            echo "## Staged for npm: $GITHUB_REF_NAME"
+            echo "## Staged for npm: v$(node -p "require('./packages/cli/package.json').version")"
             echo
-            echo "Commit \`$GITHUB_SHA\`. Approve the \`npm\` environment on this run to publish these tarballs; reject it to publish nothing."
+            echo "Started from \`$GITHUB_REF_NAME\` ($GITHUB_EVENT_NAME). Commit \`$GITHUB_SHA\`. Approve the \`npm\` environment on this run to publish these tarballs; reject it to publish nothing."
             echo
             echo "| Package | On npm | Files | Bytes | sha256 |"
             echo "| --- | --- | --- | --- | --- |"
