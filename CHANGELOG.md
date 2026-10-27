@@ -1,5 +1,14 @@
 # Changelog
 
+## <small>0.1.7 (2026-10-27)</small>
+
+* Merge pull request #1 from lede-lang/dependabot/npm_and_yarn/dev-tooling-dbc8674130 ([e363a40](https://github.com/lede-lang/lede/commit/e363a40)), closes [#1](https://github.com/lede-lang/lede/issues/1)
+* Merge pull request #12 from lede-lang/docs/refresh-after-publish ([940b733](https://github.com/lede-lang/lede/commit/940b733)), closes [#12](https://github.com/lede-lang/lede/issues/12)
+* Merge pull request #11 from lede-lang/feat/skill-setup-line ([d47dd58](https://github.com/lede-lang/lede/commit/d47dd58)), closes [#11](https://github.com/lede-lang/lede/issues/11)
+* docs: ship a README with each npm package and refresh the repo docs after the first publish ([5d6628b](https://github.com/lede-lang/lede/commit/5d6628b))
+* docs(skill): tell the agent how to get the compiler, and to ask the user first (D62) ([0958b62](https://github.com/lede-lang/lede/commit/0958b62))
+* build(deps-dev): Bump oxfmt ([7952ec7](https://github.com/lede-lang/lede/commit/7952ec7))
+
 ## <small>0.1.6 (2026-10-27)</small>
 
 * Merge pull request #10 from lede-lang/ci/stage-npm-publish ([535aaef](https://github.com/lede-lang/lede/commit/535aaef)), closes [#10](https://github.com/lede-lang/lede/issues/10)
