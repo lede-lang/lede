@@ -7,9 +7,10 @@ const root = new URL('../../../', import.meta.url).pathname;
 const json = (path: string): Record<string, any> => JSON.parse(readFileSync(join(root, path), 'utf8'));
 
 // Hosts cache an installed plugin by version, so a skill change that keeps the old version never reaches them.
-test('both plugin manifests carry the CLI version', () => {
+test('every plugin manifest carries the CLI version', () => {
   const version = json('packages/cli/package.json').version;
   assert.equal(json('.claude-plugin/marketplace.json').plugins[0].version, version);
+  assert.equal(json('skill/.claude-plugin/plugin.json').version, version);
   assert.equal(json('skill/.codex-plugin/plugin.json').version, version);
 });
 
@@ -17,6 +18,14 @@ test('both plugin manifests carry the CLI version', () => {
 test('both plugins install the skill folder, not the repository', () => {
   const claude = json('.claude-plugin/marketplace.json').plugins[0];
   assert.equal(claude.source, './skill');
-  for (const s of claude.skills) assert.ok(existsSync(join(root, 'skill', s, 'SKILL.md')), s);
+  for (const s of json('skill/.claude-plugin/plugin.json').skills) assert.ok(existsSync(join(root, 'skill', s, 'SKILL.md')), s);
   assert.equal(json('.agents/plugins/marketplace.json').plugins[0].source.path, './skill');
+});
+
+// Claude Code refuses to load a plugin whose manifest and marketplace entry both declare components ("conflicting manifests"),
+// and `claude plugin validate` does not catch it: only an install does. The plugin folder's own manifest is the one that declares them.
+test('the marketplace entry declares no components and does not switch the plugin manifest off', () => {
+  const entry = json('.claude-plugin/marketplace.json').plugins[0];
+  for (const key of ['skills', 'agents', 'commands', 'hooks', 'mcpServers', 'strict']) assert.equal(entry[key], undefined, key);
+  assert.ok(existsSync(join(root, 'skill/.claude-plugin/icon.png')), 'the plugin directory wants a square icon beside the manifest');
 });
