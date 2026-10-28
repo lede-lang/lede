@@ -50,7 +50,7 @@ RFC 4180 conventions inside one line. `;` separates rows because a newline canno
 ## D8. Diagrams laid out by elkjs, drawn by the compiler
 Brief requirement (no Graphviz, runs in the browser). ELK layered + orthogonal routing +
 INCLUDE_CHILDREN for nested groups; edge labels are layout participants, so they get space
-instead of overlapping. Visual rules from diagram-design: hairline borders, accent only on
+instead of overlapping. Visual rules from [diagram-design](https://github.com/cathrynlavery/diagram-design) (Cathryn Lavery, MIT; no code taken): hairline borders, accent only on
 `focus` nodes, mono uppercase edge labels on masks, 4px grid for node sizes, no shadows.
 
 ## D9. Phone layouts are computed, not scaled

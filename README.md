@@ -129,6 +129,12 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) first; it covers the tests, the document
 Everyone taking part follows the [Code of Conduct](CODE_OF_CONDUCT.md). Report a vulnerability through [SECURITY.md](SECURITY.md).
 Releases are tagged and described in [CHANGELOG.md](CHANGELOG.md), which is written from the commit messages (D54).
 
+## Acknowledgements
+
+Lede's diagram styling was inspired by [diagram-design](https://github.com/cathrynlavery/diagram-design) by Cathryn Lavery (MIT):
+hairline borders, one accent on the focal nodes, mono labels and no shadows. Lede shares no code with it; its diagrams are laid
+out by elkjs and drawn by Lede's own renderer (D8).
+
 ## Licence
 
 The code is Apache-2.0 ([LICENSE](LICENSE)). The full specification (`spec/lede-0.1.md`) is CC BY 4.0, and the model reference
