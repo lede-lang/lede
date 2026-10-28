@@ -1,5 +1,10 @@
 # Changelog
 
+## <small>0.1.10 (2026-10-28)</small>
+
+* Merge pull request #15 from lede-lang/docs/credit-diagram-design ([6b25857](https://github.com/lede-lang/lede/commit/6b25857)), closes [#15](https://github.com/lede-lang/lede/issues/15)
+* docs: credit diagram-design for the diagram styling ([21c4a8b](https://github.com/lede-lang/lede/commit/21c4a8b))
+
 ## <small>0.1.9 (2026-10-27)</small>
 
 * Merge pull request #14 from lede-lang/docs/fix-install-accuracy ([d46d7e4](https://github.com/lede-lang/lede/commit/d46d7e4)), closes [#14](https://github.com/lede-lang/lede/issues/14)
