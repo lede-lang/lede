@@ -1,4 +1,4 @@
-// The question controls in a real browser (spec Req 3.3, 3.4): size, overflow, contrast, labels and names.
+// The question controls in a real browser (internal spec, lede-lang/meta): size, overflow, contrast, labels and names.
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { compile } from '../src/index.ts';

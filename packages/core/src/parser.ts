@@ -545,7 +545,7 @@ export class LedeParser {
       });
     }
     for (const w of [...o.words.slice(1), ...o.flags, ...o.quoted.map((q) => `"${q}"`)])
-      this.diag('warning', 'question-option', `ignored "${w}" before the | of ${word} ${name}`, L, col, { option: w });
+      this.diag('warning', 'question-option', `ignored ${w} before the | of ${word} ${name}`, L, col, { option: w });
     for (const k of Object.keys(o.kv)) {
       if (word === 'ask' && k === 'lines') continue;
       this.diag('warning', 'question-option', `ignored ${k}= on ${word} ${name}`, L, col, { option: `${k}=` });

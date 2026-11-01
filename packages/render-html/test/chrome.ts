@@ -1,5 +1,5 @@
 // Browser checks for the question words and the shell. Not a `*.test.ts`, so the runner does not collect it.
-// A check skips, with a message, when no Chromium resolves, and fails instead when CI or LEDE_REQUIRE_CHROME is set (spec A7).
+// A check skips, with a message, when no Chromium resolves, and fails instead when CI or LEDE_REQUIRE_CHROME is set (internal spec, lede-lang/meta).
 // LEDE_SHELL_CHROME is read before CHROME so CI can enable these checks without switching on the older Chromium batteries.
 import { existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
