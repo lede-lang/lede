@@ -137,6 +137,22 @@ console.log(JSON.stringify({
   assert.match(String(out.htmlUrl), /\/node_modules\/@lede-lang\/html\/dist\/index\.js$/);
 });
 
+test('the installed library renders a shell page whose script hashes to its policy', () => {
+  writeFileSync(
+    join(app, 'shell.mjs'),
+    `import { createHash } from 'node:crypto';
+import { compile, RUNTIME, RUNTIME_SHA256 } from '@lede-lang/html';
+const { html } = await compile('ask a | q\\nexport json', { shell: true });
+const scripts = [...html.matchAll(/<script([^>]*)>([\\s\\S]*?)<\\/script>/g)];
+const digest = (s) => 'sha256-' + createHash('sha256').update(s, 'utf8').digest('base64');
+console.log(JSON.stringify({ n: scripts.length, text: scripts[1][2] === RUNTIME, hash: digest(scripts[1][2]) === RUNTIME_SHA256, csp: html.includes("script-src '" + RUNTIME_SHA256 + "'") }));
+`,
+  );
+  const r = run(process.execPath, ['shell.mjs']);
+  assert.equal(r.status, 0, r.stderr);
+  assert.deepEqual(JSON.parse(r.stdout), { n: 2, text: true, hash: true, csp: true });
+});
+
 test('a TypeScript consumer type-checks against the shipped declarations', () => {
   writeFileSync(
     join(app, 'use.ts'),
