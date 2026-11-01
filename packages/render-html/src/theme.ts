@@ -17,8 +17,7 @@ const DARK = `
   color-scheme:dark;`;
 
 /** The question words' controls (spec §4.18). Added only to a page that has a field or an `export`, so other pages are unchanged. */
-const CONTROLS = `
-/* question words */
+const CONTROLS = `/* question words */
 [hidden]{display:none!important}
 .q{display:block;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-family:var(--sans)}
 fieldset.q{margin:0}
@@ -525,5 +524,5 @@ ol.steps.sx>li>.sn{grid-column:2;min-width:0;color:var(--fg2);overflow-wrap:anyw
   table.lt.stack td .cb{min-width:0;padding:3px 8px;text-align:left}
 }
 /* end stream v04-2 */
-${opts.controls ? CONTROLS.slice(1) : ''}`;
+${opts.controls ? CONTROLS : ''}`;
 }

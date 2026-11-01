@@ -84,13 +84,14 @@ async function build(file: string, out: string | null, flags: Set<string>): Prom
     process.stderr.write(`${file}: ${errors} error(s); not written (use --force to render anyway)\n`);
     return false;
   }
+  const shell = flags.has('--shell');
   const html = await render(doc, {
     unsafeHtml: flags.has('--unsafe-html'),
     allowRemote: flags.has('--allow-remote'),
     artifact: flags.has('--artifact'),
-    shell: flags.has('--shell'),
+    shell,
   });
-  if (flags.has('--shell') && !wantsShell(doc))
+  if (shell && !wantsShell(doc))
     process.stderr.write(`${file}: --shell had no effect: the page needs an ask, choose or confirm line and an export line\n`);
   if (out) writeFileSync(out, html);
   else process.stdout.write(html);

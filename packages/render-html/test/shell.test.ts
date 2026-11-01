@@ -113,15 +113,8 @@ test('a field that has an error is not in the page or the data block', async () 
 
 // ---------------------------------------------------------------- the runtime file
 
-test('the runtime is small, ASCII, LF only, and cannot close its own element', () => {
+test('the generated module and hash file are current (the 8 KiB, ASCII and no-</script gates run there), and the module has no node: import', () => {
   assert.ok(file.length > 500, 'not a stub');
-  assert.ok(Buffer.byteLength(file) <= 8192, `${Buffer.byteLength(file)} bytes`);
-  assert.doesNotMatch(file, /[^\n -~]/, 'printable ASCII and LF only');
-  assert.doesNotMatch(file, /\r/);
-  for (const bad of ['</script', '<script', '<!--']) assert.equal(file.includes(bad), false, bad);
-});
-
-test('the generated module and hash file are current, and the module has no node: import', () => {
   const r = spawnSync(process.execPath, [new URL('../../../scripts/gen-runtime.ts', import.meta.url).pathname, '--check'], {
     encoding: 'utf8',
   });

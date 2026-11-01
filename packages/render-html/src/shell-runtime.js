@@ -44,8 +44,7 @@
     out.push('  ' + fence);
     return out;
   };
-  var write = function (fmt) {
-    var v = F.map(read);
+  var write = function (fmt, v) {
     var open = [];
     F.forEach(function (f, j) {
       if ((f.k === 'confirm' && v[j] === 'open') || (f.k === 'choose' && v[j] === null)) open.push(f.n);
@@ -72,8 +71,9 @@
     if (st) st.textContent = t;
   };
   var upd = function () {
+    var v = F.map(read);
     figs.forEach(function (x) {
-      x.querySelector('code').textContent = write(x.getAttribute('data-x'));
+      x.querySelector('code').textContent = write(x.getAttribute('data-x'), v);
       say(x, '');
     });
   };
@@ -96,7 +96,7 @@
       upd();
     } else if (b.matches('figure[data-x] .q-copy')) {
       var x = b.closest('figure[data-x]');
-      var text = write(x.getAttribute('data-x'));
+      var text = write(x.getAttribute('data-x'), F.map(read));
       var by = function () {
         getSelection().selectAllChildren(x.querySelector('pre'));
         say(x, 'Copy was blocked. The text is selected: press Ctrl+C (Cmd+C on a Mac), or choose Copy from the selection menu.');

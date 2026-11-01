@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { fieldsOf, parse, type QuestionBlock } from '@lede-lang/core';
 import { compile } from '../src/index.ts';
 import { blankAnswers, cleanText, serializeExport, type Answer } from '../src/export.ts';
+import { rng, text } from './fuzz.ts';
 
 const PAGE = [
   '# Release 4.2 go/no-go',
@@ -156,35 +157,6 @@ test('line separators in a title or an option cannot forge an item line', () => 
 });
 
 // ---------------------------------------------------------------- properties
-
-function rng(seed: number) {
-  let s = seed >>> 0;
-  return () => (s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 2 ** 32;
-}
-const PIECES = [
-  'a',
-  ' ',
-  '  ',
-  '\n',
-  '\r\n',
-  '\r',
-  '`',
-  '```',
-  '"',
-  '\\',
-  '</script>',
-  '<!--',
-  '\u2028',
-  '\u2029',
-  '\u0085',
-  '😀',
-  '- x: y',
-  '# h',
-  '(empty)',
-  '(not chosen)',
-  '\t',
-];
-const text = (r: () => number) => Array.from({ length: Math.floor(r() * 6) }, () => PIECES[Math.floor(r() * PIECES.length)]).join('');
 
 /** Reads the Markdown export back: list items and fenced blocks. */
 function readMarkdown(md: string): Map<string, string> {

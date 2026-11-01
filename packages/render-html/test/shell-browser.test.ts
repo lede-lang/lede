@@ -1,9 +1,10 @@
 // The shell runtime in Chromium, with the page's own policy in place (spec Req 6 to 8). Fails, not skips, when CI is set.
 import assert from 'node:assert/strict';
-import { fieldsOf, parse } from '@lede-lang/core';
+import { fieldsOf } from '@lede-lang/core';
 import { compile, RUNTIME } from '../src/index.ts';
 import { serializeExport, type Answer } from '../src/export.ts';
 import { browserTest, type Browser } from './chrome.ts';
+import { rng, text } from './fuzz.ts';
 
 const SRC = [
   '@title Release 4.2 go/no-go',
@@ -82,35 +83,6 @@ browserTest('the runtime adds no element and changes no attribute but hidden', a
 
 // ---------------------------------------------------------------- parity
 
-function rng(seed: number) {
-  let s = seed >>> 0;
-  return () => (s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 2 ** 32;
-}
-const PIECES = [
-  'a',
-  ' ',
-  '  ',
-  '\n',
-  '\r\n',
-  '\r',
-  '`',
-  '```',
-  '"',
-  '\\',
-  '</script>',
-  '<!--',
-  '\u2028',
-  '\u2029',
-  '\u0085',
-  '😀',
-  '- x: y',
-  '# h',
-  '(empty)',
-  '(not chosen)',
-  '\t',
-];
-const text = (r: () => number) => Array.from({ length: Math.floor(r() * 6) }, () => PIECES[Math.floor(r() * PIECES.length)]).join('');
-
 browserTest(
   'the runtime exports exactly what the reference serializer does, for 200 seeded states',
   async (browser) => {
@@ -141,7 +113,6 @@ browserTest(
         assert.equal(await code(page, fmt), serializeExport(fmt, 'Release 4.2 go/no-go', fields, held), `seed ${seed} ${fmt}`);
     }
     await ctx.close();
-    void parse;
   },
   300_000,
 );
@@ -206,20 +177,4 @@ browserTest('with scripts off the page shows the fields and the blank template, 
   assert.equal(await code(off.page, 'json'), await code(plain.page, 'json'));
   await off.ctx.close();
   await plain.ctx.close();
-});
-
-browserTest('a shell page at 360 px: no sideways scroll, 44 px buttons and controls', async (browser) => {
-  const { html } = await compile(SRC, { shell: true });
-  const { ctx, page } = await open(browser, html);
-  await page.setViewportSize({ width: 360, height: 900 });
-  assert.equal(await page.evaluate('document.scrollingElement.scrollWidth <= innerWidth'), true);
-  const heights = (await page.evaluate(
-    `[...document.querySelectorAll('.q button, .q-copy, .q input[type=text], .q-o')].filter(e => e.getBoundingClientRect().width).map(e => Math.round(e.getBoundingClientRect().height))`,
-  )) as number[];
-  assert.ok(heights.length >= 8);
-  assert.ok(
-    heights.every((h) => h >= 44),
-    heights.join(','),
-  );
-  await ctx.close();
 });

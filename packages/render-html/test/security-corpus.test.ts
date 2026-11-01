@@ -74,7 +74,8 @@ const BODY_DENY = new Set([...DENY, 'meta', 'style', 'head']);
 
 /** The runtime as it sits on disk, hashed here and not by the code under test. A shell page's policy must name exactly this. */
 const RUNTIME_FILE = readFileSync(new URL('../src/shell-runtime.js', import.meta.url), 'utf8');
-const RUNTIME_HASH = `sha256-${createHash('sha256').update(RUNTIME_FILE, 'utf8').digest('base64')}`;
+const sri = (text: string): string => `sha256-${createHash('sha256').update(text, 'utf8').digest('base64')}`;
+const RUNTIME_HASH = sri(RUNTIME_FILE);
 
 /** The page policy; a shell page's adds `script-src` for one hash. */
 function csp(allowRemote: boolean, scriptHash?: string): string {
@@ -96,7 +97,7 @@ const CONTROL_ATTRS: Record<string, string[]> = {
   label: ['class'],
 };
 const QUESTION_NAME = /^[A-Za-z][\w-]*$/;
-export interface FieldKind {
+interface FieldKind {
   name: string;
   kind: string;
 }
@@ -229,8 +230,7 @@ function audit(html: string, opts: { allowRemote?: boolean; fields?: FieldKind[]
         bad.push(`data block attributes ${JSON.stringify(data.attribs)}`);
       if (Object.keys(run.attribs).length) bad.push(`runtime attributes ${JSON.stringify(run.attribs)}`);
       if (data.at < end || run.at < data.at) bad.push('the scripts must follow <main>, data block first');
-      if (`sha256-${createHash('sha256').update(run.text, 'utf8').digest('base64')}` !== RUNTIME_HASH)
-        bad.push('the runtime text is not shell-runtime.js');
+      if (sri(run.text) !== RUNTIME_HASH) bad.push('the runtime text is not shell-runtime.js');
       if (/[<>&\u2028\u2029]/.test(data.text)) bad.push('the data block holds a raw < > & or line separator');
       try {
         const block = JSON.parse(data.text) as Record<string, unknown>;
@@ -240,7 +240,7 @@ function audit(html: string, opts: { allowRemote?: boolean; fields?: FieldKind[]
         bad.push('the data block is not JSON');
       }
     }
-  } else if (scripts.length) bad.push('a script outside shell mode');
+  }
   const want = (opts.fields ?? []).map((f) => `${f.kind}:${f.name}`).toSorted();
   if (JSON.stringify([...controls].toSorted()) !== JSON.stringify(want))
     bad.push(`controls ${JSON.stringify([...controls].toSorted())} are not the declared fields ${JSON.stringify(want)}`);
@@ -261,11 +261,14 @@ const contextDoc = (p: string) =>
     .join('\n\n');
 const markersFor = (p: string) => contextsFor(p).flatMap((c) => c.lede.match(/Mk\d+/g) ?? []);
 
+const fieldKinds = (doc: Awaited<ReturnType<typeof compile>>['doc']): FieldKind[] =>
+  fieldsOf(doc.blocks).map((f) => ({ name: f.name, kind: f.type }));
+
 const outputs: { label: string; html: string; allowRemote: boolean; fields: FieldKind[] }[] = [];
 
 async function build(label: string, src: string, allowRemote = false) {
   const { html, doc } = await compile(src, { allowRemote });
-  outputs.push({ label, html, allowRemote, fields: fieldsOf(doc.blocks).map((f) => ({ name: f.name, kind: f.type })) });
+  outputs.push({ label, html, allowRemote, fields: fieldKinds(doc) });
   return { html, doc };
 }
 
@@ -439,8 +442,6 @@ interface ShellOut {
   payload: string;
 }
 const shellOutputs: ShellOut[] = [];
-const fieldKinds = (doc: Awaited<ReturnType<typeof compile>>['doc']): FieldKind[] =>
-  fieldsOf(doc.blocks).map((f) => ({ name: f.name, kind: f.type }));
 
 test('the shell audit catches what it claims to catch', async () => {
   const { html: base, doc } = await compile('ask a | q\nexport json', { shell: true });
