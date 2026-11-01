@@ -5,6 +5,7 @@
 // not in `pnpm test`.
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -111,6 +112,19 @@ test('the installed lede bin builds and checks a page', () => {
   assert.equal(d.severity, 'error');
   assert.equal(d.line, 3);
   assert.equal(typeof d.code, 'string');
+});
+
+test('the installed lede bin builds a shell page whose script hashes to its policy, and refuses --unsafe-html', () => {
+  writeFileSync(join(app, 'ask.lede'), '# Go\n\nask a | Who?\nexport json\n');
+  const bin = join(app, 'node_modules/.bin/lede');
+  const b = run(bin, ['build', 'ask.lede', '--shell', '-o', 'ask.html']);
+  assert.equal(b.status, 0, b.stderr);
+  const html = readFileSync(join(app, 'ask.html'), 'utf8');
+  const scripts = [...html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/g)];
+  assert.equal(scripts.length, 2);
+  const hash = `sha256-${createHash('sha256').update(scripts[1][2], 'utf8').digest('base64')}`;
+  assert.ok(html.includes(`; script-src '${hash}'">`), 'the policy names the runtime');
+  assert.equal(run(bin, ['build', 'ask.lede', '--shell', '--unsafe-html']).status, 2);
 });
 
 test('plain Node imports the libraries from dist/', () => {
