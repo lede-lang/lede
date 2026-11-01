@@ -1,0 +1,38 @@
+[
+  {
+    "severity": "error",
+    "code": "question-syntax",
+    "line": 1,
+    "col": 5
+  },
+  {
+    "severity": "error",
+    "code": "question-syntax",
+    "line": 2,
+    "col": 5
+  },
+  {
+    "severity": "error",
+    "code": "question-name",
+    "line": 3,
+    "col": 5
+  },
+  {
+    "severity": "error",
+    "code": "question-dup",
+    "line": 5,
+    "col": 5
+  },
+  {
+    "severity": "error",
+    "code": "question-syntax",
+    "line": 6,
+    "col": 5
+  },
+  {
+    "severity": "warning",
+    "code": "question-option",
+    "line": 7,
+    "col": 9
+  }
+]

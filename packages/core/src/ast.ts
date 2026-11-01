@@ -244,6 +244,35 @@ export interface DiagramBlock {
   line: number;
 }
 
+/** v0.5 question words (spec §4.18). `lines` 1 is a one-line field; `text` of a `choose` is null when the question is its name. */
+export interface AskBlock {
+  type: 'ask';
+  name: string;
+  text: string;
+  lines: number;
+  line: number;
+}
+export interface ChooseBlock {
+  type: 'choose';
+  name: string;
+  text: string | null;
+  options: string[];
+  line: number;
+}
+export interface ConfirmBlock {
+  type: 'confirm';
+  name: string;
+  text: string;
+  line: number;
+}
+export type QuestionBlock = AskBlock | ChooseBlock | ConfirmBlock;
+export type ExportFormat = 'json' | 'markdown';
+export interface ExportBlock {
+  type: 'export';
+  format: ExportFormat;
+  line: number;
+}
+
 export type Block =
   | HeadingBlock
   | ParagraphBlock
@@ -261,7 +290,11 @@ export type Block =
   | GridBlock
   | DiagramBlock
   | CardsBlock
-  | StepsBlock;
+  | StepsBlock
+  | AskBlock
+  | ChooseBlock
+  | ConfirmBlock
+  | ExportBlock;
 
 export interface LedeDocument {
   meta: Record<string, string>;

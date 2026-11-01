@@ -1,0 +1,7 @@
+ask a lines=13 | Too tall
+ask b lines=0 | Too short
+ask c lines=12 | Tallest
+ask d colour=red | Ignored option
+export data
+export json
+export json
