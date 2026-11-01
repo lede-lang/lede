@@ -210,6 +210,7 @@ icons, a generic attribute escape hatch, an extras block for the frontier tier. 
 Writers: Haiku 5.5, Sonnet 5.5 and Opus 5.5, because users run all three and the pitch must hold for each; no tier is
 tuned at another's expense. Gate: fresh tasks 101-130 written by a separate subagent and hashed before any renderer
 edit (D34), judged by two blind Sonnet samples per pair. Pass bar fixed before generation: see D35.
+(Cap restated by D55: the same budget is 2,910 tokens on the Claude 5.5 tokenizer.)
 
 ## D35. Pass bar for spike 3, fixed before any v0.4 page is generated
 Per tier (Haiku 5.5, Sonnet 5.5, Opus 5.5), each judged against that tier's own HTML on blind pairs, two Sonnet
@@ -285,6 +286,7 @@ Open, the owner's call: do the seven interaction rows get an opt-in shell (`lede
 page content as data only), or stay out of scope with the static fallback documented? Recommendation: yes, as a spike on four pages, because the
 article's editors category is the round trip (edit, copy back to the agent) and a static page cannot do it; ordinary `build` stays zero-script and
 the launch safety claim is unchanged. D10 is not revised until the owner answers.
+(Answered by D43: the opt-in interaction shell is approved as a spike; ordinary `lede build` stays zero-script and D10 stands.)
 
 ## D40. `mark=` wording fixed; `lede check --fix` repairs the slips writers actually make
 The model spec said `mark=` takes the event name first; the parser wants the x value first, then the label. New writer prompt
@@ -365,6 +367,8 @@ nothing is published to npm or GitHub until the public repository exists (D45), 
 needs a public repository. npm configures a trusted publisher on an existing package, so the first publish uses an
 `NPM_TOKEN` secret on the `npm` environment, removed afterwards. The CLI surface (commands, flags, `--json`, exit codes)
 does not change.
+(Release mechanics superseded by D58, D60 and D61: `release.yml` now starts from the GitHub release and stages on npm
+for approval. The public repository now exists, so its private-repository skip no longer holds anything back.)
 
 ## D49. A security corpus gates the renderer; `@accent` is checked for AA text contrast
 `packages/render-html/test/fixtures/security-corpus.json` holds 127 injection strings, each written into
@@ -581,6 +585,7 @@ on npmjs.com or with `npm stage approve <stage-id>`, core and html before cli. S
 publish a public placeholder, `0.0.0-stage`. A version already staged is not detected on a rerun and has to be rejected first. The
 `NPM_TOKEN` bootstrap and the move to trusted publishing (D48) are unchanged. Not yet run end to end: the first staged release shows
 whether the token can stage a new package.
+(Run end to end on 2026-10-27: 0.1.6 and 0.1.7 were staged, approved and are public on npm.)
 
 ## D62. The skill tells the agent how to get the compiler, and to ask first
 
