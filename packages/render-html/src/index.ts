@@ -11,11 +11,14 @@ import type {
   StepsBlock,
   Kpi,
 } from '@lede-lang/core';
-import { browserUrl, imageSrcKind, num, parse, type ParseOptions } from '@lede-lang/core';
+import type { QuestionBlock } from '@lede-lang/core';
+import { browserUrl, exportsOf, fieldsOf, imageSrcKind, num, parse, type ParseOptions } from '@lede-lang/core';
 import sanitizeHtml from 'sanitize-html';
 import { renderChart } from './chart.ts';
 import { renderFlow } from './diagram.ts';
 import { renderSequence } from './sequence.ts';
+import { blankAnswers, serializeExport } from './export.ts';
+import { askHtml, chooseHtml, confirmHtml, exportHtml } from './question.ts';
 import { css } from './theme.ts';
 import { esc, fmtCell, inline, plain, slug, textWidth } from './util.ts';
 
@@ -74,7 +77,8 @@ export async function render(doc: LedeDocument, opts: RenderOptions = {}): Promi
   }
   const main = `<main class="doc${prose ? ' prose' : ''}">\n${body.filter(Boolean).join('\n')}\n</main>`;
   if (opts.fragment) return main;
-  const style = `<style>${css({ accent: doc.meta.accent, theme: doc.meta.theme, wide: doc.meta.width === 'wide' })}</style>`;
+  const controls = ctx.fields.length > 0 || exportsOf(doc.blocks).length > 0;
+  const style = `<style>${css({ accent: doc.meta.accent, theme: doc.meta.theme, wide: doc.meta.width === 'wide', controls })}</style>`;
   if (opts.artifact) return `<title>${esc(title)}</title>\n${style}\n${main}\n`;
   const desc = doc.meta.description ? `\n<meta name="description" content="${esc(doc.meta.description)}">` : '';
   const lang = /^[a-z]{2,3}(-[A-Za-z0-9]+)*$/.test(doc.meta.lang ?? '') ? doc.meta.lang : 'en';
@@ -288,11 +292,17 @@ class Ctx {
   private readonly doc: LedeDocument;
   private readonly opts: RenderOptions;
   private readonly picks: string[];
+  /** The page's question fields in source order, and its title for the export (none when it has no title). */
+  readonly fields: QuestionBlock[];
+  private readonly page: string | undefined;
 
   constructor(doc: LedeDocument, opts: RenderOptions) {
     this.doc = doc;
     this.opts = opts;
     this.picks = picksOf(doc.blocks);
+    this.fields = fieldsOf(doc.blocks);
+    const h1 = doc.blocks.find((b) => b.type === 'heading' && b.level === 1);
+    this.page = plain(doc.meta.title || (h1 && h1.type === 'heading' ? h1.text : '')).trim() || undefined;
   }
 
   uid(prefix: string): string {
@@ -398,6 +408,14 @@ class Ctx {
         return this.cards(b, top);
       case 'steps':
         return steps(b);
+      case 'ask':
+        return askHtml(b);
+      case 'choose':
+        return chooseHtml(b, false);
+      case 'confirm':
+        return confirmHtml(b, false);
+      case 'export':
+        return exportHtml(b, serializeExport(b.format, this.page, this.fields, blankAnswers(this.fields)), false);
       case 'kpis':
         return kpis(b, wide, top);
       case 'image': {
