@@ -9,9 +9,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { Parser } from 'htmlparser2';
-import { HEX_COLOR, parse } from '@lede-lang/core';
+import { HEX_COLOR, fieldsOf, parse } from '@lede-lang/core';
 import { compile, render } from '../src/index.ts';
-import { chromium, resolveChrome } from '../../../bench/src/shot.ts';
+import { browserTest, type Browser } from './chrome.ts';
 
 interface Case {
   id: string;
@@ -35,7 +35,7 @@ const corpus = JSON.parse(readFileSync(new URL('./fixtures/security-corpus.json'
 /** Elements that run script, fetch, navigate, submit or restyle the page; none may come out of the renderer. */
 const DENY = new Set(
   (
-    'script iframe frame frameset object embed applet form input button textarea select option base link portal noscript ' +
+    'script iframe frame frameset object embed applet form button select option base link portal noscript ' +
     'template xmp plaintext listing noembed noframes math foreignobject animate set animatemotion animatetransform use image ' +
     'feimage video audio source track isindex keygen dialog marquee bgsound param'
   ).split(' '),
@@ -73,8 +73,26 @@ function csp(allowRemote: boolean): string {
   return `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src ${img}; base-uri 'none'; form-action 'none'">`;
 }
 
-/** Every way `html` breaks the safety contract (§4.10, §7, D10); empty when it holds. */
-function audit(html: string, opts: { allowRemote?: boolean } = {}): string[] {
+/**
+ * The question controls (spec §4.18) are the only form elements a page may hold. The compiler makes them, and the sanitizer
+ * allows none of these tags, so each is judged by shape: its attributes, and the names and kinds it carries against the fields
+ * the source declared. `fieldset`, `legend` and `label` are listed so they cannot carry anything else either.
+ */
+const CONTROL_ATTRS: Record<string, string[]> = {
+  input: ['type', 'name', 'autocomplete', 'value'],
+  textarea: ['name', 'rows', 'autocomplete'],
+  fieldset: ['class'],
+  legend: ['class'],
+  label: ['class'],
+};
+const QUESTION_NAME = /^[A-Za-z][\w-]*$/;
+export interface FieldKind {
+  name: string;
+  kind: string;
+}
+
+/** Every way `html` breaks the safety contract (§4.10, §7, D10); empty when it holds. `fields` are the source's question fields. */
+function audit(html: string, opts: { allowRemote?: boolean; fields?: FieldKind[] } = {}): string[] {
   const bad: string[] = [];
   const allowRemote = !!opts.allowRemote;
   const headEnd = html.indexOf('</head>');
@@ -113,10 +131,35 @@ function audit(html: string, opts: { allowRemote?: boolean } = {}): string[] {
   }
 
   // Parsed, as a browser would read the attributes (entities decoded).
+  const controls = new Set<string>();
+  let fieldset = '';
   const parser = new Parser(
     {
+      onclosetag(name) {
+        if (name === 'fieldset') fieldset = '';
+      },
       onopentag(name, attribs) {
         const inHead = parser.startIndex < headEnd;
+        if ('hidden' in attribs) bad.push(`<${name} hidden>`);
+        if ('data-x' in attribs && !(name === 'figure' && /^(json|markdown)$/.test(attribs['data-x'])))
+          bad.push(`<${name} data-x="${attribs['data-x']}">`);
+        const allowed = CONTROL_ATTRS[name];
+        if (allowed) {
+          for (const k of Object.keys(attribs)) if (!allowed.includes(k)) bad.push(`<${name} ${k}=…> is not an allowed control attribute`);
+          const cls = attribs.class ?? '';
+          if (name === 'fieldset') fieldset = /\bq-choose\b/.test(cls) ? 'choose' : /\bq-confirm\b/.test(cls) ? 'confirm' : '';
+          if (name === 'input' || name === 'textarea') {
+            const type = name === 'textarea' ? 'textarea' : (attribs.type ?? '').toLowerCase();
+            if (!['text', 'radio', 'textarea'].includes(type)) bad.push(`<input type="${attribs.type ?? ''}">`);
+            if (attribs.autocomplete !== 'off') bad.push(`<${name}> without autocomplete="off"`);
+            if (!QUESTION_NAME.test(attribs.name ?? '')) bad.push(`<${name} name="${attribs.name ?? ''}">`);
+            if ('value' in attribs && type !== 'radio') bad.push(`<${name} value=…> outside a radio`);
+            if (name === 'textarea' && !(Number(attribs.rows) >= 2 && Number(attribs.rows) <= 12))
+              bad.push(`<textarea rows="${attribs.rows ?? ''}">`);
+            if (type === 'radio' && !fieldset) bad.push('a radio outside a .q-choose or .q-confirm fieldset');
+            controls.add(`${type === 'radio' ? fieldset : 'ask'}:${attribs.name ?? ''}`);
+          }
+        }
         if (inHead ? !HEAD_TAGS.has(name) : BODY_DENY.has(name)) bad.push(`<${name}>${inHead ? ' in the head' : ''}`);
         if (!/^[a-z][a-z0-9-]*$/.test(name)) bad.push(`odd tag name <${name}>`);
         for (const [k, v] of Object.entries(attribs)) {
@@ -143,6 +186,9 @@ function audit(html: string, opts: { allowRemote?: boolean } = {}): string[] {
   );
   parser.write(html);
   parser.end();
+  const want = (opts.fields ?? []).map((f) => `${f.kind}:${f.name}`).toSorted();
+  if (JSON.stringify([...controls].toSorted()) !== JSON.stringify(want))
+    bad.push(`controls ${JSON.stringify([...controls].toSorted())} are not the declared fields ${JSON.stringify(want)}`);
   return bad;
 }
 
@@ -160,11 +206,11 @@ const contextDoc = (p: string) =>
     .join('\n\n');
 const markersFor = (p: string) => contextsFor(p).flatMap((c) => c.lede.match(/Mk\d+/g) ?? []);
 
-const outputs: { label: string; html: string; allowRemote: boolean }[] = [];
+const outputs: { label: string; html: string; allowRemote: boolean; fields: FieldKind[] }[] = [];
 
 async function build(label: string, src: string, allowRemote = false) {
   const { html, doc } = await compile(src, { allowRemote });
-  outputs.push({ label, html, allowRemote });
+  outputs.push({ label, html, allowRemote, fields: fieldsOf(doc.blocks).map((f) => ({ name: f.name, kind: f.type })) });
   return { html, doc };
 }
 
@@ -197,6 +243,34 @@ test('the audit catches what it claims to catch', () => {
   ])
     assert.notDeepEqual(audit(page(bad)), [], bad);
   assert.notDeepEqual(audit(page('').replace(csp(false), '')), []);
+  // Question controls pass only by shape, and only as the fields the source declared.
+  const ask = '<label class="q q-ask"><span class="q-t">x</span><input type="text" name="a" autocomplete="off"></label>';
+  const fieldA = [{ name: 'a', kind: 'ask' }];
+  assert.deepEqual(audit(page(ask), { fields: fieldA }), []);
+  assert.deepEqual(audit(page(ask.replace('type="text"', 'type="TEXT"')), { fields: fieldA }), []);
+  assert.notDeepEqual(audit(page(ask)), [], 'a control the source did not declare');
+  assert.notDeepEqual(audit(page(ask), { fields: [{ name: 'b', kind: 'ask' }] }), [], 'a different name');
+  for (const bad of [
+    ask.replace('type="text"', 'type="password"'),
+    ask.replace('type="text"', 'type="image" src="//xss.example/a.png"'),
+    ask.replace('type="text"', 'type="submit"'),
+    ask.replace('type="text"', 'type="file"'),
+    ask.replace('type="text"', 'type="hidden"'),
+    ask.replace('type="text" ', ''),
+    ask.replace('autocomplete="off"', 'autocomplete="off" formaction="//xss.example"'),
+    ask.replace('autocomplete="off"', 'autocomplete="off" onfocus="x"'),
+    ask.replace('autocomplete="off"', 'autocomplete="off" list="l"'),
+    ask.replace('autocomplete="off"', 'autocomplete="off" id="a"'),
+    ask.replace('autocomplete="off"', ''),
+    ask.replace('<label class="q q-ask">', '<label class="q q-ask" style="color:red">'),
+    ask.replace('</label>', '<button type="button" class="q-copy">x</button></label>'),
+    ask.replace('</label>', '<button type="submit">x</button></label>'),
+    ask.replace('<label class="q q-ask">', '<form action="//xss.example"><label class="q q-ask">').replace('</label>', '</label></form>'),
+    '<input type="radio" name="a" value="x" autocomplete="off">',
+    '<div hidden>x</div>',
+    '<figure data-x="js">x</figure>',
+  ])
+    assert.notDeepEqual(audit(page(bad), { fields: fieldA }), [], bad);
   assert.notDeepEqual(audit(page('').replace('a{}', ':root{--accent:red}')), []);
   assert.notDeepEqual(audit(page('').replace('a{}', ':root{--accent:#fff;}body{background:url(//x)}')), []);
 });
@@ -230,7 +304,7 @@ test(`${corpus.cases.length} single-document cases`, async () => {
 
 test('every output passes the audit', () => {
   assert.ok(outputs.length >= corpus.strings.length + corpus.cases.length);
-  const fails = outputs.flatMap((o) => audit(o.html, { allowRemote: o.allowRemote }).map((p) => `${o.label}: ${p}`));
+  const fails = outputs.flatMap((o) => audit(o.html, { allowRemote: o.allowRemote, fields: o.fields }).map((p) => `${o.label}: ${p}`));
   assert.deepEqual(fails, []);
 });
 
@@ -247,7 +321,6 @@ test("fragment output is the page's <main>, so the audit of the page covers it (
  * https://lede.test/. A <base> puts the page at that origin (setContent is about:blank, where `//host` would not
  * resolve and so would never be requested), and lazy images are made eager so one below the fold is requested too.
  */
-type Browser = Awaited<ReturnType<typeof chromium.launch>>;
 const BASE = '<head><base href="https://lede.test/page.html">';
 async function probe(browser: Browser, pages: { label: string; html: string }[], tabs = 8): Promise<string[]> {
   const found: string[] = [];
@@ -277,23 +350,18 @@ async function probe(browser: Browser, pages: { label: string; html: string }[],
   return found;
 }
 
-test(
+browserTest(
   'in Chromium with the CSP removed, no payload runs and nothing leaves the page',
-  { skip: resolveChrome() ? false : 'no Chromium (set CHROME)' },
-  async () => {
-    const browser = await chromium.launch({ executablePath: resolveChrome()! });
-    try {
-      // Control: the probe must see a handler run and both spellings of a protocol-relative fetch.
-      const control = '<p>x</p><img src="x" onerror="alert(1)"><img src="//xss.example/a.png"><img src="/\\xss.example/b.png">';
-      const seen = (await probe(browser, [{ label: 'control', html: control }])).join('\n');
-      for (const want of ['a dialog opened', 'request to https://xss.example/a.png', 'request to https://xss.example/b.png'])
-        assert.ok(seen.includes(want), `control: ${want} not seen in\n${seen}`);
-      // allowRemote pages are left out: remote images are what they allow.
-      const pages = outputs.filter((o) => !o.allowRemote).map((o) => ({ label: o.label, html: o.html.replace(csp(false), '') }));
-      assert.ok(pages.length > corpus.strings.length, 'the corpus pages were built (run the whole file, not this test alone)');
-      assert.deepEqual(await probe(browser, pages), []);
-    } finally {
-      await browser.close();
-    }
+  async (browser) => {
+    // Control: the probe must see a handler run and both spellings of a protocol-relative fetch.
+    const control = '<p>x</p><img src="x" onerror="alert(1)"><img src="//xss.example/a.png"><img src="/\\xss.example/b.png">';
+    const seen = (await probe(browser, [{ label: 'control', html: control }])).join('\n');
+    for (const want of ['a dialog opened', 'request to https://xss.example/a.png', 'request to https://xss.example/b.png'])
+      assert.ok(seen.includes(want), `control: ${want} not seen in\n${seen}`);
+    // allowRemote pages are left out: remote images are what they allow.
+    const pages = outputs.filter((o) => !o.allowRemote).map((o) => ({ label: o.label, html: o.html.replace(csp(false), '') }));
+    assert.ok(pages.length > corpus.strings.length, 'the corpus pages were built (run the whole file, not this test alone)');
+    assert.deepEqual(await probe(browser, pages), []);
   },
+  600_000,
 );
