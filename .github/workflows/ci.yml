@@ -14,7 +14,8 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    # Pinned: Playwright's Chromium install does not support the newest ubuntu-latest image yet.
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -39,7 +40,7 @@ jobs:
       - run: pnpm lint
       - run: pnpm format:check
       - run: pnpm check:examples
-      # The question words' and the shell's browser checks fail, not skip, when `CI` is set (spec A7). They read
+      # The question words' and the shell's browser checks fail, not skip, when `CI` is set (internal spec, lede-lang/meta). They read
       # LEDE_SHELL_CHROME, not CHROME, so the older Chromium batteries (fonts, tick overlap) stay off here.
       - name: Install Chromium for the shell checks
         run: |

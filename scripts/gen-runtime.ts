@@ -1,7 +1,7 @@
 // The shell runtime (packages/render-html/src/shell-runtime.js) is authored as a plain file so it can be read, linted and hashed.
 // This writes the TypeScript module the library imports (a string constant and its hash, so the browser playground can bundle it
 // and `tsc` carries it into dist/) and the hex digest a reviewer checks with `sha256sum`. `--check` writes nothing and fails when
-// a generated file is out of date or the runtime breaks a gate: that is the 8 KiB build gate (spec Req 7.1).
+// a generated file is out of date or the runtime breaks a gate: that is the 8 KiB build gate (internal spec, lede-lang/meta).
 //   node scripts/gen-runtime.ts [--check]
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';

@@ -608,9 +608,9 @@ Spec §4.18 is the grammar. A malformed `ask`, `choose` or `confirm` line is an 
 as `cards` is only when alone, because `export the data` is likely prose. A line with an error makes no block and takes no name, so only what
 parsed reaches the page. The export is JSON or Markdown, keyed by the names in the source, in the shape §4.18 gives; the open items are the
 undecided confirmations and the unpicked choices, and the shape is stable within 0.x. A reason for a decision is a separate `ask`. The new
-keywords change no existing input: the 803 `.lede` files tracked at `d7f43fd` parse to identical ASTs and diagnostics, and 799 compile to
-identical pages (Appendix G.1). `--shell` builds only a page that has a question and an `export` (any other page is built as without it, and stderr says so); it is
-allowed with `--artifact`, where the data block and runtime follow `<main>` and the host's policy decides whether the runtime runs, and
-refused with `--unsafe-html`. Rejected: reading a malformed question line as prose, which keeps old prose safe and hides slips; a
-built-in reason on `confirm` (post-launch).
+keywords change no existing input: the 803 `.lede` files tracked at `d7f43fd` parse to identical ASTs and diagnostics and compile to
+identical pages (Appendix G.1). `--shell` builds only a page that has a question and an `export` (any other page is built as without
+it, and stderr says so); it is allowed with `--artifact`, where the data block and runtime follow `<main>` and the host's policy decides
+whether the runtime runs, and refused with `--unsafe-html`. Rejected: reading a malformed question line as prose, which keeps old
+prose safe and hides slips; a built-in reason on `confirm` (post-launch).
 

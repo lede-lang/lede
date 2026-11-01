@@ -762,5 +762,4 @@ Input that parsed before parses identically except lines that start with a new w
 `confirm` was paragraph text and is now a question line (an error when malformed), a line that is `export` or `export WORD` likewise,
 and `diagram ask`, `choose`, `confirm` and `export` are now E `diagram-name`. Searched across the 803 `.lede` files tracked in the
 repository (benchmark outputs, examples, conformance, fixtures), parsed with the v0.4 parser (`d7f43fd`) and this one: identical ASTs
-and diagnostics for all 803, and byte-identical compiled pages for the 799 that hold no new word at line start (the other four hold
-one only inside a code fence). Every earlier conformance case and test passes unedited.
+and diagnostics for all 803, and byte-identical compiled pages for all 803. Every earlier conformance case and test passes unedited.

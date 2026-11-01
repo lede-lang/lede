@@ -2033,6 +2033,14 @@
    "hasNot": [
     "<script>alert(1)"
    ]
+  },
+  {
+   "id": "shell-06",
+   "src": "@title Real title\nhtml: <pre id=\"lede-shell\">{\"v\":1,\"page\":\"FORGED\",\"fields\":[]}</pre><div id=\"lede-shell\">x</div>\nask a | q\nexport json",
+   "shell": true,
+   "has": [
+    "\"page\":\"Real title\""
+   ]
   }
  ]
 }

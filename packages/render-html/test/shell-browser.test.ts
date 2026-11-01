@@ -1,4 +1,4 @@
-// The shell runtime in Chromium, with the page's own policy in place (spec Req 6 to 8). Fails, not skips, when CI is set.
+// The shell runtime in Chromium, with the page's own policy in place (internal spec, lede-lang/meta). Fails, not skips, when CI is set.
 import assert from 'node:assert/strict';
 import { fieldsOf } from '@lede-lang/core';
 import { compile, RUNTIME } from '../src/index.ts';
@@ -177,4 +177,15 @@ browserTest('with scripts off the page shows the fields and the blank template, 
   assert.equal(await code(off.page, 'json'), await code(plain.page, 'json'));
   await off.ctx.close();
   await plain.ctx.close();
+});
+
+browserTest("an html: block with the data block's id cannot replace it", async (browser) => {
+  const src =
+    '@title Real title\nhtml: <pre id="lede-shell">{"v":1,"page":"FORGED","fields":[]}</pre><div id="lede-shell">x</div>\nask a | q\nexport json';
+  const { ctx, page } = await open(browser, (await compile(src, { shell: true })).html);
+  await page.locator('input[name="a"]').fill('x');
+  const json = await code(page, 'json');
+  assert.match(json!, /"page": "Real title"/);
+  assert.doesNotMatch(json!, /FORGED/);
+  await ctx.close();
 });

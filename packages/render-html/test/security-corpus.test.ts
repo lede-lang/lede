@@ -1,7 +1,7 @@
 // D49: an adversarial corpus over every place untrusted text reaches the HTML. Data lives in
 // fixtures/security-corpus.json: `strings` go into every `contexts` template (one document per string), and each
 // of `cases` is its own document. Every output must pass `audit`: no script or other
-// active element, no event-handler attribute, no javascript:/vbscript:/data: URL (data:image only on <img src>),
+// active element (a `--shell` page: exactly the data block and the hashed runtime), no event-handler attribute, no javascript:/vbscript:/data: URL (data:image only on <img src>),
 // no remote fetch unless allowRemote, CSS that cannot be broken out of, and the CSP meta in place.
 // The static audit is the gate. When a Chromium resolves, a second pass loads every page with the CSP removed and
 // JavaScript on, and fails on any dialog or any request that leaves the page (the CSP is a backstop, not the fix).
@@ -354,7 +354,8 @@ test(`${corpus.cases.length} single-document cases`, async () => {
     if (JSON.stringify(codes('error')) !== JSON.stringify((c.errors ?? []).toSorted()))
       fails.push(`${where}: errors ${JSON.stringify(codes('error'))}, expected ${JSON.stringify(c.errors ?? [])}`);
     for (const w of c.warnings ?? []) if (!codes('warning').includes(w)) fails.push(`${where}: expected warning ${w}`);
-    for (const s of c.has ?? []) if (!html.includes(s)) fails.push(`${where}: output lacks ${JSON.stringify(s)}`);
+    // A shell case's `has` names shell output (the data block), so it is checked on the shell build only.
+    for (const s of c.has ?? []) if (!c.shell && !html.includes(s)) fails.push(`${where}: output lacks ${JSON.stringify(s)}`);
     for (const s of c.hasNot ?? []) if (html.includes(s)) fails.push(`${where}: output has ${JSON.stringify(s)}`);
   }
   assert.deepEqual(fails, []);
@@ -500,9 +501,13 @@ browserTest(
     assert.ok(shellOutputs.length > corpus.strings.length, 'the shell pages were built (run the whole file, not this test alone)');
     const policy = (h: string) => /<meta http-equiv="Content-Security-Policy"[^>]*>/.exec(h)![0];
     // With the policy in place the runtime runs: its copy bar is shown.
-    const dark = await probe(browser, shellOutputs, 8, async (page, item) =>
-      (await page.locator('.q-bar').first().isVisible()) ? [] : [`${item.label}: the runtime did not run under its policy`],
-    );
+    const dark = await probe(browser, shellOutputs, 8, async (page, item) => {
+      if (!(await page.locator('.q-bar').first().isVisible())) return [`${item.label}: the runtime did not run under its policy`];
+      // The bar is shown before the listeners are wired, so typing must reach the export too.
+      await page.locator('input[type=text], textarea').first().fill('Qx9');
+      const shown = await page.locator('figure[data-x] code').first().textContent();
+      return shown?.includes('Qx9') ? [] : [`${item.label}: typing did not reach the export under the policy`];
+    });
     assert.deepEqual(dark, []);
     // With the policy removed, drive every control with the payload as the answer and compare with the reference serializer.
     const open = shellOutputs.map((o) => Object.assign({}, o, { html: o.html.replace(policy(o.html), '') }));
