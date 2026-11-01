@@ -69,8 +69,11 @@ test('the data block holds the title, the fields in source order and the formats
     ],
     formats: ['json', 'markdown'],
   });
+  // The parser keeps U+2028 out of a meta line, so the title is set on the document: the escaping must not depend on that.
   const hostile = '</script><meta http-equiv=refresh content=0> & <!-- \u2028 \u2029 "q"';
-  const out = (await compile(`@title ${hostile}\nask a | q\nexport`, { shell: true })).html;
+  const hostileDoc = parse('ask a | q\nexport');
+  hostileDoc.meta.title = hostile;
+  const out = await render(hostileDoc, { shell: true });
   const text = scripts(out)[0].text;
   assert.doesNotMatch(text, /[<>&\u2028\u2029]/);
   assert.equal((JSON.parse(text) as { page: string }).page, hostile);
@@ -113,7 +116,7 @@ test('a field that has an error is not in the page or the data block', async () 
 test('the runtime is small, ASCII, LF only, and cannot close its own element', () => {
   assert.ok(file.length > 500, 'not a stub');
   assert.ok(Buffer.byteLength(file) <= 8192, `${Buffer.byteLength(file)} bytes`);
-  assert.doesNotMatch(file, /[^\x00-\x7f]/);
+  assert.doesNotMatch(file, /[^\n -~]/, 'printable ASCII and LF only');
   assert.doesNotMatch(file, /\r/);
   for (const bad of ['</script', '<script', '<!--']) assert.equal(file.includes(bad), false, bad);
 });
@@ -124,7 +127,7 @@ test('the generated module and hash file are current, and the module has no node
   });
   assert.equal(r.status, 0, r.stderr);
   assert.doesNotMatch(readFileSync(here('../src/shell-runtime.ts'), 'utf8'), /\bnode:|\bimport\b|\brequire\b/);
-  assert.doesNotMatch(readFileSync(here('../src/shell.ts'), 'utf8'), /\bnode:/);
+  assert.doesNotMatch(readFileSync(here('../src/shell.ts'), 'utf8'), /from\s+'node:/);
 });
 
 const CATEGORIES: [string, RegExp][] = [

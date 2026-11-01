@@ -185,7 +185,7 @@ browserTest('Clear returns a choice and a decision to open; the notice is shown 
   await page.locator('input[name="hasOwnProperty"][value="rejected"]').check();
   let json = JSON.parse((await code(page, 'json'))!) as { open: string[]; answers: Record<string, unknown> };
   assert.deepEqual(json.open, []);
-  assert.deepEqual([json.answers.toString, json.answers.hasOwnProperty], ['a', 'rejected']);
+  assert.deepEqual([json.answers['toString'], json.answers['hasOwnProperty']], ['a', 'rejected']);
   await page.locator('fieldset.q-choose .q-clear').click();
   await page.locator('fieldset.q-confirm .q-clear').click();
   json = JSON.parse((await code(page, 'json'))!);
