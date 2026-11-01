@@ -1,6 +1,6 @@
 # Lede 0.1
 
-Status: **locked for Phase 0** (2026-10-16), with the post-benchmark changes in Appendices B and C and the spike additions in Appendix D. This is the reference specification. The
+Status: **locked for Phase 0** (2026-10-16), with the post-benchmark changes in Appendices B and C, the spike additions in Appendix D and the question words in §4.18 and Appendix G. This is the reference specification. The
 model-facing summary is [`model-spec.md`](model-spec.md); where they differ, this file wins.
 The reference implementation is `packages/core` (parser) and `packages/render-html`
 (renderer), and the conformance suite in `conformance/` is normative for parsing.
@@ -57,7 +57,7 @@ note         = ( "!" | "!!" ) , WS , REST ;
 quote        = ">" , [ " " ] , REST ;
 rule         = "---" , { "-" } ;
 html-line    = "html:" , REST ;
-keyword-line = data | chart | table | kpi | diagram | image | grid ;
+keyword-line = data | chart | table | kpi | diagram | image | grid | ask | choose | confirm | export ;
 diagram-line = diagram-name , ":" , WS , diagram-stmt ;   (* only if diagram-name was declared *)
 text         = REST ;                                (* paragraph line *)
 
@@ -75,6 +75,12 @@ value        = text-field | "=" , ID , "." , column ;
 image        = "image" , WS , src , WS , quoted-string , { WS , option } ;
 grid         = "grid" , WS , digit , [ WS , "count=" , integer ] ;
 diagram      = "diagram" , WS , ID , [ WS , ( "flow" | "sequence" ) ] , { WS , option } ;
+ask          = "ask" , WS , NAME , { WS , "lines=" , integer } , [ WS ] , "|" , [ WS ] , REST ;        (* 4.18 *)
+choose       = "choose" , WS , NAME , [ WS ] , "|" , options , [ "|" , [ WS ] , REST ] ;
+confirm      = "confirm" , WS , NAME , [ WS ] , "|" , [ WS ] , REST ;
+export       = "export" , [ WS , WORD ] ;                 (* json | markdown; a longer line is text *)
+options      = field , { ( "," | ";" ) , field } ;       (* data-cell fields: "," ";" "|" need double quotes *)
+NAME         = letter , { letter | digit | "_" | "-" } ;
 
 diagram-stmt = group-stmt | note-stmt | edge-stmt | node-stmt ;
 group-stmt   = "group" , [ WS , NODE-ID ] , WS , quoted-string , WS , member , { ( "," | WS ) , member } ;
@@ -255,6 +261,59 @@ with orthogonal edge routing; edge labels never overlap other edges or nodes; ed
 through non-endpoint nodes; node sizes sit on a 4px grid. A left-to-right diagram wider than a
 phone also gets a top-to-bottom layout that the page uses at phone widths.
 
+### 4.18 Questions and the export
+Four lines let a page ask and collect. They are blocks in every build mode: `lede build` draws each as a plain control with no
+script, and `lede build --shell` (§9) adds a runtime that keeps the answers and copies them out.
+
+```
+ask NAME [lines=N] | QUESTION
+choose NAME | OPTION, OPTION … [| QUESTION]
+confirm NAME | STATEMENT
+export [json|markdown]
+```
+- NAME matches `[A-Za-z][\w-]*` and is unique on the page; it is the key in the export. QUESTION and STATEMENT are inline text to
+  the end of the line, `|` included. A `choose` with no QUESTION is labelled by its name.
+- `ask`: `lines=` is a whole number from 1 to 12; above 1 the field is a text area. `confirm`: an approve-or-reject pair; it takes
+  no reason, so a reason is a separate `ask`.
+- `choose`: options are separated by `,` or `;` and read as data cells (§4.11): a quoted option may hold `,`, `;` and `|`, and the
+  options end at the first `|` outside quotes. Repeated options are removed (W `choose-dup-option`); at least two must remain, none
+  may be empty, and `(not chosen)` is reserved (E `choose-options`). Option text is plain text.
+- `export`: a bare `export` is `markdown`; one per format (W `export-dup`). The page's export lists every field in source order,
+  including fields inside `cards` and `grid`. Fields do not appear in table rows.
+- A line that is `ask`, `choose` or `confirm` alone or followed by whitespace is a question line, and fails loudly if malformed
+  (§1.5); `export` is a question line only when alone or followed by one word, so `export the data` is text. All four are lowercase:
+  `Ask the team` is text, and `\ask the team` writes lowercase text (§4.2). A line with an error makes no block and takes no name.
+- E `question-syntax` `{word}`, `question-name` `{word, name}`, `question-dup` `{name, first}`, `choose-options` `{count, empty,
+  reserved}`, `ask-lines` `{value}`, `export-format` `{format}`, `csv-quote`. W `question-option` `{option}`, `choose-dup-option`
+  `{option}`, `export-dup` `{format, first}`, `export-orphan` (an `export` and no field), `export-missing` `{fields}` (fields and no
+  `export`). The last two are reported when the document ends, so a snapshot of a prefix (§6) may show `export-missing` before
+  the `export` line arrives.
+
+AST, one block per line: `{type:"ask", name, text, lines, line}`, `{type:"choose", name, text, options, line}` (`text` is `null`
+without a QUESTION), `{type:"confirm", name, text, line}`, `{type:"export", format:"json"|"markdown", line}`.
+
+**The export.** A value per field: `ask` the text with line breaks as `\n` and the ends trimmed; `choose` the option or `null`;
+`confirm` `"approved"`, `"rejected"` or `"open"`. A field is _open_ when it is an undecided `confirm` or an unpicked `choose`; an
+empty `ask` is not open. The page title is `@title`, else the first `#` heading, as plain text; none is omitted.
+- JSON: `{"page"?, "open", "answers"}` as `JSON.stringify(…, null, 2)`, `open` the open names in source order, `answers` an object
+  from name to value in source order.
+- Markdown, lines joined by `\n`: `# TITLE` and a blank line (when there is a title), `Open: a, b` (`Open: none`), a blank line,
+  then `- NAME: VALUE` per field. VALUE is the option, `approved`, `rejected` or `open`; `(not chosen)` for an unpicked `choose`;
+  `(empty)` for an empty `ask`; the text of a one-line `ask`. An `ask` that has a line break, a backtick, U+0085, U+2028 or U+2029,
+  or equals `(empty)` or `(not chosen)`, is written as `- NAME:`, a blank line, then a fenced block indented two spaces whose fence
+  is one backtick longer than the longest run in the value (three at least); empty lines inside stay empty. U+0085, U+2028 and
+  U+2029 in the title and in options become a space.
+- Both formats carry the same trimmed answers. The template of an ordinary page is the export of the blank page.
+
+```json
+{ "page": "Release 4.2 go/no-go", "open": ["oncall"],
+  "answers": { "owner": "Dana", "risk": "medium", "migration": "approved", "oncall": "open", "notes": "Ship Tuesday." } }
+```
+
+Ordinary build rendering: `ask` a one-line field or text area, `choose` a radio group, `confirm` an Approve and a Reject radio
+beside the statement, `export` the blank-page template in a labelled `pre`. No script, no `button`, no `form`. The export shape is
+stable within 0.x (D64).
+
 ## 5. Inline markup
 `` `code` ``, `**bold**`, `*italic*` or `_italic_`, `[text](url)`. URLs must be `http`,
 `https`, `mailto`, relative or `#fragment`; others render as plain text. `\` escapes
@@ -267,13 +326,14 @@ heading, note, rule, data, chart, table, image or diagram declaration on its own
 paragraph, list, quote or kpi row when a line of another kind (or a blank line) arrives; a
 fence when it closes; a grid when it fills. Emitted blocks never change, with two exceptions
 renderers must handle: a diagram gains statements from later lines, and a chart, table or kpi
-reflects rows appended with `data NAME +=`. A snapshot of a partial document (with the open
+reflects rows appended with `data NAME +=`. Question words (§4.18) are final when read; the page-wide warnings `export-missing` and `export-orphan` are reported when the document ends. A snapshot of a partial document (with the open
 block flushed) is always a valid document. The partial last line (no `\n` yet) is not parsed.
 
 ## 7. Rendering contract (`@lede-lang/html`)
 
 - A complete page: `<!doctype html>`, `lang`, charset, viewport, one `<style>`; **no
-  executable JavaScript**, so the output works under `script-src 'none'`.
+  executable JavaScript**, so the output works under `script-src 'none'`. Question words (§4.18) draw
+  plain controls (text, radio, text area) with no script, `button` or `form`, and leave the policy unchanged.
 - No remote fetches by default (system font stacks, no remote images).
 - Light and dark themes from CSS custom properties; `prefers-color-scheme` plus
   `data-theme="light|dark"` on `<html>` to override.
@@ -328,7 +388,7 @@ diagnostics included, as JSON on stdout and exits 0 even when the document has e
 the common codes end with what to write instead (`...; put a cell that contains , in double quotes`, `...; did you mean
 delay ms?`). `detail` is optional and machine-readable. Codes the fixer reads carry it: `unknown-column` `{column, columns}`,
 `data-row-width` `{fields, want, name}`, `csv-thousands` `{fields, want, name}` (`fields` counted before the merge),
-`name-clash` `{diagram}` (a diagram named like a data set). So does `accent-contrast` (§4.3) `{accent, theme, ratio, required, against}`:
+`name-clash` `{diagram}` (a diagram named like a data set). The question-word codes (§4.18) carry `detail` too. So does `accent-contrast` (§4.3) `{accent, theme, ratio, required, against}`:
 `theme` is `light` or `dark`, `ratio` is the lowest contrast found rounded down to two decimals, `required` is `4.5`, and `against` names
 the surface (`bg`, `surface` or `accent-tint`). New keys may be added; existing ones are not removed or retyped within 0.x.
 
@@ -678,3 +738,19 @@ conformance): none used a bare `cards` line, a `step ` line, `diagram cards|step
 `| bar` field, `labels=`, `hatch=`, table `target=` or `chart range`. All 542 were parsed with the
 v0.3 parser (`d89fc20`) and this one: identical ASTs and identical diagnostic codes, severities and
 positions. Every earlier conformance case and test passes unedited.
+
+## Appendix G. Question words (2026-10, grammar v0.5)
+Status: **preview**, D63 and D64. `ask`, `choose`, `confirm` and `export` (§4.18) are new keywords, valid in every build mode. Every
+new AST block is new; a document without them parses to exactly the AST it had before. Conformance cases 31 to 34 and errors e21 to
+e26 are normative. `spec/model-spec.md` does not describe the words yet: models read them from the on-demand reference (D55 cap).
+
+The keywords are now `data chart table kpi diagram image grid cards step ask choose confirm export`, all lowercase at the start of a
+line, and none can name a diagram (E `diagram-name`).
+
+### G.1 What changed for existing input
+Input that parsed before parses identically except lines that start with a new word: a lowercase line that begins `ask`, `choose` or
+`confirm` was paragraph text and is now a question line (an error when malformed), a line that is `export` or `export WORD` likewise,
+and `diagram ask`, `choose`, `confirm` and `export` are now E `diagram-name`. Searched across the 803 `.lede` files tracked in the
+repository (benchmark outputs, examples, conformance, fixtures), parsed with the v0.4 parser (`d7f43fd`) and this one: identical ASTs
+and diagnostics for all 803, and byte-identical compiled pages for the 799 that hold no new word at line start (the other four hold
+one only inside a code fence). Every earlier conformance case and test passes unedited.
