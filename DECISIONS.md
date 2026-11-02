@@ -270,6 +270,8 @@ the 46rem text column to at most 64rem on purpose, which is why the layout check
    tuning. Any later gate round needs fresh tasks, hashed first.
 Not decided: a refinement test (does a one-line feedback edit close the Sonnet and Opus gap), input vocabulary, and allowing script. Zero-JS
 stays (D10; it is the launch safety claim). Interactive decision pages are built as a Lede body inside a separate answer shell.
+(The refinement test it left undecided is D67, 2026-11-02.)
+
 
 ## D39. Article coverage: probe run, owner decision pending on interaction
 The owner's position (2026-10-19): Lede must cover the use cases in "The unreasonable effectiveness of HTML" and produce valuable artifacts from
@@ -342,6 +344,8 @@ coverage work of D39 (its fresh-task round, new words, the reference file, the i
 posts) names only what ships.
 Rejected: holding the launch for a new round (days of work for a bar two tiers are far from), and dropping D22 (it is the honest
 measure of the one claim Lede does not yet make).
+(Brought back before 1.0 by D65 (the interaction shell), D67 (the held-out round) and D68 (the streaming viewer), 2026-11-02.)
+
 
 ## D48. npm packages: one tsc build to `dist/`, dev stays on `src/`, publishing is manual and post-cut only
 D2 deferred a build until there was something to publish. `@lede-lang/core`, `@lede-lang/html` and `@lede-lang/cli` now
@@ -563,6 +567,8 @@ The `lang` and `description` meta tags and the generator tag are dropped; the to
 output for one host, not a new format, and it does not change how an ordinary `build` page looks. It does not make Lede suitable for
 the Artifact tool's runtime features (a shared database, asking Claude from the page, saved state): those need script, and ordinary
 `build` pages have none (D10). The skill's text and trigger are unchanged until a published artifact has been seen to render.
+(Hold lifted by D66, 2026-11-02, on one measured page; the skill text changes once that check passes.)
+
 
 ## D60. The GitHub release starts the staged npm release, not the tag push (correction to D58)
 D58 started `release.yml` on a `v0.*` tag push. It never ran: semantic-release tags the release commit, whose message ends `[skip ci]`
@@ -595,3 +601,106 @@ unchanged, so D55's cap and the verbatim test still hold): if `lede` is not foun
 `npm install -g @lede-lang/cli` (or `pnpm add -g`), or `npx @lede-lang/cli build` for one build; if Node 22.12 or later is missing,
 say so and stop. Only npm, pnpm and npx are named because those are the routes tried against the published 0.1.6 packages; bun,
 yarn and deno are not listed until they are tried. A test keeps the package name in the section equal to the CLI's.
+
+
+## D65. The shell grows five editor words on the same runtime; the article's interaction rows get their verdict
+D39's seven interaction rows get the opt-in shell the owner approved (D43), built on D63 and D64 rather than on the earlier shell-only
+design: `param NAME [unit=U] | LABEL | DEFAULT MIN MAX STEP` (a slider with a number box), `toggle NAME [on|off] [needs=A,B] | LABEL`
+(a switch whose unmet prerequisites show a warning), `bucket NAME | B1, B2 … [| QUESTION]` with `NAME: item text | B` lines (items the
+reader sorts, counted live; items never move in the page, so no drag), `template NAME | LABEL` over a fence in which `{name}` is a slot
+only when `name` is a fillable field declared above it (every other brace is literal text, so JSON and CSS bodies compile; an
+undeclared `{word}` is a warning), and `preset NAME | LABEL | key=value; …` (one click sets several fields). All five are keyword lines
+only in that shape (a name after the word, then `|`, or for `toggle` `on`, `off` or `needs=`), as `export` is only when alone or with
+one word, so `toggle the flag on Monday` stays prose; a line with the shape that is malformed after it fails loudly (D64). All are
+blocks in both modes: `build` draws native controls with the written value pre-filled and the export template, with no script or
+button; `--shell` adds behaviour through the one fixed runtime, which stays under 8 KiB and now writes `value` and `aria-invalid`
+beside what D63 allows. If the words do not fit the limit, `preset` goes first, then the template's live count, then its live fill; the
+limit itself is not raised here. A third export format, `prompt`, lists only what changed (`name: value (was old)`, `set: "item" moved
+to B (was A)`, then `Open`, `Blocked`, `Unchanged`), so the agent applies the reader's edits without diffing. JSON and Markdown gain the
+new kinds and a `blocked` list additively (D64's shape holds). Rows 8, 13, 14 and 15 of the article matrix are closed by the four
+spike pages; row 16 is expected to be met by one `confirm` per row and is not probed here; row 17 by `choose` where values are
+enumerable, with native pickers deferred; row 9 (a running animation) is out, as rows 2 and 7 are. The words live in an on-demand
+reference file the skill loads by trigger, never in the capped model reference (D55). The issue's constraint that a non-shell page
+using shell words must fail is superseded by D63: the words compile in both modes. Whether an Artifact host runs the hash-pinned
+runtime is measured, not assumed; that result, the runtime size, the reference file's token count and the pages' verdict are appended
+below as they are measured. Rejected: an `item` keyword (the `NAME:` form exists), `{{`/`}}` brace escapes, bare keyword recognition,
+drag and drop, `select`, a token count in templates, raising the runtime limit, and a `diff` format (`prompt` is the diff). Internal
+spec `lede-shell-editors`, lede-lang/meta.
+
+
+## D66. The skill publishes Claude Artifacts through `lede build --artifact`; D59's hold lifts on one measured page
+Owner's decision (2026-11-02, issue #25). D59 held the skill text until a published artifact had been seen to render. The check is
+fixed here before it runs: `examples/kitchen-sink.lede` (kpi tiles, a flow and a sequence diagram, three charts, two tables), built
+with `--artifact` and published through the Artifact tool, is measured from inside the published page at 1280 px light and dark and
+390 px light and compared with the local `lede build` page at the same settings (font family equal, text sizes within 1 px, the
+centre column and page padding, the width and height of every kpi row, chart, diagram and table within 2%, the dark background equal,
+no sideways scroll); the pass bar is every comparison inside its tolerance, and a miss is reported, not tuned around. The skill gains a
+"Publishing as a Claude Artifact" section after the model reference, which is unchanged (D55), budgeted at 250 tokens on the 5.5
+tokenizer: run `check --artifact`, build with `--artifact`, publish the output, write `@description` and pass the same sentence as the
+tool's `description`, keep `@title` to two to four words, and use `data:` or asset URLs for images. The skill description names Claude
+Artifacts among the pages Lede is for and excludes only apps, games and pages that need script or live data. Two gaps are closed as
+follows. Title: a skill line, not a compiler rule, so the `<title>` stays identical in both modes and the compiler stays host-neutral.
+Images: `build --artifact` and the new `check --artifact` warn (W `artifact-image`, `detail {src, kind}`) about a relative image path,
+which the host cannot serve, and the output does not change; the page still ships, exit 0. Pages that need the tool's runtime stay
+HTML until the interaction shell (D65) is published. The skill text changes only after the check passes; its result, the artifact
+size and the measured token counts are appended to this entry when they exist. Rejected: a compiler-derived short title; refusing or
+auto-inlining a relative image (reads files with no size bound and changes the `<main>` bytes D59 promised equal); a pixel diff of
+screenshots as the check (fonts differ across machines; the probe compares what the page controls). Spec: internal spec
+`lede-artifact-publishing`, lede-lang/meta.
+
+
+## D67. Refinement test first, then a fresh hashed held-out round; both bars fixed before generation
+Owner's decision (2026-11-02, issue #26). Step 1 asks whether one line of feedback and one revision by the same writer close the
+Sonnet 5.5 and Opus 5.5 gap, on tuning tasks 71-130 (D38.4), with HTML given the same turn. Arms per tier: the v0.4 pages as the
+baseline; Lede revised against HTML revised, both writers given one line: "Revise this page so it reads as a finished, designed
+artifact rather than a plain document: give the headline numbers a prominent place, put parallel options or items side by side, show
+dated or ordered actions as visible steps, draw spans, progress and timelines to scale, label every chart, and leave no section looking
+sparse. Keep every fact, number and name exactly as it is, and keep the same sections."; and Lede hinted, where a deterministic
+script (`bench/src/hints.ts`) names at most three Lede words the page's own AST suggests, against the same revised HTML. The line is
+deliberately shaped by the v0.4 vocabulary and the themes of the HTML wins: it tests whether a generic nudge makes the Lede writer
+reach for words it has, with the HTML writer nudged the same way; it does not test arbitrary feedback. Baseline and revised pages
+are rendered by one run at one recorded commit (the renderer has moved since `2afb761`, so the published numbers are not the
+baseline of the delta); a renderer, parser or writer-prompt merge before the verdict voids the round. Writers read only their
+prompt, the brief, their own page and the line, write once, validate nothing; judges are blind, two Sonnet samples per pair, mean
+win-or-tie, under `bench/prompts/judge-v2.md`, which asks for TIE when both pages are complete, legible and free of defects
+(`judge.md` is unchanged). A round under 80% self-agreement is re-judged before its verdict is recorded; if the baseline re-judge
+returns no tie in 120 pairs the tie paragraph is revised once as `judge-v3.md` before any revised pair is judged, and the report
+names the version. Bars, 60 pairs per tier (one pair is 1.67 points), "rises" meaning a positive delta against the re-judged
+baseline: *writer reading* if both tiers rise by at least 10 points in the primary arm (qualifiers recorded, not branch-changing:
+median extra cost at most 150 output tokens per Lede page, Lede-to-HTML ratio at least 4); *hint mechanism* if in both tiers the
+hint arm rises by at least 10 points while the primary rises under 5; *renderer reading* if neither tier rises by more than 5
+points in either Lede arm; *both* otherwise; *unresolved* for a tier when the owner, judging the baseline and primary pairs of six
+of its tasks (12 pairs, judge picks hidden, a tie agreeing only with a judge tie), agrees with the judge on fewer than 7 of 12 or
+has a delta of the opposite sign or three or more pairs apart. Writer reading opens a writer-guidance spec, hint mechanism the same
+with `lede check --hints` first, renderer reading a renderer-defaults spec, both the renderer spec first; renderer and vocabulary
+work wait for the verdict. Step 2: 55 fresh tasks (131-185, five per category over the six bench and five article categories),
+written by an isolated agent that has seen no spec, renderer or page and hashed in a commit of their own, before any change
+(D34), in a separate entry numbered when written; then one held-out round for Haiku, Sonnet and Opus against each tier's own HTML
+at a frozen commit (a D36-style entry), two blind samples with ties plus 12 owner-judged pairs per tier. Pass per tier is overall
+win-or-tie at or above 60% (D22); per-category figures (five pairs, 20-point steps) are reported with their exact-binomial range,
+and a category under 40% (the floor D37 read) is named as a category fail even when the tier passes overall, with any 1.0 claim
+naming it as an exception until a later round clears it. Weakest tier first (D35); D37's figures are orientation only, since the
+judge differs. Writers `claude-sonnet-5-5` and `claude-opus-5-5` in step 1, `claude-haiku-5-5` added in step 2; judge
+`claude-sonnet-5-5`. Published numbers stay tied to archive commit `2afb761` until that round's entry replaces them. Rejected: judge
+reasons as the feedback line (asymmetric, unreproducible), archive screenshots as the baseline, re-using tasks 101-130, ten tasks
+per category, a strict 60% in each of eleven five-pair categories (a tier truly at the bar passes that 1.5% of the time).
+(Internal spec `lede-refinement-heldout`, lede-lang/meta.)
+
+
+## D68. A streaming viewer, `@lede-lang/stream`, renders a page as the model writes it; built pages stay script-free
+The owner's decision (2026-11-02, issue #27): the viewer D47 moved after launch is built before 1.0, after the interaction shell (#24)
+and the `--artifact` skill change (#25). It is a fourth package, `@lede-lang/stream`, on the same version as the three (D48, D54): a
+browser class that takes model output in chunks and grows a page inside a sandboxed frame with no `allow-scripts`. The viewer is the one
+package that carries script; every `lede build` output, in every mode, stays script-free (D10, D63). Rendering is incremental: each
+block is appended once when it is final, only the open block is redrawn per chunk, sections that may still group into cards wait in
+that open tail, a diagram holds a placeholder of about its height until a line that is not one of its statements seals it, and
+`end()` settles the page against the whole-page render. The settle is a safety net, not the proof: the tests and the bench measure the
+page before it. Element ids are unchanged and `render()` bytes are pinned by a new per-file hash fixture, so compiled pages do not
+move. The flow layout engine (elkjs) becomes a lazily loaded chunk in `@lede-lang/html` and runs in a Web Worker in the viewer, so a
+text-only page loads no chunk and starts no Worker. Core gains `LedeStream.events()` and `tail()` (spec §6). The packages gain a browser
+build (`dist/browser/`, esbuild at build time), which lets the site's playground stop bundling from a checkout. Acceptance, measured by
+`bench/src/stream-bench.ts` on the 180 v0.4 pages at 50 tokens a second against the same tasks' HTML streamed the same way: first block
+painted within one frame (16.7 ms) of its newline, cumulative layout shift under 0.05, final DOM equal to `lede build` before the settle
+on at least 95% of pages. Results: appended below when the first run completes (internal spec `lede-stream`, lede-lang/meta). Rejected:
+whole-page re-render per token, deciding layout only at the end, an unlatched prose rule, a shadow root instead of a frame, ids from
+line numbers, a subpath of `@lede-lang/html`, an asynchronous push, running the `--shell` runtime inside the viewer.
