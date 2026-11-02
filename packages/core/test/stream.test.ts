@@ -194,6 +194,34 @@ test('a diagram written inside a grid is not updated or sealed until the grid is
   assert.deepEqual(names(ev), ['block:data', 'block:grid', 'update:diagram', 'seal:diagram']);
 });
 
+test('a `name:` line that changes nothing gives no update, no reopening and no seal; it is still a statement of the diagram', () => {
+  const s = new LedeStream();
+  assert.deepEqual(names(s.events('diagram a\na: x -> y\n')), ['block:diagram', 'update:diagram']);
+  // An empty statement and one that reads as nothing are diagnostics. They extend nothing, but they are lines of the diagram: it stays open.
+  assert.deepEqual(names(s.events('a:\na: "oops"\n')), []);
+  assert.deepEqual(
+    s.doc.diagnostics.map((d) => d.code),
+    ['diagram-empty-line', 'diagram-syntax'],
+  );
+  assert.deepEqual(names(s.events('a: y -> z\n')), ['update:diagram']);
+  assert.deepEqual(names(s.events('Text.\n')), ['seal:diagram']);
+  // Once sealed, a rejected statement neither updates nor reopens it, so the paragraph after it seals nothing again.
+  assert.deepEqual(names(s.events('a: "oops"\nMore.\n\n')), ['block:paragraph', 'block:paragraph']);
+  // A statement that repeats what the diagram has, and a second `legend`, change nothing either.
+  assert.deepEqual(names(s.events('a: x "X"\n')), ['update:diagram']);
+  assert.deepEqual(names(s.events('a: x "X"\n')), []);
+  assert.deepEqual(names(s.events('a: legend\na: legend\n')), ['update:diagram']);
+  assert.deepEqual(names(s.events('a: y -> z\n')), ['update:diagram']);
+  const atEnd: string[] = [];
+  s.end((e) => atEnd.push(kind(e)));
+  assert.deepEqual(atEnd, ['seal:diagram']);
+  // A sequence diagram: an `end` with no `alt` open is rejected, and the frame lines that do apply are updates.
+  const q = new LedeStream();
+  assert.deepEqual(names(q.events('diagram s sequence\ns: a -> b : hi\n')), ['block:diagram', 'update:diagram']);
+  assert.deepEqual(names(q.events('s: end\n')), []);
+  assert.deepEqual(names(q.events('s: alt "ok"\ns: b -> a : yes\ns: end\n')), ['update:diagram', 'update:diagram', 'update:diagram']);
+});
+
 // `cards` takes nothing after it, so a line that starts "cards on the table" is prose.
 const KEYWORD_LINE = /^((data|chart|table|kpi|diagram|image|grid|step)(\s|$)|cards$)/;
 const nested = (bs: Block[]): Block[] =>

@@ -5,9 +5,10 @@ import { walkBlocks } from './walk.ts';
 /**
  * What `LedeStream.events` returns, in line order.
  * - `block`: a block became final; the same blocks `write` returns.
- * - `update` with `block`: a `name:` line extended a diagram that was already returned (a diagram is a block that grows).
+ * - `update` with `block`: a `name:` line changed a diagram that was already returned (a diagram is a block that grows). A line
+ *   the parser rejects, or one that repeats what the diagram has, is no update; it is still a statement of the diagram.
  *   The next non-blank line that is not another statement of it ends the growth with a `seal`; a statement after a seal
- *   is an `update` again and a second `seal` follows (a reseal).
+ *   that changes the diagram is an `update` again and a second `seal` follows (a reseal).
  * - `update` with `data`: `data NAME += rows` appended rows; charts, tables and kpi rows that read NAME changed.
  * - `seal`: no statement of this diagram is expected for now.
  */
@@ -33,8 +34,9 @@ export class LedeStream {
   private lines: string[] = [];
 
   private readonly opts: ParseOptions;
-  /** Diagrams a statement line touched, and data names a `+=` line appended to, since the last line began. */
+  /** Diagrams a statement line was written for, the ones among them it changed, and data names a `+=` line appended to, since the last line began. */
   private touched = new Set<DiagramBlock>();
+  private changed = new Set<DiagramBlock>();
   private appended: string[] = [];
   /** Diagrams already returned in a `block` event, and the ones among them that may still receive statements. */
   private returned = new WeakSet<DiagramBlock>();
@@ -42,7 +44,13 @@ export class LedeStream {
 
   constructor(opts: ParseOptions = {}) {
     this.opts = opts;
-    this.parser = new LedeParser(opts, { onDiagramLine: (b) => this.touched.add(b), onDataAppend: (name) => this.appended.push(name) });
+    this.parser = new LedeParser(opts, {
+      onDiagramLine: (b, changed) => {
+        this.touched.add(b);
+        if (changed) this.changed.add(b);
+      },
+      onDataAppend: (name) => this.appended.push(name),
+    });
   }
 
   write(chunk: string): Block[] {
@@ -117,13 +125,15 @@ export class LedeStream {
 
   private lineEvents(line: string, out: StreamEvent[]): void {
     this.touched.clear();
+    this.changed.clear();
     this.appended.length = 0;
     const blocks = this.parser.pushLine(line);
     for (const block of blocks) out.push({ kind: 'block', block });
     for (const data of this.appended) out.push({ kind: 'update', data });
     for (const d of this.touched) {
-      // A diagram inside a grid or card run that has not been returned yet is not on screen: nothing to update.
-      if (!this.returned.has(d)) continue;
+      // A diagram inside a grid or card run that has not been returned yet is not on screen: nothing to update. A line that changed
+      // nothing is not an update and does not reopen a sealed diagram; if the diagram is open, being touched keeps it so (below).
+      if (!this.returned.has(d) || !this.changed.has(d)) continue;
       out.push({ kind: 'update', block: d });
       this.open.add(d);
     }

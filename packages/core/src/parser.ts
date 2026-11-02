@@ -29,8 +29,11 @@ import { walkBlocks } from './walk.ts';
  * the line has been applied. They are not a `ParseOptions` field, so `parse` and the snapshot parser cannot take them.
  */
 export interface ParseHooks {
-  /** A `name:` statement was read for the diagram `block` declared earlier, so it gained nodes, edges or notes. */
-  onDiagramLine(block: DiagramBlock): void;
+  /**
+   * A `name:` line was read for the diagram `block` declared earlier. `changed` is false when the line was rejected or repeated what
+   * the diagram already has (its nodes, edges, groups, notes, frames and legend are as they were); it is still a line of the diagram.
+   */
+  onDiagramLine(block: DiagramBlock, changed: boolean): void;
   /** `data NAME += rows` appended rows to the data set `name`. */
   onDataAppend(name: string): void;
 }
@@ -342,8 +345,8 @@ export class LedeParser {
       this.flush();
       const col = lead + 1 + s.indexOf(':') + 1 + (s.slice(s.indexOf(':') + 1).length - s.slice(s.indexOf(':') + 1).trimStart().length);
       const d = this.diagrams.get(dl[1])!;
-      this.diagramLine(d, dl[2].trim(), col);
-      this.hooks?.onDiagramLine(d);
+      const changed = this.diagramLine(d, dl[2].trim(), col);
+      this.hooks?.onDiagramLine(d, changed);
       return;
     }
     if (dl && /(-->|->|<->)/.test(dl[2])) {
@@ -1236,8 +1239,8 @@ export class LedeParser {
     return n;
   }
 
-  /** alt/opt/else/end in a sequence diagram. Frames are flat: one open at a time, positions are edge indexes. */
-  private frameLine(d: DiagramBlock, word: 'alt' | 'opt' | 'else' | 'end', rest: string, col: number): void {
+  /** alt/opt/else/end in a sequence diagram. Frames are flat: one open at a time, positions are edge indexes. True when a frame was opened, got a branch or was closed. */
+  private frameLine(d: DiagramBlock, word: 'alt' | 'opt' | 'else' | 'end', rest: string, col: number): boolean {
     const L = this.lineNo;
     const st = this.seq.get(d) ?? { open: null, skip: 0 };
     this.seq.set(d, st);
@@ -1253,7 +1256,7 @@ export class LedeParser {
           L,
           col,
         );
-        return;
+        return false;
       }
       if (!cond)
         this.diag(
@@ -1273,11 +1276,11 @@ export class LedeParser {
       };
       (d.frames ??= []).push(f);
       st.open = f;
-      return;
+      return true;
     }
     if (st.skip) {
       if (word === 'end') st.skip--;
-      return;
+      return false;
     }
     const f = st.open;
     if (!f) {
@@ -1290,7 +1293,7 @@ export class LedeParser {
         L,
         col,
       );
-      return;
+      return false;
     }
     if (word === 'else') {
       if (f.kind === 'opt') {
@@ -1301,33 +1304,38 @@ export class LedeParser {
           L,
           col,
         );
-        return;
+        return false;
       }
       f.branches[f.branches.length - 1].to = at;
       f.branches.push({ label: cond, from: at, to: null, line: L });
-      return;
+      return true;
     }
     if (rest) this.diag('warning', 'diagram-block-syntax', `end takes nothing after it; "${rest}" is ignored`, L, col);
     f.branches[f.branches.length - 1].to = at;
     f.to = at;
     f.endLine = L;
     st.open = null;
+    return true;
   }
 
-  private diagramLine(d: DiagramBlock, s: string, col: number): void {
+  /** Apply a `name:` line to the diagram. True when it changed the diagram: a rejected line, and one that repeats what is there, did not. */
+  private diagramLine(d: DiagramBlock, s: string, col: number): boolean {
     const L = this.lineNo;
     const ID = /^[A-Za-z0-9_][\w.-]*$/;
     if (s === '') {
       this.diag('warning', 'diagram-empty-line', `empty ${d.name}: line`, L, col);
-      return;
+      return false;
     }
 
     // NAME: legend (v0.4): a key of node kinds and arrow styles. Flow diagrams only.
     if (s === 'legend') {
       if (d.kind === 'sequence')
         this.diag('warning', 'legend-kind', `legend applies to flow diagrams; ignored on sequence diagram ${d.name}`, L, col);
-      else d.legend = true;
-      return;
+      else if (d.legend !== true) {
+        d.legend = true;
+        return true;
+      }
+      return false;
     }
 
     // alt "cond" / opt "cond" / else ["cond"] / end   (sequence only). A line that starts with one of
@@ -1335,8 +1343,7 @@ export class LedeParser {
     if (d.kind === 'sequence') {
       const bm = /^(alt|opt|else|end)(?:\s+(.*))?$/.exec(s);
       if (bm && !/^(<->|-->|->|,)/.test(bm[2] ?? '')) {
-        this.frameLine(d, bm[1] as 'alt' | 'opt' | 'else' | 'end', (bm[2] ?? '').trim(), col);
-        return;
+        return this.frameLine(d, bm[1] as 'alt' | 'opt' | 'else' | 'end', (bm[2] ?? '').trim(), col);
       }
     }
 
@@ -1349,13 +1356,13 @@ export class LedeParser {
         .filter(Boolean);
       if (!over.every((x) => ID.test(x))) {
         this.diag('error', 'diagram-syntax', 'note needs `note id : text`', L, col);
-        return;
+        return false;
       }
       if (d.kind !== 'sequence') this.diag('warning', 'diagram-note', 'notes only render in sequence diagrams', L, col);
       over.forEach((x) => this.node(d, x));
       // `after` places the note between messages: it follows the first `after` edges.
       d.notes.push({ over, text: nm[2].trim(), after: d.edges.length, line: L });
-      return;
+      return true;
     }
 
     // group [id] "Label" a, b, c
@@ -1370,7 +1377,7 @@ export class LedeParser {
       }
       if (body[i] !== '"') {
         this.diag('error', 'diagram-syntax', 'group needs `group [id] "Label" member, member`', L, col);
-        return;
+        return false;
       }
       const q = readQuoted(body, i);
       const members = body
@@ -1380,21 +1387,23 @@ export class LedeParser {
         .filter(Boolean);
       if (!members.length) {
         this.diag('error', 'diagram-syntax', `group "${q.value}" has no members`, L, col);
-        return;
+        return false;
       }
       const gid = id ?? `group${d.groups.length + 1}`;
       const declared = this.declared.get(d) ?? new Set<string>();
       if (d.groups.some((g) => g.id === gid) || (id && declared.has(gid))) {
         this.diag('error', 'diagram-syntax', `group id ${gid} is already used`, L, col);
-        return;
+        return false;
       }
       // An id first used in an edge (`prodvpc -> tgw`) and later declared as a group is that group:
       // its edges attach to the group's boundary.
+      const nodesBefore = d.nodes.length;
       if (id) d.nodes = d.nodes.filter((n) => n.id !== gid);
       for (const m of members) {
         if (!ID.test(m)) {
           this.diag('error', 'diagram-syntax', `bad member id "${m}"`, L, col);
-          return;
+          // The members before it were added already.
+          return d.nodes.length !== nodesBefore;
         }
         if (!d.groups.some((g) => g.id === m)) this.node(d, m);
       }
@@ -1402,7 +1411,7 @@ export class LedeParser {
       if (owner)
         this.diag('warning', 'diagram-group', `a node is in both "${owner.label}" and "${q.value}"; it is drawn in the first`, L, col);
       d.groups.push({ id: gid, label: q.value, members });
-      return;
+      return true;
     }
 
     // edges: a -> b, c --> d : label
@@ -1420,13 +1429,13 @@ export class LedeParser {
           if (!ID.test(id)) {
             const hint = id.includes('"') ? ' (declare labels on their own line: `x "Label"`)' : '';
             this.diag('error', 'diagram-syntax', `bad node id "${id}" in edge${hint}`, L, col);
-            return;
+            return false;
           }
         }
       }
       if (d.kind === 'sequence' && steps.some((x) => x.length > 1)) {
         this.diag('error', 'diagram-syntax', 'sequence messages go between exactly two participants', L, col);
-        return;
+        return false;
       }
       for (let i = 0; i < ops.length; i++) {
         for (const a of steps[i])
@@ -1445,7 +1454,7 @@ export class LedeParser {
             d.edges.push(e);
           }
       }
-      return;
+      return true;
     }
 
     // node: id "Label" [kind] [focus] ["sub label"]
@@ -1459,12 +1468,14 @@ export class LedeParser {
         L,
         col,
       );
-      return;
+      return false;
     }
     if (d.groups.some((g) => g.id === id)) {
       this.diag('error', 'diagram-syntax', `${id} is a group id`, L, col);
-      return;
+      return false;
     }
+    const existing = d.nodes.find((x) => x.id === id);
+    const was = existing && JSON.stringify(existing);
     const n = this.node(d, id);
     if (!this.declared.has(d)) this.declared.set(d, new Set());
     this.declared.get(d)!.add(id);
@@ -1481,6 +1492,7 @@ export class LedeParser {
       else if (kv.key === 'kind') n.kind = kv.text;
       else this.diag('warning', 'diagram-option', `ignored ${kv.key}= on node ${id}`, L, col + kv.offset);
     }
+    return JSON.stringify(n) !== was;
   }
 
   private diag(
