@@ -12,6 +12,7 @@ import { fileURLToPath } from 'node:url';
 import { parse } from '@lede-lang/core';
 import { render, setLayoutEngine } from '../src/index.ts';
 import { drive, normalize, type Driven } from '../../../bench/src/incremental-model.ts';
+import { benchPages, measure, summarize, summaryText } from '../../../bench/src/incremental-report.ts';
 import { resolveChrome } from '../../../bench/src/shot.ts';
 import type { Page } from '../../../bench/node_modules/playwright-core/index.js';
 
@@ -33,8 +34,6 @@ function lede(dir: string): string[] {
     .toSorted();
 }
 const read = (f: string) => readFileSync(join(root, f), 'utf8');
-const p95 = (xs: number[]) => (xs.length ? xs.toSorted((a, b) => a - b)[Math.min(xs.length - 1, Math.floor(xs.length * 0.95))] : 0);
-
 // ---- text for fixtures ---------------------------------------------------------------------------------------------------------
 
 const SENTENCES = [
@@ -64,38 +63,25 @@ test('examples: the streamed page equals the whole-page render before any settle
   }
 });
 
-test('the 180 v0.4 pages: pre-settle equality, settle causes, regroups, late meta and hold latency', async () => {
-  const files = ['haiku', 'sonnet', 'opus'].flatMap((t) => lede(`bench/gen/${t}-r6/C`).map((f) => f));
+test('the 180 v0.4 pages: pre-settle equality, settle causes, regroups, late meta and hold latency (the report of bench/src/incremental-report.ts)', async () => {
+  const files = benchPages();
   assert.equal(files.length, 180);
-  let equal = 0;
-  const causes: Record<string, number> = {};
-  const misses: string[] = [];
-  const hold: number[] = [];
-  let regroups = 0;
-  let lateMeta = 0;
-  let repicks = 0;
-  let reseals = 0;
-  for (const f of files) {
-    const src = read(f);
-    const d = await drive(src, { chunk: 64, parse: parseOpts });
-    const same = streamed(d) === (await whole(src));
-    assert.equal(d.end.equal, same, `${f}: the report agrees with the model`);
-    if (same) equal++;
-    else misses.push(`${f} ${d.end.causes.join(',')}`);
-    for (const c of d.end.causes) causes[c] = (causes[c] ?? 0) + 1;
-    hold.push(...d.end.holdMs);
-    regroups += d.end.regroups;
-    lateMeta += d.end.lateMeta;
-    repicks += d.end.repicks;
-    reseals += d.end.reseals;
-  }
+  // The same measurement the report prints, at the report's default arrival rate (4 characters every 20 ms).
+  const rows = await measure(files);
+  const s = summarize(rows);
   console.log(
-    `incremental, 180 pages: ${equal} equal before the settle (${((equal / files.length) * 100).toFixed(1)}%); causes ${JSON.stringify(causes)}; ` +
-      `regroups ${regroups}; repicks ${repicks}; reseals ${reseals}; late meta ${lateMeta}; hold p95 ${p95(hold).toFixed(2)} ms\n  misses: ${misses.join('; ')}`,
+    `incremental renderer over the 180 v0.4 pages\n${summaryText(rows)}\n  misses: ${rows
+      .filter((r) => !r.equal)
+      .map((r) => `${r.page} ${r.causes.join('+')} first ${r.firstDiff}`)
+      .join('; ')}`,
   );
-  assert.ok(equal / files.length >= 0.95, `pre-settle equality ${equal}/${files.length}`);
-  assert.equal(regroups, 0, 'regroups (the hold rule)');
-  assert.equal(lateMeta, 0, 'late meta');
+  for (const r of rows) assert.equal(r.reported, r.equal, `${r.page}: the renderer's report agrees with the string model`);
+  assert.ok(s.rate >= 0.95, `pre-settle equality ${s.equal}/${s.pages}`);
+  // Every miss has a cause the rules name, and a page that is equal reports none.
+  for (const r of rows) assert.equal(r.equal, r.causes.length === 0 && r.settled === 0, `${r.page}: causes ${r.causes.join(',')}`);
+  assert.equal(s.regroups, 0, 'regroups (the hold rule)');
+  assert.equal(s.lateMetaPages, 0, 'no page writes meta after its first block');
+  assert.equal(s.reseals, 0);
 });
 
 // ---- Req 2.3, 2.4: ids and render counts ---------------------------------------------------------------------------------------

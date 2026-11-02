@@ -75,6 +75,9 @@ export interface IncrementalEnd {
   shiftAssumed: boolean;
   /** How long each block that was held back waited before it was committed, in `now()` units. */
   holdMs: number[];
+  /** Of the blocks that waited, how many were committed inside a grouped unit, and how many as plain blocks (the wait bought nothing). */
+  heldGrouped: number;
+  heldPlain: number;
   /** For each diagram drawn alone in its unit: its placeholder height minus the height of its drawing, in px (drawing = svg + 34). */
   placeholderError: number[];
   /** Units drawn (a unit drawn again counts again). */
@@ -244,6 +247,8 @@ class Renderer implements Incremental {
   private reseals = 0;
   private renders = 0;
   private readonly holdMs: number[] = [];
+  private heldGrouped = 0;
+  private heldPlain = 0;
   private readonly placeholderError: number[] = [];
 
   constructor(meta: () => Record<string, string>, data: () => Record<string, DataSet>, opts: IncrementalOptions) {
@@ -393,7 +398,10 @@ class Renderer implements Incremental {
     const seqs = this.heldSeq.splice(0, n);
     const t = this.now();
     seqs.forEach((q, i) => {
-      if (q < this.seq || this.atEnd) this.holdMs.push(t - at[i]);
+      if (q >= this.seq && !this.atEnd) return;
+      this.holdMs.push(t - at[i]);
+      if (unit.kind === 'block') this.heldPlain++;
+      else this.heldGrouped++;
     });
     const u: U = {
       id,
@@ -670,6 +678,8 @@ class Renderer implements Incremental {
       proseFlips: this.proseFlips,
       shiftAssumed: this.shiftAssumed,
       holdMs: this.holdMs,
+      heldGrouped: this.heldGrouped,
+      heldPlain: this.heldPlain,
       placeholderError: this.placeholderError,
       renders: this.renders,
     };
