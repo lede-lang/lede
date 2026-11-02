@@ -259,6 +259,61 @@ test('tail() is the open block, and never a keyword line', () => {
   assert.deepEqual(open('para\n\n'), [], 'a blank line finishes the paragraph');
 });
 
+test('tail() copies the open block without structuredClone, and what it returns shares nothing with the parser', () => {
+  const real = globalThis.structuredClone;
+  let clones = 0;
+  globalThis.structuredClone = ((...args: Parameters<typeof real>) => {
+    clones++;
+    return real(...args);
+  }) as typeof real;
+  try {
+    for (const text of [
+      '- one\n- two\n',
+      'kpi A | 1 | | x\nkpi B | 2 | | y\n',
+      'step Do it | Mon | a note\n',
+      'First\nsecond\n',
+      '> q\n> -- who\n',
+    ]) {
+      const x = new LedeStream();
+      x.events(text);
+      assert.equal(x.tail().length, 1, text);
+    }
+  } finally {
+    globalThis.structuredClone = real;
+  }
+  assert.equal(clones, 0);
+
+  // Changing what tail() returned changes nothing in the parser, and a line that arrives later changes nothing in what it returned.
+  const s = new LedeStream();
+  s.events('- one\n- two\n');
+  const first = s.tail()[0];
+  assert.ok(first.type === 'list');
+  first.items[0].text = 'changed';
+  first.items.pop();
+  assert.deepEqual(
+    s.tail().flatMap((b) => (b.type === 'list' ? b.items.map((i) => i.text) : [])),
+    ['one', 'two'],
+  );
+  s.events('- three\n');
+  assert.deepEqual(
+    first.items.map((i) => i.text),
+    ['changed'],
+  );
+  const k = new LedeStream();
+  k.events('kpi A | 1 | | x\n');
+  const row = k.tail()[0];
+  assert.ok(row.type === 'kpis');
+  k.events('kpi B | 2 | | y\n');
+  row.items[0].value = '99';
+  assert.equal(row.items.length, 1);
+  const ended = k.end().blocks[0];
+  assert.ok(ended.type === 'kpis');
+  assert.deepEqual(
+    ended.items.map((i) => i.value),
+    ['1', '2'],
+  );
+});
+
 test('tail() shows an open grid and an open cards run as blocks, with the open block inside', () => {
   const grid = new LedeStream();
   assert.deepEqual(names(grid.events('grid 3\nfirst\n\nsecond\n')), []);

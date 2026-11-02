@@ -87,6 +87,24 @@ function accBlock(a: Acc): Block {
   return { type: 'quote', text: lines.join(' '), cite, line: a.line };
 }
 
+/**
+ * An accumulator the block `peek` builds from it can own. A list, kpi row or step run hands its items to the block it becomes, and
+ * the parser keeps adding to them, so those are copied (each item is a flat object of strings and flags); a paragraph and a quote
+ * become new strings.
+ */
+function copyAcc(a: Acc): Acc {
+  switch (a.kind) {
+    case 'list':
+      return { ...a, items: a.items.map((i) => ({ ...i })) };
+    case 'kpis':
+      return { ...a, items: a.items.map((i) => ({ ...i })) };
+    case 'steps':
+      return { ...a, items: a.items.map((i) => ({ ...i })) };
+    default:
+      return a;
+  }
+}
+
 /** The `code` (or raw `html`) block a fence becomes with the lines it holds. Strips the common indentation. */
 function fenceBlock(f: Fence): Block {
   const ind = Math.min(...f.lines.filter((l) => l.trim()).map((l) => l.length - l.trimStart().length), Infinity);
@@ -174,7 +192,7 @@ export class LedeParser {
    * part of it: it is a block or a diagnostic on its own line.
    */
   peek(): Block[] {
-    let open: Block | null = this.fence ? fenceBlock(this.fence) : this.acc ? accBlock(structuredClone(this.acc)) : null;
+    let open: Block | null = this.fence ? fenceBlock(this.fence) : this.acc ? accBlock(copyAcc(this.acc)) : null;
     const out: Block[] = [];
     const c = this.cards;
     // `emit` hands the open block to the open card, else the open grid, else the page.
