@@ -128,21 +128,26 @@ export function masthead(doc: LedeDocument, ctx: Ctx): Masthead {
  * The page body as top-level children, in order (the header first), and whether the page is set as prose. Every block is
  * drawn by `ctx`, in document order, so that ids are numbered in document order.
  */
-export async function renderMain(doc: LedeDocument, ctx: Ctx, mh: Masthead): Promise<{ body: string[]; prose: boolean }> {
+export async function renderMain(doc: LedeDocument, ctx: Ctx, mh: Masthead): Promise<{ body: string[]; prose: boolean; h1At: number }> {
   const { rest, firstH1, sub, by } = mh;
   const body: string[] = [];
   if (mh.header) body.push(mh.header);
   const prose = !isWide(doc.meta) && isProse(rest);
+  // Where the heading that carries the subtitle and byline is in `body` (they follow it as children of their own), or -1.
+  let h1At = -1;
   for (const u of plan(rest, prose)) {
     if (u.kind === 'block') {
       const b = u.block;
       // oxlint-disable-next-line eslint/no-await-in-loop -- sequential on purpose: uid() numbers ids in document order
       body.push(standfirst(b, rest[0], mh.header, prose) ?? (await ctx.block(b, true)));
-      if (b === firstH1) body.push(sub, by);
+      if (b === firstH1) {
+        h1At = body.length - 1;
+        body.push(sub, by);
+      }
       // oxlint-disable-next-line eslint/no-await-in-loop -- sequential on purpose: uid() numbers ids in document order
     } else body.push(await ctx.unit(u));
   }
-  return { body, prose };
+  return { body, prose, h1At };
 }
 
 /** Parse and render in one call. */

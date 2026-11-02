@@ -20,6 +20,7 @@ import {
   styleOf,
   tallyProse,
   type CtxMark,
+  type Masthead,
   type PickScan,
   type Probe,
   type ProseTally,
@@ -52,7 +53,11 @@ export interface Pushed {
   pending?: Promise<IncrementalOp[]>;
 }
 
-export type SettleCause = 'prose' | 'shift' | 'lead' | 'picks' | 'other';
+/**
+ * Why a child of `<main>` was settled. `masthead`: the header, or the heading that carries the subtitle and byline, which the
+ * first block alone could not decide (the first `#` heading came later and rules out or moves the header).
+ */
+export type SettleCause = 'prose' | 'shift' | 'lead' | 'picks' | 'masthead' | 'other';
 
 export interface IncrementalEnd {
   ops: IncrementalOp[];
@@ -327,7 +332,15 @@ class Renderer implements Incremental {
     return out.result();
   }
 
-  /** The first block decides the style and the masthead; a heading `#` the masthead takes is not part of the body. */
+  /**
+   * The first block decides the style and the masthead; a heading `#` the masthead takes is not part of the body. `render()`
+   * reads the first `#` heading anywhere, so a page whose first block is not one decides on a guess: the header from the
+   * `@title`, or from the subtitle and byline. The guess is right unless a `#` heading comes later and either repeats the
+   * `@title` (the page has no header) or, with no `@title`, takes the subtitle and byline to follow it. Holding the header
+   * back until that heading arrives would leave the title off the page for the whole stream on the many pages that never
+   * have one, so the guess is shown and `end()` settles it (cause `masthead`): the header, and the one heading unit, are
+   * replaced and nothing else (internal spec, lede-lang/meta).
+   */
   private begin(first: Block): { ops: IncrementalOp[]; consumed: boolean } {
     this.begun = true;
     const m = this.meta();
@@ -578,7 +591,10 @@ class Renderer implements Incremental {
     const doc: LedeDocument = { meta: m, blocks: this.all, data: this.data(), diagnostics: [] };
     const whole = new Ctx(doc, this.renderOpts);
     const mh = masthead(doc, whole);
-    const { body, prose } = await renderMain(doc, whole, mh);
+    const { body, prose, h1At } = await renderMain(doc, whole, mh);
+    // The subtitle and byline that follow the first `#` heading are children of `<main>` of their own in `render()`, and part of
+    // that heading's unit here: the heading is the one unit a late masthead decision changes.
+    if (h1At >= 0) body.splice(h1At, 3, body[h1At] + body[h1At + 1] + body[h1At + 2]);
     const theirUnits = body.slice(mh.header ? 1 : 0).filter(Boolean);
     const mineUnits = this.units.filter((u) => u.html !== '');
     const causes: SettleCause[] = [];
@@ -590,7 +606,7 @@ class Renderer implements Incremental {
     if (normalize(this.header) !== normalize(mh.header)) {
       firstDiff = 0;
       settled++;
-      causes.push('other');
+      causes.push('masthead');
       edits.push({ op: 'masthead', html: mh.header });
     }
     let f = 0;
@@ -600,7 +616,7 @@ class Renderer implements Incremental {
       // The units no longer line up: replace from the first difference to the end.
       firstDiff ??= offset + f;
       settled += Math.max(mineUnits.length, theirUnits.length) - f;
-      causes.push(this.causeOf(mineUnits[f], theirUnits[f] ?? '', whole, prose));
+      causes.push(this.causeOf(mineUnits[f], theirUnits[f] ?? '', whole, prose, mh));
       const stale = mineUnits.slice(f).map((u) => u.id);
       if (stale.length) edits.push({ op: 'remove', ids: stale });
       theirUnits.slice(f).forEach((html, k) => edits.push({ op: 'append', id: this.rest.length + k, html }));
@@ -609,7 +625,7 @@ class Renderer implements Incremental {
         if (normalize(mineUnits[i].html) === normalize(theirUnits[i])) continue;
         firstDiff ??= offset + i;
         settled++;
-        causes.push(this.causeOf(mineUnits[i], theirUnits[i], whole, prose));
+        causes.push(this.causeOf(mineUnits[i], theirUnits[i], whole, prose, mh));
         edits.push({ op: 'replace', id: mineUnits[i].id, html: theirUnits[i] });
       }
     }
@@ -671,8 +687,9 @@ class Renderer implements Incremental {
   }
 
   /** Why a unit differs from the whole-page render, judged from the two pieces of markup and the state they came from. */
-  private causeOf(u: U | undefined, theirs: string, whole: Ctx, prose: boolean): SettleCause {
+  private causeOf(u: U | undefined, theirs: string, whole: Ctx, prose: boolean, mh: Masthead): SettleCause {
     if (!u) return 'other';
+    if (mh.firstH1 && u.blocks.includes(mh.firstH1)) return 'masthead';
     const mine = u.html;
     if (mine.includes('class="lead"') !== theirs.includes('class="lead"')) return 'lead';
     const levels = (h: string) => h.replace(/<(\/?)h[1-4]\b/g, '<$1h');

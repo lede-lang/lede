@@ -398,6 +398,39 @@ test('an empty flow diagram has no slot to leave behind: sealed while its unit w
   assert.equal(streamed(d), await whole(open));
 });
 
+test('masthead: an @title that a later # heading repeats leaves the page without a header; only the header and the standfirst are settled', async () => {
+  const src = ['@title Plan', '', 'Intro text.', '', '# Plan', '', 'More.', ''].join('\n');
+  const off = await drive(src, { chunk: 7, parse: parseOpts });
+  assert.equal(off.end.equal, false);
+  assert.equal(off.end.countMismatch, false);
+  assert.deepEqual(off.end.causes, ['masthead', 'lead']);
+  assert.equal(off.end.settled, 2);
+  const on = await drive(src, { chunk: 7, parse: parseOpts, settle: true });
+  assert.equal(streamed(on), await whole(src));
+  assert.doesNotMatch(on.model.main(), /<header/);
+});
+
+test('masthead: with no @title, the subtitle and byline follow the first # heading wherever it comes; the settle replaces that heading, not the page', async () => {
+  const src = ['@subtitle A sub', '@author Ann', '', 'Intro text.', '', '# Heading', '', 'More.', '', 'Last.', ''].join('\n');
+  const off = await drive(src, { chunk: 7, parse: parseOpts });
+  assert.equal(off.end.equal, false);
+  assert.equal(off.end.countMismatch, false, 'the subtitle and byline are part of the heading unit, not children of their own');
+  assert.deepEqual(off.end.causes, ['masthead', 'lead', 'masthead']);
+  assert.equal(off.end.settled, 3);
+  const on = await drive(src, { chunk: 7, parse: parseOpts, settle: true });
+  assert.equal(streamed(on), await whole(src));
+  assert.ok(!on.model.log.some((o) => o.op === 'remove'), 'no unit was removed');
+  assert.ok(
+    on.model.log.filter((o) => o.op === 'replace').length <= 3,
+    'the first paragraph and the heading are drawn again; the units after them are left alone',
+  );
+  // The heading is last: the subtitle and byline are children after it, and the page still equals the whole-page render.
+  const last = ['@subtitle A sub', '', 'Intro text.', '', '# Heading', ''].join('\n');
+  const end = await drive(last, { chunk: 7, parse: parseOpts, settle: true });
+  assert.equal(streamed(end), await whole(last));
+  assert.equal(end.end.countMismatch, false);
+});
+
 // ---- early layout-shift check (Chromium) ----------------------------------------------------------------------------------------
 
 const chrome = resolveChrome();
