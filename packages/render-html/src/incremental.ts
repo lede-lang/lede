@@ -290,6 +290,7 @@ class Renderer implements Incremental {
       diagnostics: [],
     };
     this.ctx = new Ctx(this.doc, render);
+    this.ctx.cacheLayouts = true;
     this.frontier = this.ctx.mark();
     this.ctx.slot = (d, wide) => {
       if (this.mode === 'none') return null;
@@ -601,6 +602,7 @@ class Renderer implements Incremental {
     // Settle: the finished document through the whole-page renderer, compared child by child.
     const doc: LedeDocument = { meta: m, blocks: this.all, data: this.data(), diagnostics: [] };
     const whole = new Ctx(doc, this.renderOpts);
+    whole.cacheLayouts = true;
     const mh = masthead(doc, whole);
     const { body, prose, h1At } = await renderMain(doc, whole, mh);
     // The subtitle and byline that follow the first `#` heading are children of `<main>` of their own in `render()`, and part of

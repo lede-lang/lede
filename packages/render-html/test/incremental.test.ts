@@ -540,6 +540,39 @@ test('a drawing that has settled is not kept: only the ones in flight are, and e
   assert.equal(end.settled, 0);
 });
 
+test('layouts are cached only for the incremental renderer: plain render() never serializes a diagram, the settle reuses the layout', async () => {
+  const page = ['# T', '', FLOW].join('\n');
+  const stringify = JSON.stringify;
+  let diagrams = 0;
+  JSON.stringify = ((value: unknown, ...rest: unknown[]) => {
+    if (typeof value === 'object' && value !== null && (value as { type?: string }).type === 'diagram') diagrams++;
+    return (stringify as (...a: unknown[]) => string)(value, ...rest);
+  }) as typeof JSON.stringify;
+  try {
+    await render(parse(page, parseOpts));
+  } finally {
+    JSON.stringify = stringify;
+  }
+  assert.equal(diagrams, 0, 'render() serialized a diagram for a cache it cannot hit');
+
+  let calls = 0;
+  const { default: ELK } = await import('elkjs/lib/elk.bundled.js');
+  const elk = new (ELK as unknown as new () => { layout: (g: unknown) => Promise<unknown> })();
+  setLayoutEngine((g) => {
+    calls++;
+    return elk.layout(g);
+  });
+  await render(parse(page, parseOpts));
+  const plain = calls;
+  assert.ok(plain >= 1);
+  calls = 0;
+  const d = await drive(page, { chunk: 5, parse: parseOpts, settle: true });
+  const streamedCalls = calls;
+  assert.equal(streamed(d), await whole(page));
+  assert.equal(d.end.renders >= 2, true, 'the diagram was drawn more than once');
+  assert.equal(streamedCalls, plain, 'the page was laid out once; the settle drew it again from that layout');
+});
+
 // ---- early layout-shift check (Chromium) ----------------------------------------------------------------------------------------
 
 const chrome = resolveChrome();

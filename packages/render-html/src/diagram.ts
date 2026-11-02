@@ -1027,18 +1027,21 @@ interface Layouts {
   phone: Fit | null;
 }
 
+const layoutsFor = async (d: DiagramBlock): Promise<Layouts> => ({ desk: await bestFit(d, false, FIT_DESKTOP), phone: await phoneFit(d) });
+
 /**
  * The layouts of each flow diagram, kept while the block reads the same, so drawing it again (the incremental renderer draws a
  * unit more than once, and checks the finished page against the whole-page render) costs a drawing and no layout. A drawing
- * only reads a layout, and everything it reads of the block is in the key.
+ * only reads a layout, and everything it reads of the block is in the key. Only a caller that draws a block more than once asks
+ * for this (`renderFlow`'s `cached`): the key is the block serialized, which a page drawn once would pay for and never use.
  */
 const laidOut = new WeakMap<DiagramBlock, { key: string; layouts: Promise<Layouts> }>();
 
-function layoutsOf(d: DiagramBlock): Promise<Layouts> {
+function cachedLayoutsOf(d: DiagramBlock): Promise<Layouts> {
   const key = JSON.stringify(d);
   const hit = laidOut.get(d);
   if (hit?.key === key) return hit.layouts;
-  const layouts = (async () => ({ desk: await bestFit(d, false, FIT_DESKTOP), phone: await phoneFit(d) }))();
+  const layouts = layoutsFor(d);
   laidOut.set(d, { key, layouts });
   // A layout that failed is not kept.
   layouts.catch(() => {
@@ -1055,8 +1058,8 @@ function layoutsOf(d: DiagramBlock): Promise<Layouts> {
  * A phone drawing too wide for 11px text is laid out again (`phoneFit`). If nothing fits, the phone gets the
  * diagram as a numbered list (`ol.seqlist.flowlist`) instead of an unreadable or sideways-scrolling drawing.
  */
-export async function renderFlow(d: DiagramBlock, uid: string): Promise<string> {
-  const { desk, phone } = await layoutsOf(d);
+export async function renderFlow(d: DiagramBlock, uid: string, cached = false): Promise<string> {
+  const { desk, phone } = await (cached ? cachedLayoutsOf(d) : layoutsFor(d));
   const h = drawPlaced(desk.d, desk.p, uid, false);
   if (!phone) {
     const fig = figure(d, `<div class="dg-h">${h.svg}</div><div class="dg-v" data-flow style="--wv:560px">${flowList(d)}</div>`, h.W, 240);

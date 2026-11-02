@@ -420,6 +420,11 @@ export class Ctx {
    * (a figure of the right height, the drawing comes later) or null to draw it. A flow diagram cannot be drawn by `blockSync`.
    */
   slot: ((b: DiagramBlock, wide: boolean) => string | null) | null = null;
+  /**
+   * Set by the incremental renderer only, for itself and for the whole-page render it checks the page against: a flow diagram is laid
+   * out once while its block reads the same, however often it is drawn. A page drawn once does not pay for the key.
+   */
+  cacheLayouts = false;
 
   constructor(doc: LedeDocument, opts: RenderOptions) {
     this.doc = doc;
@@ -508,7 +513,7 @@ export class Ctx {
   async block(b: Block, top: boolean): Promise<string> {
     if (b.type === 'diagram' && b.kind !== 'sequence') {
       if (b.nodes.length === 0) return '';
-      const svg = await renderFlow(b, this.uid('d'));
+      const svg = await renderFlow(b, this.uid('d'), this.cacheLayouts);
       return top ? svg.replace('<figure class="viz dg-fig', '<figure class="viz dg-fig wide') : svg;
     }
     if (b.type === 'grid') {
