@@ -135,10 +135,79 @@ test('build --artifact writes the title, the style and the main, with no page sh
   const r = run(['build', 'p.lede', '--artifact'], dir);
   assert.equal(r.status, 0);
   assert.match(r.stdout, /^<title>Checkout &amp; cart, week 42<\/title>\n<style>/);
-  assert.doesNotMatch(r.stdout, /<!doctype|<(html|head|body|meta|script)[\s>]/i); // `<header>` is page content, not the shell
+  assert.doesNotMatch(r.stdout, /<!doctype|<(html|head|body|meta|script|link)[\s>]/i); // `<header>` is page content, not the shell
+  assert.doesNotMatch(r.stdout, /@import|url\(http/); // SVG `url(#...)` marker references are on every diagram edge and are fine
   const style = /<style>[\s\S]*?<\/style>/.exec(full)?.[0];
   const main = /<main[\s\S]*<\/main>/.exec(full)?.[0];
   assert.ok(style && main);
   assert.equal(r.stdout, `<title>Checkout &amp; cart, week 42</title>\n${style}\n${main}\n`);
   assert.match(run(['--help'], dir).stdout, /--artifact\s+build:/);
+});
+
+const FIG_PAGE = '# Figure\n\nimage fig.png "A figure"\n';
+
+test('build --artifact warns about a relative image, still writes the page and exits 0', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  writeFileSync(join(dir, 'p.lede'), FIG_PAGE);
+  const r = run(['build', 'p.lede', '--artifact'], dir);
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(r.stdout, /<img src="fig\.png"/); // the output does not guess: the relative src is written as it is
+  assert.match(
+    r.stderr,
+    /p\.lede:3:1: \S*warning\S* \[artifact-image\] .*; inline it as a data: URI or upload it as an asset and use the asset URL/,
+  );
+  const plain = run(['build', 'p.lede'], dir);
+  assert.equal(plain.status, 0);
+  assert.doesNotMatch(plain.stderr, /artifact-image/);
+  const html = run(['build', 'p.lede', '-o', 'out.html', '--artifact'], dir);
+  assert.equal(html.status, 0);
+  assert.match(readFileSync(join(dir, 'out.html'), 'utf8'), /<img src="fig\.png"/);
+});
+
+test('check --artifact counts the image warning and never ends ok; without the flag it ends ok', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  writeFileSync(join(dir, 'p.lede'), FIG_PAGE);
+  const r = run(['check', 'p.lede', '--artifact'], dir);
+  assert.equal(r.status, 0, r.stderr);
+  assert.equal(r.stderr.trimEnd().split('\n').at(-1), '1 warning(s)');
+  assert.match(r.stderr, /\[artifact-image\]/);
+  const plain = run(['check', 'p.lede'], dir);
+  assert.equal(plain.status, 0);
+  assert.equal(plain.stderr.trimEnd().split('\n').at(-1), 'ok');
+  assert.doesNotMatch(plain.stderr, /artifact-image/);
+});
+
+test('check --artifact --json carries the warning with its detail, and reports each file on its own', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  writeFileSync(join(dir, 'p.lede'), FIG_PAGE);
+  writeFileSync(join(dir, 'q.lede'), '# Fine\n\nimage data:image/gif;base64,R0lGODlhAQABAAAAACw= "Pixel"\n');
+  writeFileSync(join(dir, 'r.lede'), '# Grid\n\ngrid 2\nimage a.png "A"\nimage b.png "B"\n');
+  const r = run(['check', 'p.lede', 'q.lede', 'r.lede', '--artifact', '--json'], dir);
+  assert.equal(r.status, 0, r.stderr);
+  const out = JSON.parse(r.stdout) as Record<
+    string,
+    { code: string; severity: string; line: number; col: number; detail?: { src: string; kind: string } }[]
+  >;
+  assert.equal(out['p.lede'].length, 1);
+  assert.equal(out['p.lede'][0].code, 'artifact-image');
+  assert.equal(out['p.lede'][0].severity, 'warning');
+  assert.equal(out['p.lede'][0].line, 3);
+  assert.equal(out['p.lede'][0].col, 1);
+  assert.deepEqual(out['p.lede'][0].detail, { src: 'fig.png', kind: 'local' });
+  assert.deepEqual(out['q.lede'], []);
+  assert.deepEqual(
+    out['r.lede'].map((d) => d.detail?.src),
+    ['a.png', 'b.png'],
+  );
+  const text = run(['check', 'p.lede', 'q.lede', 'r.lede', '--artifact'], dir);
+  assert.equal(text.stderr.trimEnd().split('\n').at(-1), '3 warning(s)');
+});
+
+test('--help lists --artifact under both build and check', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  const help = run(['--help'], dir).stdout;
+  assert.match(help, /lede build .*\[--artifact\]/);
+  assert.match(help, /lede check .*\[--artifact\]/);
+  assert.match(help, /--artifact\s+build:/);
+  assert.match(help, /check\/build: also warn about an image path the host cannot serve \(W artifact-image\)/);
 });

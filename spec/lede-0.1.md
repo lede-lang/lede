@@ -294,11 +294,12 @@ with a migration note; once 1.0 ships, grammar changes follow an RFC process (to
 The command is `lede`, the bin of the npm package `@lede-lang/cli` (Node 22.12+; it runs as compiled JavaScript). The library
 packages are `@lede-lang/core` (parser) and `@lede-lang/html` (renderer). The three share one version (D48).
 
-`lede check FILE... [--json] [--fix [--dry-run]]` prints every diagnostic and exits 1 if any is an error, 0 otherwise (2 for a usage
-error or a missing file). Without `--json`, its last line, on stderr, is `ok` only when no file had a diagnostic of either severity;
-otherwise it is the counts summed over every file: `1 warning(s)`, `2 error(s)` or `1 error(s), 2 warning(s)`. A warning leaves the exit
-code at 0 but never gets `ok`: read the diagnostics above that line, since the exit code does not carry them. With `--json` there is no
-such line. `lede --help` lists every command and flag.
+`lede check FILE... [--json] [--fix [--dry-run]] [--artifact]` prints every diagnostic and exits 1 if any is an error, 0 otherwise (2 for
+a usage error or a missing file). Without `--json`, its last line, on stderr, is `ok` only when no file had a diagnostic of either
+severity; otherwise it is the counts summed over every file: `1 warning(s)`, `2 error(s)` or `1 error(s), 2 warning(s)`. A warning leaves
+the exit code at 0 but never gets `ok`: read the diagnostics above that line, since the exit code does not carry them. With `--json` there
+is no such line. `--artifact` adds the artifact checks (below) to the report; they are warnings, so the exit code is unchanged and the
+last line is their count, never `ok`. `lede --help` lists every command and flag.
 
 `lede build FILE [-o OUT] [--force] [--unsafe-html] [--allow-remote] [--artifact]` compiles the first FILE to one page. Diagnostics go to stderr as
 for `check`. With `-o` the page is written to OUT and a size line goes to stderr; without it the page goes to stdout. A document with
@@ -308,7 +309,11 @@ URLs (§4.16), in `image` blocks and as `<img>` in `html` blocks. Links render t
 `https:`, to the page CSP's `img-src`, so an `http:` image is written into the page and the browser then blocks it. `--artifact` writes
 only `<title>`, the page's `<style>` and its `<main>`, in that order: no doctype, `html`, `head` or `body`, and no `meta` tags or CSP. The
 Claude Artifact tool wraps a file in a page of its own and sets those itself. The style and the main are the full page's, byte for byte, so
-the light and dark tokens, the `data-theme` override and the zero-script output are the same; only the shell differs. Exit codes for every
+the light and dark tokens, the `data-theme` override and the zero-script output are the same; only the shell differs. `--artifact` also runs
+the artifact checks: each `image` whose source is a relative path (§4.16) gets W `artifact-image` with `detail {src, kind}` (`kind` is
+`local`), because the Artifact host serves the page from its own origin and has no copy of the file; the fix is a `data:` URI or an
+uploaded asset. `check --artifact` runs the same checks and nothing else new, so an agent can see them before building. A `data:` or
+remote source raises nothing new. Exit codes for every
 command: 0 on success; 1 for `build` on errors without `--force` and for `check` on errors; 2 for a usage error (no command, an
 unknown command, no FILE) or a missing file; 70 for an internal error, such as OUT not being writable, printed to stderr. Flags a
 command does not know are ignored. `--help`, `-h` or `help` prints the help to stdout and exits 0.
@@ -330,7 +335,8 @@ delay ms?`). `detail` is optional and machine-readable. Codes the fixer reads ca
 `data-row-width` `{fields, want, name}`, `csv-thousands` `{fields, want, name}` (`fields` counted before the merge),
 `name-clash` `{diagram}` (a diagram named like a data set). So does `accent-contrast` (§4.3) `{accent, theme, ratio, required, against}`:
 `theme` is `light` or `dark`, `ratio` is the lowest contrast found rounded down to two decimals, `required` is `4.5`, and `against` names
-the surface (`bg`, `surface` or `accent-tint`). New keys may be added; existing ones are not removed or retyped within 0.x.
+the surface (`bg`, `surface` or `accent-tint`). So does `artifact-image` `{src, kind}`: `src` is the image path as written and `kind` is
+`local`. New keys may be added; existing ones are not removed or retyped within 0.x.
 
 `--fix` rewrites each file to repair mechanical slips and prints one line per repair. It repairs:
 - a `####` or deeper heading (to `###`);

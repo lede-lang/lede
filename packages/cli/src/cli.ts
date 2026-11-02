@@ -2,13 +2,13 @@
 // lede build | watch | check | ast
 import { readFileSync, writeFileSync, watch as fsWatch, existsSync, realpathSync, statSync } from 'node:fs';
 import { dirname, resolve, basename, sep } from 'node:path';
-import { parse, fix, type Diagnostic, type LedeDocument } from '@lede-lang/core';
+import { parse, fix, artifactDiagnostics, type Diagnostic, type LedeDocument } from '@lede-lang/core';
 import { render } from '@lede-lang/html';
 
 const USAGE = `usage:
   lede build <file.lede> [-o out.html] [--force] [--unsafe-html] [--allow-remote] [--artifact]
   lede watch <file.lede> [-o out.html]
-  lede check <file.lede>... [--json] [--fix [--dry-run]]
+  lede check <file.lede>... [--json] [--fix [--dry-run]] [--artifact]
   lede ast   <file.lede>
   lede help`;
 
@@ -26,7 +26,8 @@ options:
   --force         build: write the page even if it has errors
   --unsafe-html   build: keep raw \`html\` blocks unsanitized (local files only)
   --allow-remote  build: load remote images (links never need it)
-  --artifact      build: write only <title>, <style> and <main>, for the Claude Artifact tool, which wraps them in its own page
+  --artifact      build: write only <title>, <style> and <main>, for the Claude Artifact tool, which wraps them in its own page;
+                  check/build: also warn about an image path the host cannot serve (W artifact-image)
   --json          check: print diagnostics as JSON, keyed by file; each has severity, code, message,
                   line, col and, for some codes, a machine-readable \`detail\` object
   --fix           check: rewrite the file to repair mechanical slips (unquoted , or ; in cells,
@@ -76,6 +77,7 @@ function summary(errors: number, warnings: number): string {
 
 async function build(file: string, out: string | null, flags: Set<string>): Promise<boolean> {
   const { src, doc } = load(file);
+  if (flags.has('--artifact')) doc.diagnostics.push(...artifactDiagnostics(doc));
   report(file, src, doc.diagnostics);
   const errors = doc.diagnostics.filter((d) => d.severity === 'error').length;
   if (errors && !flags.has('--force')) {
@@ -139,6 +141,7 @@ async function main(argv: string[]): Promise<number> {
           } else if (r.src !== before) writeFileSync(f, r.src);
         }
         const { src, doc } = load(f);
+        if (flags.has('--artifact')) doc.diagnostics.push(...artifactDiagnostics(doc));
         all[f] = doc.diagnostics;
         if (!flags.has('--json')) report(f, src, doc.diagnostics);
         bad += doc.diagnostics.filter((d) => d.severity === 'error').length;
