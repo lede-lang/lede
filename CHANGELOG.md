@@ -1,5 +1,10 @@
 # Changelog
 
+## <small>0.1.11 (2026-11-02)</small>
+
+* Merge pull request #23 from lede-lang/claude/project-thread-xrccjs ([14b9417](https://github.com/lede-lang/lede/commit/14b9417)), closes [#23](https://github.com/lede-lang/lede/issues/23)
+* docs: mark decisions that later entries answered or superseded ([3513b4e](https://github.com/lede-lang/lede/commit/3513b4e))
+
 ## <small>0.1.10 (2026-10-28)</small>
 
 * Merge pull request #15 from lede-lang/docs/credit-diagram-design ([6b25857](https://github.com/lede-lang/lede/commit/6b25857)), closes [#15](https://github.com/lede-lang/lede/issues/15)
