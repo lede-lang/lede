@@ -10,6 +10,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import Anthropic from '@anthropic-ai/sdk';
+import { countTokens, overheadOf } from './count-tokens.ts';
 import { recountFiles, writerOf } from './rounds.ts';
 
 const ROOT = join(import.meta.dirname, '..');
@@ -52,17 +53,11 @@ if (process.argv.includes('--dry')) {
 
 const client = new Anthropic();
 
-const countRaw = async (model: string, text: string) =>
-  (await client.messages.countTokens({ model, messages: [{ role: 'user', content: text }] })).input_tokens;
-
-/**
- * count_tokens wraps the text in a user message, which adds a fixed number of tokens. Counting "a", assumed to be
- * one token on every tokenizer, measures that overhead.
- */
+/** The tokens count_tokens adds to any text, per model (see count-tokens.ts). */
 const overhead = Object.fromEntries(
-  await Promise.all(Object.values(WRITERS).map(async ({ model }) => [model, (await countRaw(model, 'a')) - 1] as const)),
+  await Promise.all(Object.values(WRITERS).map(async ({ model }) => [model, await overheadOf(client, model)] as const)),
 );
-const count = async (model: string, text: string) => (await countRaw(model, text)) - overhead[model];
+const count = (model: string, text: string) => countTokens(client, model, text, overhead[model]);
 
 async function recount(r: Row) {
   const writer = writerFor(r);

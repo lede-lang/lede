@@ -80,9 +80,10 @@ function scoreSample(judged: Map<string, Verdict>): Scored[] {
 }
 const scoredBySample = new Map([...samples].map(([name, judged]) => [name, scoreSample(judged)] as const));
 const several = scoredBySample.size > 1;
+const [firstScored] = scoredBySample.values();
 writeFileSync(
   join(dir, 'scored.json'),
-  `${JSON.stringify(several ? [...scoredBySample].flatMap(([sample, rows]) => rows.map((r) => ({ sample, ...r }))) : [...scoredBySample.values()][0])}\n`,
+  `${JSON.stringify(several ? [...scoredBySample].flatMap(([sample, rows]) => rows.map((r) => ({ sample, ...r }))) : firstScored)}\n`,
 );
 
 const good = (xs: { o: string }[]) => xs.filter((x) => x.o !== 'other').length;
@@ -100,17 +101,22 @@ function report(scored: Scored[], total: number) {
   for (const c of [...new Set(scored.map((s) => s.cat))].sort()) console.log(`  ${c}: ${pct(scored.filter((s) => s.cat === c))}`);
 }
 
-if (!several) report([...scoredBySample.values()][0], key.length);
-else {
+if (!several) {
+  report(firstScored, key.length);
+  for (const { label, lo, hi } of ranges) {
+    for (const m of new Set(firstScored.map((s) => s.model))) {
+      console.log(`${m} ${label}: ${pct(firstScored.filter((s) => s.model === m && Number(s.id) >= lo && Number(s.id) <= hi))}`);
+    }
+  }
+} else {
   for (const [name, scored] of scoredBySample) {
     console.log(`sample ${name}:`);
     report(scored, key.length);
   }
   const names = [...scoredBySample.keys()];
-  const first = scoredBySample.get(names[0])!;
   const last = scoredBySample.get(names.at(-1)!)!;
   const lastByPair = new Map(last.map((s) => [s.pair, s.o]));
-  const both = first.filter((s) => lastByPair.has(s.pair));
+  const both = firstScored.filter((s) => lastByPair.has(s.pair));
   console.log(
     `judge self-agreement (${names[0]} and ${names.at(-1)}): ${both.filter((s) => lastByPair.get(s.pair) === s.o).length} / ${both.length}`,
   );
@@ -129,13 +135,5 @@ else {
   meanLine('overall', () => true);
   for (const { label, lo, hi } of ranges) {
     for (const m of models) meanLine(`${m} ${label}`, (s) => s.model === m && Number(s.id) >= lo && Number(s.id) <= hi);
-  }
-}
-if (!several) {
-  const scored = [...scoredBySample.values()][0];
-  for (const { label, lo, hi } of ranges) {
-    for (const m of new Set(scored.map((s) => s.model))) {
-      console.log(`${m} ${label}: ${pct(scored.filter((s) => s.model === m && Number(s.id) >= lo && Number(s.id) <= hi))}`);
-    }
   }
 }

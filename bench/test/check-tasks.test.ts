@@ -6,21 +6,9 @@ import { spawnSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { CATEGORIES, NEEDS } from '../src/task-vocab.ts';
 
 const SCRIPT = join(import.meta.dirname, '..', 'src', 'check-tasks.ts');
-const CATEGORIES = [
-  'architecture',
-  'comparison',
-  'data',
-  'prose',
-  'runbook',
-  'status',
-  'specs-planning',
-  'code-review',
-  'design',
-  'reports',
-  'custom-editing',
-];
 const SECRET = 'The harbour pilots rota for week 44, Marguerite Oyelaran asks';
 const tmp = mkdtempSync(join(tmpdir(), 'lede-check-tasks-'));
 after(() => rmSync(tmp, { recursive: true, force: true }));
@@ -33,7 +21,7 @@ const valid = (i: number): Task => ({
   title: `Task ${i}`,
   brief: `${SECRET} number ${i}.`,
   checklist: { sections: ['Plan'], visible: ['Rota'], values: ['44'] },
-  needs: ['list', 'table', 'callout', 'chart', 'kpi', 'diagram', 'sequence'].slice(0, 1 + (i % 7)),
+  needs: NEEDS.slice(0, 1 + (i % NEEDS.length)),
   edit: { request: 'Change 44 to 45.', expect_visible: [], expect_values: ['45'], expect_absent: ['44'] },
 });
 
@@ -119,7 +107,7 @@ test('ids: a missing file, a duplicate, an id that disagrees with its file name,
   assert.match(r.out, /^FAIL \(set\): no file for ids 151$/m);
 
   r = check((files) => files.splice(20, 3));
-  assert.match(r.out, /^FAIL \(set\): no file for ids 151-153$/m);
+  assert.match(r.out, /^FAIL \(set\): no file for ids 151, 152, 153$/m);
 
   r = check((files) => files.push(['131-another.json', valid(0)]));
   assert.match(r.out, /^FAIL \(set\): 56 files, not 55$/m);

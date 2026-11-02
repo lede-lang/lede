@@ -17,8 +17,12 @@ minus r6, the same tier and task), the revised HTML-to-Lede token ratio, the hin
 
 The hint arm covers only the pages a hint fired for, so its delta is taken against the baseline on those same tasks (the
 baseline over all of the tier's tasks is printed beside it). Everything that is compared with a bar is exact (fractions)."""
-import json, glob, os, re, sys
+import json, os, sys
 from fractions import Fraction
+
+sys.dont_write_bytecode = True  # the import below must not leave a bench/src/__pycache__ behind
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # python3 -I leaves the script's directory off sys.path
+from judge_samples import load_samples, side, tier_of
 
 TIER_ORDER = ['sonnet', 'opus']
 MIN_AGREEMENT = Fraction(4, 5)  # a round under 80% self-agreement is re-judged before its verdict is recorded (Req 3.3)
@@ -26,47 +30,11 @@ BAR_WRITER, BAR_HINT, BAR_PRIMARY_UNDER, BAR_RENDERER = 10, 10, 5, 5  # points
 MEDIAN_EXTRA_AT_MOST, RATIO_AT_LEAST = 150, 4  # qualifiers of the writer-reading verdict
 
 
-def tier_of(model):
-    """sonnet-r7h -> sonnet-r7 -> sonnet (the same two steps as bench/src/rounds.ts)."""
-    return re.sub(r'-r\d+$', '', re.sub(r'-r(\d+)[a-z]$', r'-r\1', model))
-
-
-def read_lines(path):
-    for line in open(path):
-        if line.strip():
-            yield json.loads(line)
-
-
 def load_round(d):
     """key (pair -> entry), samples (name -> {pair: winner}) and the judge/prompt pairs named in the batch headers."""
     key = {k['pair']: k for k in json.load(open(os.path.join(d, 'key.json')))}
-    dirs = {os.path.basename(p): p for p in glob.glob(os.path.join(d, 's[0-9]*')) if os.path.isdir(p)}
-    sources = {}
-    root = sorted(glob.glob(os.path.join(d, 'judge-*.jsonl')))
-    if root:  # rounds 1 and 2 keep their one sample at the root
-        sources['root' if 's1' in dirs else 's1'] = root
-    for name in sorted(dirs, key=lambda n: int(n[1:])):
-        sources[name] = sorted(glob.glob(os.path.join(dirs[name], 'judge-*.jsonl')))
-    if not sources:
-        sys.exit('%s: no judge-*.jsonl at the root or in s<N>/' % d)
-    samples, headers = {}, set()
-    for name, files in sources.items():
-        picks = {}
-        for f in files:
-            for r in read_lines(f):
-                if 'pair' not in r:
-                    if 'judge' in r or 'prompt' in r:
-                        headers.add((r.get('judge', '?'), r.get('prompt', '?')))
-                    continue
-                picks[r['pair']] = r['winner']
-        samples[name] = picks
+    samples, headers = load_samples(d)
     return key, samples, headers
-
-
-def side(key, pair, winner):
-    if str(winner).upper() not in ('LEFT', 'RIGHT'):
-        return 'tie'
-    return 'lede' if key[pair]['left' if str(winner).upper() == 'LEFT' else 'right'] == 'C' else 'html'
 
 
 class Arm:

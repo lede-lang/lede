@@ -18,8 +18,12 @@ and builds nothing (it needs no Pillow).
 
 The page records each choice in the artifact's db (collection `spotcheck`) when it runs as a published artifact, and in
 localStorage otherwise. The answer key is NOT in the page."""
-import argparse, base64, hashlib, io, json, re, sys
+import argparse, base64, hashlib, io, json, os, sys
 from pathlib import Path
+
+sys.dont_write_bytecode = True  # the import below must not leave a bench/src/__pycache__ behind
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # python3 -I leaves the script's directory off sys.path
+from judge_samples import tier_of
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -33,11 +37,6 @@ def jpeg(path, width):
     buf = io.BytesIO()
     im.save(buf, "JPEG", quality=72, optimize=True, progressive=True)
     return "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
-
-
-def tier_of(model):
-    """sonnet-r7h -> sonnet-r7 -> sonnet (the same two steps as bench/src/rounds.ts)."""
-    return re.sub(r"-r\d+$", "", re.sub(r"-r(\d+)[a-z]$", r"-r\1", model))
 
 
 def order(seed, *parts):

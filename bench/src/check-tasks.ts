@@ -6,23 +6,9 @@
 // tasks until the held-out round. Exit status 1 on any failure.
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { CATEGORIES, NEEDS } from './task-vocab.ts';
 
 const ROOT = join(import.meta.dirname, '..');
-/** The eleven categories in id order (five tasks each): the bench six, then the five of the article. */
-const CATEGORIES = [
-  'architecture',
-  'comparison',
-  'data',
-  'prose',
-  'runbook',
-  'status',
-  'specs-planning',
-  'code-review',
-  'design',
-  'reports',
-  'custom-editing',
-] as const;
-const NEEDS = ['list', 'table', 'callout', 'chart', 'kpi', 'diagram', 'sequence'] as const;
 const PER_CATEGORY = 5;
 const FILES = CATEGORIES.length * PER_CATEGORY;
 const TECHNOLOGY = /\b(Lede|HTML|CSS|Markdown|Mermaid|React|SVG|JavaScript)\b/;
@@ -50,14 +36,8 @@ if (max - min + 1 !== FILES) fail('(set)', `the id range holds ${max - min + 1} 
 if (files.length !== FILES) fail('(set)', `${files.length} files, not ${FILES}`);
 const seen = new Map<number, number>();
 for (const f of files) seen.set(Number(prefix(f)), (seen.get(Number(prefix(f))) ?? 0) + 1);
-const missing: string[] = [];
-for (let id = min; id <= max; id++) {
-  if (seen.has(id)) continue;
-  const last = missing.at(-1);
-  if (last !== undefined && last.endsWith(`-${id - 1}`)) missing[missing.length - 1] = last.replace(/-\d+$/, `-${id}`);
-  else if (last !== undefined && last === String(id - 1)) missing[missing.length - 1] = `${last}-${id}`;
-  else missing.push(String(id));
-}
+const missing: number[] = [];
+for (let id = min; id <= max; id++) if (!seen.has(id)) missing.push(id);
 if (missing.length > 0) fail('(set)', `no file for ids ${missing.join(', ')}`);
 for (const [id, n] of seen) if (n > 1) fail('(set)', `${n} files for id ${id}`);
 

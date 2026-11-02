@@ -5,22 +5,10 @@ import { execFileSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { CATEGORIES } from '../src/task-vocab.ts';
 import { python, writeRound } from './fixtures.ts';
 
 const SCRIPT = join(import.meta.dirname, '..', 'src', 'score-heldout.py');
-const CATEGORIES = [
-  'architecture',
-  'comparison',
-  'data',
-  'prose',
-  'runbook',
-  'status',
-  'specs-planning',
-  'code-review',
-  'design',
-  'reports',
-  'custom-editing',
-];
 const IDS = Array.from({ length: 55 }, (_, i) => 131 + i);
 
 const tmp = mkdtempSync(join(tmpdir(), 'lede-score-heldout-'));

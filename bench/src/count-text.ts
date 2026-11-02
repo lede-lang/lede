@@ -12,6 +12,7 @@
 import { readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import Anthropic from '@anthropic-ai/sdk';
+import { countTokens } from './count-tokens.ts';
 
 const MODEL = 'claude-sonnet-5-5';
 const USAGE = 'usage: node bench/src/count-text.ts <file> [--from "## Heading"] [--to "## Heading"]';
@@ -82,11 +83,8 @@ export async function main(argv: string[]): Promise<number> {
   if (!process.env.ANTHROPIC_API_KEY && !process.env.ANTHROPIC_AUTH_TOKEN) return bad(NO_KEY);
 
   const client = new Anthropic();
-  const countRaw = async (s: string) =>
-    (await client.messages.countTokens({ model: MODEL, messages: [{ role: 'user', content: s }] })).input_tokens;
   try {
-    const [overhead, raw] = await Promise.all([countRaw('a').then((n) => n - 1), countRaw(text)]);
-    process.stdout.write(`${raw - overhead}\n`);
+    process.stdout.write(`${await countTokens(client, MODEL, text)}\n`);
     return 0;
   } catch (e) {
     process.stderr.write(`count_tokens failed: ${e instanceof Error ? e.message : String(e)}\n`);

@@ -17,6 +17,10 @@ A pair the judge did not give a verdict in every sample is left out of the tier'
 import glob, json, math, os, re, sys
 from fractions import Fraction
 
+sys.dont_write_bytecode = True  # the import below must not leave a bench/src/__pycache__ behind
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # python3 -I leaves the script's directory off sys.path
+import judge_samples
+
 PASS_AT, FLOOR = Fraction(3, 5), Fraction(2, 5)  # D22's 60% overall; the 40% floor D37 read for a category
 ALPHA = 0.05
 
@@ -77,30 +81,6 @@ def exact_range(k, n, alpha=ALPHA):
     return low, high
 
 
-def read_samples(d):
-    dirs = {os.path.basename(p): p for p in glob.glob(os.path.join(d, 's[0-9]*')) if os.path.isdir(p)}
-    sources = {}
-    root = sorted(glob.glob(os.path.join(d, 'judge-*.jsonl')))
-    if root:
-        sources['root' if 's1' in dirs else 's1'] = root
-    for name in sorted(dirs, key=lambda n: int(n[1:])):
-        sources[name] = sorted(glob.glob(os.path.join(dirs[name], 'judge-*.jsonl')))
-    if not sources:
-        sys.exit('%s: no judge-*.jsonl at the root or in s<N>/' % d)
-    samples = {}
-    for name, files in sources.items():
-        picks = {}
-        for f in files:
-            for line in open(f):
-                if not line.strip():
-                    continue
-                r = json.loads(line)
-                if 'pair' in r:
-                    picks[r['pair']] = r['winner']
-        samples[name] = picks
-    return samples
-
-
 def main():
     args = sys.argv[1:]
     tasks_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'tasks')
@@ -115,13 +95,11 @@ def main():
     cat = {}
     for f in glob.glob(os.path.join(tasks_dir, '*.json')):
         cat[int(re.match(r'(\d+)', os.path.basename(f)).group(1))] = json.load(open(f))['category']
-    samples = read_samples(d)
+    samples = judge_samples.load_samples(d)[0]
     names = list(samples)
 
     def side(p, w):
-        if str(w).upper() not in ('LEFT', 'RIGHT'):
-            return 'tie'
-        return 'lede' if key[p]['left' if str(w).upper() == 'LEFT' else 'right'] == 'C' else 'html'
+        return judge_samples.side(key, p, w)
 
     in_range = [p for p in key if lo <= int(key[p]['id']) <= hi]
     print('%s  tasks %d-%d  %d pairs  samples: %s' % (os.path.basename(os.path.normpath(d)), lo, hi, len(in_range), ', '.join(names)))

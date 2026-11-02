@@ -9,32 +9,18 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from '../../packages/core/src/index.ts';
-import { render } from '../../packages/render-html/src/index.ts';
+import { render, type IncrementalEnd } from '../../packages/render-html/src/index.ts';
 import { drive, normalize } from './incremental-model.ts';
 
 const ROOT = join(import.meta.dirname, '..', '..');
 export const TIERS = ['haiku', 'sonnet', 'opus'];
 
-export interface Row {
+/** The renderer's own report of a page (less its ops), and whether the model equals the whole-page render. */
+export interface Row extends Omit<IncrementalEnd, 'ops' | 'equal'> {
   page: string;
   equal: boolean;
   /** What the renderer's own report says; it must agree with `equal`. */
   reported: boolean;
-  causes: string[];
-  firstDiff: number | null;
-  settled: number;
-  countMismatch: boolean;
-  regroups: number;
-  repicks: number;
-  reseals: number;
-  holdMs: number[];
-  heldGrouped: number;
-  heldPlain: number;
-  proseFlips: number;
-  shiftAssumed: boolean;
-  lateMeta: number;
-  placeholderError: number[];
-  renders: number;
   units: number;
 }
 
@@ -81,26 +67,12 @@ export async function measure(files: string[], o: { chunk?: number | undefined; 
     const d = await drive(src, { chunk: o.chunk ?? 4, msPerChunk: o.ms ?? 20, parse: { loadFile }, settle: false });
     const theirs = normalize(await render(parse(src, { loadFile }), { fragment: true }));
     const same = normalize(d.model.main()) === theirs;
-    const e = d.end;
+    const { ops: _ops, equal: reported, ...end } = d.end;
     rows.push({
       page: f.replace(/^bench\/gen\/|\/C\//g, (m) => (m === '/C/' ? '/' : '')).replace(/-r6/, ''),
       equal: same,
-      reported: e.equal,
-      causes: e.causes,
-      firstDiff: e.firstDiff,
-      settled: e.settled,
-      countMismatch: e.countMismatch,
-      regroups: e.regroups,
-      repicks: e.repicks,
-      reseals: e.reseals,
-      holdMs: e.holdMs,
-      heldGrouped: e.heldGrouped,
-      heldPlain: e.heldPlain,
-      proseFlips: e.proseFlips,
-      shiftAssumed: e.shiftAssumed,
-      lateMeta: e.lateMeta,
-      placeholderError: e.placeholderError,
-      renders: e.renders,
+      reported,
+      ...end,
       units: d.model.units.length,
     });
   }
