@@ -431,6 +431,67 @@ test('masthead: with no @title, the subtitle and byline follow the first # headi
   assert.equal(end.end.countMismatch, false);
 });
 
+test('grouped units: a kpi that reads a data name shows the rows so far, and is drawn again when they change', async () => {
+  const faq = (between: string[]) =>
+    [
+      '# T',
+      '',
+      'data d = k,v; a,1; b,2',
+      '',
+      '## Why?',
+      '',
+      'kpi Total | =d.v | | sum',
+      '',
+      '## How?',
+      '',
+      'Like this.',
+      '',
+      '## When?',
+      '',
+      'Now.',
+      '',
+      ...between,
+      '# Closing',
+      '',
+      'Done.',
+      '',
+    ].join('\n');
+  // Rows appended while the FAQ is still held: it is drawn once, with them.
+  const held = faq(['data d += c,3', '']);
+  const a = await drive(held, { chunk: 5, parse: parseOpts });
+  assert.equal(a.end.equal, true);
+  assert.equal(streamed(a), await whole(held));
+  const drawn = a.model.log.filter((o) => (o.op === 'append' || o.op === 'replace') && o.html.includes('class="faqs"'));
+  assert.ok(
+    drawn.length >= 1 && drawn.every((o) => 'html' in o && o.html.includes('<span class="kv">3</span>')),
+    'the value is on the first drawing',
+  );
+  // Rows appended after the FAQ was committed: it is drawn again.
+  const later = faq([]) + ['', 'data d += c,3', '', 'End.', ''].join('\n');
+  const b = await drive(later, { chunk: 5, parse: parseOpts });
+  assert.equal(b.end.equal, true);
+  assert.equal(streamed(b), await whole(later));
+  assert.ok(b.model.log.some((o) => o.op === 'replace' && o.html.includes('class="faqs"') && o.html.includes('<span class="kv">3</span>')));
+  // The same inside cards, which `view` already reached, and a set.
+  const set = [
+    '# T',
+    '',
+    'data d = k,v; a,1; b,2',
+    '',
+    ...['One', 'Two', 'Three'].flatMap((n) => [`## ${n}`, '', `Short ${n}.`, '']),
+    'data d += c,3',
+    '',
+  ].join('\n');
+  assert.equal(streamed(await drive(set, { chunk: 5, parse: parseOpts })), await whole(set));
+});
+
+test('a data name defined after the kpi that reads it draws that kpi again', async () => {
+  const src = ['# T', '', 'kpi Total | =d.v | | sum', '', 'data d = k,v; a,1; b,2', '', 'Closing.', ''].join('\n');
+  const d = await drive(src, { chunk: 5, parse: parseOpts });
+  assert.equal(d.end.equal, true);
+  assert.equal(streamed(d), await whole(src));
+});
+
 // ---- early layout-shift check (Chromium) ----------------------------------------------------------------------------------------
 
 const chrome = resolveChrome();

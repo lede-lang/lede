@@ -25,6 +25,7 @@ import {
   type Probe,
   type ProseTally,
   type RenderOptions,
+  type Section,
   type Unit,
 } from './index.ts';
 import { plain } from './util.ts';
@@ -251,7 +252,6 @@ class Renderer implements Incremental {
   private shiftDecided = false;
   private frontier: CtxMark;
   private lastTail = '';
-  private readonly dataSeen = new Set<string>();
   private drawings: Promise<unknown>[] = [];
 
   /** `picksOf` over every block pushed, one block at a time. */
@@ -305,12 +305,9 @@ class Renderer implements Incremental {
   // ------------------------------------------------------------------ pushing blocks
 
   push(block: Block): Pushed {
-    if (block.type === 'data') {
-      // Defining a name again replaces the rows every chart, table and kpi reading it sees.
-      const again = this.dataSeen.has(block.name);
-      this.dataSeen.add(block.name);
-      return again ? this.update({ data: block.name }) : { ops: [] };
-    }
+    // Defining a name, or defining it again, changes what every chart, table and kpi reading it sees; the first definition can come
+    // after a reader that was drawn without rows.
+    if (block.type === 'data') return this.update({ data: block.name });
     this.seq++;
     const out = new Batch();
     this.all.push(block);
@@ -451,9 +448,20 @@ class Renderer implements Incremental {
 
   /** One unit as `render()` draws it, with every diagram `ctx.slot` claims left as a slot. */
   private drawUnit(unit: Unit): string {
-    if (unit.kind !== 'block') return this.ctx.unitSync(unit);
+    if (unit.kind !== 'block') return this.ctx.unitSync(this.viewUnit(unit));
     const b = unit.block;
     return standfirst(b, this.rest[0], this.header, this.prose) ?? this.ctx.blockSync(this.view(b), true);
+  }
+
+  /** A grouped unit whose sections hold the `view` of their blocks: a kpi in an FAQ answer has its value like any other. */
+  private viewUnit(unit: Exclude<Unit, { kind: 'block' }>): Exclude<Unit, { kind: 'block' }> {
+    const sec = (s: Section): Section => {
+      const body = s.body.map((b) => this.view(b));
+      return body.every((b, i) => b === s.body[i]) ? s : { h: s.h, body };
+    };
+    if (unit.kind === 'rec') return { ...unit, section: sec(unit.section) };
+    if (unit.kind === 'proscons') return { ...unit, pro: sec(unit.pro), con: sec(unit.con) };
+    return { ...unit, sections: unit.sections.map(sec) };
   }
 
   /** A kpi that reads a data name has no value until the document ends: draw it from a copy that has been resolved against the rows so far. */
@@ -548,7 +556,7 @@ class Renderer implements Incremental {
   /** The ids are taken now, in document order; the layout resolves later and the newest drawing of a unit wins. */
   private drawLater(u: U): Pushed {
     const version = ++u.version;
-    const drawing = u.plan.kind === 'block' ? this.ctx.block(this.view(u.plan.block), true) : this.ctx.unit(u.plan);
+    const drawing = u.plan.kind === 'block' ? this.ctx.block(this.view(u.plan.block), true) : this.ctx.unit(this.viewUnit(u.plan));
     const pending = drawing.then((html): IncrementalOp[] => {
       if (u.version !== version) return [];
       this.renders++;
