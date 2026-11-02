@@ -9,8 +9,8 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parse } from '@lede-lang/core';
-import { render, setLayoutEngine } from '../src/index.ts';
+import { LedeStream, parse, type StreamEvent } from '@lede-lang/core';
+import { type IncrementalOp, createIncremental, render, setLayoutEngine } from '../src/index.ts';
 import { drive, normalize, type Driven } from '../../../bench/src/incremental-model.ts';
 import { benchPages, measure, summarize, summaryText } from '../../../bench/src/incremental-report.ts';
 import { resolveChrome } from '../../../bench/src/shot.ts';
@@ -499,6 +499,45 @@ test('a unit the incremental side lacks is named from the whole-page render: a h
   assert.deepEqual(d.end.causes, ['shift']);
   const on = await drive(src, { chunk: 4, parse: parseOpts, settle: true });
   assert.equal(streamed(on), await whole(src));
+});
+
+/** Feed `src` to a stream and a renderer by hand, keeping every drawing that is pending. */
+function feed(src: string, opts: { settle?: boolean } = {}) {
+  const stream = new LedeStream(parseOpts);
+  const inc = createIncremental(
+    () => stream.doc.meta,
+    () => stream.doc.data,
+    { settle: false, ...opts },
+  );
+  const pending: Promise<IncrementalOp[]>[] = [];
+  const take = (r: { pending?: Promise<IncrementalOp[]> }) => r.pending && pending.push(r.pending);
+  const handle = (e: StreamEvent) => {
+    if (e.kind === 'block') take(inc.push(e.block));
+    else if (e.kind === 'seal') take(inc.seal(e.block));
+    else if ('data' in e) take(inc.update({ data: e.data }));
+    else take(inc.update(e.block));
+  };
+  for (const e of stream.events(src)) handle(e);
+  stream.end(handle);
+  return { inc, pending };
+}
+
+test('a drawing that has settled is not kept: only the ones in flight are, and end() waits for them', async () => {
+  const many = Array.from({ length: 6 }, (_, i) =>
+    [`diagram g${i}`, `g${i}: a "A"`, `g${i}: b "B"`, `g${i}: a -> b`, '', `Paragraph ${i}.`, ''].join('\n'),
+  ).join('\n');
+  const { inc, pending } = feed(many);
+  assert.ok(pending.length >= 6, `drawings started: ${pending.length}`);
+  await Promise.all(pending);
+  const kept = (inc as unknown as { drawings: { size: number } }).drawings;
+  assert.equal(kept.size, 0, 'nothing is kept once every drawing has resolved');
+  await inc.end();
+
+  // A drawing still in flight at end(): the settle compares the finished drawing, so the page is equal.
+  const again = feed(many, { settle: true });
+  const end = await again.inc.end();
+  assert.equal(end.equal, true);
+  assert.equal(end.settled, 0);
 });
 
 // ---- early layout-shift check (Chromium) ----------------------------------------------------------------------------------------

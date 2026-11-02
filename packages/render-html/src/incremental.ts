@@ -252,7 +252,8 @@ class Renderer implements Incremental {
   private shiftDecided = false;
   private frontier: CtxMark;
   private lastTail = '';
-  private drawings: Promise<unknown>[] = [];
+  /** The drawings still in flight; each leaves when it settles, so the set stays as small as the layouts waiting on the engine. */
+  private readonly drawings = new Set<Promise<unknown>>();
 
   /** `picksOf` over every block pushed, one block at a time. */
   private readonly pickScan: PickScan = { picks: [], underRec: false };
@@ -564,7 +565,10 @@ class Renderer implements Incremental {
       this.measure(u, html);
       return [{ op: 'replace', id: u.id, html }];
     });
-    this.drawings.push(pending);
+    this.drawings.add(pending);
+    // Settled either way; the rejection itself reaches whoever holds `pending`.
+    const forget = () => this.drawings.delete(pending);
+    pending.then(forget, forget);
     return { ops: [], pending };
   }
 
@@ -589,7 +593,6 @@ class Renderer implements Incremental {
     for (const d of this.byDiagram.keys()) if (!this.sealed.has(d)) batch.add(this.seal(d));
     await Promise.all(this.drawings);
     for (const more of await Promise.all(batch.pend)) ops.push(...more);
-    this.drawings = [];
 
     const m = this.meta();
     const lateMeta = this.applyLateMeta(m, ops);
