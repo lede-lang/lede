@@ -53,9 +53,12 @@ function parseOptions(file: string) {
   };
 }
 
-function load(file: string): { src: string; doc: LedeDocument } {
+/** Read and parse `file`. With `artifact`, its diagnostics also hold the warnings only an Artifact host needs. */
+function load(file: string, artifact = false): { src: string; doc: LedeDocument } {
   const src = readFileSync(file, 'utf8');
-  return { src, doc: parse(src, parseOptions(file)) };
+  const doc = parse(src, parseOptions(file));
+  if (artifact) doc.diagnostics.push(...artifactDiagnostics(doc));
+  return { src, doc };
 }
 
 function report(file: string, src: string, diags: Diagnostic[]): void {
@@ -76,8 +79,7 @@ function summary(errors: number, warnings: number): string {
 }
 
 async function build(file: string, out: string | null, flags: Set<string>): Promise<boolean> {
-  const { src, doc } = load(file);
-  if (flags.has('--artifact')) doc.diagnostics.push(...artifactDiagnostics(doc));
+  const { src, doc } = load(file, flags.has('--artifact'));
   report(file, src, doc.diagnostics);
   const errors = doc.diagnostics.filter((d) => d.severity === 'error').length;
   if (errors && !flags.has('--force')) {
@@ -140,8 +142,7 @@ async function main(argv: string[]): Promise<number> {
             });
           } else if (r.src !== before) writeFileSync(f, r.src);
         }
-        const { src, doc } = load(f);
-        if (flags.has('--artifact')) doc.diagnostics.push(...artifactDiagnostics(doc));
+        const { src, doc } = load(f, flags.has('--artifact'));
         all[f] = doc.diagnostics;
         if (!flags.has('--json')) report(f, src, doc.diagnostics);
         bad += doc.diagnostics.filter((d) => d.severity === 'error').length;

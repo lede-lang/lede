@@ -6,3 +6,4 @@ export { fix, type AppliedFix, type FixResult } from './fix.ts';
 export { HEX_COLOR, THEME_SURFACES } from './contrast.ts';
 export { browserUrl, imageSrcKind } from './url.ts';
 export { artifactDiagnostics } from './artifact.ts';
+export { walkBlocks } from './walk.ts';

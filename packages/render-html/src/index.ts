@@ -43,9 +43,9 @@ export async function render(doc: LedeDocument, opts: RenderOptions = {}): Promi
   const mh = masthead(doc, ctx);
   const { body, prose } = await renderMain(doc, ctx, mh);
   const title = mh.title;
-  const main = `<main class="doc${prose ? ' prose' : ''}">\n${body.filter(Boolean).join('\n')}\n</main>`;
+  const main = mainElement(body, prose);
   if (opts.fragment) return main;
-  const style = `<style>${css({ accent: doc.meta.accent, theme: doc.meta.theme, wide: doc.meta.width === 'wide' })}</style>`;
+  const style = `<style>${styleOf(doc.meta)}</style>`;
   if (opts.artifact) return `<title>${esc(title)}</title>\n${style}\n${main}\n`;
   const desc = doc.meta.description ? `\n<meta name="description" content="${esc(doc.meta.description)}">` : '';
   const lang = /^[a-z]{2,3}(-[A-Za-z0-9]+)*$/.test(doc.meta.lang ?? '') ? doc.meta.lang : 'en';
@@ -64,6 +64,22 @@ ${main}
 </body>
 </html>
 `;
+}
+
+/** `@width wide`. */
+export const isWide = (meta: Record<string, string>): boolean => meta.width === 'wide';
+
+/** The page stylesheet for a document's meta. */
+export const styleOf = (meta: Record<string, string>): string => css({ accent: meta.accent, theme: meta.theme, wide: isWide(meta) });
+
+/** `<main>` around the page's top-level children (empty ones left out). */
+export const mainElement = (children: string[], prose: boolean): string =>
+  `<main class="doc${prose ? ' prose' : ''}">\n${children.filter(Boolean).join('\n')}\n</main>`;
+
+/** A short paragraph straight after the title is the standfirst: its markup, or null when `b` is not one. `first` is the first body block. */
+export function standfirst(b: Block, first: Block | undefined, header: string, prose: boolean): string | null {
+  if (b.type !== 'paragraph' || b !== first || header === '' || !(prose || plain(b.text).length <= 360)) return null;
+  return `<p class="lead">${inline(b.text)}</p>`;
 }
 
 /** What `render` decides before the body: the page title, the header, and the blocks left for the body. */
@@ -116,14 +132,12 @@ export async function renderMain(doc: LedeDocument, ctx: Ctx, mh: Masthead): Pro
   const { rest, firstH1, sub, by } = mh;
   const body: string[] = [];
   if (mh.header) body.push(mh.header);
-  const prose = doc.meta.width !== 'wide' && isProse(rest);
+  const prose = !isWide(doc.meta) && isProse(rest);
   for (const u of plan(rest, prose)) {
     if (u.kind === 'block') {
       const b = u.block;
-      // A short paragraph straight after the title is the standfirst.
-      const lead = b.type === 'paragraph' && b === rest[0] && mh.header !== '' && (prose || plain(b.text).length <= 360);
       // oxlint-disable-next-line eslint/no-await-in-loop -- sequential on purpose: uid() numbers ids in document order
-      body.push(lead ? `<p class="lead">${inline(b.type === 'paragraph' ? b.text : '')}</p>` : await ctx.block(b, true));
+      body.push(standfirst(b, rest[0], mh.header, prose) ?? (await ctx.block(b, true)));
       if (b === firstH1) body.push(sub, by);
       // oxlint-disable-next-line eslint/no-await-in-loop -- sequential on purpose: uid() numbers ids in document order
     } else body.push(await ctx.unit(u));
@@ -137,7 +151,7 @@ export async function compile(src: string, opts: RenderOptions & ParseOptions = 
   return { html: await render(doc, opts), doc };
 }
 
-export function byline(author?: string, date?: string): string {
+function byline(author?: string, date?: string): string {
   if (!author && !date) return '';
   // "Name, Role": the role follows the name, muted. The comma stays in the markup, so the byline
   // still reads as "Name, Role" as text.
@@ -214,7 +228,7 @@ const span = (s: Section) => 1 + s.body.length;
 const bulletList = (b: Block): b is ListBlock => b.type === 'list' && !b.ordered && b.items.every((i) => i.checked === null);
 const boldLabel = (b: Block) => b.type === 'paragraph' && /^\*\*[^*]{1,40}\*\*:?$/.test(b.text.trim());
 
-export function plan(bs: Block[], prose = false): Unit[] {
+function plan(bs: Block[], prose = false): Unit[] {
   const out: Unit[] = [];
   for (let i = 0; i < bs.length;) {
     const { unit, n } = planAt(bs, i, prose);
@@ -341,14 +355,36 @@ function cardable(s: Section): boolean {
   return items.length <= 12 && items.every((i) => plain(i.text).length <= 160);
 }
 
+/** Blocks no essay, letter or post holds. */
+export const NOT_ESSAY = new Set<string>(['chart', 'table', 'kpis', 'diagram', 'grid', 'html', 'code', 'cards', 'steps']);
+
+/** What the essay test counts: the paragraphs, the characters in them, and the characters in every block. */
+export interface ProseTally {
+  paras: number;
+  pchars: number;
+  all: number;
+}
+
+/** Add `b` to the tally. */
+export function tallyProse(t: ProseTally, b: Block): void {
+  const len = textLen(b);
+  if (b.type === 'paragraph') {
+    t.paras++;
+    t.pchars += len;
+  }
+  t.all += len;
+}
+
+/** Mostly paragraphs, long ones: the shape of an essay, letter or post, given the tally of a page that holds no data block. */
+export const proseShape = (t: ProseTally): boolean =>
+  t.paras >= 4 && t.pchars >= 1200 && t.pchars / Math.max(1, t.all) >= 0.6 && t.pchars / t.paras >= 140;
+
 /** Mostly paragraphs, no data blocks: an essay, letter or post. */
 export function isProse(bs: Block[]): boolean {
-  if (bs.some((b) => ['chart', 'table', 'kpis', 'diagram', 'grid', 'html', 'code', 'cards', 'steps'].includes(b.type))) return false;
-  const len = textLen;
-  const paras = bs.filter((b) => b.type === 'paragraph');
-  const pchars = paras.reduce((n, b) => n + len(b), 0);
-  const all = bs.reduce((n, b) => n + len(b), 0);
-  return paras.length >= 4 && pchars >= 1200 && pchars / Math.max(1, all) >= 0.6 && pchars / paras.length >= 140;
+  if (bs.some((b) => NOT_ESSAY.has(b.type))) return false;
+  const t: ProseTally = { paras: 0, pchars: 0, all: 0 };
+  for (const b of bs) tallyProse(t, b);
+  return proseShape(t);
 }
 
 // "Pro: x", "**Do:** x", "Avoid: x": a verdict prefix the writer typed on a list item.
@@ -575,7 +611,7 @@ export class Ctx {
     // cards of prose and bullets stay in the column (D38).
     const needsRoom = b.items.some((c) => c.blocks.some((k) => k.type === 'chart' || k.type === 'table'));
     const wide = top && cols >= 3 && needsRoom;
-    const box = wide || this.doc.meta.width === 'wide' ? 1024 : 736;
+    const box = wide || isWide(this.doc.meta) ? 1024 : 736;
     // Card padding and border take 42px; a chart figure's own padding and border take 34px.
     const inner = Math.floor((box - 16 * (cols - 1)) / cols) - 42;
     // A phone card is 400 - 32 (page gutter) - 34 (card padding, border) wide.
@@ -825,30 +861,38 @@ function kbar(value: string, tone: Kpi['tone']): string {
 
 const BOLD_CELL = /^\s*\*\*[^*]+\*\*\s*$/;
 
+/** Where `pickStep` stands: the names found so far, and whether the last heading opens a Recommendation-like section. */
+export interface PickScan {
+  picks: string[];
+  underRec: boolean;
+}
+
 /** Names a page recommends: a note or paragraph opening "Choose X", "Recommend X", "Go with X", "Use X". */
 export function picksOf(bs: Block[]): string[] {
+  const scan: PickScan = { picks: [], underRec: false };
+  for (const b of bs) pickStep(scan, b);
+  return scan.picks;
+}
+
+/** Read the next block of a page for `picksOf`. Blocks must come in order, once each. */
+export function pickStep(scan: PickScan, b: Block): void {
   // A note may say "Choose X" anywhere; a paragraph counts only under a Recommendation or
   // Decision heading, and only there does a plain imperative ("Use X") count, since runbooks
   // are full of "Use X" steps.
-  const out: string[] = [];
-  let underRec = false;
-  for (const b of bs) {
-    if (b.type === 'heading') underRec = /recommend|decision|verdict|choice|conclusion/i.test(b.text);
-    if (b.type !== 'note' && !(b.type === 'paragraph' && underRec)) continue;
-    const verbs = underRec
-      ? 'choose|recommend(?:ation)?:?|go with|pick|adopt|use|buy|select'
-      : 'choose|recommend(?:ation)?:?|go with|pick|adopt';
-    const m = new RegExp(
-      `^(?:we\\s+)?(?:${verbs})\\s+(.+?)(?:[.,;:!(]|\\s+(?:with|because|mainly|for|over|as|and|now|today|instead)\\b|$)`,
-      'i',
-    ).exec(
-      plain(b.text)
-        .replace(/^\s*recommendation:\s*/i, 'choose ')
-        .trim(),
-    );
-    if (m && m[1].length <= 40) out.push(m[1].trim().toLowerCase());
-  }
-  return out;
+  if (b.type === 'heading') scan.underRec = /recommend|decision|verdict|choice|conclusion/i.test(b.text);
+  if (b.type !== 'note' && !(b.type === 'paragraph' && scan.underRec)) return;
+  const verbs = scan.underRec
+    ? 'choose|recommend(?:ation)?:?|go with|pick|adopt|use|buy|select'
+    : 'choose|recommend(?:ation)?:?|go with|pick|adopt';
+  const m = new RegExp(
+    `^(?:we\\s+)?(?:${verbs})\\s+(.+?)(?:[.,;:!(]|\\s+(?:with|because|mainly|for|over|as|and|now|today|instead)\\b|$)`,
+    'i',
+  ).exec(
+    plain(b.text)
+      .replace(/^\s*recommendation:\s*/i, 'choose ')
+      .trim(),
+  );
+  if (m && m[1].length <= 40) scan.picks.push(m[1].trim().toLowerCase());
 }
 
 function keyMatch(cellText: string, pick: string): boolean {

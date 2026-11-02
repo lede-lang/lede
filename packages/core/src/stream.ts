@@ -1,5 +1,6 @@
 import type { Block, DiagramBlock, LedeDocument } from './ast.ts';
 import { LedeParser, type ParseOptions } from './parser.ts';
+import { walkBlocks } from './walk.ts';
 
 /**
  * What `LedeStream.events` returns, in line order.
@@ -40,13 +41,8 @@ export class LedeStream {
   private open = new Set<DiagramBlock>();
 
   constructor(opts: ParseOptions = {}) {
-    const own = { ...opts };
-    delete own.hooks;
-    this.opts = own;
-    this.parser = new LedeParser({
-      ...own,
-      hooks: { onDiagramLine: (b) => this.touched.add(b), onDataAppend: (name) => this.appended.push(name) },
-    });
+    this.opts = opts;
+    this.parser = new LedeParser(opts, { onDiagramLine: (b) => this.touched.add(b), onDataAppend: (name) => this.appended.push(name) });
   }
 
   write(chunk: string): Block[] {
@@ -111,10 +107,7 @@ export class LedeStream {
     const doc = this.parser.end();
     for (const block of doc.blocks.slice(before)) {
       out.push({ kind: 'block', block });
-      for (const d of diagramsIn(block)) {
-        this.returned.add(d);
-        this.open.add(d);
-      }
+      this.shown(block);
     }
     for (const d of this.open) out.push({ kind: 'seal', block: d });
     this.open.clear();
@@ -142,18 +135,15 @@ export class LedeStream {
       }
     }
     // A diagram returned by this line's blocks opens now, so its own declaration line never seals it.
-    for (const block of blocks) {
-      for (const d of diagramsIn(block)) {
-        this.returned.add(d);
-        this.open.add(d);
-      }
-    }
+    for (const block of blocks) this.shown(block);
   }
-}
 
-/** The diagrams a block holds: itself, or the children of a grid (a diagram in a `cards` run is shown after the cards). */
-function diagramsIn(b: Block): DiagramBlock[] {
-  if (b.type === 'diagram') return [b];
-  if (b.type === 'grid') return b.children.filter((c) => c.type === 'diagram');
-  return [];
+  /** `block` was returned: the diagrams it holds (itself, or in a grid; the parser puts none in a card) may now receive statements. */
+  private shown(block: Block): void {
+    walkBlocks([block], (b) => {
+      if (b.type !== 'diagram') return;
+      this.returned.add(b);
+      this.open.add(b);
+    });
+  }
 }

@@ -4,24 +4,29 @@
 // heading shift, picks, late meta). `end()` checks the result against the whole-page render and corrects what the rules
 // missed (the settle); the tests and the bench switch the correction off, so they measure the rules and not the safety net.
 import type { Block, DataSet, DiagramBlock, LedeDocument } from '@lede-lang/core';
-import { resolve } from '@lede-lang/core';
+import { resolve, walkBlocks } from '@lede-lang/core';
 import {
   Ctx,
+  NOT_ESSAY,
   holdsFlow,
-  isProse,
+  isWide,
   masthead,
   mayGroup,
-  picksOf,
-  plan,
+  pickStep,
   planAt,
+  proseShape,
   renderMain,
+  standfirst,
+  styleOf,
+  tallyProse,
   type CtxMark,
+  type PickScan,
   type Probe,
+  type ProseTally,
   type RenderOptions,
   type Unit,
 } from './index.ts';
-import { css } from './theme.ts';
-import { inline, plain } from './util.ts';
+import { plain } from './util.ts';
 
 export type IncrementalOp =
   /** Set the `<header class="mast">` (a complete element). */
@@ -95,8 +100,6 @@ export interface Incremental {
   seal(d: DiagramBlock): Pushed;
   /** Commit what is held, draw what is open, apply late meta, settle. Call after the stream's own `end()`. */
   end(): Promise<IncrementalEnd>;
-  /** The page as it stands (header and units, no tail), for tests and the settle. */
-  mainHtml(): string;
 }
 
 export interface IncrementalOptions extends RenderOptions {
@@ -109,7 +112,6 @@ export interface IncrementalOptions extends RenderOptions {
 /** The comparison every check uses: whitespace between tags is not content; nothing else is normalized. */
 export const normalize = (html: string): string => html.replace(/>\s+</g, '><').trim();
 
-const DATA_LIKE = new Set(['chart', 'table', 'kpis', 'diagram', 'grid', 'html', 'code', 'cards', 'steps']);
 const STYLE_KEYS = ['accent', 'theme', 'width'] as const;
 const MAST_KEYS = ['title', 'subtitle', 'author', 'date'] as const;
 
@@ -118,7 +120,7 @@ const MAST_KEYS = ['title', 'subtitle', 'author', 'date'] as const;
  * flow diagram is 64 + 72 per layer, a layer being a step of the longest simple chain of edges so far, capped at 480. It
  * only has to be close: the figure takes `min-height`, so a taller drawing grows it once.
  */
-export function estimateHeight(d: DiagramBlock): number {
+function estimateHeight(d: DiagramBlock): number {
   if (d.kind === 'sequence') return 72 + 36 * d.edges.length + 24 * (d.frames?.length ?? 0);
   const next = new Map<string, string[]>();
   for (const e of d.edges) {
@@ -148,13 +150,10 @@ export function estimateHeight(d: DiagramBlock): number {
 const slotHtml = (h: number, wide: boolean): string =>
   `<figure class="viz dg-fig${wide ? ' wide' : ''} pending" style="min-height:${h}px" aria-busy="true"></figure>`;
 
-const styleOf = (m: Record<string, string>): string => css({ accent: m.accent, theme: m.theme, wide: m.width === 'wide' });
-
 /** A unit as the renderer keeps it. */
 interface U {
   /** Ordinal: the index of the unit's first block among the blocks after the masthead. */
   id: number;
-  n: number;
   plan: Unit;
   blocks: Block[];
   /** The ids this unit started from, so it can be drawn again with the ids it had. */
@@ -169,30 +168,38 @@ interface U {
   version: number;
 }
 
-function diagramsOf(blocks: Block[]): DiagramBlock[] {
-  return blocks.flatMap((b) => (b.type === 'diagram' ? [b] : b.type === 'grid' ? b.children.filter((c) => c.type === 'diagram') : []));
+/** What a unit's blocks hold, grids and cards included. */
+function inspect(blocks: Block[]): Pick<U, 'diagrams' | 'reads' | 'picks'> {
+  const diagrams: DiagramBlock[] = [];
+  const reads = new Set<string>();
+  let picks = false;
+  walkBlocks(blocks, (b) => {
+    if (b.type === 'diagram') diagrams.push(b);
+    else if (b.type === 'chart') reads.add(b.data);
+    else if (b.type === 'table') {
+      reads.add(b.data);
+      picks = true;
+    } else if (b.type === 'kpis') for (const k of b.items) if (k.ref) reads.add(k.ref.split('.')[0]);
+  });
+  return { diagrams, reads, picks };
 }
 
-function scan(b: Block, f: (b: Block) => void): void {
-  f(b);
-  if (b.type === 'grid') for (const c of b.children) scan(c, f);
-  if (b.type === 'cards') for (const c of b.items) for (const k of c.blocks) scan(k, f);
-}
+/** The ops, and the drawings still pending, of several units drawn in one step. */
+class Batch {
+  readonly ops: IncrementalOp[] = [];
+  readonly pend: Promise<IncrementalOp[]>[] = [];
 
-function readsOf(blocks: Block[]): Set<string> {
-  const out = new Set<string>();
-  for (const b of blocks)
-    scan(b, (x) => {
-      if (x.type === 'chart' || x.type === 'table') out.add(x.data);
-      if (x.type === 'kpis') for (const k of x.items) if (k.ref) out.add(k.ref.split('.')[0]);
-    });
-  return out;
-}
+  add(r: Pushed): void {
+    this.ops.push(...r.ops);
+    if (r.pending) this.pend.push(r.pending);
+  }
 
-function usesPicks(blocks: Block[]): boolean {
-  let hit = false;
-  for (const b of blocks) scan(b, (x) => (hit ||= x.type === 'table'));
-  return hit;
+  /** The ops so far, with one promise for every drawing pending. */
+  result(): Pushed {
+    const { ops, pend } = this;
+    if (pend.length === 0) return { ops };
+    return { ops, pending: pend.length === 1 ? pend[0] : Promise.all(pend).then((parts) => parts.flat()) };
+  }
 }
 
 export function createIncremental(
@@ -222,9 +229,12 @@ class Renderer implements Incremental {
 
   private readonly units: U[] = [];
   private readonly byDiagram = new Map<DiagramBlock, U>();
-  /** Diagrams shown as a slot; diagrams that have been drawn at least once; the height each slot has reached. */
-  private readonly open = new Set<DiagramBlock>();
-  private readonly drawn = new Set<DiagramBlock>();
+  /**
+   * Diagrams the stream has sealed at least once, even before their unit was committed. A diagram of a committed unit that is
+   * not in it is shown as a slot; one that is in it is drawn, and a seal after the first draws it again (a reseal).
+   */
+  private readonly sealed = new Set<DiagramBlock>();
+  /** The height each diagram's slot has reached. */
   private readonly minH = new Map<DiagramBlock, number>();
   /** What `ctx.slot` answers: nothing, the open and flow diagrams of a unit that is not finished, or every diagram (the tail). */
   private mode: 'none' | 'unit' | 'tail' = 'none';
@@ -239,8 +249,13 @@ class Renderer implements Incremental {
   private readonly dataSeen = new Set<string>();
   private drawings: Promise<unknown>[] = [];
 
+  /** `picksOf` over every block pushed, one block at a time. */
+  private readonly pickScan: PickScan = { picks: [], underRec: false };
+
   private prose = false;
   private proseFrozen = false;
+  /** The essay test's counts over the blocks read so far, while the layout is still undecided. */
+  private readonly tally: ProseTally = { paras: 0, pchars: 0, all: 0 };
   private proseFlips = 0;
   private shiftAssumed = false;
   private repicks = 0;
@@ -272,7 +287,7 @@ class Renderer implements Incremental {
     this.frontier = this.ctx.mark();
     this.ctx.slot = (d, wide) => {
       if (this.mode === 'none') return null;
-      if (this.mode === 'unit' && d.kind === 'sequence' && !this.open.has(d)) return null;
+      if (this.mode === 'unit' && d.kind === 'sequence' && this.sealed.has(d)) return null;
       const h = Math.max(this.minH.get(d) ?? 0, estimateHeight(d));
       this.minH.set(d, h);
       return slotHtml(h, wide);
@@ -289,25 +304,24 @@ class Renderer implements Incremental {
       return again ? this.update({ data: block.name }) : { ops: [] };
     }
     this.seq++;
-    const ops: IncrementalOp[] = [];
+    const out = new Batch();
     this.all.push(block);
     let consumed = false;
     if (!this.begun) {
       const r = this.begin(block);
-      ops.push(...r.ops);
+      out.ops.push(...r.ops);
       consumed = r.consumed;
     }
     if (block.type === 'heading') this.decideShift(block);
-    const pending = this.repick(block, ops);
-    if (consumed) return withPending(ops, pending);
+    this.repick(block, out);
+    if (consumed) return out.result();
     this.rest.push(block);
-    this.latchProse(block, ops);
+    this.latchProse(block, out.ops);
     this.held.push(block);
     this.heldAt.push(this.now());
     this.heldSeq.push(this.seq);
-    const pend: Promise<IncrementalOp[]>[] = pending ? [pending] : [];
-    this.commit(ops, pend, false);
-    return withPending(ops, merge(pend));
+    this.commit(out, false);
+    return out.result();
   }
 
   /** The first block decides the style and the masthead; a heading `#` the masthead takes is not part of the body. */
@@ -342,11 +356,12 @@ class Renderer implements Incremental {
   /** The prose layout is evaluated until it first becomes true, or until a block that no essay holds arrives; then it is fixed. */
   private latchProse(block: Block, ops: IncrementalOp[]): void {
     if (this.proseFrozen || this.prose) return;
-    if (DATA_LIKE.has(block.type)) {
+    if (NOT_ESSAY.has(block.type)) {
       this.proseFrozen = true;
       return;
     }
-    if (this.meta().width !== 'wide' && isProse(this.rest)) {
+    tallyProse(this.tally, block);
+    if (!isWide(this.meta()) && proseShape(this.tally)) {
       this.prose = true;
       this.proseFlips++;
       ops.push({ op: 'prose', on: true });
@@ -354,20 +369,17 @@ class Renderer implements Incremental {
   }
 
   /** A note or paragraph under a heading can name the choice a table is about: draw the tables again when the picks change. */
-  private repick(block: Block, ops: IncrementalOp[]): Promise<IncrementalOp[]> | undefined {
-    if (block.type !== 'heading' && block.type !== 'note' && block.type !== 'paragraph') return undefined;
-    const picks = picksOf(this.all);
-    if (picks.length === this.ctx.picks.length && picks.every((p, i) => p === this.ctx.picks[i])) return undefined;
-    this.ctx.picks = picks;
-    const pend: Promise<IncrementalOp[]>[] = [];
+  private repick(block: Block, out: Batch): void {
+    if (block.type !== 'heading' && block.type !== 'note' && block.type !== 'paragraph') return;
+    pickStep(this.pickScan, block);
+    // The names found only ever grow, so a different count is the whole comparison.
+    if (this.pickScan.picks.length === this.ctx.picks.length) return;
+    this.ctx.picks = [...this.pickScan.picks];
     for (const u of this.units) {
       if (!u.picks) continue;
       this.repicks++;
-      const r = this.redraw(u);
-      ops.push(...r.ops);
-      if (r.pending) pend.push(r.pending);
+      out.add(this.redraw(u));
     }
-    return merge(pend);
   }
 
   /**
@@ -375,7 +387,7 @@ class Renderer implements Incremental {
    * a grouped unit (a FAQ, option cards, a set, pros and cons, a recommendation) that the next blocks decide, so it and
    * everything after it stay held until `mayGroup` says no, or until every section the decision read has ended.
    */
-  private commit(ops: IncrementalOp[], pend: Promise<IncrementalOp[]>[], atEnd: boolean): void {
+  private commit(out: Batch, atEnd: boolean): void {
     while (this.held.length) {
       const head = this.held[0];
       let unit: Unit = { kind: 'block', block: head };
@@ -387,72 +399,45 @@ class Renderer implements Incremental {
         unit = r.unit;
         n = r.n;
       }
-      this.commitUnit(unit, n, ops, pend);
+      this.commitUnit(unit, n, out);
     }
   }
 
-  private commitUnit(unit: Unit, n: number, ops: IncrementalOp[], pend: Promise<IncrementalOp[]>[]): void {
+  private commitUnit(unit: Unit, n: number, out: Batch): void {
     const id = this.rest.length - this.held.length;
     const blocks = this.held.splice(0, n);
     const at = this.heldAt.splice(0, n);
     const seqs = this.heldSeq.splice(0, n);
     const t = this.now();
     seqs.forEach((q, i) => {
-      if (q >= this.seq && !this.atEnd) return;
+      if (q >= this.seq) return;
       this.holdMs.push(t - at[i]);
       if (unit.kind === 'block') this.heldPlain++;
       else this.heldGrouped++;
     });
-    const u: U = {
-      id,
-      n,
-      plan: unit,
-      blocks,
-      mark: this.frontier,
-      html: '',
-      diagrams: diagramsOf(blocks),
-      reads: readsOf(blocks),
-      picks: usesPicks(blocks),
-      version: 0,
-    };
-    for (const d of u.diagrams) {
-      // A diagram sealed while its unit was held back is finished already.
-      if (this.sealedEarly.has(d)) this.drawn.add(d);
-      else this.open.add(d);
-      this.byDiagram.set(d, u);
-    }
-    const unfinished = u.diagrams.some((d) => this.open.has(d));
-    const slotted = unfinished || u.blocks.some(holdsFlow);
+    const u: U = { id, plan: unit, blocks, mark: this.frontier, html: '', ...inspect(blocks), version: 0 };
+    for (const d of u.diagrams) this.byDiagram.set(d, u);
+    // A diagram sealed while its unit was held back is finished already.
+    const unfinished = u.diagrams.some((d) => !this.sealed.has(d));
+    const slotted = unfinished || blocks.some(holdsFlow);
     this.mode = u.diagrams.length ? 'unit' : 'none';
     u.html = this.drawUnit(unit);
     this.mode = 'none';
     this.renders++;
     this.frontier = this.ctx.mark();
     this.units.push(u);
-    if (slotted) ops.push({ op: 'placeholder', id, html: u.html, minHeight: Math.max(...u.diagrams.map((d) => this.minH.get(d) ?? 0)) });
-    else ops.push({ op: 'append', id, html: u.html });
+    if (slotted)
+      out.ops.push({ op: 'placeholder', id, html: u.html, minHeight: Math.max(...u.diagrams.map((d) => this.minH.get(d) ?? 0)) });
+    else out.ops.push({ op: 'append', id, html: u.html });
     // A flow diagram that is finished already is laid out now.
-    if (!unfinished && slotted) {
-      const r = this.redraw(u);
-      ops.push(...r.ops);
-      if (r.pending) pend.push(r.pending);
-    }
+    if (!unfinished && slotted) out.add(this.redraw(u));
   }
-
-  /** Diagrams whose seal arrived before the unit that holds them was committed. */
-  private readonly sealedEarly = new Set<DiagramBlock>();
-
-  private atEnd = false;
 
   /** One unit as `render()` draws it, with every diagram `ctx.slot` claims left as a slot. */
   private drawUnit(unit: Unit): string {
     if (unit.kind !== 'block') return this.ctx.unitSync(unit);
     const b = unit.block;
-    // A short paragraph straight after the title is the standfirst.
-    if (b.type === 'paragraph' && b === this.rest[0] && this.header !== '' && (this.prose || plain(b.text).length <= 360)) {
-      return `<p class="lead">${inline(b.text)}</p>`;
-    }
-    return this.ctx.blockSync(this.view(b), true);
+    return standfirst(b, this.rest[0], this.header, this.prose) ?? this.ctx.blockSync(this.view(b), true);
   }
 
   /** A kpi that reads a data name has no value until the document ends: draw it from a copy that has been resolved against the rows so far. */
@@ -483,16 +468,12 @@ class Renderer implements Incremental {
     const ops: IncrementalOp[] = [];
     const shown = [...this.held, ...blocks];
     if (!this.begun && shown.length) ops.push(...this.begin(shown[0]).ops);
-    this.ctx.rewind(this.frontier);
     this.mode = 'tail';
     const first = this.rest.length === 0 && this.held.length === 0 ? blocks[0] : undefined;
     const html = shown
       .map((b) => {
         if (b.type === 'grid' && b.children.length === 0) return '';
-        if (b === first && b.type === 'paragraph' && this.header !== '' && (this.prose || plain(b.text).length <= 360)) {
-          return `<p class="lead">${inline(b.text)}</p>`;
-        }
-        return this.ctx.blockSync(this.view(b), true);
+        return standfirst(b, first, this.header, this.prose) ?? this.ctx.blockSync(this.view(b), true);
       })
       .join('');
     this.mode = 'none';
@@ -508,32 +489,24 @@ class Renderer implements Incremental {
 
   update(what: DiagramBlock | { data: string }): Pushed {
     if (!('type' in what)) {
-      const ops: IncrementalOp[] = [];
-      const pend: Promise<IncrementalOp[]>[] = [];
-      for (const u of this.units) {
-        if (!u.reads.has(what.data)) continue;
-        const r = this.redraw(u);
-        ops.push(...r.ops);
-        if (r.pending) pend.push(r.pending);
-      }
-      return withPending(ops, merge(pend));
+      const out = new Batch();
+      for (const u of this.units) if (u.reads.has(what.data)) out.add(this.redraw(u));
+      return out.result();
     }
     const u = this.byDiagram.get(what);
     // A diagram not on the page yet, or one that is drawn already (its next seal draws it again): nothing to show.
-    if (!u || !this.open.has(what)) return { ops: [] };
+    if (!u || this.sealed.has(what)) return { ops: [] };
     if (estimateHeight(what) <= (this.minH.get(what) ?? 0)) return { ops: [] };
     return this.redraw(u);
   }
 
   seal(d: DiagramBlock): Pushed {
+    const again = this.sealed.has(d);
+    this.sealed.add(d);
     const u = this.byDiagram.get(d);
-    if (!u) {
-      this.sealedEarly.add(d);
-      return { ops: [] };
-    }
-    if (this.drawn.has(d)) this.reseals++;
-    this.open.delete(d);
-    this.drawn.add(d);
+    // Sealed before its unit was committed: it is drawn finished when it is.
+    if (!u) return { ops: [] };
+    if (again) this.reseals++;
     return this.redraw(u);
   }
 
@@ -541,7 +514,7 @@ class Renderer implements Incremental {
   private redraw(u: U): Pushed {
     this.ctx.rewind(u.mark);
     try {
-      const stillOpen = u.diagrams.some((d) => this.open.has(d));
+      const stillOpen = u.diagrams.some((d) => !this.sealed.has(d));
       if (!stillOpen && u.blocks.some(holdsFlow)) return this.drawLater(u);
       this.mode = stillOpen ? 'unit' : 'none';
       const html = this.drawUnit(u.plan);
@@ -580,38 +553,18 @@ class Renderer implements Incremental {
 
   // ------------------------------------------------------------------ the end
 
-  mainHtml(): string {
-    return this.mainOf(
-      this.prose,
-      this.childrenNow().map((c) => c.html),
-    );
-  }
-
-  private mainOf(prose: boolean, children: string[]): string {
-    return `<main class="doc${prose ? ' prose' : ''}">\n${children.filter(Boolean).join('\n')}\n</main>`;
-  }
-
-  private childrenNow(): { id: number | null; html: string }[] {
-    return [{ id: null, html: this.header }, ...this.units.map((u) => ({ id: u.id, html: u.html }))].filter((c) => c.html !== '');
-  }
-
   async end(): Promise<IncrementalEnd> {
-    const ops: IncrementalOp[] = [{ op: 'tail', html: '' }];
+    const batch = new Batch();
+    const ops = batch.ops;
+    ops.push({ op: 'tail', html: '' });
     this.lastTail = '';
     this.seq++;
-    this.atEnd = true;
     // What is held can group now: every section has ended.
-    const held: Promise<IncrementalOp[]>[] = [];
-    this.commit(ops, held, true);
+    this.commit(batch, true);
     // Diagrams still being written are finished: the stream ended.
-    const mine: Promise<IncrementalOp[]>[] = [...held];
-    for (const d of this.open) {
-      const r = this.seal(d);
-      ops.push(...r.ops);
-      if (r.pending) mine.push(r.pending);
-    }
+    for (const d of this.byDiagram.keys()) if (!this.sealed.has(d)) batch.add(this.seal(d));
     await Promise.all(this.drawings);
-    for (const more of await Promise.all(mine)) ops.push(...more);
+    for (const more of await Promise.all(batch.pend)) ops.push(...more);
     this.drawings = [];
 
     const m = this.meta();
@@ -704,13 +657,12 @@ class Renderer implements Incremental {
 
   /** Units committed whose extent the finished document, with the same prose layout, plans otherwise. */
   private regroups(): number {
-    const kept = new Set(this.units.map((u) => `${u.id}:${u.n}`));
-    let at = 0;
+    const kept = new Set(this.units.map((u) => `${u.id}:${u.blocks.length}`));
     let n = 0;
-    for (const u of plan(this.rest, this.prose)) {
-      const len = u.kind === 'block' ? 1 : span(u);
-      if (!kept.has(`${at}:${len}`)) n++;
-      at += len;
+    for (let at = 0; at < this.rest.length;) {
+      const step = planAt(this.rest, at, this.prose).n;
+      if (!kept.has(`${at}:${step}`)) n++;
+      at += step;
     }
     return n;
   }
@@ -727,20 +679,4 @@ class Renderer implements Incremental {
     if (prose !== this.prose) return 'prose';
     return 'other';
   }
-}
-
-function span(u: Exclude<Unit, { kind: 'block' }>): number {
-  if (u.kind === 'rec') return 1 + u.section.body.length;
-  if (u.kind === 'proscons') return 2 + u.pro.body.length + u.con.body.length;
-  return u.sections.reduce((n, s) => n + 1 + s.body.length, 0);
-}
-
-function merge(list: Promise<IncrementalOp[]>[]): Promise<IncrementalOp[]> | undefined {
-  if (list.length === 0) return undefined;
-  if (list.length === 1) return list[0];
-  return Promise.all(list).then((parts) => parts.flat());
-}
-
-function withPending(ops: IncrementalOp[], pending: Promise<IncrementalOp[]> | undefined): Pushed {
-  return pending ? { ops, pending } : { ops };
 }

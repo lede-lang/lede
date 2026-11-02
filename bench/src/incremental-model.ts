@@ -5,6 +5,7 @@ import { LedeStream, type StreamEvent } from '../../packages/core/src/index.ts';
 import type { ParseOptions } from '../../packages/core/src/index.ts';
 import {
   createIncremental,
+  mainElement,
   type Incremental,
   type IncrementalEnd,
   type IncrementalOp,
@@ -12,8 +13,7 @@ import {
   type Pushed,
 } from '../../packages/render-html/src/index.ts';
 
-/** Whitespace between tags is not content; nothing else is normalized. */
-export const normalize = (html: string): string => html.replace(/>\s+</g, '><').trim();
+export { normalize } from '../../packages/render-html/src/incremental.ts';
 
 export class StringModel {
   header = '';
@@ -70,7 +70,7 @@ export class StringModel {
 
   /** `<main>` as `render(..., { fragment: true })` writes it, plus the tail. */
   main(): string {
-    return `<main class="doc${this.prose ? ' prose' : ''}">\n${[...this.children(), this.tail].filter(Boolean).join('\n')}\n</main>`;
+    return mainElement([...this.children(), this.tail], this.prose);
   }
 }
 

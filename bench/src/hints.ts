@@ -14,7 +14,7 @@
 // "end-like" are header words (start, begin, from; end, finish, to, until) and a table's columns are those it shows (`cols=`).
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { num, parse, type Block, type LedeDocument, type TableBlock } from '@lede-lang/core';
+import { num, parse, walkBlocks, type Block, type LedeDocument, type TableBlock } from '@lede-lang/core';
 
 /** The sentence every hint line ends with, as D67 words the line. */
 export const KEEP = 'Keep every fact, number and name exactly as it is, and keep the same sections.';
@@ -27,15 +27,18 @@ interface Placed {
   heading: string | null;
 }
 
-/** Every block in document order, with its nearest heading; grids and cards are entered. */
-function flatten(blocks: Block[], heading: string | null, out: Placed[]): string | null {
-  for (const block of blocks) {
+/**
+ * Every block in document order, with its nearest heading; grids and cards are entered. A card's own title is the heading of the
+ * blocks inside it (a heading never sits inside a grid or a card: it ends them).
+ */
+function flatten(blocks: Block[]): Placed[] {
+  const out: Placed[] = [];
+  let heading: string | null = null;
+  walkBlocks(blocks, (block, card) => {
     if (block.type === 'heading') heading = block.text;
-    out.push({ block, heading });
-    if (block.type === 'grid') flatten(block.children, heading, out);
-    if (block.type === 'cards') for (const card of block.items) flatten(card.blocks, card.title, out);
-  }
-  return heading;
+    out.push({ block, heading: card?.title ?? heading });
+  });
+  return out;
 }
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -173,8 +176,7 @@ function rule5(doc: LedeDocument, placed: Placed[]): string | null {
 /** Up to three hints for a page, in rule order. Empty when no rule fires. */
 export function hintsFor(src: string): string[] {
   const doc = parse(src);
-  const placed: Placed[] = [];
-  flatten(doc.blocks, null, placed);
+  const placed = flatten(doc.blocks);
   return [rule1(placed), rule2(doc.blocks), rule3(placed), rule4(doc, placed), rule5(doc, placed)]
     .filter((h): h is string => h !== null)
     .slice(0, MAX_HINTS);

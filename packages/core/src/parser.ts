@@ -22,10 +22,11 @@ import type {
 import { num, parseInlineCsv, parseOpts, readQuoted, tokens } from './lex.ts';
 import { AA_NON_TEXT, AA_TEXT, HEX_COLOR, accentContrast } from './contrast.ts';
 import { browserUrl, imageSrcKind } from './url.ts';
+import { walkBlocks } from './walk.ts';
 
 /**
- * Callbacks for a streaming consumer (`LedeStream.events` installs them). Both run after the line has been applied.
- * `parse` and the snapshot parser never set them.
+ * Callbacks for a streaming consumer, the second argument of `new LedeParser` (`LedeStream.events` installs them). Both run after
+ * the line has been applied. They are not a `ParseOptions` field, so `parse` and the snapshot parser cannot take them.
  */
 export interface ParseHooks {
   /** A `name:` statement was read for the diagram `block` declared earlier, so it gained nodes, edges or notes. */
@@ -37,7 +38,6 @@ export interface ParseHooks {
 export interface ParseOptions {
   /** Resolves `data name < path`. Without it, file data is an error (browsers, sandboxes). */
   loadFile?: (path: string) => string;
-  hooks?: ParseHooks;
 }
 
 export const KEYWORDS = ['data', 'chart', 'table', 'kpi', 'diagram', 'image', 'grid', 'cards', 'step'] as const;
@@ -84,14 +84,6 @@ function accBlock(a: Acc): Block {
   return { type: 'quote', text: lines.join(' '), cite, line: a.line };
 }
 
-/** A copy of `a` that later lines cannot reach, for `peek`. */
-function copyAcc(a: Acc): Acc {
-  if (a.kind === 'paragraph' || a.kind === 'quote') return { ...a, lines: [...a.lines] };
-  if (a.kind === 'list') return { ...a, items: [...a.items] };
-  if (a.kind === 'kpis') return { ...a, items: [...a.items] };
-  return { ...a, items: [...a.items] };
-}
-
 /** The `code` (or raw `html`) block a fence becomes with the lines it holds. Strips the common indentation. */
 function fenceBlock(f: Fence): Block {
   const ind = Math.min(...f.lines.filter((l) => l.trim()).map((l) => l.length - l.trimStart().length), Infinity);
@@ -124,9 +116,11 @@ export class LedeParser {
   private anon = 0;
 
   private readonly opts: ParseOptions;
+  private readonly hooks: ParseHooks | undefined;
 
-  constructor(opts: ParseOptions = {}) {
+  constructor(opts: ParseOptions = {}, hooks?: ParseHooks) {
     this.opts = opts;
+    this.hooks = hooks;
   }
 
   pushLine(raw: string): Block[] {
@@ -177,7 +171,7 @@ export class LedeParser {
    * part of it: it is a block or a diagnostic on its own line.
    */
   peek(): Block[] {
-    let open: Block | null = this.fence ? fenceBlock(this.fence) : this.acc ? accBlock(copyAcc(this.acc)) : null;
+    let open: Block | null = this.fence ? fenceBlock(this.fence) : this.acc ? accBlock(structuredClone(this.acc)) : null;
     const out: Block[] = [];
     const c = this.cards;
     // `emit` hands the open block to the open card, else the open grid, else the page.
@@ -349,7 +343,7 @@ export class LedeParser {
       const col = lead + 1 + s.indexOf(':') + 1 + (s.slice(s.indexOf(':') + 1).length - s.slice(s.indexOf(':') + 1).trimStart().length);
       const d = this.diagrams.get(dl[1])!;
       this.diagramLine(d, dl[2].trim(), col);
-      this.opts.hooks?.onDiagramLine(d);
+      this.hooks?.onDiagramLine(d);
       return;
     }
     if (dl && /(-->|->|<->)/.test(dl[2])) {
@@ -596,7 +590,7 @@ export class LedeParser {
       return;
     }
     this.addRows(d, csv.rows, csv.offsets, bodyCol);
-    this.opts.hooks?.onDataAppend(name);
+    this.hooks?.onDataAppend(name);
   }
 
   private defineData(name: string, rows: string[][], offsets: number[], bodyCol: number): void {
@@ -1543,58 +1537,53 @@ export function findCol(d: DataSet, name: string): string | null {
 
 /** Post-parse resolution: kpi references and diagram sanity checks. Idempotent. */
 export function resolve(doc: LedeDocument): void {
-  const visit = (blocks: Block[]) => {
-    for (const b of blocks) {
-      if (b.type === 'grid') visit(b.children);
-      if (b.type === 'cards') for (const c of b.items) visit(c.blocks);
-      if (b.type === 'kpis') for (const k of b.items) resolveKpi(doc, k);
-      if (b.type === 'diagram') {
-        if (b.nodes.length === 0) {
+  walkBlocks(doc.blocks, (b) => {
+    if (b.type === 'kpis') for (const k of b.items) resolveKpi(doc, k);
+    if (b.type === 'diagram') {
+      if (b.nodes.length === 0) {
+        doc.diagnostics.push({
+          severity: 'warning',
+          code: 'diagram-empty',
+          message: `diagram ${b.name} has no nodes (lines must start with \`${b.name}:\`)`,
+          line: b.line,
+          col: 1,
+        });
+      }
+      for (const f of b.frames ?? []) {
+        if (f.to === null) {
           doc.diagnostics.push({
-            severity: 'warning',
-            code: 'diagram-empty',
-            message: `diagram ${b.name} has no nodes (lines must start with \`${b.name}:\`)`,
-            line: b.line,
+            severity: 'error',
+            code: 'diagram-block-unclosed',
+            message: `${f.kind} opened on line ${f.line} is never closed; add \`${b.name}: end\` after its last message`,
+            line: f.line,
             col: 1,
           });
         }
-        for (const f of b.frames ?? []) {
-          if (f.to === null) {
+      }
+      const gids = new Set(b.groups.map((g) => g.id));
+      // Group cycles: a group may not contain itself through nesting.
+      for (const g of b.groups) {
+        const seen = new Set<string>();
+        const walk = (id: string): boolean => {
+          if (seen.has(id)) return true;
+          seen.add(id);
+          const gg = b.groups.find((x) => x.id === id);
+          return !!gg && gg.members.some((m) => gids.has(m) && walk(m));
+        };
+        if (walk(g.id) && g.members.some((m) => gids.has(m))) {
+          const cyc = g.members.find((m) => gids.has(m) && b.groups.find((x) => x.id === m)!.members.includes(g.id));
+          if (cyc)
             doc.diagnostics.push({
               severity: 'error',
-              code: 'diagram-block-unclosed',
-              message: `${f.kind} opened on line ${f.line} is never closed; add \`${b.name}: end\` after its last message`,
-              line: f.line,
+              code: 'diagram-group-cycle',
+              message: `groups ${g.id} and ${cyc} contain each other`,
+              line: b.line,
               col: 1,
             });
-          }
-        }
-        const gids = new Set(b.groups.map((g) => g.id));
-        // Group cycles: a group may not contain itself through nesting.
-        for (const g of b.groups) {
-          const seen = new Set<string>();
-          const walk = (id: string): boolean => {
-            if (seen.has(id)) return true;
-            seen.add(id);
-            const gg = b.groups.find((x) => x.id === id);
-            return !!gg && gg.members.some((m) => gids.has(m) && walk(m));
-          };
-          if (walk(g.id) && g.members.some((m) => gids.has(m))) {
-            const cyc = g.members.find((m) => gids.has(m) && b.groups.find((x) => x.id === m)!.members.includes(g.id));
-            if (cyc)
-              doc.diagnostics.push({
-                severity: 'error',
-                code: 'diagram-group-cycle',
-                message: `groups ${g.id} and ${cyc} contain each other`,
-                line: b.line,
-                col: 1,
-              });
-          }
         }
       }
     }
-  };
-  visit(doc.blocks);
+  });
 }
 
 function resolveKpi(doc: LedeDocument, k: Kpi): void {

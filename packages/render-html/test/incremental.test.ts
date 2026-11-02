@@ -51,11 +51,12 @@ const sentences = (n: number, from = 0) => Array.from({ length: n }, (_, i) => S
 test('examples: the streamed page equals the whole-page render before any settle, at chunks of 1, 7 and 64 bytes', async () => {
   const files = lede('examples');
   assert.ok(files.length >= 60, `examples found: ${files.length}`);
-  for (const chunk of [1, 7, 64]) {
-    for (const f of files) {
-      const src = read(f);
+  for (const f of files) {
+    const src = read(f);
+    const expected = await whole(src);
+    for (const chunk of [1, 7, 64]) {
       const d = await drive(src, { chunk, parse: parseOpts });
-      assert.equal(streamed(d), await whole(src), `${f} at chunks of ${chunk}`);
+      assert.equal(streamed(d), expected, `${f} at chunks of ${chunk}`);
       assert.equal(d.end.equal, true, `${f}: the report agrees with the model`);
       assert.equal(d.end.regroups, 0, `${f}: regroups`);
       assert.equal(d.end.lateMeta, 0, `${f}: late meta`);

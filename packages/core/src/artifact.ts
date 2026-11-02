@@ -1,5 +1,6 @@
-import type { Block, Diagnostic, LedeDocument } from './ast.ts';
+import type { Diagnostic, LedeDocument } from './ast.ts';
 import { imageSrcKind } from './url.ts';
+import { walkBlocks } from './walk.ts';
 
 /**
  * Images a host that serves the page from its own origin cannot load: relative paths (internal spec, lede-lang/meta).
@@ -9,22 +10,16 @@ import { imageSrcKind } from './url.ts';
  */
 export function artifactDiagnostics(doc: LedeDocument): Diagnostic[] {
   const out: Diagnostic[] = [];
-  const walk = (blocks: Block[]) => {
-    for (const b of blocks) {
-      if (b.type === 'image') {
-        if (imageSrcKind(b.src) === 'local')
-          out.push({
-            severity: 'warning',
-            code: 'artifact-image',
-            message: `image ${b.src} is a relative path, which the Artifact host does not serve; inline it as a data: URI or upload it as an asset and use the asset URL`,
-            line: b.line,
-            col: 1,
-            detail: { src: b.src, kind: 'local' },
-          });
-      } else if (b.type === 'grid') walk(b.children);
-      else if (b.type === 'cards') for (const item of b.items) walk(item.blocks);
-    }
-  };
-  walk(doc.blocks);
+  walkBlocks(doc.blocks, (b) => {
+    if (b.type === 'image' && imageSrcKind(b.src) === 'local')
+      out.push({
+        severity: 'warning',
+        code: 'artifact-image',
+        message: `image ${b.src} is a relative path, which the Artifact host does not serve; inline it as a data: URI or upload it as an asset and use the asset URL`,
+        line: b.line,
+        col: 1,
+        detail: { src: b.src, kind: 'local' },
+      });
+  });
   return out;
 }
