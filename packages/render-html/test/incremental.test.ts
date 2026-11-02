@@ -10,7 +10,7 @@ import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { LedeStream, parse, type StreamEvent } from '@lede-lang/core';
-import { type IncrementalOp, createIncremental, render, setLayoutEngine } from '../src/index.ts';
+import { Ctx, type IncrementalOp, createIncremental, render, setLayoutEngine } from '../src/index.ts';
 import { drive, normalize, type Driven } from '../../../bench/src/incremental-model.ts';
 import { benchPages, measure, summarize, summaryText } from '../../../bench/src/incremental-report.ts';
 import { resolveChrome } from '../../../bench/src/shot.ts';
@@ -571,6 +571,47 @@ test('layouts are cached only for the incremental renderer: plain render() never
   assert.equal(streamed(d), await whole(page));
   assert.equal(d.end.renders >= 2, true, 'the diagram was drawn more than once');
   assert.equal(streamedCalls, plain, 'the page was laid out once; the settle drew it again from that layout');
+});
+
+test('Ctx.mark and rewind copy nothing, and a rewind can go forward again to a later mark', () => {
+  const heads = Array.from({ length: 400 }, (_, i) => ({
+    type: 'heading' as const,
+    level: 2 as const,
+    text: `Section ${i % 40}`,
+    line: i + 1,
+  }));
+  const doc = { meta: {}, blocks: heads, data: {}, diagnostics: [] };
+  const draw = (ctx: Ctx, hs: typeof heads) => hs.map((h) => ctx.blockSync(h, true));
+
+  const fresh = draw(new Ctx(doc, {}), [...heads, heads[0]]);
+  const ctx = new Ctx(doc, {});
+  const first = draw(ctx, heads.slice(0, 200));
+  const a = ctx.mark();
+  const second = draw(ctx, heads.slice(200));
+  const b = ctx.mark();
+  assert.deepEqual([...first, ...second], fresh.slice(0, 400));
+
+  // Back to the middle and draw the second half again: the same ids. Then forward to the end: nothing is taken twice.
+  ctx.rewind(a);
+  assert.deepEqual(draw(ctx, heads.slice(200)), second);
+  ctx.rewind(b);
+  assert.equal(draw(ctx, [heads[0]])[0], fresh[400]);
+  assert.match(fresh[400], /id="section-0(-x){10}"/);
+
+  const RealSet = globalThis.Set;
+  let copies = 0;
+  globalThis.Set = class<T> extends RealSet<T> {
+    constructor(items?: Iterable<T> | null) {
+      super(items);
+      if (this.size > 100) copies++;
+    }
+  };
+  try {
+    for (let i = 0; i < 50; i++) ctx.rewind(ctx.mark());
+  } finally {
+    globalThis.Set = RealSet;
+  }
+  assert.equal(copies, 0, 'mark/rewind copied the set of heading ids');
 });
 
 // ---- early layout-shift check (Chromium) ----------------------------------------------------------------------------------------

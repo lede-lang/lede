@@ -397,10 +397,10 @@ const YES = /^(\*\*)?(pros?|do|advantage|upside|strength)(:\*\*|\*\*:|:)\s*/i;
 const NO = /^(\*\*)?(cons?|don't|dont|avoid|drawback|downside|weakness)(:\*\*|\*\*:|:)\s*/i;
 const verdict = (t: string): 'yes' | 'no' | '' => (YES.test(t) ? 'yes' : NO.test(t) ? 'no' : '');
 
-/** What `rewind` puts back: the id counter and the heading ids taken so far. */
+/** What `rewind` puts back: the id counter and how many heading ids had been taken. */
 export interface CtxMark {
   n: number;
-  ids: Set<string>;
+  taken: number;
 }
 
 /**
@@ -411,7 +411,15 @@ export interface CtxMark {
 export class Ctx {
   private n = 0;
   shift = 0;
-  private ids = new Set<string>();
+  /**
+   * The heading ids in the order they were taken, and where each was taken. An id is in use when it was taken before the position
+   * being drawn (`taken`), so `mark` and `rewind` only move `taken`: nothing is copied, and a rewind can go forward again to a
+   * later mark, as the incremental renderer does when it draws a unit again between two units. The entries past `taken` are the
+   * ids of what was drawn there before; drawing the same blocks takes the same ids at the same places.
+   */
+  private readonly idAt: string[] = [];
+  private readonly idPos = new Map<string, number>();
+  private taken = 0;
   private readonly doc: LedeDocument;
   private readonly opts: RenderOptions;
   picks: string[];
@@ -437,18 +445,24 @@ export class Ctx {
   }
 
   mark(): CtxMark {
-    return { n: this.n, ids: new Set(this.ids) };
+    return { n: this.n, taken: this.taken };
   }
 
   rewind(m: CtxMark): void {
     this.n = m.n;
-    this.ids = new Set(m.ids);
+    this.taken = m.taken;
+  }
+
+  private idTaken(id: string): boolean {
+    const at = this.idPos.get(id);
+    return at !== undefined && at < this.taken && this.idAt[at] === id;
   }
 
   heading(b: HeadingBlock, cls = ''): string {
     let id = slug(b.text);
-    while (this.ids.has(id)) id += '-x';
-    this.ids.add(id);
+    while (this.idTaken(id)) id += '-x';
+    this.idAt[this.taken] = id;
+    this.idPos.set(id, this.taken++);
     const lvl = Math.min(4, b.level + this.shift);
     return `<h${lvl} id="${id}"${cls ? ` class="${cls}"` : ''}>${inline(b.text)}</h${lvl}>`;
   }
