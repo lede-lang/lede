@@ -23,9 +23,21 @@ import { num, parseInlineCsv, parseOpts, readQuoted, tokens } from './lex.ts';
 import { AA_NON_TEXT, AA_TEXT, HEX_COLOR, accentContrast } from './contrast.ts';
 import { browserUrl, imageSrcKind } from './url.ts';
 
+/**
+ * Callbacks for a streaming consumer (`LedeStream.events` installs them). Both run after the line has been applied.
+ * `parse` and the snapshot parser never set them.
+ */
+export interface ParseHooks {
+  /** A `name:` statement was read for the diagram `block` declared earlier, so it gained nodes, edges or notes. */
+  onDiagramLine(block: DiagramBlock): void;
+  /** `data NAME += rows` appended rows to the data set `name`. */
+  onDataAppend(name: string): void;
+}
+
 export interface ParseOptions {
   /** Resolves `data name < path`. Without it, file data is an error (browsers, sandboxes). */
   loadFile?: (path: string) => string;
+  hooks?: ParseHooks;
 }
 
 export const KEYWORDS = ['data', 'chart', 'table', 'kpi', 'diagram', 'image', 'grid', 'cards', 'step'] as const;
@@ -54,6 +66,37 @@ interface Fence {
   raw: boolean;
   lines: string[];
   line: number;
+}
+
+/** The block an accumulator (paragraph, list, quote, kpi row, step run) becomes when it is flushed. */
+function accBlock(a: Acc): Block {
+  if (a.kind === 'paragraph') return { type: 'paragraph', text: a.lines.join(' '), line: a.line };
+  if (a.kind === 'list') return { type: 'list', ordered: a.ordered, start: a.start, items: a.items, line: a.line };
+  if (a.kind === 'kpis') return { type: 'kpis', items: a.items, line: a.line } satisfies KpiBlock;
+  if (a.kind === 'steps') return { type: 'steps', items: a.items, line: a.line };
+  let cite: string | null = null;
+  const lines = [...a.lines];
+  const last = lines[lines.length - 1];
+  if (lines.length > 1 && /^(—|--|–)\s*/.test(last)) {
+    cite = last.replace(/^(—|--|–)\s*/, '');
+    lines.pop();
+  }
+  return { type: 'quote', text: lines.join(' '), cite, line: a.line };
+}
+
+/** A copy of `a` that later lines cannot reach, for `peek`. */
+function copyAcc(a: Acc): Acc {
+  if (a.kind === 'paragraph' || a.kind === 'quote') return { ...a, lines: [...a.lines] };
+  if (a.kind === 'list') return { ...a, items: [...a.items] };
+  if (a.kind === 'kpis') return { ...a, items: [...a.items] };
+  return { ...a, items: [...a.items] };
+}
+
+/** The `code` (or raw `html`) block a fence becomes with the lines it holds. Strips the common indentation. */
+function fenceBlock(f: Fence): Block {
+  const ind = Math.min(...f.lines.filter((l) => l.trim()).map((l) => l.length - l.trimStart().length), Infinity);
+  const body = f.lines.map((l) => (Number.isFinite(ind) ? l.slice(ind) : l)).join('\n');
+  return f.raw ? { type: 'html', html: body, line: f.line } : { type: 'code', lang: f.lang, text: body, line: f.line };
 }
 
 /**
@@ -125,6 +168,35 @@ export class LedeParser {
     this.checkAccent();
     resolve(this.doc);
     return this.doc;
+  }
+
+  /**
+   * The blocks `end()` would still add, without ending the parser or changing anything: the open paragraph, list, quote, kpi
+   * row, step run or fence, the `cards` run and the `grid` as they stand. The result is what a snapshot of the lines so
+   * far shows beyond the blocks already returned by `pushLine`. Costs the size of the open block. A keyword line is never
+   * part of it: it is a block or a diagnostic on its own line.
+   */
+  peek(): Block[] {
+    let open: Block | null = this.fence ? fenceBlock(this.fence) : this.acc ? accBlock(copyAcc(this.acc)) : null;
+    const out: Block[] = [];
+    const c = this.cards;
+    // `emit` hands the open block to the open card, else the open grid, else the page.
+    if (open && !c?.card && !this.grid) {
+      out.push(open);
+      open = null;
+    }
+    if (c && c.block.items.length > 0) {
+      const items = [...c.block.items];
+      if (c.card && open) {
+        items[items.length - 1] = { ...c.card, blocks: [...c.card.blocks, open] };
+        open = null;
+      }
+      out.push({ ...c.block, items }, ...c.deferred);
+    }
+    if (this.grid) {
+      out.push({ ...this.grid, children: open ? [...this.grid.children, open] : [...this.grid.children] });
+    }
+    return out;
   }
 
   // ------------------------------------------------------------ accent (D49)
@@ -275,7 +347,9 @@ export class LedeParser {
     if (dl && this.diagrams.has(dl[1])) {
       this.flush();
       const col = lead + 1 + s.indexOf(':') + 1 + (s.slice(s.indexOf(':') + 1).length - s.slice(s.indexOf(':') + 1).trimStart().length);
-      this.diagramLine(this.diagrams.get(dl[1])!, dl[2].trim(), col);
+      const d = this.diagrams.get(dl[1])!;
+      this.diagramLine(d, dl[2].trim(), col);
+      this.opts.hooks?.onDiagramLine(d);
       return;
     }
     if (dl && /(-->|->|<->)/.test(dl[2])) {
@@ -334,20 +408,7 @@ export class LedeParser {
     const a = this.acc;
     if (!a) return;
     this.acc = null;
-    if (a.kind === 'paragraph') this.emit({ type: 'paragraph', text: a.lines.join(' '), line: a.line });
-    else if (a.kind === 'list') this.emit({ type: 'list', ordered: a.ordered, start: a.start, items: a.items, line: a.line });
-    else if (a.kind === 'kpis') this.emit({ type: 'kpis', items: a.items, line: a.line } satisfies KpiBlock);
-    else if (a.kind === 'steps') this.emit({ type: 'steps', items: a.items, line: a.line });
-    else {
-      let cite: string | null = null;
-      const lines = [...a.lines];
-      const last = lines[lines.length - 1];
-      if (lines.length > 1 && /^(—|--|–)\s*/.test(last)) {
-        cite = last.replace(/^(—|--|–)\s*/, '');
-        lines.pop();
-      }
-      this.emit({ type: 'quote', text: lines.join(' '), cite, line: a.line });
-    }
+    this.emit(accBlock(a));
   }
 
   private fenceLine(raw: string): void {
@@ -363,11 +424,7 @@ export class LedeParser {
   private closeFence(): void {
     const f = this.fence!;
     this.fence = null;
-    // Strip the common indentation so an indented fence reads like an unindented one.
-    const ind = Math.min(...f.lines.filter((l) => l.trim()).map((l) => l.length - l.trimStart().length), Infinity);
-    const body = f.lines.map((l) => (Number.isFinite(ind) ? l.slice(ind) : l)).join('\n');
-    if (f.raw) this.emit({ type: 'html', html: body, line: f.line });
-    else this.emit({ type: 'code', lang: f.lang, text: body, line: f.line });
+    this.emit(fenceBlock(f));
   }
 
   private emit(b: Block): void {
@@ -539,6 +596,7 @@ export class LedeParser {
       return;
     }
     this.addRows(d, csv.rows, csv.offsets, bodyCol);
+    this.opts.hooks?.onDataAppend(name);
   }
 
   private defineData(name: string, rows: string[][], offsets: number[], bodyCol: number): void {

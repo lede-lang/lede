@@ -270,6 +270,15 @@ renderers must handle: a diagram gains statements from later lines, and a chart,
 reflects rows appended with `data NAME +=`. A snapshot of a partial document (with the open
 block flushed) is always a valid document. The partial last line (no `\n` yet) is not parsed.
 
+A streaming consumer learns of the two exceptions as events, in line order, beside the blocks it is given: `block` (a
+block is final), `update` (a `name:` line extended a diagram already given, or a `data NAME +=` line appended rows to
+that data name) and `seal` (the first non-blank line that is not a statement of the diagram, or the end of the document:
+a blank line does not seal, since writers space statements). A statement after a seal is an `update` again, and the next
+sealing line a second `seal`. A conforming streaming consumer may also read the open block (paragraph, list, quote, kpi
+row, step run, fence, grid or cards run, as a block) without ending the document; a keyword line is never part of it,
+because it is a block or a diagnostic on its own line. `LedeStream.events`, `.tail` and `.end` in `@lede-lang/core` are this
+interface.
+
 ## 7. Rendering contract (`@lede-lang/html`)
 
 - A complete page: `<!doctype html>`, `lang`, charset, viewport, one `<style>`; **no
