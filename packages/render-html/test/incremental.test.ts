@@ -382,6 +382,22 @@ test('elkjs is not loaded until a flow diagram is laid out', () => {
   assert.deepEqual(JSON.parse(out.trim().split('\n').at(-1)!), { before: false, after: true });
 });
 
+// ---- code review of PR #31 ---------------------------------------------------------------------------------------------------
+
+test('an empty flow diagram has no slot to leave behind: sealed while its unit was held, or at the end of the stream', async () => {
+  const held = ['## Why?', '', 'diagram flow', '', 'Some text', ''].join('\n');
+  for (const chunk of [1, 5, 64]) {
+    const d = await drive(held, { chunk, parse: parseOpts });
+    assert.doesNotMatch(d.model.main(), /pending/, `chunk ${chunk}`);
+    assert.equal(streamed(d), await whole(held), `chunk ${chunk}`);
+    assert.equal(d.end.equal, true, `chunk ${chunk}`);
+  }
+  const open = ['# T', '', 'diagram flow', ''].join('\n');
+  const d = await drive(open, { chunk: 3, parse: parseOpts });
+  assert.doesNotMatch(d.model.main(), /pending/);
+  assert.equal(streamed(d), await whole(open));
+});
+
 // ---- early layout-shift check (Chromium) ----------------------------------------------------------------------------------------
 
 const chrome = resolveChrome();

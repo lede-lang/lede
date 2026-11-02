@@ -287,6 +287,9 @@ class Renderer implements Incremental {
     this.frontier = this.ctx.mark();
     this.ctx.slot = (d, wide) => {
       if (this.mode === 'none') return null;
+      // A diagram with nothing in it is drawn as nothing (`render()` writes nothing for it), so once its statements are done
+      // there is no drawing to wait for: a slot here would never be replaced.
+      if (d.nodes.length === 0 && this.sealed.has(d)) return null;
       if (this.mode === 'unit' && d.kind === 'sequence' && this.sealed.has(d)) return null;
       const h = Math.max(this.minH.get(d) ?? 0, estimateHeight(d));
       this.minH.set(d, h);
