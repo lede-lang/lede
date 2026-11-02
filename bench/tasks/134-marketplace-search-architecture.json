@@ -1,0 +1,64 @@
+{
+  "id": "134-marketplace-search-architecture",
+  "category": "architecture",
+  "title": "Brindle Market search architecture",
+  "brief": "I'm the tech lead for search at Brindle Market, an online marketplace for craft sellers, and I want an architecture page I can show on a laptop in the onboarding session for the six engineers joining on 2026-11-02. Begin with \"How search works\" in two sentences: sellers' listing changes appear in search within 60 seconds, and shoppers get results in under 300 milliseconds at the 95th percentile. Then \"Component diagram\" with these parts: Seller Portal, Listing Service, Change Stream, Indexer, Search Cluster, Query API, Ranking Service, Result Cache, Shopper App. Connections: Seller Portal to Listing Service \"save listing\"; Listing Service to Change Stream \"listing changed\"; Change Stream to Indexer \"consume events\"; Indexer to Search Cluster \"update index\"; Shopper App to Query API \"search request\"; Query API to Result Cache \"check first\"; Query API to Search Cluster \"on cache miss\"; Search Cluster to Ranking Service \"top 200 candidates\"; Ranking Service to Query API \"re-ranked 24\". Then \"Sizing\" as a table of component, count and note: Search Cluster, 9 nodes, 3 shards with 2 replicas each; Indexer, 4 workers, handles 900 events per second; Result Cache, 2 nodes, hit rate about 62 percent; Ranking Service, 6 instances, 40 millisecond budget. Last, \"What to watch\": index lag over 60 seconds, cache hit rate under 50 percent, and any shard with no healthy replica. Index lag is the alarm people forget, so highlight it.",
+  "checklist": {
+    "sections": [
+      "How search works",
+      "Component diagram",
+      "Sizing",
+      "What to watch"
+    ],
+    "visible": [
+      "Seller Portal",
+      "Listing Service",
+      "Change Stream",
+      "Indexer",
+      "Search Cluster",
+      "Query API",
+      "Ranking Service",
+      "Result Cache",
+      "Shopper App",
+      "listing changed",
+      "on cache miss",
+      "re-ranked 24"
+    ],
+    "values": [
+      "2026-11-02",
+      "60 seconds",
+      "300 milliseconds",
+      "200",
+      "9 nodes",
+      "3 shards",
+      "2 replicas",
+      "4 workers",
+      "900 events per second",
+      "62 percent",
+      "6 instances",
+      "40 millisecond",
+      "50 percent"
+    ]
+  },
+  "needs": [
+    "diagram",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add a node called \"Spell Corrector\" between Query API and Search Cluster, with the arrow from Query API labeled \"fix typos\", and grow the Search Cluster to 12 nodes with 4 shards.",
+    "expect_visible": [
+      "Spell Corrector",
+      "fix typos"
+    ],
+    "expect_values": [
+      "12 nodes",
+      "4 shards"
+    ],
+    "expect_absent": [
+      "9 nodes",
+      "3 shards"
+    ]
+  }
+}

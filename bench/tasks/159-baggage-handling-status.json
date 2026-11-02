@@ -1,0 +1,69 @@
+{
+  "id": "159-baggage-handling-status",
+  "category": "status",
+  "title": "Pinecrest baggage handling weekly status",
+  "brief": "I run baggage operations at Pinecrest Airport and I need the weekly status page for the week ending 2026-10-30, for terminal managers who will read it on their phones during the morning walk-round. Headline numbers: 241000 bags handled, a mishandled rate of 5.9 per 1000 bags against a target of 6.5, first bag on the belt in 14 minutes against a target of 15, and belt uptime of 99.2 percent. Under \"Mishandled rate trend\" chart the rate per 1000 bags for eight weeks: W37 7.1, W38 6.8, W39 6.6, W40 6.3, W41 6.0, W42 5.8, W43 6.2, W44 5.9. Under \"Terminals\" give a table of bags handled and mishandled rate per 1000: Terminal 1, 98000, 4.9; Terminal 2, 92000, 5.7; Terminal 3, 51000, 8.4. Under \"Needs attention\": Terminal 3 is the outlier, because belt 4 jammed on 2026-10-26 and again on 2026-10-28, and a scanner at its transfer point is failing to read 1 in 12 tags. Under \"Next\": a new tag scanner for Terminal 2 goes in on 2026-11-09, belt 4 gets a new drive on 2026-11-03, and the peak holiday plan is signed off on 2026-11-12.",
+  "checklist": {
+    "sections": [
+      "Mishandled rate trend",
+      "Terminals",
+      "Needs attention",
+      "Next"
+    ],
+    "visible": [
+      "Terminal 1",
+      "Terminal 2",
+      "Terminal 3",
+      "belt 4",
+      "transfer point"
+    ],
+    "values": [
+      "2026-10-30",
+      "241000",
+      "5.9",
+      "6.5",
+      "14",
+      "15",
+      "99.2",
+      "7.1",
+      "6.8",
+      "6.6",
+      "6.3",
+      "6.0",
+      "5.8",
+      "6.2",
+      "98000",
+      "4.9",
+      "92000",
+      "5.7",
+      "51000",
+      "8.4",
+      "2026-10-26",
+      "2026-10-28",
+      "1 in 12",
+      "2026-11-09",
+      "2026-11-03",
+      "2026-11-12"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add W45 at 5.6 to the trend, change the headline rate to 5.6, and move the Terminal 2 scanner date to 2026-11-16.",
+    "expect_visible": [
+      "W45"
+    ],
+    "expect_values": [
+      "5.6",
+      "2026-11-16"
+    ],
+    "expect_absent": [
+      "2026-11-09"
+    ]
+  }
+}

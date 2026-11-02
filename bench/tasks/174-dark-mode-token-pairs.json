@@ -1,0 +1,65 @@
+{
+  "id": "174-dark-mode-token-pairs",
+  "category": "design",
+  "title": "Marrow Health color token pairs",
+  "brief": "I'm the design systems engineer at Marrow Health and I need a color token page for the engineers who are building dark mode, to be read on laptops at their desks, dated 2026-11-02. Under \"Token pairs\" give a table of eight tokens with the light value, dark value and what it is for: background, #FFFFFF, #101418, page; surface, #F3F5F7, #1A2027, cards and panels; text, #14181C, #E8ECEF, body copy; text-muted, #5B6670, #9AA6B2, secondary copy; primary, #2F6FED, #6C9BFF, buttons and links; success, #1F9254, #4CC38A, confirmations; warning, #B26A00, #FFB454, cautions; danger, #C62828, #FF7A7A, errors. Show each value as a swatch beside its hex. Under \"In use\" show two copies of the same small appointment card, one in light values and one in dark, side by side: heading Dr. Okoro, follow-up, text Tuesday 10:30, a primary button reading Confirm, and a warning line reading Bring your insurance card, using the tokens above. Under \"Rules\" a list: text-muted on surface must keep at least 4.5 to 1 contrast in both modes; use danger only for errors, never decoration; and each new token needs a light and a dark value before it ships. Highlight the first rule as a warning.",
+  "checklist": {
+    "sections": [
+      "Token pairs",
+      "In use",
+      "Rules"
+    ],
+    "visible": [
+      "background",
+      "surface",
+      "text-muted",
+      "primary",
+      "success",
+      "warning",
+      "danger",
+      "Dr. Okoro",
+      "Confirm",
+      "Bring your insurance card"
+    ],
+    "values": [
+      "2026-11-02",
+      "#FFFFFF",
+      "#101418",
+      "#F3F5F7",
+      "#1A2027",
+      "#14181C",
+      "#E8ECEF",
+      "#5B6670",
+      "#9AA6B2",
+      "#2F6FED",
+      "#6C9BFF",
+      "#1F9254",
+      "#4CC38A",
+      "#B26A00",
+      "#FFB454",
+      "#C62828",
+      "#FF7A7A",
+      "10:30",
+      "4.5 to 1"
+    ]
+  },
+  "needs": [
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the dark value of primary to #7AA8FF, and add a ninth token called info with light value #0E7490 and dark value #5CC8E0 for neutral notices.",
+    "expect_visible": [
+      "info"
+    ],
+    "expect_values": [
+      "#7AA8FF",
+      "#0E7490",
+      "#5CC8E0"
+    ],
+    "expect_absent": [
+      "#6C9BFF"
+    ]
+  }
+}

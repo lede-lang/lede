@@ -1,0 +1,54 @@
+{
+  "id": "148-plot-holder-welcome",
+  "category": "prose",
+  "title": "Ashdown allotments welcome letter",
+  "brief": "Can you make the welcome letter for new plot holders at the Ashdown Allotments Society? It is from our secretary, Joss Whitcombe, and new members will mostly open it on their phones, often standing at the gate. Address it \"Dear new plot holder\". Section \"Welcome\": we have 60 plots, a waiting list of 38 people, and you are one of 7 who joined this autumn. Section \"Your first month\" in friendly paragraphs: plots are 5 by 10 meters, the yearly rent is 42 dollars due by 2026-12-01 to the treasurer Ayesha Rahman, the gate key needs a 15 dollar deposit that you get back when you leave, and the first work day, where everyone helps repair the paths, is 2026-11-07 at 09:30. Section \"Dates to know\" as a small table: 2026-11-01, water switched off for winter; 2026-11-07, work day; 2026-12-01, rent due; 2027-03-31, water back on. Section \"The rules that matter\" as a short list: keep at least three quarters of your plot cultivated, no bonfires between May and September, and no more than one shed, up to 2 by 2 meters. Section \"Who to ask\": Joss for anything about plots, Ayesha for rent, and Tomasz Wieczorek, our site steward, for tools and the water.",
+  "checklist": {
+    "sections": [
+      "Welcome",
+      "Your first month",
+      "Dates to know",
+      "The rules that matter",
+      "Who to ask"
+    ],
+    "visible": [
+      "Dear new plot holder",
+      "Joss Whitcombe",
+      "Ayesha Rahman",
+      "Tomasz Wieczorek",
+      "water switched off for winter"
+    ],
+    "values": [
+      "60",
+      "38",
+      "7",
+      "5 by 10",
+      "42",
+      "2026-12-01",
+      "15",
+      "2026-11-07",
+      "09:30",
+      "2026-11-01",
+      "2027-03-31",
+      "2 by 2"
+    ]
+  },
+  "needs": [
+    "list",
+    "table"
+  ],
+  "edit": {
+    "request": "The rent is now 45 dollars and due by 2026-12-15, and the work day moves to 2026-11-14.",
+    "expect_visible": [],
+    "expect_values": [
+      "45",
+      "2026-12-15",
+      "2026-11-14"
+    ],
+    "expect_absent": [
+      "42",
+      "2026-12-01",
+      "2026-11-07"
+    ]
+  }
+}

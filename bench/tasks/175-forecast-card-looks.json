@@ -1,0 +1,63 @@
+{
+  "id": "175-forecast-card-looks",
+  "category": "design",
+  "title": "Port Alder forecast card looks",
+  "brief": "I'm the designer at Port Alder Weather, a small regional forecast app, and we need to choose the look of our forecast card. Please show the same forecast four times, side by side, in four looks that a group can compare on a projector, each labeled with its name and its main colors. The forecast: Port Alder, today high 14 and low 7 degrees, rain chance 60 percent, wind 22 kilometers per hour from the northwest, and highs for the next five days as a small chart in each look: Wed 14, Thu 13, Fri 11, Sat 12, Sun 15. Look 1 is \"Clear\": white #FFFFFF, navy #12263F text and one blue #2D7DD2 accent, lots of space. Look 2 is \"Dense\": light gray #ECEFF1, small type, every number visible at once, teal #00796B accent. Look 3 is \"Playful\": sunny yellow #FFD23F background, rounded shapes, coral #EE6352 accent, larger numbers. Look 4 is \"Night\": near black #0B1020 with pale text #E6EDF7 and an amber #FFB000 accent. Under each look, list its colors with their hex values. Add a final \"Our pick\" section, highlighted: the committee favors Clear for phones and Night as the evening option.",
+  "checklist": {
+    "sections": [
+      "Clear",
+      "Dense",
+      "Playful",
+      "Night",
+      "Our pick"
+    ],
+    "visible": [
+      "Port Alder",
+      "northwest",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun"
+    ],
+    "values": [
+      "14",
+      "7",
+      "60 percent",
+      "22",
+      "13",
+      "11",
+      "12",
+      "15",
+      "#FFFFFF",
+      "#12263F",
+      "#2D7DD2",
+      "#ECEFF1",
+      "#00796B",
+      "#FFD23F",
+      "#EE6352",
+      "#0B1020",
+      "#E6EDF7",
+      "#FFB000"
+    ]
+  },
+  "needs": [
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the rain chance to 80 percent in all four looks, and add a fifth look called \"Paper\": warm white #FAF6EE with brown #5A3E2B text.",
+    "expect_visible": [
+      "Paper"
+    ],
+    "expect_values": [
+      "80 percent",
+      "#FAF6EE",
+      "#5A3E2B"
+    ],
+    "expect_absent": [
+      "60 percent"
+    ]
+  }
+}

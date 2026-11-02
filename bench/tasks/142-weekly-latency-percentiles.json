@@ -1,0 +1,77 @@
+{
+  "id": "142-weekly-latency-percentiles",
+  "category": "data",
+  "title": "Tallis weekly latency report",
+  "brief": "I'm on the reliability team at Tallis Messaging and I need the weekly latency page for the Monday review on 2026-10-19, which we will read on laptops. The week is Monday 2026-10-12 to Sunday 2026-10-18. Under \"Targets and week\" show headline numbers: median 42 milliseconds, 95th percentile 129 and 99th percentile 420 for the whole week, against targets of 150 for the 95th and 500 for the 99th. Under \"Daily percentiles\" chart the three series by day, in milliseconds. Median: Mon 42, Tue 41, Wed 43, Thu 58, Fri 44, Sat 40, Sun 39. 95th: 118, 121, 119, 246, 124, 109, 104. 99th: 310, 305, 322, 1840, 331, 262, 251. Under \"By endpoint\" a table of median, 95th and 99th for the week: Send message 51, 142, 388; Read messages 33, 96, 240; List threads 47, 131, 355; Upload attachment 210, 640, 1620. Upload attachment is above target and always has been, so say it is slow by design but watched. Under \"What happened on Thursday\": between 14:05 and 14:43 the cache was cold after a deploy that purged it by mistake, so the 99th percentile hit 1840 milliseconds and the 95th was 246, the one day over target. The fix is a deploy check that blocks purging without a warm-up, owned by Imran Qureshi, due 2026-10-30.",
+  "checklist": {
+    "sections": [
+      "Targets and week",
+      "Daily percentiles",
+      "By endpoint",
+      "What happened on Thursday"
+    ],
+    "visible": [
+      "Send message",
+      "Read messages",
+      "List threads",
+      "Upload attachment",
+      "Imran Qureshi"
+    ],
+    "values": [
+      "2026-10-19",
+      "42",
+      "129",
+      "420",
+      "150",
+      "500",
+      "58",
+      "118",
+      "121",
+      "119",
+      "246",
+      "124",
+      "109",
+      "104",
+      "310",
+      "305",
+      "322",
+      "1840",
+      "331",
+      "262",
+      "251",
+      "51",
+      "142",
+      "388",
+      "33",
+      "96",
+      "240",
+      "47",
+      "131",
+      "355",
+      "210",
+      "640",
+      "1620",
+      "14:05",
+      "14:43",
+      "2026-10-30"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add Monday 2026-10-19 to the daily chart with median 41, 95th 116 and 99th 300, and change the weekly 99th percentile headline from 420 to 410.",
+    "expect_visible": [],
+    "expect_values": [
+      "116",
+      "300",
+      "410"
+    ],
+    "expect_absent": [
+      "420"
+    ]
+  }
+}

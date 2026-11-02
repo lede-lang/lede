@@ -1,0 +1,58 @@
+{
+  "id": "151-database-failover-runbook",
+  "category": "runbook",
+  "title": "Merrow database failover runbook",
+  "brief": "I'm the on-call lead at Merrow Streaming and I need a runbook for failing over our primary database to its replica, which engineers will open on their phones in the middle of the night, so it has to be quick to scan. Version dated 2026-10-21. Under \"When to use this\": the primary has been unreachable from two monitoring regions for 2 minutes, or replication lag has stayed above 30 seconds for 10 minutes while writes are failing. Do not use it for slow queries. Under \"Steps\" in order, with who does each and by when counted from the page: 1, the on-call engineer Priya Nandakumar confirms the outage from two regions, within 3 minutes; 2, the incident lead Gabriel Osei approves the failover, within 5 minutes; 3, the database administrator Wen Zhao promotes the replica, within 10 minutes; 4, Priya points the application at the new primary and checks that sign-ins and playback start succeed, within 15 minutes; 5, the communications owner Tessa Brandt posts a status update within 20 minutes and then every 30 minutes; 6, Wen rebuilds the old primary as a replica within 24 hours. Under \"Thresholds\": lag under 30 seconds is safe to fail over; lag between 30 and 120 seconds needs the incident lead to accept losing that many seconds of writes; over 120 seconds the head of engineering, Mateus Ferreira, must approve. Under \"Contacts\": Priya ext 4410, Gabriel ext 4422, Wen ext 4437, Tessa ext 4451, Mateus ext 4400. Highlight the 120 second rule as a warning.",
+  "checklist": {
+    "sections": [
+      "When to use this",
+      "Steps",
+      "Thresholds",
+      "Contacts"
+    ],
+    "visible": [
+      "Priya Nandakumar",
+      "Gabriel Osei",
+      "Wen Zhao",
+      "Tessa Brandt",
+      "Mateus Ferreira"
+    ],
+    "values": [
+      "2026-10-21",
+      "2 minutes",
+      "30 seconds",
+      "10 minutes",
+      "3 minutes",
+      "5 minutes",
+      "15 minutes",
+      "20 minutes",
+      "30 minutes",
+      "24 hours",
+      "120 seconds",
+      "4410",
+      "4422",
+      "4437",
+      "4451",
+      "4400"
+    ]
+  },
+  "needs": [
+    "list",
+    "table",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the incident lead to Rhea Castellano with ext 4429, and tighten the approval step to within 4 minutes.",
+    "expect_visible": [
+      "Rhea Castellano"
+    ],
+    "expect_values": [
+      "4429",
+      "4 minutes"
+    ],
+    "expect_absent": [
+      "Gabriel Osei",
+      "4422"
+    ]
+  }
+}

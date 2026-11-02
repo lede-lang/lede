@@ -1,0 +1,51 @@
+{
+  "id": "150-fewer-books-essay",
+  "category": "prose",
+  "title": "Rookwood Press fewer books essay",
+  "brief": "I'm Hester Vance, publisher at Rookwood Press, a small independent press with 9 staff, and I want an essay on our site called \"Why we print fewer books\", for readers who will read it on a laptop at a desk with a coffee. It should read like an essay: headings and paragraphs, with no more than one short list. Sections: \"The year we pulped 11000 books\": in 2023, returns from shops left us with 11000 unsold copies we had to destroy, and I stood in the warehouse and watched. \"What fewer titles buys\": we printed 120 titles in 2022 and plan 86 in 2026; the return rate fell from 34 percent to 19 percent, and each book now gets two launch events instead of none. \"What we lost\": three debut authors we would have taken a chance on, and about a quarter of our backlist in print, and I will not pretend that is nothing. \"What we are promising\": a short list of three promises, no title without a named champion on staff, no print run above 1.5 times the pre-orders, and a yearly public report on returns, the first due 2027-01-31. End with one pulled-out line: a smaller list is not a smaller ambition. Tone: honest, a little rueful, no marketing language.",
+  "checklist": {
+    "sections": [
+      "The year we pulped 11000 books",
+      "What fewer titles buys",
+      "What we lost",
+      "What we are promising"
+    ],
+    "visible": [
+      "Hester Vance",
+      "Rookwood Press",
+      "named champion",
+      "a smaller list is not a smaller ambition"
+    ],
+    "values": [
+      "9",
+      "11000",
+      "2023",
+      "120",
+      "2022",
+      "86",
+      "2026",
+      "34 percent",
+      "19 percent",
+      "1.5 times",
+      "2027-01-31"
+    ]
+  },
+  "needs": [
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the 2026 plan from 86 titles to 90, the return rate fall to 21 percent instead of 19 percent, and the first report date to 2027-02-28.",
+    "expect_visible": [],
+    "expect_values": [
+      "90",
+      "21 percent",
+      "2027-02-28"
+    ],
+    "expect_absent": [
+      "86",
+      "19 percent",
+      "2027-01-31"
+    ]
+  }
+}

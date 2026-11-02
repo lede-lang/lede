@@ -1,0 +1,66 @@
+{
+  "id": "143-residents-survey-results",
+  "category": "data",
+  "title": "Harbourview residents survey results",
+  "brief": "I'm the research officer at Harbourview Residents' Association, and the committee, who will have this printed for the meeting on 2026-11-16, wants the results of our annual survey. Open with the headline numbers: 1260 replies from 5400 households (23.3 percent), and overall satisfaction of 3.7 out of 5, down from 3.9 last year. Under \"Satisfaction over time\" chart overall satisfaction for six years: 2021 3.6, 2022 3.7, 2023 3.5, 2024 3.8, 2025 3.9, 2026 3.7. Under \"By service\" give a table of the 2025 and 2026 scores out of 5: Library 4.4, 4.4; Rubbish collection 4.2, 4.3; Parks 4.0, 4.1; Street lighting 4.0, 3.9; Bus service 3.3, 2.8; Road repairs 2.9, 2.4. Road repairs and the bus service are the two outliers, and the committee must see them at once. Under \"What people wrote\" give a list of the top themes with the number of comments: potholes and road surface 214; bus frequency in the evening 167; broken street lights on Alder Lane 58; dog fouling in parks 41.",
+  "checklist": {
+    "sections": [
+      "Satisfaction over time",
+      "By service",
+      "What people wrote"
+    ],
+    "visible": [
+      "Library",
+      "Rubbish collection",
+      "Parks",
+      "Street lighting",
+      "Bus service",
+      "Road repairs",
+      "Alder Lane"
+    ],
+    "values": [
+      "2026-11-16",
+      "1260",
+      "5400",
+      "23.3",
+      "3.7",
+      "3.9",
+      "3.6",
+      "3.5",
+      "3.8",
+      "4.4",
+      "4.2",
+      "4.3",
+      "4.0",
+      "4.1",
+      "3.3",
+      "2.8",
+      "2.9",
+      "2.4",
+      "214",
+      "167",
+      "58",
+      "41"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Correct the bus service 2026 score to 3.0 and the evening bus comments to 183, and add a line saying the next survey opens on 2027-09-06.",
+    "expect_visible": [],
+    "expect_values": [
+      "3.0",
+      "183",
+      "2027-09-06"
+    ],
+    "expect_absent": [
+      "2.8",
+      "167"
+    ]
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "id": "158-food-bank-status",
+  "category": "status",
+  "title": "Meridale Food Bank weekly status",
+  "brief": "I'm the operations coordinator at Meridale Food Bank and the trustees, who will have this printed for their meeting on 2026-11-02, want a status page for the week ending 2026-10-30. Headline numbers: 812 households served this week against a target of 750, 9.4 tonnes of food given out, 214 volunteer hours, and stock cover of 9 days against our minimum of 14. Under \"Households served\" chart the last six weeks: W39 690, W40 705, W41 748, W42 790, W43 801, W44 812. Under \"Depots\" give a table of households, food in kilograms and volunteers: Eastside 301, 3550, 18; Marlow Road 244, 2900, 12; St. Brides Hall 187, 2150, 14; Mobile van 80, 800, 6. Under \"Needs attention\": Marlow Road has only 3 days of stock cover, and its delivery from the regional warehouse is not due until 2026-11-06, so flag it clearly. Under \"Coming up\": the winter hamper drive starts on 2026-11-14 with a target of 600 hampers, and the volunteer thank-you evening is on 2026-11-20.",
+  "checklist": {
+    "sections": [
+      "Households served",
+      "Depots",
+      "Needs attention",
+      "Coming up"
+    ],
+    "visible": [
+      "Eastside",
+      "Marlow Road",
+      "St. Brides Hall",
+      "Mobile van",
+      "hamper drive"
+    ],
+    "values": [
+      "2026-11-02",
+      "2026-10-30",
+      "812",
+      "750",
+      "9.4",
+      "214",
+      "9",
+      "14",
+      "690",
+      "705",
+      "748",
+      "790",
+      "801",
+      "301",
+      "3550",
+      "18",
+      "244",
+      "2900",
+      "12",
+      "187",
+      "2150",
+      "80",
+      "800",
+      "6",
+      "3 days",
+      "2026-11-06",
+      "2026-11-14",
+      "600",
+      "2026-11-20"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Marlow Road's delivery has been brought forward to 2026-11-03, which lifts its stock cover to 8 days. Also change the hamper drive target to 650.",
+    "expect_visible": [],
+    "expect_values": [
+      "2026-11-03",
+      "8 days",
+      "650"
+    ],
+    "expect_absent": [
+      "2026-11-06",
+      "600",
+      "3 days"
+    ]
+  }
+}

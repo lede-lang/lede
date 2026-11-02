@@ -1,0 +1,65 @@
+{
+  "id": "185-grant-triage-board",
+  "category": "custom-editing",
+  "title": "Marigold grant triage board",
+  "brief": "I'm the director of the Marigold Community Foundation and at the board meeting on 2026-11-13 I will sort this round's 8 grant applications on my laptop. Please make a page where I can move each application between the groups \"Fund\", \"Waitlist\" and \"Decline\", put the ones in Fund in order of priority, and see at once whether the Fund total is within this round's budget of 120000 dollars. The applications, with amount requested and review score out of 100: A-101 Riverside Youth Football, 18000, 82; A-102 Tenants' Repair Cafe, 9500, 91; A-103 Harbor Mural Project, 24000, 67; A-104 Seniors' Digital Skills, 15000, 88; A-105 Night Shelter Heating, 38000, 94; A-106 Community Orchard, 12500, 73; A-107 Library Reading Buddies, 7800, 79; A-108 Canal Clean-up Crew, 21000, 61. My starting proposal puts everything in Fund except A-107, which is on the Waitlist, with Fund in the order A-105, A-102, A-104, A-101, A-103, A-106, A-108. Under \"Budget check\" show the budget, the Fund total (138000 as proposed) and how far it is over or under (18000 over), with a clear warning while it is over. Under \"Result to paste\" give plain text for an email to the board: each group name followed by its applications in order, with the Fund total on the last line.",
+  "checklist": {
+    "sections": [
+      "Fund",
+      "Waitlist",
+      "Decline",
+      "Budget check",
+      "Result to paste"
+    ],
+    "visible": [
+      "Riverside Youth Football",
+      "Tenants' Repair Cafe",
+      "Harbor Mural Project",
+      "Seniors' Digital Skills",
+      "Night Shelter Heating",
+      "Community Orchard",
+      "Library Reading Buddies",
+      "Canal Clean-up Crew"
+    ],
+    "values": [
+      "2026-11-13",
+      "120000",
+      "138000",
+      "18000",
+      "18000",
+      "9500",
+      "24000",
+      "15000",
+      "38000",
+      "12500",
+      "7800",
+      "21000",
+      "82",
+      "91",
+      "67",
+      "88",
+      "94",
+      "73",
+      "79",
+      "61"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "table",
+    "callout",
+    "list"
+  ],
+  "edit": {
+    "request": "Move A-108 Canal Clean-up Crew from Fund to Decline, and raise the budget from 120000 to 125000 dollars.",
+    "expect_visible": [],
+    "expect_values": [
+      "125000",
+      "117000"
+    ],
+    "expect_absent": [
+      "120000",
+      "138000"
+    ]
+  }
+}

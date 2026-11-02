@@ -704,3 +704,14 @@ painted within one frame (16.7 ms) of its newline, cumulative layout shift under
 on at least 95% of pages. Results: appended below when the first run completes (internal spec `lede-stream`, lede-lang/meta). Rejected:
 whole-page re-render per token, deciding layout only at the end, an unlatched prose rule, a shadow root instead of a frame, ids from
 line numbers, a subpath of `@lede-lang/html`, an asynchronous push, running the `--shell` runtime inside the viewer.
+
+## D69. Fresh held-out set, tasks 131-185, written and hashed before the refinement test
+Five tasks per category over eleven categories, written in one pass by an isolated Sonnet 5.5 subagent whose whole prompt was
+`bench/prompts/tasks-writer.md` followed by the verbatim `bench/tasks/41-*.json` to `50-*.json` (handed to it as one file it read;
+it never saw the spec, the renderer, any `.lede` or `.html`, any other prompt or report, and read no other file; it appended its
+55 lines to one output file in ten writes). Split into one file per task by its `id` without the orchestrator reading the briefs.
+`node bench/src/check-tasks.ts 131 185`: 55 of 55 files, ids contiguous, five per category, all fields present, `needs` within
+the closed set, no technology word in a brief; passed on the first run, so the writer was not re-run. Not opened again except
+through `check-tasks.ts` and the round-3 harness (D67). SHA-256 of the 55 files concatenated in numeric id order:
+`for n in $(seq 131 185); do cat bench/tasks/$n-*.json; done | shasum -a 256` = `47e032ceebbff3671833be3126a9420b196a3cfc4c358b03e72602cce2f15e17`.
+Commit: this one; parser, renderer and spec files are unchanged at this point (HEAD before it: `6daa270`).

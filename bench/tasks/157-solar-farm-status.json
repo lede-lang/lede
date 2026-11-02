@@ -1,0 +1,71 @@
+{
+  "id": "157-solar-farm-status",
+  "category": "status",
+  "title": "Ironwood Solar Farm weekly status",
+  "brief": "I look after the Ironwood Solar Farm for its owners, and I need the weekly status page for the week ending 2026-10-30, which the asset managers will read on laptops. Headline numbers first: 184 megawatt-hours generated, a performance ratio of 81.4 percent against a target of 84, availability of 98.7 percent, and 2 inverters offline. Under \"Generation trend\" chart weekly generation in megawatt-hours over six weeks: W39 218, W40 203, W41 197, W42 188, W43 186, W44 184; part of the decline is the season, but the performance ratio has also slipped from 83.0 in W39. Under \"Blocks\" give a table of generation, availability percent and open issues for the five array blocks: Block A 41, 99.8, none; Block B 39, 99.6, none; Block C 38, 99.4, dirty panels; Block D 33, 95.8, inverters 3 and 4 faulty since 2026-10-24; Block E 33, 99.9, none. Under \"Needs attention\": Block D is losing about 9 megawatt-hours a week until the inverters are replaced. Under \"Next\": replacement inverter parts arrive 2026-11-04, a panel wash for Block C on 2026-11-06, and the annual grid inspection on 2026-11-19.",
+  "checklist": {
+    "sections": [
+      "Generation trend",
+      "Blocks",
+      "Needs attention",
+      "Next"
+    ],
+    "visible": [
+      "Block A",
+      "Block B",
+      "Block C",
+      "Block D",
+      "Block E",
+      "performance ratio",
+      "dirty panels"
+    ],
+    "values": [
+      "2026-10-30",
+      "184",
+      "81.4",
+      "84",
+      "98.7",
+      "2",
+      "218",
+      "203",
+      "197",
+      "188",
+      "186",
+      "83.0",
+      "41",
+      "99.8",
+      "39",
+      "99.6",
+      "38",
+      "99.4",
+      "33",
+      "95.8",
+      "99.9",
+      "2026-10-24",
+      "9",
+      "2026-11-04",
+      "2026-11-06",
+      "2026-11-19"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Inverter 3 on Block D was repaired on 2026-10-31, so only inverter 4 is still faulty. Change the replacement parts arrival to 2026-11-02.",
+    "expect_visible": [
+      "inverter 4"
+    ],
+    "expect_values": [
+      "2026-10-31",
+      "2026-11-02"
+    ],
+    "expect_absent": [
+      "2026-11-04"
+    ]
+  }
+}

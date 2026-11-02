@@ -1,0 +1,73 @@
+{
+  "id": "139-school-solar-options",
+  "category": "comparison",
+  "title": "Ravenhill School solar options",
+  "brief": "I chair the buildings committee at Ravenhill School, and the governors, who will have this printed in their pack for 2026-11-12, want a plain page that compares three ways to put solar panels on our roof. We use 168000 kilowatt-hours a year, mostly in daytime, and pay 0.19 dollars per kilowatt-hour. Under \"Options\" compare: A, buy a 60 kilowatt system outright for 78000 dollars, generating 66000 kilowatt-hours a year, saving 12540 a year, payback 6.2 years; B, a 120 kilowatt system owned by a company that sells us power at 0.11 per kilowatt-hour for 20 years, nothing upfront, 132000 kilowatt-hours a year, saving 10560 a year; C, a 90 kilowatt system with a battery, 139000 dollars on a loan, 99000 kilowatt-hours a year, saving 18810 a year, payback 7.4 years, and the battery keeps the server room running in a power cut. Under \"Option A through the year\" chart its monthly generation in kilowatt-hours: Jan 2800, Feb 3900, Mar 5600, Apr 6900, May 8100, Jun 8400, Jul 8000, Aug 7200, Sep 6200, Oct 4300, Nov 2600, Dec 2000. Under \"If it goes wrong\" list what we would have to undo: A, the panels stay and the money is lost; B, a 20 year contract is hard to exit and the roof cannot be repaired freely; C, the loan continues. Under \"Recommendation\": A, the shortest payback and no long contract; consider a battery later. Make that stand out.",
+  "checklist": {
+    "sections": [
+      "Options",
+      "Option A through the year",
+      "If it goes wrong",
+      "Recommendation"
+    ],
+    "visible": [
+      "payback",
+      "battery",
+      "20 year contract",
+      "server room"
+    ],
+    "values": [
+      "2026-11-12",
+      "168000",
+      "0.19",
+      "60",
+      "78000",
+      "66000",
+      "12540",
+      "6.2",
+      "120",
+      "0.11",
+      "132000",
+      "10560",
+      "90",
+      "139000",
+      "99000",
+      "18810",
+      "7.4",
+      "2800",
+      "3900",
+      "5600",
+      "6900",
+      "8100",
+      "8400",
+      "8000",
+      "7200",
+      "6200",
+      "4300",
+      "2600",
+      "2000"
+    ]
+  },
+  "needs": [
+    "table",
+    "chart",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Option A's price has fallen to 72000 dollars, so its payback is 5.7 years, and option C's loan is now 133000 dollars, which makes its payback 7.1 years.",
+    "expect_visible": [],
+    "expect_values": [
+      "72000",
+      "5.7",
+      "133000",
+      "7.1"
+    ],
+    "expect_absent": [
+      "78000",
+      "139000",
+      "6.2",
+      "7.4"
+    ]
+  }
+}

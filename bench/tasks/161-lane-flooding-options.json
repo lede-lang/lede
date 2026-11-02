@@ -1,0 +1,63 @@
+{
+  "id": "161-lane-flooding-options",
+  "category": "specs-planning",
+  "title": "Brightwater Mill Lane flood options",
+  "brief": "I'm the clerk of Brightwater Parish Council and I need an options page on stopping the flooding of Mill Lane, for the councillors who will read it printed before the meeting on 2026-11-10. Under \"The problem\": the lane floods when the Brightwater Brook rises above 1.9 meters, which happened 4 times last winter, cutting off 63 homes for a total of 9 days. Under \"Three options\", as a table: A, raise the lane by 0.6 meters, 380000 dollars, 14 weeks of work, 3000 a year to maintain, with the risk that water is pushed onto the 11 homes below; B, a retention pond upstream on the Hale Farm field, 520000 dollars, 30 weeks, 6500 a year, with the risk that the landowner withdraws or the permit takes longer than 20 weeks; C, a pump station and drain, 210000 dollars, 9 weeks, 14000 a year for power and servicing, with the risk that a pump fails in the one storm it is needed. Under \"If it fails\", what would have to be undone: A, the raised lane stays but the homes below need flood protection of about 90000; B, the pond can be filled back in for about 60000 but the land stays with the council; C, the pumps can be sold for about 30 percent of cost. Under \"Recommendation\": B, because it protects the whole village and not only the lane, provided the landowner signs by 2026-12-15; if not, fall back to A. Make the recommendation and the fallback easy to find.",
+  "checklist": {
+    "sections": [
+      "The problem",
+      "Three options",
+      "If it fails",
+      "Recommendation"
+    ],
+    "visible": [
+      "Brightwater Brook",
+      "Hale Farm",
+      "retention pond",
+      "pump station",
+      "landowner"
+    ],
+    "values": [
+      "2026-11-10",
+      "1.9 meters",
+      "4",
+      "63",
+      "9 days",
+      "0.6 meters",
+      "380000",
+      "14 weeks",
+      "3000",
+      "11",
+      "520000",
+      "30 weeks",
+      "6500",
+      "20 weeks",
+      "210000",
+      "9 weeks",
+      "14000",
+      "90000",
+      "60000",
+      "30 percent",
+      "2026-12-15"
+    ]
+  },
+  "needs": [
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change option C's cost to 185000 dollars and its yearly running cost to 11000, and move the landowner deadline to 2027-01-15.",
+    "expect_visible": [],
+    "expect_values": [
+      "185000",
+      "11000",
+      "2027-01-15"
+    ],
+    "expect_absent": [
+      "210000",
+      "14000",
+      "2026-12-15"
+    ]
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "id": "179-chat-assistant-trial",
+  "category": "reports",
+  "title": "Orbitus chat assistant trial results",
+  "brief": "I'm the head of customer experience at Orbitus Mobile and I need a results report on our chat assistant trial for the leadership team, who were not involved and will read it on laptops on 2026-10-23. The trial ran 2026-09-07 to 2026-10-16 and covered 14200 chats. Headline numbers: 38 percent of chats resolved by the assistant without a person, average handling time down from 11.4 to 8.7 minutes, and customer satisfaction of 4.1 out of 5 against 4.3 for chats with people. Under \"Weekly resolution\" chart the share resolved by the assistant: W37 29, W38 33, W39 36, W40 40, W41 43, W42 46. Under \"By topic\" give a table of chats, percent resolved by the assistant and satisfaction: Billing 4300, 51, 4.4; Plan changes 3100, 42, 4.3; Coverage 2400, 39, 4.2; Device help 3600, 27, 3.9; Cancellations 800, 6, 3.2. Cancellations is the outlier, because customers asking to leave wanted a person and said so, and this must be flagged. Under \"Recommendation\", as a short list: roll out to billing, plan changes and coverage from 2026-11-16, keep device help in trial until it passes 40 percent, and send cancellations straight to people.",
+  "checklist": {
+    "sections": [
+      "Weekly resolution",
+      "By topic",
+      "Recommendation"
+    ],
+    "visible": [
+      "Billing",
+      "Plan changes",
+      "Coverage",
+      "Device help",
+      "Cancellations",
+      "assistant"
+    ],
+    "values": [
+      "2026-10-23",
+      "2026-09-07",
+      "2026-10-16",
+      "14200",
+      "38",
+      "11.4",
+      "8.7",
+      "4.1",
+      "4.3",
+      "29",
+      "33",
+      "36",
+      "40",
+      "43",
+      "46",
+      "4300",
+      "51",
+      "4.4",
+      "3100",
+      "42",
+      "2400",
+      "39",
+      "4.2",
+      "3600",
+      "27",
+      "3.9",
+      "800",
+      "6",
+      "3.2",
+      "2026-11-16"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add W43 at 48 to the chart and change the rollout date to 2026-11-30.",
+    "expect_visible": [
+      "W43"
+    ],
+    "expect_values": [
+      "48",
+      "2026-11-30"
+    ],
+    "expect_absent": [
+      "2026-11-16"
+    ]
+  }
+}

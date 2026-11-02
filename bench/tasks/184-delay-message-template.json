@@ -1,0 +1,50 @@
+{
+  "id": "184-delay-message-template",
+  "category": "custom-editing",
+  "title": "Marlowe delayed delivery message",
+  "brief": "I'm a customer care lead at Marlowe Furniture and I need a page for my team's laptops where an agent can fill in the blanks of our delayed delivery message and take the finished message away to paste into an email. The template is the text between the dashes:\n---\nHello {first_name},\n\nI'm sorry to tell you that your {item} (order {order_number}) will not arrive on {original_date} as planned. {delay_reason}. Your new delivery date is {new_date}.\n\nTo say sorry, we have added a {voucher_amount} dollar voucher to your account. You do not need to do anything.\n\nIf the new date does not work, reply to this message and I will rebook it.\n\n{agent_name}\nMarlowe Furniture customer care\n---\nUnder \"Template\" show it as written, with the blanks marked. Under \"Blanks\" give a table of the eight blanks with a sample value for each that the agent can change: first_name, Rowan; item, Ashby oak dining table; order_number, MF-70418; original_date, 2026-11-06; delay_reason, The oak top failed our finish inspection; new_date, 2026-11-20; voucher_amount, 40; agent_name, Eilidh Mackenzie. Mark any blank that is left empty. Under \"Filled message\" show the whole message with the sample values already in place, updating as the values change, as plain text that is easy to copy.",
+  "checklist": {
+    "sections": [
+      "Template",
+      "Blanks",
+      "Filled message"
+    ],
+    "visible": [
+      "first_name",
+      "item",
+      "order_number",
+      "original_date",
+      "delay_reason",
+      "new_date",
+      "voucher_amount",
+      "agent_name",
+      "Rowan",
+      "Ashby oak dining table",
+      "Eilidh Mackenzie",
+      "Marlowe Furniture customer care"
+    ],
+    "values": [
+      "MF-70418",
+      "2026-11-06",
+      "2026-11-20",
+      "40"
+    ]
+  },
+  "needs": [
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the new delivery date to 2026-11-27 and the voucher to 60 dollars.",
+    "expect_visible": [],
+    "expect_values": [
+      "2026-11-27",
+      "60"
+    ],
+    "expect_absent": [
+      "2026-11-20",
+      "40"
+    ]
+  }
+}

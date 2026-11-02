@@ -1,0 +1,79 @@
+{
+  "id": "156-road-repair-status",
+  "category": "status",
+  "title": "Kelmarsh road repair weekly status",
+  "brief": "Hello, I coordinate the road repair program for Kelmarsh Council, and I need a weekly status page for the week ending 2026-10-30 that councillors will read on their phones. Lead with the headline numbers: 612 potholes repaired this week, a backlog of 1480, an average repair time of 6.4 days against a target of 5, and 88 percent of jobs finished on time. Under \"Backlog trend\" chart the open backlog over eight weeks: W37 1910, W38 1840, W39 1795, W40 1710, W41 1650, W42 1590, W43 1535, W44 1480. Under \"Districts\" give a table of backlog, repaired this week and average days to repair: Northgate 310, 142, 5.1; Central 402, 171, 6.0; Eastfield 285, 118, 5.8; Riverside 366, 84, 9.7; Harbor 117, 97, 4.2. Under \"Needs attention\": Riverside is the one to flag clearly, because the flood closure of Mill Bridge on 2026-10-21 kept crews out for four days. Under \"Next week\": night resurfacing on Mill Road starting 2026-11-03, a second crew moved to Riverside on 2026-11-02, and the budget review with the finance committee on 2026-11-05.",
+  "checklist": {
+    "sections": [
+      "Backlog trend",
+      "Districts",
+      "Needs attention",
+      "Next week"
+    ],
+    "visible": [
+      "Northgate",
+      "Central",
+      "Eastfield",
+      "Riverside",
+      "Harbor",
+      "Mill Bridge",
+      "Mill Road"
+    ],
+    "values": [
+      "2026-10-30",
+      "612",
+      "1480",
+      "6.4",
+      "5",
+      "88",
+      "W37",
+      "W44",
+      "1910",
+      "1840",
+      "1795",
+      "1710",
+      "1650",
+      "1590",
+      "1535",
+      "310",
+      "142",
+      "5.1",
+      "402",
+      "171",
+      "6.0",
+      "285",
+      "118",
+      "5.8",
+      "366",
+      "84",
+      "9.7",
+      "117",
+      "97",
+      "4.2",
+      "2026-10-21",
+      "2026-11-03",
+      "2026-11-02",
+      "2026-11-05"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add W45 at 1425 to the trend, change the headline backlog to 1425, and change Riverside's average days to repair from 9.7 to 8.9.",
+    "expect_visible": [
+      "W45"
+    ],
+    "expect_values": [
+      "1425",
+      "8.9"
+    ],
+    "expect_absent": [
+      "9.7"
+    ]
+  }
+}

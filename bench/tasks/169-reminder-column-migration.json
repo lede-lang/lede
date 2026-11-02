@@ -1,0 +1,52 @@
+{
+  "id": "169-reminder-column-migration",
+  "category": "code-review",
+  "title": "Bellwether reminder column migration",
+  "brief": "I'm Dariusz Wolak, a developer at Bellwether Clinics, and I need a pull request page for pull request 1507 that two reviewers, Esther Mbeki and Colm Fitzgerald, will read printed, at a table, before the 10:00 review meeting on 2026-11-04. The change replaces the yes or no sms_opt_in flag on our appointments with a reminder_channel that can be sms, email or none, so patients can choose email. Sections: \"Summary\": the new column is added and filled from the old flag in this pull request, and the old column is dropped in a second pull request after 2026-11-17. \"The migration\": show the code with line numbers:\n1 -- step 1, this pull request\n2 ALTER TABLE appointments ADD COLUMN reminder_channel TEXT;\n3 UPDATE appointments SET reminder_channel = 'sms' WHERE sms_opt_in = TRUE;\n4 UPDATE appointments SET reminder_channel = 'none' WHERE sms_opt_in = FALSE;\n5 CREATE INDEX idx_appt_reminder ON appointments (reminder_channel);\n6 -- step 2, next pull request, after 2026-11-17\n7 ALTER TABLE appointments DROP COLUMN sms_opt_in;\n\"Risks to check\": a list: the table has 6.8 million rows and the two updates took 14 minutes on staging, locking writes the whole time; rows where sms_opt_in is empty get no channel at all; and the app code must read both columns until step 2. \"Rollout and rollback\": run step 1 on 2026-11-08 between 02:00 and 02:30 when clinics are closed; until step 2 ships it can be undone by dropping the new column, but after step 2 it cannot, so the dropped column must be backed up first. Make the point that step 2 cannot be undone stand out.",
+  "checklist": {
+    "sections": [
+      "Summary",
+      "The migration",
+      "Risks to check",
+      "Rollout and rollback"
+    ],
+    "visible": [
+      "Dariusz Wolak",
+      "Esther Mbeki",
+      "Colm Fitzgerald",
+      "reminder_channel",
+      "sms_opt_in"
+    ],
+    "values": [
+      "1507",
+      "10:00",
+      "2026-11-04",
+      "2026-11-17",
+      "6.8 million",
+      "14 minutes",
+      "2026-11-08",
+      "02:00",
+      "02:30"
+    ]
+  },
+  "needs": [
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Move the step 1 run to 2026-11-15 between 03:00 and 03:30, and say the staging run took 9 minutes instead of 14.",
+    "expect_visible": [],
+    "expect_values": [
+      "2026-11-15",
+      "03:00",
+      "03:30",
+      "9 minutes"
+    ],
+    "expect_absent": [
+      "2026-11-08",
+      "02:00",
+      "02:30",
+      "14 minutes"
+    ]
+  }
+}

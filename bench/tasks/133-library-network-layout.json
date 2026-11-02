@@ -1,0 +1,63 @@
+{
+  "id": "133-library-network-layout",
+  "category": "architecture",
+  "title": "Dunmere library network layout",
+  "brief": "Our IT coordinator role at Dunmere County Library Service has landed me the job of documenting how the branches are networked, and the library committee wants it printed on one sheet for their meeting on 2026-11-05. Please make the page with \"Overview\": five sites share a county wide area link, staff and public traffic are kept apart, and the catalog lives only at Central Library. Then \"Network diagram\" with these parts: Central Library, Harbor Branch, Millrace Branch, Orchard Branch, Outreach Van, County WAN, Core Firewall, Catalog Server, Guest Wi-Fi Controller, Internet. Connections: Harbor Branch to County WAN \"fiber, 500 Mbps\"; Millrace Branch to County WAN \"fiber, 500 Mbps\"; Orchard Branch to County WAN \"wireless, 100 Mbps\"; Outreach Van to County WAN \"cellular, 50 Mbps\"; Central Library to County WAN \"fiber, 1 Gbps\"; Central Library to Core Firewall \"all traffic\"; Core Firewall to Catalog Server \"staff VLAN only\"; Core Firewall to Guest Wi-Fi Controller \"guest VLAN\"; Core Firewall to Internet \"filtered\". Then \"Segments\" as a table of VLAN number, name, subnet and who uses it: 10, Staff, 172.20.10.0/24, circulation desks and back office; 20, Public PCs, 172.20.20.0/24, patron computers; 30, Guest Wi-Fi, 172.20.30.0/23, personal devices; 40, Printers, 172.20.40.0/26, staff and public printers. Finish with \"Rules\": guest traffic may never reach the Catalog Server, public PCs cannot reach staff machines, and Orchard's wireless link is the weakest, which the committee will be asked to fund replacing.",
+  "checklist": {
+    "sections": [
+      "Overview",
+      "Network diagram",
+      "Segments",
+      "Rules"
+    ],
+    "visible": [
+      "Central Library",
+      "Harbor Branch",
+      "Millrace Branch",
+      "Orchard Branch",
+      "Outreach Van",
+      "County WAN",
+      "Core Firewall",
+      "Catalog Server",
+      "Guest Wi-Fi Controller",
+      "Internet",
+      "Staff",
+      "Public PCs",
+      "Guest Wi-Fi",
+      "Printers"
+    ],
+    "values": [
+      "2026-11-05",
+      "500 Mbps",
+      "100 Mbps",
+      "50 Mbps",
+      "1 Gbps",
+      "10",
+      "20",
+      "30",
+      "40",
+      "172.20.10.0/24",
+      "172.20.20.0/24",
+      "172.20.30.0/23",
+      "172.20.40.0/26"
+    ]
+  },
+  "needs": [
+    "diagram",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Orchard Branch has been upgraded to fiber at 500 Mbps, so change its link label to \"fiber, 500 Mbps\", and add a new segment 50 named Meeting Rooms with subnet 172.20.50.0/25 for room bookings.",
+    "expect_visible": [
+      "Meeting Rooms"
+    ],
+    "expect_values": [
+      "172.20.50.0/25"
+    ],
+    "expect_absent": [
+      "wireless, 100 Mbps"
+    ]
+  }
+}

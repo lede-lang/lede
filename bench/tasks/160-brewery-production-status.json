@@ -1,0 +1,72 @@
+{
+  "id": "160-brewery-production-status",
+  "category": "status",
+  "title": "Harrowgate Brewery weekly production status",
+  "brief": "Hi, I manage production at Harrowgate Brewery and I need a status page for the week ending 2026-10-30, to print for the Monday production meeting. Headline numbers: 184000 liters brewed, a yield of 94.2 percent against a target of 95, packaging line efficiency of 78.4 percent against a target of 85, and 3 batches on quality hold. Under \"Packaging efficiency trend\" chart the weekly efficiency over eight weeks: W37 82.0, W38 81.5, W39 80.9, W40 80.2, W41 79.6, W42 79.1, W43 78.8, W44 78.4. Under \"Packaging lines\" give a table of output, efficiency and downtime hours: Canning, 412000 cans, 71.9 percent, 19.5 hours; Kegging, 3150 kegs, 86.3 percent, 4.0 hours; Bottling, 96000 bottles, 83.1 percent, 6.5 hours. Under \"Needs attention\": the canning line's seamer is worn and is behind most of the downtime; the part arrives on 2026-11-03 and will be fitted on 2026-11-04, and the 3 held batches must be released or dumped by 2026-11-02. Under \"Coming up\": the winter ale brew on 2026-11-09 and the packaging audit on 2026-11-12.",
+  "checklist": {
+    "sections": [
+      "Packaging efficiency trend",
+      "Packaging lines",
+      "Needs attention",
+      "Coming up"
+    ],
+    "visible": [
+      "Canning",
+      "Kegging",
+      "Bottling",
+      "seamer",
+      "winter ale"
+    ],
+    "values": [
+      "2026-10-30",
+      "184000",
+      "94.2",
+      "95",
+      "78.4",
+      "85",
+      "3",
+      "82.0",
+      "81.5",
+      "80.9",
+      "80.2",
+      "79.6",
+      "79.1",
+      "78.8",
+      "412000",
+      "71.9",
+      "19.5",
+      "3150",
+      "86.3",
+      "4.0",
+      "96000",
+      "83.1",
+      "6.5",
+      "2026-11-03",
+      "2026-11-04",
+      "2026-11-02",
+      "2026-11-09",
+      "2026-11-12"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "The seamer part now arrives on 2026-10-31 and will be fitted on 2026-11-01. Also correct the canning efficiency to 74.0 percent.",
+    "expect_visible": [],
+    "expect_values": [
+      "2026-10-31",
+      "2026-11-01",
+      "74.0"
+    ],
+    "expect_absent": [
+      "2026-11-03",
+      "2026-11-04",
+      "71.9"
+    ]
+  }
+}

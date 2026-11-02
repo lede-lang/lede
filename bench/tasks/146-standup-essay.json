@@ -1,0 +1,50 @@
+{
+  "id": "146-standup-essay",
+  "category": "prose",
+  "title": "Tern & Tillow standup essay",
+  "brief": "I'm Marisol Ibarra, founder of Tern & Tillow, a design studio of 11 people, and I want to publish a blog essay called \"Why we stopped the daily standup\" for readers who will mostly open it on their phones. Write it as an essay with headings and mostly paragraphs. Open with \"The problem with ten minutes\": 11 people, 10 minutes, 5 days is 550 minutes a week, more than nine hours of the studio's time, and most of it was people reciting what they had already done. Then \"What we tried\": for 8 weeks, from 2026-08-31 to 2026-10-23, we replaced the meeting with a written note posted by 10:00 each day, three lines: done, next, stuck. Then \"What changed\": tasks stuck for more than two days fell from 14 to 6, nobody missed a deadline because of a missed conversation, and two juniors said they spoke more in the Thursday review than they ever had in a standup. Then \"What we would tell you\": a short list of three rules, keep the note to three lines, answer stuck notes within 2 hours, and keep one weekly meeting where people actually talk. End with a short pulled-out sentence: a meeting is a cost, and a good one should earn it. Tone: warm, direct, a little wry.",
+  "checklist": {
+    "sections": [
+      "The problem with ten minutes",
+      "What we tried",
+      "What changed",
+      "What we would tell you"
+    ],
+    "visible": [
+      "Marisol Ibarra",
+      "Tern & Tillow",
+      "stuck",
+      "Thursday review"
+    ],
+    "values": [
+      "11",
+      "10 minutes",
+      "550 minutes",
+      "8 weeks",
+      "2026-08-31",
+      "2026-10-23",
+      "10:00",
+      "14",
+      "6",
+      "2 hours"
+    ]
+  },
+  "needs": [
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Make the trial 12 weeks, ending on 2026-11-20 instead of 2026-10-23, and change the response time for stuck notes from 2 hours to 1 hour.",
+    "expect_visible": [],
+    "expect_values": [
+      "12 weeks",
+      "2026-11-20",
+      "1 hour"
+    ],
+    "expect_absent": [
+      "8 weeks",
+      "2026-10-23",
+      "2 hours"
+    ]
+  }
+}

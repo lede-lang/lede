@@ -1,0 +1,56 @@
+{
+  "id": "163-timekeeping-rollout-options",
+  "category": "specs-planning",
+  "title": "Gorsefield timekeeping rollout options",
+  "brief": "I lead the timekeeping project at Gorsefield Hospital Trust, and the programme board will read this printed on 2026-11-09 to choose how we roll the new staff timekeeping system out to 900 staff on 24 wards. Under \"The goal\": every ward on the new system before the pay cut-off on 2027-03-26. Under \"Rollout options\", as a table with duration, extra cost and risk: A, switch all 24 wards on 2027-01-04 after 12 weeks of preparation, 40000 dollars of extra cover, risk that a fault hits every ward at once; B, ward by ward over 12 weeks from 2027-01-11, 2 wards per week, 95000 dollars of extra support staff, risk of running two systems for 12 weeks and double-entry errors; C, a pilot on 2 wards for 4 weeks from 2027-01-11, then the other 22 wards in two waves on 2027-02-15 and 2027-03-08, 70000 dollars, risk that the pilot wards are not typical. Under \"If it goes wrong\", what would have to be undone: A, go back to paper for all 900 staff, which needs 3 days and about 60 managers; B, revert only the wards switched so far, a ward at a time; C, stop after the pilot with only 2 wards to revert. Under \"Recommendation\": C, because it fits before the cut-off and limits the worst case to 2 wards. Make the recommendation and the cut-off date impossible to miss.",
+  "checklist": {
+    "sections": [
+      "The goal",
+      "Rollout options",
+      "If it goes wrong",
+      "Recommendation"
+    ],
+    "visible": [
+      "pay cut-off",
+      "pilot",
+      "paper",
+      "Gorsefield Hospital Trust"
+    ],
+    "values": [
+      "2026-11-09",
+      "900",
+      "24",
+      "2027-03-26",
+      "2027-01-04",
+      "12 weeks",
+      "40000",
+      "2027-01-11",
+      "2 wards per week",
+      "95000",
+      "4 weeks",
+      "22",
+      "2027-02-15",
+      "2027-03-08",
+      "70000",
+      "3 days",
+      "60"
+    ]
+  },
+  "needs": [
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Option C's extra cost is now 65000 dollars and its second wave moves to 2027-03-01.",
+    "expect_visible": [],
+    "expect_values": [
+      "65000",
+      "2027-03-01"
+    ],
+    "expect_absent": [
+      "70000",
+      "2027-03-08"
+    ]
+  }
+}

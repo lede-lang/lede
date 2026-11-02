@@ -1,0 +1,60 @@
+{
+  "id": "131-rain-gauge-pipeline",
+  "category": "architecture",
+  "title": "Quillmere rain gauge pipeline",
+  "brief": "Hello, I run the data platform team at Quillmere Hydrology Institute and I need an architecture page showing how readings from our rain gauges become the flood warnings on our public map, version dated 2026-10-20. It will be projected in Thursday's design review, so it has to be readable from the back of the room. Start with \"Overview\": 1840 gauges across the Quillmere basin report every 5 minutes, and a reading should reach the public map within 90 seconds. Then \"Pipeline diagram\" with these parts: Rain Gauges, Field Gateway, Intake Queue, Validator, Raw Archive, Basin Model, Warning Store, Public Map. Connections: Rain Gauges to Field Gateway \"radio, 5 minute interval\"; Field Gateway to Intake Queue \"batched readings\"; Intake Queue to Validator \"one reading per message\"; Validator to Raw Archive \"every reading, unchanged\"; Validator to Basin Model \"readings that pass\"; Basin Model to Warning Store \"warning levels\"; Warning Store to Public Map \"refresh every 30 seconds\". Then \"Component details\" as a table with part, job and capacity: Field Gateway, relays readings from 40 gauges, 46 gateways; Intake Queue, holds up to 6 hours of backlog, 12 partitions; Validator, rejects readings above 400 millimeters per hour, 8 workers; Basin Model, recalculates every 2 minutes, 3 replicas. Finish with \"Known weak point\": all 46 gateways share one satellite uplink as backup, and that is what the review should debate, so make it stand out.",
+  "checklist": {
+    "sections": [
+      "Overview",
+      "Pipeline diagram",
+      "Component details",
+      "Known weak point"
+    ],
+    "visible": [
+      "Rain Gauges",
+      "Field Gateway",
+      "Intake Queue",
+      "Validator",
+      "Raw Archive",
+      "Basin Model",
+      "Warning Store",
+      "Public Map",
+      "batched readings",
+      "readings that pass",
+      "satellite uplink"
+    ],
+    "values": [
+      "1840",
+      "5 minutes",
+      "90 seconds",
+      "2026-10-20",
+      "30 seconds",
+      "40",
+      "46",
+      "6 hours",
+      "12",
+      "400",
+      "8",
+      "2 minutes",
+      "3"
+    ]
+  },
+  "needs": [
+    "diagram",
+    "table",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add a node called \"Alert Dispatcher\" fed by Warning Store with an arrow labeled \"push on level 3\", and raise the Validator ceiling from 400 to 450 millimeters per hour.",
+    "expect_visible": [
+      "Alert Dispatcher",
+      "push on level 3"
+    ],
+    "expect_values": [
+      "450"
+    ],
+    "expect_absent": [
+      "400"
+    ]
+  }
+}

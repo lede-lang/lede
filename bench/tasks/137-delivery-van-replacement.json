@@ -1,0 +1,74 @@
+{
+  "id": "137-delivery-van-replacement",
+  "category": "comparison",
+  "title": "Oakhurst delivery van replacement",
+  "brief": "I manage the fleet for Oakhurst Bakery, and the finance director has asked for a page to help us choose what to buy when we replace our 14 delivery vans in January 2027, printed for her and two board members. Each van drives 38000 kilometers a year and we keep them 5 years. Under \"Options\" set three side by side: diesel at 31000 dollars per van, 0.21 dollars per kilometer to run, 2100 a year maintenance, 700 kilometer range; hybrid at 38500, 0.15, 1800, 900 kilometers; electric at 49000, 0.07, 1100, 240 kilometers, plus 14 chargers at 2400 each. Under \"Five-year cost\" chart the whole fleet's cumulative cost at the end of each year: diesel 575120, 716240, 857360, 998480, 1139600; hybrid 644000, 749000, 854000, 959000, 1064000; electric 772240, 824880, 877520, 930160, 982800, with a sentence saying electric is cheapest from year 4. Under \"Range check\" warn that our longest route, the Saturday market run, is 190 kilometers and an electric van in winter manages only about 170. Under \"Recommendation\": electric for the 13 vans on shorter routes and a hybrid for the one on the Saturday market run, accepting a slightly higher cost for that van.",
+  "checklist": {
+    "sections": [
+      "Options",
+      "Five-year cost",
+      "Range check",
+      "Recommendation"
+    ],
+    "visible": [
+      "diesel",
+      "hybrid",
+      "electric",
+      "Saturday market run"
+    ],
+    "values": [
+      "14",
+      "38000",
+      "5",
+      "31000",
+      "0.21",
+      "2100",
+      "700",
+      "38500",
+      "0.15",
+      "1800",
+      "900",
+      "49000",
+      "0.07",
+      "1100",
+      "240",
+      "2400",
+      "190",
+      "170",
+      "575120",
+      "716240",
+      "857360",
+      "998480",
+      "1139600",
+      "644000",
+      "749000",
+      "854000",
+      "959000",
+      "1064000",
+      "772240",
+      "824880",
+      "877520",
+      "930160",
+      "982800",
+      "13"
+    ]
+  },
+  "needs": [
+    "table",
+    "chart",
+    "callout",
+    "list"
+  ],
+  "edit": {
+    "request": "The Saturday market run has been shortened to 150 kilometers, so recommend electric for all 14 vans and drop the hybrid recommendation.",
+    "expect_visible": [
+      "all 14 vans"
+    ],
+    "expect_values": [
+      "150"
+    ],
+    "expect_absent": [
+      "190"
+    ]
+  }
+}

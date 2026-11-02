@@ -1,0 +1,58 @@
+{
+  "id": "164-office-lease-options",
+  "category": "specs-planning",
+  "title": "Lowell & Finch office options",
+  "brief": "I'm the office manager at Lowell & Finch Accountants and the six partners will go through this on their laptops before Friday's meeting on 2026-11-06. Under \"Where we stand\": our lease on Canal Street ends on 2027-03-31, and we have 38 staff, of whom 24 now come in 3 days a week. Under \"The three ways forward\", as a table with yearly rent, one-off cost and risk: A, renew Canal Street for 5 years and refit, rent 212000 a year, refit 140000, risk of paying for 38 desks when only about 26 are used on a busy day; B, move to the Hartley Yard building, rent 168000 a year, move and fit-out 205000, risk that clients dislike the move, and 6 of the staff live more than an hour away; C, take a smaller floor on Canal Street for 120000 a year with 26 shared desks plus 4 meeting rooms booked by the hour, refit 90000, risk that peak days are crowded. Under \"If we regret it\", what would have to be undone: A, we are tied to the lease for 5 years with an exit fee of 6 months' rent; B, moving back would cost about 150000 and we would have given up Canal Street; C, we can take more floor later if the landlord has it, otherwise nothing. Under \"Recommendation\": C, because it saves 92000 a year against A and keeps the address; test the desk-sharing for 8 weeks before signing, starting 2026-11-16.",
+  "checklist": {
+    "sections": [
+      "Where we stand",
+      "The three ways forward",
+      "If we regret it",
+      "Recommendation"
+    ],
+    "visible": [
+      "Canal Street",
+      "Hartley Yard",
+      "desk-sharing",
+      "exit fee"
+    ],
+    "values": [
+      "2026-11-06",
+      "2027-03-31",
+      "38",
+      "24",
+      "3 days",
+      "212000",
+      "140000",
+      "26",
+      "168000",
+      "205000",
+      "6",
+      "120000",
+      "90000",
+      "150000",
+      "92000",
+      "8 weeks",
+      "2026-11-16"
+    ]
+  },
+  "needs": [
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Option C's rent is 126000 a year, so the saving against A is 86000, and the desk-sharing test starts on 2026-11-23 instead.",
+    "expect_visible": [],
+    "expect_values": [
+      "126000",
+      "86000",
+      "2026-11-23"
+    ],
+    "expect_absent": [
+      "120000",
+      "92000",
+      "2026-11-16"
+    ]
+  }
+}

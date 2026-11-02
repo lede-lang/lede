@@ -1,0 +1,59 @@
+{
+  "id": "166-invoice-retry-pr",
+  "category": "code-review",
+  "title": "Corvane invoice retry pull request",
+  "brief": "I'm Lucia Ferrante, a developer at Corvane Billing, and I need a pull request page for pull request 2231 that three reviewers, Amir Haddad, Joon Park and Sana Qureshi, will read on their phones between meetings. Sections: \"Summary\": invoice exports to the accounting partner failed whenever the partner's service was slow, about 1 batch in 20 of our 1200-invoice nightly batches, so this change retries a timed-out upload up to 4 times with waits of 2, 4, 8 and 16 seconds, a total wait of 30 seconds, after the 10 second timeout. \"Files changed\": a table: invoice_export.py +14 -4; test_invoice_export.py +31 -0; settings.py +2 -0. \"The change\": show this code with line numbers so reviewers can say which line they mean:\n1 def export_invoices(client, batch):\n2     sent = 0\n3     for invoice in batch:\n4         attempt = 0\n5         while True:\n6             try:\n7                 client.post('/invoices', invoice.to_dict())\n8                 sent += 1\n9                 break\n10            except TimeoutError:\n11                attempt += 1\n12                if attempt > 4:\n13                    raise\n14                time.sleep(2 ** attempt)\n15    return sent\n\"What to look at\": a list, with the first item flagged as the one I most want eyes on: the retry resends the same invoice, and the partner has only supported an idempotency key since 2026-09-14, which this code does not send yet, so a slow success could create a duplicate; also the wait blocks the whole batch. \"Rollout\": 10 percent of nightly batches from 2026-11-03, all batches from 2026-11-10 if no duplicates are reported.",
+  "checklist": {
+    "sections": [
+      "Summary",
+      "Files changed",
+      "The change",
+      "What to look at",
+      "Rollout"
+    ],
+    "visible": [
+      "Lucia Ferrante",
+      "Amir Haddad",
+      "Joon Park",
+      "Sana Qureshi",
+      "invoice_export.py",
+      "test_invoice_export.py",
+      "settings.py",
+      "idempotency key"
+    ],
+    "values": [
+      "2231",
+      "1200",
+      "4",
+      "2",
+      "8",
+      "16",
+      "30 seconds",
+      "10 second",
+      "+14 -4",
+      "+31 -0",
+      "+2 -0",
+      "2026-09-14",
+      "10 percent",
+      "2026-11-03",
+      "2026-11-10"
+    ]
+  },
+  "needs": [
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the retry limit from 4 to 3, which makes the total wait 14 seconds, and start the rollout at 25 percent instead of 10 percent.",
+    "expect_visible": [],
+    "expect_values": [
+      "14 seconds",
+      "25 percent"
+    ],
+    "expect_absent": [
+      "30 seconds",
+      "10 percent"
+    ]
+  }
+}

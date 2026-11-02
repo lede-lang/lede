@@ -1,0 +1,58 @@
+{
+  "id": "132-cheque-deposit-sequence",
+  "category": "architecture",
+  "title": "Pellam cheque deposit flow",
+  "brief": "I'm a product engineer at Pellam Cooperative Bank, and the compliance office has asked for a printed page, for the binder given to new engineers, that explains what happens when a member deposits a cheque with the phone camera. The page is dated 2026-10-08. Under \"Deposit sequence\" show the exchange between six parties, named exactly: Member App, Deposit Service, Image Checker, Fraud Screen, Ledger, Notifier. In order: Member App to Deposit Service \"submit front and back images\"; Deposit Service to Image Checker \"read amount and account\"; Image Checker to Deposit Service \"amount 1200.00, confidence 0.97\"; Deposit Service to Fraud Screen \"score deposit\"; Fraud Screen to Deposit Service \"risk 12 of 100\"; Deposit Service to Ledger \"post pending credit\"; Ledger to Deposit Service \"posted, ref LD-55021\"; Deposit Service to Notifier \"send received notice\"; Notifier to Member App \"push, deposit received\"; Deposit Service to Ledger \"release hold after 1 business day\". Under \"Hold rules\" give a table of deposit amount and hold: up to 500 dollars, no hold; over 500 up to 2500 dollars, 1 business day; over 2500 dollars, 3 business days. Under \"Safeguards\": a risk score above 70 sends the deposit to manual review instead of posting, cheque images are deleted after 45 days, and a confidence below 0.90 asks the member to retake the photo. Make the 70 threshold impossible to miss.",
+  "checklist": {
+    "sections": [
+      "Deposit sequence",
+      "Hold rules",
+      "Safeguards"
+    ],
+    "visible": [
+      "Member App",
+      "Deposit Service",
+      "Image Checker",
+      "Fraud Screen",
+      "Ledger",
+      "Notifier",
+      "submit front and back images",
+      "post pending credit",
+      "push, deposit received",
+      "manual review"
+    ],
+    "values": [
+      "2026-10-08",
+      "1200.00",
+      "0.97",
+      "12 of 100",
+      "LD-55021",
+      "1 business day",
+      "500",
+      "2500",
+      "3 business days",
+      "70",
+      "45 days",
+      "0.90"
+    ]
+  },
+  "needs": [
+    "sequence",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add a seventh party named Audit Log, and after the Ledger replies \"posted, ref LD-55021\" have Deposit Service send Audit Log \"record posting\". Also raise the manual review threshold from 70 to 75.",
+    "expect_visible": [
+      "Audit Log",
+      "record posting"
+    ],
+    "expect_values": [
+      "75"
+    ],
+    "expect_absent": [
+      "70"
+    ]
+  }
+}

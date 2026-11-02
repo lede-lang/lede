@@ -1,0 +1,66 @@
+{
+  "id": "173-success-animation-timings",
+  "category": "design",
+  "title": "Pocketwise success animation timings",
+  "brief": "I'm the motion designer at Pocketwise, a budgeting app, and I need a page for tomorrow's design review, projected on the big screen, that sets out the timings of the payment success animation so we can judge them and say what to change. Dated 2026-10-27. The animation has six parts, each with a start time and a duration in milliseconds and an easing: Card rises, starts at 0, lasts 280, ease-out; Circle draws, starts at 120, lasts 400, ease-in-out; Checkmark strokes, starts at 420, lasts 220, linear; Amount counts up, starts at 300, lasts 600, ease-in-out; Confetti burst, starts at 560, lasts 840, ease-out; Button fades in, starts at 900, lasts 200, ease-out. A haptic tap fires at 520. Under \"Timeline\" show the six parts as bars on a shared time axis from 0 to 1500, so overlaps are visible. Under \"Timings\" give the table of start, duration, end and easing for each part, with the ends 280, 520, 640, 900, 1400 and 1100. Under \"Review notes\" a list: the whole animation ends at 1400, inside our budget of 1500; the checkmark finishes at 640, only 120 after the haptic at 520, which feels late; and the button appears at 900, before the confetti is over, which is intended. Highlight that the budget is 1500 and the current total is 1400.",
+  "checklist": {
+    "sections": [
+      "Timeline",
+      "Timings",
+      "Review notes"
+    ],
+    "visible": [
+      "Card rises",
+      "Circle draws",
+      "Checkmark strokes",
+      "Amount counts up",
+      "Confetti burst",
+      "Button fades in",
+      "ease-out",
+      "ease-in-out",
+      "linear",
+      "haptic"
+    ],
+    "values": [
+      "2026-10-27",
+      "0",
+      "280",
+      "120",
+      "400",
+      "420",
+      "220",
+      "300",
+      "600",
+      "560",
+      "840",
+      "900",
+      "200",
+      "520",
+      "640",
+      "1400",
+      "1100",
+      "1500"
+    ]
+  },
+  "needs": [
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Shorten the Checkmark strokes duration from 220 to 160 so it ends at 580 instead of 640, and move the Button fades in start from 900 to 800 so it ends at 1000.",
+    "expect_visible": [],
+    "expect_values": [
+      "160",
+      "580",
+      "800",
+      "1000"
+    ],
+    "expect_absent": [
+      "220",
+      "640",
+      "1100"
+    ]
+  }
+}
