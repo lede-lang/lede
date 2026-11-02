@@ -293,6 +293,11 @@ interface.
   `<details>`. Table headers use `<th scope>`.
 - Every box that can scroll sideways (tables, diagrams, code blocks, chart data) takes keyboard
   focus (`tabindex="0"`) and has an accessible name.
+- The package also exposes an incremental form, `createIncremental(meta, data, opts)`, that takes the blocks of a
+  `LedeStream` (§6) as they become final and returns DOM operations carrying the HTML of the unit each one touches; after
+  the stream ends, the markup it has built equals the `<main>` that `render()` writes for the whole document, and it carries
+  no script. The layout engine for flow diagrams (elkjs) is loaded when the first flow diagram is laid out, and
+  `setLayoutEngine(fn)` replaces it.
 
 ## 8. Versioning
 The spec version is independent of package versions. 0.x minor versions may change grammar

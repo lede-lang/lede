@@ -1,6 +1,5 @@
 import type { DiagramBlock, DiagramEdge, DiagramNode } from '@lede-lang/core';
-// elkjs ships a bundled build with no worker; it runs the same in Node and the browser.
-import ELK from 'elkjs/lib/elk.bundled.js';
+import { layout } from './elk.ts';
 import { esc, inline, plain, snap4, textWidth } from './util.ts';
 
 const NAME = 13; // node name, sans 600
@@ -149,9 +148,6 @@ export interface Placed {
   width: number;
   height: number;
 }
-
-// elkjs is CommonJS; under NodeNext its typings miss the default-export constructor.
-const elk = new (ELK as unknown as new () => { layout(g: unknown): Promise<unknown> })();
 
 // ---- decision diamonds (stream-b) ----------------------------------------------------------
 const LINE = 16; // decision label line height
@@ -541,7 +537,7 @@ async function layoutOnce(d: DiagramBlock, compact: boolean, prior?: Placed, tie
     elkNodes.get(c)!.edges!.push(ee);
   });
 
-  const res = (await elk.layout(root)) as ElkNode;
+  const res = (await layout(root)) as ElkNode;
 
   // Flatten to absolute coordinates.
   const placed: Placed = { nodes: [], groups: [], edges: [], width: res.width ?? 0, height: res.height ?? 0 };
