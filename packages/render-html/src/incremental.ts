@@ -624,7 +624,7 @@ class Renderer implements Incremental {
       // The units no longer line up: replace from the first difference to the end.
       firstDiff ??= offset + f;
       settled += Math.max(mineUnits.length, theirUnits.length) - f;
-      causes.push(this.causeOf(mineUnits[f], theirUnits[f] ?? '', whole, prose, mh));
+      causes.push(this.causeOf(mineUnits[f], theirUnits[f], whole, prose, mh));
       const stale = mineUnits.slice(f).map((u) => u.id);
       if (stale.length) edits.push({ op: 'remove', ids: stale });
       theirUnits.slice(f).forEach((html, k) => edits.push({ op: 'append', id: this.rest.length + k, html }));
@@ -694,16 +694,22 @@ class Renderer implements Incremental {
     return n;
   }
 
-  /** Why a unit differs from the whole-page render, judged from the two pieces of markup and the state they came from. */
-  private causeOf(u: U | undefined, theirs: string, whole: Ctx, prose: boolean, mh: Masthead): SettleCause {
-    if (!u) return 'other';
-    if (mh.firstH1 && u.blocks.includes(mh.firstH1)) return 'masthead';
-    const mine = u.html;
-    if (mine.includes('class="lead"') !== theirs.includes('class="lead"')) return 'lead';
+  /**
+   * Why a unit differs from the whole-page render, judged from the two pieces of markup and the state they came from. When the
+   * counts differ, the first unit that only one side has is judged from the side that has it.
+   */
+  private causeOf(u: U | undefined, theirs: string | undefined, whole: Ctx, prose: boolean, mh: Masthead): SettleCause {
+    if (u && mh.firstH1 && u.blocks.includes(mh.firstH1)) return 'masthead';
+    const mine = u?.html ?? '';
+    const other = theirs ?? '';
+    if (mine.includes('class="lead"') !== other.includes('class="lead"')) return 'lead';
     const levels = (h: string) => h.replace(/<(\/?)h[1-4]\b/g, '<$1h');
-    if (whole.shift !== this.ctx.shift && levels(mine) === levels(theirs)) return 'shift';
+    // Two headings a level apart are the same unit moved by the shift; a heading only one side has is the shift moving it into
+    // or out of the body (a late `@title` becomes the page heading, and the `#` heading the masthead had taken moves into the body).
+    const heading = u && theirs !== undefined ? levels(mine) === levels(other) : /^<h[1-4]\b/.test(mine || other);
+    if (whole.shift !== this.ctx.shift && heading) return 'shift';
     const picked = whole.picks.length !== this.ctx.picks.length || whole.picks.some((p, i) => p !== this.ctx.picks[i]);
-    if (u.picks && picked) return 'picks';
+    if ((u ? u.picks : /<table\b/.test(other)) && picked) return 'picks';
     if (prose !== this.prose) return 'prose';
     return 'other';
   }

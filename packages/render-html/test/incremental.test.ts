@@ -492,6 +492,15 @@ test('a data name defined after the kpi that reads it draws that kpi again', asy
   assert.equal(streamed(d), await whole(src));
 });
 
+test('a unit the incremental side lacks is named from the whole-page render: a heading that a late @title shifts is the shift', async () => {
+  const src = ['# Intro', '', '@title Other', ''].join('\n');
+  const d = await drive(src, { chunk: 4, parse: parseOpts });
+  assert.equal(d.end.countMismatch, true);
+  assert.deepEqual(d.end.causes, ['shift']);
+  const on = await drive(src, { chunk: 4, parse: parseOpts, settle: true });
+  assert.equal(streamed(on), await whole(src));
+});
+
 // ---- early layout-shift check (Chromium) ----------------------------------------------------------------------------------------
 
 const chrome = resolveChrome();
