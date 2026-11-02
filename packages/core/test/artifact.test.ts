@@ -6,6 +6,18 @@ const SUFFIX = '; inline it as a data: URI or upload it as an asset and use the 
 const check = (src: string) => artifactDiagnostics(parse(src));
 const GIF = 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
 
+test('a local path is a local path: the message does not call a root-absolute one relative', () => {
+  const [d] = check('image /assets/logo.png "Logo"\n');
+  assert.equal(d.code, 'artifact-image');
+  assert.equal(d.message.startsWith('image /assets/logo.png is a local path, '), true, d.message);
+  assert.ok(!d.message.includes('relative'), d.message);
+  assert.ok(d.message.endsWith(SUFFIX), d.message);
+  assert.deepEqual(d.detail, { src: '/assets/logo.png', kind: 'local' });
+  // The same wording for a relative path.
+  const [r] = check('image fig.png "A figure"\n');
+  assert.equal(r.message.startsWith('image fig.png is a local path, '), true, r.message);
+});
+
 test('a relative image at the top level is a warning at its line, column 1, with the source in detail', () => {
   const found = check('# Hi\n\nimage fig.png "A figure"\n');
   assert.equal(found.length, 1);

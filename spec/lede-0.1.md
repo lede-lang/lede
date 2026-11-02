@@ -325,8 +325,8 @@ URLs (§4.16), in `image` blocks and as `<img>` in `html` blocks. Links render t
 only `<title>`, the page's `<style>` and its `<main>`, in that order: no doctype, `html`, `head` or `body`, and no `meta` tags or CSP. The
 Claude Artifact tool wraps a file in a page of its own and sets those itself. The style and the main are the full page's, byte for byte, so
 the light and dark tokens, the `data-theme` override and the zero-script output are the same; only the shell differs. `--artifact` also runs
-the artifact checks: each `image` whose source is a relative path (§4.16) gets W `artifact-image` with `detail {src, kind}` (`kind` is
-`local`), because the Artifact host serves the page from its own origin and has no copy of the file; the fix is a `data:` URI or an
+the artifact checks: each `image` whose source is a local path (§4.16: relative, or starting with `/`) gets W `artifact-image` with
+`detail {src, kind}` (`kind` is `local`), because the Artifact host serves the page from its own origin and has no copy of the file; the fix is a `data:` URI or an
 uploaded asset. `check --artifact` runs the same checks and nothing else new, so an agent can see them before building. A `data:` or
 remote source raises nothing new. Exit codes for every
 command: 0 on success; 1 for `build` on errors without `--force` and for `check` on errors; 2 for a usage error (no command, an
