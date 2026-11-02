@@ -11,7 +11,9 @@ for sd in sorted(glob.glob(os.path.join(d, 's[0-9]*'))):
     m = {}
     for f in glob.glob(os.path.join(sd, 'judge-*.jsonl')):
         for l in open(f):
-            if l.strip(): r = json.loads(l); m[r['pair']] = r['winner']
+            if not l.strip(): continue
+            r = json.loads(l)
+            if 'pair' in r: m[r['pair']] = r['winner']  # a line without `pair` is the header record of the batch file
     samples[os.path.basename(sd)] = m
 def side(p, w):
     if w not in ('LEFT', 'RIGHT'): return 'tie'
