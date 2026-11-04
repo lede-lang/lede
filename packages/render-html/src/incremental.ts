@@ -1,10 +1,11 @@
 // The incremental renderer (internal spec, lede-lang/meta): blocks go in one at a time as they become final, DOM operations come
 // out with the HTML of the unit they touch, and the markup that results is the markup `render()` writes for the whole page.
 // Six decisions in `render()` read the whole document; each has a rule below (prose layout, grouping, the standfirst, the
-// heading shift, picks, late meta). The question words add a seventh, the `export` (see `reexport`). `end()` checks the result
-// against the whole-page render and corrects what the rules missed (the settle); the tests and the bench switch the correction
-// off, so they measure the rules and not the safety net.
-import type { Block, DataSet, DiagramBlock, LedeDocument, QuestionBlock } from '@lede-lang/core';
+// heading shift, picks, late meta). The question words and the editor words add a seventh, the `export` (see `reexport`), and a
+// block that grows besides the diagram, the bucket set (see `grew`). `end()` checks the result against the whole-page render and
+// corrects what the rules missed (the settle); the tests and the bench switch the correction off, so they measure the rules and not
+// the safety net.
+import type { Block, BucketBlock, DataSet, DiagramBlock, LedeDocument, QuestionBlock } from '@lede-lang/core';
 import { exportsOf, fieldsOf, resolve, walkBlocks } from '@lede-lang/core';
 import {
   Ctx,
@@ -101,10 +102,10 @@ export interface Incremental {
   push(block: Block): Pushed;
   /** The open blocks (`LedeStream.tail()`), after the held ones: the run of elements at the end of the page. */
   tail(blocks: Block[]): IncrementalOp[];
-  /** A diagram gained statements, or a `data NAME +=` appended rows. */
-  update(what: DiagramBlock | { data: string }): Pushed;
-  /** No statement of this diagram is expected for now: draw it. */
-  seal(d: DiagramBlock): Pushed;
+  /** A diagram gained statements, a bucket set gained an item, or a `data NAME +=` appended rows. */
+  update(what: DiagramBlock | BucketBlock | { data: string }): Pushed;
+  /** No statement of this diagram is expected for now: draw it. A bucket set is drawn in full by every update, so its seal adds nothing. */
+  seal(d: DiagramBlock | BucketBlock): Pushed;
   /** Commit what is held, draw what is open, apply late meta, settle. Call after the stream's own `end()`. */
   end(): Promise<IncrementalEnd>;
 }
@@ -172,6 +173,8 @@ interface U {
   mark: CtxMark;
   html: string;
   diagrams: DiagramBlock[];
+  /** The bucket sets in the unit, which gain items from later lines. */
+  buckets: BucketBlock[];
   /** Data names a chart, table or kpi in the unit reads. */
   reads: Set<string>;
   /** The unit holds a table, which reads the page's picks. */
@@ -185,13 +188,15 @@ interface U {
 }
 
 /** What a unit's blocks hold, grids and cards included. */
-function inspect(blocks: Block[]): Pick<U, 'diagrams' | 'reads' | 'picks' | 'exports'> {
+function inspect(blocks: Block[]): Pick<U, 'diagrams' | 'buckets' | 'reads' | 'picks' | 'exports'> {
   const diagrams: DiagramBlock[] = [];
+  const buckets: BucketBlock[] = [];
   const reads = new Set<string>();
   let picks = false;
   let exports = false;
   walkBlocks(blocks, (b) => {
     if (b.type === 'diagram') diagrams.push(b);
+    else if (b.type === 'bucket') buckets.push(b);
     else if (b.type === 'export') exports = true;
     else if (b.type === 'chart') reads.add(b.data);
     else if (b.type === 'table') {
@@ -199,7 +204,7 @@ function inspect(blocks: Block[]): Pick<U, 'diagrams' | 'reads' | 'picks' | 'exp
       picks = true;
     } else if (b.type === 'kpis') for (const k of b.items) if (k.ref) reads.add(k.ref.split('.')[0]);
   });
-  return { diagrams, reads, picks, exports };
+  return { diagrams, buckets, reads, picks, exports };
 }
 
 /** The ops, and the drawings still pending, of several units drawn in one step. */
@@ -247,6 +252,7 @@ class Renderer implements Incremental {
 
   private readonly units: U[] = [];
   private readonly byDiagram = new Map<DiagramBlock, U>();
+  private readonly byBucket = new Map<BucketBlock, U>();
   /**
    * Diagrams the stream has sealed at least once, even before their unit was committed. A diagram of a committed unit that is
    * not in it is shown as a slot; one that is in it is drawn, and a seal after the first draws it again (a reseal).
@@ -372,9 +378,9 @@ class Renderer implements Incremental {
   /**
    * An `export` draws the answer template of the whole page: every question field, whether it comes before or after the export,
    * and the page title, which can come from a `#` heading or an `@title` read later. Neither is known when the export arrives, so it
-   * is drawn with what has been read, like a table with the picks, and drawn again in place (`replace`) when a field arrives or the
-   * title changes; `end()` does so once more with the finished page. The ids do not move, since the export takes none. A page with
-   * no `export` pays nothing (internal spec, lede-lang/meta).
+   * is drawn with what has been read, like a table with the picks, and drawn again in place (`replace`) when a field arrives, a
+   * bucket set gains an item or the title changes; `end()` does so once more with the finished page. The ids do not move, since the
+   * export takes none. A page with no `export` pays nothing (internal spec, lede-lang/meta).
    */
   private reexport(out: Batch): void {
     if (this.exportUnits.length === 0) return;
@@ -386,9 +392,11 @@ class Renderer implements Incremental {
     }
   }
 
-  /** What an `export` lists: the number of fields (they only ever grow) and the title. */
+  /** What an `export` lists: the number of fields and of bucket items (they only ever grow) and the title. */
   private exportKey(): string {
-    return `${this.fields.length}:${this.ctx.page ?? ''}`;
+    let items = 0;
+    for (const f of this.fields) if (f.type === 'bucket') items += f.items.length;
+    return `${this.fields.length}:${items}:${this.ctx.page ?? ''}`;
   }
 
   /**
@@ -492,6 +500,7 @@ class Renderer implements Incremental {
     });
     const u: U = { id, plan: unit, blocks, mark: this.frontier, html: '', ...inspect(blocks), exportKey: '', version: 0 };
     for (const d of u.diagrams) this.byDiagram.set(d, u);
+    for (const b of u.buckets) this.byBucket.set(b, u);
     if (u.exports) {
       u.exportKey = this.exportKey();
       this.exportUnits.push(u);
@@ -588,12 +597,13 @@ class Renderer implements Incremental {
 
   // ------------------------------------------------------------------ updates, seals, drawings
 
-  update(what: DiagramBlock | { data: string }): Pushed {
+  update(what: DiagramBlock | BucketBlock | { data: string }): Pushed {
     if (!('type' in what)) {
       const out = new Batch();
       for (const u of this.units) if (u.reads.has(what.data)) out.add(this.redraw(u));
       return out.result();
     }
+    if (what.type === 'bucket') return this.grew(what);
     const u = this.byDiagram.get(what);
     // A diagram not on the page yet, or one that is drawn already (its next seal draws it again): nothing to show.
     if (!u || this.sealed.has(what)) return { ops: [] };
@@ -601,7 +611,22 @@ class Renderer implements Incremental {
     return this.redraw(u);
   }
 
-  seal(d: DiagramBlock): Pushed {
+  /**
+   * A bucket set gained an item. Its unit is drawn again in place, with the set as it stands: the rows and the counts are static
+   * markup, so each item is a whole drawing and there is nothing to wait for. A set whose unit is still held, or is in a grid or
+   * cards run not pushed yet, is drawn when that unit is, from the set as it stands then. The `export` lists the items either way.
+   */
+  private grew(set: BucketBlock): Pushed {
+    const out = new Batch();
+    const u = this.byBucket.get(set);
+    if (u) out.add(this.redraw(u));
+    this.reexport(out);
+    return out.result();
+  }
+
+  seal(d: DiagramBlock | BucketBlock): Pushed {
+    // A bucket set has no drawing to finish: every update drew it in full.
+    if (d.type === 'bucket') return { ops: [] };
     const again = this.sealed.has(d);
     this.sealed.add(d);
     const u = this.byDiagram.get(d);

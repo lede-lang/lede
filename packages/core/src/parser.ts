@@ -42,6 +42,12 @@ export interface ParseHooks {
    * the diagram already has (its nodes, edges, groups, notes, frames and legend are as they were); it is still a line of the diagram.
    */
   onDiagramLine(block: DiagramBlock, changed: boolean): void;
+  /**
+   * A `NAME: ITEM | BUCKET` line was read for the bucket set `block` declared earlier (spec §4.19). `changed` is true when the item
+   * was added, and false when the line was rejected (no text, no bucket, an unknown bucket) or repeated an item the set has. The
+   * line is a statement of the set either way, as a rejected line is a statement of a diagram.
+   */
+  onBucketItem(block: BucketBlock, changed: boolean): void;
   /** `data NAME += rows` appended rows to the data set `name`. */
   onDataAppend(name: string): void;
 }
@@ -478,8 +484,10 @@ export class LedeParser {
     if (dl && owner) {
       this.flush();
       const col = lead + 1 + s.indexOf(':') + 1 + (s.slice(s.indexOf(':') + 1).length - s.slice(s.indexOf(':') + 1).trimStart().length);
-      if (owner.type === 'bucket') this.bucketItem(owner, dl[2].trim(), col);
-      else {
+      if (owner.type === 'bucket') {
+        const changed = this.bucketItem(owner, dl[2].trim(), col);
+        this.hooks?.onBucketItem(owner, changed);
+      } else {
         const changed = this.diagramLine(owner, dl[2].trim(), col);
         this.hooks?.onDiagramLine(owner, changed);
       }
@@ -1026,8 +1034,11 @@ export class LedeParser {
     this.register({ type: 'bucket', name, text: list.text, buckets, items: [], line: L } satisfies BucketBlock, col);
   }
 
-  /** `NAME: ITEM TEXT | B` where NAME is a bucket set. The item is added to the emitted block, as a diagram gains statements. */
-  private bucketItem(set: BucketBlock, rest: string, col: number): void {
+  /**
+   * `NAME: ITEM TEXT | B` where NAME is a bucket set. The item is added to the emitted block, as a diagram gains statements; true
+   * when it was added, false when the line was rejected or repeated an item.
+   */
+  private bucketItem(set: BucketBlock, rest: string, col: number): boolean {
     const L = this.lineNo;
     const hint = `\`${set.name}: ITEM TEXT | ${set.buckets[0]}\`; the buckets are ${set.buckets.join(', ')}. Start the line with \\ if it is prose`;
     let text = '';
@@ -1054,7 +1065,7 @@ export class LedeParser {
       this.diag('error', 'bucket-item', `${set.name}: an item needs its text and its bucket after a |: ${hint}`, L, col, {
         name: set.name,
       });
-      return;
+      return false;
     }
     if (!set.buckets.includes(target)) {
       this.diag(
@@ -1068,7 +1079,7 @@ export class LedeParser {
           buckets: set.buckets,
         },
       );
-      return;
+      return false;
     }
     const first = set.items.find((i) => i.text === text);
     if (first) {
@@ -1076,9 +1087,10 @@ export class LedeParser {
         text,
         first: first.line,
       });
-      return;
+      return false;
     }
     set.items.push({ text, bucket: target, line: L });
+    return true;
   }
 
   /** `template NAME | LABEL`: the next non-blank line must open a fence, which becomes the body (spec §4.19). */

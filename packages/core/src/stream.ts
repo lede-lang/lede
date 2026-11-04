@@ -1,26 +1,30 @@
-import type { Block, DiagramBlock, LedeDocument } from './ast.ts';
+import type { Block, BucketBlock, DiagramBlock, LedeDocument } from './ast.ts';
 import { LedeParser, type ParseOptions } from './parser.ts';
 import { walkBlocks } from './walk.ts';
 
 /**
  * What `LedeStream.events` returns, in line order.
  * - `block`: a block became final; the same blocks `write` returns.
- * - `update` with `block`: a `name:` line changed a diagram that was already returned (a diagram is a block that grows). A line
- *   the parser rejects, or one that repeats what the diagram has, is no update; it is still a statement of the diagram.
+ * - `update` with `block`: a `name:` line changed a diagram that was already returned (a diagram is a block that grows), or
+ *   a `NAME: ITEM | B` line added an item to a bucket set that was already returned (a bucket set grows the same way). A line
+ *   the parser rejects, or one that repeats what the block has, is no update; it is still a statement of the block.
  *   The next non-blank line that is not another statement of it ends the growth with a `seal`; a statement after a seal
- *   that changes the diagram is an `update` again and a second `seal` follows (a reseal).
+ *   that changes the block is an `update` again and a second `seal` follows (a reseal).
  * - `update` with `data`: `data NAME += rows` appended rows; charts, tables and kpi rows that read NAME changed.
- * - `seal`: no statement of this diagram is expected for now.
+ * - `seal`: no statement of this diagram or bucket set is expected for now.
  */
 export type StreamEvent =
   | { kind: 'block'; block: Block }
-  | { kind: 'update'; block: DiagramBlock }
+  | { kind: 'update'; block: DiagramBlock | BucketBlock }
   | { kind: 'update'; data: string }
-  | { kind: 'seal'; block: DiagramBlock };
+  | { kind: 'seal'; block: DiagramBlock | BucketBlock };
+
+/** A block that is returned once and then gains lines: a diagram (statements) or a bucket set (items). */
+type Growing = DiagramBlock | BucketBlock;
 
 /**
  * Feed model output as it arrives. `write` returns blocks that became final;
- * `events` returns those plus the updates and seals of diagrams and data;
+ * `events` returns those plus the updates and seals of diagrams, bucket sets and data;
  * `tail` returns the block or blocks still being written, without ending the
  * document; `snapshot` returns a whole document for the text so far (the open
  * paragraph, list or fence included), which is what a live preview that
@@ -34,23 +38,29 @@ export class LedeStream {
   private lines: string[] = [];
 
   private readonly opts: ParseOptions;
-  /** Diagrams a statement line was written for, the ones among them it changed, and data names a `+=` line appended to, since the last line began. */
-  private touched = new Set<DiagramBlock>();
-  private changed = new Set<DiagramBlock>();
+  /**
+   * Diagrams and bucket sets a statement line was written for, the ones among them it changed, and data names a `+=` line appended
+   * to, since the last line began.
+   */
+  private touched = new Set<Growing>();
+  private changed = new Set<Growing>();
   private appended: string[] = [];
-  /** Diagrams already returned in a `block` event, and the ones among them that may still receive statements. */
-  private returned = new WeakSet<DiagramBlock>();
-  private open = new Set<DiagramBlock>();
+  /** Diagrams and bucket sets already returned in a `block` event, and the ones among them that may still receive statements. */
+  private returned = new WeakSet<Growing>();
+  private open = new Set<Growing>();
 
   constructor(opts: ParseOptions = {}) {
     this.opts = opts;
     this.parser = new LedeParser(opts, {
-      onDiagramLine: (b, changed) => {
-        this.touched.add(b);
-        if (changed) this.changed.add(b);
-      },
+      onDiagramLine: (b, changed) => this.statement(b, changed),
+      onBucketItem: (b, changed) => this.statement(b, changed),
       onDataAppend: (name) => this.appended.push(name),
     });
+  }
+
+  private statement(b: Growing, changed: boolean): void {
+    this.touched.add(b);
+    if (changed) this.changed.add(b);
   }
 
   write(chunk: string): Block[] {
@@ -60,10 +70,10 @@ export class LedeStream {
   }
 
   /**
-   * `write` plus what happened to blocks already returned: an `update` for every diagram a line extended and for every
-   * `data NAME +=` line, a `seal` for a diagram when a non-blank line that is not one of its statements arrives (a blank line
-   * does not seal: writers space statements). Within one line the order is: its blocks, its data updates, its diagram
-   * update, its seals.
+   * `write` plus what happened to blocks already returned: an `update` for every diagram or bucket set a line extended and for
+   * every `data NAME +=` line, a `seal` for a diagram or bucket set when a non-blank line that is not one of its statements
+   * arrives (a blank line does not seal: writers space statements). Within one line the order is: its blocks, its data updates,
+   * its diagram or bucket update, its seals.
    */
   events(chunk: string): StreamEvent[] {
     this.buf += chunk;
@@ -78,7 +88,11 @@ export class LedeStream {
     return out;
   }
 
-  /** The blocks still open: what `snapshot()` shows beyond the blocks `events()` has returned. Does not end the parser. */
+  /**
+   * The blocks still open: what `snapshot()` shows beyond the blocks `events()` has returned. Does not end the parser. A `template`
+   * fence that is still open is the template block with the text so far; a bucket set is never here (it was returned on its
+   * declaration and grows by `update`).
+   */
   tail(): Block[] {
     return this.parser.peek();
   }
@@ -99,8 +113,8 @@ export class LedeStream {
   }
 
   /**
-   * Finish the document: the partial last line is read as a line, the open block is flushed, and every diagram still open
-   * is sealed. The blocks this adds are the document's blocks after the ones `events()` returned. `onEvent` receives the
+   * Finish the document: the partial last line is read as a line, the open block is flushed, and every diagram and bucket set
+   * still open is sealed. The blocks this adds are the document's blocks after the ones `events()` returned. `onEvent` receives the
    * events of this last step (the last line's, the blocks it finishes, the seals), which `events()` cannot.
    */
   end(onEvent?: (e: StreamEvent) => void): LedeDocument {
@@ -131,8 +145,8 @@ export class LedeStream {
     for (const block of blocks) out.push({ kind: 'block', block });
     for (const data of this.appended) out.push({ kind: 'update', data });
     for (const d of this.touched) {
-      // A diagram inside a grid or card run that has not been returned yet is not on screen: nothing to update. A line that changed
-      // nothing is not an update and does not reopen a sealed diagram; if the diagram is open, being touched keeps it so (below).
+      // A diagram or bucket set inside a grid or card run that has not been returned yet is not on screen: nothing to update. A line
+      // that changed nothing is not an update and does not reopen a sealed block; if the block is open, being touched keeps it so (below).
       if (!this.returned.has(d) || !this.changed.has(d)) continue;
       out.push({ kind: 'update', block: d });
       this.open.add(d);
@@ -144,14 +158,14 @@ export class LedeStream {
         this.open.delete(d);
       }
     }
-    // A diagram returned by this line's blocks opens now, so its own declaration line never seals it.
+    // A diagram or bucket set returned by this line's blocks opens now, so its own declaration line never seals it.
     for (const block of blocks) this.shown(block);
   }
 
-  /** `block` was returned: the diagrams it holds (itself, or in a grid; the parser puts none in a card) may now receive statements. */
+  /** `block` was returned: the diagrams and bucket sets it holds (itself, or in a grid or a card) may now receive statements. */
   private shown(block: Block): void {
     walkBlocks([block], (b) => {
-      if (b.type !== 'diagram') return;
+      if (b.type !== 'diagram' && b.type !== 'bucket') return;
       this.returned.add(b);
       this.open.add(b);
     });

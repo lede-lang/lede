@@ -20,8 +20,8 @@ const { src, applied, remaining } = fix('table t\n...');   // repaired text, wha
 `fix` repairs a source text from its diagnostics.
 
 To show a page while it is being written, feed the stream chunks. `events` returns what became final and what changed in
-blocks already returned (a diagram that gained a line, rows appended to a data set, a diagram that is complete); `tail`
-returns the block still being written, without ending the document:
+blocks already returned (a diagram or a bucket set that gained a line, rows appended to a data set, a diagram or set that is
+complete); `tail` returns the block still being written, without ending the document:
 
 ```js
 import { LedeStream } from '@lede-lang/core';
@@ -29,10 +29,10 @@ import { LedeStream } from '@lede-lang/core';
 const s = new LedeStream();
 for await (const chunk of modelOutput) {
   for (const e of s.events(chunk)) {
-    // e.kind is 'block' (e.block is final), 'update' (e.block is a diagram that grew, or e.data names a data set
-    // that gained rows) or 'seal' (e.block is a diagram nothing more is expected for)
+    // e.kind is 'block' (e.block is final), 'update' (e.block is a diagram or bucket set that grew, or e.data names a
+    // data set that gained rows) or 'seal' (e.block is a diagram or bucket set nothing more is expected for)
   }
-  show(s.tail());       // the open paragraph, list, kpi row, fence, grid or cards run, as blocks
+  show(s.tail());       // the open paragraph, list, kpi row, fence (a template's, as the template), grid or cards run, as blocks
 }
 const doc = s.end(); // the blocks it finishes are doc.blocks after those `events` returned; end((e) => …) gives their events
 ```

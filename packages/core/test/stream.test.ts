@@ -9,7 +9,7 @@ const fixtures = ['examples/kitchen-sink.lede', 'examples/parity/editors.lede'].
   src: readFileSync(new URL(`../../../${path}`, import.meta.url), 'utf8'),
 }));
 
-const src = fixtures[0].src; // the kitchen sink
+const kitchen = fixtures[0].src;
 
 for (const { path, src } of fixtures) {
   test(`blocks emitted while streaming equal the final parse, in order (${path})`, () => {
@@ -181,7 +181,7 @@ function chunks(s: string, n: number): string[] {
   return out;
 }
 const kind = (e: StreamEvent) =>
-  e.kind === 'block' ? `block:${e.block.type}` : 'data' in e ? `update:data ${e.data}` : `${e.kind}:diagram`;
+  e.kind === 'block' ? `block:${e.block.type}` : 'data' in e ? `update:data ${e.data}` : `${e.kind}:${e.block.type}`;
 const names = (events: StreamEvent[]) => events.map(kind);
 
 test('events() has the same block events as write(), at chunk sizes 1, 7 and 64, over every example and conformance case', () => {
@@ -262,11 +262,11 @@ test('the same events come out whatever the chunking', () => {
   const run = (n: number) => {
     const s = new LedeStream();
     const out: string[] = [];
-    for (const c of chunks(src, n)) out.push(...names(s.events(c)));
+    for (const c of chunks(kitchen, n)) out.push(...names(s.events(c)));
     s.end((e) => out.push(kind(e)));
     return out;
   };
-  const whole = run(src.length);
+  const whole = run(kitchen.length);
   assert.ok(whole.includes('update:diagram') && whole.includes('seal:diagram'), 'kitchen-sink streams a diagram');
   for (const n of [1, 7, 64]) assert.deepEqual(run(n), whole, `chunks of ${n}`);
 });
@@ -325,9 +325,182 @@ test('a `name:` line that changes nothing gives no update, no reopening and no s
   assert.deepEqual(names(q.events('s: alt "ok"\ns: b -> a : yes\ns: end\n')), ['update:diagram', 'update:diagram', 'update:diagram']);
 });
 
+test('a bucket set streams as a diagram does: an update per item line, a seal at the first other non-blank line (Req 1.1)', () => {
+  const s = new LedeStream();
+  assert.deepEqual(names(s.events('bucket triage | Now, Next, Later | Where does each go?\n')), ['block:bucket']);
+  // Its declaration does not seal it; an item line is an update, and a blank line between items does not seal.
+  assert.deepEqual(names(s.events('triage: ENG-1 First | Now\n\ntriage: ENG-2 Second | Later\n')), ['update:bucket', 'update:bucket']);
+  // A line the parser rejects (no bucket, an unknown bucket, nothing) and one that repeats an item are no update, and still its lines.
+  assert.deepEqual(names(s.events('triage: ENG-3 has no bucket\ntriage: ENG-3 | Cut\ntriage:\ntriage: ENG-1 First | Next\n')), []);
+  assert.deepEqual(
+    s.doc.diagnostics.map((d) => d.code),
+    ['bucket-item', 'bucket-unknown', 'bucket-item', 'bucket-dup-item'],
+  );
+  assert.deepEqual(names(s.events('triage: ENG-3 Third | Next\n')), ['update:bucket']);
+  // The first line that is not an item seals it; then nothing is open.
+  assert.deepEqual(names(s.events('Done sorting.\n')), ['seal:bucket']);
+  assert.deepEqual(names(s.events('More.\n')), []);
+  // An item after the seal is an update again and the next sealing line a second seal; a rejected one reopens nothing.
+  assert.deepEqual(names(s.events('triage: ENG-4 Fourth | Later\n')), ['block:paragraph', 'update:bucket']);
+  assert.deepEqual(names(s.events('triage: ENG-4 Fourth | Later\n')), []);
+  assert.deepEqual(names(s.events('# Heading\n')), ['block:heading', 'seal:bucket']);
+  assert.deepEqual(names(s.events('triage: ENG-5 | Nowhere\nText.\n')), []);
+  const bucket = s.doc.blocks.find((b): b is BucketBlock => b.type === 'bucket')!;
+  assert.equal(bucket.items.length, 4);
+  // The update names the object the declaration returned, which is the one that grew.
+  const t = new LedeStream();
+  const [declared] = t.events('bucket b | A, B\n');
+  const [update] = t.events('b: x | A\n');
+  assert.ok(declared.kind === 'block' && update.kind === 'update' && 'block' in update);
+  assert.equal(update.block, declared.block);
+  // end() reads the unterminated last line and seals what is still open, a bucket set and a diagram alike.
+  const u = new LedeStream();
+  u.events('bucket b | A, B\ndiagram d\nd: p -> q\nb: x | A');
+  const atEnd: string[] = [];
+  u.end((e) => atEnd.push(kind(e)));
+  assert.deepEqual(atEnd, ['update:bucket', 'seal:diagram', 'seal:bucket']);
+  // A diagram's declaration seals the open set, a set's declaration seals the open diagram, and each reopens by its own line.
+  const v = new LedeStream();
+  assert.deepEqual(names(v.events('bucket b | A, B\nb: x | A\ndiagram d\n')), [
+    'block:bucket',
+    'update:bucket',
+    'block:diagram',
+    'seal:bucket',
+  ]);
+  assert.deepEqual(names(v.events('d: p -> q\nb: y | B\n')), ['update:diagram', 'update:bucket', 'seal:diagram']);
+  assert.deepEqual(names(v.events('d: q -> r\n')), ['update:diagram', 'seal:bucket']);
+});
+
+test('a bucket set in a grid or a card is not updated until the block that holds it is returned (Req 1.1)', () => {
+  const grid = new LedeStream();
+  // The grid is open, so the set is not on screen: its items change nothing a viewer shows yet, and nothing is sealed.
+  assert.deepEqual(names(grid.events('grid 2\nbucket b | A, B\nb: x | A\n')), []);
+  const [open] = grid.tail();
+  assert.ok(open.type === 'grid' && open.children[0].type === 'bucket');
+  assert.equal(open.children[0].items.length, 1, 'the open grid shows the set with the items so far');
+  assert.deepEqual(names(grid.events('para\n\n')), ['block:grid']);
+  // Returned, the set is open like any other: its next item is an update, and a line of another kind seals it.
+  assert.deepEqual(names(grid.events('b: y | B\n')), ['update:bucket']);
+  assert.deepEqual(names(grid.events('Text.\n')), ['seal:bucket']);
+  const cards = new LedeStream();
+  assert.deepEqual(names(cards.events('# Plans\n\ncards\n\n### One\nbucket c | A, B\nc: x | A\n')), ['block:heading']);
+  assert.deepEqual(names(cards.events('## Next\n')), ['block:cards', 'block:heading']);
+  assert.deepEqual(names(cards.events('c: y | B\n')), ['update:bucket']);
+});
+
+test('param, toggle, bucket and preset are block events on their own line, whole or half; a template is one when its fence closes', () => {
+  const lines = [
+    ['ask note | Note', 'ask'],
+    ['param press unit=x | Press depth | 0.94 0.85 1 0.01', 'param'],
+    ['toggle live on | Live', 'toggle'],
+    ['bucket triage | Now, Next | Where?', 'bucket'],
+    ['preset snappy | Snappy | press=0.96; live=on', 'preset'],
+  ] as const;
+  const s = new LedeStream();
+  for (const [line, type] of lines) {
+    const cut = Math.ceil(line.length / 2);
+    assert.deepEqual(s.events(line.slice(0, cut)), [], `${type}: half a line`);
+    assert.deepEqual(s.tail(), [], `${type}: half a line`);
+    // The set the `bucket` line returned is open, so the first line after it that is not an item seals it.
+    const sealed = type === 'preset' ? ['seal:bucket'] : [];
+    assert.deepEqual(names(s.events(`${line.slice(cut)}\n`)), [`block:${type}`, ...sealed], `${type}: the whole line`);
+    assert.deepEqual(s.tail(), [], `${type}: final on its own line, so never a tail`);
+  }
+  // An item line of the set is no block and no tail either: it grows the set, which opens again.
+  assert.deepEqual(names(s.events('triage: ENG-1 | Now\n')), ['update:bucket']);
+  assert.deepEqual(s.tail(), []);
+});
+
+test('tail() returns the open fence of a template as the template block with the text so far, and nothing before or after it', () => {
+  const s = new LedeStream();
+  s.events('ask who | Who?\nparam n | N | 1 0 9 1\n');
+  assert.deepEqual(names(s.events('template greeting | Greeting\n')), []);
+  assert.deepEqual(s.tail(), [], 'the template line alone is no block');
+  assert.deepEqual(names(s.events('\n')), []);
+  assert.deepEqual(s.tail(), [], 'a blank line keeps it pending');
+  // The fence is open: its text so far, with the slots found so far. Half a line is nothing yet.
+  assert.deepEqual(names(s.events('```text\n')), []);
+  const at = (): TemplateBlock => {
+    const t = s.tail();
+    assert.equal(t.length, 1);
+    assert.ok(t[0].type === 'template');
+    return t[0];
+  };
+  assert.deepEqual([at().body, at().slots, at().lang, at().name, at().text, at().line], ['', [], 'text', 'greeting', 'Greeting', 3]);
+  s.events('Hello {wh');
+  assert.equal(at().body, '');
+  s.events('o}, you asked for {n}.\n');
+  assert.deepEqual([at().body, at().slots], ['Hello {who}, you asked for {n}.', ['who', 'n']]);
+  // An indented fence reads like an unindented one; a brace that names nothing is kept as written and is no slot.
+  s.events('  {nobody} stays\n');
+  assert.deepEqual([at().body, at().slots], ['Hello {who}, you asked for {n}.\n  {nobody} stays', ['who', 'n']]);
+  // What the snapshot shows beyond the returned blocks is the same block, and no diagnostic comes before the fence closes.
+  const returned = s.doc.blocks.length;
+  assert.deepEqual(s.tail(), s.snapshot().blocks.slice(returned));
+  assert.deepEqual(
+    s.doc.diagnostics.map((d) => d.code),
+    [],
+  );
+  // The closing fence returns it, once, and the tail is empty again; the block returned is the one tail() showed.
+  const shown = at();
+  const closed = s.events('```\n');
+  assert.deepEqual(names(closed), ['block:template']);
+  assert.deepEqual(closed[0].kind === 'block' ? closed[0].block : null, shown);
+  assert.deepEqual(s.tail(), []);
+  assert.deepEqual(
+    s.doc.diagnostics.map((d) => d.code),
+    ['template-slot'],
+  );
+  // Calling tail() registered nothing: the name is still free for the closing fence to take.
+  const t = new LedeStream();
+  t.events('template once | Once\n```\nbody\n');
+  t.tail();
+  t.tail();
+  t.events('```\n');
+  assert.deepEqual(
+    t.end().diagnostics.map((d) => d.code),
+    ['template-empty', 'export-missing'],
+  );
+  // A raw fence after a template line is no template: its tail is the html block, and the template has no fence.
+  const raw = new LedeStream();
+  raw.events('template raw | Raw\n```=html\n<b>x</b>\n');
+  assert.deepEqual(raw.tail(), [{ type: 'html', html: '<b>x</b>', line: 2 }]);
+  // An unclosed fence at the end of the document ends there, as a snapshot reads it.
+  const open = new LedeStream();
+  open.events('ask a | A?\ntemplate t | T\n```\n{a}\n');
+  assert.ok(open.tail()[0].type === 'template');
+  assert.deepEqual(
+    open.end().blocks.map((b) => b.type),
+    ['ask', 'template'],
+  );
+});
+
+test('the same events come out whatever the chunking, over the editor examples too, and each bucket item line is one update', () => {
+  for (const f of ['examples/parity/editors.lede', 'examples/parity/editors-large.lede']) {
+    const text = readFileSync(new URL(f, root), 'utf8');
+    const run = (n: number) => {
+      const s = new LedeStream();
+      const out: string[] = [];
+      for (const c of chunks(text, n)) out.push(...names(s.events(c)));
+      s.end((e) => out.push(kind(e)));
+      return out;
+    };
+    const whole = run(text.length);
+    const itemLines = text.split('\n').filter((l) => l.startsWith('triage:')).length;
+    assert.ok(itemLines >= 3);
+    assert.equal(whole.filter((e) => e === 'update:bucket').length, itemLines, `${f}: one update per item line`);
+    assert.equal(whole.filter((e) => e === 'block:bucket').length, 1);
+    // The set seals once: at the blank line's successor, which is not an item.
+    assert.equal(whole.filter((e) => e === 'seal:bucket').length, 1, `${f}: sealed once`);
+    for (const n of [1, 7, 64]) assert.deepEqual(run(n), whole, `${f}: chunks of ${n}`);
+  }
+});
+
 // `cards` takes nothing after it, so a line that starts "cards on the table" is prose. So is "export the data": `export` is a keyword
 // line only alone or with one word after it.
-const KEYWORD_LINE = /^((data|chart|table|kpi|diagram|image|grid|step|ask|choose|confirm)(\s|$)|export(\s+\S+)?\s*$|cards$)/;
+// The editor words are keyword lines only with a name and a `|` after it (spec §4.19): "toggle the flag on Monday" is prose.
+const KEYWORD_LINE =
+  /^((data|chart|table|kpi|diagram|image|grid|step|ask|choose|confirm)(\s|$)|export(\s+\S+)?\s*$|cards$|(param|toggle|bucket|template|preset)\s+[A-Za-z][\w-]*[^|]*\|)/;
 const nested = (bs: Block[]): Block[] =>
   bs.flatMap((b) => (b.type === 'grid' ? b.children : b.type === 'cards' ? b.items.flatMap((c) => c.blocks) : [b]));
 
