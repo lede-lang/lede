@@ -1,16 +1,20 @@
 import type {
+  AskBlock,
   Block,
   CardItem,
   CardsBlock,
   ChartBlock,
   ChartKind,
   ChartMark,
+  ChooseBlock,
+  ConfirmBlock,
   DataSet,
   Diagnostic,
   DiagramBlock,
   DiagramEdge,
   DiagramFrame,
   DiagramNode,
+  ExportBlock,
   GridBlock,
   Kpi,
   KpiBlock,
@@ -28,11 +32,28 @@ export interface ParseOptions {
   loadFile?: (path: string) => string;
 }
 
-export const KEYWORDS = ['data', 'chart', 'table', 'kpi', 'diagram', 'image', 'grid', 'cards', 'step'] as const;
+export const KEYWORDS = [
+  'data',
+  'chart',
+  'table',
+  'kpi',
+  'diagram',
+  'image',
+  'grid',
+  'cards',
+  'step',
+  'ask',
+  'choose',
+  'confirm',
+  'export',
+] as const;
 export const META_KEYS = ['title', 'subtitle', 'description', 'author', 'date', 'accent', 'theme', 'lang', 'width', 'fonts'];
 const CHART_KINDS: ChartKind[] = ['line', 'area', 'bar', 'hbar', 'range'];
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const KEYWORD_RE = new RegExp(`^(${KEYWORDS.join('|')})(?=\\s|$)`);
+const QUESTION_NAME = /^[A-Za-z][\w-]*$/;
+/** The Markdown export's placeholder for an unpicked `choose`; an option may not spell it. */
+const NOT_CHOSEN = '(not chosen)';
 
 type Acc =
   | { kind: 'paragraph'; lines: string[]; line: number }
@@ -75,6 +96,10 @@ export class LedeParser {
   /** The open alt/opt frame per sequence diagram, and how many rejected nested openers still await their `end`. */
   private seq = new WeakMap<DiagramBlock, { open: DiagramFrame | null; skip: number }>();
   private lineNo = 0;
+  /** Question names to the line that first used them (a Map, so `constructor` is an ordinary name), and the `export` formats seen. */
+  private names = new Map<string, number>();
+  private exports = new Map<string, number>();
+  private firstExport = 0;
   /** Where the last valid `@accent` was written; its contrast is checked in `end()`, once `@theme` is known. */
   private accentAt: { line: number; col: number } | null = null;
   private out: Block[] = [];
@@ -123,6 +148,7 @@ export class LedeParser {
       this.doc.blocks.push(g);
     }
     this.checkAccent();
+    this.checkExport();
     resolve(this.doc);
     return this.doc;
   }
@@ -264,8 +290,8 @@ export class LedeParser {
       return;
     }
     const kw = KEYWORD_RE.exec(s);
-    // `cards` takes nothing after it: `cards on the table` stays prose.
-    if (kw && !(kw[1] === 'cards' && s !== 'cards')) {
+    // `cards` takes nothing after it: `cards on the table` stays prose. `export` takes at most one word: `export the data` does too.
+    if (kw && !(kw[1] === 'cards' && s !== 'cards') && !(kw[1] === 'export' && s.split(/\s+/).length > 2)) {
       const rest = s.slice(kw[1].length).trim();
       const restCol = lead + 1 + s.indexOf(rest, kw[1].length);
       this.keyword(kw[1], rest, restCol, lead);
@@ -441,6 +467,12 @@ export class LedeParser {
     }
     this.flush();
     switch (kw) {
+      case 'ask':
+      case 'choose':
+      case 'confirm':
+        return this.questionLine(kw, rest, col);
+      case 'export':
+        return this.exportLine(rest, col);
       case 'cards': {
         if (this.cards) this.closeCards();
         if (this.grid) this.closeGrid(true);
@@ -480,6 +512,123 @@ export class LedeParser {
         return this.diagramDecl(rest, col);
     }
     this.diag('error', 'unknown-keyword', `unknown keyword ${kw}`, L, lead + 1);
+  }
+
+  /**
+   * `ask NAME [lines=N] | text`, `choose NAME | options [| text]`, `confirm NAME | text` (spec §4.18). A line with an
+   * error makes no block and takes no name, so what reaches the page is only what parsed.
+   */
+  private questionLine(word: 'ask' | 'choose' | 'confirm', rest: string, col: number): void {
+    const L = this.lineNo;
+    const bar = rest.indexOf('|');
+    if (bar < 0) {
+      this.diag('error', 'question-syntax', `${word} needs \`${word} NAME | text\` (start the line with \\ if it is prose)`, L, col, {
+        word,
+      });
+      return;
+    }
+    const o = parseOpts(rest.slice(0, bar));
+    const right = rest.slice(bar + 1);
+    const name = o.words[0] ?? '';
+    let bad = false;
+    const fail = (code: string, message: string, detail?: Record<string, unknown>) => {
+      bad = true;
+      this.diag('error', code, message, L, col, detail);
+    };
+    if (!name) fail('question-syntax', `${word} needs a name before the |: \`${word} NAME | text\``, { word });
+    else if (!QUESTION_NAME.test(name)) {
+      fail('question-name', `${name} is not a name: use a letter, then letters, digits, _ or -`, { word, name });
+    } else if (this.names.has(name)) {
+      fail('question-dup', `${name} is already used on line ${this.names.get(name)}; every question needs its own name`, {
+        name,
+        first: this.names.get(name),
+      });
+    }
+    for (const w of [...o.words.slice(1), ...o.flags, ...o.quoted.map((q) => `"${q}"`)])
+      this.diag('warning', 'question-option', `ignored ${w} before the | of ${word} ${name}`, L, col, { option: w });
+    for (const k of Object.keys(o.kv)) {
+      if (word === 'ask' && k === 'lines') continue;
+      this.diag('warning', 'question-option', `ignored ${k}= on ${word} ${name}`, L, col, { option: `${k}=` });
+    }
+    let lines = 1;
+    if (word === 'ask' && o.kv.lines !== undefined) {
+      const n = /^\d+$/.test(o.kv.lines) ? Number(o.kv.lines) : NaN;
+      if (n >= 1 && n <= 12) lines = n;
+      else fail('ask-lines', `lines= must be a whole number from 1 to 12 (got "${o.kv.lines}")`, { value: o.kv.lines });
+    }
+    if (word !== 'choose') {
+      const text = right.trim();
+      if (!text) fail('question-syntax', `${word} ${name} needs text after the |`, { word });
+      if (bad) return;
+      this.names.set(name, L);
+      const b: AskBlock | ConfirmBlock =
+        word === 'ask' ? { type: 'ask', name, text, lines, line: L } : { type: 'confirm', name, text, line: L };
+      this.emit(b);
+      return;
+    }
+    const cut = pipeOutsideQuotes(right);
+    const csv = parseInlineCsv(cut < 0 ? right : right.slice(0, cut));
+    if (csv.unclosedAt !== null) fail('csv-quote', 'unclosed " in choose options', {});
+    const options: string[] = [];
+    let empty = false;
+    for (const t of csv.rows.flat().map((x) => x.trim())) {
+      if (t === '') empty = true;
+      else if (options.includes(t))
+        this.diag('warning', 'choose-dup-option', `choose ${name} lists "${t}" twice; the first is kept`, L, col, { option: t });
+      else options.push(t);
+    }
+    const reserved = options.includes(NOT_CHOSEN);
+    if (empty || reserved || options.length < 2) {
+      const why = empty
+        ? 'an option is empty (check for a doubled or trailing comma)'
+        : reserved
+          ? `${NOT_CHOSEN} is reserved`
+          : 'choose needs at least two different options';
+      fail('choose-options', `choose ${name}: ${why}; write \`choose ${name} | one, two\``, { count: options.length, empty, reserved });
+    }
+    if (bad) return;
+    this.names.set(name, L);
+    const text = cut < 0 ? '' : right.slice(cut + 1).trim();
+    const b: ChooseBlock = { type: 'choose', name, text: text || null, options, line: L };
+    this.emit(b);
+  }
+
+  /** `export [json|markdown]`: one per format. A bare `export` is markdown. */
+  private exportLine(rest: string, col: number): void {
+    const L = this.lineNo;
+    const format = rest === '' ? 'markdown' : rest;
+    if (format !== 'json' && format !== 'markdown') {
+      this.diag('error', 'export-format', `export takes json or markdown (got "${rest}"); start the line with \\ if it is prose`, L, col, {
+        format: rest,
+      });
+      return;
+    }
+    const first = this.exports.get(format);
+    if (first !== undefined) {
+      this.diag('warning', 'export-dup', `export ${format} is already on line ${first}; this one is ignored`, L, col, { format, first });
+      return;
+    }
+    this.exports.set(format, L);
+    this.firstExport ||= L;
+    const b: ExportBlock = { type: 'export', format, line: L };
+    this.emit(b);
+  }
+
+  /** Whole-page checks for the question words; they run in `end()`, so a snapshot of a prefix may warn about an `export` still to come. */
+  private checkExport(): void {
+    const fields = this.names.size;
+    if (fields > 0 && this.exports.size === 0) {
+      this.diag(
+        'warning',
+        'export-missing',
+        'this page asks questions but has no export line, so the answers cannot be copied; add `export json` or `export markdown`',
+        Math.min(...this.names.values()),
+        1,
+        { fields },
+      );
+    } else if (fields === 0 && this.exports.size > 0) {
+      this.diag('warning', 'export-orphan', 'export has no ask, choose or confirm line to export', this.firstExport, 1, {});
+    }
   }
 
   private dataLine(rest: string, col: number): void {
@@ -1569,4 +1718,27 @@ export function parse(src: string, opts: ParseOptions = {}): LedeDocument {
   const p = new LedeParser(opts);
   for (const line of src.split('\n')) p.pushLine(line);
   return p.end();
+}
+
+/**
+ * Index of the first `|` that is not inside a double-quoted field, or -1. A quote opens only at the start of a field, as in
+ * `parseInlineCsv`, so `12" pipe | Which?` still finds its `|`.
+ */
+function pipeOutsideQuotes(s: string): number {
+  let i = 0;
+  let start = true;
+  while (i < s.length) {
+    if (start) {
+      while (i < s.length && /\s/.test(s[i])) i++;
+      start = false;
+      if (s[i] === '"') {
+        i = readQuoted(s, i).end;
+        continue;
+      }
+    }
+    if (s[i] === '|') return i;
+    if (s[i] === ',' || s[i] === ';') start = true;
+    i++;
+  }
+  return -1;
 }

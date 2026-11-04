@@ -1,0 +1,39 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Questions",
+      "line": 1
+    },
+    {
+      "type": "ask",
+      "name": "owner",
+      "text": "Who signs off on this release?",
+      "lines": 1,
+      "line": 3
+    },
+    {
+      "type": "ask",
+      "name": "notes",
+      "text": "Anything the **release notes** should carry?",
+      "lines": 4,
+      "line": 4
+    },
+    {
+      "type": "ask",
+      "name": "on-call_2",
+      "text": "Who is on call?",
+      "lines": 1,
+      "line": 5
+    },
+    {
+      "type": "export",
+      "format": "json",
+      "line": 7
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

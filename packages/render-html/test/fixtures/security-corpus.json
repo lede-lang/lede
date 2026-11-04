@@ -255,6 +255,26 @@
    "name": "sequence diagram",
    "skip": "<?-x?-{1,2}>|-x-",
    "lede": "diagram s sequence title=\"Mk44 {Q}\"\ns: a \"Mk45 {Q}\" user\ns: b \"x\" kind=\"{Q}\"\ns: a -> b : Mk46 {T}\ns: note b : Mk47 {T}\ns: alt \"Mk48 {Q}\"\ns: b --> a : ok\ns: else \"{Q}\"\ns: b --> a : no\ns: end"
+  },
+  {
+   "name": "ask question",
+   "lede": "ask q1 | Mk49 {T}"
+  },
+  {
+   "name": "confirm statement",
+   "lede": "confirm c1 | Mk50 {T}"
+  },
+  {
+   "name": "choose option",
+   "lede": "choose p1 | {C}, Mk51"
+  },
+  {
+   "name": "choose question and export",
+   "lede": "choose p2 | a, b | Mk52 {T}\n\nexport json"
+  },
+  {
+   "name": "question inside cards",
+   "lede": "cards\n### Mk53\nconfirm c9 | Mk54 {T}\n## Mk55"
   }
  ],
  "cases": [
@@ -1871,6 +1891,101 @@
   {
    "id": "blocks-11",
    "src": "> <script>alert(1)</script>\n> \u2014 <img src=x onerror=alert(1)>"
+  },
+  {
+   "id": "question-01",
+   "src": "ask <img src=x onerror=alert(1)> | q",
+   "errors": [
+    "question-name"
+   ],
+   "hasNot": [
+    "<img src=x"
+   ]
+  },
+  {
+   "id": "question-02",
+   "src": "ask a lines=<script> | q\nexport",
+   "errors": [
+    "ask-lines"
+   ],
+   "hasNot": [
+    "<script"
+   ]
+  },
+  {
+   "id": "question-03",
+   "src": "ask a | q\nexport <script>alert(1)</script>",
+   "errors": [
+    "export-format"
+   ],
+   "warnings": [
+    "export-missing"
+   ],
+   "hasNot": [
+    "<script"
+   ]
+  },
+  {
+   "id": "question-04",
+   "src": "ask a | [x](javascript:alert(1))\nchoose b | \"javascript:alert(1)\", \"x\"\nconfirm c | <a href=\"javascript:alert(1)\">x</a>\nexport",
+   "has": [
+    "value=\"javascript:alert(1)\""
+   ],
+   "hasNot": [
+    "href=\"javascript"
+   ]
+  },
+  {
+   "id": "question-05",
+   "src": "ask a | <img src=x onerror=alert(1)>\nconfirm c | \" onfocus=\"alert(1)\nchoose d | \"\"\" onfocus=\"\"x\", y\nexport",
+   "hasNot": [
+    "onfocus=\"",
+    "<img src=x"
+   ]
+  },
+  {
+   "id": "question-06",
+   "src": "choose x | \"a|b\", c | Which?\nchoose y | 12\" pipe, 3\" tube | Which?\nask z | a ``` b\nexport",
+   "has": [
+    "value=\"a|b\"",
+    "value=\"12&quot; pipe\""
+   ]
+  },
+  {
+   "id": "question-07",
+   "src": "html: <input name=x><button>go</button><textarea>t</textarea><form action=//xss.example><select><option>x</option></select></form>\nHello",
+   "hasNot": [
+    "<input",
+    "<button",
+    "<textarea",
+    "<form",
+    "<select"
+   ]
+  },
+  {
+   "id": "question-08",
+   "src": "ask a | q\nask a | <script>alert(1)</script>\nexport",
+   "errors": [
+    "question-dup"
+   ],
+   "hasNot": [
+    "<script"
+   ]
+  },
+  {
+   "id": "question-09",
+   "src": "@title </script><meta http-equiv=refresh content=0>\nask a | q\nexport json",
+   "hasNot": [
+    "<meta http-equiv=refresh"
+   ]
+  },
+  {
+   "id": "question-10",
+   "src": "choose a | x, \"<script>alert(1)</script>\", <img src=x onerror=alert(1)>\nexport",
+   "hasNot": [
+    "<script",
+    "<img src=x"
+   ]
   }
  ]
 }

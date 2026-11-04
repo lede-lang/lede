@@ -1,0 +1,14 @@
+# Decisions
+
+confirm migration | The migration ran on staging and rolled back cleanly
+confirm oncall | On-call is staffed | and the pager works
+
+cards
+### Sign-off
+confirm legal | Legal has signed off
+
+---
+
+ask constructor | A name that is also a property of Object
+
+export markdown

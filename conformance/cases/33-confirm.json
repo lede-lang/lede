@@ -1,0 +1,59 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Decisions",
+      "line": 1
+    },
+    {
+      "type": "confirm",
+      "name": "migration",
+      "text": "The migration ran on staging and rolled back cleanly",
+      "line": 3
+    },
+    {
+      "type": "confirm",
+      "name": "oncall",
+      "text": "On-call is staffed | and the pager works",
+      "line": 4
+    },
+    {
+      "type": "cards",
+      "items": [
+        {
+          "title": "Sign-off",
+          "blocks": [
+            {
+              "type": "confirm",
+              "name": "legal",
+              "text": "Legal has signed off",
+              "line": 8
+            }
+          ],
+          "line": 7
+        }
+      ],
+      "line": 6
+    },
+    {
+      "type": "rule",
+      "line": 10
+    },
+    {
+      "type": "ask",
+      "name": "constructor",
+      "text": "A name that is also a property of Object",
+      "lines": 1,
+      "line": 12
+    },
+    {
+      "type": "export",
+      "format": "markdown",
+      "line": 14
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

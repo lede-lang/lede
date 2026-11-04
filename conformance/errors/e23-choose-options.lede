@@ -1,0 +1,8 @@
+choose one | only
+choose blank | a,,b
+choose reserved | a, (not chosen)
+choose open | "a, b
+choose dup | x, x, y
+choose dup2 | x, x
+choose ok | a, b
+export

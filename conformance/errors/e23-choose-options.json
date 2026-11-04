@@ -1,0 +1,50 @@
+[
+  {
+    "severity": "error",
+    "code": "choose-options",
+    "line": 1,
+    "col": 8
+  },
+  {
+    "severity": "error",
+    "code": "choose-options",
+    "line": 2,
+    "col": 8
+  },
+  {
+    "severity": "error",
+    "code": "choose-options",
+    "line": 3,
+    "col": 8
+  },
+  {
+    "severity": "error",
+    "code": "csv-quote",
+    "line": 4,
+    "col": 8
+  },
+  {
+    "severity": "error",
+    "code": "choose-options",
+    "line": 4,
+    "col": 8
+  },
+  {
+    "severity": "warning",
+    "code": "choose-dup-option",
+    "line": 5,
+    "col": 8
+  },
+  {
+    "severity": "warning",
+    "code": "choose-dup-option",
+    "line": 6,
+    "col": 8
+  },
+  {
+    "severity": "error",
+    "code": "choose-options",
+    "line": 6,
+    "col": 8
+  }
+]

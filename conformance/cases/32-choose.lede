@@ -1,0 +1,7 @@
+# Choices
+
+choose risk | low, medium, high
+choose size | S; M; L | How big is the change?
+choose region | "us-east-1 (primary, 60%)", "eu-west-1; backup", "a|b" | Which region goes first?
+
+export
