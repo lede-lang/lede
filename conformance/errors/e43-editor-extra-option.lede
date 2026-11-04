@@ -1,0 +1,12 @@
+param speed step=5 unit=ms | Speed | 50 0 100 5
+toggle dark big | Dark mode
+bucket queue big | Now, Later
+queue: Fix the login | Now
+ask who | Who signs off?
+preset snappy fast | Snappy | speed=75
+template note extra | A note
+```text
+{who} {speed} {dark}
+```
+toggle the flag on Monday
+export json

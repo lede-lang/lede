@@ -101,7 +101,7 @@ node-stmt    = NODE-ID , { WS , ( quoted-string | kind | "focus" | "*" | option 
 
 Keywords are case-sensitive and lowercase. `Table 3 shows…` is prose; `table of contents` is an
 error (no data named `of`) and must be written `\table of contents`. The five editor words `param`, `toggle`, `bucket`, `template`
-and `preset` are keyword lines only in the shape §4.19 gives (a name, then `|`); `toggle the flag on Monday` is prose.
+and `preset` are keyword lines only in the shape §4.19 gives (a name, and a `|` after it); `toggle the flag on Monday` is prose.
 
 ## 4. Blocks
 
@@ -342,12 +342,14 @@ preset NAME | LABEL | key=value; key=value
 export prompt                     (a third format beside json and markdown)
 ```
 - **The shape rule.** A line that starts with `param`, `toggle`, `bucket`, `template` or `preset` and a space is a keyword line only when
-  its second token is a NAME followed by `|`; for `param` also by `unit=`, for `toggle` also by `on`, `off` or `needs=`. Any other line
-  that starts with one of the words is text: `toggle the flag on Monday`, `bucket the tickets by owner`, `preset values are listed
-  below`, `param names are lowercase` and `template files live here` are paragraphs. A line that has the shape and is malformed after it
-  fails loudly (§1.5) as E `question-syntax` `{word}`: `toggle dark on` has no `|`, `param x | Label | 1 2` has two numbers too few. The
-  words are lowercase, and a leading `\` writes them as text (§4.2). There is no `item` word: an item is a `NAME:` line (below), so no
-  prose line changes meaning.
+  its second token is a NAME and the line has a `|` after it, with anything between (an option the word does not take there is W
+  `question-option` and ignored, as on `ask`: `toggle dark big | Dark mode`); for `param` also when the NAME is followed by `unit=`, for
+  `toggle` by `on`, `off` or `needs=`, even before a `|` is written. Any other line that starts with one of the words is text: `toggle the
+  flag on Monday`, `bucket the tickets by owner`, `preset values are listed below`, `param names are lowercase` and `template files live
+  here` are paragraphs, because none has a `|` after its second word (a text line that does has to start with `\`, as below). A line that
+  has the shape and is malformed after it fails loudly (§1.5) as E `question-syntax` `{word}`: `toggle dark on` has no `|`, `param x |
+  Label | 1 2` has two numbers too few. The words are lowercase, and a leading `\` writes them as text (§4.2). There is no `item` word: an
+  item is a `NAME:` line (below), so no prose line changes meaning.
 - **Names.** NAME matches `[A-Za-z][\w-]*` and shares one registry with `ask`, `choose` and `confirm`: a repeat is E `question-dup`
   `{name, first}`, whatever the two words. A line with an error makes no block and takes no name. A bucket set's name is the set's
   (not each bucket's). A `preset` has a name but no value in the export, so it is not a field: it does not stop `export-orphan` or count
@@ -933,12 +935,12 @@ and diagnostics for all 803, and byte-identical compiled pages for all 803. Ever
 Status: **preview**, D65. `param`, `toggle`, `bucket`, `template` and `preset`, the `NAME: ITEM | B` lines of a bucket set, and `export
 prompt` (§4.19) are new, valid in every build mode. The keywords are now `data chart table kpi diagram image grid cards step ask choose
 confirm export param toggle bucket template preset`, and none can name a diagram (E `diagram-name`). Conformance cases 35 to 40 and
-errors e27 to e42 are normative. `spec/model-spec.md` does not describe the words: models read them from the on-demand reference (D55
+errors e27 to e43 are normative. `spec/model-spec.md` does not describe the words: models read them from the on-demand reference (D55
 cap).
 
 **What changed for existing input.** Input that parsed before parses identically except: a lowercase line that starts with one of the five
-words, a name and then `|` (for `param` also `unit=`, for `toggle` also `on`, `off` or `needs=`) was paragraph text and is now an editor
-line (an error when malformed); `export prompt` was E `export-format` and is a block; the message of E `export-format` now names
+words, a name and then, later on the line, a `|` (for `param` also `unit=`, for `toggle` also `on`, `off` or `needs=`) was paragraph text
+and is now an editor line (an error when malformed); `export prompt` was E `export-format` and is a block; the message of E `export-format` now names
 `prompt`; and `diagram param`, `toggle`, `bucket`, `template` and `preset` are now E `diagram-name`. A `NAME:` line binds to a bucket set
 only when a `bucket NAME` is above it, so a document without a bucket set binds nothing new. Searched across the 814 `.lede` files
 tracked on `main` at `de5408c` (benchmark outputs, examples, conformance, fixtures), parsed with the parser at that commit and with this

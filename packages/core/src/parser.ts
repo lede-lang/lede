@@ -64,19 +64,22 @@ const KEYWORD_RE = new RegExp(`^(${KEYWORDS.join('|')})(?=\\s|$)`);
 const NAME_RE = /^[A-Za-z][\w-]*$/;
 /** The same pattern as source text, to build the line shapes below from. */
 const NAME = NAME_RE.source.slice(1, -1);
-/** An editor word's line: the word, a name, then `|` or one of the `alt` options (a regex source). */
-const editorShape = (word: string, alt = ''): RegExp => new RegExp(`^${word}\\s+${NAME}(?:\\s*\\|${alt})`);
+/**
+ * An editor word's line: the word, a name, then anything up to a `|` on the same line, or else one of the `alt` openings (a regex source:
+ * the options that make a line a keyword line before any `|` is written, so that the missing `|` fails loudly).
+ */
+const editorShape = (word: string, alt = ''): RegExp => new RegExp(`^${word}\\s+${NAME}(?:(?=[\\s|])[^|]*\\|${alt ? `|${alt}` : ''})`);
 /**
  * Keyword lines that are keyword lines only in their shape (spec §4.18, §4.19), because prose may start with the word: `cards` takes
- * nothing after it and `export` at most one word, and an editor word needs its name, then `|` (for `param` also `unit=`, for `toggle`
- * also `on`, `off` or `needs=`). `cards on the table`, `export the data` and `toggle the flag on Monday` are prose. Any other keyword
- * is a keyword line whatever follows.
+ * nothing after it and `export` at most one word, and an editor word needs its name and then, somewhere on the line, a `|` (for `param`
+ * also `unit=`, for `toggle` also `on`, `off` or `needs=`, which fail loudly without one). `cards on the table`, `export the data` and
+ * `toggle the flag on Monday` are prose. Any other keyword is a keyword line whatever follows.
  */
 const SHAPES: Partial<Record<string, RegExp>> = {
   cards: /^cards$/,
   export: /^export(?:\s+\S+)?$/,
-  param: editorShape('param', '|\\s+unit='),
-  toggle: editorShape('toggle', '|\\s+(?:on|off)(?=[\\s|]|$)|\\s+needs='),
+  param: editorShape('param', '\\s+unit='),
+  toggle: editorShape('toggle', '\\s+(?:on|off)(?=[\\s|]|$)|\\s+needs='),
   bucket: editorShape('bucket'),
   template: editorShape('template'),
   preset: editorShape('preset'),

@@ -577,6 +577,54 @@ test('2.7 shape rule: the shape is a name followed by |, or by unit= for param, 
   }
 });
 
+test('2.7 shape rule: a name, any words and then a | is a keyword line, so an option the word does not take is W question-option', () => {
+  const cases: [src: string, type: string, option: string][] = [
+    ['param x step=5 unit=ms | Label | 1 0 2 1', 'param', 'step='],
+    ['param x big | Label | 1 0 2 1', 'param', 'big'],
+    ['toggle dark big | Dark mode', 'toggle', 'big'],
+    ['toggle dark big small | Dark mode', 'toggle', 'big'],
+    ['bucket b big | A, B', 'bucket', 'big'],
+    [`template t extra | Label\n${FENCE}\nbody\n${FENCE}`, 'template', 'extra'],
+    ['ask x | X\npreset p extra | Label | x=1', 'preset', 'extra'],
+  ];
+  for (const [src, type, option] of cases) {
+    assert.ok(
+      blocks(src).some((b) => b.type === type),
+      src,
+    );
+    assert.ok(!kinds(src).includes('paragraph'), src);
+    assert.deepEqual(detail(src, 'question-option'), { option }, src);
+  }
+  // `step=5` and `big` are ignored, so the block is what the line without them gives.
+  assert.deepEqual(
+    only<ParamBlock>('param x step=5 unit=ms | Label | 1 0 2 1', 'param')[0],
+    only<ParamBlock>('param x unit=ms | Label | 1 0 2 1', 'param')[0],
+  );
+  // Prose with a | after its second word is a keyword line now, and fails loudly as a malformed one does: a leading \ makes it text.
+  assert.deepEqual(errs('bucket the tickets by owner | then Monday'), [
+    'warning:question-option@1',
+    'warning:question-option@1',
+    'warning:question-option@1',
+    'error:bucket-names@1',
+  ]);
+  assert.deepEqual(errs('preset values are listed | below'), [
+    'warning:question-option@1',
+    'warning:question-option@1',
+    'error:question-syntax@1',
+  ]);
+  assert.deepEqual(kinds('\\bucket the tickets by owner | then Monday'), ['paragraph']);
+  // With no | after the name it is prose, whatever the words, and so is a second token that is no name.
+  for (const line of [
+    'param x step=5 unit',
+    'toggle dark big',
+    'bucket b big',
+    'template t extra',
+    'preset p extra',
+    'toggle needs=x big | L',
+  ])
+    assert.deepEqual(kinds(line), ['paragraph'], line);
+});
+
 test('2.7 shape rule: a line with the shape that is malformed after it fails loudly', () => {
   for (const line of [
     'toggle dark on',
