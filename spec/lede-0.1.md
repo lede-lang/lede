@@ -329,10 +329,8 @@ shape is stable within 0.x (D64).
 Status: **preview**, D65. Five more lines make a page the reader edits and sends back: a number on a slider, a switch with prerequisites,
 items sorted into buckets, a text with `{slots}` that fills in, and a one-click set of values. Like the question words (§4.18) they are
 blocks in every build mode, and a document without them parses to exactly the AST it had before and compiles to the same bytes (Appendix
-G.2). This section is the grammar, how a page draws the words (below) and what the three export formats write for them. The live
-behaviour under `--shell` (the slider and number box following each other, the warning, the counts, the template refilling, the preset
-button) is not built yet: a shell page that has one of these words carries the shell's script, which stops at once and leaves the page as
-the ordinary build draws it.
+G.2). This section is the grammar, how a page draws the words (below), what the three export formats write for them and, last, what
+the shell does with them under `--shell`.
 
 ```
 param NAME [unit=U] | LABEL | DEFAULT MIN MAX STEP
@@ -450,6 +448,22 @@ puts it, each `template` filled from those, each `ask` empty, `choose` unpicked 
   all stayed). A line is left out when its list is empty. When nothing changed the text is the heading, a blank line and `No changes.`,
   with no other line, even if a field is open. A template's text is not repeated: its slots are fields and appear by name.
 
+**Under `--shell`.** The fixed runtime (§7) acts on all seven field kinds, and every export it writes is, character for character, what the
+rules above give for the values the controls hold. On every change it rewrites each export, the warnings, the counts and the filled
+templates in one pass, so nothing it shows is older than the last input. The page is a working page without it (the controls are native),
+and the runtime adds no element and moves none.
+- `param`: the range and the number box follow each other. A number box that is emptied leaves the range where it was, and while the
+  box is empty the export uses the page's default.
+- `toggle`: when it is `on` and a toggle it `needs` is `off`, the runtime sets `aria-invalid="true"` on its checkbox and writes
+  `needs A, which is off` (the first unmet name) into the status span outside the label; both go when the need is met. Nothing is
+  disabled and nothing is refused: the toggle is _blocked_ in the export (above).
+- `bucket`: each count tile follows the radios at once. Items never move in the page.
+- `template`: the body is refilled on every change, once and in one pass, and the count beneath is in Unicode code points.
+- `preset`: the hidden button of each preset is shown and its text of values is hidden. A click sets the radio, checkbox, text and number
+  controls named in the preset (the range follows its number box), rewrites everything as for any change and says `Applied LABEL` beside
+  the first export. A preset sets values and sends nothing.
+- If the data block cannot be read (§7), the runtime changes nothing and the page stays as the ordinary build draws it.
+
 ## 5. Inline markup
 `` `code` ``, `**bold**`, `*italic*` or `_italic_`, `[text](url)`. URLs must be `http`,
 `https`, `mailto`, relative or `#fragment`; others render as plain text. `\` escapes
@@ -477,11 +491,14 @@ block flushed) is always a valid document. The partial last line (no `\n` yet) i
   plain controls (text, radio, text area) with no script, `button` or `form`, and leave the policy unchanged; the editor words (§4.19)
   add range, number and checkbox inputs, lists and a `pre`, on the same terms. That holds for every page built without `--shell`.
 - With `--shell` (§9), a page that has a question and an `export` carries exactly two scripts after `<main>`: an inert
-  `application/json` block (the title, the field names and kinds, the formats; `<`, `>`, `&`, U+2028 and U+2029 written as `\uXXXX`)
-  and the compiler's one fixed runtime, under 8 KiB. The page policy is the ordinary one plus `script-src 'sha256-…'` naming the
-  runtime's SHA-256, so nothing else can run. The runtime sends nothing, keeps nothing after the tab closes, and writes only
-  `textContent` of the export and status text, the `hidden` attribute, radio state and the selection. The model never writes script,
-  in either mode.
+  `application/json` block (version 2: the title, each field's name and kind, for a `param` its default, unit, bounds and step, for a `toggle` its
+  state and prerequisites, for a `bucket` its bucket names and item texts, for a `template` its body and slots, then the presets and the
+  formats; `<`, `>`, `&`, U+2028 and U+2029 written as `\uXXXX`) and the compiler's one fixed runtime, under 8 KiB. The page policy is
+  the ordinary one plus `script-src 'sha256-…'` naming the runtime's SHA-256, so nothing else can run. The runtime sends nothing, keeps
+  nothing after the tab closes, and writes only `textContent` (the export, status text and the filled template), the `value` of a text,
+  number or range control and the `checked` state of a radio or checkbox (both only to follow a twin control or apply a preset), the
+  `hidden` attribute, `aria-invalid` on a toggle's checkbox, and the selection. It rejects a block whose version is not 2 or whose
+  fields do not fit their kind, and then does nothing. The model never writes script, in either mode.
 - No remote fetches by default (system font stacks, no remote images).
 - Light and dark themes from CSS custom properties; `prefers-color-scheme` plus
   `data-theme="light|dark"` on `<html>` to override.
@@ -518,8 +535,7 @@ only `<title>`, the page's `<style>` and its `<main>`, in that order: no doctype
 Claude Artifact tool wraps a file in a page of its own and sets those itself. The style and the main are the full page's, byte for byte, so
 the light and dark tokens, the `data-theme` override and the zero-script output are the same; only the shell differs. `--shell` adds the interaction shell (§7) to a page that has at least one field (`ask`, `choose`, `confirm`, `param`, `toggle`, `bucket`
 or `template`) and an `export` line (`export json`, `export markdown` or `export prompt`); any other page is built as without the flag,
-and stderr says so. The shell does not yet act on the editor words (§4.19): on a page that has one the script stops and leaves the page
-as the ordinary build draws it. With `--artifact` the data block and runtime follow `<main>` and the
+and stderr says so. With `--artifact` the data block and runtime follow `<main>` and the
 meta tags are still omitted, so the Artifact host's own policy decides whether the runtime runs. `--shell` with `--unsafe-html` is a
 usage error: raw `html` could plant its own controls and data block. Exit codes for every
 command: 0 on success; 1 for `build` on errors without `--force` and for `check` on errors; 2 for a usage error (no command, an
@@ -932,5 +948,6 @@ now reads `json, markdown or prompt`. Every earlier conformance case passes uned
 **What changed for existing pages.** None. The same 814 files, none of which has an editor word, were compiled in seven modes (plain,
 `--shell`, `--artifact`, `--shell --artifact`, fragment, `--allow-remote` and `--unsafe-html`) with the renderer at `de5408c` and with the
 renderer that draws the editor words, on the parser at `113fc51`: 5,698 pages, byte-identical in every one. The markup, the CSS and the
-`prompt` note exist only on a page that has an editor word or `export prompt`. A page with an editor word draws the controls of §4.19;
-under `--shell` the script stops at once on it (§4.19, status), so the shell's behaviour on a question-only page is unchanged.
+`prompt` note exist only on a page that has an editor word or `export prompt`. A page with an editor word draws the controls of §4.19,
+and under `--shell` the runtime acts on them. The shell's behaviour on a question-only page is unchanged; its data block now carries
+version 2 on every shell page (§7).

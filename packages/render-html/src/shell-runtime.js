@@ -1,10 +1,9 @@
-/* Lede shell runtime (spec 4.18 and 7, D63). One fixed script, pinned by hash in the page's policy.
-   It reads the page's controls, writes the answers as an export and copies it out. */
+/* Lede shell runtime (spec 4.18, 4.19 and 7; D63, D65): one fixed script, pinned by hash in the page's policy. */
 (function () {
   'use strict';
-  var d = document;
-  var m = d.querySelector('main');
-  var s = d.querySelector('script#lede-shell');
+  var m = document.querySelector('main');
+  var s = document.querySelector('script#lede-shell');
+  var A = Array.isArray;
   var c;
   if (!m || !s) return;
   try {
@@ -12,103 +11,185 @@
   } catch {
     return;
   }
-  if (!c || c.v !== 1 || !Array.isArray(c.fields) || !Array.isArray(c.formats)) return;
+  if (!c || c.v !== 2 || !A(c.fields) || !A(c.formats)) return;
   var F = c.fields;
-  for (var i = 0; i < F.length; i++) {
-    if (!F[i] || !/^[A-Za-z][\w-]*$/.test(F[i].n) || !/^(ask|choose|confirm)$/.test(F[i].k)) return;
-  }
-  var each = function (list, fn) {
-    Array.prototype.forEach.call(list, fn);
-  };
-  var flat = function (t) {
-    return t.replace(/[\n\r\u0085\u2028\u2029]/g, ' ');
-  };
-  var read = function (f) {
-    var q;
-    if (f.k === 'ask') {
-      q = m.querySelector('[name="' + f.n + '"]');
-      return q ? q.value.replace(/\r\n?/g, '\n').trim() : '';
+  var P = c.presets || [];
+  var L = (q, r) => [].slice.call((r || m).querySelectorAll(q));
+  var nm = (n) => L('[name="' + n + '"]');
+  var T = L('figure.q-tpl > pre[role=region] > code');
+  var B = L('.q-preset > button.q-pre');
+  var N = F.map((f) => f && f.n);
+  var ok = F.every(
+    (f) =>
+      f &&
+      /^[A-Za-z][\w-]*$/.test(f.n) &&
+      /^(ask|choose|confirm|param|toggle|bucket|template)$/.test(f.k) &&
+      (f.k !== 'bucket' || (A(f.b) && A(f.t) && A(f.i) && f.t.length === f.i.length)) &&
+      (f.k !== 'template' || A(f.s)),
+  );
+  if (!ok) return;
+  var flat = (t) => t.replace(/[\n\r\u0085\u2028\u2029]/g, ' ');
+  var pt = (f, x) => (f.u ? x + ' ' + f.u : '' + x);
+  var read = (f) => {
+    var k = f.k;
+    var q = nm(f.n);
+    if (k === 'ask') return q[0].value.replace(/\r\n?/g, '\n').trim();
+    if (k === 'toggle') return q[0].checked ? 'on' : 'off';
+    if (k === 'param') {
+      q = parseFloat(q[1].value);
+      return isFinite(q) ? q : f.i;
     }
-    q = m.querySelector('input[name="' + f.n + '"]:checked');
-    return q ? q.value : f.k === 'confirm' ? 'open' : null;
+    if (k === 'bucket')
+      return f.t.map((t, j) => f.b[nm(f.n + ':' + j).findIndex((r) => r.checked)] || f.i[j]);
+    q = q.find((x) => x.checked);
+    return q ? q.value : k === 'confirm' ? 'open' : k === 'choose' ? null : '';
   };
-  var item = function (n, x) {
-    if (x === '') return ['- ' + n + ': (empty)'];
-    if (x !== '(empty)' && x !== '(not chosen)' && !/[\n\u0085\u2028\u2029`]/.test(x)) return ['- ' + n + ': ' + x];
-    var run = Math.max.apply(null, [0].concat((x.match(/`+/g) || []).map(function (r) { return r.length; })));
-    var fence = '`'.repeat(Math.max(3, run + 1));
-    var out = ['- ' + n + ':', '', '  ' + fence];
-    each(x.split('\n'), function (l) {
-      out.push(l === '' ? '' : '  ' + l);
-    });
-    out.push('  ' + fence);
-    return out;
-  };
-  var write = function (fmt, v) {
-    var open = [];
-    F.forEach(function (f, j) {
-      if ((f.k === 'confirm' && v[j] === 'open') || (f.k === 'choose' && v[j] === null)) open.push(f.n);
-    });
-    if (fmt === 'json') {
-      var answers = Object.fromEntries(F.map(function (f, j) { return [f.n, v[j]]; }));
-      return JSON.stringify(c.page ? { page: c.page, open: open, answers: answers } : { open: open, answers: answers }, null, 2);
-    }
-    var items = [];
-    F.forEach(function (f, j) {
-      if (f.k === 'choose') items.push('- ' + f.n + ': ' + (v[j] === null ? '(not chosen)' : flat(v[j])));
-      else if (f.k === 'confirm') items.push('- ' + f.n + ': ' + v[j]);
-      else items = items.concat(item(f.n, v[j]));
-    });
-    var top = c.page ? ['# ' + flat(c.page), ''] : [];
-    top.push('Open: ' + (open.length ? open.join(', ') : 'none'));
-    return top.concat(items.length ? [''].concat(items) : []).join('\n');
-  };
-  var figs = Array.prototype.filter.call(m.querySelectorAll('figure[data-x]'), function (x) {
-    return c.formats.indexOf(x.getAttribute('data-x')) >= 0;
-  });
-  var say = function (x, t) {
-    var st = x.querySelector('.q-st');
-    if (st) st.textContent = t;
-  };
-  var upd = function () {
+  var calc = () => {
     var v = F.map(read);
-    figs.forEach(function (x) {
-      x.querySelector('code').textContent = write(x.getAttribute('data-x'), v);
+    return v.map((x, j) =>
+      F[j].k !== 'template'
+        ? x
+        : F[j].b.replace(/\{([A-Za-z][\w-]*)\}/g, (y, k) => {
+            var h = F[j].s.indexOf(k) < 0 ? -1 : N.indexOf(k);
+            return h < 0 ? y : F[h].k === 'param' ? pt(F[h], v[h]) : v[h] || y;
+          }),
+    );
+  };
+  var lack = (v) => {
+    var on = N.filter((n, j) => F[j].k === 'toggle' && v[j] === 'on');
+    return F.map((f) => (on.indexOf(f.n) < 0 ? [] : (f.d || []).filter((x) => on.indexOf(x) < 0)));
+  };
+  var item = (n, x, force, tail) => {
+    if (x === '') return ['- ' + n + ': (empty)'];
+    if (!force && !/^\((empty|not chosen)\)$|[\n\u0085\u2028\u2029`]/.test(x)) return ['- ' + n + ': ' + x + tail];
+    var f = '`'.repeat(Math.max(3, ...(x.match(/`+/g) || []).map((r) => r.length + 1)));
+    return ['- ' + n + ':' + tail, '', '  ' + f].concat(
+      x.split('\n').map((l) => (l === '' ? '' : '  ' + l)),
+      '  ' + f,
+    );
+  };
+  var write = (fmt, v) => {
+    var U = lack(v);
+    var blocked = N.filter((n, j) => U[j].length);
+    var open = N.filter((n, j) => (F[j].k === 'confirm' && v[j] === 'open') || (F[j].k === 'choose' && v[j] === null));
+    var tg = F.some((f) => f.k === 'toggle');
+    var of = (f, j, b) => f.t.filter((t, k) => v[j][k] === b);
+    if (fmt === 'json') {
+      return JSON.stringify({ ...(c.page ? { page: c.page } : {}), open, ...(tg ? { blocked } : {}), answers: Object.fromEntries(F.map((f, j) => [f.n, f.k === 'bucket' ? Object.fromEntries(f.b.map((b) => [b, of(f, j, b)])) : v[j]])) }, null, 2);
+    }
+    var md = [];
+    var pl = [];
+    var qq = (t) => '"' + t.replace(/"/g, '""') + '"';
+    F.forEach((f, j) => {
+      var k = f.k;
+      var x = v[j];
+      var w = k === 'ask' ? '' : k === 'choose' ? null : k === 'confirm' ? 'open' : f.i;
+      var sh = (y) => (k === 'param' ? flat(pt(f, y)) : k === 'choose' ? (y === null ? '(not chosen)' : flat(y)) : y);
+      var o = '- ' + f.n + ':';
+      if (k === 'bucket') {
+        md.push(
+          o,
+          ...f.b.map((b) => {
+            var ts = of(f, j, b).map((t) => (/[,;"]/.test((t = flat(t))) || t === '(none)' ? qq(t) : t));
+            return '  - ' + flat(b) + ': ' + (ts.join(', ') || '(none)');
+          }),
+        );
+        pl.push(...f.t.map((t, i) => (x[i] === w[i] ? 0 : o + ' ' + qq(flat(t)) + ' moved to ' + flat(x[i]) + ' (was ' + flat(w[i]) + ')')).filter(Boolean));
+      } else {
+        md.push(...(k === 'ask' || k === 'template' ? item(f.n, x, k === 'template', '') : [o + ' ' + sh(x)]));
+        if (k !== 'template' && x !== w)
+          pl.push(...(k === 'ask' ? item(f.n, x, 0, ' (was empty)') : [o + ' ' + sh(x) + ' (was ' + (k === 'choose' ? 'not chosen' : sh(w)) + ')']));
+      }
+    });
+    if (fmt === 'prompt') {
+      var rest = N.filter((n) => !pl.some((l) => l.indexOf('- ' + n + ': ') === 0) && open.indexOf(n) < 0 && blocked.indexOf(n) < 0);
+      var tail = [['Open', open], ['Blocked', blocked], ['Unchanged', rest]].filter((a) => a[1].length).map((a) => a[0] + ': ' + a[1].join(', '));
+      return ['Apply these changes' + (c.page ? ' to ' + flat(c.page) : '') + ':', '']
+        .concat(pl.length ? pl.concat(tail.length ? [''].concat(tail) : []) : 'No changes.')
+        .join('\n');
+    }
+    return (c.page ? ['# ' + flat(c.page), ''] : [])
+      .concat('Open: ' + (open.join(', ') || 'none'), tg ? 'Blocked: ' + (blocked.join(', ') || 'none') : [], md.length ? [''].concat(md) : [])
+      .join('\n');
+  };
+  var figs = L('figure[data-x]').filter((x) => c.formats.indexOf(x.dataset.x) >= 0);
+  var say = (x, t) => {
+    x.querySelector('.q-st').textContent = t;
+  };
+  var upd = () => {
+    var v = calc();
+    var U = lack(v);
+    var ti = 0;
+    figs.forEach((x) => {
+      x.querySelector('code').textContent = write(x.dataset.x, v);
       say(x, '');
     });
+    F.forEach((f, j) => {
+      var k = f.k;
+      var e;
+      if (k === 'toggle') {
+        e = nm(f.n)[0];
+        if (U[j].length) e.setAttribute('aria-invalid', 'true');
+        else e.removeAttribute('aria-invalid');
+        e.closest('.q-toggle').querySelector('.q-st').textContent = U[j].length ? 'needs ' + U[j][0] + ', which is off' : '';
+      } else if (k === 'bucket' && f.t.length) {
+        e = L('.q-bk .q-n', nm(f.n + ':0')[0].closest('fieldset.q-bucket'));
+        f.b.forEach((b, i) => {
+          e[i].textContent = v[j].filter((y) => y === b).length;
+        });
+      } else if (k === 'template') {
+        e = T[ti++];
+        e.textContent = v[j];
+        e.closest('figure').querySelector('.q-n').textContent = [...v[j]].length;
+      }
+    });
   };
-  each(m.querySelectorAll('figure[data-x] .q-bar, fieldset.q > button.q-clear'), function (e) {
-    e.removeAttribute('hidden');
-  });
-  each(m.querySelectorAll('figure[data-x] .q-xn'), function (e) {
-    e.setAttribute('hidden', '');
-  });
-  m.addEventListener('input', upd);
-  m.addEventListener('change', upd);
+  try {
+    upd();
+  } catch {
+    return;
+  }
+  L('figure[data-x] .q-bar, fieldset.q > button.q-clear, .q-preset > button.q-pre').forEach((e) => e.removeAttribute('hidden'));
+  L('figure[data-x] .q-xn, .q-preset > button.q-pre + .q-pv').forEach((e) => e.setAttribute('hidden', ''));
+  var go = (e) => {
+    var t = e.target;
+    var p = t.closest ? t.closest('.q-param') : null;
+    if (p) L('input', p).forEach((x) => { if (x !== t && t.value) x.value = t.value; });
+    upd();
+  };
+  m.addEventListener('input', go);
+  m.addEventListener('change', go);
   addEventListener('pageshow', upd);
-  m.addEventListener('click', function (e) {
+  m.addEventListener('click', (e) => {
     var b = e.target.closest ? e.target.closest('button') : null;
     if (!b) return;
     if (b.matches('fieldset.q > button.q-clear')) {
-      each(b.parentNode.querySelectorAll('input[type=radio]'), function (r) {
+      L('input[type=radio]', b.parentNode).forEach((r) => {
         r.checked = false;
       });
       upd();
+    } else if (B.indexOf(b) >= 0) {
+      P[B.indexOf(b)].v.forEach((kv) =>
+        nm(kv[0]).forEach((r) => {
+          if (r.type === 'radio') r.checked = r.value === kv[1];
+          else if (r.type === 'checkbox') r.checked = kv[1] === 'on';
+          else r.value = kv[1];
+        }),
+      );
+      upd();
+      say(figs[0], 'Applied ' + b.textContent);
     } else if (b.matches('figure[data-x] .q-copy')) {
       var x = b.closest('figure[data-x]');
-      var text = write(x.getAttribute('data-x'), F.map(read));
-      var by = function () {
+      var text = write(x.dataset.x, calc());
+      var by = () => {
         getSelection().selectAllChildren(x.querySelector('pre'));
         say(x, 'Copy was blocked. The text is selected: press Ctrl+C (Cmd+C on a Mac), or choose Copy from the selection menu.');
       };
       try {
-        navigator.clipboard.writeText(text).then(function () {
-          return say(x, 'Copied');
-        }, by);
+        navigator.clipboard.writeText(text).then(() => say(x, 'Copied'), by);
       } catch {
         by();
       }
     }
   });
-  upd();
 })();

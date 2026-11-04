@@ -169,7 +169,7 @@ function changes(fields: QuestionBlock[], vals: Value[], was: Value[]): { lines:
         break;
       case 'param':
         if (typeof v === 'number' && typeof w === 'number' && v !== w)
-          line(f.name, [`- ${f.name}: ${paramText(f, v)} (was ${paramText(f, w)})`]);
+          line(f.name, [`- ${f.name}: ${flat(paramText(f, v))} (was ${flat(paramText(f, w))})`]);
         break;
       case 'toggle':
         if (v !== w) line(f.name, [`- ${f.name}: ${String(v)} (was ${String(w)})`]);

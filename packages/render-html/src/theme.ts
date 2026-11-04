@@ -44,20 +44,21 @@ legend.q-t+*{clear:both}
 
 /**
  * The editor words' controls (spec §4.19), after the rules above and under the same `.q` gate: added only to a page that draws one,
- * so every other page keeps its bytes. No new tokens. The preset row keeps its box when the runtime swaps its text for its button
- * (the two share one grid cell, and the hidden text keeps its box through `visibility`), so activation moves nothing.
+ * so every other page keeps its bytes. No new tokens. Activation moves nothing: the preset row keeps its box when the runtime swaps its
+ * text for its button (the two share one grid cell, and the hidden text keeps its box through `visibility`), and a toggle's warning
+ * shares the cell of its "Needs" note and takes its place while it shows, so a proposal that starts blocked draws the same rows.
  */
 const EDITORS = `/* editor words */
 .q-pr{display:flex;align-items:center;gap:10px}
 .q-pr input[type=range]{flex:1 1 auto;min-width:0;height:44px;margin:0;background:transparent;accent-color:var(--accent)}
 .q-pr input[type=number]{flex:none;width:5.5em;min-height:44px;font:16px/1.4 var(--sans);color:var(--fg);background:var(--bg);border:1px solid var(--line2);border-radius:8px;padding:9px 8px;text-align:right}
 .q-u{flex:none;font:14px/1 var(--sans);color:var(--fg2)}
-.q-toggle{display:flex;flex-wrap:wrap;align-items:center}
-.q-toggle>label{display:flex;align-items:center;gap:10px;flex:1 1 100%;min-height:44px;cursor:pointer}
+.q-toggle{display:grid}
+.q-toggle>label{display:flex;align-items:center;gap:10px;min-height:44px;cursor:pointer}
 .q-toggle>label input{flex:none;width:20px;height:20px;margin:0;accent-color:var(--accent)}
 .q-toggle .q-t{margin:0}
-.q-nd,.q-toggle .q-st{margin:0;font:14px/1.5 var(--sans);color:var(--fg2)}
-.q-toggle .q-st:not(:empty){margin-left:12px}
+.q-nd,.q-toggle .q-st{grid-area:2/1;margin:0;font:14px/1.5 var(--sans);color:var(--fg2)}
+.q-toggle:has(.q-st:not(:empty)) .q-nd{visibility:hidden}
 .q-toggle:has([aria-invalid=true]) .q-st{color:var(--bad)}
 .q-n{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--fg)}
 .q-bk{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px;padding:0;list-style:none}

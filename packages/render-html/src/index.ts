@@ -12,7 +12,7 @@ import type {
   Kpi,
   QuestionBlock,
 } from '@lede-lang/core';
-import { browserUrl, exportsOf, fieldsOf, imageSrcKind, num, parse, type ParseOptions } from '@lede-lang/core';
+import { browserUrl, exportsOf, fieldsOf, imageSrcKind, num, parse, presetsOf, type ParseOptions } from '@lede-lang/core';
 import sanitizeHtml from 'sanitize-html';
 import { renderChart } from './chart.ts';
 import { renderFlow } from './diagram.ts';
@@ -101,7 +101,7 @@ export async function render(doc: LedeDocument, opts: RenderOptions = {}): Promi
   if (opts.fragment) return main;
   const controls = fields.length > 0 || exports.length > 0;
   const style = `<style>${css({ accent: doc.meta.accent, theme: doc.meta.theme, wide: doc.meta.width === 'wide', controls, editors: usesEditors(doc.blocks) })}</style>`;
-  const scripts = shell ? `${shellScripts(ctx.page, fields, exports)}\n` : '';
+  const scripts = shell ? `${shellScripts(ctx.page, fields, exports, presetsOf(doc.blocks))}\n` : '';
   if (opts.artifact) return `<title>${esc(title)}</title>\n${style}\n${main}\n${scripts}`;
   const desc = doc.meta.description ? `\n<meta name="description" content="${esc(doc.meta.description)}">` : '';
   const lang = /^[a-z]{2,3}(-[A-Za-z0-9]+)*$/.test(doc.meta.lang ?? '') ? doc.meta.lang : 'en';

@@ -59,7 +59,7 @@ test('the data block holds the title, the fields in source order and the formats
   const { html } = await compile(SRC, { shell: true });
   const block = JSON.parse(scripts(html)[0].text) as Record<string, unknown>;
   assert.deepEqual(block, {
-    v: 1,
+    v: 2,
     page: 'Release 4.2 go/no-go',
     fields: [
       { n: 'owner', k: 'ask' },
@@ -142,16 +142,22 @@ for (const [name, re] of CATEGORIES)
     assert.doesNotMatch(file, re);
   });
 
-test('the runtime assigns only textContent and checked, and passes only allowed literals to attribute and event calls', () => {
+test('the runtime assigns only textContent, checked and value, and passes only allowed literals to attribute and event calls', () => {
   const assigned = [...file.matchAll(/\.([A-Za-z_$][\w$]*)\s*=(?!=)/g)].map((m) => m[1]);
   assert.deepEqual(
-    [...new Set(assigned)].filter((n) => n !== 'textContent' && n !== 'checked'),
+    [...new Set(assigned)].filter((n) => n !== 'textContent' && n !== 'checked' && n !== 'value'),
     [],
   );
   assert.doesNotMatch(file, /\]\s*=(?!=)/, 'no bracket assignment');
   assert.doesNotMatch(file, /\bon[a-z]+\s*=/, 'no handler property');
   const arg = (fn: string) => [...file.matchAll(new RegExp(`${fn}\\(\\s*([^,)]*)`, 'g'))].map((m) => m[1].trim());
-  for (const a of [...arg('setAttribute'), ...arg('removeAttribute')]) assert.equal(a, "'hidden'");
+  for (const a of [...arg('setAttribute'), ...arg('removeAttribute')]) assert.match(a, /^'(hidden|aria-invalid)'$/);
+  assert.ok([...arg('setAttribute'), ...arg('removeAttribute')].includes("'aria-invalid'"), 'it writes aria-invalid');
   for (const a of arg('addEventListener')) assert.match(a, /^'(input|change|click|pageshow)'$/);
   assert.ok(arg('setAttribute').length > 0 && arg('addEventListener').length >= 4, 'it uses them');
+  // The one attribute write that is not a literal is the hidden attribute's value, empty; nothing else is passed as a second argument.
+  assert.deepEqual(
+    [...file.matchAll(/setAttribute\(([^,)]*),\s*([^)]*)\)/g)].map((m) => `${m[1]} ${m[2]}`).toSorted(),
+    ["'aria-invalid' 'true'", "'hidden' ''"].toSorted(),
+  );
 });
