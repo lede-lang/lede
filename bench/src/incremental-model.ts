@@ -125,7 +125,7 @@ export async function drive(src: string, o: DriveOptions = {}): Promise<Driven> 
   };
   const handle = (e: StreamEvent) => {
     if (e.kind === 'block') take(inc.push(e.block));
-    else if (e.kind === 'seal') take(inc.seal(e.block));
+    else if (e.kind === 'seal' || e.kind === 'bucket-seal') take(inc.seal(e.block));
     else if ('data' in e) take(inc.update({ data: e.data }));
     else take(inc.update(e.block));
   };

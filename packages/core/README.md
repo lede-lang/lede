@@ -29,8 +29,9 @@ import { LedeStream } from '@lede-lang/core';
 const s = new LedeStream();
 for await (const chunk of modelOutput) {
   for (const e of s.events(chunk)) {
-    // e.kind is 'block' (e.block is final), 'update' (e.block is a diagram or bucket set that grew, or e.data names a
-    // data set that gained rows) or 'seal' (e.block is a diagram or bucket set nothing more is expected for)
+    // e.kind is 'block' (e.block is final), 'update' (e.block is a diagram that grew, or e.data names a data set that
+    // gained rows) or 'seal' (e.block is a diagram nothing more is expected for); a bucket set has 'bucket-update' and
+    // 'bucket-seal' for the same two events
   }
   show(s.tail());       // the open paragraph, list, kpi row, fence (a template's, as the template), grid or cards run, as blocks
 }

@@ -493,18 +493,20 @@ fence shows it with the text so far, and a snapshot after the `template` line an
 block flushed) is always a valid document. The partial last line (no `\n` yet) is not parsed.
 
 A streaming consumer learns of the two exceptions as events, in line order, beside the blocks it is given: `block` (a
-block is final), `update` (a `name:` line changed a diagram already given, a `NAME: ITEM | B` line added an item to a bucket set
-already given, or a `data NAME +=` line appended rows to that data name) and `seal` (the first non-blank line that is not a
-statement of the diagram or bucket set, or the end of the document: a blank line does not seal, since writers space statements).
-A bucket set streams as a diagram does: it is given on its declaration, each item line is an `update` and the first other non-blank
-line seals it. A `name:` line that is rejected, or that repeats what the diagram or set has (a bad item, an unknown bucket, an item
-text it already lists), is no `update`, but it is still a statement of it and does not seal it. A statement after a seal
-that changes the diagram or set is an `update` again, and the next sealing line a second `seal`. A diagram or bucket set inside a
-`grid` or `cards` run that has not been given yet is not on screen, so its lines are no `update`. A conforming streaming
-consumer may also read the open block (paragraph, list, quote, kpi row, step run, fence, grid or cards run, as a block)
-without ending the document; a keyword line is never part of it, because it is a block or a diagnostic on its own line, except
-that the fence a `template` line opened is read as the template block with the text so far (a `template` line with no fence yet
-adds nothing). A bucket set is never in it: it was given on its declaration.
+block is final), `update` (a `name:` line changed a diagram already given, or a `data NAME +=` line appended rows to that data
+name) and `seal` (the first non-blank line that is not a statement of the diagram, or the end of the document: a blank line does
+not seal, since writers space statements). A bucket set has the same two events as kinds of their own, `bucket-update` (a
+`NAME: ITEM | B` line added an item to a bucket set already given) and `bucket-seal`, so `update` and `seal` carry a diagram, as
+they did before bucket sets. A bucket set streams as a diagram does: it is given on its declaration, each item line is a
+`bucket-update` and the first other non-blank line seals it. A `name:` line that is rejected, or that repeats what the diagram or
+set has (a bad item, an unknown bucket, an item text it already lists), is no update, but it is still a statement of it and does
+not seal it. A statement after a seal that changes the diagram or set is an update again, and the next sealing line a second
+seal. A diagram or bucket set inside a `grid` or `cards` run that has not been given yet is not on screen, so its lines are no
+update. A conforming streaming consumer may also read the open block (paragraph, list, quote, kpi row, step run, fence, grid or
+cards run, as a block) without ending the document; a keyword line is never part of it, because it is a block or a diagnostic on
+its own line, except that the fence a `template` line opened is read as the template block with the text so far (a `template` line
+with no fence yet adds nothing). A bucket set is in it only inside an open `grid` or `cards` run, with the items read so far; one
+written anywhere else was given on its declaration.
 `LedeStream.events`, `.tail` and `.end` in `@lede-lang/core` are this interface.
 
 ## 7. Rendering contract (`@lede-lang/html`)
@@ -536,8 +538,8 @@ adds nothing). A bucket set is never in it: it was given on its declaration.
   `LedeStream` (§6) as they become final and returns DOM operations carrying the HTML of the unit each one touches; after
   the stream ends, the markup it has built equals the `<main>` that `render()` writes for the whole document, and it carries
   no script. Question words (§4.18) stream as the controls `render()` draws, and so do the editor words (§4.19): `param`, `toggle`,
-  `preset` and `template` are drawn when read, a `bucket` set is drawn again in place for each item line (the `update` of §6; its
-  `seal` adds nothing, since every update drew it in full), and a `template` fence still open is drawn, with the text so far, in the open
+  `preset` and `template` are drawn when read, a `bucket` set is drawn again in place for each item line (the `bucket-update` of §6; its
+  `bucket-seal` adds nothing, since every update drew it in full), and a `template` fence still open is drawn, with the text so far, in the open
   block the consumer reads. The page's stylesheet gains the controls' rules when the first field or `export` arrives and the editors' when
   the first editor word does. An `export` lists the fields, the bucket items and the title read so far and is drawn again, in place,
   when a later field, item or the title changes what it lists. The `shell` option has no effect on this form, which draws the ordinary page. The layout engine for flow diagrams (elkjs) is loaded when the first flow diagram is laid

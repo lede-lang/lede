@@ -5,26 +5,31 @@ import { walkBlocks } from './walk.ts';
 /**
  * What `LedeStream.events` returns, in line order.
  * - `block`: a block became final; the same blocks `write` returns.
- * - `update` with `block`: a `name:` line changed a diagram that was already returned (a diagram is a block that grows), or
- *   a `NAME: ITEM | B` line added an item to a bucket set that was already returned (a bucket set grows the same way). A line
- *   the parser rejects, or one that repeats what the block has, is no update; it is still a statement of the block.
- *   The next non-blank line that is not another statement of it ends the growth with a `seal`; a statement after a seal
- *   that changes the block is an `update` again and a second `seal` follows (a reseal).
+ * - `update` with `block`: a `name:` line changed a diagram that was already returned (a diagram is a block that grows). A line
+ *   the parser rejects, or one that repeats what the diagram has, is no update; it is still a statement of the diagram. The next
+ *   non-blank line that is not another statement of it ends the growth with a `seal`; a statement after a seal that changes the
+ *   diagram is an `update` again and a second `seal` follows (a reseal).
  * - `update` with `data`: `data NAME += rows` appended rows; charts, tables and kpi rows that read NAME changed.
- * - `seal`: no statement of this diagram or bucket set is expected for now.
+ * - `seal`: no statement of this diagram is expected for now.
+ * - `bucket-update` and `bucket-seal`: the same two events for a bucket set (spec §4.19), which grows by `NAME: ITEM | B` lines as a
+ *   diagram does. They are kinds of their own so that `update` and `seal` always carry a diagram, as they did before bucket sets.
  */
 export type StreamEvent =
   | { kind: 'block'; block: Block }
-  | { kind: 'update'; block: DiagramBlock | BucketBlock }
+  | { kind: 'update'; block: DiagramBlock }
   | { kind: 'update'; data: string }
-  | { kind: 'seal'; block: DiagramBlock | BucketBlock };
+  | { kind: 'seal'; block: DiagramBlock }
+  | { kind: 'bucket-update'; block: BucketBlock }
+  | { kind: 'bucket-seal'; block: BucketBlock };
 
 /** A block that is returned once and then gains lines: a diagram (statements) or a bucket set (items). */
 type Growing = DiagramBlock | BucketBlock;
 
+const sealOf = (d: Growing): StreamEvent => (d.type === 'bucket' ? { kind: 'bucket-seal', block: d } : { kind: 'seal', block: d });
+
 /**
  * Feed model output as it arrives. `write` returns blocks that became final;
- * `events` returns those plus the updates and seals of diagrams, bucket sets and data;
+ * `events` returns those plus the updates and seals of diagrams and bucket sets, and the updates of data;
  * `tail` returns the block or blocks still being written, without ending the
  * document; `snapshot` returns a whole document for the text so far (the open
  * paragraph, list or fence included), which is what a live preview that
@@ -70,10 +75,10 @@ export class LedeStream {
   }
 
   /**
-   * `write` plus what happened to blocks already returned: an `update` for every diagram or bucket set a line extended and for
-   * every `data NAME +=` line, a `seal` for a diagram or bucket set when a non-blank line that is not one of its statements
-   * arrives (a blank line does not seal: writers space statements). Within one line the order is: its blocks, its data updates,
-   * its diagram or bucket update, its seals.
+   * `write` plus what happened to blocks already returned: an `update` (`bucket-update` for a bucket set) for every diagram or
+   * bucket set a line extended and an `update` with `data` for every `data NAME +=` line, a `seal` (`bucket-seal`) for a diagram or
+   * bucket set when a non-blank line that is not one of its statements arrives (a blank line does not seal: writers space
+   * statements). Within one line the order is: its blocks, its data updates, its diagram or bucket updates, its seals.
    */
   events(chunk: string): StreamEvent[] {
     this.buf += chunk;
@@ -90,8 +95,9 @@ export class LedeStream {
 
   /**
    * The blocks still open: what `snapshot()` shows beyond the blocks `events()` has returned. Does not end the parser. A `template`
-   * fence that is still open is the template block with the text so far; a bucket set is never here (it was returned on its
-   * declaration and grows by `update`).
+   * fence that is still open is the template block with the text so far. A bucket set is here only inside an open `grid` or `cards`
+   * run, with the items read so far (the run is not returned yet, so the set has no `bucket-update` events either); one written
+   * outside such a run was returned on its declaration and grows by `bucket-update`.
    */
   tail(): Block[] {
     return this.parser.peek();
@@ -131,7 +137,7 @@ export class LedeStream {
       out.push({ kind: 'block', block });
       this.shown(block);
     }
-    for (const d of this.open) out.push({ kind: 'seal', block: d });
+    for (const d of this.open) out.push(sealOf(d));
     this.open.clear();
     if (onEvent) for (const e of out) onEvent(e);
     return doc;
@@ -148,13 +154,13 @@ export class LedeStream {
       // A diagram or bucket set inside a grid or card run that has not been returned yet is not on screen: nothing to update. A line
       // that changed nothing is not an update and does not reopen a sealed block; if the block is open, being touched keeps it so (below).
       if (!this.returned.has(d) || !this.changed.has(d)) continue;
-      out.push({ kind: 'update', block: d });
+      out.push(d.type === 'bucket' ? { kind: 'bucket-update', block: d } : { kind: 'update', block: d });
       this.open.add(d);
     }
     if (line.trim() !== '') {
       for (const d of this.open) {
         if (this.touched.has(d)) continue;
-        out.push({ kind: 'seal', block: d });
+        out.push(sealOf(d));
         this.open.delete(d);
       }
     }

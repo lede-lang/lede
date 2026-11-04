@@ -33,7 +33,7 @@ import { browserUrl, imageSrcKind } from './url.ts';
 import { walkBlocks } from './walk.ts';
 
 /**
- * Callbacks for a streaming consumer, the second argument of `new LedeParser` (`LedeStream.events` installs them). Both run after
+ * Callbacks for a streaming consumer, the second argument of `new LedeParser` (`LedeStream.events` installs them). Each runs after
  * the line has been applied. They are not a `ParseOptions` field, so `parse` and the snapshot parser cannot take them.
  */
 export interface ParseHooks {
@@ -45,9 +45,10 @@ export interface ParseHooks {
   /**
    * A `NAME: ITEM | BUCKET` line was read for the bucket set `block` declared earlier (spec §4.19). `changed` is true when the item
    * was added, and false when the line was rejected (no text, no bucket, an unknown bucket) or repeated an item the set has. The
-   * line is a statement of the set either way, as a rejected line is a statement of a diagram.
+   * line is a statement of the set either way, as a rejected line is a statement of a diagram. Optional, so a hooks object written
+   * before bucket sets existed keeps working.
    */
-  onBucketItem(block: BucketBlock, changed: boolean): void;
+  onBucketItem?(block: BucketBlock, changed: boolean): void;
   /** `data NAME += rows` appended rows to the data set `name`. */
   onDataAppend(name: string): void;
 }
@@ -486,7 +487,7 @@ export class LedeParser {
       const col = lead + 1 + s.indexOf(':') + 1 + (s.slice(s.indexOf(':') + 1).length - s.slice(s.indexOf(':') + 1).trimStart().length);
       if (owner.type === 'bucket') {
         const changed = this.bucketItem(owner, dl[2].trim(), col);
-        this.hooks?.onBucketItem(owner, changed);
+        this.hooks?.onBucketItem?.(owner, changed);
       } else {
         const changed = this.diagramLine(owner, dl[2].trim(), col);
         this.hooks?.onDiagramLine(owner, changed);
