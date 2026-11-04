@@ -1,6 +1,7 @@
 // Byte identity of `render()` (internal spec, lede-lang/meta): fixtures/render-hashes.json holds the SHA-256 of the ordinary,
 // `fragment` and `artifact` output of every tracked `.lede` file outside bench/gen/ (the examples, conformance cases,
-// parity fixtures, article pages), keyed by path and mode. A change to the renderer that moves one byte of one page fails here
+// parity fixtures, article pages), keyed by path and mode. A page that wants the interaction shell (D63: a question and an
+// `export`) has a fourth entry, `shell`; any other page renders the same with the option, so it has none. A change to the renderer that moves one byte of one page fails here
 // and shows as a reviewed JSON diff after `UPDATE=1 node --test packages/render-html/test/render-hashes.test.ts`, the way
 // conformance/run.test.ts regenerates its expectations. bench/gen/ (the frozen model outputs, 600 files) is covered by a
 // one-off sweep against `main` when the renderer is refactored, not by CI.
@@ -10,7 +11,8 @@ import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { compile, type RenderOptions } from '../src/index.ts';
+import { parse } from '@lede-lang/core';
+import { compile, render, wantsShell, type RenderOptions } from '../src/index.ts';
 
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 const fixtureUrl = new URL('./fixtures/render-hashes.json', import.meta.url);
@@ -33,10 +35,11 @@ const sha = (s: string) => createHash('sha256').update(s).digest('hex');
 async function hashesOf(file: string): Promise<Record<string, string>> {
   const src = readFileSync(`${root}${file}`, 'utf8');
   const out: Record<string, string> = {};
-  for (const [mode, opts] of Object.entries(MODES)) {
-    // A stand-in for `data x < file.csv`, as conformance/run.test.ts uses, so those pages draw their charts.
-    out[mode] = sha((await compile(src, { ...opts, loadFile: () => 'a,b\n1,2' })).html);
-  }
+  // A stand-in for `data x < file.csv`, as conformance/run.test.ts uses, so those pages draw their charts.
+  const loadFile = () => 'a,b\n1,2';
+  for (const [mode, opts] of Object.entries(MODES)) out[mode] = sha((await compile(src, { ...opts, loadFile })).html);
+  const doc = parse(src, { loadFile });
+  if (wantsShell(doc)) out.shell = sha(await render(doc, { shell: true }));
   return out;
 }
 

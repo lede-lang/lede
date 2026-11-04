@@ -732,22 +732,26 @@
   "conformance/cases/31-ask.lede": {
     "ordinary": "ff311707eed50bb19253bc1b80000a15aa20504715a38114ea8c71488092dac5",
     "fragment": "2ce5e18c22023870eb08374818706728bba0ce25ac32e877a956a9dbab18dd4c",
-    "artifact": "9282ac9605b227501048d6cf0a0c73eb60c437203467db4b7fb4ba2138e4d858"
+    "artifact": "9282ac9605b227501048d6cf0a0c73eb60c437203467db4b7fb4ba2138e4d858",
+    "shell": "98d332278543240125f321605aa77d3f7b6b7d6022a06b6c59075fc358feb0ab"
   },
   "conformance/cases/32-choose.lede": {
     "ordinary": "737aba3e096c40fdcc049c149b53b5dc315f9b1952ad78a62c25d66b18b724f3",
     "fragment": "ed387f85b0780f054e87575d97d3427a8a2ae6adcf35b22d1d6110be613e3dee",
-    "artifact": "edf95b0bb70d5b72cc83b74293f489093e745f999fd7ede6d028c03124999137"
+    "artifact": "edf95b0bb70d5b72cc83b74293f489093e745f999fd7ede6d028c03124999137",
+    "shell": "2fa2a13cf067ac720033e82f4d998e84b014362cee86e366a504febffb70bd13"
   },
   "conformance/cases/33-confirm.lede": {
     "ordinary": "735d33386a48379dd5db0bc573312a86107e1a221c35e3898833382f684c4186",
     "fragment": "5c4bdec4a2f2a2b15bb6802367fe929d8224e329f1809a9ad47388dca6cb2ec2",
-    "artifact": "941f867fca252ab7fed09fba6018004ab0a123cc7eb43a86d7f7a029d095f4eb"
+    "artifact": "941f867fca252ab7fed09fba6018004ab0a123cc7eb43a86d7f7a029d095f4eb",
+    "shell": "6e066cc0b872753b5cdbca97fe62558a5a1182368fc9f29b183ebd527bfcd9de"
   },
   "conformance/cases/34-export.lede": {
     "ordinary": "86e3783850d3a15678660211183f8d5836bcdc50be1b0796fbe1342ab27b38f5",
     "fragment": "904e201d9aa26369a4284ecf33cd95924fde7ba749fbb70f0164f2ab1f36d36d",
-    "artifact": "b0d4500addf59c7c507a3780293de5ad64d2c2d5a5d0998c24c181177289e051"
+    "artifact": "b0d4500addf59c7c507a3780293de5ad64d2c2d5a5d0998c24c181177289e051",
+    "shell": "d01287a332cfb80450859dccc1a44f00617583180a895027a2871a96f0e57f85"
   },
   "conformance/errors/e01-unknown-data.lede": {
     "ordinary": "fbe554334f54d975ecd4e76cd256d4a7e6d8d1baedac779b29629e73bebc519d",
@@ -857,17 +861,20 @@
   "conformance/errors/e22-question-names.lede": {
     "ordinary": "da5f2ddb14e9dec75c92ee1940094c5a35dc1434e50f56164f358030ae1b6d87",
     "fragment": "4f5b6fff4563f26618ece94a7437671274dee20a504bd4e1f70404623cb8cd4e",
-    "artifact": "311ae2d94b9f29f696a304dd6b3b07d3825a8c2846be0f35d77ee3fdfca98d89"
+    "artifact": "311ae2d94b9f29f696a304dd6b3b07d3825a8c2846be0f35d77ee3fdfca98d89",
+    "shell": "f8637b629ff6daf5302d8c052d126184dfea5bbd57008a53a08068a36935fc18"
   },
   "conformance/errors/e23-choose-options.lede": {
     "ordinary": "1a5861def0d0d46a226b94a96a6c0d18e1c51d507e763cb84bbd8c6a6b667e09",
     "fragment": "5deb3b7838aab41f810ee7c285e9e0c17878a3e947c1a5892cf71e0e70db5810",
-    "artifact": "5af9a10575dd4ae0799bdbccf0904b0fe9899eb857abc9638a1b77144c586e5c"
+    "artifact": "5af9a10575dd4ae0799bdbccf0904b0fe9899eb857abc9638a1b77144c586e5c",
+    "shell": "0b3aadf33499d7b902eb53f91bdb012a574c500a5715c43004d038795f907bee"
   },
   "conformance/errors/e24-ask-lines-export.lede": {
     "ordinary": "dfb9d427daa8e412aeea8ef5acad0d66d8da27ff500ac55a74e662a4a1207a1b",
     "fragment": "4895fc01b1481b9bd42abd499ebede76d30040eb239fc794da1d722127dcee25",
-    "artifact": "fff0565d314b81d711a0d3a3983e18dfb2fbfc4bd92746d5ff88c150db93f1e5"
+    "artifact": "fff0565d314b81d711a0d3a3983e18dfb2fbfc4bd92746d5ff88c150db93f1e5",
+    "shell": "f511cb237c6527813f7ccc2a4d3087fb2fcfa8718b86a8285199c6d34eac116f"
   },
   "conformance/errors/e25-export-orphan.lede": {
     "ordinary": "be48d002edf0b740ba874bd6405016c9cd7a9d5909be88b9295b96521cebe051",
@@ -1057,7 +1064,8 @@
   "examples/parity/questions.lede": {
     "ordinary": "280653da7690e498a612f004ba4660d7117adbd5e161dd770ca128dde3202727",
     "fragment": "f83e0ce9d02b1713ed40eb1fb67612f38a8551aa818fd64700ef1c8d1178e990",
-    "artifact": "1a0716c3f1cd3f55d424f8ea49425aafa841c514ceb1803fc10f5a4f8c500a4a"
+    "artifact": "1a0716c3f1cd3f55d424f8ea49425aafa841c514ceb1803fc10f5a4f8c500a4a",
+    "shell": "0d80b72b2be0ef5cff3f01831ec4509c2718d9b0a02b3657289a5b973eed9ac1"
   },
   "examples/parity/recommendation.lede": {
     "ordinary": "29e29f5bdc71ef76db68d337caec3c6aaf8122e4b086a4a3dbed821debb41242",
