@@ -1,0 +1,9 @@
+ask a | A
+export json
+template one | No fence follows
+Some prose instead.
+
+template two | A blank line, then prose
+
+Prose after the blank line.
+template three | The document ends here

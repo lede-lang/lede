@@ -1,0 +1,10 @@
+ask who | Who signs off?
+param who | Same name | 1 0 2 1
+toggle who | Same name
+bucket who | A, B
+preset who | Same name | who=x
+template who | Same name
+```text
+{who}
+```
+export json

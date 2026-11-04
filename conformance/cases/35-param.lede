@@ -1,0 +1,10 @@
+# Parameters
+
+param press | Press depth | 0.94 0.85 1 0.01
+param morph unit=ms | Morph time | 240 120 400 20
+param opacity unit="% of full" | Opacity, as a share | 50 0 100 5
+param offset unit=px | Offset | -2 -10 10 0.5
+param gap | Gap | before | after | 8 0 16 4
+param tilt_2 | Tilt | 0 -1 1 0.25
+
+export json

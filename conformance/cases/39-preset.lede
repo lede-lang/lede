@@ -1,0 +1,12 @@
+# Presets
+
+ask note | Note
+choose easing | ease-out, spring, linear
+param press unit=x | Press depth | 0.94 0.85 1 0.01
+toggle express | Express checkout
+
+preset snappy | Snappy | press=0.96; easing=ease-out; express=on; note=Ship it
+preset calm | Calm | press=0.9; easing=spring; express=off; note="a; b = c"
+preset plain | Plain | note=x=y
+
+export json

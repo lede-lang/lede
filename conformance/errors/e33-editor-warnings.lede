@@ -1,0 +1,18 @@
+ask who | Who signs off?
+confirm sure | Are we sure?
+export json
+
+bucket triage | Now, Next
+triage: ENG-1 First | Now
+triage: ENG-1 First | Next
+bucket nothing | A, B
+
+template plain | Names a bucket
+```text
+Just text, {nothing} here.
+```
+
+template mixed | Names a confirm and an ask
+```text
+Are you {sure}? Ask {who}.
+```

@@ -1,0 +1,14 @@
+ask who | Who signs off?
+confirm sure | Are we sure?
+bucket triage | Now, Next
+triage: ENG-1 First | Now
+template tpl | A template
+```text
+{who}
+```
+preset first | Unknown key | nope=1
+preset second | A confirm | sure=approved
+preset third | A bucket | triage=Now
+preset fourth | A template | tpl=x
+preset fifth | One good, one bad | who=Dana; nope=1
+export json
