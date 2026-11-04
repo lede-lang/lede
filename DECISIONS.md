@@ -704,3 +704,150 @@ painted within one frame (16.7 ms) of its newline, cumulative layout shift under
 on at least 95% of pages. Results: appended below when the first run completes (internal spec `lede-stream`, lede-lang/meta). Rejected:
 whole-page re-render per token, deciding layout only at the end, an unlatched prose rule, a shadow root instead of a frame, ids from
 line numbers, a subpath of `@lede-lang/html`, an asynchronous push, running the `--shell` runtime inside the viewer.
+
+
+## D70. Page chrome is a compiler default: stable anchors, a contents bar on long pages, share metadata, no script
+Owner's decision (2026-11-04, answers 2, 3, 5 and 6 of the ten questions). Concerns the compiler can own become compiler defaults at
+zero writer tokens; a page-level `@` key opts out. Heading ids stay slugs, but a duplicate now gets `-2`, `-3`, ... instead of `-x`;
+`main` and the shapes of chart and diagram ids and their parts (`c1`, `c1-t`, `d3-a`) are never given to a heading; and an `id` in a
+sanitized `=html` fence that equals an id the compiler writes is dropped (the compiler's anchors win; fence `href`s are not rewritten).
+This is the one-time id change D68's "element ids are unchanged" did not foresee, made now because anchors are about to be documented;
+the render-hash fixture is regenerated once for it. `:root` gets `scroll-padding-top` for the bar, `:target` headings a mark, smooth
+scrolling only under `prefers-reduced-motion: no-preference`. A page with four or more top-level `##` sections (a folded section, D72,
+counts) gets `<nav class="bar" aria-label="Contents">` inside `<main>` after the masthead, spanning the page width: the title as a link
+to the top and one link per section; it is sticky above 560 px when the links fit one line by the compiler's own text metrics and there
+are at most ten sections, otherwise a static strip, and always static on phones and in print; `@toc on|off` forces or removes it (on:
+from two sections), `@header sticky|plain` controls stickiness. The bar is inside `<main>` so `--artifact` output carries it and D59's
+byte identity holds. For the streaming viewer (D68) the bar and the fence rule are whole-document inputs with incremental rules: the
+bar is emitted when the fourth section seals and grows per section, so D68's pre-settle equality does not move; a fence id that
+collides with a later heading is a settle case. Full pages write `og:title`, `og:type`, and from the meta keys `og:description`,
+`author`, `article:published_time` (ISO `@date` only), `og:image` with `twitter:card` (from a new `@image`) and `<link
+rel="canonical">` (from a new `@canonical`), after the description meta and before the stylesheet; `@image` and `@canonical` take an
+absolute `https:` URL only, written normalised, anything else is W `meta-url` `{key, value, kind}` and the tag is not written. The
+browser fetches none of it and the CSP is unchanged. The launch claim is now "no `<script>` element at all" for `build` and `build
+--artifact`, so there is no JSON-LD; `--shell` (D63) is the one mode with script and is audited separately. Unknown `@toc` or `@header`
+values are W `meta-value` `{key, value, allowed}`, case-insensitive. The writer-facing lines for the four keys go in the skill's
+on-demand `meta.md` (D72), their single home, not in the capped model reference (D55). The owner agreed the direction; three details
+are this spec's recommendations pending the owner's answer: the four-section threshold, `https:`-only share images, and keeping the bar
+in `--artifact` output rather than revising D59. Rejected: keeping `-x`; ids from line numbers; a `toc` keyword line (article-coverage
+task 4's row is superseded; `fold` and `swatch` stand); a disclosure instead of the strip; a fixed-height sticky bar that may wrap
+(WCAG 2.4.11); emitting the bar only at settle; JSON-LD or any script element; `og:url`, `og:site_name`, `og:locale` and the full
+`twitter:*` set; `http:` share images; rewriting fence `href`s; removing `id` from the sanitizer allowlist. Lands only after D67 step 1
+records its verdict; the D66 artifact check (which needs the rebuilt page published, or a local fallback recorded as pending) and the
+D68 stream bench are re-run as release gates. Internal spec `lede-page-chrome`, lede-lang/meta.
+
+
+## D71. WCAG 2.2 AA for compiler-owned output is a stated guarantee, held by a full-axe CI gate over every shipped page
+Owner's decision (2026-11-04, answer 4 of the ten questions; no `lede-a11y` skill, the compiler owns this). `spec/lede-0.1.md` §7
+states that markup and styles the compiler writes meet WCAG 2.2 AA as axe-core measures it, names the criteria that hold by
+construction (one `<main>` with a skip link, headings in source order as anchors, reading order equal to source order, a visible focus
+ring on every focusable element, no motion except under `prefers-reduced-motion: no-preference`, no time limits, no media, no script in
+`build` or `build --artifact` output, with `--shell` (D63) the one mode that carries a runtime and is audited by the same gate once it
+lands), and names the writer's share (alt text that describes, link text, heading levels, the contents of `html` fences). The proof is
+`test/a11y.test.ts`, run by a new `a11y` CI job: every `.lede` under `examples/` (not `as-written`), `conformance/cases/` and
+`conformance/errors/` is built as a full page and audited in Chromium at 360 and 1280 px, light and dark, with the full WCAG 2.0, 2.1
+and 2.2 A and AA rule set (tags `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`, `wcag22aa`); one violation fails; `incomplete` results and
+best-practice counts are reported, never failing. The gate is run on `main` before anything is fixed and its findings are listed by
+rule id; each fix is the smallest renderer change that passes. Three gaps close with it: `<a class="skip" href="#main" lang="en">Skip
+to content</a>` first in `<body>` on full pages (outside `<main>`, so `--artifact` output is unchanged and inherits its host's shell),
+one universal `:focus-visible` rule so the native controls the shell words draw (D65) are ringed too, and a test that no `transition`,
+`animation` or `scroll-behavior` exists outside a reduced-motion guard (the rule D70's smooth scrolling and D73's layer switches are
+written against). The parser gains W `heading-skip` `{from, to}` when a heading is more than one level deeper than the one before it
+(zero occurrences in the shipped corpus; never an error, never fixed by `--fix`). The three existing axe runs stay `color-contrast`
+only: they are layout batteries, the gate is the audit. The owner agreed the direction; three details are this spec's recommendations
+pending the owner's answer: that the `a11y` job becomes a required check (a branch-protection step only the owner can take), that
+`conformance/errors/` pages are in the corpus, and that `heading-skip` stays a warning. Rejected: a writer checklist or skill; failing
+on best-practice rules (`region` would flag every byline); AAA; promoting skipped headings automatically; running the gate inside the
+`test` job (needs a browser, doubles its time); a Lighthouse score as the measure. The gate may merge before D67's verdict only if
+`main` passes it unchanged; every renderer or parser change waits for the verdict, and the D66 check and D68 bench are re-run after
+them. Internal spec `lede-accessibility`, lede-lang/meta.
+
+
+## D72. One skill, with reference files the agent reads by trigger; each file budgeted, counted, probed and frozen into a bench prompt
+Owner's decision (2026-11-04). There is one `lede` skill and no sibling skills (`lede-seo`, `lede-a11y` were considered: a second skill
+is a second trigger the host may not fire and a second install). The model reference stays at its 2,910-token cap (D55) and is not
+reissued; writer vocabulary that does not fit it lives in on-demand files under `skill/lede/reference/`, which `SKILL.md` names in one
+`## Reference files` table of file, trigger and token count (the section itself at most 180 tokens with three rows, 35 per later row).
+Triggers are phrases a user writes, never Lede words. Vocabulary is added in order of cost: a compiler default (zero writer tokens),
+then a page-level `@meta` key, then a writer word (an RFC-style decision, a measured collision count over every tracked `.lede` file
+and a measured round), then an opt-in output mode that never leaks into plain `build`. Each file has a budget in
+`skill/lede/reference/budgets.json` with its count on each of the three writer tokenizers (the gate is the largest), the SHA-256 of the
+counted text and the date, so a change without a recount fails `pnpm test`; every fenced example in a file is parsed by the compiler in
+that test, and every `@key` it names must exist. A file ships only after a probe round: 12 briefs from an isolated agent that saw no
+spec, renderer or page, hashed before any renderer change (D34), three tiers, 36 pages written once with no validation, none invalid
+after `lede check --fix` with no gated warning (first-try and word use reported). The round's prompt is the frozen
+`bench/prompts/C-lede-0.6.md`: every byte of `C-lede-0.5.md`, a newline, then the shipped reference files verbatim in a
+`<lede-reference-files>` block; `0.5` stays, `0.6` is never edited, and a later file ships with `0.7` built the same way. The work
+lands in three waves and the gate is D67: wave A (the mechanism, `meta.md` as a file no writer is yet told about, the hashed briefs)
+needs no verdict; waves B and C (the `SKILL.md` section, `0.6`, the words and `pages.md`, `0.7`) start only after D67 step 1's verdict
+is recorded and the spec it opens (writer guidance, or renderer defaults) has run. The first files: `meta.md` (the keys beyond the core
+reference: `@description`, `@accent`, `@theme`, `@lang`; the D70 and D74 keys join it as they render) and `pages.md` (`fold`, `at` line
+notes and `swatch` from the article coverage design, D39; `mark=` and `scale=` stay in that design). There is no `toc` word: D70 draws
+the contents strip by default on long pages and `@toc off` removes it. D65's `shell.md` and D73's `diagrams.md` ship through this
+mechanism, and D65's "12-line section" becomes one row of the table. Rejected: sibling skills; raising the cap; one combined reference
+file (a status page would read the shell words for nothing); loading files by a CLI command (the skill is text, hosts read files);
+editing `C-lede-0.5.md` to append the files; a checkbox fold so print could force it open (`fold` is a native `<details>` and prints as
+the reader left it, which the file's rules say). Results (the counts, the briefs hashes, the round numbers, the prompt file) are
+appended below as they are measured. Internal spec `lede-reference-files`, lede-lang/meta.
+
+
+## D73. Layers on flow diagrams: one layout, radio pills, CSS dimming; `layer` reserved now, implemented after D67's verdict
+Owner's decision (2026-11-04, question 8). A flow diagram may carry up to six statements `NAME: layer "Label" member, member…`, a
+member being a node id, a group id (its contents come along) or an edge written with any arrow the edge statement accepts (`a->b`, `a
+-> b`, `a-->b`, `a<->b`, `a-x->b`, `a -x- b`; the two ids and their order name the edge). The word is a statement only in that shape:
+`NAME: layer` alone or in an edge keeps its node reading, as F.7 did for `legend`, and no tracked `.lede` file uses the shape (0 of 803
+at 2213927). The page draws the diagram once, as today, desktop and phone, and tags every drawn element with the indexes of the layers
+it belongs to; a `<fieldset>` of pills before the drawing, "All" checked by default, holds one hidden radio per layer, and six static
+CSS rules (`.dg-fig:has(.lswK:checked) … :not(.lK){opacity:.25}`) dim what is outside the chosen layer. Nothing moves between views,
+the first paint is today's drawing, and a browser without `:has()` shows that drawing with inert pills. Native radios give Tab, arrow
+keys and a named group to screen readers; the drawing's `<desc>` lists each layer and its members, so a listener needs no control;
+print shows the full drawing and the layer names as plain text; pills wrap at 44 px on phones and the list fallback dims its rows; the
+150 ms fade exists only under `prefers-reduced-motion: no-preference`; `--artifact` ships the same `<main>`; the streaming viewer
+treats a layer line as a diagram statement; the radio group is named `_<uid>l`, and since an ask or choose name starts with a letter,
+the shell runtime can never read it as a field and its exports are byte-identical across a pill change. The audit of the security
+corpus (D49) judges `<input>` by its nearest fieldset: inside the layer group only `type="radio"` with the attributes `type name class
+checked` (no `autocomplete`, no `id`); inside a shell question group that spec's own set; elsewhere denied, with must-fail self-tests;
+the flow context and eight cases cover the label and members, and no writer text reaches an attribute. Every layer warning is one code,
+W `diagram-layer`, with `detail.kind`: `member` for a member that names nothing (checked at the end of the document, the member
+dropped), `max` for a seventh layer, `sequence` for a layer on a sequence diagram. The word is taught by
+`skill/lede/reference/diagrams.md` (at most 250 tokens) through D72's mechanism and its probe round, never by the model reference
+(D55). The gate: this entry reserves the word and an RFC issue on lede-lang/lede carries the proposal now; the parser, renderer, spec
+and skill changes land only after D67 step 1's verdict is recorded, after the spec that verdict opens has run (writer guidance for
+writer reading or hint mechanism, renderer defaults for renderer reading or both; unresolved waits for the owner's line below), and
+after D72's waves B and C. Rejected: a layer id (nothing references a layer); a default layer other than "All" and cumulative `+member`
+layers (both change the first paint D66 and D68 measure; deferred until a probe shows the need); hiding instead of dimming; a layout
+per layer; layers on sequence diagrams or charts; `:target` (ids, URL and scroll changes, no default state), `<details name>`
+(collapses rather than dims), checkboxes, the sibling combinator without `:has()` (loses the named group for one end-of-life browser),
+per-layer SVG copies, and any script. Results (the collision count, the corpus totals, the render check, the round) are appended below
+as they are measured. Internal spec `lede-layered-diagrams`, lede-lang/meta.
+
+
+## D74. Pages get their own look through named font pairings and palette presets; nothing is fetched, nothing is embedded
+Owner's decision (2026-11-04, answer 9 of the ten questions: "otherwise all artifacts look the same"). The `fonts` meta key, parsed
+since 0.1 and never rendered, now selects one of six pairings of system font stacks, `editorial` (today's look, the default), `plain`,
+`book`, `modern`, `humanist`, `slab`, each setting three tokens: `--head` (headings, kpi values, quotes), `--body` (running text),
+`--prose` (long-form pages). Interface text (labels, chips, legends, chart and diagram text, table cells, layer pills, the contents
+bar, the skip link) stays on a fixed `--ui` stack and code on `--mono` in every pairing, because the compiler sizes SVG text and table
+columns with the metrics of a system sans and a pairing must not be able to move a chart, diagram or table; kpi values keep the heading
+face while the identity pages pass the phone overflow battery; `--serif` and `--sans` are renamed away. A new `@palette` key selects
+one of five presets, `paper` (today's values, the default), `slate`, `sand`, `forest`, `plum`, each twelve surface, grey, rule and
+accent tokens in light and dark; status, categorical (D11) and heat colours are the same in every palette, and a luminance band on the
+grounds (light at or above 0.85, dark at or below 0.02) keeps D11's validated order readable on all of them. A node test in `core`
+validates every palette before any browser sees it: body text at 7:1 and other text at 4.5:1 against every ground it sits on, body text
+at 4.5:1 on each of the five house heat steps (the check that retuned two dark values), the accent and its ink at 4.5:1 against page,
+card and tint, the house status colours against page and card, page colour against the accent (step numbers), and the band; the D71
+gate and the phone layout battery audit six example pages that use every pairing and palette. The palette table lives in `core` so the
+D49 `@accent` check reads the surfaces of the palette in force (`THEME_SURFACES` stays exported as a derived alias), and `@accent`
+still sits on top of any palette. Unknown names are W `meta-value` `{key, value, allowed}` and the default applies; the value is a
+lookup key and never reaches the stylesheet. `--artifact` output's `<style>` stays byte-identical to the full page's and the CSP is
+unchanged. Embedded `data:` fonts are rejected: the page's own CSP (`default-src 'none'`, no `font-src`) would block them and so the
+D10 claim would have to change, the security corpus forbids `url(` in the stylesheet as the second layer, a two-weight Latin pairing
+adds 80 to 150 KB to a 79 KB page, an Artifact host's CSP would fail them silently, and each file needs a licence check; if wanted
+later it is a separate opt-in flag with an OFL-or-Apache rule, WOFF2 subsets, a 120 KB cap and `font-src data:` only on pages that
+embed, under its own decision. Also rejected: writer-supplied stacks or hexes beyond `@accent`; palettes that move status or series
+colours; dark-only palettes; a combined `@look` key; changing the default; more names at launch. The owner asked for fonts and colours
+so pages do not all look the same and agreed the direction; three details are this spec's recommendations pending the owner's answer:
+system stacks only (embedded `data:` fonts were the brief's wording, rejected above), the six pairing and five palette names, and
+keeping `editorial` and `paper` as the default. Writers learn the names from the skill's on-demand `meta.md` (D72) after its probe
+round; the model reference (D55) does not change. Lands only after D67 step 1 records its verdict; the token rename re-runs the D66
+artifact check and the D68 stream bench as release gates. Internal spec `lede-page-identity`, lede-lang/meta.
