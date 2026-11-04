@@ -1,5 +1,6 @@
 import type {
   Block,
+  BucketBlock,
   CardItem,
   CardsBlock,
   ChartBlock,
@@ -17,9 +18,13 @@ import type {
   KpiBlock,
   ListItem,
   LedeDocument,
+  ParamBlock,
+  PresetBlock,
   QuestionBlock,
   Step,
   TableBlock,
+  TemplateBlock,
+  ToggleBlock,
 } from './ast.ts';
 import { num, parseInlineCsv, parseOpts, pipeOutsideQuotes, readQuoted, tokens } from './lex.ts';
 import { NOT_CHOSEN } from './fields.ts';
@@ -45,6 +50,11 @@ export const KEYWORDS = [
   'choose',
   'confirm',
   'export',
+  'param',
+  'toggle',
+  'bucket',
+  'template',
+  'preset',
 ] as const;
 export const META_KEYS = ['title', 'subtitle', 'description', 'author', 'date', 'accent', 'theme', 'lang', 'width', 'fonts'];
 const CHART_KINDS: ChartKind[] = ['line', 'area', 'bar', 'hbar', 'range'];
@@ -52,6 +62,25 @@ const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const KEYWORD_RE = new RegExp(`^(${KEYWORDS.join('|')})(?=\\s|$)`);
 /** A question or diagram name. */
 const NAME_RE = /^[A-Za-z][\w-]*$/;
+/**
+ * The editor words (spec §4.19) are keyword lines only in their shape, as `export` is only alone or with one word: the word, a
+ * name, then `|` (for `param` also `unit=`, for `toggle` also `on`, `off` or `needs=`). `toggle the flag on Monday` is prose.
+ */
+const EDITOR_SHAPE = new Map<string, RegExp>([
+  ['param', /^param\s+[A-Za-z][\w-]*(?:\s*\||\s+unit=)/],
+  ['toggle', /^toggle\s+[A-Za-z][\w-]*(?:\s*\||\s+(?:on|off)(?=[\s|]|$)|\s+needs=)/],
+  ['bucket', /^bucket\s+[A-Za-z][\w-]*\s*\|/],
+  ['template', /^template\s+[A-Za-z][\w-]*\s*\|/],
+  ['preset', /^preset\s+[A-Za-z][\w-]*\s*\|/],
+]);
+/** A template slot: a `{name}` in the fence. The runtime reads the same shape. */
+const SLOT_RE = /\{([A-Za-z][\w-]*)\}/g;
+/** Marks a `bucket` name the export would write for something else (`choose` reserves `(not chosen)` the same way). */
+const BUCKET_RESERVED = [NOT_CHOSEN, '(empty)'];
+/** The kinds a `{slot}` and a `preset` key may name: the fields that hold a value the reader sets. */
+const FILLABLE = new Set(['ask', 'choose', 'param', 'toggle']);
+/** Tolerance when a number is tested against a step grid or the 1,000-step cap. */
+const EPS = 1e-9;
 
 type Acc =
   | { kind: 'paragraph'; lines: string[]; line: number }
@@ -73,12 +102,22 @@ interface Fence {
   raw: boolean;
   lines: string[];
   line: number;
+  /** Set when the fence is a `template`'s body; closing it emits the template, not a code block. */
+  template?: PendingTemplate;
+}
+
+/** A `template NAME | LABEL` line waiting for its fence: it takes its name when the fence closes. */
+interface PendingTemplate {
+  name: string;
+  text: string;
+  line: number;
+  col: number;
 }
 
 /**
  * Line-at-a-time parser. `pushLine` returns the top-level blocks that became
  * final with that line; a block never changes after it is returned, except a
- * diagram (later `name:` lines add to it) and a table/chart whose data gets
+ * diagram or a bucket set (later `name:` lines add to it) and a table/chart whose data gets
  * `+=` rows. Both are resolved again at render time. A `cards` run (v0.4) is
  * held back until it ends; blocks around it still stream as usual.
  */
@@ -97,6 +136,14 @@ export class LedeParser {
   /** Question names to the line that first used them (a Map, so `constructor` is an ordinary name), and the `export` formats seen. */
   private names = new Map<string, number>();
   private exports = new Map<string, number>();
+  /** The editor words' state (spec §4.19): the block each field name was declared by, preset names (not fields), bucket sets, toggles for `end()`. */
+  private fieldBlocks = new Map<string, QuestionBlock>();
+  private presetNames = new Map<string, number>();
+  private buckets = new Map<string, BucketBlock>();
+  private toggles: { block: ToggleBlock; col: number }[] = [];
+  private tpl: PendingTemplate | null = null;
+  /** Where the text after a word started, for the checks `end()` makes. */
+  private at = new WeakMap<Block, number>();
   /** Where the last valid `@accent` was written; its contrast is checked in `end()`, once `@theme` is known. */
   private accentAt: { line: number; col: number } | null = null;
   private out: Block[] = [];
@@ -144,6 +191,7 @@ export class LedeParser {
       this.grid = null;
       this.doc.blocks.push(g);
     }
+    this.checkEditors();
     this.checkAccent();
     this.checkExport();
     resolve(this.doc);
@@ -192,14 +240,21 @@ export class LedeParser {
       this.flush();
       return;
     }
+    const fm = /^(`{3,})\s*(=?)([\w+-]*)\s*$/.exec(s);
+    // A `template` line takes the next non-blank line as its fence; any other line, or a raw html fence, leaves it without one.
+    const template = this.tpl ?? undefined;
+    if (template) {
+      this.tpl = null;
+      if (!fm || fm[2] === '=') this.templateFence(template);
+    }
     if (s.startsWith('\\')) {
       this.textLine(s.slice(1));
       return;
     }
-    const fm = /^(`{3,})\s*(=?)([\w+-]*)\s*$/.exec(s);
     if (fm) {
       this.flush();
       this.fence = { ticks: fm[1].length, raw: fm[2] === '=', lang: fm[3], lines: [], line: L };
+      if (template && fm[2] !== '=') this.fence.template = template;
       if (fm[2] === '=' && fm[3] !== 'html') {
         this.diag('error', 'raw-format', `raw fence must be \`\`\`=html, not =${fm[3]}`, L, lead + 1);
       }
@@ -287,18 +342,23 @@ export class LedeParser {
       return;
     }
     const kw = KEYWORD_RE.exec(s);
+    const shape = kw ? EDITOR_SHAPE.get(kw[1]) : undefined;
     // `cards` takes nothing after it: `cards on the table` stays prose. `export` takes at most one word: `export the data` does too.
-    if (kw && !(kw[1] === 'cards' && s !== 'cards') && !(kw[1] === 'export' && s.split(/\s+/).length > 2)) {
+    // The editor words need their shape (see EDITOR_SHAPE).
+    if (kw && !(kw[1] === 'cards' && s !== 'cards') && !(kw[1] === 'export' && s.split(/\s+/).length > 2) && !(shape && !shape.test(s))) {
       const rest = s.slice(kw[1].length).trim();
       const restCol = lead + 1 + s.indexOf(rest, kw[1].length);
       this.keyword(kw[1], rest, restCol, lead);
       return;
     }
     const dl = /^([A-Za-z][\w-]*):\s*(.*)$/.exec(s);
-    if (dl && this.diagrams.has(dl[1])) {
+    // A `NAME:` line binds to a bucket set before it can bind to a diagram (a set and a diagram never share a name).
+    if (dl && (this.buckets.has(dl[1]) || this.diagrams.has(dl[1]))) {
       this.flush();
       const col = lead + 1 + s.indexOf(':') + 1 + (s.slice(s.indexOf(':') + 1).length - s.slice(s.indexOf(':') + 1).trimStart().length);
-      this.diagramLine(this.diagrams.get(dl[1])!, dl[2].trim(), col);
+      const set = this.buckets.get(dl[1]);
+      if (set) this.bucketItem(set, dl[2].trim(), col);
+      else this.diagramLine(this.diagrams.get(dl[1])!, dl[2].trim(), col);
       return;
     }
     if (dl && /(-->|->|<->)/.test(dl[2])) {
@@ -389,6 +449,10 @@ export class LedeParser {
     // Strip the common indentation so an indented fence reads like an unindented one.
     const ind = Math.min(...f.lines.filter((l) => l.trim()).map((l) => l.length - l.trimStart().length), Infinity);
     const body = f.lines.map((l) => (Number.isFinite(ind) ? l.slice(ind) : l)).join('\n');
+    if (f.template) {
+      this.closeTemplate(f, f.template, body);
+      return;
+    }
     if (f.raw) this.emit({ type: 'html', html: body, line: f.line });
     else this.emit({ type: 'code', lang: f.lang, text: body, line: f.line });
   }
@@ -470,6 +534,16 @@ export class LedeParser {
         return this.questionLine(kw, rest, col);
       case 'export':
         return this.exportLine(rest, col);
+      case 'param':
+        return this.paramLine(rest, col);
+      case 'toggle':
+        return this.toggleLine(rest, col);
+      case 'bucket':
+        return this.bucketLine(rest, col);
+      case 'template':
+        return this.templateLine(rest, col);
+      case 'preset':
+        return this.presetLine(rest, col);
       case 'cards': {
         if (this.cards) this.closeCards();
         if (this.grid) this.closeGrid(true);
@@ -535,10 +609,10 @@ export class LedeParser {
     if (!name) fail('question-syntax', `${word} needs a name before the |: \`${word} NAME | text\``, { word });
     else if (!NAME_RE.test(name)) {
       fail('question-name', `${name} is not a name: use a letter, then letters, digits, _ or -`, { word, name });
-    } else if (this.names.has(name)) {
-      fail('question-dup', `${name} is already used on line ${this.names.get(name)}; every question needs its own name`, {
+    } else if (this.taken(name) !== undefined) {
+      fail('question-dup', `${name} is already used on line ${this.taken(name)}; every question needs its own name`, {
         name,
-        first: this.names.get(name),
+        first: this.taken(name),
       });
     }
     for (const w of [...o.words.slice(1), ...o.flags, ...o.quoted.map((q) => `"${q}"`)])
@@ -584,17 +658,25 @@ export class LedeParser {
     }
     if (bad) return;
     this.names.set(name, L);
+    this.fieldBlocks.set(name, block);
     this.emit(block);
   }
 
-  /** `export [json|markdown]`: one per format. A bare `export` is markdown. */
+  /** `export [json|markdown|prompt]`: one per format. A bare `export` is markdown. */
   private exportLine(rest: string, col: number): void {
     const L = this.lineNo;
     const format = rest === '' ? 'markdown' : rest;
-    if (format !== 'json' && format !== 'markdown') {
-      this.diag('error', 'export-format', `export takes json or markdown (got "${rest}"); start the line with \\ if it is prose`, L, col, {
-        format: rest,
-      });
+    if (format !== 'json' && format !== 'markdown' && format !== 'prompt') {
+      this.diag(
+        'error',
+        'export-format',
+        `export takes json, markdown or prompt (got "${rest}"); start the line with \\ if it is prose`,
+        L,
+        col,
+        {
+          format: rest,
+        },
+      );
       return;
     }
     const first = this.exports.get(format);
@@ -621,6 +703,439 @@ export class LedeParser {
       );
     } else if (fields === 0 && this.exports.size > 0) {
       this.diag('warning', 'export-orphan', 'export has no ask, choose or confirm line to export', Math.min(...this.exports.values()), 1);
+    }
+  }
+
+  // ------------------------------------------------------------ editor words (spec §4.19)
+
+  /** The line that first used a name: a field, or a preset (which has a name but no value in the export). */
+  private taken(name: string): number | undefined {
+    return this.names.get(name) ?? this.presetNames.get(name);
+  }
+
+  /** Names of the fields a `{slot}` or a `preset` key may name, in source order. */
+  private fillable(): string[] {
+    return [...this.fieldBlocks].filter(([, b]) => FILLABLE.has(b.type)).map(([n]) => n);
+  }
+
+  /**
+   * The part every editor word shares: the text before the first `|` is `NAME` and options, and the name must be free. Returns the
+   * name, the option text and the text after the `|`, or null after reporting why the line is no block.
+   */
+  private editorHead(word: string, rest: string, col: number, usage: string): { name: string; opts: string; right: string } | null {
+    const L = this.lineNo;
+    const bar = rest.indexOf('|');
+    if (bar < 0) {
+      this.diag('error', 'question-syntax', `${word} needs \`${usage}\` (start the line with \\ if it is prose)`, L, col, { word });
+      return null;
+    }
+    const left = rest.slice(0, bar).trim();
+    const cut = left.search(/\s/);
+    const name = cut < 0 ? left : left.slice(0, cut);
+    if (!name) {
+      this.diag('error', 'question-syntax', `${word} needs a name before the |: \`${usage}\``, L, col, { word });
+      return null;
+    }
+    if (!NAME_RE.test(name)) {
+      this.diag('error', 'question-name', `${name} is not a name: use a letter, then letters, digits, _ or -`, L, col, { word, name });
+      return null;
+    }
+    const first = this.taken(name);
+    if (first !== undefined) {
+      this.diag('error', 'question-dup', `${name} is already used on line ${first}; every question needs its own name`, L, col, {
+        name,
+        first,
+      });
+      return null;
+    }
+    return { name, opts: cut < 0 ? '' : left.slice(cut).trim(), right: rest.slice(bar + 1) };
+  }
+
+  /** W `question-option` for every option before the `|` that the word does not take. */
+  private ignoreOptions(word: string, name: string, o: ReturnType<typeof parseOpts>, keep: string[], col: number): void {
+    const L = this.lineNo;
+    for (const w of [...o.words, ...o.flags, ...o.quoted.map((q) => `"${q}"`)])
+      this.diag('warning', 'question-option', `ignored ${w} before the | of ${word} ${name}`, L, col, { option: w });
+    for (const k of Object.keys(o.kv)) {
+      if (!keep.includes(k)) this.diag('warning', 'question-option', `ignored ${k}= on ${word} ${name}`, L, col, { option: `${k}=` });
+    }
+  }
+
+  /** Records a field once its block parsed: its name is taken, and `end()` and the `preset` and `template` checks can find it. */
+  private register(b: QuestionBlock, col: number): void {
+    this.names.set(b.name, b.line);
+    this.fieldBlocks.set(b.name, b);
+    this.at.set(b, col);
+    this.emit(b);
+  }
+
+  /** `param NAME [unit=U] | LABEL | DEFAULT MIN MAX STEP` (spec §4.19). */
+  private paramLine(rest: string, col: number): void {
+    const L = this.lineNo;
+    const usage = 'param NAME [unit=U] | LABEL | DEFAULT MIN MAX STEP';
+    const h = this.editorHead('param', rest, col, usage);
+    if (!h) return;
+    const { name } = h;
+    const o = parseOpts(h.opts);
+    this.ignoreOptions('param', name, o, ['unit'], col);
+    const bar = h.right.lastIndexOf('|');
+    const text = bar < 0 ? '' : h.right.slice(0, bar).trim();
+    if (bar < 0 || !text) {
+      this.diag('error', 'question-syntax', `${name}: write \`${usage}\` (the label and the four numbers are each after a |)`, L, col, {
+        word: 'param',
+      });
+      return;
+    }
+    const words = h.right
+      .slice(bar + 1)
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+    const nums = words.map((w) => num(w));
+    if (nums.length !== 4 || nums.some((n) => n === null)) {
+      this.diag(
+        'error',
+        'question-syntax',
+        `param ${name} needs four numbers after the last |: DEFAULT MIN MAX STEP (got "${words.join(' ')}")`,
+        L,
+        col,
+        { word: 'param' },
+      );
+      return;
+    }
+    const [value, min, max, step] = nums as [number, number, number, number];
+    const rule = !(min < max)
+      ? 'order'
+      : !(step > 0)
+        ? 'step'
+        : value < min || value > max
+          ? 'range'
+          : !onGrid(value - min, step)
+            ? 'grid'
+            : (max - min) / step > 1000 + EPS
+              ? 'count'
+              : null;
+    if (rule) {
+      const why = {
+        order: `MIN ${min} must be below MAX ${max}`,
+        step: `STEP ${step} must be above 0`,
+        range: `DEFAULT ${value} must lie from MIN ${min} to MAX ${max}`,
+        grid: `DEFAULT ${value} must be MIN ${min} plus a whole number of steps of ${step}`,
+        count: `MIN ${min} to MAX ${max} is more than 1000 steps of ${step}; raise STEP`,
+      }[rule];
+      this.diag('error', 'param-range', `param ${name}: ${why}`, L, col, { value, min, max, step, rule });
+      return;
+    }
+    const unit = o.kv.unit ?? '';
+    this.register({ type: 'param', name, text, value, min, max, step, ...(unit ? { unit } : {}), line: L } satisfies ParamBlock, col);
+  }
+
+  /** `toggle NAME [on|off] [needs=A,B] | LABEL` (spec §4.19). `needs` is checked in `end()`, so it may name a later toggle. */
+  private toggleLine(rest: string, col: number): void {
+    const L = this.lineNo;
+    const usage = 'toggle NAME [on|off] [needs=A,B] | LABEL';
+    const h = this.editorHead('toggle', rest, col, usage);
+    if (!h) return;
+    const { name } = h;
+    const o = parseOpts(h.opts, ['on', 'off']);
+    // The first state word wins; a second is an option that does nothing.
+    this.ignoreOptions('toggle', name, { ...o, flags: o.flags.slice(1) }, ['needs'], col);
+    const text = h.right.trim();
+    if (!text) {
+      this.diag('error', 'question-syntax', `toggle ${name} needs text after the |: \`${usage}\``, L, col, { word: 'toggle' });
+      return;
+    }
+    const needs = [
+      ...new Set(
+        (o.kv.needs ?? '')
+          .split(',')
+          .map((n) => n.trim())
+          .filter(Boolean),
+      ),
+    ];
+    const block: ToggleBlock = { type: 'toggle', name, text, on: o.flags[0] === 'on', ...(needs.length ? { needs } : {}), line: L };
+    this.toggles.push({ block, col });
+    this.register(block, col);
+  }
+
+  /** `bucket NAME | B1, B2 … [| QUESTION]` declares a bucket set; `NAME: ITEM | B` lines then fill it (spec §4.19). */
+  private bucketLine(rest: string, col: number): void {
+    const L = this.lineNo;
+    const h = this.editorHead('bucket', rest, col, 'bucket NAME | B1, B2 … [| QUESTION]');
+    if (!h) return;
+    const { name } = h;
+    this.ignoreOptions('bucket', name, parseOpts(h.opts), [], col);
+    const cut = pipeOutsideQuotes(h.right);
+    const csv = parseInlineCsv(cut < 0 ? h.right : h.right.slice(0, cut));
+    let bad = false;
+    if (csv.unclosedAt !== null) {
+      bad = true;
+      this.diag('error', 'csv-quote', 'unclosed " in bucket names', L, col);
+    }
+    const buckets: string[] = [];
+    let empty = false;
+    let dup = false;
+    for (const t of csv.rows.flat().map((x) => x.trim())) {
+      if (t === '') empty = true;
+      else if (buckets.includes(t)) dup = true;
+      else buckets.push(t);
+    }
+    const reserved = buckets.some((b) => BUCKET_RESERVED.includes(b));
+    if (empty || dup || reserved || buckets.length < 2 || buckets.length > 8) {
+      bad = true;
+      const why = empty
+        ? 'a bucket name is empty (check for a doubled or trailing comma)'
+        : dup
+          ? 'a bucket name is repeated'
+          : reserved
+            ? `${BUCKET_RESERVED.join(' and ')} are reserved`
+            : 'a bucket set needs two to eight buckets';
+      this.diag('error', 'bucket-names', `bucket ${name}: ${why}; write \`bucket ${name} | Now, Next, Later\``, L, col, {
+        count: buckets.length,
+        empty,
+        dup,
+        reserved,
+      });
+    }
+    const clash = this.doc.data[name] ? 'data' : this.diagrams.has(name) ? 'diagram' : null;
+    if (clash) {
+      bad = true;
+      this.diag('error', 'name-clash', `${name} is already a ${clash} name; rename the bucket set`, L, col, { bucket: name });
+    }
+    if (bad) return;
+    const text = cut < 0 ? '' : h.right.slice(cut + 1).trim();
+    const block: BucketBlock = { type: 'bucket', name, text: text || null, buckets, items: [], line: L };
+    this.buckets.set(name, block);
+    this.register(block, col);
+  }
+
+  /** `NAME: ITEM TEXT | B` where NAME is a bucket set. The item is added to the emitted block, as a diagram gains statements. */
+  private bucketItem(set: BucketBlock, rest: string, col: number): void {
+    const L = this.lineNo;
+    const hint = `\`${set.name}: ITEM TEXT | ${set.buckets[0]}\`; the buckets are ${set.buckets.join(', ')}. Start the line with \\ if it is prose`;
+    let text = '';
+    let target = '';
+    let found = false;
+    // A quoted item text may hold a |; otherwise the item runs to the last |.
+    if (rest.startsWith('"')) {
+      const q = readQuoted(rest, 0);
+      const after = q.closed ? rest.slice(q.end).trimStart() : '';
+      if (after.startsWith('|') && !after.includes('|', 1)) {
+        text = q.value.trim();
+        target = after.slice(1).trim();
+        found = true;
+      }
+    }
+    if (!found) {
+      const cut = rest.lastIndexOf('|');
+      if (cut >= 0) {
+        text = rest.slice(0, cut).trim();
+        target = rest.slice(cut + 1).trim();
+      }
+    }
+    if (!text || !target) {
+      this.diag('error', 'bucket-item', `${set.name}: an item needs its text and its bucket after a |: ${hint}`, L, col, {
+        name: set.name,
+      });
+      return;
+    }
+    if (!set.buckets.includes(target)) {
+      this.diag(
+        'error',
+        'bucket-unknown',
+        `${set.name}: "${target}" is not one of its buckets (${set.buckets.join(', ')}); the name must match exactly`,
+        L,
+        col,
+        {
+          bucket: target,
+          buckets: set.buckets,
+        },
+      );
+      return;
+    }
+    const first = set.items.find((i) => i.text === text);
+    if (first) {
+      this.diag('warning', 'bucket-dup-item', `${set.name} lists "${text}" twice; the first, on line ${first.line}, is kept`, L, col, {
+        text,
+        first: first.line,
+      });
+      return;
+    }
+    set.items.push({ text, bucket: target, line: L });
+  }
+
+  /** `template NAME | LABEL`: the next non-blank line must open a fence, which becomes the body (spec §4.19). */
+  private templateLine(rest: string, col: number): void {
+    const usage = 'template NAME | LABEL';
+    const h = this.editorHead('template', rest, col, usage);
+    if (!h) return;
+    this.ignoreOptions('template', h.name, parseOpts(h.opts), [], col);
+    const text = h.right.trim();
+    if (!text) {
+      this.diag(
+        'error',
+        'question-syntax',
+        `template ${h.name} needs text after the |: \`${usage}\` and a fence on the next line`,
+        this.lineNo,
+        col,
+        {
+          word: 'template',
+        },
+      );
+      return;
+    }
+    this.tpl = { name: h.name, text, line: this.lineNo, col };
+  }
+
+  /** The fence a `template` waited for did not come. */
+  private templateFence(t: PendingTemplate): void {
+    this.diag(
+      'error',
+      'template-fence',
+      `template ${t.name} needs a code fence on the next line: \`\`\`text … \`\`\` holds its body`,
+      t.line,
+      t.col,
+      {
+        name: t.name,
+      },
+    );
+  }
+
+  /** The fence of a `template` closed: find its slots, warn about braces that name nothing, and emit the block. */
+  private closeTemplate(f: Fence, t: PendingTemplate, body: string): void {
+    const fields = this.fillable();
+    const slots: string[] = [];
+    const warned = new Set<string>();
+    f.lines.forEach((raw, k) => {
+      for (const m of raw.matchAll(SLOT_RE)) {
+        const word = m[1];
+        if (fields.includes(word)) {
+          if (!slots.includes(word)) slots.push(word);
+        } else if (!warned.has(word)) {
+          warned.add(word);
+          this.diag(
+            'warning',
+            'template-slot',
+            `{${word}} names no ask, choose, param or toggle declared above, so it stays as written (fields: ${fields.join(', ') || 'none'})`,
+            f.line + 1 + k,
+            m.index + 1,
+            { slot: word, fields },
+          );
+        }
+      }
+    });
+    if (slots.length === 0)
+      this.diag('warning', 'template-empty', `template ${t.name} has no {slot}, so its text is shown as written`, t.line, t.col, {
+        name: t.name,
+      });
+    this.register(
+      {
+        type: 'template',
+        name: t.name,
+        text: t.text,
+        body,
+        ...(f.lang ? { lang: f.lang } : {}),
+        slots,
+        line: t.line,
+      } satisfies TemplateBlock,
+      t.col,
+    );
+  }
+
+  /** `preset NAME | LABEL | key=value; key=value`: sets fields declared above it. A bad assignment makes no block. */
+  private presetLine(rest: string, col: number): void {
+    const L = this.lineNo;
+    const usage = 'preset NAME | LABEL | key=value; key=value';
+    const h = this.editorHead('preset', rest, col, usage);
+    if (!h) return;
+    const { name } = h;
+    this.ignoreOptions('preset', name, parseOpts(h.opts), [], col);
+    const bar = h.right.indexOf('|');
+    const text = bar < 0 ? '' : h.right.slice(0, bar).trim();
+    const pairs = bar < 0 ? [] : assignments(h.right.slice(bar + 1));
+    if (!text || pairs.length === 0 || pairs.some((p) => p.value === null || p.key === '')) {
+      this.diag(
+        'error',
+        'question-syntax',
+        `preset ${name} needs a label and at least one key=value after the second |: \`${usage}\``,
+        L,
+        col,
+        {
+          word: 'preset',
+        },
+      );
+      return;
+    }
+    const fields = this.fillable();
+    const values: { name: string; value: string }[] = [];
+    let bad = false;
+    for (const { key, value: raw } of pairs) {
+      const given = raw ?? '';
+      if (values.some((v) => v.name === key)) {
+        this.diag('warning', 'question-option', `preset ${name} sets ${key} twice; the first is kept`, L, col, { option: `${key}=` });
+        continue;
+      }
+      const field = this.fieldBlocks.get(key);
+      if (!field || !FILLABLE.has(field.type)) {
+        bad = true;
+        this.diag(
+          'error',
+          'preset-key',
+          `preset ${name}: ${key} is not an ask, choose, param or toggle declared above it (fields: ${fields.join(', ') || 'none'})`,
+          L,
+          col,
+          { key, fields },
+        );
+        continue;
+      }
+      const value = presetValue(field, given);
+      if (value === null) {
+        bad = true;
+        this.diag('error', 'preset-value', `preset ${name}: "${given}" is not a value for ${key}; ${presetHint(field)}`, L, col, {
+          key,
+          value: given,
+          kind: field.type,
+        });
+        continue;
+      }
+      values.push({ name: key, value });
+    }
+    if (bad) return;
+    this.presetNames.set(name, L);
+    this.emit({ type: 'preset', name, text, values, line: L } satisfies PresetBlock);
+  }
+
+  /** Whole-document checks for the editor words; they run in `end()`, so a snapshot of a prefix may report what a later line settles. */
+  private checkEditors(): void {
+    const names = this.toggles.map((t) => t.block.name);
+    for (const { block, col } of this.toggles) {
+      for (const need of block.needs ?? []) {
+        if (need !== block.name && names.includes(need)) continue;
+        const why =
+          need === block.name ? 'a toggle cannot need itself' : `${need} is not a toggle on this page (toggles: ${names.join(', ')})`;
+        this.diag('error', 'toggle-needs', `toggle ${block.name} needs ${need}: ${why}`, block.line, col, {
+          name: block.name,
+          needs: need,
+          toggles: names,
+        });
+      }
+    }
+    for (const b of this.buckets.values()) {
+      if (b.items.length === 0)
+        this.diag(
+          'warning',
+          'bucket-empty',
+          `bucket ${b.name} has no item; add lines like \`${b.name}: ITEM TEXT | ${b.buckets[0]}\``,
+          b.line,
+          this.at.get(b) ?? 1,
+          {
+            name: b.name,
+          },
+        );
+    }
+    if (this.tpl) {
+      this.templateFence(this.tpl);
+      this.tpl = null;
     }
   }
 
@@ -693,6 +1208,10 @@ export class LedeParser {
       this.diag('warning', 'data-redefined', `data ${name} is redefined; the new definition replaces it`, L, bodyCol);
     if (this.diagrams.has(name))
       this.diag('error', 'name-clash', `${name} is already a diagram name; rename the diagram (e.g. \`diagram ${name}-flow\`)`, L, bodyCol);
+    if (this.buckets.has(name))
+      this.diag('error', 'name-clash', `${name} is already a bucket set name; rename the data (e.g. \`data ${name}-rows\`)`, L, bodyCol, {
+        bucket: name,
+      });
     const columns = rows[0].map((c) => c.trim());
     const dup = columns.find((c, i) => columns.indexOf(c) !== i);
     if (dup) this.diag('error', 'data-dup-column', `data ${name} has two columns named ${dup}`, L, bodyCol);
@@ -1295,6 +1814,10 @@ export class LedeParser {
       this.diag('error', 'name-clash', `${name} is already a data name; rename the diagram (e.g. \`diagram ${name}-flow\`)`, L, col, {
         diagram: name,
       });
+    if (this.buckets.has(name))
+      this.diag('error', 'name-clash', `${name} is already a bucket set name; rename the diagram (e.g. \`diagram ${name}-flow\`)`, L, col, {
+        bucket: name,
+      });
     const o = parseOpts(rest.slice(t[1]?.offset ?? rest.length), ['flow', 'sequence']);
     for (const w of o.words) this.diag('warning', 'diagram-option', `ignored diagram option "${w}"`, L, col);
     const kind = o.flags.includes('sequence') ? 'sequence' : 'flow';
@@ -1583,6 +2106,75 @@ export class LedeParser {
   ): void {
     this.doc.diagnostics.push({ severity, code, message, line, col: Math.max(1, col), ...(detail ? { detail } : {}) });
   }
+}
+
+/** `d` is a whole number of `step`s, within a rounding error (0.94 - 0.85 is not exactly 9 steps of 0.01 in floating point). */
+function onGrid(d: number, step: number): boolean {
+  const q = d / step;
+  return Math.abs(q - Math.round(q)) <= EPS;
+}
+
+/**
+ * The assignments of a `preset`: `key=value` separated by `;`. The first `=` splits key from value and the value runs to the next
+ * `;`, so an `ask` value may hold `=` and `|`. A value that starts with `"` and closes before a `;` is quoted, which lets it hold a
+ * `;`. An assignment with no `=` has a null value.
+ */
+function assignments(body: string): { key: string; value: string | null }[] {
+  const out: { key: string; value: string | null }[] = [];
+  let i = 0;
+  while (i < body.length) {
+    while (i < body.length && /[\s;]/.test(body[i])) i++;
+    if (i >= body.length) break;
+    const eq = body.indexOf('=', i);
+    const semi = body.indexOf(';', i);
+    if (eq < 0 || (semi >= 0 && semi < eq)) {
+      const end = semi < 0 ? body.length : semi;
+      out.push({ key: body.slice(i, end).trim(), value: null });
+      i = end + 1;
+      continue;
+    }
+    const key = body.slice(i, eq).trim();
+    i = eq + 1;
+    while (i < body.length && /[ \t]/.test(body[i])) i++;
+    if (body[i] === '"') {
+      const q = readQuoted(body, i);
+      const tail = /^\s*(;|$)/.exec(body.slice(q.end));
+      if (q.closed && tail) {
+        out.push({ key, value: q.value });
+        i = q.end + tail[0].length;
+        continue;
+      }
+    }
+    const end = body.indexOf(';', i) < 0 ? body.length : body.indexOf(';', i);
+    out.push({ key, value: body.slice(i, end).trim() });
+    i = end + 1;
+  }
+  return out;
+}
+
+/** The value a `preset` sets on a field as the export will hold it, or null when the field cannot take it. */
+function presetValue(field: QuestionBlock, value: string): string | null {
+  switch (field.type) {
+    case 'ask':
+      return value;
+    case 'choose':
+      return field.options.includes(value) ? value : null;
+    case 'toggle':
+      return value === 'on' || value === 'off' ? value : null;
+    case 'param': {
+      const n = num(value);
+      return n !== null && n >= field.min - EPS && n <= field.max + EPS && onGrid(n - field.min, field.step) ? String(n) : null;
+    }
+    default:
+      return null;
+  }
+}
+
+function presetHint(field: QuestionBlock): string {
+  if (field.type === 'choose') return `choose one of ${field.options.join(', ')}`;
+  if (field.type === 'toggle') return 'a toggle takes on or off';
+  if (field.type === 'param') return `a number from ${field.min} to ${field.max} in steps of ${field.step}`;
+  return 'it does not take a value';
 }
 
 export function mergeThousands(r: string[], want: number): { row: string[]; merged: string[] } | null {

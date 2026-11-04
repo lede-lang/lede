@@ -52,6 +52,7 @@ test('--help lists the commands and flags and exits 0, with or without a file', 
     assert.equal(r.status, 0, args.join(' '));
     assert.match(r.stdout, /--dry-run/);
     assert.match(r.stdout, /--shell/);
+    assert.match(r.stdout, /export json,\s+markdown or prompt/);
     assert.match(r.stdout, /lede check/);
   }
 });

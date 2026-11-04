@@ -1,4 +1,4 @@
-import type { Block, ExportBlock, QuestionBlock } from './ast.ts';
+import type { Block, ExportBlock, PresetBlock, QuestionBlock } from './ast.ts';
 
 /** The Markdown export's placeholder for an unpicked `choose`; the parser refuses an option spelled like it. */
 export const NOT_CHOSEN = '(not chosen)';
@@ -11,11 +11,25 @@ function walk(blocks: Block[], visit: (b: Block) => void): void {
   }
 }
 
-/** Every question block of a document in source order, including those inside `cards` and `grid`. */
+const FIELD_TYPES: ReadonlySet<string> = new Set(['ask', 'choose', 'confirm', 'param', 'toggle', 'bucket', 'template']);
+
+/**
+ * Every field of a document in source order, including those inside `cards` and `grid`: `ask`, `choose`, `confirm`, `param`,
+ * `toggle`, `bucket` and `template`. A `preset` has a name but no value in the export, so it is not a field (see `presetsOf`).
+ */
 export function fieldsOf(blocks: Block[]): QuestionBlock[] {
   const out: QuestionBlock[] = [];
   walk(blocks, (b) => {
-    if (b.type === 'ask' || b.type === 'choose' || b.type === 'confirm') out.push(b);
+    if (FIELD_TYPES.has(b.type)) out.push(b as QuestionBlock);
+  });
+  return out;
+}
+
+/** Every `preset` block, wherever it sits. */
+export function presetsOf(blocks: Block[]): PresetBlock[] {
+  const out: PresetBlock[] = [];
+  walk(blocks, (b) => {
+    if (b.type === 'preset') out.push(b);
   });
   return out;
 }

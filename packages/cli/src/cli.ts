@@ -27,8 +27,9 @@ options:
   --unsafe-html   build: keep raw \`html\` blocks unsanitized (local files only)
   --allow-remote  build: load remote images (links never need it)
   --artifact      build: write only <title>, <style> and <main>, for the Claude Artifact tool, which wraps them in its own page
-  --shell         build/watch: add the interaction shell to a page with ask, choose or confirm lines and an export line: one fixed
-                  script, pinned by hash in the page's policy, that keeps the answers and copies them out. Not with --unsafe-html
+  --shell         build/watch: add the interaction shell to a page with ask, choose or confirm lines and an export line (export json,
+                  markdown or prompt): one fixed script, pinned by hash in the page's policy, that keeps the answers and copies them
+                  out. Not with --unsafe-html
   --json          check: print diagnostics as JSON, keyed by file; each has severity, code, message,
                   line, col and, for some codes, a machine-readable \`detail\` object
   --fix           check: rewrite the file to repair mechanical slips (unquoted , or ; in cells,

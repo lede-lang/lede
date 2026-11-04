@@ -1,7 +1,7 @@
 export type * from './ast.ts';
 export { LedeParser, parse, resolve, KEYWORDS, META_KEYS, type ParseOptions } from './parser.ts';
 export { LedeStream } from './stream.ts';
-export { NOT_CHOSEN, exportsOf, fieldsOf } from './fields.ts';
+export { NOT_CHOSEN, exportsOf, fieldsOf, presetsOf } from './fields.ts';
 export { num, parseInlineCsv } from './lex.ts';
 export { fix, type AppliedFix, type FixResult } from './fix.ts';
 export { HEX_COLOR, THEME_SURFACES } from './contrast.ts';

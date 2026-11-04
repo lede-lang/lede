@@ -1,6 +1,6 @@
 # Lede 0.1
 
-Status: **locked for Phase 0** (2026-10-16), with the post-benchmark changes in Appendices B and C, the spike additions in Appendix D and the question words in §4.18 and Appendix G. This is the reference specification. The
+Status: **locked for Phase 0** (2026-10-16), with the post-benchmark changes in Appendices B and C, the spike additions in Appendix D, the question words in §4.18 and Appendix G, and the editor words in §4.19 and Appendix G.2. This is the reference specification. The
 model-facing summary is [`model-spec.md`](model-spec.md); where they differ, this file wins.
 The reference implementation is `packages/core` (parser) and `packages/render-html`
 (renderer), and the conformance suite in `conformance/` is normative for parsing.
@@ -43,7 +43,7 @@ the line after the matched prefix.
 ```ebnf
 document     = { line , NL } ;
 line         = blank | fence-open | escaped | meta | heading | task-item | bullet | ordered
-             | note | quote | rule | html-line | keyword-line | diagram-line | text ;
+             | note | quote | rule | html-line | keyword-line | bucket-item | diagram-line | text ;
 
 blank        = "" ;
 escaped      = "\" , REST ;                         (* REST is paragraph text *)
@@ -57,7 +57,9 @@ note         = ( "!" | "!!" ) , WS , REST ;
 quote        = ">" , [ " " ] , REST ;
 rule         = "---" , { "-" } ;
 html-line    = "html:" , REST ;
-keyword-line = data | chart | table | kpi | diagram | image | grid | ask | choose | confirm | export ;
+keyword-line = data | chart | table | kpi | diagram | image | grid | ask | choose | confirm | export
+             | param | toggle | bucket | template | preset ;
+bucket-item  = NAME , ":" , WS , REST , [ WS ] , "|" , [ WS ] , TEXT ;   (* only if NAME is a declared bucket set; REST runs to the last | *)
 diagram-line = diagram-name , ":" , WS , diagram-stmt ;   (* only if diagram-name was declared *)
 text         = REST ;                                (* paragraph line *)
 
@@ -78,7 +80,13 @@ diagram      = "diagram" , WS , ID , [ WS , ( "flow" | "sequence" ) ] , { WS , o
 ask          = "ask" , WS , NAME , { WS , "lines=" , integer } , [ WS ] , "|" , [ WS ] , REST ;        (* 4.18 *)
 choose       = "choose" , WS , NAME , [ WS ] , "|" , options , [ "|" , [ WS ] , REST ] ;
 confirm      = "confirm" , WS , NAME , [ WS ] , "|" , [ WS ] , REST ;
-export       = "export" , [ WS , WORD ] ;                 (* json | markdown; a longer line is text *)
+export       = "export" , [ WS , WORD ] ;                 (* json | markdown | prompt; a longer line is text *)
+param        = "param" , WS , NAME , [ WS , "unit=" , TEXT ] , [ WS ] , "|" , [ WS ] , REST , [ WS ] , "|" , [ WS ] , NUM , WS , NUM , WS , NUM , WS , NUM ;
+toggle       = "toggle" , WS , NAME , [ WS , ( "on" | "off" ) ] , [ WS , "needs=" , NAME , { "," , NAME } ] , [ WS ] , "|" , [ WS ] , REST ;
+bucket       = "bucket" , WS , NAME , [ WS ] , "|" , options , [ "|" , [ WS ] , REST ] ;
+template     = "template" , WS , NAME , [ WS ] , "|" , [ WS ] , REST ;      (* then a fence; "{" NAME "}" in its text is a slot *)
+preset       = "preset" , WS , NAME , [ WS ] , "|" , [ WS ] , REST , [ WS ] , "|" , assign , { ";" , assign } ;
+assign       = [ WS ] , NAME , [ WS ] , "=" , [ WS ] , TEXT ;             (* NUM: a decimal number; the four are DEFAULT MIN MAX STEP *)
 options      = field , { ( "," | ";" ) , field } ;       (* data-cell fields: "," ";" "|" need double quotes *)
 NAME         = letter , { letter | digit | "_" | "-" } ;
 
@@ -92,7 +100,8 @@ node-stmt    = NODE-ID , { WS , ( quoted-string | kind | "focus" | "*" | option 
 ```
 
 Keywords are case-sensitive and lowercase. `Table 3 shows…` is prose; `table of contents` is an
-error (no data named `of`) and must be written `\table of contents`.
+error (no data named `of`) and must be written `\table of contents`. The five editor words `param`, `toggle`, `bucket`, `template`
+and `preset` are keyword lines only in the shape §4.19 gives (a name, then `|`); `toggle the flag on Monday` is prose.
 
 ## 4. Blocks
 
@@ -269,7 +278,7 @@ script, and `lede build --shell` (§9) adds a runtime that keeps the answers and
 ask NAME [lines=N] | QUESTION
 choose NAME | OPTION, OPTION … [| QUESTION]
 confirm NAME | STATEMENT
-export [json|markdown]
+export [json|markdown|prompt]
 ```
 - NAME matches `[A-Za-z][\w-]*` and is unique on the page; it is the key in the export. QUESTION and STATEMENT are inline text to
   the end of the line, `|` included. A `choose` with no QUESTION is labelled by its name.
@@ -278,7 +287,7 @@ export [json|markdown]
 - `choose`: options are separated by `,` or `;` and read as data cells (§4.11): a quoted option may hold `,`, `;` and `|`, and the
   options end at the first `|` outside quotes. Repeated options are removed (W `choose-dup-option`); at least two must remain, none
   may be empty, and `(not chosen)` is reserved (E `choose-options`). Option text is plain text.
-- `export`: a bare `export` is `markdown`; one per format (W `export-dup`). The page's export lists every field in source order,
+- `export`: a bare `export` is `markdown`; `prompt` is the third format (§4.19); one per format (W `export-dup`). The page's export lists every field in source order,
   including fields inside `cards` and `grid`. Fields do not appear in table rows.
 - A line that is `ask`, `choose` or `confirm` alone or followed by whitespace is a question line, and fails loudly if malformed
   (§1.5); `export` is a question line only when alone or followed by one word, so `export the data` is text. All four are lowercase:
@@ -290,7 +299,7 @@ export [json|markdown]
   the `export` line arrives.
 
 AST, one block per line: `{type:"ask", name, text, lines, line}`, `{type:"choose", name, text, options, line}` (`text` is `null`
-without a QUESTION), `{type:"confirm", name, text, line}`, `{type:"export", format:"json"|"markdown", line}`.
+without a QUESTION), `{type:"confirm", name, text, line}`, `{type:"export", format:"json"|"markdown"|"prompt", line}`.
 
 **The export.** A value per field: `ask` the text with line breaks as `\n` and the ends trimmed; `choose` the option or `null`;
 `confirm` `"approved"`, `"rejected"` or `"open"`. A field is _open_ when it is an undecided `confirm` or an unpicked `choose`; an
@@ -314,6 +323,86 @@ Ordinary build rendering: `ask` a one-line field or text area, `choose` a radio 
 beside the statement, `export` the blank-page template in a labelled `pre`. No script, no `button`, no `form`. The export shape is
 stable within 0.x (D64).
 
+### 4.19 Editor words
+Status: **preview**, D65. Five more lines make a page the reader edits and sends back: a number on a slider, a switch with prerequisites,
+items sorted into buckets, a text with `{slots}` that fills in, and a one-click set of values. Like the question words (§4.18) they are
+blocks in every build mode, and a document without them parses to exactly the AST it had before (Appendix G.2). This section is the
+parser's contract. How a page draws them and what the three export formats write for them is added to §4.18 and §7 with the renderer;
+until then the compiler parses them and leaves them out of the page and its export.
+
+```
+param NAME [unit=U] | LABEL | DEFAULT MIN MAX STEP
+toggle NAME [on|off] [needs=A,B] | LABEL
+bucket NAME | B1, B2 … [| QUESTION]
+NAME: ITEM TEXT | B
+template NAME | LABEL            (then a fence: its text is the body)
+preset NAME | LABEL | key=value; key=value
+export prompt                     (a third format beside json and markdown)
+```
+- **The shape rule.** A line that starts with `param`, `toggle`, `bucket`, `template` or `preset` and a space is a keyword line only when
+  its second token is a NAME followed by `|`; for `param` also by `unit=`, for `toggle` also by `on`, `off` or `needs=`. Any other line
+  that starts with one of the words is text: `toggle the flag on Monday`, `bucket the tickets by owner`, `preset values are listed
+  below`, `param names are lowercase` and `template files live here` are paragraphs. A line that has the shape and is malformed after it
+  fails loudly (§1.5) as E `question-syntax` `{word}`: `toggle dark on` has no `|`, `param x | Label | 1 2` has two numbers too few. The
+  words are lowercase, and a leading `\` writes them as text (§4.2). There is no `item` word: an item is a `NAME:` line (below), so no
+  prose line changes meaning.
+- **Names.** NAME matches `[A-Za-z][\w-]*` and shares one registry with `ask`, `choose` and `confirm`: a repeat is E `question-dup`
+  `{name, first}`, whatever the two words. A line with an error makes no block and takes no name. A bucket set's name is the set's
+  (not each bucket's). A `preset` has a name but no value in the export, so it is not a field: it does not stop `export-orphan` or count
+  in `export-missing`. LABEL and QUESTION are inline text to the end of the line, `|` included, except where a section below says
+  otherwise.
+- **`param`.** DEFAULT, MIN, MAX and STEP are numbers read as a chart reads a cell (§4.11). The label runs from the first `|` to the last,
+  so it may hold `|`. `unit=` is the only option; its value is plain text to the next space (quote it to hold spaces), and an empty
+  unit is none. The numbers must satisfy these rules, tested in this order; the first to fail is E `param-range` with its `rule`:
+  MIN < MAX (`order`); STEP > 0 (`step`); MIN ≤ DEFAULT ≤ MAX (`range`); DEFAULT − MIN a whole multiple of STEP within 1e-9 (`grid`);
+  (MAX − MIN) / STEP at most 1000 (`count`). Anything but four numbers after the last `|` is E `question-syntax`. Any option but
+  `unit=` is W `question-option` and ignored.
+- **`toggle`.** The state is `off` unless `on` is written. `needs=` lists toggles on the same page, separated by `,` (quote the list if
+  it holds a space); repeats are dropped. It is checked when the document ends, so a toggle may need one declared later: a name that is
+  not a toggle, or the toggle itself, is E `toggle-needs` at the toggle's line. The first state word wins; any other word, flag or option
+  before the `|` is W `question-option` and ignored. A toggle's text runs to the end of the line.
+- **`bucket` and its items.** Buckets are read as data cells, as `choose` options are (§4.18): `,` or `;` between them, quotes for a name
+  that holds `,`, `;` or `|`, ending at the first `|` outside quotes; what follows is the QUESTION, or none. A set has two to eight
+  buckets, distinct after trimming, none empty, none spelled `(not chosen)` or `(empty)`: otherwise E `bucket-names`. A set cannot
+  share a name with a data set or a diagram, nor they with it (E `name-clash` `{bucket}`; `--fix` leaves it). After the set, a
+  `NAME: ITEM TEXT | B` line whose NAME is that set adds an item, as a `NAME:` line whose NAME is a diagram adds a statement; a set is
+  tried before a diagram, and an item line above its set is what it was before (a diagram statement, or text). The item text is what
+  precedes the last `|` (or a `"quoted"` text that is followed by exactly one `|`), trimmed; the bucket after it must be one of the set's
+  exactly, case included (E `bucket-unknown`). A line with no `|`, no text or no bucket is E `bucket-item`, whose message names the set.
+  An item text repeated in one set is W `bucket-dup-item` and the first is kept. Items keep source order. A set that has no item when
+  the document ends is W `bucket-empty`.
+- **`template`.** The next non-blank line must open a fence (§4.9), and its text is the body; the fence's info string is `lang`. Any
+  other line, a raw `=html` fence, or the end of the document there is E `template-fence` at the template's line. `{NAME}`, with NAME a
+  letter then letters, digits, `_` or `-`, is a *slot* only when NAME is an `ask`, `choose`, `param` or `toggle` declared above the
+  template; every other brace sequence is literal text, with no escape: `{{x}}`, `{"a": 1}` and `{"press": {press}}` (where `{press}` is
+  the slot and the outer braces are JSON) are all fine. A `{word}` that names no such field (a `confirm`, a bucket set, a typo) is W
+  `template-slot`, once per word at its first use, and stays as written; a body with no slot is W `template-empty`. The block is
+  emitted when the fence closes, and an unclosed fence closes as fences do (W `unclosed-fence`).
+- **`preset`.** The label runs to the next `|`. The rest is assignments separated by `;`: the first `=` splits key from value, and the
+  value runs to the next `;`, so an `ask` value may hold `=` and `|`. A value that starts with `"` and closes before a `;` or the end of
+  the line is quoted and may hold `;`. Each key is an `ask`, `choose`, `param` or `toggle` declared above the preset (E `preset-key`;
+  a `confirm`, bucket set, template or preset is not one) and each value is valid for it (E `preset-value`): a `choose` option, `on` or
+  `off`, a number in range on the `param`'s step grid (stored as the number it reads as, `0.90x` as `0.9`), any text for an `ask`. A
+  repeated key keeps its first value (W `question-option`). One bad assignment makes no block. Anything but a label and at least one
+  `key=value` is E `question-syntax`.
+- **`export prompt`** is accepted beside `json` and `markdown`; any other word is E `export-format` `{format}`, and its message names all
+  three.
+- E `question-syntax` `{word}`, `question-name` `{word, name}`, `question-dup` `{name, first}`, `param-range` `{value, min, max, step,
+  rule}`, `toggle-needs` `{name, needs, toggles}` (`needs` is the offending name, `toggles` every toggle on the page),
+  `bucket-names` `{count, empty, dup, reserved}`, `bucket-unknown` `{bucket, buckets}`, `bucket-item` `{name}`, `template-fence`
+  `{name}`, `preset-key` `{key, fields}`, `preset-value` `{key, value, kind}`, `name-clash` `{bucket}`, `csv-quote`. W
+  `question-option` `{option}`, `bucket-dup-item` `{text, first}`, `bucket-empty` `{name}`, `template-slot` `{slot, fields}` (`fields` are
+  the fillable fields declared above), `template-empty` `{name}`. `toggle-needs`, `bucket-empty` and `template-fence` at the end of the
+  document are reported when the document ends, so a snapshot of a prefix (§6) may show them before the line that settles them.
+
+AST, one block per line, in this key order; `unit`, `needs` and `lang` are omitted when unused, so existing documents keep their AST:
+`{type:"param", name, text, value, min, max, step, unit?, line}`, `{type:"toggle", name, text, on, needs?, line}`,
+`{type:"bucket", name, text, buckets, items:[{text, bucket, line}], line}` (`text` is `null` without a QUESTION; the items arrive after the
+block is emitted), `{type:"template", name, text, body, lang?, slots, line}` (`body` is the fence text, `slots` the ordered unique slot
+names; `line` is the `template` line), `{type:"preset", name, text, values:[{name, value}], line}`, and `{type:"export", format:"prompt",
+line}`. `fieldsOf` returns the seven field kinds in source order, including those inside `cards` and `grid`; `presetsOf` returns the
+presets.
+
 ## 5. Inline markup
 `` `code` ``, `**bold**`, `*italic*` or `_italic_`, `[text](url)`. URLs must be `http`,
 `https`, `mailto`, relative or `#fragment`; others render as plain text. `\` escapes
@@ -325,8 +414,13 @@ A conforming parser accepts input line by line and emits a block as soon as it i
 heading, note, rule, data, chart, table, image or diagram declaration on its own line; a
 paragraph, list, quote or kpi row when a line of another kind (or a blank line) arrives; a
 fence when it closes; a grid when it fills. Emitted blocks never change, with two exceptions
-renderers must handle: a diagram gains statements from later lines, and a chart, table or kpi
-reflects rows appended with `data NAME +=`. Question words (§4.18) are final when read; the page-wide warnings `export-missing` and `export-orphan` are reported when the document ends. A snapshot of a partial document (with the open
+renderers must handle: a diagram or a bucket set (§4.19) gains statements from later lines, and a chart, table or kpi
+reflects rows appended with `data NAME +=`. Question words (§4.18) are final when read; the page-wide warnings `export-missing` and `export-orphan` are reported when the document ends. Among the editor words (§4.19), `param`, `toggle` and `preset` are final when read. A `bucket` is emitted on its
+declaration and gains an item from each later `NAME:` line. A half-written bucket set renders as its legend, its count tiles (counting
+the items written so far, none right after the `bucket` line) and the item rows so far as static radios; each later item line adds a
+row and raises one count, and nothing already drawn moves. A `template` is emitted when its fence closes; a snapshot taken inside the
+fence shows it with the text so far, and a snapshot after the `template` line and before the fence shows no template. The warnings
+`toggle-needs`, `bucket-empty` and `template-fence` are reported when the document ends. A snapshot of a partial document (with the open
 block flushed) is always a valid document. The partial last line (no `\n` yet) is not parsed.
 
 ## 7. Rendering contract (`@lede-lang/html`)
@@ -375,8 +469,8 @@ URLs (§4.16), in `image` blocks and as `<img>` in `html` blocks. Links render t
 `https:`, to the page CSP's `img-src`, so an `http:` image is written into the page and the browser then blocks it. `--artifact` writes
 only `<title>`, the page's `<style>` and its `<main>`, in that order: no doctype, `html`, `head` or `body`, and no `meta` tags or CSP. The
 Claude Artifact tool wraps a file in a page of its own and sets those itself. The style and the main are the full page's, byte for byte, so
-the light and dark tokens, the `data-theme` override and the zero-script output are the same; only the shell differs. `--shell` adds the interaction shell (§7) to a page that has at least one `ask`, `choose` or `confirm` line and an `export` line; any
-other page is built as without the flag, and stderr says so. With `--artifact` the data block and runtime follow `<main>` and the
+the light and dark tokens, the `data-theme` override and the zero-script output are the same; only the shell differs. `--shell` adds the interaction shell (§7) to a page that has at least one `ask`, `choose` or `confirm` line and an `export` line
+(`export json`, `export markdown` or `export prompt`); any other page is built as without the flag, and stderr says so. With `--artifact` the data block and runtime follow `<main>` and the
 meta tags are still omitted, so the Artifact host's own policy decides whether the runtime runs. `--shell` with `--unsafe-html` is a
 usage error: raw `html` could plant its own controls and data block. Exit codes for every
 command: 0 on success; 1 for `build` on errors without `--force` and for `check` on errors; 2 for a usage error (no command, an
@@ -398,7 +492,12 @@ diagnostics included, as JSON on stdout and exits 0 even when the document has e
 the common codes end with what to write instead (`...; put a cell that contains , in double quotes`, `...; did you mean
 delay ms?`). `detail` is optional and machine-readable. Codes the fixer reads carry it: `unknown-column` `{column, columns}`,
 `data-row-width` `{fields, want, name}`, `csv-thousands` `{fields, want, name}` (`fields` counted before the merge),
-`name-clash` `{diagram}` (a diagram named like a data set). The question-word codes (§4.18) carry `detail` too. So does `accent-contrast` (§4.3) `{accent, theme, ratio, required, against}`:
+`name-clash` `{diagram}` (a diagram named like a data set; a clash with a bucket set carries `{bucket}` instead, and `--fix` leaves
+it). The question-word codes (§4.18) carry `detail` too, and so do the editor-word codes (§4.19): `param-range` `{value, min, max,
+step, rule}` (`rule` is `order`, `step`, `range`, `grid` or `count`), `toggle-needs` `{name, needs, toggles}`, `bucket-names`
+`{count, empty, dup, reserved}`, `bucket-unknown` `{bucket, buckets}`, `bucket-item` `{name}`, `bucket-dup-item` `{text, first}`,
+`bucket-empty` `{name}`, `template-fence` `{name}`, `template-slot` `{slot, fields}`, `template-empty` `{name}`, `preset-key`
+`{key, fields}` and `preset-value` `{key, value, kind}`; `export-format` `{format}` now names `prompt` too. So does `accent-contrast` (§4.3) `{accent, theme, ratio, required, against}`:
 `theme` is `light` or `dark`, `ratio` is the lowest contrast found rounded down to two decimals, `required` is `4.5`, and `against` names
 the surface (`bg`, `surface` or `accent-tint`). New keys may be added; existing ones are not removed or retyped within 0.x.
 
@@ -763,3 +862,20 @@ Input that parsed before parses identically except lines that start with a new w
 and `diagram ask`, `choose`, `confirm` and `export` are now E `diagram-name`. Searched across the 803 `.lede` files tracked in the
 repository (benchmark outputs, examples, conformance, fixtures), parsed with the v0.4 parser (`d7f43fd`) and this one: identical ASTs
 and diagnostics for all 803, and byte-identical compiled pages for all 803. Every earlier conformance case and test passes unedited.
+
+### G.2 Editor words
+Status: **preview**, D65. `param`, `toggle`, `bucket`, `template` and `preset`, the `NAME: ITEM | B` lines of a bucket set, and `export
+prompt` (§4.19) are new, valid in every build mode. The keywords are now `data chart table kpi diagram image grid cards step ask choose
+confirm export param toggle bucket template preset`, and none can name a diagram (E `diagram-name`). Conformance cases 35 to 40 and
+errors e27 to e41 are normative. `spec/model-spec.md` does not describe the words: models read them from the on-demand reference (D55
+cap).
+
+**What changed for existing input.** Input that parsed before parses identically except: a lowercase line that starts with one of the five
+words, a name and then `|` (for `param` also `unit=`, for `toggle` also `on`, `off` or `needs=`) was paragraph text and is now an editor
+line (an error when malformed); `export prompt` was E `export-format` and is a block; the message of E `export-format` now names
+`prompt`; and `diagram param`, `toggle`, `bucket`, `template` and `preset` are now E `diagram-name`. A `NAME:` line binds to a bucket set
+only when a `bucket NAME` is above it, so a document without a bucket set binds nothing new. Searched across the 814 `.lede` files
+tracked on `main` at `de5408c` (benchmark outputs, examples, conformance, fixtures), parsed with the parser at that commit and with this
+one: none has a line that starts with one of the five words, and the ASTs and diagnostics (codes, severities, lines, columns and
+`detail`) are identical for all 814. The only difference is the message of the E `export-format` in conformance error e24, which
+now reads `json, markdown or prompt`. Every earlier conformance case passes unedited.

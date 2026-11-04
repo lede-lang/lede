@@ -1,6 +1,14 @@
 // Markup for the question words (spec §4.18). Plain controls with a fixed attribute set; no script, no form, no id. The
 // shell adds its buttons and copy bar on top of exactly this markup (spec §7).
-import type { AskBlock, ChooseBlock, ConfirmBlock, ExportBlock } from '@lede-lang/core';
+import {
+  fieldsOf,
+  type AskBlock,
+  type Block,
+  type ChooseBlock,
+  type ConfirmBlock,
+  type ExportBlock,
+  type QuestionBlock,
+} from '@lede-lang/core';
 import { esc, inline } from './util.ts';
 
 export function askHtml(b: AskBlock): string {
@@ -25,7 +33,14 @@ export function confirmHtml(b: ConfirmBlock, shell: boolean): string {
   return `<fieldset class="q q-confirm"><legend class="q-t">${inline(b.text)}</legend>${radio(b.name, 'approved', 'Approve', ' q-yes')}${radio(b.name, 'rejected', 'Reject', ' q-no')}${clear(shell)}</fieldset>`;
 }
 
-const NAMES = { json: 'JSON', markdown: 'Markdown' } as const;
+/**
+ * The fields this renderer draws and exports so far. The editor words (spec §4.19) parse, and the render change that follows the
+ * parser draws them; until then they are left out of the page and of its export, which stay as they were.
+ */
+export const drawnFields = (blocks: Block[]): QuestionBlock[] =>
+  fieldsOf(blocks).filter((f) => f.type === 'ask' || f.type === 'choose' || f.type === 'confirm');
+
+const NAMES = { json: 'JSON', markdown: 'Markdown', prompt: 'Prompt' } as const;
 
 /** `template` is the export of the blank page. In shell mode the copy bar follows it. */
 export function exportHtml(b: ExportBlock, template: string, shell: boolean): string {

@@ -542,13 +542,14 @@ test('2.7 shape rule: the shape is a name followed by |, or by unit= for param, 
     ['toggle on | L', 'toggle'],
     ['bucket a | X, Y', 'bucket'],
     ['ask x | X\npreset a | L | x=1', 'preset'],
-    ['template a | L', 'template'],
+    [`template a | L\n${FENCE}\nbody\n${FENCE}`, 'template'],
   ];
   for (const [src, type] of ok) {
-    const last = src.split('\n').length;
-    const lastLine = src.split('\n')[last - 1];
-    assert.ok(parse(src).blocks.some((b) => b.type === type) || errs(src).some((d) => d.startsWith('error:')), lastLine);
-    assert.ok(!kinds(src).includes('paragraph'), lastLine);
+    assert.ok(
+      blocks(src).some((b) => b.type === type),
+      src,
+    );
+    assert.ok(!kinds(src).includes('paragraph'), src);
   }
 });
 
@@ -585,7 +586,7 @@ test('2.7 names: a param, toggle, bucket, template or preset named like an ask i
   }
   assert.deepEqual(errs('param a | A | 1 0 2 1\nask a | Second\nexport json'), ['error:question-dup@2']);
   assert.deepEqual(errs('toggle a | A\nchoose a | x, y\nexport json'), ['error:question-dup@2']);
-  assert.deepEqual(errs('bucket a | X, Y\nconfirm a | C\nexport json'), ['error:question-dup@2']);
+  assert.deepEqual(errs('bucket a | X, Y\na: i | X\nconfirm a | C\nexport json'), ['error:question-dup@3']);
 });
 
 test('2.7 names: a line with an error makes no block and takes no name', () => {

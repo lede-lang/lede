@@ -6,5 +6,7 @@ bucket flow | Now, Next
 bucket plan | Now, Next
 plan: A | Now
 data plan = id,owner; 1,ana
-diagram plan
+bucket lane | Now, Next
+lane: B | Now
+diagram lane
 export json

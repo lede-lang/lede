@@ -12,13 +12,13 @@ import type {
   Kpi,
   QuestionBlock,
 } from '@lede-lang/core';
-import { browserUrl, exportsOf, fieldsOf, imageSrcKind, num, parse, type ParseOptions } from '@lede-lang/core';
+import { browserUrl, exportsOf, imageSrcKind, num, parse, type ParseOptions } from '@lede-lang/core';
 import sanitizeHtml from 'sanitize-html';
 import { renderChart } from './chart.ts';
 import { renderFlow } from './diagram.ts';
 import { renderSequence } from './sequence.ts';
 import { serializeExport } from './export.ts';
-import { askHtml, chooseHtml, confirmHtml, exportHtml } from './question.ts';
+import { askHtml, chooseHtml, confirmHtml, drawnFields, exportHtml } from './question.ts';
 import { SCRIPT_SRC, shellScripts } from './shell.ts';
 import { css } from './theme.ts';
 import { esc, fmtCell, inline, plain, slug, textWidth } from './util.ts';
@@ -47,7 +47,7 @@ const WIDE = new Set(['grid', 'diagram']);
 export async function render(doc: LedeDocument, opts: RenderOptions = {}): Promise<string> {
   if (opts.shell && opts.unsafeHtml)
     throw new Error('shell cannot be combined with unsafeHtml: raw html could plant its own controls and data block');
-  const fields = fieldsOf(doc.blocks);
+  const fields = drawnFields(doc.blocks);
   const exports = exportsOf(doc.blocks);
   const shell = !!opts.shell && !opts.fragment && fields.length > 0 && exports.length > 0;
   const ctx = new Ctx(doc, { ...opts, shell }, fields);
@@ -426,6 +426,13 @@ class Ctx {
         return chooseHtml(b, !!this.opts.shell);
       case 'confirm':
         return confirmHtml(b, !!this.opts.shell);
+      case 'param':
+      case 'toggle':
+      case 'bucket':
+      case 'template':
+      case 'preset':
+        // Parsed (spec §4.19); drawn by the render change that follows the parser.
+        return '';
       case 'export':
         return exportHtml(b, serializeExport(b.format, this.page, this.fields), !!this.opts.shell);
       case 'kpis':
