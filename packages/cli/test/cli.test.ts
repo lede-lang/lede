@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, symlinkSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 
 const CLI = new URL('../src/cli.ts', import.meta.url).pathname;
 const run = (args: string[], cwd: string) => spawnSync(process.execPath, [CLI, ...args], { cwd, encoding: 'utf8' });
@@ -237,6 +237,47 @@ test('build --shell adds the pinned runtime to a page with questions, and says s
   assert.equal(none.status, 0);
   assert.match(none.stderr, /--shell had no effect/);
   assert.equal(none.stdout, run(['build', 'plain.lede'], dir).stdout);
+});
+
+test('watch --shell says once that the flag had no effect, and again only after the page stops taking the shell', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  const page = join(dir, 'page.lede');
+  writeFileSync(page, '# Plain\n\nText\n');
+  const child = spawn(process.execPath, [CLI, 'watch', 'page.lede', '--shell'], { cwd: dir });
+  let err = '';
+  child.stderr.setEncoding('utf8');
+  child.stderr.on('data', (d: string) => (err += d));
+  const count = (re: RegExp) => err.match(re)?.length ?? 0;
+  const builds = () => count(/page\.lede → /g);
+  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  const until = async (done: () => boolean) => {
+    for (let i = 0; i < 100 && !done(); i++) await sleep(50);
+    assert.ok(done(), `timed out; stderr so far:\n${err}`);
+  };
+  /** Save `text` and wait for the rebuild it causes. */
+  const save = async (text: string) => {
+    const before = builds();
+    writeFileSync(page, text);
+    await until(() => builds() > before);
+    await sleep(150); // a second event for the same save would be a second build, which must not matter
+  };
+  try {
+    await until(() => builds() >= 1 && err.includes('watching'));
+    const none = () => count(/--shell had no effect/g);
+    assert.equal(none(), 1, 'the first build says it');
+    await save('# Plain\n\nMore text\n');
+    await save('# Plain\n\nEven more text\n');
+    assert.equal(none(), 1, 'a rebuild with the same result is quiet');
+    await save('# Go\nask a | Who?\nexport json\n');
+    assert.equal(none(), 1, 'a page that takes the shell has nothing to say');
+    assert.equal((readFileSync(join(dir, 'page.html'), 'utf8').match(/<script/g) ?? []).length, 2);
+    await save('# Plain\n\nText again\n');
+    assert.equal(none(), 2, 'and it says so again once the page stops taking it');
+    await save('# Plain\n\nText once more\n');
+    assert.equal(none(), 2);
+  } finally {
+    child.kill();
+  }
 });
 
 test('--shell with --artifact keeps the scripts and drops the meta; with --unsafe-html it is a usage error', () => {

@@ -30,7 +30,8 @@ options:
                   check/build: also warn about an image path the host cannot serve (W artifact-image)
   --shell         build/watch: add the interaction shell to a page with a field (ask, choose, confirm, param, toggle, bucket or template)
                   and an export line (export json, markdown or prompt): one fixed script, pinned by hash in the page's policy, that
-                  keeps the answers and copies them out. Not with --unsafe-html
+                  keeps the answers and copies them out. Not with --unsafe-html. A page that cannot take it gets a note on stderr
+                  (in watch, once, not on every save)
   --json          check: print diagnostics as JSON, keyed by file; each has severity, code, message,
                   line, col and, for some codes, a machine-readable \`detail\` object
   --fix           check: rewrite the file to repair mechanical slips (unquoted , or ; in cells,
@@ -81,7 +82,12 @@ function summary(errors: number, warnings: number): string {
   return counts.length ? counts.join(', ') : 'ok';
 }
 
-async function build(file: string, out: string | null, flags: Set<string>): Promise<boolean> {
+/** What `watch` remembers between rebuilds: whether the last one said `--shell` had no effect, so the next says it only when that starts to hold. */
+interface Watching {
+  shellIdle: boolean;
+}
+
+async function build(file: string, out: string | null, flags: Set<string>, watching?: Watching): Promise<boolean> {
   const { src, doc } = load(file, flags.has('--artifact'));
   report(file, src, doc.diagnostics);
   const errors = doc.diagnostics.filter((d) => d.severity === 'error').length;
@@ -96,10 +102,12 @@ async function build(file: string, out: string | null, flags: Set<string>): Prom
     artifact: flags.has('--artifact'),
     shell,
   });
-  if (shell && !wantsShell(doc))
+  const idle = shell && !wantsShell(doc);
+  if (idle && !watching?.shellIdle)
     process.stderr.write(
       `${file}: --shell had no effect: the page needs a field (ask, choose, confirm, param, toggle, bucket or template) and an export line\n`,
     );
+  if (watching) watching.shellIdle = idle;
   if (out) writeFileSync(out, html);
   else process.stdout.write(html);
   if (out)
@@ -170,11 +178,12 @@ async function main(argv: string[]): Promise<number> {
       return 0;
     case 'watch': {
       const target = out ?? resolve(dirname(files[0]), `${basename(files[0], '.lede')}.html`);
-      await build(files[0], target, new Set([...flags, '--force']));
+      const watching: Watching = { shellIdle: false };
+      await build(files[0], target, new Set([...flags, '--force']), watching);
       let timer: NodeJS.Timeout | null = null;
       fsWatch(files[0], () => {
         if (timer) clearTimeout(timer);
-        timer = setTimeout(() => void build(files[0], target, new Set([...flags, '--force'])), 60);
+        timer = setTimeout(() => void build(files[0], target, new Set([...flags, '--force']), watching), 60);
       });
       process.stderr.write(`watching ${files[0]} → ${target}\n`);
       return await new Promise<number>(() => {});

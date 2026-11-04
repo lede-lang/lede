@@ -583,7 +583,8 @@ unknown command, no FILE, `--shell` with `--unsafe-html`) or a missing file; 70 
 command does not know are ignored. `--help`, `-h` or `help` prints the help to stdout and exits 0.
 
 `lede watch FILE [-o OUT]` builds FILE to OUT, or to `NAME.html` beside `NAME.lede`, then rebuilds on every change until stopped. It always
-renders as if `--force` were given, and honours `--unsafe-html`, `--allow-remote` and `--shell`. `lede ast FILE` prints the parsed document,
+renders as if `--force` were given, and honours `--unsafe-html`, `--allow-remote` and `--shell`. With `--shell`, the note that the flag had no
+effect is printed on the first build it holds for, and again only if a page that took the shell stops doing so; it is not repeated on every save. `lede ast FILE` prints the parsed document,
 diagnostics included, as JSON on stdout and exits 0 even when the document has errors.
 
 `--json` prints one object keyed by file path; each value is an array of diagnostics:
