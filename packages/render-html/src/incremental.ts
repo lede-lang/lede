@@ -6,7 +6,7 @@
 // corrects what the rules missed (the settle); the tests and the bench switch the correction off, so they measure the rules and not
 // the safety net.
 import type { Block, BucketBlock, DataSet, DiagramBlock, LedeDocument, QuestionBlock } from '@lede-lang/core';
-import { exportsOf, fieldsOf, resolve, walkBlocks } from '@lede-lang/core';
+import { exportsOf, fieldsOf, presetsOf, resolve, walkBlocks } from '@lede-lang/core';
 import {
   Ctx,
   NOT_ESSAY,
@@ -30,6 +30,7 @@ import {
   type Section,
   type Unit,
 } from './index.ts';
+import { usesEditors } from './question.ts';
 import { plain } from './util.ts';
 
 export type IncrementalOp =
@@ -279,9 +280,11 @@ class Renderer implements Incremental {
   /**
    * The question fields of every block pushed, in source order: the array `ctx.fields` is, so an `export` lists the fields read so
    * far. `controls`: a field or an `export` has arrived, so the stylesheet carries the controls' rules (as `render()`'s does).
+   * `editors`: an editor word (`param`, `toggle`, `bucket`, `template` or `preset`) has, so it carries theirs too.
    */
   private readonly fields: QuestionBlock[] = [];
   private controls = false;
+  private editors = false;
   /** The committed units that hold an `export`. */
   private readonly exportUnits: U[] = [];
 
@@ -347,7 +350,7 @@ class Renderer implements Incremental {
       const r = this.begin(block);
       out.ops.push(...r.ops);
       consumed = r.consumed;
-    } else if (gained) out.ops.push({ op: 'style', css: styleOf(this.startMeta, true) });
+    } else if (gained) out.ops.push({ op: 'style', css: this.style(this.startMeta) });
     if (block.type === 'heading') this.decideShift(block);
     this.repick(block, out);
     if (consumed) {
@@ -365,14 +368,23 @@ class Renderer implements Incremental {
   }
 
   /**
-   * A question field joins `fields`. The first field or `export` of the page adds the controls' rules to the stylesheet; true when
-   * this block did, so the caller emits the style (the first block's style is `begin`'s).
+   * A question field joins `fields`. The first field or `export` of the page adds the controls' rules to the stylesheet, and the
+   * first editor word (a `preset` too, which is no field) adds the editors'; true when this block did either, so the caller emits
+   * the style (the first block's style is `begin`'s).
    */
   private takeQuestions(block: Block): boolean {
     const found = fieldsOf([block]);
     this.fields.push(...found);
-    if (this.controls || (found.length === 0 && exportsOf([block]).length === 0)) return false;
-    return (this.controls = true);
+    const controls = !this.controls && (found.length > 0 || exportsOf([block]).length > 0);
+    const editors = !this.editors && usesEditors(found, presetsOf([block]));
+    if (controls) this.controls = true;
+    if (editors) this.editors = true;
+    return controls || editors;
+  }
+
+  /** The page stylesheet for `meta`, with the controls' and the editors' rules once a field, an `export` or an editor word has arrived. */
+  private style(meta: Record<string, string>): string {
+    return styleOf(meta, this.controls, this.editors);
   }
 
   /**
@@ -412,7 +424,7 @@ class Renderer implements Incremental {
     this.begun = true;
     const m = this.meta();
     this.startMeta = { ...m };
-    const ops: IncrementalOp[] = [{ op: 'style', css: styleOf(m, this.controls) }];
+    const ops: IncrementalOp[] = [{ op: 'style', css: this.style(m) }];
     const mh = masthead({ meta: m, blocks: [first], data: {}, diagnostics: [] }, this.ctx);
     const consumed = mh.rest.length === 0;
     this.titleBranch = Boolean(m.title) && !consumed;
@@ -572,7 +584,7 @@ class Renderer implements Incremental {
     let gained = false;
     for (const b of blocks) gained = this.takeQuestions(b) || gained;
     if (!this.begun && shown.length) ops.push(...this.begin(shown[0]).ops);
-    else if (gained) ops.push({ op: 'style', css: styleOf(this.startMeta, true) });
+    else if (gained) ops.push({ op: 'style', css: this.style(this.startMeta) });
     this.mode = 'tail';
     const first = this.rest.length === 0 && this.held.length === 0 ? blocks[0] : undefined;
     let html: string;
@@ -777,7 +789,7 @@ class Renderer implements Incremental {
     if (!this.begun) return 0;
     const differs = (k: string) => (m[k] ?? '') !== (this.startMeta[k] ?? '');
     const lateMeta = [...STYLE_KEYS, ...MAST_KEYS].filter(differs).length;
-    if (STYLE_KEYS.some(differs)) ops.push({ op: 'style', css: styleOf(m, this.controls) });
+    if (STYLE_KEYS.some(differs)) ops.push({ op: 'style', css: this.style(m) });
     if (MAST_KEYS.some(differs)) {
       const doc: LedeDocument = { meta: m, blocks: this.all, data: {}, diagnostics: [] };
       const header = masthead(doc, new Ctx(doc, this.renderOpts)).header;

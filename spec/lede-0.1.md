@@ -535,9 +535,12 @@ adds nothing). A bucket set is never in it: it was given on its declaration.
 - The package also exposes an incremental form, `createIncremental(meta, data, opts)`, that takes the blocks of a
   `LedeStream` (§6) as they become final and returns DOM operations carrying the HTML of the unit each one touches; after
   the stream ends, the markup it has built equals the `<main>` that `render()` writes for the whole document, and it carries
-  no script. Question words (§4.18) stream as the controls `render()` draws; an `export` lists the fields and the title read so
-  far and is drawn again, in place, when a later field or the title changes what it lists. The `shell` option has no effect on this
-  form, which draws the ordinary page. The layout engine for flow diagrams (elkjs) is loaded when the first flow diagram is laid
+  no script. Question words (§4.18) stream as the controls `render()` draws, and so do the editor words (§4.19): `param`, `toggle`,
+  `preset` and `template` are drawn when read, a `bucket` set is drawn again in place for each item line (the `update` of §6; its
+  `seal` adds nothing, since every update drew it in full), and a `template` fence still open is drawn, with the text so far, in the open
+  block the consumer reads. The page's stylesheet gains the controls' rules when the first field or `export` arrives and the editors' when
+  the first editor word does. An `export` lists the fields, the bucket items and the title read so far and is drawn again, in place,
+  when a later field, item or the title changes what it lists. The `shell` option has no effect on this form, which draws the ordinary page. The layout engine for flow diagrams (elkjs) is loaded when the first flow diagram is laid
   out, and `setLayoutEngine(fn)` replaces it.
 
 ## 8. Versioning

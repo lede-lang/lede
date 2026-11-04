@@ -10,7 +10,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { LedeStream, parse, type StreamEvent } from '@lede-lang/core';
 import { Ctx, type IncrementalOp, createIncremental, render, setLayoutEngine } from '../src/index.ts';
-import { drive, normalize, type Driven } from '../../../bench/src/incremental-model.ts';
+import { drive, normalize, StringModel, type Driven } from '../../../bench/src/incremental-model.ts';
 import { benchPages, measure, summarize, summaryText } from '../../../bench/src/incremental-report.ts';
 import { browserTest } from './chrome.ts';
 import type { Page } from '../../../bench/node_modules/playwright-core/index.js';
@@ -761,6 +761,261 @@ test('questions: the settle changes nothing on a page the rules already got righ
     const d = await drive(src, { chunk: 11, parse: parseOpts, settle: true });
     assert.equal(d.end.settled, 0);
     assert.equal(streamed(d), await whole(src));
+  }
+});
+
+// ---- the editor words (spec §4.19) ---------------------------------------------------------------------------------------------
+
+const EDITOR_PAGES = ['examples/parity/editors.lede', 'examples/parity/editors-large.lede'];
+const EDITOR_RULES = '/* editor words */';
+type Drawn = Extract<IncrementalOp, { op: 'append' | 'replace' | 'placeholder' }>;
+/** Every drawing of a unit (appended or drawn again) whose markup holds `part`. */
+const drawings = (d: Driven, part: string): Drawn[] =>
+  d.model.log.filter((o): o is Drawn => (o.op === 'append' || o.op === 'replace') && o.html.includes(part));
+
+test('editors: the two parity pages stream into the whole-page render before any settle, at chunks of 1, 7 and 64 bytes', async () => {
+  for (const f of EDITOR_PAGES) {
+    const src = read(f);
+    const expected = await whole(src);
+    const style = await wholeStyle(src);
+    assert.match(style, /\/\* editor words \*\//, `${f} draws the editor words`);
+    for (const chunk of [1, 7, 64]) {
+      const d = await drive(src, { chunk, parse: parseOpts });
+      assert.equal(streamed(d), expected, `${f} at chunks of ${chunk}`);
+      assert.equal(d.model.css, style, `${f} @${chunk}: the stylesheet`);
+      // Nothing for the settle to name: no cause, no child replaced, no unit grouped differently, no late meta.
+      assert.equal(d.end.equal, true, `${f} @${chunk}`);
+      assert.deepEqual([d.end.settled, d.end.causes, d.end.regroups, d.end.lateMeta, d.end.reseals], [0, [], 0, 0, 0], `${f} @${chunk}`);
+      // The pre-settle page is what a viewer shows: with the settle on, nothing is added to it.
+      const settled = await drive(src, { chunk, parse: parseOpts, settle: true });
+      assert.equal(streamed(settled), expected);
+      assert.equal(settled.end.settled, 0);
+    }
+  }
+});
+
+test('editors: param, toggle, preset and template are final blocks drawn once each; a bucket set is drawn again for each item line', async () => {
+  const src = read('examples/parity/editors.lede');
+  const items = src.split('\n').filter((l) => l.startsWith('triage:')).length;
+  assert.equal(items, 3);
+  for (const chunk of [1, 7, 64]) {
+    const d = await drive(src, { chunk, parse: parseOpts });
+    const drawn = drawings(d, 'q-bucket');
+    assert.equal(drawn[0].op, 'append');
+    assert.ok(
+      drawn.slice(1).every((o) => o.op === 'replace' && o.id === drawn[0].id),
+      'in place, with its own id',
+    );
+    const rows = drawn.map((o) => (o.html.match(/class="q-item"/g) ?? []).length);
+    // Each drawing has more rows than the one before, and the last has them all. A chunk that holds several item lines is one
+    // drawing, since the set already has them all when the first of its updates is applied; one line at a time, each item is one.
+    assert.ok(
+      rows.every((n, i) => i === 0 || n > rows[i - 1]),
+      `chunks of ${chunk}: ${rows.join(',')}`,
+    );
+    assert.equal(rows.at(-1), items);
+    if (chunk === 1) assert.deepEqual(rows, [0, 1, 2, 3]);
+    // The other words took one drawing each; the exports were drawn again only for the fields and items that came before them.
+    const once = (cls: string) => drawings(d, cls).length;
+    for (const cls of ['q-param', 'q-toggle', 'q-tpl', 'q-preset']) assert.equal(once(`class="q ${cls}`) >= 1, true, cls);
+    assert.equal(once('class="q q-param'), 1);
+    assert.equal(once('class="q q-tpl'), 1);
+    assert.equal(once('class="q q-preset'), 1);
+    assert.equal(once('class="q q-toggle'), 2, 'two toggles');
+    // Every unit is drawn once but the set (one more drawing per item line, even when the page already shows it): the renders are
+    // the units, the items and nothing else.
+    assert.equal(d.end.renders, d.model.units.length + items, `chunks of ${chunk}`);
+  }
+});
+
+test('editors: an export written first lists each field and each bucket item as it arrives, in place, in every format', async () => {
+  const src = [
+    '@title Release board',
+    '# Release board',
+    '',
+    'export json',
+    'export markdown',
+    'export prompt',
+    '',
+    'param press unit=x | Press depth | 0.94 0.85 1 0.01',
+    'toggle live on | Live',
+    'bucket triage | Now, Next | Where?',
+    'triage: ENG-1 First | Now',
+    'triage: "ENG-2 Second, then third" | Next',
+    '',
+    'template note | Note',
+    '```text',
+    'Press {press}, live {live}.',
+    '```',
+    '',
+  ].join('\n');
+  for (const chunk of [1, 7, 64]) {
+    const d = await drive(src, { chunk, parse: parseOpts });
+    assert.equal(streamed(d), await whole(src), `chunks of ${chunk}`);
+    assert.equal(d.end.equal, true);
+    const [json, markdown, prompt] = exportsIn(d.model.main());
+    // The initial values are in the export: the number with its unit, the switch, every item under its bucket, the filled template.
+    assert.match(json, /&quot;press&quot;: 0\.94/);
+    assert.match(json, /&quot;live&quot;: &quot;on&quot;/);
+    assert.match(json, /&quot;Now&quot;: \[\s*&quot;ENG-1 First&quot;/);
+    assert.match(markdown, /- press: 0\.94 x/);
+    assert.match(markdown, /  - Next: &quot;ENG-2 Second, then third&quot;/);
+    assert.match(markdown, /Press 0\.94 x, live on\./);
+    // The prompt lists changes from the page as written, and the page as written has none: the title, and nothing about the fields.
+    assert.match(prompt, /Apply these changes to Release board:\s*No changes\./);
+    assert.doesNotMatch(prompt, /press|triage|ENG-/);
+    // Each export was drawn when it arrived and again for every field and every bucket item after it, and no more.
+    const drawn = (fmt: string) => drawings(d, `data-x="${fmt}"`);
+    for (const fmt of ['json', 'markdown'])
+      assert.equal(
+        drawn(fmt).length,
+        1 + 6,
+        `${fmt}: on arrival, then for the param, the toggle, the bucket, its two items and the template`,
+      );
+    // The prompt's text does not move with the fields, so it is drawn once and never replaced.
+    assert.equal(drawn('prompt').length, 1);
+  }
+});
+
+test('editors: the editors rules reach the stylesheet with the first editor word, and a page of question words keeps the plain controls', async () => {
+  const src = [
+    '# Page',
+    '',
+    'Some words first.',
+    '',
+    'ask a | Who?',
+    '',
+    'Between.',
+    '',
+    'param p | P | 1 0 2 1',
+    '',
+    'preset one | One | p=2',
+    '',
+  ].join('\n');
+  const d = await drive(src, { chunk: 5, parse: parseOpts });
+  assert.equal(d.model.css, await wholeStyle(src));
+  const styles = stylesOf(d) as { css: string }[];
+  assert.equal(styles.length, 3, 'the plain style, then the controls, then the editors');
+  assert.deepEqual(
+    styles.map((x) => x.css.includes(EDITOR_RULES)),
+    [false, false, true],
+  );
+  assert.ok(styles[1].css.length > styles[0].css.length);
+  // A page of question words alone never carries them.
+  const q = await drive(QUESTIONS, { chunk: 7, parse: parseOpts });
+  assert.equal(q.model.css.includes(EDITOR_RULES), false);
+  // An editor word that is the first block of the page has them in its first style; so does one inside an open grid.
+  const first = 'param p | P | 1 0 2 1\n';
+  assert.equal(stylesOf(await drive(first, { parse: parseOpts })).length, 1);
+  assert.equal((await drive(first, { parse: parseOpts })).model.css, await wholeStyle(first));
+  const grid = ['# Page', '', 'grid 2', 'toggle a | A', 'bucket b | X, Y', ''].join('\n');
+  const g = await drive(grid, { chunk: 6, parse: parseOpts });
+  assert.equal(g.model.css, await wholeStyle(grid));
+  assert.equal(streamed(g), await whole(grid));
+});
+
+test('editors: the tail shows an open template fence as the template with the text so far, and drops it when the fence closes', async () => {
+  const stream = new LedeStream(parseOpts);
+  const inc = createIncremental(
+    () => stream.doc.meta,
+    () => stream.doc.data,
+    { settle: false },
+  );
+  const model = new StringModel();
+  const put = (text: string) => {
+    for (const e of stream.events(text)) if (e.kind === 'block') model.apply(inc.push(e.block).ops);
+    model.apply(inc.tail(stream.tail()));
+  };
+  put('# Page\n\nask who | Who?\nparam n | N | 3 0 9 1\n\ntemplate hi | Greeting\n');
+  assert.doesNotMatch(model.tail, /q-tpl/, 'the template line alone shows nothing');
+  put('```text\nHello {who}');
+  // The fence is open: the template is there, with no text yet. The half line is not part of it.
+  assert.match(model.tail, /<figure class="q q-tpl">/);
+  assert.match(model.tail, /<code><\/code>/);
+  assert.match(model.tail, /<span class="q-n">0<\/span> characters/);
+  put(', you asked for {n}.\n');
+  assert.match(model.tail, /<figure class="q q-tpl"><figcaption class="q-t">Greeting<\/figcaption>/);
+  // The slots are filled from the fields above it, as the whole page fills them: `who` is empty, so it stays as written.
+  assert.match(model.tail, /<code>Hello \{who\}, you asked for 3\.\n<\/code>|<code>Hello \{who\}, you asked for 3\.<\/code>/);
+  assert.match(model.tail, /<span class="q-n">\d+<\/span> characters/);
+  put('More text.\n');
+  assert.match(model.tail, /More text\./);
+  // The closing fence returns the block: it is a unit of the page, the tail is empty, and the page is the whole-page render's.
+  put('```\n\nexport json\n');
+  assert.equal(model.tail, '');
+  const done = await inc.end();
+  assert.equal(done.equal, true);
+  assert.equal(
+    normalize(model.main()),
+    await whole(
+      '# Page\n\nask who | Who?\nparam n | N | 3 0 9 1\n\ntemplate hi | Greeting\n```text\nHello {who}, you asked for {n}.\nMore text.\n```\n\nexport json\n',
+    ),
+  );
+});
+
+test('editors: a bucket set in an open grid is in the tail with its items so far, and the page ends equal to the whole-page render', async () => {
+  const src = ['# Page', '', 'grid 2', 'bucket b | A, B', 'b: x | A', 'b: y | B', '', 'export json', ''].join('\n');
+  for (const chunk of [1, 7, 64]) {
+    const d = await drive(src, { chunk, parse: parseOpts });
+    assert.equal(streamed(d), await whole(src), `chunks of ${chunk}`);
+    assert.equal(d.end.equal, true);
+  }
+  const stream = new LedeStream(parseOpts);
+  const inc = createIncremental(
+    () => stream.doc.meta,
+    () => stream.doc.data,
+    { settle: false },
+  );
+  const put = (text: string) => {
+    for (const e of stream.events(text)) if (e.kind === 'block') inc.push(e.block);
+    return inc.tail(stream.tail());
+  };
+  put('# Page\n\n');
+  const ops = put('grid 2\nbucket b | A, B\nb: x | A\n');
+  const tail = ops.find((o) => o.op === 'tail');
+  assert.ok(tail?.op === 'tail');
+  assert.equal((tail.html.match(/class="q-item"/g) ?? []).length, 1);
+  const more = put('b: y | B\n').find((o) => o.op === 'tail');
+  assert.ok(more?.op === 'tail');
+  assert.equal((more.html.match(/class="q-item"/g) ?? []).length, 2);
+});
+
+test('editors: `shell` has no effect on the incremental renderer; the editor words draw as render() draws them for a fragment', async () => {
+  for (const f of EDITOR_PAGES) {
+    const src = read(f);
+    const d = await drive(src, { chunk: 9, parse: parseOpts, shell: true });
+    assert.equal(streamed(d), await whole(src), f);
+    assert.doesNotMatch(d.model.main(), /q-clear|class="q-pre"|q-bar|<script/);
+    assert.equal(d.model.css, await wholeStyle(src));
+  }
+});
+
+test('editors: a bucket set and an export drawn before the items are in the page the rules got right, whatever the order of the lines', async () => {
+  // A bucket set written between a heading that may group and its next sibling, and items written after other blocks.
+  const src = [
+    '# Plan',
+    '',
+    '## Decision?',
+    '',
+    'bucket b | A, B | Where?',
+    'b: x | A',
+    '',
+    '## Another?',
+    '',
+    'An answer.',
+    '',
+    'b: y | B',
+    'Closing words.',
+    '',
+    'b: z | A',
+    'export markdown',
+    '',
+  ].join('\n');
+  for (const chunk of [1, 3, 7, 64]) {
+    const d = await drive(src, { chunk, parse: parseOpts });
+    assert.equal(streamed(d), await whole(src), `chunks of ${chunk}`);
+    assert.equal(d.end.equal, true);
+    assert.equal(d.end.reseals, 0, 'a bucket set has no reseal');
   }
 });
 
