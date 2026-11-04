@@ -122,7 +122,8 @@ node bench/src/pairs.ts          # build blind pairwise images for the judge
 node bench/src/aggregate.ts      # results/summary.json
 ```
 
-Results land in `bench/results/`; `DECISIONS.md` records the method and the numbers of each round (D12 to D18, D27 to D38).
+Results land in `bench/results/`; `DECISIONS.md` records the method and the numbers of each round (D12 to D18, D27 to D38), and D50 restates the
+cost, time and context figures with each writer's own tokenizer.
 
 ## Contributing
 
