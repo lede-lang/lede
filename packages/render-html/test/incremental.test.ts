@@ -6,14 +6,13 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { readFileSync, readdirSync } from 'node:fs';
-import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { LedeStream, parse, type StreamEvent } from '@lede-lang/core';
 import { Ctx, type IncrementalOp, createIncremental, render, setLayoutEngine } from '../src/index.ts';
 import { drive, normalize, type Driven } from '../../../bench/src/incremental-model.ts';
 import { benchPages, measure, summarize, summaryText } from '../../../bench/src/incremental-report.ts';
-import { resolveChrome } from '../../../bench/src/shot.ts';
+import { browserTest } from './chrome.ts';
 import type { Page } from '../../../bench/node_modules/playwright-core/index.js';
 
 const root = fileURLToPath(new URL('../../../', import.meta.url));
@@ -616,9 +615,7 @@ test('Ctx.mark and rewind copy nothing, and a rewind can go forward again to a l
 
 // ---- early layout-shift check (Chromium) ----------------------------------------------------------------------------------------
 
-const chrome = resolveChrome();
-const skip = chrome ? false : 'no Chromium found: set CHROME to run the layout-shift check';
-if (skip) console.warn(`incremental layout-shift check skipped: ${skip}`);
+// `browserTest` skips without a Chromium, and fails instead when CI or LEDE_REQUIRE_CHROME is set.
 
 const CLS_PAGES: Record<string, string> = {
   faq: [
@@ -781,16 +778,12 @@ async function shiftOf(page: Page, frameWidth: number, styles: string, recorded:
   );
 }
 
-test(
+browserTest(
   'layout shift while streaming: five pages measured at 1280 and 400 wide; over 0.05 is reported as a finding',
-  { skip, timeout: 240_000 },
-  async () => {
-    const require = createRequire(new URL('../../../bench/package.json', import.meta.url));
-    const { chromium } = require('playwright-core') as typeof import('../../../bench/node_modules/playwright-core/index.js');
+  async (browser) => {
     const { css } = await import('../src/index.ts');
-    const browser = await chromium.launch({ executablePath: chrome! });
+    const page = await browser.newPage({ viewport: { width: 1300, height: 900 } });
     try {
-      const page = await browser.newPage({ viewport: { width: 1300, height: 900 } });
       await page.setContent('<!doctype html><body></body>');
       // The observer must see a shift at all, or the numbers below mean nothing: move a block under a visible one.
       const probe = await page.evaluate(async () => {
@@ -837,7 +830,8 @@ test(
       if (over.length) console.warn(`FINDING: layout shift over 0.05: ${over.join('; ')}`);
       assert.equal(rows.length, 2 * Object.keys(CLS_PAGES).length);
     } finally {
-      await browser.close();
+      await page.close();
     }
   },
+  240_000,
 );
