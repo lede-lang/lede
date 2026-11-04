@@ -980,6 +980,37 @@ test('editors: a bucket set in an open grid is in the tail with its items so far
   assert.equal((more.html.match(/class="q-item"/g) ?? []).length, 2);
 });
 
+test('editors: a bucket set and an `export` in one unit are drawn once per item line, not again for the export', async () => {
+  // The grid holds both and is returned when it is full, so each later item line draws the one unit, which lists the item already.
+  const src = ['# Page', '', 'grid 2', 'bucket b | A, B', 'export json', 'b: x | A', 'b: y | B', '', 'Closing.', ''].join('\n');
+  for (const chunk of [1, 5, 64]) {
+    const d = await drive(src, { chunk, parse: parseOpts });
+    assert.equal(streamed(d), await whole(src), `chunks of ${chunk}`);
+    assert.equal(d.end.equal, true);
+    // Two units (the grid, the paragraph) and an item line each: nothing drawn a second time for the export it holds.
+    assert.equal(d.end.renders, d.model.units.length + 2, `chunks of ${chunk}`);
+  }
+});
+
+test('editors: the export lists every bucket item whether or not the consumer passes on the updates of the set', async () => {
+  const src = ['# Page', '', 'bucket b | A, B', 'b: x | A', '', 'export json', '', 'b: y | B', 'b: z | A', ''].join('\n');
+  const stream = new LedeStream(parseOpts);
+  const inc = createIncremental(
+    () => stream.doc.meta,
+    () => stream.doc.data,
+    { settle: false },
+  );
+  const model = new StringModel();
+  // Only the blocks are given to the renderer, a line at a time: the item lines after the `bucket` line reach it through no `update`.
+  for (const line of src.split('\n'))
+    for (const e of stream.events(`${line}\n`)) if (e.kind === 'block') model.apply(inc.push(e.block).ops);
+  stream.end((e) => e.kind === 'block' && model.apply(inc.push(e.block).ops));
+  model.apply((await inc.end()).ops);
+  const [json] = exportsIn(model.main());
+  // The set's own drawing is the settle's to correct; the export is made right by `end()` itself.
+  for (const item of ['x', 'y', 'z']) assert.match(json, new RegExp(`&quot;${item}&quot;`), item);
+});
+
 test('editors: `shell` has no effect on the incremental renderer; the editor words draw as render() draws them for a fragment', async () => {
   for (const f of EDITOR_PAGES) {
     const src = read(f);

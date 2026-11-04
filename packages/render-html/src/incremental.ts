@@ -5,8 +5,8 @@
 // block that grows besides the diagram, the bucket set (see `grew`). `end()` checks the result against the whole-page render and
 // corrects what the rules missed (the settle); the tests and the bench switch the correction off, so they measure the rules and not
 // the safety net.
-import type { Block, BucketBlock, DataSet, DiagramBlock, LedeDocument, QuestionBlock } from '@lede-lang/core';
-import { exportsOf, fieldsOf, presetsOf, resolve, walkBlocks } from '@lede-lang/core';
+import type { Block, BucketBlock, DataSet, DiagramBlock, LedeDocument, PresetBlock, QuestionBlock } from '@lede-lang/core';
+import { FIELD_KINDS, resolve, walkBlocks } from '@lede-lang/core';
 import {
   Ctx,
   NOT_ESSAY,
@@ -111,12 +111,12 @@ export interface Incremental {
   end(): Promise<IncrementalEnd>;
 }
 
+/**
+ * The options of `render()`. Its `shell` has no effect here: the viewer draws the ordinary page, which is what `render()` writes for a
+ * `fragment` (the shell never acts on one). Handing the page to the shell runtime after `end()` is later work (internal spec,
+ * lede-lang/meta).
+ */
 export interface IncrementalOptions extends RenderOptions {
-  /**
-   * `shell` has no effect here: the viewer draws the ordinary page, which is what `render()` writes for a `fragment`
-   * (the shell never acts on one). Handing the page to the shell runtime after `end()` is later work (internal spec, lede-lang/meta).
-   */
-  shell?: boolean;
   /** Correct the page against the whole-page render at `end()`. Default true; the tests and the bench pass false. */
   settle?: boolean;
   /** The clock for hold times. Default `performance.now()`. */
@@ -208,6 +208,19 @@ function inspect(blocks: Block[]): Pick<U, 'diagrams' | 'buckets' | 'reads' | 'p
   return { diagrams, buckets, reads, picks, exports };
 }
 
+/** The question fields, the `preset` blocks and whether an `export` is among a block and the blocks it holds, found in one walk. */
+function questionsIn(block: Block): { fields: QuestionBlock[]; presets: PresetBlock[]; hasExport: boolean } {
+  const fields: QuestionBlock[] = [];
+  const presets: PresetBlock[] = [];
+  let hasExport = false;
+  walkBlocks([block], (b) => {
+    if (Object.hasOwn(FIELD_KINDS, b.type)) fields.push(b as QuestionBlock);
+    else if (b.type === 'preset') presets.push(b);
+    else if (b.type === 'export') hasExport = true;
+  });
+  return { fields, presets, hasExport };
+}
+
 /** The ops, and the drawings still pending, of several units drawn in one step. */
 class Batch {
   readonly ops: IncrementalOp[] = [];
@@ -285,6 +298,9 @@ class Renderer implements Incremental {
   private readonly fields: QuestionBlock[] = [];
   private controls = false;
   private editors = false;
+  /** The bucket items of those fields, kept as the sets grow (`countItems`): what `exportKey()` reads, so it costs nothing per call. */
+  private items = 0;
+  private readonly counted = new Map<BucketBlock, number>();
   /** The committed units that hold an `export`. */
   private readonly exportUnits: U[] = [];
 
@@ -372,14 +388,23 @@ class Renderer implements Incremental {
    * first editor word (a `preset` too, which is no field) adds the editors'; true when this block did either, so the caller emits
    * the style (the first block's style is `begin`'s).
    */
-  private takeQuestions(block: Block): boolean {
-    const found = fieldsOf([block]);
+  private takeQuestions(block: Block, temporary = false): boolean {
+    const { fields: found, presets, hasExport } = questionsIn(block);
     this.fields.push(...found);
-    const controls = !this.controls && (found.length > 0 || exportsOf([block]).length > 0);
-    const editors = !this.editors && usesEditors(found, presetsOf([block]));
+    // The bucket items an `export` lists are counted for the fields that stay; a temporary field (below) is dropped again.
+    if (!temporary) for (const f of found) if (f.type === 'bucket') this.countItems(f);
+    const controls = !this.controls && (found.length > 0 || hasExport);
+    const editors = !this.editors && usesEditors(found, presets);
     if (controls) this.controls = true;
     if (editors) this.editors = true;
     return controls || editors;
+  }
+
+  /** Bring the running count of bucket items up to the items `set` has now. Counting a set again, or one that has not grown, adds nothing. */
+  private countItems(set: BucketBlock): void {
+    const n = set.items.length;
+    this.items += n - (this.counted.get(set) ?? 0);
+    this.counted.set(set, n);
   }
 
   /** The page stylesheet for `meta`, with the controls' and the editors' rules once a field, an `export` or an editor word has arrived. */
@@ -406,9 +431,7 @@ class Renderer implements Incremental {
 
   /** What an `export` lists: the number of fields and of bucket items (they only ever grow) and the title. */
   private exportKey(): string {
-    let items = 0;
-    for (const f of this.fields) if (f.type === 'bucket') items += f.items.length;
-    return `${this.fields.length}:${items}:${this.ctx.page ?? ''}`;
+    return `${this.fields.length}:${this.items}:${this.ctx.page ?? ''}`;
   }
 
   /**
@@ -582,7 +605,7 @@ class Renderer implements Incremental {
     // dropped again below, and added for good when the run is pushed.
     const known = this.fields.length;
     let gained = false;
-    for (const b of blocks) gained = this.takeQuestions(b) || gained;
+    for (const b of blocks) gained = this.takeQuestions(b, true) || gained;
     if (!this.begun && shown.length) ops.push(...this.begin(shown[0]).ops);
     else if (gained) ops.push({ op: 'style', css: this.style(this.startMeta) });
     this.mode = 'tail';
@@ -630,8 +653,13 @@ class Renderer implements Incremental {
    */
   private grew(set: BucketBlock): Pushed {
     const out = new Batch();
+    if (this.counted.has(set)) this.countItems(set);
     const u = this.byBucket.get(set);
-    if (u) out.add(this.redraw(u));
+    if (u) {
+      out.add(this.redraw(u));
+      // That drawing lists the fields and items as they stand, so an `export` in the same unit is current: `reexport` skips it.
+      if (u.exports) u.exportKey = this.exportKey();
+    }
     this.reexport(out);
     return out.result();
   }
@@ -702,7 +730,9 @@ class Renderer implements Incremental {
     this.seq++;
     // What is held can group now: every section has ended.
     this.commit(batch, true);
-    // The fields and the title are final: an `export` drawn before the last of them is drawn again.
+    // The fields and the title are final: an `export` drawn before the last of them is drawn again. A consumer that did not pass on the
+    // updates of a bucket set has not had the running count of its items kept, so it is made right here.
+    for (const set of this.counted.keys()) this.countItems(set);
     this.reexport(batch);
     // Diagrams still being written are finished: the stream ended.
     for (const d of this.byDiagram.keys()) if (!this.sealed.has(d)) batch.add(this.seal(d));
