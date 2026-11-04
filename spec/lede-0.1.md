@@ -355,8 +355,9 @@ export prompt                     (a third format beside json and markdown)
   (not each bucket's). A `preset` has a name but no value in the export, so it is not a field: it does not stop `export-orphan` or count
   in `export-missing`. LABEL and QUESTION are inline text to the end of the line, `|` included, except where a section below says
   otherwise.
-- **`param`.** DEFAULT, MIN, MAX and STEP are numbers read as a chart reads a cell (§4.11). The label runs from the first `|` to the last,
-  so it may hold `|`. `unit=` is the only option; its value is plain text to the next space (quote it to hold spaces), and an empty
+- **`param`.** DEFAULT, MIN, MAX and STEP are numbers read as a chart reads a cell (§4.11), except that a `,` must separate thousands
+  (`1,500`, `-2,000.5`): a chart drops every comma, which would read `1,5` as 15, so here `1,5` is not a number. The label runs from the
+  first `|` to the last, so it may hold `|`. `unit=` is the only option; its value is plain text to the next space (quote it to hold spaces), and an empty
   unit is none. The numbers must satisfy these rules, tested in this order; the first to fail is E `param-range` with its `rule`:
   MIN < MAX (`order`); STEP > 0 (`step`); MIN ≤ DEFAULT ≤ MAX (`range`); DEFAULT − MIN a whole multiple of STEP within 1e-9 (`grid`);
   MAX − MIN a whole multiple of STEP within 1e-9 (`grid-max`), so MAX is itself a value the control can hold and a `preset` can set;
@@ -388,8 +389,8 @@ export prompt                     (a third format beside json and markdown)
   value runs to the next `;`, so an `ask` value may hold `=` and `|`. A value that starts with `"` and closes before a `;` or the end of
   the line is quoted and may hold `;`. Each key is an `ask`, `choose`, `param` or `toggle` declared above the preset (E `preset-key`;
   a `confirm`, bucket set, template or preset is not one) and each value is valid for it (E `preset-value`): a `choose` option, `on` or
-  `off`, a number in range on the `param`'s step grid (stored as the number it reads as, `0.90x` as `0.9`), any text for an `ask`. A
-  repeated key keeps its first value (W `question-option`). One bad assignment makes no block. Anything but a label and at least one
+  `off`, a number in range on the `param`'s step grid (read as the `param` numbers are, comma rule included, and stored as the number it
+  reads as, `0.90x` as `0.9`), any text for an `ask`. A repeated key keeps its first value (W `question-option`). One bad assignment makes no block. Anything but a label and at least one
   `key=value` is E `question-syntax`.
 - **`export prompt`** is accepted beside `json` and `markdown`; any other word is E `export-format` `{format}`, and its message names all
   three.

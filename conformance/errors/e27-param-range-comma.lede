@@ -1,0 +1,6 @@
+param a | A comma is not a decimal point | 1,5 0 10 1
+param b | Thousands are fine | 1,500 0 3,000 100
+param c | Preset target | 0 0 5000 5
+preset p | One | c=1,5
+preset q | Two | c=1,500
+export json

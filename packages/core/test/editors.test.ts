@@ -83,6 +83,27 @@ test('2.1 param: MAX is MIN plus a whole number of steps (rule grid-max), so the
   assert.equal(only<PresetBlock>('param a | A | 0 0 1 0.25\npreset top | Top | a=1', 'preset')[0].values[0].value, '1');
 });
 
+test('2.1 param: a comma in a number is a thousands separator or an error, never dropped (1,5 is not 15)', () => {
+  // A chart cell drops every comma; for a param that would turn a decimal comma or a typo into another number, so it is refused.
+  for (const bad of ['1,5', '1,5000', '1,50', ',5', '1,500,5', '1.5,5', '1,', '5,']) {
+    const src = `param a | A | ${bad} 0 99999 1`;
+    assert.deepEqual(diags(src), ['error:question-syntax@1'], bad);
+    assert.deepEqual(kinds(src), [], bad);
+    assert.match(parse(src).diagnostics[0].message, /thousands/, bad);
+  }
+  assert.deepEqual(diags('param a | A | 5 0,5 10 1'), ['error:question-syntax@1']);
+  assert.deepEqual(diags('param a | A | 5 0 10 1,0'), ['error:question-syntax@1']);
+  // A comma that groups thousands reads as before.
+  const [p] = only<ParamBlock>('param a | A | 1,500 0 3,000 100', 'param');
+  assert.deepEqual([p.value, p.min, p.max, p.step], [1500, 0, 3000, 100]);
+  const [q] = only<ParamBlock>('param a | A | -1,200.5 -1,300.5 -800.5 0.5', 'param');
+  assert.deepEqual([q.value, q.min, q.max, q.step], [-1200.5, -1300.5, -800.5, 0.5]);
+  assert.equal(only<ParamBlock>('param a | A | $1,500 0 500,000 500', 'param')[0].value, 1500);
+  // Units, percent and a plus sign still read as a chart reads them.
+  assert.equal(only<ParamBlock>('param a | A | 0.90x 0 1 0.01', 'param')[0].value, 0.9);
+  assert.equal(only<ParamBlock>('param a | A | 50% 0 100% 5', 'param')[0].max, 100);
+});
+
 test('2.1 param: at most 1,000 steps from MIN to MAX (rule count)', () => {
   assert.equal((detail('param a | A | 0 0 1001 1', 'param-range') as { rule: string }).rule, 'count');
   assert.equal((detail('param a | A | 0 0 1 0.0005', 'param-range') as { rule: string }).rule, 'count');
@@ -504,6 +525,16 @@ test('2.5 preset: values are valid for their field (E preset-value): an option, 
     value: 'zzz',
     kind: 'choose',
   });
+});
+
+test('2.5 preset: a comma in a param value is a thousands separator or E preset-value (1,5 is not 15)', () => {
+  const base = 'param n | N | 0 0 5000 5\nask x | X\n';
+  assert.deepEqual(errs(`${base}preset p | P | n=1,5`), ['error:preset-value@3']);
+  assert.deepEqual(detail(`${base}preset p | P | n=1,5`, 'preset-value'), { key: 'n', value: '1,5', kind: 'param' });
+  assert.deepEqual(errs(`${base}preset p | P | n=1,5000`), ['error:preset-value@3']);
+  assert.deepEqual(only<PresetBlock>(`${base}preset p | P | n=1,500`, 'preset')[0].values, [{ name: 'n', value: '1500' }]);
+  // Other texts keep their commas: an ask value is any text.
+  assert.deepEqual(only<PresetBlock>(`${base}preset p | P | x=1,5`, 'preset')[0].values, [{ name: 'x', value: '1,5' }]);
 });
 
 test('2.5 preset: one bad assignment makes no block and takes no name', () => {

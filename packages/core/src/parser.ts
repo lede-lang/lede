@@ -830,12 +830,15 @@ export class LedeParser {
       .trim()
       .split(/\s+/)
       .filter(Boolean);
-    const nums = words.map((w) => num(w));
+    const nums = words.map((w) => paramNumber(w));
     if (nums.length !== 4 || nums.some((n) => n === null)) {
+      const comma = words.some((w) => w.includes(',') && paramNumber(w) === null);
       this.diag(
         'error',
         'question-syntax',
-        `param ${name} needs four numbers after the last |: DEFAULT MIN MAX STEP (got "${words.join(' ')}")`,
+        `param ${name} needs four numbers after the last |: DEFAULT MIN MAX STEP (got "${words.join(' ')}")${
+          comma ? '; a comma only separates thousands (1,500), so write a decimal point, not 1,5' : ''
+        }`,
         L,
         col,
         { word: 'param' },
@@ -1121,7 +1124,7 @@ export class LedeParser {
       const value = presetValue(field, given);
       if (value === null) {
         bad = true;
-        this.diag('error', 'preset-value', `preset ${name}: "${given}" is not a value for ${key}; ${presetHint(field)}`, L, col, {
+        this.diag('error', 'preset-value', `preset ${name}: "${given}" is not a value for ${key}; ${presetHint(field, given)}`, L, col, {
           key,
           value: given,
           kind: field.type,
@@ -2162,6 +2165,18 @@ function onGrid(d: number, step: number): boolean {
   return Math.abs(q - Math.round(q)) <= EPS;
 }
 
+/**
+ * A number of a `param` line or a `preset` value (spec §4.19): as a chart reads a cell (§4.11), except that a `,` must separate
+ * thousands (`1,500`). A chart drops every comma, which would read `1,5` as 15 and a decimal comma as a bigger number.
+ */
+function paramNumber(w: string): number | null {
+  if (w.includes(',')) {
+    const head = /^[-+−]?[$€£]?(?:\d{1,3}(?:,\d{3})+|\d+)(?![\d,])/.exec(w);
+    if (!head || w.slice(head[0].length).includes(',')) return null;
+  }
+  return num(w);
+}
+
 /** The last point of the grid that does not pass `max`, without the noise of the multiplication (`0.1 + 3 * 0.1` is not `0.4`). */
 function lastStep(min: number, step: number, max: number): number {
   return Number((min + Math.floor((max - min) / step + EPS) * step).toFixed(9));
@@ -2215,7 +2230,7 @@ function presetValue(field: QuestionBlock, value: string): string | null {
     case 'toggle':
       return value === 'on' || value === 'off' ? value : null;
     case 'param': {
-      const n = num(value);
+      const n = paramNumber(value);
       return n !== null && n >= field.min - EPS && n <= field.max + EPS && onGrid(n - field.min, field.step) ? String(n) : null;
     }
     default:
@@ -2223,10 +2238,11 @@ function presetValue(field: QuestionBlock, value: string): string | null {
   }
 }
 
-function presetHint(field: QuestionBlock): string {
+function presetHint(field: QuestionBlock, given: string): string {
   if (field.type === 'choose') return `choose one of ${field.options.join(', ')}`;
   if (field.type === 'toggle') return 'a toggle takes on or off';
-  if (field.type === 'param') return `a number from ${field.min} to ${field.max} in steps of ${field.step}`;
+  if (field.type === 'param')
+    return `a number from ${field.min} to ${field.max} in steps of ${field.step}${given.includes(',') ? ' (a comma only separates thousands, as in 1,500)' : ''}`;
   return 'it does not take a value';
 }
 
