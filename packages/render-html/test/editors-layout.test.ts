@@ -70,3 +70,45 @@ for (const shell of [false, true])
       },
     );
   }
+
+// On a prose page (the serif essay layout) the bucket keeps its own lists: `.prose li+li` and `.prose ol>li::before` are more specific
+// than the plain resets, so the tiles must stay level and each item's number badge must sit where the bucket puts it.
+const PROSE = [
+  '@title Notes on the move',
+  ...Array.from(
+    { length: 5 },
+    (_, k) =>
+      `Paragraph ${k + 1}. ${'The plan keeps each team on its own schedule until the shared services are ready for them. '.repeat(4)}`,
+  ),
+].join('\n\n');
+const BUCKET = [
+  'bucket plan | Now, Next, Later | Where does each piece go?',
+  'plan: Move the build | Now',
+  'plan: Retire the old queue | Next',
+  'plan: Rewrite the report job | Later',
+  'plan: Audit the access list | Now',
+  'export json',
+].join('\n');
+
+const LISTS = `(() => ({
+  prose: document.querySelector('main').classList.contains('prose'),
+  tileTops: [...document.querySelectorAll('.q-bk li')].map((li) => Math.round(li.getBoundingClientRect().top)),
+  tileMargins: [...document.querySelectorAll('.q-bk li')].map((li) => getComputedStyle(li).marginTop),
+  rowMargins: [...document.querySelectorAll('.q-items > li')].map((li) => getComputedStyle(li).marginTop),
+  badgeTops: [...document.querySelectorAll('.q-items > li')].map((li) => getComputedStyle(li, '::before').top),
+}))()`;
+
+browserTest('a bucket on a prose page keeps its tiles level and its number badges in place, at 360 px', async (browser) => {
+  const { html, doc } = await compile(`${PROSE}\n\n${BUCKET}`);
+  assert.deepEqual(doc.diagnostics, []);
+  const ctx = await browser.newContext({ viewport: { width: 360, height: 900 }, bypassCSP: true });
+  const page = await ctx.newPage();
+  await page.setContent(html);
+  const got = (await page.evaluate(LISTS)) as Record<string, unknown>;
+  assert.equal(got.prose, true, 'the page takes the prose layout');
+  assert.equal(new Set(got.tileTops as number[]).size, 1, `the three tiles share a top: ${JSON.stringify(got.tileTops)}`);
+  assert.deepEqual(got.tileMargins, ['0px', '0px', '0px']);
+  assert.deepEqual(got.rowMargins, ['0px', '0px', '0px', '0px'], 'the item rows are spaced by the list gap alone');
+  assert.deepEqual(got.badgeTops, ['10px', '10px', '10px', '10px']);
+  await ctx.close();
+});

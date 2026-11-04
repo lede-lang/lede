@@ -47,6 +47,7 @@ legend.q-t+*{clear:both}
  * so every other page keeps its bytes. No new tokens. Activation moves nothing: the preset row keeps its box when the runtime swaps its
  * text for its button (the two share one grid cell, and the hidden text keeps its box through `visibility`), and a toggle's warning
  * shares the cell of its "Needs" note and takes its place while it shows, so a proposal that starts blocked draws the same rows.
+ * The bucket's list resets are prefixed with `.q-bucket` to outrank the prose layout's `.prose li+li` and `.prose ol>li::before`.
  */
 const EDITORS = `/* editor words */
 .q-pr{display:flex;align-items:center;gap:10px}
@@ -62,12 +63,12 @@ const EDITORS = `/* editor words */
 .q-toggle:has([aria-invalid=true]) .q-st{color:var(--bad)}
 .q-n{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--fg)}
 .q-bk{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px;padding:0;list-style:none}
-.q-bk li{flex:1 1 4.5rem;min-width:0;margin:0;padding:8px 12px;background:var(--bg);border:1px solid var(--line);border-radius:10px;font:600 12px/1.3 var(--sans);letter-spacing:.04em;text-transform:uppercase;color:var(--fg2);overflow-wrap:anywhere}
+.q-bucket .q-bk li{flex:1 1 4.5rem;min-width:0;margin:0;padding:8px 12px;background:var(--bg);border:1px solid var(--line);border-radius:10px;font:600 12px/1.3 var(--sans);letter-spacing:.04em;text-transform:uppercase;color:var(--fg2);overflow-wrap:anywhere}
 .q-bk .q-n{display:block;font-size:1.5rem;line-height:1.2;font-weight:600;letter-spacing:0}
 .q-items{display:flex;flex-direction:column;gap:12px;margin:0;padding:0;list-style:none}
 .q-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 16px;align-items:center}
-.q-items>li{margin:0;min-height:44px}
-.q-items>li::before{top:10px}
+.q-bucket .q-items>li{margin:0;min-height:44px}
+.q-bucket .q-items>li::before{top:10px}
 .q-il{display:flex;align-items:center;min-height:44px;font:15px/1.45 var(--sans);overflow-wrap:anywhere}
 .q-seg{display:flex;flex-wrap:wrap;gap:6px}
 .q-seg label{display:flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--bg);font:14px/1.2 var(--sans);cursor:pointer;transition:background-color .12s,border-color .12s}
