@@ -1,7 +1,7 @@
 {
   "name": "@lede-lang/html",
   "version": "0.1.13",
-  "description": "Renders a Lede document to one self-contained, zero-JavaScript HTML page",
+  "description": "Renders a Lede document to one self-contained HTML page with no script by default",
   "keywords": [
     "lede",
     "html",
@@ -27,7 +27,9 @@
   "files": [
     "dist",
     "!dist/.tsbuildinfo",
-    "src"
+    "src",
+    "!src/shell-runtime.js",
+    "!src/shell-runtime.sha256"
   ],
   "exports": "./src/index.ts",
   "dependencies": {

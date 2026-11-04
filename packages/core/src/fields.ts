@@ -1,5 +1,8 @@
 import type { Block, ExportBlock, QuestionBlock } from './ast.ts';
 
+/** The Markdown export's placeholder for an unpicked `choose`; the parser refuses an option spelled like it. */
+export const NOT_CHOSEN = '(not chosen)';
+
 function walk(blocks: Block[], visit: (b: Block) => void): void {
   for (const b of blocks) {
     visit(b);
@@ -14,7 +17,7 @@ export function fieldsOf(blocks: Block[]): QuestionBlock[] {
   walk(blocks, (b) => {
     if (b.type === 'ask' || b.type === 'choose' || b.type === 'confirm') out.push(b);
   });
-  return out.toSorted((a, b) => a.line - b.line);
+  return out;
 }
 
 /** Every `export` block, wherever it sits. */

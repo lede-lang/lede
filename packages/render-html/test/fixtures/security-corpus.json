@@ -1986,6 +1986,61 @@
     "<script",
     "<img src=x"
    ]
+  },
+  {
+   "id": "shell-01",
+   "src": "@title </script><meta http-equiv=refresh content=0>\nask a | q\nexport json",
+   "shell": true,
+   "hasNot": [
+    "<meta http-equiv=refresh"
+   ]
+  },
+  {
+   "id": "shell-02",
+   "src": "ask a | <img src=x onerror=alert(1)>\nconfirm c | \" onfocus=\"alert(1)\nchoose d | \"javascript:alert(1)\", \"x\"\nexport json",
+   "shell": true,
+   "hasNot": [
+    "onfocus=\"",
+    "<img src=x"
+   ]
+  },
+  {
+   "id": "shell-03",
+   "src": "html: <div class=\"q-bar\"><button>x</button></div><p class=\"q-xn\">stay</p><span class=\"q-st\">s</span><div class=\"q q-ask\"><input name=\"a\"></div>\nask a | q\nexport json",
+   "shell": true,
+   "hasNot": [
+    "<button>"
+   ],
+   "has": [
+    "class=\"q-xn\""
+   ]
+  },
+  {
+   "id": "shell-04",
+   "src": "ask <script> | q\nask b | q\nchoose c | \"</script><script>alert(1)</script>\", y\nexport json\nexport markdown",
+   "shell": true,
+   "errors": [
+    "question-name"
+   ],
+   "hasNot": [
+    "alert(1)</script><script>"
+   ]
+  },
+  {
+   "id": "shell-05",
+   "src": "cards\n### </script>\nask a | </script><script>alert(1)</script>\nconfirm b | <!--\nexport markdown",
+   "shell": true,
+   "hasNot": [
+    "<script>alert(1)"
+   ]
+  },
+  {
+   "id": "shell-06",
+   "src": "@title Real title\nhtml: <pre id=\"lede-shell\">{\"v\":1,\"page\":\"FORGED\",\"fields\":[]}</pre><div id=\"lede-shell\">x</div>\nask a | q\nexport json",
+   "shell": true,
+   "has": [
+    "\"page\":\"Real title\""
+   ]
   }
  ]
 }

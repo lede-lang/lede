@@ -2,7 +2,8 @@
 
 A line-oriented document format for AI-written web artifacts. It compiles to a single
 self-contained HTML page with charts, diagrams, light and dark themes and phone layouts, and
-no JavaScript.
+no JavaScript. A page can ask the reader questions (`ask`, `choose`, `confirm`, `export`); building with `--shell` then adds one
+fixed script, pinned by hash in the page's policy, that copies the answers out. Without the flag there is still no script.
 
 Site, reference, gallery and a playground that compiles Lede in your browser: [ledelang.dev](https://ledelang.dev/).
 

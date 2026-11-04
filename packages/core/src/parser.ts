@@ -1,13 +1,10 @@
 import type {
-  AskBlock,
   Block,
   CardItem,
   CardsBlock,
   ChartBlock,
   ChartKind,
   ChartMark,
-  ChooseBlock,
-  ConfirmBlock,
   DataSet,
   Diagnostic,
   DiagramBlock,
@@ -20,10 +17,12 @@ import type {
   KpiBlock,
   ListItem,
   LedeDocument,
+  QuestionBlock,
   Step,
   TableBlock,
 } from './ast.ts';
-import { num, parseInlineCsv, parseOpts, readQuoted, tokens } from './lex.ts';
+import { num, parseInlineCsv, parseOpts, pipeOutsideQuotes, readQuoted, tokens } from './lex.ts';
+import { NOT_CHOSEN } from './fields.ts';
 import { AA_NON_TEXT, AA_TEXT, HEX_COLOR, accentContrast } from './contrast.ts';
 import { browserUrl, imageSrcKind } from './url.ts';
 
@@ -51,9 +50,8 @@ export const META_KEYS = ['title', 'subtitle', 'description', 'author', 'date', 
 const CHART_KINDS: ChartKind[] = ['line', 'area', 'bar', 'hbar', 'range'];
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const KEYWORD_RE = new RegExp(`^(${KEYWORDS.join('|')})(?=\\s|$)`);
-const QUESTION_NAME = /^[A-Za-z][\w-]*$/;
-/** The Markdown export's placeholder for an unpicked `choose`; an option may not spell it. */
-const NOT_CHOSEN = '(not chosen)';
+/** A question or diagram name. */
+const NAME_RE = /^[A-Za-z][\w-]*$/;
 
 type Acc =
   | { kind: 'paragraph'; lines: string[]; line: number }
@@ -99,7 +97,6 @@ export class LedeParser {
   /** Question names to the line that first used them (a Map, so `constructor` is an ordinary name), and the `export` formats seen. */
   private names = new Map<string, number>();
   private exports = new Map<string, number>();
-  private firstExport = 0;
   /** Where the last valid `@accent` was written; its contrast is checked in `end()`, once `@theme` is known. */
   private accentAt: { line: number; col: number } | null = null;
   private out: Block[] = [];
@@ -536,7 +533,7 @@ export class LedeParser {
       this.diag('error', code, message, L, col, detail);
     };
     if (!name) fail('question-syntax', `${word} needs a name before the |: \`${word} NAME | text\``, { word });
-    else if (!QUESTION_NAME.test(name)) {
+    else if (!NAME_RE.test(name)) {
       fail('question-name', `${name} is not a name: use a letter, then letters, digits, _ or -`, { word, name });
     } else if (this.names.has(name)) {
       fail('question-dup', `${name} is already used on line ${this.names.get(name)}; every question needs its own name`, {
@@ -556,41 +553,38 @@ export class LedeParser {
       if (n >= 1 && n <= 12) lines = n;
       else fail('ask-lines', `lines= must be a whole number from 1 to 12 (got "${o.kv.lines}")`, { value: o.kv.lines });
     }
-    if (word !== 'choose') {
+    let block: QuestionBlock;
+    if (word === 'choose') {
+      const cut = pipeOutsideQuotes(right);
+      const csv = parseInlineCsv(cut < 0 ? right : right.slice(0, cut));
+      if (csv.unclosedAt !== null) fail('csv-quote', 'unclosed " in choose options');
+      const options: string[] = [];
+      let empty = false;
+      for (const t of csv.rows.flat().map((x) => x.trim())) {
+        if (t === '') empty = true;
+        else if (options.includes(t))
+          this.diag('warning', 'choose-dup-option', `choose ${name} lists "${t}" twice; the first is kept`, L, col, { option: t });
+        else options.push(t);
+      }
+      const reserved = options.includes(NOT_CHOSEN);
+      if (empty || reserved || options.length < 2) {
+        const why = empty
+          ? 'an option is empty (check for a doubled or trailing comma)'
+          : reserved
+            ? `${NOT_CHOSEN} is reserved`
+            : 'choose needs at least two different options';
+        fail('choose-options', `choose ${name}: ${why}; write \`choose ${name} | one, two\``, { count: options.length, empty, reserved });
+      }
+      const text = cut < 0 ? '' : right.slice(cut + 1).trim();
+      block = { type: 'choose', name, text: text || null, options, line: L };
+    } else {
       const text = right.trim();
       if (!text) fail('question-syntax', `${word} ${name} needs text after the |`, { word });
-      if (bad) return;
-      this.names.set(name, L);
-      const b: AskBlock | ConfirmBlock =
-        word === 'ask' ? { type: 'ask', name, text, lines, line: L } : { type: 'confirm', name, text, line: L };
-      this.emit(b);
-      return;
-    }
-    const cut = pipeOutsideQuotes(right);
-    const csv = parseInlineCsv(cut < 0 ? right : right.slice(0, cut));
-    if (csv.unclosedAt !== null) fail('csv-quote', 'unclosed " in choose options', {});
-    const options: string[] = [];
-    let empty = false;
-    for (const t of csv.rows.flat().map((x) => x.trim())) {
-      if (t === '') empty = true;
-      else if (options.includes(t))
-        this.diag('warning', 'choose-dup-option', `choose ${name} lists "${t}" twice; the first is kept`, L, col, { option: t });
-      else options.push(t);
-    }
-    const reserved = options.includes(NOT_CHOSEN);
-    if (empty || reserved || options.length < 2) {
-      const why = empty
-        ? 'an option is empty (check for a doubled or trailing comma)'
-        : reserved
-          ? `${NOT_CHOSEN} is reserved`
-          : 'choose needs at least two different options';
-      fail('choose-options', `choose ${name}: ${why}; write \`choose ${name} | one, two\``, { count: options.length, empty, reserved });
+      block = word === 'ask' ? { type: 'ask', name, text, lines, line: L } : { type: 'confirm', name, text, line: L };
     }
     if (bad) return;
     this.names.set(name, L);
-    const text = cut < 0 ? '' : right.slice(cut + 1).trim();
-    const b: ChooseBlock = { type: 'choose', name, text: text || null, options, line: L };
-    this.emit(b);
+    this.emit(block);
   }
 
   /** `export [json|markdown]`: one per format. A bare `export` is markdown. */
@@ -609,7 +603,6 @@ export class LedeParser {
       return;
     }
     this.exports.set(format, L);
-    this.firstExport ||= L;
     const b: ExportBlock = { type: 'export', format, line: L };
     this.emit(b);
   }
@@ -627,7 +620,7 @@ export class LedeParser {
         { fields },
       );
     } else if (fields === 0 && this.exports.size > 0) {
-      this.diag('warning', 'export-orphan', 'export has no ask, choose or confirm line to export', this.firstExport, 1, {});
+      this.diag('warning', 'export-orphan', 'export has no ask, choose or confirm line to export', Math.min(...this.exports.values()), 1);
     }
   }
 
@@ -1286,7 +1279,7 @@ export class LedeParser {
     const L = this.lineNo;
     const t = tokens(rest);
     const name = t[0] && t[0].key === undefined && !t[0].quoted ? t[0].text : '';
-    if (!/^[A-Za-z][\w-]*$/.test(name)) {
+    if (!NAME_RE.test(name)) {
       this.diag('error', 'diagram-name', 'diagram needs a name: `diagram flow` then lines like `flow: a -> b`', L, col);
       return;
     }
@@ -1718,27 +1711,4 @@ export function parse(src: string, opts: ParseOptions = {}): LedeDocument {
   const p = new LedeParser(opts);
   for (const line of src.split('\n')) p.pushLine(line);
   return p.end();
-}
-
-/**
- * Index of the first `|` that is not inside a double-quoted field, or -1. A quote opens only at the start of a field, as in
- * `parseInlineCsv`, so `12" pipe | Which?` still finds its `|`.
- */
-function pipeOutsideQuotes(s: string): number {
-  let i = 0;
-  let start = true;
-  while (i < s.length) {
-    if (start) {
-      while (i < s.length && /\s/.test(s[i])) i++;
-      start = false;
-      if (s[i] === '"') {
-        i = readQuoted(s, i).end;
-        continue;
-      }
-    }
-    if (s[i] === '|') return i;
-    if (s[i] === ',' || s[i] === ';') start = true;
-    i++;
-  }
-  return -1;
 }

@@ -31,6 +31,20 @@
   "overrides": [
     {
       "files": [
+        "packages/render-html/src/shell-runtime.js"
+      ],
+      "env": {
+        "browser": true
+      },
+      "rules": {
+        "eslint/no-var": "off",
+        "eslint/prefer-const": "off",
+        "eslint/func-style": "off",
+        "eslint/prefer-template": "off"
+      }
+    },
+    {
+      "files": [
         "**/test/**",
         "conformance/*.test.ts"
       ],

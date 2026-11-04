@@ -169,6 +169,29 @@ export function parseInlineCsv(s: string): { rows: string[][]; offsets: number[]
   return { rows, offsets, unclosedAt };
 }
 
+/**
+ * Index of the first `|` that is not inside a double-quoted field, or -1. A quote opens only at the start of a field, as in
+ * `parseInlineCsv`, so `12" pipe | Which?` still finds its `|`.
+ */
+export function pipeOutsideQuotes(s: string): number {
+  let i = 0;
+  let start = true;
+  while (i < s.length) {
+    if (start) {
+      while (i < s.length && /\s/.test(s[i])) i++;
+      start = false;
+      if (s[i] === '"') {
+        i = readQuoted(s, i).end;
+        continue;
+      }
+    }
+    if (s[i] === '|') return i;
+    if (s[i] === ',' || s[i] === ';') start = true;
+    i++;
+  }
+  return -1;
+}
+
 /** Parse a number the way charts read data cells: tolerates `,` `$` `%` and units. */
 export function num(v: string | undefined): number | null {
   if (v === undefined) return null;

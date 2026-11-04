@@ -39,8 +39,9 @@ change.
   `spec/lede-0.1.md` §9 and `lede --help` in the same change.
 - **A decision entry** in `DECISIONS.md` for a design, format, renderer or benchmark-method change. Read the entries that touch the
   area first.
-- **Safety held.** A compiled page has no script and fetches nothing remote unless `--allow-remote` (D10). The security corpus in
-  `packages/render-html/test` must keep passing.
+- **Safety held.** A page built without `--shell` has no script (D10), a `--shell` page runs only the hashed runtime (D63), and neither
+  fetches anything remote unless `--allow-remote`. The security corpus in `packages/render-html/test` must keep passing. The runtime is
+  `packages/render-html/src/shell-runtime.js`: edit only that file, then run `node scripts/gen-runtime.ts`.
 
 Do not edit the frozen benchmark artifacts: `bench/prompts/C-lede-0.1.md` to `0.4.md` and `bench/tasks/` tie published numbers to a
 commit. Write a new prompt file and note it in `DECISIONS.md`.

@@ -333,7 +333,14 @@ block flushed) is always a valid document. The partial last line (no `\n` yet) i
 
 - A complete page: `<!doctype html>`, `lang`, charset, viewport, one `<style>`; **no
   executable JavaScript**, so the output works under `script-src 'none'`. Question words (§4.18) draw
-  plain controls (text, radio, text area) with no script, `button` or `form`, and leave the policy unchanged.
+  plain controls (text, radio, text area) with no script, `button` or `form`, and leave the policy unchanged. That holds for every
+  page built without `--shell`.
+- With `--shell` (§9), a page that has a question and an `export` carries exactly two scripts after `<main>`: an inert
+  `application/json` block (the title, the field names and kinds, the formats; `<`, `>`, `&`, U+2028 and U+2029 written as `\uXXXX`)
+  and the compiler's one fixed runtime, under 8 KiB. The page policy is the ordinary one plus `script-src 'sha256-…'` naming the
+  runtime's SHA-256, so nothing else can run. The runtime sends nothing, keeps nothing after the tab closes, and writes only
+  `textContent` of the export and status text, the `hidden` attribute, radio state and the selection. The model never writes script,
+  in either mode.
 - No remote fetches by default (system font stacks, no remote images).
 - Light and dark themes from CSS custom properties; `prefers-color-scheme` plus
   `data-theme="light|dark"` on `<html>` to override.
@@ -360,7 +367,7 @@ otherwise it is the counts summed over every file: `1 warning(s)`, `2 error(s)` 
 code at 0 but never gets `ok`: read the diagnostics above that line, since the exit code does not carry them. With `--json` there is no
 such line. `lede --help` lists every command and flag.
 
-`lede build FILE [-o OUT] [--force] [--unsafe-html] [--allow-remote] [--artifact]` compiles the first FILE to one page. Diagnostics go to stderr as
+`lede build FILE [-o OUT] [--force] [--unsafe-html] [--allow-remote] [--artifact] [--shell]` compiles the first FILE to one page. Diagnostics go to stderr as
 for `check`. With `-o` the page is written to OUT and a size line goes to stderr; without it the page goes to stdout. A document with
 an error is not written and exits 1, unless `--force`, which renders it anyway and exits 0. `--unsafe-html` keeps `html` blocks
 unsanitized (§4.10); `--help` marks it for local files only, but nothing checks that. `--allow-remote` lets images load from remote
@@ -368,13 +375,16 @@ URLs (§4.16), in `image` blocks and as `<img>` in `html` blocks. Links render t
 `https:`, to the page CSP's `img-src`, so an `http:` image is written into the page and the browser then blocks it. `--artifact` writes
 only `<title>`, the page's `<style>` and its `<main>`, in that order: no doctype, `html`, `head` or `body`, and no `meta` tags or CSP. The
 Claude Artifact tool wraps a file in a page of its own and sets those itself. The style and the main are the full page's, byte for byte, so
-the light and dark tokens, the `data-theme` override and the zero-script output are the same; only the shell differs. Exit codes for every
+the light and dark tokens, the `data-theme` override and the zero-script output are the same; only the shell differs. `--shell` adds the interaction shell (§7) to a page that has at least one `ask`, `choose` or `confirm` line and an `export` line; any
+other page is built as without the flag, and stderr says so. With `--artifact` the data block and runtime follow `<main>` and the
+meta tags are still omitted, so the Artifact host's own policy decides whether the runtime runs. `--shell` with `--unsafe-html` is a
+usage error: raw `html` could plant its own controls and data block. Exit codes for every
 command: 0 on success; 1 for `build` on errors without `--force` and for `check` on errors; 2 for a usage error (no command, an
-unknown command, no FILE) or a missing file; 70 for an internal error, such as OUT not being writable, printed to stderr. Flags a
+unknown command, no FILE, `--shell` with `--unsafe-html`) or a missing file; 70 for an internal error, such as OUT not being writable, printed to stderr. Flags a
 command does not know are ignored. `--help`, `-h` or `help` prints the help to stdout and exits 0.
 
 `lede watch FILE [-o OUT]` builds FILE to OUT, or to `NAME.html` beside `NAME.lede`, then rebuilds on every change until stopped. It always
-renders as if `--force` were given, and honours `--unsafe-html` and `--allow-remote`. `lede ast FILE` prints the parsed document,
+renders as if `--force` were given, and honours `--unsafe-html`, `--allow-remote` and `--shell`. `lede ast FILE` prints the parsed document,
 diagnostics included, as JSON on stdout and exits 0 even when the document has errors.
 
 `--json` prints one object keyed by file path; each value is an array of diagnostics:

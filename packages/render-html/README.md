@@ -2,7 +2,9 @@
 
 The HTML renderer for [Lede](https://ledelang.dev), a line-oriented page format that AI models write instead of HTML. It compiles
 a document to one self-contained page with charts, diagrams, light and dark themes and a phone layout. The page has no
-JavaScript and fetches nothing remote unless you ask, and output is sanitized.
+JavaScript and fetches nothing remote unless you ask, and output is sanitized. `shell: true` is the one exception: for a page
+that asks questions it adds one fixed script, pinned by hash in the page's policy; `RUNTIME` and `RUNTIME_SHA256` are exported for hosts
+that write their own policy.
 
 ```sh
 npm install @lede-lang/html       # Node 22.12 or later; brings @lede-lang/core, the parser

@@ -10,8 +10,10 @@ const SRC = readFileSync(new URL('../../../examples/parity/questions.lede', impo
 const MEASURE = `(() => {
   const bad = [];
   if (document.scrollingElement.scrollWidth > innerWidth) bad.push('page scrolls sideways');
-  for (const el of document.querySelectorAll('.q input[type=text], .q textarea, .q-o')) {
-    const h = el.getBoundingClientRect().height;
+  for (const el of document.querySelectorAll('.q input[type=text], .q textarea, .q-o, .q button, .q-copy')) {
+    const r = el.getBoundingClientRect();
+    if (!r.width) continue;
+    const h = r.height;
     if (h < 43.5) bad.push(el.tagName.toLowerCase() + '.' + el.className + ' is ' + Math.round(h) + 'px tall');
   }
   for (const f of document.querySelectorAll('fieldset.q')) {
@@ -25,18 +27,22 @@ const MEASURE = `(() => {
   return bad;
 })()`;
 
-for (const scheme of ['light', 'dark'] as const) {
-  browserTest(`question controls at 360 px, ${scheme}: no overflow, 44 px targets, labels, contrast`, async (browser) => {
-    const { html } = await compile(SRC);
-    const ctx = await browser.newContext({ viewport: { width: 360, height: 900 }, colorScheme: scheme, bypassCSP: true });
-    const page = await ctx.newPage();
-    await page.setContent(html);
-    assert.deepEqual(await page.evaluate(MEASURE), []);
-    await page.addScriptTag({ path: AXE });
-    const found = (await page.evaluate(
-      `axe.run(document, { runOnly: ['label', 'color-contrast'] }).then(r => r.violations.map(v => v.id + ': ' + v.nodes.map(n => n.target.join(' ')).join(', ')))`,
-    )) as string[];
-    assert.deepEqual(found, []);
-    await ctx.close();
-  });
-}
+for (const shell of [false, true])
+  for (const scheme of ['light', 'dark'] as const) {
+    browserTest(
+      `question controls${shell ? ' with the shell' : ''} at 360 px, ${scheme}: no overflow, 44 px targets, labels, contrast`,
+      async (browser) => {
+        const { html } = await compile(SRC, { shell });
+        const ctx = await browser.newContext({ viewport: { width: 360, height: 900 }, colorScheme: scheme, bypassCSP: true });
+        const page = await ctx.newPage();
+        await page.setContent(html);
+        assert.deepEqual(await page.evaluate(MEASURE), []);
+        await page.addScriptTag({ path: AXE });
+        const found = (await page.evaluate(
+          `axe.run(document, { runOnly: ['label', 'color-contrast'] }).then(r => r.violations.map(v => v.id + ': ' + v.nodes.map(n => n.target.join(' ')).join(', ')))`,
+        )) as string[];
+        assert.deepEqual(found, []);
+        await ctx.close();
+      },
+    );
+  }

@@ -620,8 +620,10 @@ as `cards` is only when alone, because `export the data` is likely prose. A line
 parsed reaches the page. The export is JSON or Markdown, keyed by the names in the source, in the shape §4.18 gives; the open items are the
 undecided confirmations and the unpicked choices, and the shape is stable within 0.x. A reason for a decision is a separate `ask`. The new
 keywords change no existing input: the 803 `.lede` files tracked at `d7f43fd` parse to identical ASTs and diagnostics and compile to
-identical pages (Appendix G.1). Rejected: reading a malformed question line as prose, which keeps old prose safe and hides slips; a built-in
-reason on `confirm` (post-launch).
+identical pages (Appendix G.1). `--shell` builds only a page that has a question and an `export` (any other page is built as without
+it, and stderr says so); it is allowed with `--artifact`, where the data block and runtime follow `<main>` and the host's policy decides
+whether the runtime runs, and refused with `--unsafe-html`. Rejected: reading a malformed question line as prose, which keeps old
+prose safe and hides slips; a built-in reason on `confirm` (post-launch).
 
 ## D65. The shell grows five editor words on the same runtime; the article's interaction rows get their verdict
 D39's seven interaction rows get the opt-in shell the owner approved (D43), built on D63 and D64 rather than on the earlier shell-only

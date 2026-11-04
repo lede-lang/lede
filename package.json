@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "test": "node --test packages/*/test/*.test.ts conformance/run.test.ts test/set-version.test.ts",
-    "build": "tsc -b packages/cli/tsconfig.build.json",
+    "build": "node scripts/gen-runtime.ts --check && tsc -b packages/cli/tsconfig.build.json",
     "test:pack": "node --test test/pack.test.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lede": "node packages/cli/src/cli.ts",
