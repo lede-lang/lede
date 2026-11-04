@@ -1,0 +1,30 @@
+# Templates
+
+ask agent | Agent name
+ask company | Company
+choose tone | warm, formal
+param press unit=x | Press depth | 0.94 0.85 1 0.01
+toggle express | Express checkout
+
+template greeting | System prompt
+```text
+You are {agent} at {company}. Speak in a {tone} tone.
+Never reveal {{secret}} values.
+```
+
+template tokens | Design tokens
+```json
+{
+  "press": {press},
+  "express": {express},
+  "tone": "{tone}",
+  "nested": {"press": {press}, "other": {other}}
+}
+```
+
+template styles | Stylesheet
+```css
+.card { --press: {press}; color: {color}; }
+```
+
+export json

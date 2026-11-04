@@ -1,0 +1,78 @@
+@title Release board: plan, tune and sort
+# Release board
+
+Sort the tickets, tune eight rollout settings, switch three flags, and copy the changes back to the agent. This page is the large
+case for the shell: thirty items to place, eight numbers, three switches and a long runbook that fills as you edit.
+
+ask owner | Who signs off on this release?
+
+param canary unit=% | Canary share | 5 0 100 5
+param ramp unit=%/day | Ramp per day | 10 0 50 1
+param timeout unit=ms | Request timeout | 800 100 5000 50
+param retries | Retries before giving up | 2 0 10 1
+param burst unit=req/s | Burst allowance | 120 0 1000 10
+param cache unit=min | Cache lifetime | 15 1 240 1
+param soak unit=h | Soak time before the next step | 6 0 48 2
+param budget unit=% | Error budget left to hold | 2.5 0 10 0.5
+
+toggle checkout_v2 on | Serve the new checkout
+toggle express needs=checkout_v2 | Express checkout
+toggle saved_cards on needs=checkout_v2,express | Saved cards on the express path
+
+bucket triage | Now, Next, Later, Cut | Where does each ticket go?
+triage: ENG-2041 Fix duplicate receipt emails | Now
+triage: ENG-2047 Rotate the signing secret | Now
+triage: "ENG-2052 Retry, then give up" | Next
+triage: ENG-2058 Cache the price table | Next
+triage: ENG-2063 Drop the legacy cookie | Later
+triage: "ENG-2066 Align the ""Pay"" button label" | Next
+triage: ENG-2071 Backfill order totals | Now
+triage: ENG-2074 Rename the queue: orders-v2 | Later
+triage: ENG-2079 Add a health probe | Now
+triage: "ENG-2083 Trim logging; keep the audit trail" | Next
+triage: ENG-2086 Upgrade the card form | Later
+triage: ENG-2090 Remove the unused flag | Cut
+triage: ENG-2092 Replace moment.js with date-fns | Next
+triage: ENG-2095 Document the rollback | Now
+triage: ENG-2098 Throttle the export job | Later
+triage: ENG-2101 Fix the 404 on the receipt page | Now
+triage: ENG-2104 Split the monolith | Cut
+triage: ENG-2107 Add dark mode to the receipt | Later
+triage: ENG-2110 Rate-limit the lookup | Next
+triage: ENG-2113 Migrate the cron jobs | Later
+triage: ENG-2116 Stop retrying on 4xx | Now
+triage: ENG-2119 Pin the base image | Next
+triage: ENG-2122 Review the CSP report | Now
+triage: ENG-2125 Remove the beta banner | Cut
+triage: ENG-2128 Index the orders table | Next
+triage: ENG-2131 Speed up the cart page | Later
+triage: ENG-2134 Fix the tax rounding | Now
+triage: ENG-2137 Switch the mailer | Later
+triage: ENG-2140 Archive old sessions | Cut
+triage: ENG-2143 Add the on-call runbook link | Next
+
+template runbook | Runbook for the on-call engineer
+```text
+Release runbook. Owner: {owner}.
+
+1. Send {canary} of traffic to the new build and watch the error rate for {soak}.
+2. If the error budget left is above {budget}, raise the share by {ramp} per day; otherwise hold and page the owner.
+3. Every request times out after {timeout} and is retried {retries} times with a short pause between tries.
+4. Allow bursts of {burst} and keep cached prices for {cache}; never cache a signed-in basket.
+5. The new checkout is {checkout_v2}. Express checkout is {express}. Saved cards on the express path are {saved_cards}.
+
+Rollback: switch the new checkout off, wait for the queue to drain, then confirm the old path takes orders.
+Do not edit the flags by hand while a step is soaking; ask {owner} first and write the reason in the channel.
+Escalate to the owner after two failed steps, and to the platform team after three. Keep this page open until the
+last ticket is closed, and paste the final export into the release notes so the next shift starts from the same numbers.
+
+Checks before each step: the dashboards load, the synthetic order completes in under {timeout}, and the retry count on the
+payment provider has not moved. Checks after each step: the queue depth is flat, the cache hit rate is steady with a
+lifetime of {cache}, and no ticket from the Now column has been reopened. {owner} signs the final step.
+Contacts: the platform team keeps a rota in the usual place; the payments provider has a status page and a phone line.
+If the provider is down, do not retry beyond {retries} tries; hold the step and tell {owner}.
+```
+
+export json
+export markdown
+export prompt

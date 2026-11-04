@@ -1,0 +1,88 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Switches",
+      "line": 1
+    },
+    {
+      "type": "toggle",
+      "name": "dark",
+      "text": "Dark mode",
+      "on": false,
+      "line": 3
+    },
+    {
+      "type": "toggle",
+      "name": "beta",
+      "text": "Beta features",
+      "on": true,
+      "line": 4
+    },
+    {
+      "type": "toggle",
+      "name": "checkout_v2",
+      "text": "New checkout",
+      "on": false,
+      "line": 5
+    },
+    {
+      "type": "toggle",
+      "name": "express",
+      "text": "Express checkout",
+      "on": false,
+      "needs": [
+        "checkout_v2"
+      ],
+      "line": 6
+    },
+    {
+      "type": "toggle",
+      "name": "ai",
+      "text": "AI assistant",
+      "on": true,
+      "needs": [
+        "checkout_v2",
+        "beta"
+      ],
+      "line": 7
+    },
+    {
+      "type": "toggle",
+      "name": "sync",
+      "text": "Sync with a | in the label",
+      "on": true,
+      "needs": [
+        "beta",
+        "ai"
+      ],
+      "line": 8
+    },
+    {
+      "type": "toggle",
+      "name": "early",
+      "text": "Needs a toggle declared below",
+      "on": false,
+      "needs": [
+        "late"
+      ],
+      "line": 9
+    },
+    {
+      "type": "toggle",
+      "name": "late",
+      "text": "Declared later",
+      "on": false,
+      "line": 10
+    },
+    {
+      "type": "export",
+      "format": "markdown",
+      "line": 12
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

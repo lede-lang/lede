@@ -632,8 +632,9 @@ design: `param NAME [unit=U] | LABEL | DEFAULT MIN MAX STEP` (a slider with a nu
 reader sorts, counted live; items never move in the page, so no drag), `template NAME | LABEL` over a fence in which `{name}` is a slot
 only when `name` is a fillable field declared above it (every other brace is literal text, so JSON and CSS bodies compile; an
 undeclared `{word}` is a warning), and `preset NAME | LABEL | key=value; …` (one click sets several fields). All five are keyword lines
-only in that shape (a name after the word, then `|`, or for `toggle` `on`, `off` or `needs=`), as `export` is only when alone or with
-one word, so `toggle the flag on Monday` stays prose; a line with the shape that is malformed after it fails loudly (D64). All are
+only in that shape (a name after the word and a `|` later on the line, or for `toggle` `on`, `off` or `needs=`), as `export` is only
+when alone or with one word, so `toggle the flag on Monday` stays prose; an option the word does not take before the `|` is a warning, and
+a line with the shape that is malformed after it fails loudly (D64). All are
 blocks in both modes: `build` draws native controls with the written value pre-filled and the export template, with no script or
 button; `--shell` adds behaviour through the one fixed runtime, which stays under 8 KiB and now writes `value` and `aria-invalid`
 beside what D63 allows. If the words do not fit the limit, `preset` goes first, then the template's live count, then its live fill; the

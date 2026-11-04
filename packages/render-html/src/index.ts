@@ -15,13 +15,24 @@ import type {
   Kpi,
   QuestionBlock,
 } from '@lede-lang/core';
-import { browserUrl, exportsOf, fieldsOf, imageSrcKind, num, parse, type ParseOptions } from '@lede-lang/core';
+import { browserUrl, exportsOf, fieldsOf, imageSrcKind, num, parse, presetsOf, type ParseOptions } from '@lede-lang/core';
 import sanitizeHtml from 'sanitize-html';
 import { renderChart } from './chart.ts';
 import { renderFlow } from './diagram.ts';
 import { renderSequence } from './sequence.ts';
-import { serializeExport } from './export.ts';
-import { askHtml, chooseHtml, confirmHtml, exportHtml } from './question.ts';
+import { serializeExport, settle, type Value } from './export.ts';
+import {
+  askHtml,
+  bucketHtml,
+  chooseHtml,
+  confirmHtml,
+  exportHtml,
+  paramHtml,
+  presetHtml,
+  templateHtml,
+  toggleHtml,
+  usesEditors,
+} from './question.ts';
 import { SCRIPT_SRC, shellScripts } from './shell.ts';
 import { css } from './theme.ts';
 import { esc, fmtCell, inline, plain, slug, textWidth } from './util.ts';
@@ -52,6 +63,7 @@ export async function render(doc: LedeDocument, opts: RenderOptions = {}): Promi
     throw new Error('shell cannot be combined with unsafeHtml: raw html could plant its own controls and data block');
   const fields = fieldsOf(doc.blocks);
   const exports = exportsOf(doc.blocks);
+  const presets = presetsOf(doc.blocks);
   const shell = !!opts.shell && !opts.fragment && fields.length > 0 && exports.length > 0;
   const ctx = new Ctx(doc, { ...opts, shell }, fields);
   const mh = masthead(doc, ctx);
@@ -59,8 +71,8 @@ export async function render(doc: LedeDocument, opts: RenderOptions = {}): Promi
   const title = mh.title;
   const main = mainElement(body, prose);
   if (opts.fragment) return main;
-  const style = `<style>${styleOf(doc.meta, fields.length > 0 || exports.length > 0)}</style>`;
-  const scripts = shell ? `${shellScripts(ctx.page, fields, exports)}\n` : '';
+  const style = `<style>${styleOf(doc.meta, fields.length > 0 || exports.length > 0, usesEditors(fields, presets))}</style>`;
+  const scripts = shell ? `${shellScripts(ctx.page, fields, exports, presets)}\n` : '';
   if (opts.artifact) return `<title>${esc(title)}</title>\n${style}\n${main}\n${scripts}`;
   const desc = doc.meta.description ? `\n<meta name="description" content="${esc(doc.meta.description)}">` : '';
   const lang = /^[a-z]{2,3}(-[A-Za-z0-9]+)*$/.test(doc.meta.lang ?? '') ? doc.meta.lang : 'en';
@@ -84,9 +96,12 @@ ${scripts}</body>
 /** `@width wide`. */
 export const isWide = (meta: Record<string, string>): boolean => meta.width === 'wide';
 
-/** The page stylesheet for a document's meta. `controls`: the page has a question field or an `export`, which add their own rules. */
-export const styleOf = (meta: Record<string, string>, controls = false): string =>
-  css({ accent: meta.accent, theme: meta.theme, wide: isWide(meta), controls });
+/**
+ * The page stylesheet for a document's meta. `controls`: the page has a question field or an `export`, which add their own rules.
+ * `editors`: it draws an editor word (`param`, `toggle`, `bucket`, `template` or `preset`), which adds more (`usesEditors`).
+ */
+export const styleOf = (meta: Record<string, string>, controls = false, editors = false): string =>
+  css({ accent: meta.accent, theme: meta.theme, wide: isWide(meta), controls, editors });
 
 /** `<main>` around the page's top-level children (empty ones left out). */
 export const mainElement = (children: string[], prose: boolean): string =>
@@ -454,6 +469,13 @@ export class Ctx {
    * grows as fields arrive, so an `export` drawn mid-stream lists the fields read so far (internal spec, lede-lang/meta).
    */
   readonly fields: QuestionBlock[];
+  /**
+   * The page as written, which a `template`'s filled body and an `export`'s template are drawn from: each field's value (spec §3.2),
+   * the templates filled. Worked out when read, from the fields as they are then, so it follows a page still being written.
+   */
+  get written(): Value[] {
+    return settle(this.fields, []);
+  }
 
   constructor(doc: LedeDocument, opts: RenderOptions, fields: QuestionBlock[] = fieldsOf(doc.blocks)) {
     this.doc = doc;
@@ -621,8 +643,18 @@ export class Ctx {
         return chooseHtml(b, !!this.opts.shell);
       case 'confirm':
         return confirmHtml(b, !!this.opts.shell);
+      case 'param':
+        return paramHtml(b);
+      case 'toggle':
+        return toggleHtml(b);
+      case 'bucket':
+        return bucketHtml(b);
+      case 'template':
+        return templateHtml(b, String(this.written[this.fields.indexOf(b)]));
+      case 'preset':
+        return presetHtml(b, !!this.opts.shell, this.fields);
       case 'export':
-        return exportHtml(b, serializeExport(b.format, this.page, this.fields), !!this.opts.shell);
+        return exportHtml(b, serializeExport(b.format, this.page, this.fields, this.written), !!this.opts.shell);
       case 'kpis':
         return kpis(b, wide, top);
       case 'image': {

@@ -52,6 +52,8 @@ test('--help lists the commands and flags and exits 0, with or without a file', 
     assert.equal(r.status, 0, args.join(' '));
     assert.match(r.stdout, /--dry-run/);
     assert.match(r.stdout, /--shell/);
+    assert.match(r.stdout, /export json,\s+markdown or prompt/);
+    assert.match(r.stdout, /a field \(ask, choose, confirm, param, toggle, bucket or template\)/);
     assert.match(r.stdout, /lede check/);
   }
 });
@@ -222,6 +224,13 @@ test('build --shell adds the pinned runtime to a page with questions, and says s
   assert.match(shell.stdout, /content="[^"]*; script-src 'sha256-[A-Za-z0-9+/]+='"/);
   assert.equal((shell.stdout.match(/<script/g) ?? []).length, 2);
   assert.doesNotMatch(shell.stderr, /had no effect/);
+  // An editor word is a field too (spec §4.19): a page of only a param and an export is a shell page.
+  writeFileSync(join(dir, 'e.lede'), '# Go\nparam n | N | 5 0 10 1\nexport prompt\n');
+  const editor = run(['build', 'e.lede', '--shell'], dir);
+  assert.equal(editor.status, 0, editor.stderr);
+  assert.doesNotMatch(editor.stderr, /had no effect/);
+  assert.match(editor.stdout, /<input type="range" name="n"/);
+  assert.equal((editor.stdout.match(/<script/g) ?? []).length, 2);
   const plain = run(['build', 'q.lede'], dir);
   assert.doesNotMatch(plain.stdout, /<script/, 'D10: no flag, no script');
   const none = run(['build', 'plain.lede', '--shell'], dir);

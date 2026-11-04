@@ -1,0 +1,8 @@
+bucket one | Only
+bucket empty | Now, , Later
+bucket dup | Now, Now, Later
+bucket reserved | Now, (not chosen)
+bucket marker | Now, (empty)
+bucket nine | a, b, c, d, e, f, g, h, i
+bucket open | "a, b
+bucket none |

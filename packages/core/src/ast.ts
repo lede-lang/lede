@@ -265,8 +265,58 @@ export interface ConfirmBlock {
   text: string;
   line: number;
 }
-export type QuestionBlock = AskBlock | ChooseBlock | ConfirmBlock;
-export type ExportFormat = 'json' | 'markdown';
+/**
+ * v0.5 editor words (spec §4.19). `param`: a number on a grid (`value` is the proposed one); `unit` is omitted when unused.
+ * `toggle`: `on` is the proposed state, `needs` the toggles it requires (omitted when none).
+ */
+export interface ParamBlock {
+  type: 'param';
+  name: string;
+  text: string;
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  unit?: string;
+  line: number;
+}
+export interface ToggleBlock {
+  type: 'toggle';
+  name: string;
+  text: string;
+  on: boolean;
+  needs?: string[];
+  line: number;
+}
+/** A bucket set: `buckets` are its B1 to Bn, `items` the `NAME: text | B` lines that followed, in source order. They arrive after the block is emitted. */
+export interface BucketBlock {
+  type: 'bucket';
+  name: string;
+  text: string | null;
+  buckets: string[];
+  items: { text: string; bucket: string; line: number }[];
+  line: number;
+}
+/** `body` is the fence text, `lang` its info string (omitted when empty), `slots` the ordered unique `{name}` fields it fills. */
+export interface TemplateBlock {
+  type: 'template';
+  name: string;
+  text: string;
+  body: string;
+  lang?: string;
+  slots: string[];
+  line: number;
+}
+/** Sets fields declared above it; it has a name but no value in the export, so it is not a field. */
+export interface PresetBlock {
+  type: 'preset';
+  name: string;
+  text: string;
+  values: { name: string; value: string }[];
+  line: number;
+}
+export type QuestionBlock = AskBlock | ChooseBlock | ConfirmBlock | ParamBlock | ToggleBlock | BucketBlock | TemplateBlock;
+export type ExportFormat = 'json' | 'markdown' | 'prompt';
 export interface ExportBlock {
   type: 'export';
   format: ExportFormat;
@@ -294,6 +344,11 @@ export type Block =
   | AskBlock
   | ChooseBlock
   | ConfirmBlock
+  | ParamBlock
+  | ToggleBlock
+  | BucketBlock
+  | TemplateBlock
+  | PresetBlock
   | ExportBlock;
 
 export interface LedeDocument {

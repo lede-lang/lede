@@ -1,0 +1,32 @@
+[
+  {
+    "severity": "warning",
+    "code": "bucket-dup-item",
+    "line": 7,
+    "col": 9
+  },
+  {
+    "severity": "warning",
+    "code": "template-slot",
+    "line": 12,
+    "col": 12
+  },
+  {
+    "severity": "warning",
+    "code": "template-empty",
+    "line": 10,
+    "col": 10
+  },
+  {
+    "severity": "warning",
+    "code": "template-slot",
+    "line": 17,
+    "col": 9
+  },
+  {
+    "severity": "warning",
+    "code": "bucket-empty",
+    "line": 8,
+    "col": 8
+  }
+]

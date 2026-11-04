@@ -1,0 +1,74 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Triage",
+      "line": 1
+    },
+    {
+      "type": "bucket",
+      "name": "triage",
+      "text": "Where does each ticket go?",
+      "buckets": [
+        "Now",
+        "Next",
+        "Later",
+        "Cut"
+      ],
+      "items": [
+        {
+          "text": "ENG-2041 Fix duplicate emails",
+          "bucket": "Now",
+          "line": 6
+        },
+        {
+          "text": "ENG-2047 Rotate the signing secret",
+          "bucket": "Now",
+          "line": 7
+        },
+        {
+          "text": "ENG-2050 Cache the \"plan\" lookup",
+          "bucket": "Next",
+          "line": 8
+        },
+        {
+          "text": "ENG-2052 Retry, then give up",
+          "bucket": "Later",
+          "line": 9
+        },
+        {
+          "text": "ENG-2053 Drop the a | b path",
+          "bucket": "Cut",
+          "line": 10
+        }
+      ],
+      "line": 3
+    },
+    {
+      "type": "bucket",
+      "name": "rank",
+      "text": null,
+      "buckets": [
+        "High, urgent",
+        "Low"
+      ],
+      "items": [
+        {
+          "text": "Alpha",
+          "bucket": "High, urgent",
+          "line": 11
+        }
+      ],
+      "line": 4
+    },
+    {
+      "type": "export",
+      "format": "json",
+      "line": 13
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

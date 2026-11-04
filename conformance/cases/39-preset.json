@@ -1,0 +1,114 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Presets",
+      "line": 1
+    },
+    {
+      "type": "ask",
+      "name": "note",
+      "text": "Note",
+      "lines": 1,
+      "line": 3
+    },
+    {
+      "type": "choose",
+      "name": "easing",
+      "text": null,
+      "options": [
+        "ease-out",
+        "spring",
+        "linear"
+      ],
+      "line": 4
+    },
+    {
+      "type": "param",
+      "name": "press",
+      "text": "Press depth",
+      "value": 0.94,
+      "min": 0.85,
+      "max": 1,
+      "step": 0.01,
+      "unit": "x",
+      "line": 5
+    },
+    {
+      "type": "toggle",
+      "name": "express",
+      "text": "Express checkout",
+      "on": false,
+      "line": 6
+    },
+    {
+      "type": "preset",
+      "name": "snappy",
+      "text": "Snappy",
+      "values": [
+        {
+          "name": "press",
+          "value": "0.96"
+        },
+        {
+          "name": "easing",
+          "value": "ease-out"
+        },
+        {
+          "name": "express",
+          "value": "on"
+        },
+        {
+          "name": "note",
+          "value": "Ship it"
+        }
+      ],
+      "line": 8
+    },
+    {
+      "type": "preset",
+      "name": "calm",
+      "text": "Calm",
+      "values": [
+        {
+          "name": "press",
+          "value": "0.9"
+        },
+        {
+          "name": "easing",
+          "value": "spring"
+        },
+        {
+          "name": "express",
+          "value": "off"
+        },
+        {
+          "name": "note",
+          "value": "a; b = c"
+        }
+      ],
+      "line": 9
+    },
+    {
+      "type": "preset",
+      "name": "plain",
+      "text": "Plain",
+      "values": [
+        {
+          "name": "note",
+          "value": "x=y"
+        }
+      ],
+      "line": 10
+    },
+    {
+      "type": "export",
+      "format": "json",
+      "line": 12
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

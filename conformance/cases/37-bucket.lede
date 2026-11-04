@@ -1,0 +1,13 @@
+# Triage
+
+bucket triage | Now, Next, Later, Cut | Where does each ticket go?
+bucket rank | "High, urgent", Low
+
+triage: ENG-2041 Fix duplicate emails | Now
+triage: ENG-2047 Rotate the signing secret | Now
+triage: ENG-2050 Cache the "plan" lookup | Next
+triage: "ENG-2052 Retry, then give up" | Later
+triage: ENG-2053 Drop the a | b path | Cut
+rank: Alpha | High, urgent
+
+export json

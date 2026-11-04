@@ -1,0 +1,6 @@
+toggle dark on
+toggle light off needs=dark
+toggle both on off | Both words
+toggle x needs=y
+toggle ok | Fine
+export json

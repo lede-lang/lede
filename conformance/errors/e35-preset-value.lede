@@ -1,0 +1,11 @@
+choose size | S, M, L
+toggle dark | Dark mode
+param press unit=x | Press depth | 0.94 0.85 1 0.01
+ask note | Note
+preset a | Not an option | size=XL
+preset b | Not on or off | dark=yes
+preset c | Out of range | press=1.5
+preset d | Off the grid | press=0.945
+preset e | Not a number | press=fast
+preset f | All fine | size=M; dark=on; press=0.9; note=anything
+export json

@@ -28,8 +28,9 @@ options:
   --allow-remote  build: load remote images (links never need it)
   --artifact      build: write only <title>, <style> and <main>, for the Claude Artifact tool, which wraps them in its own page;
                   check/build: also warn about an image path the host cannot serve (W artifact-image)
-  --shell         build/watch: add the interaction shell to a page with ask, choose or confirm lines and an export line: one fixed
-                  script, pinned by hash in the page's policy, that keeps the answers and copies them out. Not with --unsafe-html
+  --shell         build/watch: add the interaction shell to a page with a field (ask, choose, confirm, param, toggle, bucket or template)
+                  and an export line (export json, markdown or prompt): one fixed script, pinned by hash in the page's policy, that
+                  keeps the answers and copies them out. Not with --unsafe-html
   --json          check: print diagnostics as JSON, keyed by file; each has severity, code, message,
                   line, col and, for some codes, a machine-readable \`detail\` object
   --fix           check: rewrite the file to repair mechanical slips (unquoted , or ; in cells,
@@ -96,7 +97,9 @@ async function build(file: string, out: string | null, flags: Set<string>): Prom
     shell,
   });
   if (shell && !wantsShell(doc))
-    process.stderr.write(`${file}: --shell had no effect: the page needs an ask, choose or confirm line and an export line\n`);
+    process.stderr.write(
+      `${file}: --shell had no effect: the page needs a field (ask, choose, confirm, param, toggle, bucket or template) and an export line\n`,
+    );
   if (out) writeFileSync(out, html);
   else process.stdout.write(html);
   if (out)

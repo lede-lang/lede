@@ -1,0 +1,81 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Parameters",
+      "line": 1
+    },
+    {
+      "type": "param",
+      "name": "press",
+      "text": "Press depth",
+      "value": 0.94,
+      "min": 0.85,
+      "max": 1,
+      "step": 0.01,
+      "line": 3
+    },
+    {
+      "type": "param",
+      "name": "morph",
+      "text": "Morph time",
+      "value": 240,
+      "min": 120,
+      "max": 400,
+      "step": 20,
+      "unit": "ms",
+      "line": 4
+    },
+    {
+      "type": "param",
+      "name": "opacity",
+      "text": "Opacity, as a share",
+      "value": 50,
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "% of full",
+      "line": 5
+    },
+    {
+      "type": "param",
+      "name": "offset",
+      "text": "Offset",
+      "value": -2,
+      "min": -10,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",
+      "line": 6
+    },
+    {
+      "type": "param",
+      "name": "gap",
+      "text": "Gap | before | after",
+      "value": 8,
+      "min": 0,
+      "max": 16,
+      "step": 4,
+      "line": 7
+    },
+    {
+      "type": "param",
+      "name": "tilt_2",
+      "text": "Tilt",
+      "value": 0,
+      "min": -1,
+      "max": 1,
+      "step": 0.25,
+      "line": 8
+    },
+    {
+      "type": "export",
+      "format": "json",
+      "line": 10
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

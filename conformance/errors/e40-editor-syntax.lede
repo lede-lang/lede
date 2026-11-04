@@ -1,0 +1,10 @@
+param x | Label | 1 2
+param y | Label
+param z | Label | a b c d
+param w | | 1 0 2 1
+preset p | Label
+preset q | Label |
+preset r | Label | nokey
+preset s | | a=1
+template t |
+toggle u |
