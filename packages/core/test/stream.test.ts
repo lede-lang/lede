@@ -222,8 +222,9 @@ test('a `name:` line that changes nothing gives no update, no reopening and no s
   assert.deepEqual(names(q.events('s: alt "ok"\ns: b -> a : yes\ns: end\n')), ['update:diagram', 'update:diagram', 'update:diagram']);
 });
 
-// `cards` takes nothing after it, so a line that starts "cards on the table" is prose.
-const KEYWORD_LINE = /^((data|chart|table|kpi|diagram|image|grid|step)(\s|$)|cards$)/;
+// `cards` takes nothing after it, so a line that starts "cards on the table" is prose. So is "export the data": `export` is a keyword
+// line only alone or with one word after it.
+const KEYWORD_LINE = /^((data|chart|table|kpi|diagram|image|grid|step|ask|choose|confirm)(\s|$)|export(\s+\S+)?\s*$|cards$)/;
 const nested = (bs: Block[]): Block[] =>
   bs.flatMap((b) => (b.type === 'grid' ? b.children : b.type === 'cards' ? b.items.flatMap((c) => c.blocks) : [b]));
 
@@ -257,6 +258,54 @@ test('tail() is the open block, and never a keyword line', () => {
   assert.deepEqual(open('```=html\n<p>hi</p>\n'), [{ type: 'html', html: '<p>hi</p>', line: 1 }]);
   assert.deepEqual(open('# Done\n'), [], 'a heading is final on its own line');
   assert.deepEqual(open('para\n\n'), [], 'a blank line finishes the paragraph');
+});
+
+test('a question word is a block event on its own line and never a tail, whole or half (ask, choose, confirm, export)', () => {
+  const lines = [
+    ['ask owner | Who signs off on this release?', 'ask'],
+    ['choose risk | low, medium, high', 'choose'],
+    ['confirm migration | The migration ran on staging and rolled back', 'confirm'],
+    ['export json', 'export'],
+  ] as const;
+  const s = new LedeStream();
+  for (const [line, type] of lines) {
+    // Half a line is nothing yet, the way a half kpi line is nothing: no event, no tail, no half field.
+    const cut = Math.ceil(line.length / 2);
+    assert.deepEqual(s.events(line.slice(0, cut)), [], `${type}: half a line`);
+    assert.deepEqual(s.tail(), [], `${type}: half a line`);
+    assert.deepEqual(names(s.events(`${line.slice(cut)}\n`)), [`block:${type}`], `${type}: the whole line`);
+    assert.deepEqual(s.tail(), [], `${type}: a question word is final on its own line`);
+  }
+  assert.deepEqual(
+    s.end().blocks.map((b) => b.type),
+    ['ask', 'choose', 'confirm', 'export'],
+  );
+  // It ends the open block before it, and is a block of its own beside it: the open paragraph and the open kpi row come out first.
+  const p = new LedeStream();
+  assert.deepEqual(names(p.events('Some words\nask a | Who?\n')), ['block:paragraph', 'block:ask']);
+  assert.deepEqual(p.tail(), []);
+  const k = new LedeStream();
+  assert.deepEqual(names(k.events('kpi A | 1 | | x\nchoose b | x, y\n')), ['block:kpis', 'block:choose']);
+  assert.deepEqual(k.tail(), []);
+  // A question line that is wrong is a diagnostic on its own line: no block, no tail, and it does not read as text.
+  const bad = new LedeStream();
+  assert.deepEqual(bad.events('ask the team about it\nconfirm\n'), []);
+  assert.deepEqual(bad.tail(), []);
+  assert.deepEqual(
+    bad.doc.diagnostics.map((d) => d.code),
+    ['question-syntax', 'question-syntax'],
+  );
+  // Inside an open grid the fields are the grid's children, each whole, and the grid is the only thing in the tail.
+  const g = new LedeStream();
+  assert.deepEqual(g.events('grid 3\nask a | Who?\nconfirm b | Sure?\n'), []);
+  const [open] = g.tail();
+  assert.ok(open.type === 'grid');
+  assert.deepEqual(
+    open.children.map((c) => c.type),
+    ['ask', 'confirm'],
+  );
+  assert.deepEqual(names(g.events('choose c | x, y\n')), ['block:grid']);
+  assert.deepEqual(g.tail(), []);
 });
 
 test('tail() copies the open block without structuredClone, and what it returns shares nothing with the parser', () => {
