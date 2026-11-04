@@ -12,13 +12,24 @@ import type {
   Kpi,
   QuestionBlock,
 } from '@lede-lang/core';
-import { browserUrl, exportsOf, imageSrcKind, num, parse, type ParseOptions } from '@lede-lang/core';
+import { browserUrl, exportsOf, fieldsOf, imageSrcKind, num, parse, type ParseOptions } from '@lede-lang/core';
 import sanitizeHtml from 'sanitize-html';
 import { renderChart } from './chart.ts';
 import { renderFlow } from './diagram.ts';
 import { renderSequence } from './sequence.ts';
-import { serializeExport } from './export.ts';
-import { askHtml, chooseHtml, confirmHtml, drawnFields, exportHtml } from './question.ts';
+import { blankAnswers, fillTemplate, serializeExport, settle, type Value } from './export.ts';
+import {
+  askHtml,
+  bucketHtml,
+  chooseHtml,
+  confirmHtml,
+  exportHtml,
+  paramHtml,
+  presetHtml,
+  templateHtml,
+  toggleHtml,
+  usesEditors,
+} from './question.ts';
 import { SCRIPT_SRC, shellScripts } from './shell.ts';
 import { css } from './theme.ts';
 import { esc, fmtCell, inline, plain, slug, textWidth } from './util.ts';
@@ -47,7 +58,7 @@ const WIDE = new Set(['grid', 'diagram']);
 export async function render(doc: LedeDocument, opts: RenderOptions = {}): Promise<string> {
   if (opts.shell && opts.unsafeHtml)
     throw new Error('shell cannot be combined with unsafeHtml: raw html could plant its own controls and data block');
-  const fields = drawnFields(doc.blocks);
+  const fields = fieldsOf(doc.blocks);
   const exports = exportsOf(doc.blocks);
   const shell = !!opts.shell && !opts.fragment && fields.length > 0 && exports.length > 0;
   const ctx = new Ctx(doc, { ...opts, shell }, fields);
@@ -89,7 +100,7 @@ export async function render(doc: LedeDocument, opts: RenderOptions = {}): Promi
   const main = `<main class="doc${prose ? ' prose' : ''}">\n${body.filter(Boolean).join('\n')}\n</main>`;
   if (opts.fragment) return main;
   const controls = fields.length > 0 || exports.length > 0;
-  const style = `<style>${css({ accent: doc.meta.accent, theme: doc.meta.theme, wide: doc.meta.width === 'wide', controls })}</style>`;
+  const style = `<style>${css({ accent: doc.meta.accent, theme: doc.meta.theme, wide: doc.meta.width === 'wide', controls, editors: usesEditors(doc.blocks) })}</style>`;
   const scripts = shell ? `${shellScripts(ctx.page, fields, exports)}\n` : '';
   if (opts.artifact) return `<title>${esc(title)}</title>\n${style}\n${main}\n${scripts}`;
   const desc = doc.meta.description ? `\n<meta name="description" content="${esc(doc.meta.description)}">` : '';
@@ -306,6 +317,8 @@ class Ctx {
   private readonly picks: string[];
   /** The page's question fields in source order, and its title for the export (none when it has no title). */
   readonly fields: QuestionBlock[];
+  /** The page as written, computed once: each field's value (spec §3.2), with the templates filled. */
+  readonly written: Value[];
   readonly page: string | undefined;
 
   constructor(doc: LedeDocument, opts: RenderOptions, fields: QuestionBlock[]) {
@@ -313,6 +326,7 @@ class Ctx {
     this.opts = opts;
     this.picks = picksOf(doc.blocks);
     this.fields = fields;
+    this.written = settle(fields, blankAnswers(fields));
     const h1 = doc.blocks.find((b) => b.type === 'heading' && b.level === 1);
     this.page = plain(doc.meta.title || (h1 && h1.type === 'heading' ? h1.text : '')).trim() || undefined;
   }
@@ -427,14 +441,17 @@ class Ctx {
       case 'confirm':
         return confirmHtml(b, !!this.opts.shell);
       case 'param':
+        return paramHtml(b);
       case 'toggle':
+        return toggleHtml(b);
       case 'bucket':
+        return bucketHtml(b);
       case 'template':
+        return templateHtml(b, fillTemplate(b, this.fields, this.written));
       case 'preset':
-        // Parsed (spec §4.19); drawn by the render change that follows the parser.
-        return '';
+        return presetHtml(b, !!this.opts.shell, this.fields);
       case 'export':
-        return exportHtml(b, serializeExport(b.format, this.page, this.fields), !!this.opts.shell);
+        return exportHtml(b, serializeExport(b.format, this.page, this.fields, this.written), !!this.opts.shell);
       case 'kpis':
         return kpis(b, wide, top);
       case 'image': {

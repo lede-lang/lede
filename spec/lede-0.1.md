@@ -312,7 +312,9 @@ empty `ask` is not open. The page title is `@title`, else the first `#` heading,
   or equals `(empty)` or `(not chosen)`, is written as `- NAME:`, a blank line, then a fenced block indented two spaces whose fence
   is one backtick longer than the longest run in the value (three at least); empty lines inside stay empty. U+0085, U+2028 and
   U+2029 in the title and in options become a space.
-- Both formats carry the same trimmed answers. The template of an ordinary page is the export of the blank page.
+- Both formats carry the same trimmed answers. The template of an ordinary page is the export of the page as written, which is the blank
+  page when it has only the words above. The editor words (§4.19) add their values, a `blocked` list and the `prompt` format, and change
+  nothing written here.
 
 ```json
 { "page": "Release 4.2 go/no-go", "open": ["oncall"],
@@ -320,15 +322,17 @@ empty `ask` is not open. The page title is `@title`, else the first `#` heading,
 ```
 
 Ordinary build rendering: `ask` a one-line field or text area, `choose` a radio group, `confirm` an Approve and a Reject radio
-beside the statement, `export` the blank-page template in a labelled `pre`. No script, no `button`, no `form`. The export shape is
-stable within 0.x (D64).
+beside the statement, `export` the template of the page as written in a labelled `pre`. No script, no `button`, no `form`. The export
+shape is stable within 0.x (D64).
 
 ### 4.19 Editor words
 Status: **preview**, D65. Five more lines make a page the reader edits and sends back: a number on a slider, a switch with prerequisites,
 items sorted into buckets, a text with `{slots}` that fills in, and a one-click set of values. Like the question words (§4.18) they are
-blocks in every build mode, and a document without them parses to exactly the AST it had before (Appendix G.2). This section is the
-parser's contract. How a page draws them and what the three export formats write for them is added to §4.18 and §7 with the renderer;
-until then the compiler parses them and leaves them out of the page and its export.
+blocks in every build mode, and a document without them parses to exactly the AST it had before and compiles to the same bytes (Appendix
+G.2). This section is the grammar, how a page draws the words (below) and what the three export formats write for them. The live
+behaviour under `--shell` (the slider and number box following each other, the warning, the counts, the template refilling, the preset
+button) is not built yet: a shell page that has one of these words carries the shell's script, which stops at once and leaves the page as
+the ordinary build draws it.
 
 ```
 param NAME [unit=U] | LABEL | DEFAULT MIN MAX STEP
@@ -403,6 +407,49 @@ names; `line` is the `template` line), `{type:"preset", name, text, values:[{nam
 line}`. `fieldsOf` returns the seven field kinds in source order, including those inside `cards` and `grid`; `presetsOf` returns the
 presets.
 
+**Drawing.** In every mode each word draws native controls with the proposed value filled in, and no `button`, `form`, `select`, `output`
+or `id`. LABEL and QUESTION are inline text (§5); names, numbers, option names and item texts are plain text.
+- `param`: a labelled `input type="range"` and an `input type="number"` with the same `name`, `min`, `max`, `step` and `value`, then the
+  unit as text. The number box carries the accessible name `LABEL, value`. The number box is the one the export reads.
+- `toggle`: an `input type="checkbox"` (`value="on"`, `checked` when the state is `on`) in a label, then, outside the label, `Needs A, B`
+  when `needs=` is given and an empty `role="status"` span the shell writes its warning in. The checkbox's name is the label alone.
+- `bucket`: the legend is the QUESTION, else the set's name; a row of count tiles, one per bucket, each the number of items written into
+  it; then an ordered list with one row per item, each row the item text and a radio group (`name="SET:i"`, i the item's index from 0,
+  one radio per bucket, the written one checked). A set with no item draws the tiles and no list. Items never move in the page.
+- `template`: the body with each slot replaced by the field's value as written (below), in a labelled `pre`, and the count of its
+  characters (Unicode code points) beneath.
+- `preset`: `LABEL: key value, key value` as text, a `param` value followed by its unit. With `--shell` a hidden button named LABEL
+  precedes the text for the shell to reveal; without it there is no button.
+
+The CSS for these words is added only to a page that draws one, so every other page keeps its bytes.
+
+**The export for the editor words.** Values: `param` the number (the page's default when the box is empty or not a number); `toggle` `on` or
+`off`; `bucket` the bucket each item is in, in the item order (an item with no valid bucket is where it was written); `template` the
+body with each slot replaced, once and in one pass over the body, by the slot field's value as text: an `ask` or `choose` its text, a
+`param` its number then a space and its unit when it has one, a `toggle` `on` or `off`. An `ask` left empty and a `choose` left unpicked
+leave `{name}` as written, a value that itself holds `{other}` is not expanded, and every brace sequence that is not a slot stays. A
+toggle is _blocked_ when it is `on` and a toggle it `needs` is `off`; a `needs` name that is no toggle is never met. `open` is as in §4.18.
+The export of an ordinary page is the export of the page as written: each `param` at its default, each `toggle` and item where its line
+puts it, each `template` filled from those, each `ask` empty, `choose` unpicked and `confirm` open.
+- JSON: `{"page"?, "open", "blocked"?, "answers"}`. `blocked` (the blocked toggles' names in source order) is present only on a page
+  that has a toggle. In `answers`, a `param` is a number, a `toggle` `"on"` or `"off"`, a `bucket` an object from every bucket's name, in
+  order, to the array of the item texts in it, and a `template` the filled text.
+- Markdown: after `Open: …`, `Blocked: a, b` or `Blocked: none` when the page has a toggle. Then `- NAME: 0.94 x` for a `param` (the
+  unit after a space when there is one) and `- NAME: on` for a `toggle`. A `bucket` is `- NAME:` followed by one line per bucket in
+  order, `  - B: item, item`; an item text that holds `,`, `;` or `"`, or is spelled `(none)`, is written as a quoted cell (`"` doubled),
+  and an empty bucket is `  - B: (none)`. A `template` is `- NAME:`, a blank line and its text in a fenced block as for a multi-line
+  `ask` (`(empty)` when the text is empty). U+0085, U+2028 and U+2029 in item texts and bucket names become a space.
+- Prompt: the text an agent applies without diffing. The first line is `Apply these changes to TITLE:` (`Apply these changes:` with no
+  title), then a blank line, then one line per changed field in source order and, for a `bucket`, one line per moved item in item order.
+  A field is changed when its value differs from the page as written; an `ask`, `choose` and `confirm` compare against blank. The lines:
+  `- NAME: VALUE (was OLD)` with OLD `empty`, `not chosen`, `open`, the written number and unit, or `on`/`off` (a multi-line or
+  sentinel `ask` writes `- NAME: (was empty)` and then the fence form of §4.18), and `- SET: "ITEM TEXT" moved to B (was A)` with the
+  item text always a quoted cell (`"` doubled), so a `:` or `(was` inside it cannot be misread. A reader takes a line of a bucket set's
+  name for a move and any other for a field. After a blank line: `Open: a, b` when any field is open, `Blocked: a, b` when any toggle is
+  blocked, and `Unchanged: a, b` for every field that has no line, is not open and is not blocked (a template always, a set whose items
+  all stayed). A line is left out when its list is empty. When nothing changed the text is the heading, a blank line and `No changes.`,
+  with no other line, even if a field is open. A template's text is not repeated: its slots are fields and appear by name.
+
 ## 5. Inline markup
 `` `code` ``, `**bold**`, `*italic*` or `_italic_`, `[text](url)`. URLs must be `http`,
 `https`, `mailto`, relative or `#fragment`; others render as plain text. `\` escapes
@@ -427,8 +474,8 @@ block flushed) is always a valid document. The partial last line (no `\n` yet) i
 
 - A complete page: `<!doctype html>`, `lang`, charset, viewport, one `<style>`; **no
   executable JavaScript**, so the output works under `script-src 'none'`. Question words (§4.18) draw
-  plain controls (text, radio, text area) with no script, `button` or `form`, and leave the policy unchanged. That holds for every
-  page built without `--shell`.
+  plain controls (text, radio, text area) with no script, `button` or `form`, and leave the policy unchanged; the editor words (§4.19)
+  add range, number and checkbox inputs, lists and a `pre`, on the same terms. That holds for every page built without `--shell`.
 - With `--shell` (§9), a page that has a question and an `export` carries exactly two scripts after `<main>`: an inert
   `application/json` block (the title, the field names and kinds, the formats; `<`, `>`, `&`, U+2028 and U+2029 written as `\uXXXX`)
   and the compiler's one fixed runtime, under 8 KiB. The page policy is the ordinary one plus `script-src 'sha256-…'` naming the
@@ -469,8 +516,10 @@ URLs (§4.16), in `image` blocks and as `<img>` in `html` blocks. Links render t
 `https:`, to the page CSP's `img-src`, so an `http:` image is written into the page and the browser then blocks it. `--artifact` writes
 only `<title>`, the page's `<style>` and its `<main>`, in that order: no doctype, `html`, `head` or `body`, and no `meta` tags or CSP. The
 Claude Artifact tool wraps a file in a page of its own and sets those itself. The style and the main are the full page's, byte for byte, so
-the light and dark tokens, the `data-theme` override and the zero-script output are the same; only the shell differs. `--shell` adds the interaction shell (§7) to a page that has at least one `ask`, `choose` or `confirm` line and an `export` line
-(`export json`, `export markdown` or `export prompt`); any other page is built as without the flag, and stderr says so. With `--artifact` the data block and runtime follow `<main>` and the
+the light and dark tokens, the `data-theme` override and the zero-script output are the same; only the shell differs. `--shell` adds the interaction shell (§7) to a page that has at least one field (`ask`, `choose`, `confirm`, `param`, `toggle`, `bucket`
+or `template`) and an `export` line (`export json`, `export markdown` or `export prompt`); any other page is built as without the flag,
+and stderr says so. The shell does not yet act on the editor words (§4.19): on a page that has one the script stops and leaves the page
+as the ordinary build draws it. With `--artifact` the data block and runtime follow `<main>` and the
 meta tags are still omitted, so the Artifact host's own policy decides whether the runtime runs. `--shell` with `--unsafe-html` is a
 usage error: raw `html` could plant its own controls and data block. Exit codes for every
 command: 0 on success; 1 for `build` on errors without `--force` and for `check` on errors; 2 for a usage error (no command, an
@@ -879,3 +928,9 @@ tracked on `main` at `de5408c` (benchmark outputs, examples, conformance, fixtur
 one: none has a line that starts with one of the five words, and the ASTs and diagnostics (codes, severities, lines, columns and
 `detail`) are identical for all 814. The only difference is the message of the E `export-format` in conformance error e24, which
 now reads `json, markdown or prompt`. Every earlier conformance case passes unedited.
+
+**What changed for existing pages.** None. The same 814 files, none of which has an editor word, were compiled in seven modes (plain,
+`--shell`, `--artifact`, `--shell --artifact`, fragment, `--allow-remote` and `--unsafe-html`) with the renderer at `de5408c` and with the
+renderer that draws the editor words, on the parser at `113fc51`: 5,698 pages, byte-identical in every one. The markup, the CSS and the
+`prompt` note exist only on a page that has an editor word or `export prompt`. A page with an editor word draws the controls of §4.19;
+under `--shell` the script stops at once on it (§4.19, status), so the shell's behaviour on a question-only page is unchanged.

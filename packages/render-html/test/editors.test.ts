@@ -1,19 +1,14 @@
 // The editor words in the page and in the export (spec §4.19, D65): markup, the three export formats and their readers.
-// Requirement numbers are those of the internal spec (lede-lang/meta). Every check here is red until the renderer draws the words.
+// Requirement numbers are those of the internal spec (lede-lang/meta).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { fieldsOf, LedeStream, parse, type ExportFormat, type QuestionBlock } from '@lede-lang/core';
+import { fieldsOf, LedeStream, parse, type BucketBlock, type QuestionBlock } from '@lede-lang/core';
 import { compile, render } from '../src/index.ts';
-import { blankAnswers, cleanText, serializeExport } from '../src/export.ts';
+import { blankAnswers, cleanText, serializeExport, type Value } from '../src/export.ts';
 import { rng, text } from './fuzz.ts';
 
-/**
- * One value per field, parallel to `fieldsOf`: `ask` text, `choose` option or null, `confirm` word, `param` number, `toggle` `on`
- * or `off`, `bucket` the bucket name of each item in order, `template` ignored (null).
- */
-type Value = string | number | string[] | null;
-const serialize = serializeExport as (format: ExportFormat, page: string | undefined, fields: QuestionBlock[], values?: Value[]) => string;
-const initial = blankAnswers as (fields: QuestionBlock[]) => Value[];
+const serialize = serializeExport;
+const initial = blankAnswers;
 const fieldsFor = (src: string): QuestionBlock[] => fieldsOf(parse(src).blocks);
 
 const SRC = [
@@ -70,7 +65,7 @@ test('3.1 param draws a labelled range and a number box that share a name, bound
   // No unit, no unit span; a label with markup keeps its text in the accessible name.
   const bare = (await compile('param n | The **bold** one | 5 0 10 1')).html;
   assert.ok(bare.includes('<span class="q-pr"><input type="range" name="n"'));
-  assert.equal(bare.includes('q-u'), false);
+  assert.equal(mainOf(bare).includes('q-u'), false);
   assert.ok(bare.includes('aria-label="The bold one, value"'));
   assert.ok(bare.includes('<span class="q-t">The <strong>bold</strong> one</span>'));
 });
@@ -90,7 +85,7 @@ test('3.1 toggle draws a checkbox, checked when on, with its needs and its statu
     ),
   );
   assert.ok((await compile('toggle a | A\ntoggle b | B\ntoggle c needs=a,b | C')).html.includes('<span class="q-nd">Needs a, b</span>'));
-  assert.equal(html.includes('aria-invalid'), false, 'only the runtime sets it');
+  assert.equal(mainOf(html).includes('aria-invalid'), false, 'only the runtime sets it');
 });
 
 test('3.1 bucket draws a count tile per bucket and an ordered list of items, each with a radio group, the written one checked', async () => {
@@ -120,7 +115,7 @@ test('3.1 bucket draws a count tile per bucket and an ordered list of items, eac
   // Without a QUESTION the legend is the set's name; a set with no item has tiles and no list.
   const bare = (await compile('bucket b | A, B')).html;
   assert.ok(bare.includes('<legend class="q-t">b</legend><ul class="q-bk"><li><span class="q-n">0</span> A</li>'));
-  assert.equal(bare.includes('q-items'), false);
+  assert.equal(mainOf(bare).includes('q-items'), false);
 });
 
 test('3.1 template draws the filled body in a named pre with a character count; preset draws its values as text', async () => {
@@ -230,14 +225,13 @@ for (const shell of [false, true])
 test('3.1 in ordinary mode there is no button; with the shell the only new one is a hidden .q-pre per preset', async () => {
   const ordinary = (await compile(SRC)).html;
   assert.equal(/<(button|select|output|form)\b/.test(ordinary), false);
-  assert.equal(ordinary.includes('q-pre'), false);
+  assert.equal(mainOf(ordinary).includes('class="q-pre"'), false);
   assert.equal(ordinary.includes('<script'), false);
   const shell = (await compile(SRC, { shell: true })).html;
   assert.equal(shell.match(/<button type="button" class="q-pre" hidden>Snappy<\/button>/g)?.length, 1);
   assert.ok(shell.includes('<div class="q q-preset"><button type="button" class="q-pre" hidden>Snappy</button><span class="q-pv">'));
   const classes = [...shell.matchAll(/<button\b[^>]*\bclass="([^"]*)"/g)].map((m) => m[1]);
   assert.deepEqual([...new Set(classes)].toSorted(), ['q-clear', 'q-copy', 'q-pre']);
-  assert.ok(!shell.slice(0, shell.indexOf('<main')).includes('q-pre'));
 });
 
 test('3.1 the control CSS for the editor words is added only to a page that has one', async () => {
@@ -432,7 +426,9 @@ test('5.2 Markdown: an item text with a comma, semicolon or quote, or spelled (n
 });
 
 test('5.2 Markdown and prompt: a line separator in an item text or the title cannot start a line', () => {
-  const f = fieldsFor('bucket b | A, B\nb: one\u2028- forged: x | A\nexport prompt');
+  // The parser does not read a line holding U+2028 as an item line (its `.` stops there), so the text is set on the block.
+  const f = fieldsFor('bucket b | A, B\nb: one | A\nexport prompt');
+  (f[0] as BucketBlock).items[0].text = 'one\u2028- forged: x';
   const page = 'T\u2029- forged: approved';
   for (const fmt of ['markdown', 'prompt'] as const) {
     const out = serialize(fmt, page, f, [['B']]);

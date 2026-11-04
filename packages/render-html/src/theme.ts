@@ -42,7 +42,50 @@ legend.q-t+*{clear:both}
 .q-bar .q-xn2,.q-bar .q-st{margin:0}
 `;
 
-export function css(opts: { accent?: string; theme?: string; wide?: boolean; controls?: boolean }): string {
+/**
+ * The editor words' controls (spec §4.19), after the rules above and under the same `.q` gate: added only to a page that draws one,
+ * so every other page keeps its bytes. No new tokens. The preset row keeps its box when the runtime swaps its text for its button
+ * (the two share one grid cell, and the hidden text keeps its box through `visibility`), so activation moves nothing.
+ */
+const EDITORS = `/* editor words */
+.q-pr{display:flex;align-items:center;gap:10px}
+.q-pr input[type=range]{flex:1 1 auto;min-width:0;height:44px;margin:0;background:transparent;accent-color:var(--accent)}
+.q-pr input[type=number]{flex:none;width:5.5em;min-height:44px;font:16px/1.4 var(--sans);color:var(--fg);background:var(--bg);border:1px solid var(--line2);border-radius:8px;padding:9px 8px;text-align:right}
+.q-u{flex:none;font:14px/1 var(--sans);color:var(--fg2)}
+.q-toggle{display:flex;flex-wrap:wrap;align-items:center}
+.q-toggle>label{display:flex;align-items:center;gap:10px;flex:1 1 100%;min-height:44px;cursor:pointer}
+.q-toggle>label input{flex:none;width:20px;height:20px;margin:0;accent-color:var(--accent)}
+.q-toggle .q-t{margin:0}
+.q-nd,.q-toggle .q-st{margin:0;font:14px/1.5 var(--sans);color:var(--fg2)}
+.q-toggle .q-st:not(:empty){margin-left:12px}
+.q-toggle:has([aria-invalid=true]) .q-st{color:var(--bad)}
+.q-n{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--fg)}
+.q-bk{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px;padding:0;list-style:none}
+.q-bk li{flex:1 1 4.5rem;min-width:0;margin:0;padding:8px 12px;background:var(--bg);border:1px solid var(--line);border-radius:10px;font:600 12px/1.3 var(--sans);letter-spacing:.04em;text-transform:uppercase;color:var(--fg2);overflow-wrap:anywhere}
+.q-bk .q-n{display:block;font-size:1.5rem;line-height:1.2;font-weight:600;letter-spacing:0}
+.q-items{display:flex;flex-direction:column;gap:12px;margin:0;padding:0;list-style:none}
+.q-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 16px;align-items:center}
+.q-items>li{margin:0;min-height:44px}
+.q-items>li::before{top:10px}
+.q-il{display:flex;align-items:center;min-height:44px;font:15px/1.45 var(--sans);overflow-wrap:anywhere}
+.q-seg{display:flex;flex-wrap:wrap;gap:6px}
+.q-seg label{display:flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--bg);font:14px/1.2 var(--sans);cursor:pointer;transition:background-color .12s,border-color .12s}
+.q-seg label:has(input:checked){border-color:var(--accent);background:var(--accent-tint)}
+.q-seg input{flex:none;width:16px;height:16px;margin:0;accent-color:var(--accent)}
+.q-tpl{margin:0}
+.q-tpl pre.code{background:var(--bg)}
+.q-cnt{margin:8px 0 0;font:14px/1.5 var(--sans);color:var(--fg2)}
+.q-preset{display:grid}
+.q-preset>*{grid-area:1/1}
+.q-pre{align-self:start;justify-self:start;min-height:44px;padding:0 16px;font:600 14px/1 var(--sans);color:var(--fg);background:var(--surface);border:1px solid var(--accent-line);border-radius:8px;cursor:pointer}
+.q-pre:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.q-pv{display:flex;align-items:center;min-height:44px;font:14px/1.5 var(--sans);color:var(--fg2);overflow-wrap:anywhere}
+.q-pv[hidden]{display:flex!important;visibility:hidden}
+@media (max-width:30em){.q-item{grid-template-columns:minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){.q-seg label{transition:none}}
+`;
+
+export function css(opts: { accent?: string; theme?: string; wide?: boolean; controls?: boolean; editors?: boolean }): string {
   const accent = opts.accent && HEX_COLOR.test(opts.accent) ? `--accent:${opts.accent};--accent-ink:${opts.accent};` : '';
   const forced =
     opts.theme === 'dark'
@@ -524,5 +567,5 @@ ol.steps.sx>li>.sn{grid-column:2;min-width:0;color:var(--fg2);overflow-wrap:anyw
   table.lt.stack td .cb{min-width:0;padding:3px 8px;text-align:left}
 }
 /* end stream v04-2 */
-${opts.controls ? CONTROLS : ''}`;
+${opts.controls ? CONTROLS : ''}${opts.controls && opts.editors ? EDITORS : ''}`;
 }
