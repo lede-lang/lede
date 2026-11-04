@@ -953,9 +953,14 @@ one: none has a line that starts with one of the five words, and the ASTs and di
 `detail`) are identical for all 814. The only difference is the message of the E `export-format` in conformance error e24, which
 now reads `json, markdown or prompt`. Every earlier conformance case passes unedited.
 
-**What changed for existing pages.** None. The same 814 files, none of which has an editor word, were compiled in seven modes (plain,
-`--shell`, `--artifact`, `--shell --artifact`, fragment, `--allow-remote` and `--unsafe-html`) with the renderer at `de5408c` and with the
-renderer that draws the editor words, on the parser at `113fc51`: 5,698 pages, byte-identical in every one. The markup, the CSS and the
-`prompt` note exist only on a page that has an editor word or `export prompt`. A page with an editor word draws the controls of §4.19,
-and under `--shell` the runtime acts on them. The shell's behaviour on a question-only page is unchanged; its data block now carries
-version 2 on every shell page (§7).
+**What changed for existing pages.** A page built without `--shell` is unchanged; the `--shell` build of a question page changes in its
+scripts. The same 814 files, none of which has an editor word, were compiled in seven modes (plain, `--shell`, `--artifact`, `--shell
+--artifact`, fragment, `--allow-remote` and `--unsafe-html`) with the renderer at `de5408c` and with the renderer that draws the editor
+words: 5,698 pages, of which 5,682 are byte-identical, every page in the five modes that carry no script among them. The other 16 are the
+`--shell` and `--shell --artifact` builds of the eight files that ask a question and have an export: `conformance/cases/31-ask`,
+`32-choose`, `33-confirm` and `34-export`, `conformance/errors/e22-question-names`, `e23-choose-options` and `e24-ask-lines-export`, and
+`examples/parity/questions`. They carry the new runtime, so their data block (version 2 on every shell page, §7), their script and the
+hash in their page policy change; with the two script elements and that hash taken out, each is byte-identical to the old build, and any
+other file builds as without `--shell` (D64). The markup, the CSS and the `prompt` note exist only on a page that has an editor word or
+`export prompt`. A page with an editor word draws the controls of §4.19, and under `--shell` the runtime acts on them. The shell's
+behaviour on a question-only page is unchanged.
