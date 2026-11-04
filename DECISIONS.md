@@ -721,8 +721,8 @@ that open tail, a diagram holds a placeholder of about its height until a line t
 page before it. Element ids are unchanged and `render()` bytes are pinned by a new per-file hash fixture, so compiled pages do not
 move. The flow layout engine (elkjs) becomes a lazily loaded chunk in `@lede-lang/html` and runs in a Web Worker in the viewer, so a
 text-only page loads no chunk and starts no Worker. Core gains `LedeStream.events()` and `tail()` (spec §6); the editor words of D65
-stream with them: a `bucket` set grows by item lines, so it is an `update` per item and a `seal` at the first other line, as a diagram
-is, and an open `template` fence is in the tail as the template. The packages gain a browser
+stream with them: a `bucket` set grows by item lines, so it is a `bucket-update` per item and a `bucket-seal` at the first other line, as a diagram
+has `update` and `seal` (the bucket events are kinds of their own, so `update` and `seal` always carry a diagram), and an open `template` fence is in the tail as the template. The packages gain a browser
 build (`dist/browser/`, esbuild at build time), which lets the site's playground stop bundling from a checkout. Acceptance, measured by
 `bench/src/stream-bench.ts` on the 180 v0.4 pages at 50 tokens a second against the same tasks' HTML streamed the same way: first block
 painted within one frame (16.7 ms) of its newline, cumulative layout shift under 0.05, final DOM equal to `lede build` before the settle
