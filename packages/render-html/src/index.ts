@@ -17,7 +17,7 @@ import sanitizeHtml from 'sanitize-html';
 import { renderChart } from './chart.ts';
 import { renderFlow } from './diagram.ts';
 import { renderSequence } from './sequence.ts';
-import { blankAnswers, fillTemplate, serializeExport, settle, type Value } from './export.ts';
+import { serializeExport, settle, type Value } from './export.ts';
 import {
   askHtml,
   bucketHtml,
@@ -60,6 +60,7 @@ export async function render(doc: LedeDocument, opts: RenderOptions = {}): Promi
     throw new Error('shell cannot be combined with unsafeHtml: raw html could plant its own controls and data block');
   const fields = fieldsOf(doc.blocks);
   const exports = exportsOf(doc.blocks);
+  const presets = presetsOf(doc.blocks);
   const shell = !!opts.shell && !opts.fragment && fields.length > 0 && exports.length > 0;
   const ctx = new Ctx(doc, { ...opts, shell }, fields);
   const blocks = doc.blocks.filter((b) => b.type !== 'data');
@@ -100,8 +101,8 @@ export async function render(doc: LedeDocument, opts: RenderOptions = {}): Promi
   const main = `<main class="doc${prose ? ' prose' : ''}">\n${body.filter(Boolean).join('\n')}\n</main>`;
   if (opts.fragment) return main;
   const controls = fields.length > 0 || exports.length > 0;
-  const style = `<style>${css({ accent: doc.meta.accent, theme: doc.meta.theme, wide: doc.meta.width === 'wide', controls, editors: usesEditors(doc.blocks) })}</style>`;
-  const scripts = shell ? `${shellScripts(ctx.page, fields, exports, presetsOf(doc.blocks))}\n` : '';
+  const style = `<style>${css({ accent: doc.meta.accent, theme: doc.meta.theme, wide: doc.meta.width === 'wide', controls, editors: usesEditors(fields, presets) })}</style>`;
+  const scripts = shell ? `${shellScripts(ctx.page, fields, exports, presets)}\n` : '';
   if (opts.artifact) return `<title>${esc(title)}</title>\n${style}\n${main}\n${scripts}`;
   const desc = doc.meta.description ? `\n<meta name="description" content="${esc(doc.meta.description)}">` : '';
   const lang = /^[a-z]{2,3}(-[A-Za-z0-9]+)*$/.test(doc.meta.lang ?? '') ? doc.meta.lang : 'en';
@@ -326,7 +327,7 @@ class Ctx {
     this.opts = opts;
     this.picks = picksOf(doc.blocks);
     this.fields = fields;
-    this.written = settle(fields, blankAnswers(fields));
+    this.written = settle(fields, []);
     const h1 = doc.blocks.find((b) => b.type === 'heading' && b.level === 1);
     this.page = plain(doc.meta.title || (h1 && h1.type === 'heading' ? h1.text : '')).trim() || undefined;
   }
@@ -447,7 +448,7 @@ class Ctx {
       case 'bucket':
         return bucketHtml(b);
       case 'template':
-        return templateHtml(b, fillTemplate(b, this.fields, this.written));
+        return templateHtml(b, String(this.written[this.fields.indexOf(b)]));
       case 'preset':
         return presetHtml(b, !!this.opts.shell, this.fields);
       case 'export':

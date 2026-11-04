@@ -1,10 +1,8 @@
 // Markup for the question words (spec §4.18) and the editor words (spec §4.19). Plain controls with a fixed attribute set; no
 // script, no form, no id. The shell adds its buttons and copy bar on top of exactly this markup (spec §7).
 import {
-  fieldsOf,
-  presetsOf,
+  FIELD_KINDS,
   type AskBlock,
-  type Block,
   type BucketBlock,
   type ChooseBlock,
   type ConfirmBlock,
@@ -15,6 +13,7 @@ import {
   type TemplateBlock,
   type ToggleBlock,
 } from '@lede-lang/core';
+import { paramText } from './export.ts';
 import { esc, inline, plain } from './util.ts';
 
 export function askHtml(b: AskBlock): string {
@@ -30,20 +29,20 @@ const radio = (name: string, value: string, label: string, cls = '') =>
 
 const clear = (shell: boolean) => (shell ? '<button type="button" class="q-clear" hidden>Clear</button>' : '');
 
+/** The legend of a `choose` or a `bucket`: its question, or its name when it was written without one. */
+const legendOf = (b: { name: string; text: string | null }): string => (b.text === null ? esc(b.name) : inline(b.text));
+
 export function chooseHtml(b: ChooseBlock, shell: boolean): string {
-  const legend = b.text === null ? esc(b.name) : inline(b.text);
-  return `<fieldset class="q q-choose"><legend class="q-t">${legend}</legend>${b.options.map((o) => radio(b.name, o, o)).join('')}${clear(shell)}</fieldset>`;
+  return `<fieldset class="q q-choose"><legend class="q-t">${legendOf(b)}</legend>${b.options.map((o) => radio(b.name, o, o)).join('')}${clear(shell)}</fieldset>`;
 }
 
 export function confirmHtml(b: ConfirmBlock, shell: boolean): string {
   return `<fieldset class="q q-confirm"><legend class="q-t">${inline(b.text)}</legend>${radio(b.name, 'approved', 'Approve', ' q-yes')}${radio(b.name, 'rejected', 'Reject', ' q-no')}${clear(shell)}</fieldset>`;
 }
 
-const EDITOR_KINDS: ReadonlySet<string> = new Set(['param', 'toggle', 'bucket', 'template']);
-
 /** Whether the page draws an editor word, which is when it carries the CSS for them (spec §4.19). */
-export const usesEditors = (blocks: Block[]): boolean =>
-  fieldsOf(blocks).some((f) => EDITOR_KINDS.has(f.type)) || presetsOf(blocks).length > 0;
+export const usesEditors = (fields: QuestionBlock[], presets: PresetBlock[]): boolean =>
+  presets.length > 0 || fields.some((f) => FIELD_KINDS[f.type].editor);
 
 const num = (n: number) => esc(String(n));
 
@@ -68,7 +67,6 @@ export function toggleHtml(b: ToggleBlock): string {
 
 /** A count tile per bucket and a row per item with one radio per bucket, the written one checked. Items never move. */
 export function bucketHtml(b: BucketBlock): string {
-  const legend = b.text === null ? esc(b.name) : inline(b.text);
   const tiles = b.buckets.map((x) => `<li><span class="q-n">${b.items.filter((i) => i.bucket === x).length}</span> ${esc(x)}</li>`);
   const rows = b.items.map((it, i) => {
     const seg = b.buckets.map(
@@ -78,7 +76,7 @@ export function bucketHtml(b: BucketBlock): string {
     return `<li class="q-item"><span class="q-il">${esc(it.text)}</span><span class="q-seg">${seg.join('')}</span></li>`;
   });
   return (
-    `<fieldset class="q q-bucket"><legend class="q-t">${legend}</legend><ul class="q-bk">${tiles.join('')}</ul>` +
+    `<fieldset class="q q-bucket"><legend class="q-t">${legendOf(b)}</legend><ul class="q-bk">${tiles.join('')}</ul>` +
     `${rows.length ? `<ol class="q-items">${rows.join('')}</ol>` : ''}</fieldset>`
   );
 }
@@ -96,7 +94,7 @@ export function templateHtml(b: TemplateBlock, filled: string): string {
 export function presetHtml(b: PresetBlock, shell: boolean, fields: QuestionBlock[]): string {
   const shown = b.values.map((v) => {
     const f = fields.find((x) => x.name === v.name);
-    return `${v.name} ${f?.type === 'param' && f.unit ? `${v.value} ${f.unit}` : v.value}`;
+    return `${v.name} ${f?.type === 'param' ? paramText(f, v.value) : v.value}`;
   });
   const button = shell ? `<button type="button" class="q-pre" hidden>${esc(plain(b.text))}</button>` : '';
   return `<div class="q q-preset">${button}<span class="q-pv">${inline(b.text)}: ${esc(shown.join(', '))}</span></div>`;

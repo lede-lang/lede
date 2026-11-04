@@ -13,7 +13,8 @@ const inert = (v: unknown): string =>
 /**
  * One field as the runtime reads it (spec §7, data block v2): its name and kind, then what the runtime cannot read back out of the page.
  * `i` is the value the page was written with, `u` a `param`'s unit, `mn`, `mx` and `st` its bounds and step, `d` the toggles a `toggle`
- * needs, `b` a `bucket`'s names or a `template`'s body, `t` the item texts, `s` a template's slot names. Wave 1 kinds carry no more.
+ * needs, `b` a `bucket`'s names or a `template`'s body, `t` the item texts, `s` a template's slot names. `ask`, `choose` and `confirm`
+ * carry no more.
  */
 function fieldData(f: QuestionBlock): Record<string, unknown> {
   const base = { n: f.name, k: f.type };
@@ -32,12 +33,7 @@ function fieldData(f: QuestionBlock): Record<string, unknown> {
 }
 
 /** The two script elements, in page order: the inert JSON the runtime reads, then the runtime. */
-export function shellScripts(
-  page: string | undefined,
-  fields: QuestionBlock[],
-  exports: ExportBlock[],
-  presets: PresetBlock[] = [],
-): string {
+export function shellScripts(page: string | undefined, fields: QuestionBlock[], exports: ExportBlock[], presets: PresetBlock[]): string {
   const data = {
     v: 2,
     ...(page ? { page } : {}),

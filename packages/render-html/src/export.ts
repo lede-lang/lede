@@ -1,6 +1,14 @@
 // The export of a page's answers (spec §4.18, §4.19): the shape an agent reads back. This is the reference serializer. It draws the
 // fill-in template of an ordinary page (the export of the page as written) and is the oracle the shell runtime is tested against.
-import { NOT_CHOSEN, type BucketBlock, type ExportFormat, type ParamBlock, type QuestionBlock, type TemplateBlock } from '@lede-lang/core';
+import {
+  NOT_CHOSEN,
+  SLOT_RE,
+  type BucketBlock,
+  type ExportFormat,
+  type ParamBlock,
+  type QuestionBlock,
+  type TemplateBlock,
+} from '@lede-lang/core';
 
 /** `ask`: the text; `choose`: the option or null; `confirm`: approved, rejected or open. */
 export type Answer = string | null;
@@ -18,38 +26,19 @@ const EMPTY = '(empty)';
 const NONE = '(none)';
 
 /** The page as written (spec §3.2): a blank `ask`, `choose` and `confirm`, and every other field at the value its line proposes. */
-export function blankAnswers(fields: QuestionBlock[]): Value[] {
-  return fields.map((f) => {
-    switch (f.type) {
-      case 'ask':
-        return '';
-      case 'choose':
-        return null;
-      case 'confirm':
-        return 'open';
-      case 'param':
-        return f.value;
-      case 'toggle':
-        return f.on ? 'on' : 'off';
-      case 'bucket':
-        return f.items.map((i) => i.bucket);
-      default:
-        return null;
-    }
-  });
-}
+export const blankAnswers = (fields: QuestionBlock[]): Value[] => settle(fields, []);
 
 /** Line breaks become `\n` and the ends are trimmed, as the export promises. */
 export const cleanText = (v: string): string => v.replace(/\r\n?/g, '\n').trim();
 
-/** A `param` as text: its number, then a space and its unit when it has one. */
-export const paramText = (f: ParamBlock, v: number): string => (f.unit ? `${v} ${f.unit}` : `${v}`);
+/** A `param` as text: its number (or the text of one, as a `preset` holds it), then a space and its unit when it has one. */
+export const paramText = (f: ParamBlock, v: number | string): string => (f.unit ? `${v} ${f.unit}` : `${v}`);
 
 /**
  * `{name}` in the body becomes the slot field's value as text, once, in a single pass over the body (a value holding `{other}` is not
  * expanded); an `ask` left empty and a `choose` left unpicked leave `{name}` as written, as does any brace sequence that is not a slot.
  */
-export function fillTemplate(b: TemplateBlock, fields: QuestionBlock[], settled: Value[]): string {
+function fillTemplate(b: TemplateBlock, fields: QuestionBlock[], settled: Value[]): string {
   const text = new Map<string, string>();
   fields.forEach((f, i) => {
     const v = settled[i];
@@ -58,7 +47,7 @@ export function fillTemplate(b: TemplateBlock, fields: QuestionBlock[], settled:
     else if (f.type === 'param' && typeof v === 'number') text.set(f.name, paramText(f, v));
     else if (f.type === 'toggle' && typeof v === 'string') text.set(f.name, v);
   });
-  return b.body.replace(/\{([A-Za-z][\w-]*)\}/g, (m, name: string) => text.get(name) ?? m);
+  return b.body.replace(SLOT_RE, (m, name: string) => text.get(name) ?? m);
 }
 
 /**
@@ -110,13 +99,13 @@ function blockedNames(fields: QuestionBlock[], values: Value[]): string[] {
 /** U+0085, U+2028 and U+2029 count as line ends to some Markdown viewers; they become a space in text that is not fenced. */
 const flat = (v: string): string => v.replace(/[\n\r\u0085\u2028\u2029]/g, ' ');
 
-/** An item text as a cell of a bucket line: quoted, with `"` doubled, when it holds `,`, `;` or `"` or reads as the empty marker. */
-const cell = (t: string): string => {
-  const x = flat(t);
-  return /[,;"]/.test(x) || x === NONE ? `"${x.replaceAll('"', '""')}"` : x;
-};
 /** An item text in a move line: always quoted, so a `:` or `(was` inside it cannot be misread. */
 const quoted = (t: string): string => `"${flat(t).replaceAll('"', '""')}"`;
+/** An item text as a cell of a bucket line: quoted when it holds `,`, `;` or `"` or reads as the empty marker. */
+const cell = (t: string): string => {
+  const x = flat(t);
+  return /[,;"]/.test(x) || x === NONE ? quoted(x) : x;
+};
 
 /** A blank line, then the value in a fenced block indented two spaces, the fence one backtick longer than the longest run in it. */
 function fenceBody(v: string): string[] {
@@ -165,14 +154,12 @@ function changes(fields: QuestionBlock[], vals: Value[], was: Value[]): { lines:
         if (typeof v === 'string' && v !== w) line(f.name, [`- ${f.name}: ${flat(v)} (was not chosen)`]);
         break;
       case 'confirm':
+      case 'toggle':
         if (v !== w) line(f.name, [`- ${f.name}: ${String(v)} (was ${String(w)})`]);
         break;
       case 'param':
         if (typeof v === 'number' && typeof w === 'number' && v !== w)
           line(f.name, [`- ${f.name}: ${flat(paramText(f, v))} (was ${flat(paramText(f, w))})`]);
-        break;
-      case 'toggle':
-        if (v !== w) line(f.name, [`- ${f.name}: ${String(v)} (was ${String(w)})`]);
         break;
       case 'bucket':
         if (Array.isArray(v) && Array.isArray(w))
@@ -191,12 +178,7 @@ function changes(fields: QuestionBlock[], vals: Value[], was: Value[]): { lines:
  * `page` is the document title or undefined. `values` run parallel to `fields` and default to the page as written; `ask` values are
  * cleaned here. `prompt` lists only what differs from the page as written.
  */
-export function serializeExport(
-  format: ExportFormat,
-  page: string | undefined,
-  fields: QuestionBlock[],
-  values: Value[] = blankAnswers(fields),
-): string {
+export function serializeExport(format: ExportFormat, page: string | undefined, fields: QuestionBlock[], values: Value[] = []): string {
   const vals = settle(fields, values);
   const open = openNames(fields, vals);
   const blocked = blockedNames(fields, vals);
@@ -214,7 +196,7 @@ export function serializeExport(
   }
   if (format === 'prompt') {
     const head = `Apply these changes${page ? ` to ${flat(page)}` : ''}:`;
-    const { lines, changed } = changes(fields, vals, settle(fields, blankAnswers(fields)));
+    const { lines, changed } = changes(fields, vals, blankAnswers(fields));
     if (lines.length === 0) return [head, '', 'No changes.'].join('\n');
     const unchanged = fields.map((f) => f.name).filter((n) => !changed.has(n) && !open.includes(n) && !blocked.includes(n));
     const tail = [
