@@ -249,6 +249,19 @@ test('2.3 bucket: a bucket set shares no name with a data set or a diagram, eith
   assert.deepEqual(clash?.detail, { bucket: 't' });
 });
 
+test('2.3 bucket: a name like a member of Object.prototype is no data or diagram name, so it clashes with nothing', () => {
+  for (const n of ['constructor', 'toString', 'hasOwnProperty', 'valueOf']) {
+    assert.deepEqual(errs(`bucket ${n} | A, B\n${n}: x | A\nexport json`), [], n);
+    assert.deepEqual(kinds(`bucket ${n} | A, B\n${n}: x | A\nexport json`), ['bucket', 'export'], n);
+    // The same lookup serves `diagram`: it is not held by a name only the prototype has.
+    assert.deepEqual(errs(`diagram ${n}`), ['warning:diagram-empty@1'], n);
+  }
+  // A name that is held still clashes, either way round.
+  const clashes = (src: string) => errs(src).filter((d) => d.includes('name-clash'));
+  assert.deepEqual(clashes('data constructor = a,b; 1,2\nbucket constructor | A, B'), ['error:name-clash@2']);
+  assert.deepEqual(clashes('data constructor = a,b; 1,2\ndiagram constructor'), ['error:name-clash@2']);
+});
+
 test('2.3 bucket: html cannot name a bucket set, since html: is a raw block that would never reach an item (E question-name)', () => {
   assert.deepEqual(errs('bucket html | A, B\nhtml: x | A\nexport json'), ['error:question-name@1']);
   assert.deepEqual(kinds('bucket html | A, B\nhtml: x | A\nexport json'), ['html', 'export']);

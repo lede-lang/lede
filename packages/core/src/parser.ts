@@ -1166,7 +1166,8 @@ export class LedeParser {
 
   /** Whether a data set, a diagram or a bucket set already has the name. */
   private holds(space: Space, name: string): boolean {
-    return space === 'data' ? !!this.doc.data[name] : space === 'diagram' ? this.diagrams.has(name) : !!this.bucketSet(name);
+    // Own property only: `constructor` or `toString` is on the prototype of any object, not a data set.
+    return space === 'data' ? Object.hasOwn(this.doc.data, name) : space === 'diagram' ? this.diagrams.has(name) : !!this.bucketSet(name);
   }
 
   /**
