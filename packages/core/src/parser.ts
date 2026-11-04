@@ -849,6 +849,11 @@ export class LedeParser {
       ['step', !(step > 0), `STEP ${step} must be above 0`],
       ['range', value < min || value > max, `DEFAULT ${value} must lie from MIN ${min} to MAX ${max}`],
       ['grid', !onGrid(value - min, step), `DEFAULT ${value} must be MIN ${min} plus a whole number of steps of ${step}`],
+      [
+        'grid-max',
+        !onGrid(max - min, step),
+        `MAX ${max} must be MIN ${min} plus a whole number of steps of ${step} (the last one ends at ${lastStep(min, step, max)}); change MAX or STEP`,
+      ],
       ['count', (max - min) / step > 1000 + EPS, `MIN ${min} to MAX ${max} is more than 1000 steps of ${step}; raise STEP`],
     ];
     const broken = rules.find(([, failed]) => failed);
@@ -2155,6 +2160,11 @@ export class LedeParser {
 function onGrid(d: number, step: number): boolean {
   const q = d / step;
   return Math.abs(q - Math.round(q)) <= EPS;
+}
+
+/** The last point of the grid that does not pass `max`, without the noise of the multiplication (`0.1 + 3 * 0.1` is not `0.4`). */
+function lastStep(min: number, step: number, max: number): number {
+  return Number((min + Math.floor((max - min) / step + EPS) * step).toFixed(9));
 }
 
 /**

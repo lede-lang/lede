@@ -359,6 +359,7 @@ export prompt                     (a third format beside json and markdown)
   so it may hold `|`. `unit=` is the only option; its value is plain text to the next space (quote it to hold spaces), and an empty
   unit is none. The numbers must satisfy these rules, tested in this order; the first to fail is E `param-range` with its `rule`:
   MIN < MAX (`order`); STEP > 0 (`step`); MIN ≤ DEFAULT ≤ MAX (`range`); DEFAULT − MIN a whole multiple of STEP within 1e-9 (`grid`);
+  MAX − MIN a whole multiple of STEP within 1e-9 (`grid-max`), so MAX is itself a value the control can hold and a `preset` can set;
   (MAX − MIN) / STEP at most 1000 (`count`). Anything but four numbers after the last `|` is E `question-syntax`. Any option but
   `unit=` is W `question-option` and ignored.
 - **`toggle`.** The state is `off` unless `on` is written. `needs=` lists toggles on the same page, separated by `,` (quote the list if
@@ -562,7 +563,7 @@ delay ms?`). `detail` is optional and machine-readable. Codes the fixer reads ca
 `data-row-width` `{fields, want, name}`, `csv-thousands` `{fields, want, name}` (`fields` counted before the merge),
 `name-clash` `{diagram}` (a diagram named like a data set; a clash with a bucket set carries `{bucket}` instead, and `--fix` leaves
 it). The question-word codes (§4.18) carry `detail` too, and so do the editor-word codes (§4.19): `param-range` `{value, min, max,
-step, rule}` (`rule` is `order`, `step`, `range`, `grid` or `count`), `toggle-needs` `{name, needs, toggles}`, `bucket-names`
+step, rule}` (`rule` is `order`, `step`, `range`, `grid`, `grid-max` or `count`), `toggle-needs` `{name, needs, toggles}`, `bucket-names`
 `{count, empty, dup, reserved}`, `bucket-unknown` `{bucket, buckets}`, `bucket-item` `{name}`, `bucket-dup-item` `{text, first}`,
 `bucket-empty` `{name}`, `template-fence` `{name}`, `template-slot` `{slot, fields}`, `template-empty` `{name}`, `preset-key`
 `{key, fields}` and `preset-value` `{key, value, kind}`; `export-format` `{format}` now names `prompt` too. So does `accent-contrast` (§4.3) `{accent, theme, ratio, required, against}`:

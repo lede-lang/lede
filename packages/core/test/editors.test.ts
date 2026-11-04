@@ -65,6 +65,24 @@ test('2.1 param: DEFAULT - MIN is a whole number of steps within 1e-9 (rule grid
   assert.deepEqual(diags('param a | A | 0.94 0.85 1 0.01\nparam b | B | 0.3 0.1 0.9 0.1\nexport json'), []);
 });
 
+test('2.1 param: MAX is MIN plus a whole number of steps (rule grid-max), so the range ends on a value the preset can set', () => {
+  const rule = (src: string) => (detail(src, 'param-range') as { rule: string } | undefined)?.rule;
+  assert.equal(rule('param a | A | 0 0 1 0.3'), 'grid-max');
+  assert.equal(rule('param a | A | 0.5 0.5 10 2'), 'grid-max');
+  assert.deepEqual(detail('param a | A | 0 0 1 0.3', 'param-range'), { value: 0, min: 0, max: 1, step: 0.3, rule: 'grid-max' });
+  assert.deepEqual(errs('param a | A | 0 0 1 0.3'), ['error:param-range@1']);
+  assert.match(parse('param a | A | 0 0 1 0.3').diagnostics[0].message, /MAX 1 .*0\.9/);
+  // A default off the grid is still the grid rule, which comes first; the 1,000-step cap comes after.
+  assert.equal(rule('param a | A | 0.1 0 1 0.3'), 'grid');
+  assert.equal(rule('param a | A | 0 0 1000.5 1'), 'grid-max');
+  assert.equal(rule('param a | A | 0 0 2000 1'), 'count');
+  // Float noise passes, as it does for the default: 0.8 / 0.1 and 0.99 / 0.01 are not whole in floating point.
+  assert.deepEqual(errs('param a | A | 0.3 0.1 0.9 0.1\nparam b | B | 0.5 0 0.99 0.01\nexport json'), []);
+  // The point of the rule: the preset hint says "from MIN to MAX in steps of STEP", so MAX itself must be accepted.
+  assert.deepEqual(errs('param a | A | 0 0 1 0.25\npreset top | Top | a=1\nexport json'), []);
+  assert.equal(only<PresetBlock>('param a | A | 0 0 1 0.25\npreset top | Top | a=1', 'preset')[0].values[0].value, '1');
+});
+
 test('2.1 param: at most 1,000 steps from MIN to MAX (rule count)', () => {
   assert.equal((detail('param a | A | 0 0 1001 1', 'param-range') as { rule: string }).rule, 'count');
   assert.equal((detail('param a | A | 0 0 1 0.0005', 'param-range') as { rule: string }).rule, 'count');
