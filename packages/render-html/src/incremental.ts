@@ -1,10 +1,11 @@
 // The incremental renderer (internal spec, lede-lang/meta): blocks go in one at a time as they become final, DOM operations come
 // out with the HTML of the unit they touch, and the markup that results is the markup `render()` writes for the whole page.
 // Six decisions in `render()` read the whole document; each has a rule below (prose layout, grouping, the standfirst, the
-// heading shift, picks, late meta). `end()` checks the result against the whole-page render and corrects what the rules
-// missed (the settle); the tests and the bench switch the correction off, so they measure the rules and not the safety net.
-import type { Block, DataSet, DiagramBlock, LedeDocument } from '@lede-lang/core';
-import { resolve, walkBlocks } from '@lede-lang/core';
+// heading shift, picks, late meta). The question words add a seventh, the `export` (see `reexport`). `end()` checks the result
+// against the whole-page render and corrects what the rules missed (the settle); the tests and the bench switch the correction
+// off, so they measure the rules and not the safety net.
+import type { Block, DataSet, DiagramBlock, LedeDocument, QuestionBlock } from '@lede-lang/core';
+import { exportsOf, fieldsOf, resolve, walkBlocks } from '@lede-lang/core';
 import {
   Ctx,
   NOT_ESSAY,
@@ -109,6 +110,11 @@ export interface Incremental {
 }
 
 export interface IncrementalOptions extends RenderOptions {
+  /**
+   * `shell` has no effect here: the viewer draws the ordinary page, which is what `render()` writes for a `fragment`
+   * (the shell never acts on one). Handing the page to the shell runtime after `end()` is later work (internal spec, lede-lang/meta).
+   */
+  shell?: boolean;
   /** Correct the page against the whole-page render at `end()`. Default true; the tests and the bench pass false. */
   settle?: boolean;
   /** The clock for hold times. Default `performance.now()`. */
@@ -170,24 +176,30 @@ interface U {
   reads: Set<string>;
   /** The unit holds a table, which reads the page's picks. */
   picks: boolean;
+  /** The unit holds an `export`, which lists the page's question fields and its title. */
+  exports: boolean;
+  /** The fields and title (`exportKey()`) the unit's last drawing listed. */
+  exportKey: string;
   /** A later drawing supersedes an earlier one that resolves after it. */
   version: number;
 }
 
 /** What a unit's blocks hold, grids and cards included. */
-function inspect(blocks: Block[]): Pick<U, 'diagrams' | 'reads' | 'picks'> {
+function inspect(blocks: Block[]): Pick<U, 'diagrams' | 'reads' | 'picks' | 'exports'> {
   const diagrams: DiagramBlock[] = [];
   const reads = new Set<string>();
   let picks = false;
+  let exports = false;
   walkBlocks(blocks, (b) => {
     if (b.type === 'diagram') diagrams.push(b);
+    else if (b.type === 'export') exports = true;
     else if (b.type === 'chart') reads.add(b.data);
     else if (b.type === 'table') {
       reads.add(b.data);
       picks = true;
     } else if (b.type === 'kpis') for (const k of b.items) if (k.ref) reads.add(k.ref.split('.')[0]);
   });
-  return { diagrams, reads, picks };
+  return { diagrams, reads, picks, exports };
 }
 
 /** The ops, and the drawings still pending, of several units drawn in one step. */
@@ -258,6 +270,15 @@ class Renderer implements Incremental {
   /** `picksOf` over every block pushed, one block at a time. */
   private readonly pickScan: PickScan = { picks: [], underRec: false };
 
+  /**
+   * The question fields of every block pushed, in source order: the array `ctx.fields` is, so an `export` lists the fields read so
+   * far. `controls`: a field or an `export` has arrived, so the stylesheet carries the controls' rules (as `render()`'s does).
+   */
+  private readonly fields: QuestionBlock[] = [];
+  private controls = false;
+  /** The committed units that hold an `export`. */
+  private readonly exportUnits: U[] = [];
+
   private prose = false;
   private proseFrozen = false;
   /** The essay test's counts over the blocks read so far, while the layout is still undecided. */
@@ -275,7 +296,8 @@ class Renderer implements Incremental {
   constructor(meta: () => Record<string, string>, data: () => Record<string, DataSet>, opts: IncrementalOptions) {
     this.meta = meta;
     this.data = data;
-    const { settle, now, ...render } = opts;
+    // `shell` is dropped: see `IncrementalOptions`.
+    const { settle, now, shell: _shell, ...render } = opts;
     this.renderOpts = render;
     this.settleOn = settle ?? true;
     this.now = now ?? (() => performance.now());
@@ -289,7 +311,7 @@ class Renderer implements Incremental {
       blocks: this.all,
       diagnostics: [],
     };
-    this.ctx = new Ctx(this.doc, render);
+    this.ctx = new Ctx(this.doc, render, this.fields);
     this.ctx.cacheLayouts = true;
     this.frontier = this.ctx.mark();
     this.ctx.slot = (d, wide) => {
@@ -313,22 +335,60 @@ class Renderer implements Incremental {
     this.seq++;
     const out = new Batch();
     this.all.push(block);
+    const gained = this.takeQuestions(block);
     let consumed = false;
     if (!this.begun) {
       const r = this.begin(block);
       out.ops.push(...r.ops);
       consumed = r.consumed;
-    }
+    } else if (gained) out.ops.push({ op: 'style', css: styleOf(this.startMeta, true) });
     if (block.type === 'heading') this.decideShift(block);
     this.repick(block, out);
-    if (consumed) return out.result();
+    if (consumed) {
+      this.reexport(out);
+      return out.result();
+    }
     this.rest.push(block);
     this.latchProse(block, out.ops);
     this.held.push(block);
     this.heldAt.push(this.now());
     this.heldSeq.push(this.seq);
     this.commit(out, false);
+    this.reexport(out);
     return out.result();
+  }
+
+  /**
+   * A question field joins `fields`. The first field or `export` of the page adds the controls' rules to the stylesheet; true when
+   * this block did, so the caller emits the style (the first block's style is `begin`'s).
+   */
+  private takeQuestions(block: Block): boolean {
+    const found = fieldsOf([block]);
+    this.fields.push(...found);
+    if (this.controls || (found.length === 0 && exportsOf([block]).length === 0)) return false;
+    return (this.controls = true);
+  }
+
+  /**
+   * An `export` draws the answer template of the whole page: every question field, whether it comes before or after the export,
+   * and the page title, which can come from a `#` heading or an `@title` read later. Neither is known when the export arrives, so it
+   * is drawn with what has been read, like a table with the picks, and drawn again in place (`replace`) when a field arrives or the
+   * title changes; `end()` does so once more with the finished page. The ids do not move, since the export takes none. A page with
+   * no `export` pays nothing (internal spec, lede-lang/meta).
+   */
+  private reexport(out: Batch): void {
+    if (this.exportUnits.length === 0) return;
+    const key = this.exportKey();
+    for (const u of this.exportUnits) {
+      if (u.exportKey === key) continue;
+      u.exportKey = key;
+      out.add(this.redraw(u));
+    }
+  }
+
+  /** What an `export` lists: the number of fields (they only ever grow) and the title. */
+  private exportKey(): string {
+    return `${this.fields.length}:${this.ctx.page ?? ''}`;
   }
 
   /**
@@ -344,7 +404,7 @@ class Renderer implements Incremental {
     this.begun = true;
     const m = this.meta();
     this.startMeta = { ...m };
-    const ops: IncrementalOp[] = [{ op: 'style', css: styleOf(m) }];
+    const ops: IncrementalOp[] = [{ op: 'style', css: styleOf(m, this.controls) }];
     const mh = masthead({ meta: m, blocks: [first], data: {}, diagnostics: [] }, this.ctx);
     const consumed = mh.rest.length === 0;
     this.titleBranch = Boolean(m.title) && !consumed;
@@ -430,8 +490,12 @@ class Renderer implements Incremental {
       if (unit.kind === 'block') this.heldPlain++;
       else this.heldGrouped++;
     });
-    const u: U = { id, plan: unit, blocks, mark: this.frontier, html: '', ...inspect(blocks), version: 0 };
+    const u: U = { id, plan: unit, blocks, mark: this.frontier, html: '', ...inspect(blocks), exportKey: '', version: 0 };
     for (const d of u.diagrams) this.byDiagram.set(d, u);
+    if (u.exports) {
+      u.exportKey = this.exportKey();
+      this.exportUnits.push(u);
+    }
     // A diagram sealed while its unit was held back is finished already.
     const unfinished = u.diagrams.some((d) => !this.sealed.has(d));
     const slotted = unfinished || blocks.some(holdsFlow);
@@ -493,16 +557,27 @@ class Renderer implements Incremental {
   tail(blocks: Block[]): IncrementalOp[] {
     const ops: IncrementalOp[] = [];
     const shown = [...this.held, ...blocks];
+    // The fields of an open grid or cards run count for an `export` drawn beside them, for as long as the run is open: they are
+    // dropped again below, and added for good when the run is pushed.
+    const known = this.fields.length;
+    let gained = false;
+    for (const b of blocks) gained = this.takeQuestions(b) || gained;
     if (!this.begun && shown.length) ops.push(...this.begin(shown[0]).ops);
+    else if (gained) ops.push({ op: 'style', css: styleOf(this.startMeta, true) });
     this.mode = 'tail';
     const first = this.rest.length === 0 && this.held.length === 0 ? blocks[0] : undefined;
-    const html = shown
-      .map((b) => {
-        if (b.type === 'grid' && b.children.length === 0) return '';
-        return standfirst(b, first, this.header, this.prose) ?? this.ctx.blockSync(this.view(b), true);
-      })
-      .join('');
-    this.mode = 'none';
+    let html: string;
+    try {
+      html = shown
+        .map((b) => {
+          if (b.type === 'grid' && b.children.length === 0) return '';
+          return standfirst(b, first, this.header, this.prose) ?? this.ctx.blockSync(this.view(b), true);
+        })
+        .join('');
+    } finally {
+      this.fields.length = known;
+      this.mode = 'none';
+    }
     this.ctx.rewind(this.frontier);
     if (html !== this.lastTail) {
       this.lastTail = html;
@@ -590,6 +665,8 @@ class Renderer implements Incremental {
     this.seq++;
     // What is held can group now: every section has ended.
     this.commit(batch, true);
+    // The fields and the title are final: an `export` drawn before the last of them is drawn again.
+    this.reexport(batch);
     // Diagrams still being written are finished: the stream ended.
     for (const d of this.byDiagram.keys()) if (!this.sealed.has(d)) batch.add(this.seal(d));
     await Promise.all(this.drawings);
@@ -675,7 +752,7 @@ class Renderer implements Incremental {
     if (!this.begun) return 0;
     const differs = (k: string) => (m[k] ?? '') !== (this.startMeta[k] ?? '');
     const lateMeta = [...STYLE_KEYS, ...MAST_KEYS].filter(differs).length;
-    if (STYLE_KEYS.some(differs)) ops.push({ op: 'style', css: styleOf(m) });
+    if (STYLE_KEYS.some(differs)) ops.push({ op: 'style', css: styleOf(m, this.controls) });
     if (MAST_KEYS.some(differs)) {
       const doc: LedeDocument = { meta: m, blocks: this.all, data: {}, diagnostics: [] };
       const header = masthead(doc, new Ctx(doc, this.renderOpts)).header;

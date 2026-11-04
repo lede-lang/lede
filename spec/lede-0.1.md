@@ -364,8 +364,10 @@ without ending the document; a keyword line is never part of it, because it is a
 - The package also exposes an incremental form, `createIncremental(meta, data, opts)`, that takes the blocks of a
   `LedeStream` (§6) as they become final and returns DOM operations carrying the HTML of the unit each one touches; after
   the stream ends, the markup it has built equals the `<main>` that `render()` writes for the whole document, and it carries
-  no script. The layout engine for flow diagrams (elkjs) is loaded when the first flow diagram is laid out, and
-  `setLayoutEngine(fn)` replaces it.
+  no script. Question words (§4.18) stream as the controls `render()` draws; an `export` lists the fields and the title read so
+  far and is drawn again, in place, when a later field or the title changes what it lists. The `shell` option has no effect on this
+  form, which draws the ordinary page. The layout engine for flow diagrams (elkjs) is loaded when the first flow diagram is laid
+  out, and `setLayoutEngine(fn)` replaces it.
 
 ## 8. Versioning
 The spec version is independent of package versions. 0.x minor versions may change grammar

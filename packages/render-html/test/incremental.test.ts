@@ -613,6 +613,157 @@ test('Ctx.mark and rewind copy nothing, and a rewind can go forward again to a l
   assert.equal(copies, 0, 'mark/rewind copied the set of heading ids');
 });
 
+// ---- the question words (spec §4.18) -------------------------------------------------------------------------------------------
+
+/** The `<style>` of the whole-page render of `src`. */
+async function wholeStyle(src: string): Promise<string> {
+  return /<style>([\s\S]*?)<\/style>/.exec(await render(parse(src, parseOpts)))![1];
+}
+const exportsIn = (html: string): string[] => html.match(/<figure class="q-x"[\s\S]*?<\/figure>/g) ?? [];
+const stylesOf = (d: Driven) => d.model.log.filter((o) => o.op === 'style');
+
+const QUESTIONS = [
+  '@title Release go/no-go',
+  '',
+  '# Release go/no-go',
+  '',
+  'Four answers are needed before the window opens.',
+  '',
+  'ask owner | Who signs off on this release?',
+  'choose risk | low, medium, high',
+  'confirm migration | The migration ran on staging and rolled back cleanly',
+  'ask notes lines=3 | Anything the release notes should carry?',
+  '',
+  'export json',
+  'export markdown',
+  '',
+].join('\n');
+
+test('questions: each field and each export is a block of its own, drawn as render() draws it, at chunks of 1, 7 and 64 bytes', async () => {
+  const expected = await whole(QUESTIONS);
+  for (const chunk of [1, 7, 64]) {
+    const d = await drive(QUESTIONS, { chunk, parse: parseOpts });
+    assert.equal(streamed(d), expected, `chunks of ${chunk}`);
+    assert.equal(d.end.equal, true);
+    assert.equal(d.end.renders, d.model.units.length, 'nothing was drawn twice');
+  }
+  // The style is the plain one from the first block, and the one with the controls' rules from the first field on: twice, not more.
+  const d = await drive(QUESTIONS, { chunk: 7, parse: parseOpts });
+  assert.equal(stylesOf(d).length, 2);
+  assert.equal(d.model.css, await wholeStyle(QUESTIONS));
+  // A page that opens with a field has the controls' rules in its first style.
+  const first = 'ask a | Who?\n';
+  assert.equal(stylesOf(await drive(first, { parse: parseOpts })).length, 1);
+});
+
+test('questions: an export written before its fields lists them once they arrive, in place, and the ids do not move', async () => {
+  const src = [
+    '# Answers',
+    '',
+    'export json',
+    '',
+    '## Section',
+    '',
+    'ask a | First?',
+    '',
+    'choose b | x, y',
+    '',
+    '## Section',
+    '',
+    'confirm c | Sure?',
+    '',
+  ].join('\n');
+  const d = await drive(src, { chunk: 5, parse: parseOpts });
+  assert.equal(streamed(d), await whole(src), 'the finished page, before any settle');
+  assert.equal(d.end.equal, true);
+  // The export was drawn when it arrived, with no field to list, and again for each field that came after it.
+  const drawn = d.model.log.filter((o) => (o.op === 'append' || o.op === 'replace') && o.html.includes('class="q-x"'));
+  assert.equal(drawn.length, 4, 'once on arrival, then once for each of the three fields');
+  assert.match(drawn[0].op === 'append' ? drawn[0].html : '', /&quot;answers&quot;: \{\}/);
+  assert.match(exportsIn(d.model.main())[0], /&quot;a&quot;: &quot;&quot;[\s\S]*&quot;b&quot;: null[\s\S]*&quot;c&quot;: &quot;open&quot;/);
+  // The headings after it keep the ids the whole page gives them.
+  assert.deepEqual(
+    [...d.model.main().matchAll(/<h2 id="([^"]+)"/g)].map((m) => m[1]),
+    ['section', 'section-x'],
+  );
+});
+
+test('questions: a field after the last export, and a title that comes from a later # heading, draw the export again', async () => {
+  // No @title, and the first # heading is not the first block: the export's page is that heading, which has not arrived yet.
+  const src = ['Intro words.', '', 'ask a | First?', '', 'export markdown', '', '# Late title', '', 'confirm b | Sure?', ''].join('\n');
+  const d = await drive(src, { chunk: 4, parse: parseOpts });
+  assert.equal(streamed(d), await whole(src));
+  assert.deepEqual(exportsIn(d.model.main()), exportsIn(await whole(src)));
+  assert.match(exportsIn(d.model.main())[0], /# Late title/);
+  assert.match(exportsIn(d.model.main())[0], /- b: open/);
+});
+
+test('questions: an @title written after the export is in the export at the end, without the settle', async () => {
+  const src = ['ask a | First?', '', 'export json', '', '@title Late meta', ''].join('\n');
+  const d = await drive(src, { chunk: 6, parse: parseOpts, settle: false });
+  assert.equal(d.end.lateMeta, 1);
+  assert.deepEqual(exportsIn(d.model.main()), exportsIn(await whole(src)));
+  assert.match(exportsIn(d.model.main())[0], /&quot;page&quot;: &quot;Late meta&quot;/);
+});
+
+test('questions: the controls reach the stylesheet when the first field or export arrives, and a page without them keeps the plain one', async () => {
+  const late = ['# Plain page', '', 'Some words first.', '', 'ask a | Who?', ''].join('\n');
+  const a = await drive(late, { chunk: 7, parse: parseOpts });
+  assert.equal(stylesOf(a).length, 2, 'the plain style, then the style with the controls');
+  assert.equal(a.model.css, await wholeStyle(late));
+  assert.ok(a.model.css.length > (stylesOf(a)[0] as { css: string }).css.length);
+  const none = ['# Plain page', '', 'Some words first.', ''].join('\n');
+  const b = await drive(none, { chunk: 7, parse: parseOpts });
+  assert.equal(stylesOf(b).length, 1);
+  assert.equal(b.model.css, await wholeStyle(none));
+  // An export alone is enough, and so is a field that sits in a grid that is still open when it is the first to arrive.
+  const onlyExport = ['# Page', '', 'export json', ''].join('\n');
+  assert.equal((await drive(onlyExport, { parse: parseOpts })).model.css, await wholeStyle(onlyExport));
+  const grid = ['# Page', '', 'grid 2', 'ask a | Who?', 'confirm b | Sure?', ''].join('\n');
+  const g = await drive(grid, { chunk: 9, parse: parseOpts });
+  assert.equal(g.model.css, await wholeStyle(grid));
+  assert.equal(streamed(g), await whole(grid));
+});
+
+test('questions: the tail shows an open grid of fields with the export beside it listing them, then drops them', async () => {
+  const stream = new LedeStream(parseOpts);
+  const inc = createIncremental(
+    () => stream.doc.meta,
+    () => stream.doc.data,
+    { settle: false },
+  );
+  const put = (text: string) => {
+    for (const e of stream.events(text)) if (e.kind === 'block') inc.push(e.block);
+    return inc.tail(stream.tail());
+  };
+  put('# Page\n\n');
+  const ops = put('grid 3\nask a | Who?\nexport json\n');
+  const tail = ops.find((o) => o.op === 'tail');
+  assert.ok(tail?.op === 'tail');
+  assert.match(tail.html, /class="q q-ask"/);
+  assert.match(tail.html, /&quot;a&quot;: &quot;&quot;/, "the open grid's field is in its export");
+  assert.ok(ops.some((o) => o.op === 'style'));
+  // Closed, the grid is a block: the field is added for good, once.
+  put('confirm c | Sure?\n');
+  const d = await inc.end();
+  assert.equal(d.equal, true);
+});
+
+test('questions: `shell` has no effect on the incremental renderer, which draws what render() draws for a fragment', async () => {
+  const withShell = await drive(QUESTIONS, { chunk: 9, parse: parseOpts, shell: true });
+  assert.equal(streamed(withShell), await whole(QUESTIONS));
+  assert.doesNotMatch(withShell.model.main(), /q-clear|q-bar|<script/);
+  assert.equal(withShell.model.css, await wholeStyle(QUESTIONS));
+});
+
+test('questions: the settle changes nothing on a page the rules already got right', async () => {
+  for (const src of [QUESTIONS, read('examples/parity/questions.lede')]) {
+    const d = await drive(src, { chunk: 11, parse: parseOpts, settle: true });
+    assert.equal(d.end.settled, 0);
+    assert.equal(streamed(d), await whole(src));
+  }
+});
+
 // ---- early layout-shift check (Chromium) ----------------------------------------------------------------------------------------
 
 // `browserTest` skips without a Chromium, and fails instead when CI or LEDE_REQUIRE_CHROME is set.

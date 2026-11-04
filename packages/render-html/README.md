@@ -55,7 +55,9 @@ await drawings;
 apply(done.ops);
 ```
 
-A drawing that resolves early waits for the ones before it, so units stay in source order.
+A drawing that resolves early waits for the ones before it, so units stay in source order. Question words (`ask`, `choose`,
+`confirm`, `export`) are blocks of their own and are drawn as `render()` draws them; an `export` lists every field of the page, so
+it is drawn again in place when a field or the title arrives after it. The `shell` option has no effect on this form.
 `end()` compares the page with the whole-page render and corrects what differs (`settle: false` reports without correcting,
 which is how the tests measure the incremental path itself). Pages built by `compile` and `render` stay script-free; this
 form only produces HTML for a host that applies it.
