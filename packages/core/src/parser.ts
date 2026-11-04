@@ -27,7 +27,7 @@ import type {
   ToggleBlock,
 } from './ast.ts';
 import { num, parseInlineCsv, parseOpts, pipeOutsideQuotes, readQuoted, tokens } from './lex.ts';
-import { NOT_CHOSEN } from './fields.ts';
+import { FIELD_KINDS, NOT_CHOSEN, SLOT_RE } from './fields.ts';
 import { AA_NON_TEXT, AA_TEXT, HEX_COLOR, accentContrast } from './contrast.ts';
 import { browserUrl, imageSrcKind } from './url.ts';
 
@@ -62,23 +62,44 @@ const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const KEYWORD_RE = new RegExp(`^(${KEYWORDS.join('|')})(?=\\s|$)`);
 /** A question or diagram name. */
 const NAME_RE = /^[A-Za-z][\w-]*$/;
+/** The same pattern as source text, to build the line shapes below from. */
+const NAME = NAME_RE.source.slice(1, -1);
+/** An editor word's line: the word, a name, then `|` or one of the `alt` options (a regex source). */
+const editorShape = (word: string, alt = ''): RegExp => new RegExp(`^${word}\\s+${NAME}(?:\\s*\\|${alt})`);
 /**
- * The editor words (spec §4.19) are keyword lines only in their shape, as `export` is only alone or with one word: the word, a
- * name, then `|` (for `param` also `unit=`, for `toggle` also `on`, `off` or `needs=`). `toggle the flag on Monday` is prose.
+ * Keyword lines that are keyword lines only in their shape (spec §4.18, §4.19), because prose may start with the word: `cards` takes
+ * nothing after it and `export` at most one word, and an editor word needs its name, then `|` (for `param` also `unit=`, for `toggle`
+ * also `on`, `off` or `needs=`). `cards on the table`, `export the data` and `toggle the flag on Monday` are prose. Any other keyword
+ * is a keyword line whatever follows.
  */
-const EDITOR_SHAPE = new Map<string, RegExp>([
-  ['param', /^param\s+[A-Za-z][\w-]*(?:\s*\||\s+unit=)/],
-  ['toggle', /^toggle\s+[A-Za-z][\w-]*(?:\s*\||\s+(?:on|off)(?=[\s|]|$)|\s+needs=)/],
-  ['bucket', /^bucket\s+[A-Za-z][\w-]*\s*\|/],
-  ['template', /^template\s+[A-Za-z][\w-]*\s*\|/],
-  ['preset', /^preset\s+[A-Za-z][\w-]*\s*\|/],
-]);
-/** A template slot: a `{name}` in the fence. The runtime reads the same shape. */
-const SLOT_RE = /\{([A-Za-z][\w-]*)\}/g;
+const SHAPES: Partial<Record<string, RegExp>> = {
+  cards: /^cards$/,
+  export: /^export(?:\s+\S+)?$/,
+  param: editorShape('param', '|\\s+unit='),
+  toggle: editorShape('toggle', '|\\s+(?:on|off)(?=[\\s|]|$)|\\s+needs='),
+  bucket: editorShape('bucket'),
+  template: editorShape('template'),
+  preset: editorShape('preset'),
+};
 /** Marks a `bucket` name the export would write for something else (`choose` reserves `(not chosen)` the same way). */
 const BUCKET_RESERVED = [NOT_CHOSEN, '(empty)'];
-/** The kinds a `{slot}` and a `preset` key may name: the fields that hold a value the reader sets. */
-const FILLABLE = new Set(['ask', 'choose', 'param', 'toggle']);
+type Space = 'data' | 'diagram' | 'bucket';
+const SPACES: readonly Space[] = ['data', 'diagram', 'bucket'];
+/** How a message names the kind of name that is taken. */
+const NOUN: Record<Space, string> = { data: 'data', diagram: 'diagram', bucket: 'bucket set' };
+const RENAME_DIAGRAM = (name: string) => `rename the diagram (e.g. \`diagram ${name}-flow\`)`;
+/**
+ * A name declared as one kind when another already has it, keyed `declared>had`: what the message says to rename, and the key of the
+ * diagnostic's `detail` (the name itself under that key), if it has one. `lede check --fix` reads the `diagram` key.
+ */
+const CLASH: Record<string, [fix: (name: string) => string, key: 'diagram' | 'bucket' | null]> = {
+  'data>diagram': [RENAME_DIAGRAM, null],
+  'data>bucket': [(name) => `rename the data (e.g. \`data ${name}-rows\`)`, 'bucket'],
+  'diagram>data': [RENAME_DIAGRAM, 'diagram'],
+  'diagram>bucket': [RENAME_DIAGRAM, 'bucket'],
+  'bucket>data': [() => 'rename the bucket set', 'bucket'],
+  'bucket>diagram': [() => 'rename the bucket set', 'bucket'],
+};
 /** Tolerance when a number is tested against a step grid or the 1,000-step cap. */
 const EPS = 1e-9;
 
@@ -133,17 +154,15 @@ export class LedeParser {
   /** The open alt/opt frame per sequence diagram, and how many rejected nested openers still await their `end`. */
   private seq = new WeakMap<DiagramBlock, { open: DiagramFrame | null; skip: number }>();
   private lineNo = 0;
-  /** Question names to the line that first used them (a Map, so `constructor` is an ordinary name), and the `export` formats seen. */
-  private names = new Map<string, number>();
+  /** The `export` formats seen, to the line that first used each. */
   private exports = new Map<string, number>();
-  /** The editor words' state (spec §4.19): the block each field name was declared by, preset names (not fields), bucket sets, toggles for `end()`. */
-  private fieldBlocks = new Map<string, QuestionBlock>();
+  /**
+   * The fields (spec §4.18, §4.19) by name, in source order: the block, and where the text after its word started, for the checks
+   * `end()` makes. A Map, so `constructor` is an ordinary name. A preset has a name but no value in the export, so it is kept apart.
+   */
+  private fields = new Map<string, { block: QuestionBlock; col: number }>();
   private presetNames = new Map<string, number>();
-  private buckets = new Map<string, BucketBlock>();
-  private toggles: { block: ToggleBlock; col: number }[] = [];
   private tpl: PendingTemplate | null = null;
-  /** Where the text after a word started, for the checks `end()` makes. */
-  private at = new WeakMap<Block, number>();
   /** Where the last valid `@accent` was written; its contrast is checked in `end()`, once `@theme` is known. */
   private accentAt: { line: number; col: number } | null = null;
   private out: Block[] = [];
@@ -342,10 +361,8 @@ export class LedeParser {
       return;
     }
     const kw = KEYWORD_RE.exec(s);
-    const shape = kw ? EDITOR_SHAPE.get(kw[1]) : undefined;
-    // `cards` takes nothing after it: `cards on the table` stays prose. `export` takes at most one word: `export the data` does too.
-    // The editor words need their shape (see EDITOR_SHAPE).
-    if (kw && !(kw[1] === 'cards' && s !== 'cards') && !(kw[1] === 'export' && s.split(/\s+/).length > 2) && !(shape && !shape.test(s))) {
+    // Some keywords start a keyword line only in their shape; the rest of the time the line is prose (see SHAPES).
+    if (kw && (SHAPES[kw[1]]?.test(s) ?? true)) {
       const rest = s.slice(kw[1].length).trim();
       const restCol = lead + 1 + s.indexOf(rest, kw[1].length);
       this.keyword(kw[1], rest, restCol, lead);
@@ -353,12 +370,12 @@ export class LedeParser {
     }
     const dl = /^([A-Za-z][\w-]*):\s*(.*)$/.exec(s);
     // A `NAME:` line binds to a bucket set before it can bind to a diagram (a set and a diagram never share a name).
-    if (dl && (this.buckets.has(dl[1]) || this.diagrams.has(dl[1]))) {
+    const owner = dl ? (this.bucketSet(dl[1]) ?? this.diagrams.get(dl[1])) : undefined;
+    if (dl && owner) {
       this.flush();
       const col = lead + 1 + s.indexOf(':') + 1 + (s.slice(s.indexOf(':') + 1).length - s.slice(s.indexOf(':') + 1).trimStart().length);
-      const set = this.buckets.get(dl[1]);
-      if (set) this.bucketItem(set, dl[2].trim(), col);
-      else this.diagramLine(this.diagrams.get(dl[1])!, dl[2].trim(), col);
+      if (owner.type === 'bucket') this.bucketItem(owner, dl[2].trim(), col);
+      else this.diagramLine(owner, dl[2].trim(), col);
       return;
     }
     if (dl && /(-->|->|<->)/.test(dl[2])) {
@@ -591,36 +608,18 @@ export class LedeParser {
    */
   private questionLine(word: 'ask' | 'choose' | 'confirm', rest: string, col: number): void {
     const L = this.lineNo;
-    const bar = rest.indexOf('|');
-    if (bar < 0) {
-      this.diag('error', 'question-syntax', `${word} needs \`${word} NAME | text\` (start the line with \\ if it is prose)`, L, col, {
-        word,
-      });
-      return;
-    }
+    const usage = `${word} NAME | text`;
+    const bar = this.bar(word, usage, rest, col);
+    if (bar < 0) return;
     const o = parseOpts(rest.slice(0, bar));
     const right = rest.slice(bar + 1);
     const name = o.words[0] ?? '';
-    let bad = false;
+    let bad = this.badName(word, name, usage, col);
     const fail = (code: string, message: string, detail?: Record<string, unknown>) => {
       bad = true;
       this.diag('error', code, message, L, col, detail);
     };
-    if (!name) fail('question-syntax', `${word} needs a name before the |: \`${word} NAME | text\``, { word });
-    else if (!NAME_RE.test(name)) {
-      fail('question-name', `${name} is not a name: use a letter, then letters, digits, _ or -`, { word, name });
-    } else if (this.taken(name) !== undefined) {
-      fail('question-dup', `${name} is already used on line ${this.taken(name)}; every question needs its own name`, {
-        name,
-        first: this.taken(name),
-      });
-    }
-    for (const w of [...o.words.slice(1), ...o.flags, ...o.quoted.map((q) => `"${q}"`)])
-      this.diag('warning', 'question-option', `ignored ${w} before the | of ${word} ${name}`, L, col, { option: w });
-    for (const k of Object.keys(o.kv)) {
-      if (word === 'ask' && k === 'lines') continue;
-      this.diag('warning', 'question-option', `ignored ${k}= on ${word} ${name}`, L, col, { option: `${k}=` });
-    }
+    this.ignoreOptions(word, name, { ...o, words: o.words.slice(1) }, word === 'ask' ? ['lines'] : [], col);
     let lines = 1;
     if (word === 'ask' && o.kv.lines !== undefined) {
       const n = /^\d+$/.test(o.kv.lines) ? Number(o.kv.lines) : NaN;
@@ -629,37 +628,33 @@ export class LedeParser {
     }
     let block: QuestionBlock;
     if (word === 'choose') {
-      const cut = pipeOutsideQuotes(right);
-      const csv = parseInlineCsv(cut < 0 ? right : right.slice(0, cut));
-      if (csv.unclosedAt !== null) fail('csv-quote', 'unclosed " in choose options');
-      const options: string[] = [];
-      let empty = false;
-      for (const t of csv.rows.flat().map((x) => x.trim())) {
-        if (t === '') empty = true;
-        else if (options.includes(t))
-          this.diag('warning', 'choose-dup-option', `choose ${name} lists "${t}" twice; the first is kept`, L, col, { option: t });
-        else options.push(t);
+      const list = this.nameList(right, 'choose options', col);
+      bad ||= list.unclosed;
+      for (const t of list.dups) {
+        this.diag('warning', 'choose-dup-option', `choose ${name} lists "${t}" twice; the first is kept`, L, col, { option: t });
       }
+      const options = list.items;
       const reserved = options.includes(NOT_CHOSEN);
-      if (empty || reserved || options.length < 2) {
-        const why = empty
+      if (list.empty || reserved || options.length < 2) {
+        const why = list.empty
           ? 'an option is empty (check for a doubled or trailing comma)'
           : reserved
             ? `${NOT_CHOSEN} is reserved`
             : 'choose needs at least two different options';
-        fail('choose-options', `choose ${name}: ${why}; write \`choose ${name} | one, two\``, { count: options.length, empty, reserved });
+        fail('choose-options', `choose ${name}: ${why}; write \`choose ${name} | one, two\``, {
+          count: options.length,
+          empty: list.empty,
+          reserved,
+        });
       }
-      const text = cut < 0 ? '' : right.slice(cut + 1).trim();
-      block = { type: 'choose', name, text: text || null, options, line: L };
+      block = { type: 'choose', name, text: list.text, options, line: L };
     } else {
       const text = right.trim();
       if (!text) fail('question-syntax', `${word} ${name} needs text after the |`, { word });
       block = word === 'ask' ? { type: 'ask', name, text, lines, line: L } : { type: 'confirm', name, text, line: L };
     }
     if (bad) return;
-    this.names.set(name, L);
-    this.fieldBlocks.set(name, block);
-    this.emit(block);
+    this.register(block, col);
   }
 
   /** `export [json|markdown|prompt]`: one per format. A bare `export` is markdown. */
@@ -691,13 +686,13 @@ export class LedeParser {
 
   /** Whole-page checks for the question words; they run in `end()`, so a snapshot of a prefix may warn about an `export` still to come. */
   private checkExport(): void {
-    const fields = this.names.size;
+    const fields = this.fields.size;
     if (fields > 0 && this.exports.size === 0) {
       this.diag(
         'warning',
         'export-missing',
         'this page asks questions but has no export line, so the answers cannot be copied; add `export json` or `export markdown`',
-        Math.min(...this.names.values()),
+        Math.min(...[...this.fields.values()].map((d) => d.block.line)),
         1,
         { fields },
       );
@@ -710,12 +705,52 @@ export class LedeParser {
 
   /** The line that first used a name: a field, or a preset (which has a name but no value in the export). */
   private taken(name: string): number | undefined {
-    return this.names.get(name) ?? this.presetNames.get(name);
+    return this.fields.get(name)?.block.line ?? this.presetNames.get(name);
   }
 
   /** Names of the fields a `{slot}` or a `preset` key may name, in source order. */
   private fillable(): string[] {
-    return [...this.fieldBlocks].filter(([, b]) => FILLABLE.has(b.type)).map(([n]) => n);
+    return [...this.fields.values()].filter((d) => FIELD_KINDS[d.block.type].fillable).map((d) => d.block.name);
+  }
+
+  /** The fields of one kind, in source order. */
+  private fieldsOfKind<T extends QuestionBlock['type']>(type: T): { block: Extract<QuestionBlock, { type: T }>; col: number }[] {
+    return [...this.fields.values()].filter((d): d is { block: Extract<QuestionBlock, { type: T }>; col: number } => d.block.type === type);
+  }
+
+  private bucketSet(name: string): BucketBlock | undefined {
+    const block = this.fields.get(name)?.block;
+    return block?.type === 'bucket' ? block : undefined;
+  }
+
+  /** The index of the `|` that ends the head of a question or editor line, or -1 after reporting that the line has none. */
+  private bar(word: string, usage: string, rest: string, col: number): number {
+    const bar = rest.indexOf('|');
+    if (bar < 0)
+      this.diag('error', 'question-syntax', `${word} needs \`${usage}\` (start the line with \\ if it is prose)`, this.lineNo, col, {
+        word,
+      });
+    return bar;
+  }
+
+  /** Reports why `name` cannot name a field (it is missing, not a name, or taken) and returns true, or returns false when it can. */
+  private badName(word: string, name: string, usage: string, col: number): boolean {
+    const L = this.lineNo;
+    if (!name) {
+      this.diag('error', 'question-syntax', `${word} needs a name before the |: \`${usage}\``, L, col, { word });
+      return true;
+    }
+    if (!NAME_RE.test(name)) {
+      this.diag('error', 'question-name', `${name} is not a name: use a letter, then letters, digits, _ or -`, L, col, { word, name });
+      return true;
+    }
+    const first = this.taken(name);
+    if (first === undefined) return false;
+    this.diag('error', 'question-dup', `${name} is already used on line ${first}; every question needs its own name`, L, col, {
+      name,
+      first,
+    });
+    return true;
   }
 
   /**
@@ -723,31 +758,12 @@ export class LedeParser {
    * name, the option text and the text after the `|`, or null after reporting why the line is no block.
    */
   private editorHead(word: string, rest: string, col: number, usage: string): { name: string; opts: string; right: string } | null {
-    const L = this.lineNo;
-    const bar = rest.indexOf('|');
-    if (bar < 0) {
-      this.diag('error', 'question-syntax', `${word} needs \`${usage}\` (start the line with \\ if it is prose)`, L, col, { word });
-      return null;
-    }
+    const bar = this.bar(word, usage, rest, col);
+    if (bar < 0) return null;
     const left = rest.slice(0, bar).trim();
     const cut = left.search(/\s/);
     const name = cut < 0 ? left : left.slice(0, cut);
-    if (!name) {
-      this.diag('error', 'question-syntax', `${word} needs a name before the |: \`${usage}\``, L, col, { word });
-      return null;
-    }
-    if (!NAME_RE.test(name)) {
-      this.diag('error', 'question-name', `${name} is not a name: use a letter, then letters, digits, _ or -`, L, col, { word, name });
-      return null;
-    }
-    const first = this.taken(name);
-    if (first !== undefined) {
-      this.diag('error', 'question-dup', `${name} is already used on line ${first}; every question needs its own name`, L, col, {
-        name,
-        first,
-      });
-      return null;
-    }
+    if (this.badName(word, name, usage, col)) return null;
     return { name, opts: cut < 0 ? '' : left.slice(cut).trim(), right: rest.slice(bar + 1) };
   }
 
@@ -761,12 +777,32 @@ export class LedeParser {
     }
   }
 
+  /**
+   * `A, B, C [| TEXT]` as `choose` and `bucket` read it: the names up to the first `|` outside quotes, trimmed, and what follows it.
+   * `items` keeps the first of each name; `dups` has one entry per later repeat, and `empty` says a name was blank. An unclosed
+   * quote is reported here, as `what` (the words of its message).
+   */
+  private nameList(right: string, what: string, col: number) {
+    const cut = pipeOutsideQuotes(right);
+    const csv = parseInlineCsv(cut < 0 ? right : right.slice(0, cut));
+    const unclosed = csv.unclosedAt !== null;
+    if (unclosed) this.diag('error', 'csv-quote', `unclosed " in ${what}`, this.lineNo, col);
+    const items: string[] = [];
+    const dups: string[] = [];
+    let empty = false;
+    for (const t of csv.rows.flat().map((x) => x.trim())) {
+      if (t === '') empty = true;
+      else if (items.includes(t)) dups.push(t);
+      else items.push(t);
+    }
+    const text = cut < 0 ? '' : right.slice(cut + 1).trim();
+    return { items, dups, empty, unclosed, text: text || null };
+  }
+
   /** Records a field once its block parsed: its name is taken, and `end()` and the `preset` and `template` checks can find it. */
-  private register(b: QuestionBlock, col: number): void {
-    this.names.set(b.name, b.line);
-    this.fieldBlocks.set(b.name, b);
-    this.at.set(b, col);
-    this.emit(b);
+  private register(block: QuestionBlock, col: number): void {
+    this.fields.set(block.name, { block, col });
+    this.emit(block);
   }
 
   /** `param NAME [unit=U] | LABEL | DEFAULT MIN MAX STEP` (spec §4.19). */
@@ -804,25 +840,17 @@ export class LedeParser {
       return;
     }
     const [value, min, max, step] = nums as [number, number, number, number];
-    const rule = !(min < max)
-      ? 'order'
-      : !(step > 0)
-        ? 'step'
-        : value < min || value > max
-          ? 'range'
-          : !onGrid(value - min, step)
-            ? 'grid'
-            : (max - min) / step > 1000 + EPS
-              ? 'count'
-              : null;
-    if (rule) {
-      const why = {
-        order: `MIN ${min} must be below MAX ${max}`,
-        step: `STEP ${step} must be above 0`,
-        range: `DEFAULT ${value} must lie from MIN ${min} to MAX ${max}`,
-        grid: `DEFAULT ${value} must be MIN ${min} plus a whole number of steps of ${step}`,
-        count: `MIN ${min} to MAX ${max} is more than 1000 steps of ${step}; raise STEP`,
-      }[rule];
+    // The first rule that fails, in this order, is the one reported.
+    const rules: [rule: string, failed: boolean, why: string][] = [
+      ['order', !(min < max), `MIN ${min} must be below MAX ${max}`],
+      ['step', !(step > 0), `STEP ${step} must be above 0`],
+      ['range', value < min || value > max, `DEFAULT ${value} must lie from MIN ${min} to MAX ${max}`],
+      ['grid', !onGrid(value - min, step), `DEFAULT ${value} must be MIN ${min} plus a whole number of steps of ${step}`],
+      ['count', (max - min) / step > 1000 + EPS, `MIN ${min} to MAX ${max} is more than 1000 steps of ${step}; raise STEP`],
+    ];
+    const broken = rules.find(([, failed]) => failed);
+    if (broken) {
+      const [rule, , why] = broken;
       this.diag('error', 'param-range', `param ${name}: ${why}`, L, col, { value, min, max, step, rule });
       return;
     }
@@ -854,7 +882,6 @@ export class LedeParser {
       ),
     ];
     const block: ToggleBlock = { type: 'toggle', name, text, on: o.flags[0] === 'on', ...(needs.length ? { needs } : {}), line: L };
-    this.toggles.push({ block, col });
     this.register(block, col);
   }
 
@@ -865,25 +892,14 @@ export class LedeParser {
     if (!h) return;
     const { name } = h;
     this.ignoreOptions('bucket', name, parseOpts(h.opts), [], col);
-    const cut = pipeOutsideQuotes(h.right);
-    const csv = parseInlineCsv(cut < 0 ? h.right : h.right.slice(0, cut));
-    let bad = false;
-    if (csv.unclosedAt !== null) {
-      bad = true;
-      this.diag('error', 'csv-quote', 'unclosed " in bucket names', L, col);
-    }
-    const buckets: string[] = [];
-    let empty = false;
-    let dup = false;
-    for (const t of csv.rows.flat().map((x) => x.trim())) {
-      if (t === '') empty = true;
-      else if (buckets.includes(t)) dup = true;
-      else buckets.push(t);
-    }
+    const list = this.nameList(h.right, 'bucket names', col);
+    const buckets = list.items;
+    let bad = list.unclosed;
+    const dup = list.dups.length > 0;
     const reserved = buckets.some((b) => BUCKET_RESERVED.includes(b));
-    if (empty || dup || reserved || buckets.length < 2 || buckets.length > 8) {
+    if (list.empty || dup || reserved || buckets.length < 2 || buckets.length > 8) {
       bad = true;
-      const why = empty
+      const why = list.empty
         ? 'a bucket name is empty (check for a doubled or trailing comma)'
         : dup
           ? 'a bucket name is repeated'
@@ -892,21 +908,15 @@ export class LedeParser {
             : 'a bucket set needs two to eight buckets';
       this.diag('error', 'bucket-names', `bucket ${name}: ${why}; write \`bucket ${name} | Now, Next, Later\``, L, col, {
         count: buckets.length,
-        empty,
+        empty: list.empty,
         dup,
         reserved,
       });
     }
-    const clash = this.doc.data[name] ? 'data' : this.diagrams.has(name) ? 'diagram' : null;
-    if (clash) {
-      bad = true;
-      this.diag('error', 'name-clash', `${name} is already a ${clash} name; rename the bucket set`, L, col, { bucket: name });
-    }
+    // A bucket set that clashes is refused, and one error says so.
+    if (this.clash('bucket', name, col, true).length > 0) bad = true;
     if (bad) return;
-    const text = cut < 0 ? '' : h.right.slice(cut + 1).trim();
-    const block: BucketBlock = { type: 'bucket', name, text: text || null, buckets, items: [], line: L };
-    this.buckets.set(name, block);
-    this.register(block, col);
+    this.register({ type: 'bucket', name, text: list.text, buckets, items: [], line: L } satisfies BucketBlock, col);
   }
 
   /** `NAME: ITEM TEXT | B` where NAME is a bucket set. The item is added to the emitted block, as a diagram gains statements. */
@@ -1075,8 +1085,8 @@ export class LedeParser {
         this.diag('warning', 'question-option', `preset ${name} sets ${key} twice; the first is kept`, L, col, { option: `${key}=` });
         continue;
       }
-      const field = this.fieldBlocks.get(key);
-      if (!field || !FILLABLE.has(field.type)) {
+      const field = this.fields.get(key)?.block;
+      if (!field || !FIELD_KINDS[field.type].fillable) {
         bad = true;
         this.diag(
           'error',
@@ -1107,8 +1117,9 @@ export class LedeParser {
 
   /** Whole-document checks for the editor words; they run in `end()`, so a snapshot of a prefix may report what a later line settles. */
   private checkEditors(): void {
-    const names = this.toggles.map((t) => t.block.name);
-    for (const { block, col } of this.toggles) {
+    const toggles = this.fieldsOfKind('toggle');
+    const names = toggles.map((t) => t.block.name);
+    for (const { block, col } of toggles) {
       for (const need of block.needs ?? []) {
         if (need !== block.name && names.includes(need)) continue;
         const why =
@@ -1120,14 +1131,14 @@ export class LedeParser {
         });
       }
     }
-    for (const b of this.buckets.values()) {
+    for (const { block: b, col } of this.fieldsOfKind('bucket')) {
       if (b.items.length === 0)
         this.diag(
           'warning',
           'bucket-empty',
           `bucket ${b.name} has no item; add lines like \`${b.name}: ITEM TEXT | ${b.buckets[0]}\``,
           b.line,
-          this.at.get(b) ?? 1,
+          col,
           {
             name: b.name,
           },
@@ -1137,6 +1148,34 @@ export class LedeParser {
       this.templateFence(this.tpl);
       this.tpl = null;
     }
+  }
+
+  // ------------------------------------------------------------ names shared by data, diagrams and bucket sets
+
+  /** Whether a data set, a diagram or a bucket set already has the name. */
+  private holds(space: Space, name: string): boolean {
+    return space === 'data' ? !!this.doc.data[name] : space === 'diagram' ? this.diagrams.has(name) : !!this.bucketSet(name);
+  }
+
+  /**
+   * Data sets, diagrams and bucket sets share one namespace, since a `NAME:` line must mean one of them. Reports `name` as an error for
+   * each of the other two that already has it (`once`: only the first) and returns those it found. The caller decides whether the
+   * declaration goes on.
+   */
+  private clash(declaring: Space, name: string, col: number, once = false): Space[] {
+    const held = SPACES.filter((s) => s !== declaring && this.holds(s, name));
+    for (const had of once ? held.slice(0, 1) : held) {
+      const [fix, key] = CLASH[`${declaring}>${had}`];
+      this.diag(
+        'error',
+        'name-clash',
+        `${name} is already a ${NOUN[had]} name; ${fix(name)}`,
+        this.lineNo,
+        col,
+        key ? { [key]: name } : undefined,
+      );
+    }
+    return held;
   }
 
   private dataLine(rest: string, col: number): void {
@@ -1206,12 +1245,7 @@ export class LedeParser {
     }
     if (this.doc.data[name])
       this.diag('warning', 'data-redefined', `data ${name} is redefined; the new definition replaces it`, L, bodyCol);
-    if (this.diagrams.has(name))
-      this.diag('error', 'name-clash', `${name} is already a diagram name; rename the diagram (e.g. \`diagram ${name}-flow\`)`, L, bodyCol);
-    if (this.buckets.has(name))
-      this.diag('error', 'name-clash', `${name} is already a bucket set name; rename the data (e.g. \`data ${name}-rows\`)`, L, bodyCol, {
-        bucket: name,
-      });
+    this.clash('data', name, bodyCol);
     const columns = rows[0].map((c) => c.trim());
     const dup = columns.find((c, i) => columns.indexOf(c) !== i);
     if (dup) this.diag('error', 'data-dup-column', `data ${name} has two columns named ${dup}`, L, bodyCol);
@@ -1810,14 +1844,7 @@ export class LedeParser {
       this.diag('error', 'diagram-redeclared', `diagram ${name} is already declared on line ${this.diagrams.get(name)!.line}`, L, col);
       return;
     }
-    if (this.doc.data[name])
-      this.diag('error', 'name-clash', `${name} is already a data name; rename the diagram (e.g. \`diagram ${name}-flow\`)`, L, col, {
-        diagram: name,
-      });
-    if (this.buckets.has(name))
-      this.diag('error', 'name-clash', `${name} is already a bucket set name; rename the diagram (e.g. \`diagram ${name}-flow\`)`, L, col, {
-        bucket: name,
-      });
+    this.clash('diagram', name, col);
     const o = parseOpts(rest.slice(t[1]?.offset ?? rest.length), ['flow', 'sequence']);
     for (const w of o.words) this.diag('warning', 'diagram-option', `ignored diagram option "${w}"`, L, col);
     const kind = o.flags.includes('sequence') ? 'sequence' : 'flow';
