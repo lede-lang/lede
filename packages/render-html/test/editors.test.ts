@@ -2,7 +2,7 @@
 // Requirement numbers are those of the internal spec (lede-lang/meta).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { fieldsOf, LedeStream, parse, type BucketBlock, type QuestionBlock } from '@lede-lang/core';
+import { fieldsOf, LedeStream, parse, type BucketBlock, type ParamBlock, type QuestionBlock, type TemplateBlock } from '@lede-lang/core';
 import { compile, render } from '../src/index.ts';
 import { blankAnswers, cleanText, serializeExport, type Value } from '../src/export.ts';
 import { rng, text } from './fuzz.ts';
@@ -861,4 +861,111 @@ test('7.1 a half-written bucket set draws its legend, its tiles and the rows so 
   const inner = (h: string) => /<ol class="q-items">([\s\S]*)<\/ol>/.exec(h)?.[1] ?? '';
   for (let k = 1; k < pages.length; k++)
     assert.ok(inner(pages[k]).startsWith(inner(pages[k - 1])), `the rows drawn at line ${k} stay as they were`);
+});
+
+// ---------------------------------------------------------------- data block v2 (task 5)
+
+const block = (html: string) => /<script type="application\/json" id="lede-shell">([\s\S]*?)<\/script>/.exec(html)![1];
+
+test('5.4 the data block v2 holds each field as the runtime reads it, and a wave 1 page differs from v1 only in its version', async () => {
+  const { html } = await compile('@title T\nask a | A\nchoose b | x, y\nconfirm c | C\nexport json', { shell: true });
+  assert.deepEqual(JSON.parse(block(html)), {
+    v: 2,
+    page: 'T',
+    fields: [
+      { n: 'a', k: 'ask' },
+      { n: 'b', k: 'choose' },
+      { n: 'c', k: 'confirm' },
+    ],
+    formats: ['json'],
+  });
+  const src = [
+    'param p unit=ms | P | 50 0 100 5',
+    'param q | Q | 0.5 0 1 0.25',
+    'toggle t1 on | T1',
+    'toggle t2 needs=t1 | T2',
+    'bucket s | Now, Next',
+    's: one | Now',
+    's: two | Next',
+    'ask a | A',
+    'template tpl | Tpl',
+    '```text',
+    'x {a} {p} {{y}}',
+    '```',
+    'preset ps | Ps | p=75; t1=off; a="x; y"',
+    'export prompt',
+    'export markdown',
+  ].join('\n');
+  const v2 = JSON.parse(block((await compile(src, { shell: true })).html)) as Record<string, unknown>;
+  assert.deepEqual(v2, {
+    v: 2,
+    fields: [
+      { n: 'p', k: 'param', i: 50, u: 'ms', mn: 0, mx: 100, st: 5 },
+      { n: 'q', k: 'param', i: 0.5, mn: 0, mx: 1, st: 0.25 },
+      { n: 't1', k: 'toggle', i: 'on' },
+      { n: 't2', k: 'toggle', i: 'off', d: ['t1'] },
+      { n: 's', k: 'bucket', b: ['Now', 'Next'], t: ['one', 'two'], i: ['Now', 'Next'] },
+      { n: 'a', k: 'ask' },
+      { n: 'tpl', k: 'template', s: ['a', 'p'], b: 'x {a} {p} {{y}}' },
+    ],
+    presets: [
+      {
+        n: 'ps',
+        v: [
+          ['p', '75'],
+          ['t1', 'off'],
+          ['a', 'x; y'],
+        ],
+      },
+    ],
+    formats: ['prompt', 'markdown'],
+  });
+});
+
+test('5.4 hostile initial values, item texts and bodies stay data in the block: no raw <, >, & or line separator, and they read back whole', async () => {
+  const hostile = `</script><!-- & > <img src=x onerror=alert(1)> "q" \\ \u{2028} \u{2029} \u{85} \`tick\``;
+  const doc = parse(
+    [
+      'param p unit=ms | P | 5 0 10 1',
+      'toggle t1 on | T1',
+      'toggle t2 needs=t1 | T2',
+      'bucket s | Now, Next',
+      's: one | Now',
+      's: two | Next',
+      'ask a | A',
+      'template tpl | Tpl',
+      '```text',
+      'x {a} {p}',
+      '```',
+      'preset ps | Ps | p=7; t1=off',
+      'export json',
+      'export markdown',
+      'export prompt',
+    ].join('\n'),
+  );
+  // The parser keeps line separators out of a line, so the hostile text is set on the blocks: the escaping must not depend on that.
+  const f = fieldsOf(doc.blocks);
+  (f[0] as ParamBlock).unit = hostile;
+  (f[2] as { needs: string[] }).needs = [hostile];
+  const bucket = f[3] as BucketBlock;
+  bucket.buckets = [`Now${hostile}`, hostile];
+  bucket.items = [
+    { text: hostile, bucket: bucket.buckets[0], line: 5 },
+    { text: `${hostile}${hostile}`, bucket: hostile, line: 6 },
+  ];
+  (f[5] as TemplateBlock).body = `${hostile} {a} {p}`;
+  const preset = doc.blocks.find((b) => b.type === 'preset') as { values: { name: string; value: string }[] };
+  preset.values = [{ name: 'a', value: hostile }];
+  const html = await render(doc, { shell: true });
+  const raw = block(html);
+  assert.doesNotMatch(raw, /[<>&\u{2028}\u{2029}]/u);
+  assert.equal(html.split('<script').length, 3, 'still exactly the data block and the runtime');
+  const data = JSON.parse(raw) as { fields: Record<string, unknown>[]; presets: { v: string[][] }[] };
+  assert.equal(data.fields[0].u, hostile);
+  assert.deepEqual(data.fields[2].d, [hostile]);
+  assert.deepEqual(data.fields[3].b, [`Now${hostile}`, hostile]);
+  assert.deepEqual(data.fields[3].t, [hostile, `${hostile}${hostile}`]);
+  assert.deepEqual(data.fields[3].i, [`Now${hostile}`, hostile]);
+  assert.equal(data.fields[5].b, `${hostile} {a} {p}`);
+  assert.deepEqual(data.presets[0].v, [['a', hostile]]);
 });
