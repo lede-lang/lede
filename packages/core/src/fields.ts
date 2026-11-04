@@ -1,15 +1,8 @@
 import type { Block, ExportBlock, PresetBlock, QuestionBlock } from './ast.ts';
+import { walkBlocks } from './walk.ts';
 
 /** The Markdown export's placeholder for an unpicked `choose`; the parser refuses an option spelled like it. */
 export const NOT_CHOSEN = '(not chosen)';
-
-function walk(blocks: Block[], visit: (b: Block) => void): void {
-  for (const b of blocks) {
-    visit(b);
-    if (b.type === 'cards') for (const c of b.items) walk(c.blocks, visit);
-    else if (b.type === 'grid') walk(b.children, visit);
-  }
-}
 
 /**
  * The kinds of field (spec §4.18, §4.19). `fillable`: the field holds a value the reader sets, so a `{slot}` or a `preset` key may name
@@ -35,7 +28,7 @@ export const SLOT_RE = /\{([A-Za-z][\w-]*)\}/g;
  */
 export function fieldsOf(blocks: Block[]): QuestionBlock[] {
   const out: QuestionBlock[] = [];
-  walk(blocks, (b) => {
+  walkBlocks(blocks, (b) => {
     if (Object.hasOwn(FIELD_KINDS, b.type)) out.push(b as QuestionBlock);
   });
   return out;
@@ -44,7 +37,7 @@ export function fieldsOf(blocks: Block[]): QuestionBlock[] {
 /** Every `preset` block, wherever it sits. */
 export function presetsOf(blocks: Block[]): PresetBlock[] {
   const out: PresetBlock[] = [];
-  walk(blocks, (b) => {
+  walkBlocks(blocks, (b) => {
     if (b.type === 'preset') out.push(b);
   });
   return out;
@@ -53,7 +46,7 @@ export function presetsOf(blocks: Block[]): PresetBlock[] {
 /** Every `export` block, wherever it sits. */
 export function exportsOf(blocks: Block[]): ExportBlock[] {
   const out: ExportBlock[] = [];
-  walk(blocks, (b) => {
+  walkBlocks(blocks, (b) => {
     if (b.type === 'export') out.push(b);
   });
   return out;

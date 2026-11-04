@@ -755,6 +755,12 @@ test('a preset is not a field: it does not stop export-orphan, and a page of fie
   assert.deepEqual(detail('ask a | A\npreset p | P | a=x', 'export-missing'), { fields: 1 });
 });
 
+test('the export-orphan warning names every word that makes a field to export', () => {
+  const message = parse('export json').diagnostics.find((d) => d.code === 'export-orphan')?.message;
+  for (const word of ['ask', 'choose', 'confirm', 'param', 'toggle', 'bucket', 'template'])
+    assert.match(message ?? '', new RegExp(`\\b${word}\\b`), word);
+});
+
 test('every code carries the detail keys the spec lists', () => {
   const want: [string, string, string[]][] = [
     ['param a | A | 1 2 1 1', 'param-range', ['value', 'min', 'max', 'step', 'rule']],

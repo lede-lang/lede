@@ -793,7 +793,13 @@ export class LedeParser {
         { fields },
       );
     } else if (fields === 0 && this.exports.size > 0) {
-      this.diag('warning', 'export-orphan', 'export has no ask, choose or confirm line to export', Math.min(...this.exports.values()), 1);
+      this.diag(
+        'warning',
+        'export-orphan',
+        'export has no ask, choose, confirm, param, toggle, bucket or template line to export',
+        Math.min(...this.exports.values()),
+        1,
+      );
     }
   }
 
