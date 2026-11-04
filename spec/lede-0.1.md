@@ -425,7 +425,9 @@ or `id`. LABEL and QUESTION are inline text (§5); names, numbers, option names 
 
 The CSS for these words is added only to a page that draws one, so every other page keeps its bytes.
 
-**The export for the editor words.** Values: `param` the number (the page's default when the box is empty or not a number); `toggle` `on` or
+**The export for the editor words.** Values: `param` the number in the box, held to MIN..MAX and then moved to the nearest point of the step
+grid from MIN (a tie goes up, and the noise of the multiplication is rounded away at nine decimals, so `0.85 + 11 * 0.01` is `0.96`), or the
+page's default when the box is empty or not a number; `toggle` `on` or
 `off`; `bucket` the bucket each item is in, in the item order (an item with no valid bucket is where it was written); `template` the
 body with each slot replaced, once and in one pass over the body, by the slot field's value as text: an `ask` or `choose` its text, a
 `param` its number then a space and its unit when it has one, a `toggle` `on` or `off`. An `ask` left empty and a `choose` left unpicked
@@ -457,7 +459,8 @@ rules above give for the values the controls hold. On every change it rewrites e
 templates in one pass, so nothing it shows is older than the last input. The page is a working page without it (the controls are native),
 and the runtime adds no element and moves none.
 - `param`: the range and the number box follow each other. A number box that is emptied leaves the range where it was, and while the
-  box is empty the export uses the page's default.
+  box is empty the export uses the page's default. A number typed outside MIN..MAX or off the grid stays in the box as typed (the range
+  stops at its end); the export holds it to the range and the grid, as above.
 - `toggle`: when it is `on` and a toggle it `needs` is `off`, the runtime sets `aria-invalid="true"` on its checkbox and writes
   `needs A, which is off` (the first unmet name) into the status span outside the label; both go when the need is met. Nothing is
   disabled and nothing is refused: the toggle is _blocked_ in the export (above).

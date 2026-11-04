@@ -33,15 +33,25 @@ browserTest('4.1 param: the range and the number box follow each other, and the 
   await page.locator(num).fill('0.97');
   assert.equal(await val(page, range), '0.97', 'typing in the number box moves the range');
   assert.match((await code(page, 'markdown'))!, /^- press: 0\.97 x$/m);
-  // Out of range: the range stops at its end, the export keeps what was typed (the number box is the source).
+  // Out of range: the range stops at its end, and the export holds the number to MIN..MAX (the number box is still the source).
   await page.locator(num).fill('0.5');
   assert.equal(await val(page, range), '0.85');
-  assert.match((await code(page, 'markdown'))!, /^- press: 0\.5 x$/m);
+  assert.match((await code(page, 'markdown'))!, /^- press: 0\.85 x$/m);
+  assert.match((await code(page, 'prompt'))!, /^- press: 0\.85 x \(was 0\.94 x\)$/m);
   // Emptied or not a number: the export reads the value the page was written with, and the range stays where it was.
   await page.locator(num).fill('');
   assert.equal(await val(page, range), '0.85');
   assert.match((await code(page, 'markdown'))!, /^- press: 0\.94 x$/m);
   assert.match((await code(page, 'prompt'))!, /^No changes\.$/m);
+  // Above the top, and off the grid: the export holds the number to MIN..MAX and snaps it to the nearest step from MIN, with the float
+  // noise rounded away (0.85 + 11 * 0.01 is 0.9600000000000001).
+  await page.locator(num).fill('7');
+  assert.match((await code(page, 'markdown'))!, /^- press: 1 x$/m);
+  await page.locator(num).fill('0.9549');
+  assert.match((await code(page, 'markdown'))!, /^- press: 0\.95 x$/m);
+  await page.locator(num).fill('0.9551');
+  assert.match((await code(page, 'markdown'))!, /^- press: 0\.96 x$/m);
+  assert.match((await code(page, 'prompt'))!, /^- press: 0\.96 x \(was 0\.94 x\)$/m);
   await ctx.close();
 });
 
@@ -325,7 +335,34 @@ browserTest(
       FORMATS.forEach((fmt, k) => assert.equal(read.codes[k], serializeExport(fmt, block.page, blocks, held), `${label} ${fmt}`));
     };
     await compare('initial state');
-    const numbers = ['', '0', '12.5', '-3', 'abc', '1e2', '100', '35', '0.25', '7', '-0', '1e21'];
+    // In range, off the grid, below, above, on a tie and on float noise, for p (0 to 100 by 5) and q (0 to 1 by 0.25).
+    const numbers = [
+      '',
+      '0',
+      '12.5',
+      '-3',
+      'abc',
+      '1e2',
+      '100',
+      '35',
+      '0.25',
+      '7',
+      '-0',
+      '1e21',
+      '0.3',
+      '0.9',
+      '-0.1',
+      '2.5',
+      '99.99',
+      '47.5',
+      '52.5',
+      '0.125',
+      '0.875',
+      '1.0000001',
+      '-1e-9',
+      '0.6249999',
+      '120',
+    ];
     for (let seed = 1; seed <= 300; seed++) {
       const r = rng(seed);
       const plan = {

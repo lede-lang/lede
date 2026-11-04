@@ -572,6 +572,28 @@ test('5.1 a value that is not valid for its field is read as the written one', (
   assert.deepEqual(answers(['', 'off', ['Y']]), { p: 5, t: 'off', b: { X: [], Y: ['i'] } });
 });
 
+test('5.1 a typed number is held to MIN..MAX and snapped to the step grid from MIN, in the values, the template and the prompt', () => {
+  const f = fieldsFor('param p unit=ms | P | 50 0 100 5\nparam q | Q | 0.94 0.85 1 0.01\ntemplate t | T\n```text\n{p} {q}\n```');
+  const answers = (v: Value[]) => (JSON.parse(serialize('json', undefined, f, v)) as { answers: Record<string, unknown> }).answers;
+  const pq = (v: [number, number]) => {
+    const a = answers([...v, null]);
+    return [a.p, a.q];
+  };
+  assert.deepEqual(pq([150, 0.5]), [100, 0.85], 'above the top, below the bottom');
+  assert.deepEqual(pq([-3, 2]), [0, 1]);
+  assert.deepEqual(pq([12.4, 0.9449]), [10, 0.94], 'to the nearest step');
+  assert.deepEqual(pq([13, 0.9451]), [15, 0.95]);
+  assert.deepEqual(pq([12.5, 0.855]), [15, 0.86], 'a tie goes up');
+  assert.deepEqual(pq([-0.4, 0.96]), [0, 0.96], '0.85 + 11 * 0.01 is 0.9600000000000001 before the noise is rounded away');
+  assert.deepEqual(pq([50, 0.94]), [50, 0.94], 'a point on the grid is itself, so the written default is a fixed point');
+  assert.deepEqual(pq([Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY]), [50, 0.94], 'not a finite number is the written value');
+  assert.equal(answers([220, 0.2, null]).t, '100 ms 0.85', 'the template is filled from the held values');
+  assert.match(serialize('prompt', undefined, f, [220, 0.2, null]), /^- p: 100 ms \(was 50 ms\)\n- q: 0\.85 \(was 0\.94\)$/m);
+  assert.match(serialize('markdown', undefined, f, [-9, 7, null]), /^- p: 0 ms\n- q: 1$/m);
+  // A value that moves to where the page started is no change.
+  assert.match(serialize('prompt', undefined, f, [52, 0.9401, null]), /^No changes\.$/m);
+});
+
 // ---------------------------------------------------------------- Req 5.4, 5.5: readers, as an agent reads the answer back
 
 type Typed = string | number | null | Record<string, string[]>;

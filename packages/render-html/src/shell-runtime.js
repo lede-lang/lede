@@ -37,7 +37,7 @@
     if (k === 'toggle') return q[0].checked ? 'on' : 'off';
     if (k === 'param') {
       q = parseFloat(q[1].value);
-      return isFinite(q) ? q : f.i;
+      return isFinite(q) ? +(f.mn + Math.round((Math.min(f.mx, Math.max(f.mn, q)) - f.mn) / f.st) * f.st).toFixed(9) : f.i;
     }
     if (k === 'bucket')
       return f.t.map((t, j) => f.b[nm(f.n + ':' + j).findIndex((r) => r.checked)] || f.i[j]);

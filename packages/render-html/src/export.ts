@@ -51,8 +51,15 @@ function fillTemplate(b: TemplateBlock, fields: QuestionBlock[], settled: Value[
 }
 
 /**
+ * A typed number as the export means it: held to MIN..MAX, then moved to the nearest point of the step grid from MIN (a tie goes up), with
+ * the noise of the multiplication rounded away (`0.85 + 11 * 0.01` is `0.9600000000000001`). The runtime computes the same expression.
+ */
+const snap = (f: ParamBlock, x: number): number =>
+  Number((f.min + Math.round((Math.min(f.max, Math.max(f.min, x)) - f.min) / f.step) * f.step).toFixed(9));
+
+/**
  * Each value as the export means it. A value of the wrong shape (a `NaN` or empty number box, a bucket outside the set) is the value the
- * page was written with, and a `template` is filled from the others.
+ * page was written with, a `param` is held to its range and grid, and a `template` is filled from the others.
  */
 export function settle(fields: QuestionBlock[], values: Value[]): Value[] {
   const out: Value[] = fields.map((f, i) => {
@@ -65,7 +72,7 @@ export function settle(fields: QuestionBlock[], values: Value[]): Value[] {
       case 'confirm':
         return typeof v === 'string' ? v : 'open';
       case 'param':
-        return typeof v === 'number' && Number.isFinite(v) ? v : f.value;
+        return typeof v === 'number' && Number.isFinite(v) ? snap(f, v) : f.value;
       case 'toggle':
         return v === 'on' || v === 'off' ? v : f.on ? 'on' : 'off';
       case 'bucket':
