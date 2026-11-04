@@ -727,9 +727,10 @@ absolute `https:` URL only, written normalised, anything else is W `meta-url` `{
 browser fetches none of it and the CSP is unchanged. The launch claim is now "no `<script>` element at all" for `build` and `build
 --artifact`, so there is no JSON-LD; `--shell` (D63) is the one mode with script and is audited separately. Unknown `@toc` or `@header`
 values are W `meta-value` `{key, value, allowed}`, case-insensitive. The writer-facing lines for the four keys go in the skill's
-on-demand `meta.md` (D72), their single home, not in the capped model reference (D55). The owner agreed the direction; three details
-are this spec's recommendations pending the owner's answer: the four-section threshold, `https:`-only share images, and keeping the bar
-in `--artifact` output rather than revising D59. Rejected: keeping `-x`; ids from line numbers; a `toc` keyword line (article-coverage
+on-demand `meta.md` (D72), their single home, not in the capped model reference (D55). The owner agreed the direction and on
+2026-11-04 set the threshold at four sections, with `@toc off` to opt out and `@toc on` from two; two details are this spec's
+recommendations pending the owner's answer: `https:`-only share images, and keeping the bar in `--artifact` output rather than
+revising D59. Rejected: keeping `-x`; ids from line numbers; a `toc` keyword line (article-coverage
 task 4's row is superseded; `fold` and `swatch` stand); a disclosure instead of the strip; a fixed-height sticky bar that may wrap
 (WCAG 2.4.11); emitting the bar only at settle; JSON-LD or any script element; `og:url`, `og:site_name`, `og:locale` and the full
 `twitter:*` set; `http:` share images; rewriting fence `href`s; removing `id` from the sanitizer allowlist. Lands only after D67 step 1
@@ -824,7 +825,7 @@ as they are measured. Internal spec `lede-layered-diagrams`, lede-lang/meta.
 
 ## D74. Pages get their own look through named font pairings and palette presets; nothing is fetched, nothing is embedded
 Owner's decision (2026-11-04, answer 9 of the ten questions: "otherwise all artifacts look the same"). The `fonts` meta key, parsed
-since 0.1 and never rendered, now selects one of six pairings of system font stacks, `editorial` (today's look, the default), `plain`,
+since 0.1 and never rendered, now selects one of six pairings of system font stacks, `editorial` (today's look, the default), `clean`,
 `book`, `modern`, `humanist`, `slab`, each setting three tokens: `--head` (headings, kpi values, quotes), `--body` (running text),
 `--prose` (long-form pages). Interface text (labels, chips, legends, chart and diagram text, table cells, layer pills, the contents
 bar, the skip link) stays on a fixed `--ui` stack and code on `--mono` in every pairing, because the compiler sizes SVG text and table
@@ -846,8 +847,9 @@ adds 80 to 150 KB to a 79 KB page, an Artifact host's CSP would fail them silent
 later it is a separate opt-in flag with an OFL-or-Apache rule, WOFF2 subsets, a 120 KB cap and `font-src data:` only on pages that
 embed, under its own decision. Also rejected: writer-supplied stacks or hexes beyond `@accent`; palettes that move status or series
 colours; dark-only palettes; a combined `@look` key; changing the default; more names at launch. The owner asked for fonts and colours
-so pages do not all look the same and agreed the direction; three details are this spec's recommendations pending the owner's answer:
-system stacks only (embedded `data:` fonts were the brief's wording, rejected above), the six pairing and five palette names, and
-keeping `editorial` and `paper` as the default. Writers learn the names from the skill's on-demand `meta.md` (D72) after its probe
-round; the model reference (D55) does not change. Lands only after D67 step 1 records its verdict; the token rename re-runs the D66
-artifact check and the D68 stream bench as release gates. Internal spec `lede-page-identity`, lede-lang/meta.
+so pages do not all look the same and agreed the direction; on 2026-11-04 the owner chose system stacks only and left the names to us:
+pairings `editorial`, `clean`, `book`, `modern`, `humanist`, `slab`, palettes `paper`, `slate`, `sand`, `forest`, `plum`. Keeping
+`editorial` and `paper` as the default is this spec's recommendation pending the owner's answer. Writers learn the names from the
+skill's on-demand `meta.md` (D72) after its probe round; the model reference (D55) does not change. Lands only after D67 step 1 records
+its verdict; the token rename re-runs the D66 artifact check and the D68 stream bench as release gates. Internal spec
+`lede-page-identity`, lede-lang/meta.
