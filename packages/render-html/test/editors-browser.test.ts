@@ -3,9 +3,9 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fieldsOf } from '@lede-lang/core';
-import { compile, RUNTIME } from '../src/index.ts';
+import { compile } from '../src/index.ts';
 import { serializeExport } from '../src/export.ts';
-import { browserTest, type Browser } from './chrome.ts';
+import { browserTest, serve, tamper } from './chrome.ts';
 import { rng, text } from './fuzz.ts';
 import { heldValues, SNAPSHOT, type Entry } from './held.ts';
 
@@ -13,24 +13,7 @@ const example = (name: string) => readFileSync(new URL(`../../../examples/parity
 const EDITORS = example('editors');
 const LARGE = example('editors-large');
 
-const URL_ = 'https://lede.test/page.html';
-
-/** Serves `html` at a stub https origin, so the page keeps its policy and the runtime runs only if its hash is the page's. */
-async function open(browser: Browser, html: string, width = 1280, scheme: 'light' | 'dark' = 'light') {
-  const ctx = await browser.newContext({ viewport: { width, height: 900 }, colorScheme: scheme });
-  const page = await ctx.newPage();
-  await page.route(URL_, (r) => r.fulfill({ status: 200, contentType: 'text/html', body: html }));
-  await page.goto(URL_);
-  return { ctx, page };
-}
-type Tab = Awaited<ReturnType<typeof open>>['page'];
-
-/** The same page with the runtime changed by one byte: the policy stops it, so the page is what a reader without script sees. */
-const blocked = (html: string): string => {
-  const out = html.replace(`<script>${RUNTIME}</script>`, `<script>${RUNTIME} </script>`);
-  assert.notEqual(out, html);
-  return out;
-};
+type Tab = Awaited<ReturnType<typeof serve>>['page'];
 
 const code = (page: Tab, fmt: string) => page.locator(`figure[data-x="${fmt}"] code`).textContent();
 const val = (page: Tab, sel: string) => page.locator(sel).inputValue();
@@ -39,7 +22,7 @@ const val = (page: Tab, sel: string) => page.locator(sel).inputValue();
 
 browserTest('4.1 param: the range and the number box follow each other, and the export carries the number box', async (browser) => {
   const { html } = await compile(EDITORS, { shell: true });
-  const { ctx, page } = await open(browser, html);
+  const { ctx, page } = await serve(browser, html);
   const range = 'input[type=range][name=press]';
   const num = 'input[type=number][name=press]';
   assert.deepEqual([await val(page, range), await val(page, num)], ['0.94', '0.94']);
@@ -77,7 +60,7 @@ browserTest(
       'export prompt',
     ].join('\n');
     const { html } = await compile(src, { shell: true });
-    const { ctx, page } = await open(browser, html);
+    const { ctx, page } = await serve(browser, html);
     const st = (n: string) => page.locator(`.q-toggle:has(input[name=${n}]) .q-st`).textContent();
     const invalid = (n: string) => page.locator(`input[name=${n}]`).getAttribute('aria-invalid');
     // c is on and needs b, which is off; d is off, so its unmet need says nothing.
@@ -115,7 +98,7 @@ browserTest(
   '4.3 bucket: the count tiles follow the radios at once, nothing moves in the DOM, and the export groups in source order',
   async (browser) => {
     const { html } = await compile(EDITORS, { shell: true });
-    const { ctx, page } = await open(browser, html);
+    const { ctx, page } = await serve(browser, html);
     const tiles = async () => page.locator('fieldset.q-bucket .q-bk .q-n').allTextContents();
     assert.deepEqual(await tiles(), ['1', '1', '1']);
     await page.evaluate(`window.__rows = [...document.querySelectorAll('.q-items > li')]; window.__rows.forEach((r, i) => (r.__i = i));
@@ -162,7 +145,7 @@ browserTest('4.4 template: refilled in one pass on every change, braces literal,
     doc.diagnostics.some((d) => d.code === 'template-slot'),
     'the undeclared {z} is a warning',
   );
-  const { ctx, page } = await open(browser, html);
+  const { ctx, page } = await serve(browser, html);
   const tpl = () => page.locator('figure.q-tpl code').textContent();
   const count = () => page.locator('figure.q-tpl .q-n').textContent();
   const initial = '{"name": "{a}", "other": "{b}", "p": 5 ms, "t": "off", "x": {{y}}, "z": {z}, "q": {"k": 5 ms}}';
@@ -200,7 +183,7 @@ browserTest(
   '4.5 preset: its button sets the text, the radio, both param controls and the checkbox, and says which preset it applied',
   async (browser) => {
     const { html } = await compile(PRESET_SRC, { shell: true });
-    const { ctx, page } = await open(browser, html);
+    const { ctx, page } = await serve(browser, html);
     const button = page.locator('.q-preset > button.q-pre');
     assert.equal(await button.isVisible(), true);
     assert.equal(await button.textContent(), 'Boost');
@@ -229,7 +212,7 @@ browserTest(
 
 browserTest('4.5 with scripts blocked a preset is its values as text and no button', async (browser) => {
   const { html } = await compile(PRESET_SRC, { shell: true });
-  const { ctx, page } = await open(browser, blocked(html));
+  const { ctx, page } = await serve(browser, tamper(html));
   assert.equal(await page.locator('.q-preset > button.q-pre').isVisible(), false);
   assert.equal(await page.locator('.q-preset > .q-pv').isVisible(), true);
   assert.match((await page.locator('.q-preset > .q-pv').textContent())!, /^Boost: who Dana; B, tier pro, plus, speed 2 x, fast on$/);
@@ -242,7 +225,7 @@ browserTest(
   '4.6 a driven session adds no element, writes no attribute but hidden and aria-invalid, and writes text only in its places',
   async (browser) => {
     const { html } = await compile(EDITORS, { shell: true });
-    const { ctx, page } = await open(browser, html);
+    const { ctx, page } = await serve(browser, html);
     await page.evaluate(`window.__m = []; new MutationObserver((rs) => { for (const r of rs) window.__m.push({
     type: r.type, attr: r.attributeName, added: [...r.addedNodes, ...r.removedNodes].map((n) => n.nodeType === 1 ? 'element:' + n.nodeName : 'text'),
     in: (r.target.nodeType === 1 ? r.target : r.target.parentNode).closest('code') ? 'code' : (r.target.nodeType === 1 ? r.target : r.target.parentNode).closest('[role=status]') ? 'status'
@@ -295,6 +278,7 @@ const POOL = [
   'ENG-1: "q", with; all',
   '(empty)',
 ];
+const FORMATS = ['json', 'markdown', 'prompt'] as const;
 const quote = (t: string) => `"${t.replaceAll('"', '""')}"`;
 const PARITY_SRC = [
   '@title Checkout: "play" | then <b>purple</b>',
@@ -330,14 +314,15 @@ browserTest(
       [],
     );
     const blocks = fieldsOf(doc.blocks);
-    const { ctx, page } = await open(browser, html);
+    const { ctx, page } = await serve(browser, html);
     const block = JSON.parse((await page.locator('script#lede-shell').textContent())!) as { page: string };
     assert.equal(block.page, 'Checkout: "play" | then <b>purple</b>');
+    // The controls and the three code blocks in one round trip, so they are read from the same state.
+    const READ = `({ entries: ${SNAPSHOT}, codes: ${JSON.stringify(FORMATS)}.map((f) => document.querySelector('figure[data-x=' + f + '] code').textContent) })`;
     const compare = async (label: string) => {
-      const entries = (await page.evaluate(SNAPSHOT)) as Entry[];
-      const held = heldValues(blocks, entries);
-      for (const fmt of ['json', 'markdown', 'prompt'] as const)
-        assert.equal(await code(page, fmt), serializeExport(fmt, block.page, blocks, held), `${label} ${fmt}`);
+      const read = (await page.evaluate(READ)) as { entries: Entry[]; codes: string[] };
+      const held = heldValues(blocks, read.entries);
+      FORMATS.forEach((fmt, k) => assert.equal(read.codes[k], serializeExport(fmt, block.page, blocks, held), `${label} ${fmt}`));
     };
     await compare('initial state');
     const numbers = ['', '0', '12.5', '-3', 'abc', '1e2', '100', '35', '0.25', '7', '-0', '1e21'];
@@ -400,8 +385,8 @@ for (const [name, src] of [
   for (const width of [1280, 360])
     browserTest(`4.8 activation changes no geometry, ${name} at ${width} px`, async (browser) => {
       const { html } = await compile(src, { shell: true });
-      const off = await open(browser, blocked(html), width);
-      const on = await open(browser, html, width);
+      const off = await serve(browser, tamper(html), { width });
+      const on = await serve(browser, html, { width });
       // Without these the comparison could pass because nothing was activated.
       assert.equal(await off.page.locator('.q-bar').first().isVisible(), false, 'the blocked page shows no copy bar');
       assert.equal(await on.page.locator('.q-bar').first().isVisible(), true, 'the live page ran its runtime');
@@ -446,7 +431,7 @@ browserTest('4.9 on the large page a change is handled in under 50 ms (16 ms is 
     [8, 3, 1],
   );
   assert.equal(fieldsOf(doc.blocks).flatMap((f) => (f.type === 'bucket' ? f.items : [])).length, 30);
-  const { ctx, page } = await open(browser, html);
+  const { ctx, page } = await serve(browser, html);
   assert.equal(await page.locator('figure[data-x]').count(), 3);
   assert.equal(await page.locator('.q-bar').first().isVisible(), true, 'the runtime ran');
   // The capture listener on the window runs before the runtime's on <main>, the bubble listener on the document after it.
@@ -481,7 +466,7 @@ browserTest('a data block the runtime cannot trust leaves the page as the ordina
   const bar = (p: Tab) => p.locator('.q-bar').first().isVisible();
   const data = /<script type="application\/json" id="lede-shell">([\s\S]*?)<\/script>/.exec(html)![1];
   const good = JSON.parse(data) as { v: number; fields: { k: string; t?: unknown; i?: unknown; s?: unknown }[] };
-  const ok = await open(browser, html);
+  const ok = await serve(browser, html);
   assert.equal(await bar(ok.page), true);
   await ok.ctx.close();
   const bad: [string, (b: typeof good) => void][] = [
@@ -494,7 +479,7 @@ browserTest('a data block the runtime cannot trust leaves the page as the ordina
   for (const [what, mutate] of bad) {
     const copy = JSON.parse(data) as typeof good;
     mutate(copy);
-    const { ctx, page } = await open(
+    const { ctx, page } = await serve(
       browser,
       html.replace(data, () => JSON.stringify(copy)),
     );

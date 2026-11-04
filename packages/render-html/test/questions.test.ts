@@ -5,6 +5,7 @@ import { fieldsOf, parse, type QuestionBlock } from '@lede-lang/core';
 import { compile } from '../src/index.ts';
 import { blankAnswers, cleanText, serializeExport, type Answer } from '../src/export.ts';
 import { rng, text } from './fuzz.ts';
+import { unescape } from './held.ts';
 
 const PAGE = [
   '# Release 4.2 go/no-go',
@@ -16,12 +17,6 @@ const PAGE = [
   'export json',
 ].join('\n');
 
-const unescape = (s: string) =>
-  s
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&amp;/g, '&');
 const fieldsFor = (src: string): QuestionBlock[] => fieldsOf(parse(src).blocks);
 
 test('each word draws plain controls with no script, button, form or id', async () => {

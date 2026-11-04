@@ -1,7 +1,15 @@
 // What a page's controls hold, read from a browser and turned into the values the reference serializer takes (internal spec, lede-lang/meta).
-// Shared by the shell's parity and security checks. Not a `*.test.ts`.
+// Shared by the shell's parity and security checks, and by the checks that read an export out of the page's markup. Not a `*.test.ts`.
 import type { QuestionBlock } from '@lede-lang/core';
 import type { Value } from '../src/export.ts';
+
+/** Markup text as the text it shows: the four entities `esc` writes, with `&amp;` last so `&amp;lt;` reads as `&lt;`. */
+export const unescape = (s: string): string =>
+  s
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, '&');
 
 /** One entry per named control: `[name, type, value, checked]`. Runs in the page. */
 export const SNAPSHOT = `[...document.querySelectorAll('main [name]')].map((e) => [e.name, e.type, e.value, e.checked])`;

@@ -6,6 +6,7 @@ import { fieldsOf, LedeStream, parse, type BucketBlock, type ParamBlock, type Qu
 import { compile, render } from '../src/index.ts';
 import { blankAnswers, cleanText, serializeExport, type Value } from '../src/export.ts';
 import { rng, text } from './fuzz.ts';
+import { unescape } from './held.ts';
 
 const serialize = serializeExport;
 const initial = blankAnswers;
@@ -39,12 +40,6 @@ const F = fieldsFor(SRC);
 const CHANGED: Value[] = ['Dana', 0.96, 'off', 'on', 'spring', 'approved', ['Now', 'Cut', 'Next'], null];
 const PRESS_ONLY: Value[] = ['', 0.96, 'on', 'off', null, 'open', ['Now', 'Next', 'Next'], null];
 
-const unescape = (s: string) =>
-  s
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&amp;/g, '&');
 const exportCode = (html: string, fmt: string) =>
   unescape(new RegExp(`<figure class="q-x" data-x="${fmt}">[\\s\\S]*?<code>([\\s\\S]*?)</code>`).exec(html)![1]);
 const codePoints = (s: string) => Array.from(s).length;

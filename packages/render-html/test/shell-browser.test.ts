@@ -1,9 +1,9 @@
 // The shell runtime in Chromium, with the page's own policy in place (internal spec, lede-lang/meta). Fails, not skips, when CI is set.
 import assert from 'node:assert/strict';
 import { fieldsOf } from '@lede-lang/core';
-import { compile, RUNTIME } from '../src/index.ts';
+import { compile } from '../src/index.ts';
 import { serializeExport, type Answer } from '../src/export.ts';
-import { browserTest, type Browser } from './chrome.ts';
+import { browserTest, serve, tamper, type Browser } from './chrome.ts';
 import { rng, text } from './fuzz.ts';
 
 const SRC = [
@@ -16,20 +16,9 @@ const SRC = [
   'export markdown',
 ].join('\n');
 
-const URL_ = 'https://lede.test/page.html';
-
-/** Serves `html` at a stub https origin so the page keeps its policy and the Clipboard API has a secure context. */
-async function open(browser: Browser, html: string, init?: string, javaScriptEnabled = true) {
-  const ctx = await browser.newContext({ viewport: { width: 400, height: 900 }, javaScriptEnabled });
-  await ctx.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: 'https://lede.test' });
-  const page = await ctx.newPage();
-  const logs: string[] = [];
-  page.on('console', (m) => logs.push(m.text()));
-  if (init) await page.addInitScript(init);
-  await page.route(URL_, (r) => r.fulfill({ status: 200, contentType: 'text/html', body: html }));
-  await page.goto(URL_);
-  return { ctx, page, logs };
-}
+/** At phone width, with the clipboard allowed: `init` runs before the page's scripts, and `javaScriptEnabled` can turn them off. */
+const open = (browser: Browser, html: string, init?: string, javaScriptEnabled = true) =>
+  serve(browser, html, { width: 400, clipboard: true, init, javaScriptEnabled });
 const code = (page: Awaited<ReturnType<typeof open>>['page'], fmt: 'json' | 'markdown') =>
   page.locator(`figure[data-x="${fmt}"] code`).textContent();
 
@@ -41,9 +30,7 @@ browserTest('the pinned hash lets the runtime run; one changed byte stops it and
   assert.match((await code(ran.page, 'json'))!, /"constructor": "Dana"/, 'the JSON block was read under the policy');
   await ran.ctx.close();
 
-  const tampered = html.replace(`<script>${RUNTIME}</script>`, `<script>${RUNTIME} </script>`);
-  assert.notEqual(tampered, html);
-  const blocked = await open(browser, tampered);
+  const blocked = await open(browser, tamper(html));
   assert.equal(await blocked.page.locator('.q-bar').first().isVisible(), false);
   await blocked.page.locator('input[name="constructor"]').fill('Dana');
   assert.doesNotMatch((await code(blocked.page, 'json'))!, /Dana/);
