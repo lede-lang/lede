@@ -1,5 +1,17 @@
 # Changelog
 
+## <small>0.1.14 (2026-11-04)</small>
+
+* Merge pull request #17 from lede-lang/feat/shell-runtime ([7366bc2](https://github.com/lede-lang/lede/commit/7366bc2)), closes [#17](https://github.com/lede-lang/lede/issues/17)
+* Merge remote-tracking branch 'origin/main' into feat/shell-runtime ([9af2f02](https://github.com/lede-lang/lede/commit/9af2f02))
+* Merge branch 'feat/question-words' into feat/shell-runtime ([378654a](https://github.com/lede-lang/lede/commit/378654a))
+* Merge feat/question-words into feat/shell-runtime ([a17e6cb](https://github.com/lede-lang/lede/commit/a17e6cb))
+* refactor: compute a page's fields once, share the helpers and trim the tests ([a0f645a](https://github.com/lede-lang/lede/commit/a0f645a))
+* test: add the shell's acceptance checks, red until the runtime lands ([931353e](https://github.com/lede-lang/lede/commit/931353e))
+* test: run the security corpus over shell pages ([66c4ab7](https://github.com/lede-lang/lede/commit/66c4ab7))
+* feat(cli): add --shell to build and watch ([19c04bb](https://github.com/lede-lang/lede/commit/19c04bb))
+* feat(html): add the shell runtime and page assembly ([51c33b8](https://github.com/lede-lang/lede/commit/51c33b8))
+
 ## <small>0.1.13 (2026-11-04)</small>
 
 * Merge pull request #16 from lede-lang/feat/question-words ([dfa4a87](https://github.com/lede-lang/lede/commit/dfa4a87)), closes [#16](https://github.com/lede-lang/lede/issues/16)
