@@ -1,5 +1,11 @@
 # Changelog
 
+## <small>0.1.15 (2026-11-04)</small>
+
+* Merge pull request #32 from lede-lang/claude/project-thread-5elyqc ([bd5663f](https://github.com/lede-lang/lede/commit/bd5663f)), closes [#32](https://github.com/lede-lang/lede/issues/32)
+* docs: record D70 to D74 for page chrome, accessibility, reference files, layers and page identity ([288034f](https://github.com/lede-lang/lede/commit/288034f))
+* docs: record the owner's answers on fonts, names and the contents bar in D70 and D74 ([b0232c7](https://github.com/lede-lang/lede/commit/b0232c7))
+
 ## <small>0.1.14 (2026-11-04)</small>
 
 * Merge pull request #17 from lede-lang/feat/shell-runtime ([7366bc2](https://github.com/lede-lang/lede/commit/7366bc2)), closes [#17](https://github.com/lede-lang/lede/issues/17)
