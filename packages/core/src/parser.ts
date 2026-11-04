@@ -891,6 +891,18 @@ export class LedeParser {
     const h = this.editorHead('bucket', rest, col, 'bucket NAME | B1, B2 … [| QUESTION]');
     if (!h) return;
     const { name } = h;
+    // A `html: …` line is a raw block before any `NAME:` line is tried, so a set called html could never take an item (diagramDecl too).
+    if (name === 'html') {
+      this.diag(
+        'error',
+        'question-name',
+        'html cannot name a bucket set: a line starting `html:` is a raw HTML block, so it could never be an item; pick another name',
+        L,
+        col,
+        { word: 'bucket', name },
+      );
+      return;
+    }
     this.ignoreOptions('bucket', name, parseOpts(h.opts), [], col);
     const list = this.nameList(h.right, 'bucket names', col);
     const buckets = list.items;

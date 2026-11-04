@@ -366,7 +366,8 @@ export prompt                     (a third format beside json and markdown)
 - **`bucket` and its items.** Buckets are read as data cells, as `choose` options are (§4.18): `,` or `;` between them, quotes for a name
   that holds `,`, `;` or `|`, ending at the first `|` outside quotes; what follows is the QUESTION, or none. A set has two to eight
   buckets, distinct after trimming, none empty, none spelled `(not chosen)` or `(empty)`: otherwise E `bucket-names`. A set cannot
-  share a name with a data set or a diagram, nor they with it (E `name-clash` `{bucket}`; `--fix` leaves it). After the set, a
+  share a name with a data set or a diagram, nor they with it (E `name-clash` `{bucket}`; `--fix` leaves it), and cannot be named `html`, as a
+  diagram cannot, because a line `html: …` is a raw block (§4.10) before it could be an item (E `question-name`). After the set, a
   `NAME: ITEM TEXT | B` line whose NAME is that set adds an item, as a `NAME:` line whose NAME is a diagram adds a statement; a set is
   tried before a diagram, and an item line above its set is what it was before (a diagram statement, or text). The item text is what
   precedes the last `|` (or a `"quoted"` text that is followed by exactly one `|`), trimmed; the bucket after it must be one of the set's
@@ -932,7 +933,7 @@ and diagnostics for all 803, and byte-identical compiled pages for all 803. Ever
 Status: **preview**, D65. `param`, `toggle`, `bucket`, `template` and `preset`, the `NAME: ITEM | B` lines of a bucket set, and `export
 prompt` (§4.19) are new, valid in every build mode. The keywords are now `data chart table kpi diagram image grid cards step ask choose
 confirm export param toggle bucket template preset`, and none can name a diagram (E `diagram-name`). Conformance cases 35 to 40 and
-errors e27 to e41 are normative. `spec/model-spec.md` does not describe the words: models read them from the on-demand reference (D55
+errors e27 to e42 are normative. `spec/model-spec.md` does not describe the words: models read them from the on-demand reference (D55
 cap).
 
 **What changed for existing input.** Input that parsed before parses identically except: a lowercase line that starts with one of the five

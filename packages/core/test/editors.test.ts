@@ -249,6 +249,17 @@ test('2.3 bucket: a bucket set shares no name with a data set or a diagram, eith
   assert.deepEqual(clash?.detail, { bucket: 't' });
 });
 
+test('2.3 bucket: html cannot name a bucket set, since html: is a raw block that would never reach an item (E question-name)', () => {
+  assert.deepEqual(errs('bucket html | A, B\nhtml: x | A\nexport json'), ['error:question-name@1']);
+  assert.deepEqual(kinds('bucket html | A, B\nhtml: x | A\nexport json'), ['html', 'export']);
+  assert.deepEqual(detail('bucket html | A, B', 'question-name'), { word: 'bucket', name: 'html' });
+  assert.match(parse('bucket html | A, B').diagnostics[0].message, /html/);
+  // It takes no name, so a field may use it; only a bucket set is shadowed by the raw block. Another name keeps working.
+  assert.deepEqual(errs('bucket html | A, B\nask html | Q\nexport json'), ['error:question-name@1']);
+  assert.deepEqual(errs('ask html | Q\nexport json'), []);
+  assert.deepEqual(errs('bucket htm | A, B\nhtm: x | A\nexport json'), []);
+});
+
 test('2.3 bucket: the five words cannot name a diagram', () => {
   for (const w of ['param', 'toggle', 'bucket', 'template', 'preset']) assert.deepEqual(errs(`diagram ${w}`), ['error:diagram-name@1'], w);
   assert.ok((core.KEYWORDS as readonly string[]).includes('bucket'));
