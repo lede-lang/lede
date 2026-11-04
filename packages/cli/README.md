@@ -2,7 +2,7 @@
 
 The `lede` command for [Lede](https://ledelang.dev), a line-oriented page format that AI models write instead of HTML. It checks
 `.lede` files and compiles each to one self-contained HTML page with charts, diagrams, light and dark themes and a phone layout,
-and no JavaScript.
+and no JavaScript. `--shell` is the one exception: it adds a single fixed, hashed script to a page that asks questions.
 
 ```sh
 npm install -g @lede-lang/cli     # Node 22.12 or later

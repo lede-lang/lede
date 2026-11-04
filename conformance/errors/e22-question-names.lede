@@ -1,0 +1,8 @@
+ask owner Who signs off?
+ask | no name
+ask 9lives | bad name
+ask who | first
+ask who | second
+ask empty |
+confirm ok extra | Fine
+export

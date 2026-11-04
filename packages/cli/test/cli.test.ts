@@ -51,6 +51,7 @@ test('--help lists the commands and flags and exits 0, with or without a file', 
     const r = run(args, dir);
     assert.equal(r.status, 0, args.join(' '));
     assert.match(r.stdout, /--dry-run/);
+    assert.match(r.stdout, /--shell/);
     assert.match(r.stdout, /lede check/);
   }
 });
@@ -210,4 +211,44 @@ test('--help lists --artifact under both build and check', () => {
   assert.match(help, /lede check .*\[--artifact\]/);
   assert.match(help, /--artifact\s+build:/);
   assert.match(help, /check\/build: also warn about an image path the host cannot serve \(W artifact-image\)/);
+});
+
+test('build --shell adds the pinned runtime to a page with questions, and says so when there is nothing to run', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  writeFileSync(join(dir, 'q.lede'), '# Go\nask a | Who?\nexport json\n');
+  writeFileSync(join(dir, 'plain.lede'), '# Plain\n\nText\n');
+  const shell = run(['build', 'q.lede', '--shell'], dir);
+  assert.equal(shell.status, 0, shell.stderr);
+  assert.match(shell.stdout, /content="[^"]*; script-src 'sha256-[A-Za-z0-9+/]+='"/);
+  assert.equal((shell.stdout.match(/<script/g) ?? []).length, 2);
+  assert.doesNotMatch(shell.stderr, /had no effect/);
+  const plain = run(['build', 'q.lede'], dir);
+  assert.doesNotMatch(plain.stdout, /<script/, 'D10: no flag, no script');
+  const none = run(['build', 'plain.lede', '--shell'], dir);
+  assert.equal(none.status, 0);
+  assert.match(none.stderr, /--shell had no effect/);
+  assert.equal(none.stdout, run(['build', 'plain.lede'], dir).stdout);
+});
+
+test('--shell with --artifact keeps the scripts and drops the meta; with --unsafe-html it is a usage error', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  writeFileSync(join(dir, 'q.lede'), '# Go\nask a | Who?\nexport json\n');
+  const art = run(['build', 'q.lede', '--shell', '--artifact'], dir);
+  assert.equal(art.status, 0, art.stderr);
+  assert.match(art.stdout, /^<title>/);
+  assert.doesNotMatch(art.stdout, /<meta/);
+  assert.equal((art.stdout.match(/<script/g) ?? []).length, 2);
+  const bad = run(['build', 'q.lede', '--shell', '--unsafe-html'], dir);
+  assert.equal(bad.status, 2);
+  assert.match(bad.stderr, /--shell.*--unsafe-html/);
+  assert.equal(bad.stdout, '');
+});
+
+test('build exits 1 on a question error and 0 with --force, which draws only the lines that parsed', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  writeFileSync(join(dir, 'q.lede'), 'ask a | Who?\nask a | Again\nexport json\n');
+  assert.equal(run(['build', 'q.lede', '-o', 'out.html'], dir).status, 1);
+  const forced = run(['build', 'q.lede', '-o', 'out.html', '--force'], dir);
+  assert.equal(forced.status, 0);
+  assert.equal((readFileSync(join(dir, 'out.html'), 'utf8').match(/<input /g) ?? []).length, 1);
 });

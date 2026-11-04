@@ -8,6 +8,8 @@
   "sortPackageJson": false,
   "ignorePatterns": [
     "node_modules/**",
+    "packages/render-html/src/shell-runtime.js",
+    "packages/render-html/src/shell-runtime.ts",
     "packages/*/dist/**",
     "pnpm-lock.yaml",
     "bench/gen/**",

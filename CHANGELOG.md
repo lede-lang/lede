@@ -1,5 +1,15 @@
 # Changelog
 
+## <small>0.1.13 (2026-11-04)</small>
+
+* Merge pull request #16 from lede-lang/feat/question-words ([dfa4a87](https://github.com/lede-lang/lede/commit/dfa4a87)), closes [#16](https://github.com/lede-lang/lede/issues/16)
+* Merge remote-tracking branch 'origin/main' into feat/question-words ([1ffe458](https://github.com/lede-lang/lede/commit/1ffe458))
+* fix: run CI on ubuntu-24.04, cite the internal spec as such, say all 803 pages ([6d26bf1](https://github.com/lede-lang/lede/commit/6d26bf1))
+* docs: specify the question words (spec 4.18) and record D63 and D64 ([137da7b](https://github.com/lede-lang/lede/commit/137da7b))
+* test: run the security corpus over the question words ([39c60ed](https://github.com/lede-lang/lede/commit/39c60ed))
+* feat(html): draw the question words as plain controls ([3dee373](https://github.com/lede-lang/lede/commit/3dee373))
+* feat(core): parse ask, choose, confirm and export ([60a2867](https://github.com/lede-lang/lede/commit/60a2867))
+
 ## <small>0.1.12 (2026-11-02)</small>
 
 * Merge pull request #28 from lede-lang/claude/project-thread-pw3s53 ([ed1e896](https://github.com/lede-lang/lede/commit/ed1e896)), closes [#28](https://github.com/lede-lang/lede/issues/28) [#24](https://github.com/lede-lang/lede/issues/24) [#27](https://github.com/lede-lang/lede/issues/27)

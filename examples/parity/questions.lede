@@ -1,0 +1,14 @@
+@title Release 4.2 go/no-go
+# Release 4.2 go/no-go
+
+Six answers are needed before the window opens. Fill them in and copy the result back to the agent.
+
+ask owner | Who signs off on this release?
+choose risk | low, medium, high
+choose region | "us-east-1 (primary, 60% of traffic)", "eu-west-1 (secondary)", "ap-southeast-2" | Which region goes first?
+confirm migration | The migration ran on staging and rolled back cleanly in under four minutes with no replication lag
+confirm oncall | On-call for the release window is staffed
+ask notes lines=4 | Anything the release notes should carry?
+
+export json
+export markdown

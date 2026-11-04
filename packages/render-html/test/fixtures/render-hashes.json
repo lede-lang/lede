@@ -729,6 +729,26 @@
     "fragment": "1eb286bafa4756cd3fd909a7fa97b50aeb20130b7eb642c7ba3b131e80f4d4b2",
     "artifact": "c5bb1dac10df811280c585facf3bc640e930d5164782a6c47160c1d8b8d5129d"
   },
+  "conformance/cases/31-ask.lede": {
+    "ordinary": "ff311707eed50bb19253bc1b80000a15aa20504715a38114ea8c71488092dac5",
+    "fragment": "2ce5e18c22023870eb08374818706728bba0ce25ac32e877a956a9dbab18dd4c",
+    "artifact": "9282ac9605b227501048d6cf0a0c73eb60c437203467db4b7fb4ba2138e4d858"
+  },
+  "conformance/cases/32-choose.lede": {
+    "ordinary": "737aba3e096c40fdcc049c149b53b5dc315f9b1952ad78a62c25d66b18b724f3",
+    "fragment": "ed387f85b0780f054e87575d97d3427a8a2ae6adcf35b22d1d6110be613e3dee",
+    "artifact": "edf95b0bb70d5b72cc83b74293f489093e745f999fd7ede6d028c03124999137"
+  },
+  "conformance/cases/33-confirm.lede": {
+    "ordinary": "735d33386a48379dd5db0bc573312a86107e1a221c35e3898833382f684c4186",
+    "fragment": "5c4bdec4a2f2a2b15bb6802367fe929d8224e329f1809a9ad47388dca6cb2ec2",
+    "artifact": "941f867fca252ab7fed09fba6018004ab0a123cc7eb43a86d7f7a029d095f4eb"
+  },
+  "conformance/cases/34-export.lede": {
+    "ordinary": "86e3783850d3a15678660211183f8d5836bcdc50be1b0796fbe1342ab27b38f5",
+    "fragment": "904e201d9aa26369a4284ecf33cd95924fde7ba749fbb70f0164f2ab1f36d36d",
+    "artifact": "b0d4500addf59c7c507a3780293de5ad64d2c2d5a5d0998c24c181177289e051"
+  },
   "conformance/errors/e01-unknown-data.lede": {
     "ordinary": "fbe554334f54d975ecd4e76cd256d4a7e6d8d1baedac779b29629e73bebc519d",
     "fragment": "650f1173f1435633d2f1b964126f765a726128d053f4c642ec3c28cbf3dbd7fe",
@@ -828,6 +848,36 @@
     "ordinary": "f435dc6d7ae0c8b4bd15e22d91a7c14edeb559807024bfb1563275696c286887",
     "fragment": "b16f82b32f21181a8033a54a1bf493915cdbc3775213fcf8b9dc4626c0ec172c",
     "artifact": "56efdec012ffcff2fa13a8c49f4e3011f3832e6f73eb874bc6a5d1c5490d764b"
+  },
+  "conformance/errors/e21-question-prose.lede": {
+    "ordinary": "5a96461ba626b2ecce23054b47216c52109037a358b23b1349aaa7a71fba2888",
+    "fragment": "43a2e1bad87f9f9fb5aa91dabcbd3e2b929d44e7e40f46396a2b71bc45369deb",
+    "artifact": "3b00a79f35531feecd48b47b71f42e3b6a8ccab8a080bbef259860379cec7495"
+  },
+  "conformance/errors/e22-question-names.lede": {
+    "ordinary": "da5f2ddb14e9dec75c92ee1940094c5a35dc1434e50f56164f358030ae1b6d87",
+    "fragment": "4f5b6fff4563f26618ece94a7437671274dee20a504bd4e1f70404623cb8cd4e",
+    "artifact": "311ae2d94b9f29f696a304dd6b3b07d3825a8c2846be0f35d77ee3fdfca98d89"
+  },
+  "conformance/errors/e23-choose-options.lede": {
+    "ordinary": "1a5861def0d0d46a226b94a96a6c0d18e1c51d507e763cb84bbd8c6a6b667e09",
+    "fragment": "5deb3b7838aab41f810ee7c285e9e0c17878a3e947c1a5892cf71e0e70db5810",
+    "artifact": "5af9a10575dd4ae0799bdbccf0904b0fe9899eb857abc9638a1b77144c586e5c"
+  },
+  "conformance/errors/e24-ask-lines-export.lede": {
+    "ordinary": "dfb9d427daa8e412aeea8ef5acad0d66d8da27ff500ac55a74e662a4a1207a1b",
+    "fragment": "4895fc01b1481b9bd42abd499ebede76d30040eb239fc794da1d722127dcee25",
+    "artifact": "fff0565d314b81d711a0d3a3983e18dfb2fbfc4bd92746d5ff88c150db93f1e5"
+  },
+  "conformance/errors/e25-export-orphan.lede": {
+    "ordinary": "be48d002edf0b740ba874bd6405016c9cd7a9d5909be88b9295b96521cebe051",
+    "fragment": "41dbd46ffaf2d8c6845a356a704324419af9aadbe1a8530ca866c3e6ab2e8e81",
+    "artifact": "aed703e9080c2e33b05de4615c7068da09a59ff6ad9c35f46f0db6725fdf7148"
+  },
+  "conformance/errors/e26-export-missing.lede": {
+    "ordinary": "8a41df1e801acefda66d9b33985dd6b860691212fa1785ec60569a906fca1d47",
+    "fragment": "af783c842f29ff5737d314e0bf8eadda1a667ec66c5ad637dd0d965d39fd8e4c",
+    "artifact": "3190b350945897181ea7a9b78028ddbde1963b075374b08b644ec511c09828fc"
   },
   "examples/article/01-options-grid.lede": {
     "ordinary": "f6dd15e31e5c9617c27e800aa362f66f89e1fd0ba22c5779af5159aab9119c39",
@@ -1003,6 +1053,11 @@
     "ordinary": "7792358bb1430a3735feeff73bb5a2f97a92392faeac6b96ebfdd5810d60437f",
     "fragment": "9a007a0dc9a308a913205b9a0e89bb9f307a7ea40659efd4889c113475c9ce25",
     "artifact": "0f797f4736770d56f374dab8c571c6237ff96df4f0b9f3c7324411aff4a0b3bb"
+  },
+  "examples/parity/questions.lede": {
+    "ordinary": "280653da7690e498a612f004ba4660d7117adbd5e161dd770ca128dde3202727",
+    "fragment": "f83e0ce9d02b1713ed40eb1fb67612f38a8551aa818fd64700ef1c8d1178e990",
+    "artifact": "1a0716c3f1cd3f55d424f8ea49425aafa841c514ceb1803fc10f5a4f8c500a4a"
   },
   "examples/parity/recommendation.lede": {
     "ordinary": "29e29f5bdc71ef76db68d337caec3c6aaf8122e4b086a4a3dbed821debb41242",

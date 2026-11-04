@@ -3,10 +3,10 @@
 import { readFileSync, writeFileSync, watch as fsWatch, existsSync, realpathSync, statSync } from 'node:fs';
 import { dirname, resolve, basename, sep } from 'node:path';
 import { parse, fix, artifactDiagnostics, type Diagnostic, type LedeDocument } from '@lede-lang/core';
-import { render } from '@lede-lang/html';
+import { render, wantsShell } from '@lede-lang/html';
 
 const USAGE = `usage:
-  lede build <file.lede> [-o out.html] [--force] [--unsafe-html] [--allow-remote] [--artifact]
+  lede build <file.lede> [-o out.html] [--force] [--unsafe-html] [--allow-remote] [--artifact] [--shell]
   lede watch <file.lede> [-o out.html]
   lede check <file.lede>... [--json] [--fix [--dry-run]] [--artifact]
   lede ast   <file.lede>
@@ -28,6 +28,8 @@ options:
   --allow-remote  build: load remote images (links never need it)
   --artifact      build: write only <title>, <style> and <main>, for the Claude Artifact tool, which wraps them in its own page;
                   check/build: also warn about an image path the host cannot serve (W artifact-image)
+  --shell         build/watch: add the interaction shell to a page with ask, choose or confirm lines and an export line: one fixed
+                  script, pinned by hash in the page's policy, that keeps the answers and copies them out. Not with --unsafe-html
   --json          check: print diagnostics as JSON, keyed by file; each has severity, code, message,
                   line, col and, for some codes, a machine-readable \`detail\` object
   --fix           check: rewrite the file to repair mechanical slips (unquoted , or ; in cells,
@@ -86,11 +88,15 @@ async function build(file: string, out: string | null, flags: Set<string>): Prom
     process.stderr.write(`${file}: ${errors} error(s); not written (use --force to render anyway)\n`);
     return false;
   }
+  const shell = flags.has('--shell');
   const html = await render(doc, {
     unsafeHtml: flags.has('--unsafe-html'),
     allowRemote: flags.has('--allow-remote'),
     artifact: flags.has('--artifact'),
+    shell,
   });
+  if (shell && !wantsShell(doc))
+    process.stderr.write(`${file}: --shell had no effect: the page needs an ask, choose or confirm line and an export line\n`);
   if (out) writeFileSync(out, html);
   else process.stdout.write(html);
   if (out)
@@ -112,6 +118,10 @@ async function main(argv: string[]): Promise<number> {
   const files = rest.filter((a, i) => !a.startsWith('-') && !(oi >= 0 && i === oi + 1));
   if (!cmd || !files.length || !['build', 'watch', 'check', 'ast'].includes(cmd)) {
     process.stderr.write(`${USAGE}\n`);
+    return 2;
+  }
+  if ((cmd === 'build' || cmd === 'watch') && flags.has('--shell') && flags.has('--unsafe-html')) {
+    process.stderr.write('lede: --shell cannot be combined with --unsafe-html: raw html could plant its own controls and data block\n');
     return 2;
   }
   for (const f of files)

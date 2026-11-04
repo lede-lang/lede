@@ -13,12 +13,16 @@ import type {
   GridBlock,
   StepsBlock,
   Kpi,
+  QuestionBlock,
 } from '@lede-lang/core';
-import { browserUrl, imageSrcKind, num, parse, type ParseOptions } from '@lede-lang/core';
+import { browserUrl, exportsOf, fieldsOf, imageSrcKind, num, parse, type ParseOptions } from '@lede-lang/core';
 import sanitizeHtml from 'sanitize-html';
 import { renderChart } from './chart.ts';
 import { renderFlow } from './diagram.ts';
 import { renderSequence } from './sequence.ts';
+import { serializeExport } from './export.ts';
+import { askHtml, chooseHtml, confirmHtml, exportHtml } from './question.ts';
+import { SCRIPT_SRC, shellScripts } from './shell.ts';
 import { css } from './theme.ts';
 import { esc, fmtCell, inline, plain, slug, textWidth } from './util.ts';
 
@@ -34,19 +38,30 @@ export interface RenderOptions {
    * or body, and no meta tags or content security policy (the host sets them). The style and the main are the full page's, byte for byte.
    */
   artifact?: boolean;
+  /**
+   * Add the interaction shell (spec §7, D63): one data block and the fixed runtime, named by its hash in the page policy. Acts
+   * only on a page with a question and an `export`, and not on a `fragment`. Refused together with `unsafeHtml`.
+   */
+  shell?: boolean;
 }
 
 const WIDE = new Set(['grid', 'diagram']);
 
 export async function render(doc: LedeDocument, opts: RenderOptions = {}): Promise<string> {
-  const ctx = new Ctx(doc, opts);
+  if (opts.shell && opts.unsafeHtml)
+    throw new Error('shell cannot be combined with unsafeHtml: raw html could plant its own controls and data block');
+  const fields = fieldsOf(doc.blocks);
+  const exports = exportsOf(doc.blocks);
+  const shell = !!opts.shell && !opts.fragment && fields.length > 0 && exports.length > 0;
+  const ctx = new Ctx(doc, { ...opts, shell }, fields);
   const mh = masthead(doc, ctx);
   const { body, prose } = await renderMain(doc, ctx, mh);
   const title = mh.title;
   const main = mainElement(body, prose);
   if (opts.fragment) return main;
-  const style = `<style>${styleOf(doc.meta)}</style>`;
-  if (opts.artifact) return `<title>${esc(title)}</title>\n${style}\n${main}\n`;
+  const style = `<style>${styleOf(doc.meta, fields.length > 0 || exports.length > 0)}</style>`;
+  const scripts = shell ? `${shellScripts(ctx.page, fields, exports)}\n` : '';
+  if (opts.artifact) return `<title>${esc(title)}</title>\n${style}\n${main}\n${scripts}`;
   const desc = doc.meta.description ? `\n<meta name="description" content="${esc(doc.meta.description)}">` : '';
   const lang = /^[a-z]{2,3}(-[A-Za-z0-9]+)*$/.test(doc.meta.lang ?? '') ? doc.meta.lang : 'en';
   return `<!doctype html>
@@ -54,14 +69,14 @@ export async function render(doc: LedeDocument, opts: RenderOptions = {}): Promi
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src ${opts.allowRemote ? "'self' data: https:" : "'self' data:"}; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src ${opts.allowRemote ? "'self' data: https:" : "'self' data:"}; base-uri 'none'; form-action 'none'${shell ? `; ${SCRIPT_SRC}` : ''}">
 <meta name="generator" content="lede 0.1">
 <title>${esc(title)}</title>${desc}
 ${style}
 </head>
 <body>
 ${main}
-</body>
+${scripts}</body>
 </html>
 `;
 }
@@ -69,8 +84,9 @@ ${main}
 /** `@width wide`. */
 export const isWide = (meta: Record<string, string>): boolean => meta.width === 'wide';
 
-/** The page stylesheet for a document's meta. */
-export const styleOf = (meta: Record<string, string>): string => css({ accent: meta.accent, theme: meta.theme, wide: isWide(meta) });
+/** The page stylesheet for a document's meta. `controls`: the page has a question field or an `export`, which add their own rules. */
+export const styleOf = (meta: Record<string, string>, controls = false): string =>
+  css({ accent: meta.accent, theme: meta.theme, wide: isWide(meta), controls });
 
 /** `<main>` around the page's top-level children (empty ones left out). */
 export const mainElement = (children: string[], prose: boolean): string =>
@@ -433,11 +449,26 @@ export class Ctx {
    * out once while its block reads the same, however often it is drawn. A page drawn once does not pay for the key.
    */
   cacheLayouts = false;
+  /**
+   * The page's question fields in source order. `render()` passes the finished page's; the incremental renderer passes an array it
+   * grows as fields arrive, so an `export` drawn mid-stream lists the fields read so far (internal spec, lede-lang/meta).
+   */
+  readonly fields: QuestionBlock[];
 
-  constructor(doc: LedeDocument, opts: RenderOptions) {
+  constructor(doc: LedeDocument, opts: RenderOptions, fields: QuestionBlock[] = fieldsOf(doc.blocks)) {
     this.doc = doc;
     this.opts = opts;
     this.picks = picksOf(doc.blocks);
+    this.fields = fields;
+  }
+
+  /**
+   * The page's title for the export: `@title`, else the first `#` heading, else none. Read when an `export` is drawn (and once for
+   * the shell's data block), not when the context is made, so it follows a page still being written.
+   */
+  get page(): string | undefined {
+    const h1 = this.doc.blocks.find((b) => b.type === 'heading' && b.level === 1);
+    return plain(this.doc.meta.title || (h1 && h1.type === 'heading' ? h1.text : '')).trim() || undefined;
   }
 
   uid(prefix: string): string {
@@ -584,6 +615,14 @@ export class Ctx {
         return this.cardsSync(b, top);
       case 'steps':
         return steps(b);
+      case 'ask':
+        return askHtml(b);
+      case 'choose':
+        return chooseHtml(b, !!this.opts.shell);
+      case 'confirm':
+        return confirmHtml(b, !!this.opts.shell);
+      case 'export':
+        return exportHtml(b, serializeExport(b.format, this.page, this.fields), !!this.opts.shell);
       case 'kpis':
         return kpis(b, wide, top);
       case 'image': {
@@ -1250,6 +1289,8 @@ export function sanitize(html: string, opts: { allowRemote?: boolean | undefined
   return sanitizeHtml(html, { ...ALLOWED, allowedSchemesByTag: { img: ['data', 'http', 'https'] } });
 }
 
+export { RUNTIME, RUNTIME_SHA256 } from './shell-runtime.ts';
+export { wantsShell } from './shell.ts';
 export { css } from './theme.ts';
 export { layoutFlow } from './diagram.ts';
 export { setLayoutEngine, type LayoutFn } from './elk.ts';

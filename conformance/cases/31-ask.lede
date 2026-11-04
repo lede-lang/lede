@@ -1,0 +1,7 @@
+# Questions
+
+ask owner | Who signs off on this release?
+ask notes lines=4 | Anything the **release notes** should carry?
+ask on-call_2 | Who is on call?
+
+export json

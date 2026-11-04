@@ -1,0 +1,51 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Choices",
+      "line": 1
+    },
+    {
+      "type": "choose",
+      "name": "risk",
+      "text": null,
+      "options": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "line": 3
+    },
+    {
+      "type": "choose",
+      "name": "size",
+      "text": "How big is the change?",
+      "options": [
+        "S",
+        "M",
+        "L"
+      ],
+      "line": 4
+    },
+    {
+      "type": "choose",
+      "name": "region",
+      "text": "Which region goes first?",
+      "options": [
+        "us-east-1 (primary, 60%)",
+        "eu-west-1; backup",
+        "a|b"
+      ],
+      "line": 5
+    },
+    {
+      "type": "export",
+      "format": "markdown",
+      "line": 7
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

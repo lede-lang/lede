@@ -1,0 +1,40 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Exports",
+      "line": 1
+    },
+    {
+      "type": "ask",
+      "name": "a",
+      "text": "A",
+      "lines": 1,
+      "line": 3
+    },
+    {
+      "type": "export",
+      "format": "json",
+      "line": 5
+    },
+    {
+      "type": "export",
+      "format": "markdown",
+      "line": 6
+    },
+    {
+      "type": "paragraph",
+      "text": "Export the data, ask the team, and choose a date. Confirm it too.",
+      "line": 8
+    },
+    {
+      "type": "paragraph",
+      "text": "export the data to a file",
+      "line": 10
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

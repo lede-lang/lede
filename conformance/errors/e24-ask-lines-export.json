@@ -1,0 +1,32 @@
+[
+  {
+    "severity": "error",
+    "code": "ask-lines",
+    "line": 1,
+    "col": 5
+  },
+  {
+    "severity": "error",
+    "code": "ask-lines",
+    "line": 2,
+    "col": 5
+  },
+  {
+    "severity": "warning",
+    "code": "question-option",
+    "line": 4,
+    "col": 5
+  },
+  {
+    "severity": "error",
+    "code": "export-format",
+    "line": 5,
+    "col": 8
+  },
+  {
+    "severity": "warning",
+    "code": "export-dup",
+    "line": 7,
+    "col": 8
+  }
+]

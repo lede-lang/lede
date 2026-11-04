@@ -5,6 +5,7 @@
 // not in `pnpm test`.
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -113,6 +114,19 @@ test('the installed lede bin builds and checks a page', () => {
   assert.equal(typeof d.code, 'string');
 });
 
+test('the installed lede bin builds a shell page whose script hashes to its policy, and refuses --unsafe-html', () => {
+  writeFileSync(join(app, 'ask.lede'), '# Go\n\nask a | Who?\nexport json\n');
+  const bin = join(app, 'node_modules/.bin/lede');
+  const b = run(bin, ['build', 'ask.lede', '--shell', '-o', 'ask.html']);
+  assert.equal(b.status, 0, b.stderr);
+  const html = readFileSync(join(app, 'ask.html'), 'utf8');
+  const scripts = [...html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/g)];
+  assert.equal(scripts.length, 2);
+  const hash = `sha256-${createHash('sha256').update(scripts[1][2], 'utf8').digest('base64')}`;
+  assert.ok(html.includes(`; script-src '${hash}'">`), 'the policy names the runtime');
+  assert.equal(run(bin, ['build', 'ask.lede', '--shell', '--unsafe-html']).status, 2);
+});
+
 test('plain Node imports the libraries from dist/', () => {
   writeFileSync(
     join(app, 'use.mjs'),
@@ -135,6 +149,22 @@ console.log(JSON.stringify({
   assert.equal(out.blocks, 1);
   assert.match(String(out.coreUrl), /\/node_modules\/@lede-lang\/core\/dist\/index\.js$/);
   assert.match(String(out.htmlUrl), /\/node_modules\/@lede-lang\/html\/dist\/index\.js$/);
+});
+
+test('the installed library renders a shell page whose script hashes to its policy', () => {
+  writeFileSync(
+    join(app, 'shell.mjs'),
+    `import { createHash } from 'node:crypto';
+import { compile, RUNTIME, RUNTIME_SHA256 } from '@lede-lang/html';
+const { html } = await compile('ask a | q\\nexport json', { shell: true });
+const scripts = [...html.matchAll(/<script([^>]*)>([\\s\\S]*?)<\\/script>/g)];
+const digest = (s) => 'sha256-' + createHash('sha256').update(s, 'utf8').digest('base64');
+console.log(JSON.stringify({ n: scripts.length, text: scripts[1][2] === RUNTIME, hash: digest(scripts[1][2]) === RUNTIME_SHA256, csp: html.includes("script-src '" + RUNTIME_SHA256 + "'") }));
+`,
+  );
+  const r = run(process.execPath, ['shell.mjs']);
+  assert.equal(r.status, 0, r.stderr);
+  assert.deepEqual(JSON.parse(r.stdout), { n: 2, text: true, hash: true, csp: true });
 });
 
 test('a TypeScript consumer type-checks against the shipped declarations', () => {

@@ -16,7 +16,33 @@ const DARK = `
   --h1:#0d366b; --h2:#104281; --h3:#184f95; --h4:#1c5cab; --h5:#256abf;
   color-scheme:dark;`;
 
-export function css(opts: { accent?: string; theme?: string; wide?: boolean }): string {
+/** The question words' controls (spec §4.18). Added only to a page that has a field or an `export`, so other pages are unchanged. */
+const CONTROLS = `/* question words */
+[hidden]{display:none!important}
+.q{display:block;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-family:var(--sans)}
+fieldset.q{margin:0}
+.q-t{display:block;padding:0;margin:0 0 10px;font:600 1rem/1.45 var(--sans);color:var(--fg)}
+legend.q-t{float:left;width:100%}
+legend.q-t+*{clear:both}
+.q input[type=text],.q textarea{display:block;width:100%;min-height:44px;font:16px/1.4 var(--sans);color:var(--fg);background:var(--bg);border:1px solid var(--line2);border-radius:8px;padding:9px 12px}
+.q textarea{resize:vertical}
+.q-o{display:flex;align-items:center;gap:10px;min-height:44px;margin-top:8px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);cursor:pointer}
+.q-o input{flex:none;width:20px;height:20px;margin:0;accent-color:var(--accent)}
+.q-o:has(input:checked){border-color:var(--accent);background:var(--accent-tint)}
+.q-yes:has(input:checked){border-color:var(--good);background:var(--good-bg)}
+.q-no:has(input:checked){border-color:var(--bad);background:var(--bad-bg)}
+.q input:focus-visible,.q textarea:focus-visible,.q-clear:focus-visible,.q-copy:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.q-clear,.q-copy{min-height:44px;padding:0 16px;font:600 14px/1 var(--sans);color:var(--fg);background:var(--surface);border:1px solid var(--line2);border-radius:8px;cursor:pointer}
+.q-clear{margin-top:8px}
+.q-copy{color:var(--bg);background:var(--accent);border-color:var(--accent)}
+.q-x{margin:0}
+.q-xt{margin-bottom:6px;font:600 12px/1.4 var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--fg2)}
+.q-xn,.q-xn2,.q-st{margin:8px 0 0;font:14px/1.5 var(--sans);color:var(--fg2)}
+.q-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-top:10px}
+.q-bar .q-xn2,.q-bar .q-st{margin:0}
+`;
+
+export function css(opts: { accent?: string; theme?: string; wide?: boolean; controls?: boolean }): string {
   const accent = opts.accent && HEX_COLOR.test(opts.accent) ? `--accent:${opts.accent};--accent-ink:${opts.accent};` : '';
   const forced =
     opts.theme === 'dark'
@@ -498,5 +524,5 @@ ol.steps.sx>li>.sn{grid-column:2;min-width:0;color:var(--fg2);overflow-wrap:anyw
   table.lt.stack td .cb{min-width:0;padding:3px 8px;text-align:left}
 }
 /* end stream v04-2 */
-`;
+${opts.controls ? CONTROLS : ''}`;
 }

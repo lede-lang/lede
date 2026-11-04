@@ -603,6 +603,28 @@ say so and stop. Only npm, pnpm and npx are named because those are the routes t
 yarn and deno are not listed until they are tried. A test keeps the package name in the section equal to the CLI's.
 
 
+## D63. Four question words in every page; one fixed, hashed script only with `--shell`
+`ask`, `choose`, `confirm` and `export` are ordinary blocks: in `build` they render as plain inputs, an approve-or-reject pair and a fenced
+fill-in template, with no script (D10 unchanged). `lede build --shell` adds one first-party script, versioned with the compiler, inlined and
+pinned by SHA-256 in the Content Security Policy, under 8 KiB, that keeps answers while the page is open and copies them out as Markdown or
+JSON keyed by name. Page content reaches it as escaped JSON; it writes text and an allowlist of attributes. No request, no storage, no `eval`.
+The skill never passes `--shell`; a host rendering untrusted pages keeps `build`. D59's statement that `build` pages have no script still
+holds for every page built without the flag. Answers D39 and closes the D43 spike. Rejected: model-authored script behind a sandbox, an
+`iframe` shell, a hosted editor (as in D39), and shell-only words (one source must compile in both modes).
+
+
+## D64. The question words' grammar and export shape
+Spec §4.18 is the grammar. A malformed `ask`, `choose` or `confirm` line is an error, as `kpi` is, not prose: read as prose it would pass
+`lede check` with the field missing and hide the slip from the writer. `export` is a keyword line only when alone or followed by one word,
+as `cards` is only when alone, because `export the data` is likely prose. A line with an error makes no block and takes no name, so only what
+parsed reaches the page. The export is JSON or Markdown, keyed by the names in the source, in the shape §4.18 gives; the open items are the
+undecided confirmations and the unpicked choices, and the shape is stable within 0.x. A reason for a decision is a separate `ask`. The new
+keywords change no existing input: the 803 `.lede` files tracked at `d7f43fd` parse to identical ASTs and diagnostics and compile to
+identical pages (Appendix G.1). `--shell` builds only a page that has a question and an `export` (any other page is built as without
+it, and stderr says so); it is allowed with `--artifact`, where the data block and runtime follow `<main>` and the host's policy decides
+whether the runtime runs, and refused with `--unsafe-html`. Rejected: reading a malformed question line as prose, which keeps old
+prose safe and hides slips; a built-in reason on `confirm` (post-launch).
+
 ## D65. The shell grows five editor words on the same runtime; the article's interaction rows get their verdict
 D39's seven interaction rows get the opt-in shell the owner approved (D43), built on D63 and D64 rather than on the earlier shell-only
 design: `param NAME [unit=U] | LABEL | DEFAULT MIN MAX STEP` (a slider with a number box), `toggle NAME [on|off] [needs=A,B] | LABEL`

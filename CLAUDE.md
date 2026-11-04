@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Lede is a line-oriented document format that AI models write instead of HTML. It compiles to one self-contained, zero-JavaScript HTML page (charts, diagrams, light/dark, phone layouts). The GitHub repo is `lede-lang/lede`, created at launch from one commit; the earlier history is in the private archive, `lede-lang/lede-archive`. The domain is `ledelang.dev`; this repo holds the spec, compiler, CLI, skill and benchmark. The website lives in a separate repo, `lede-site` (CDK app plus compiled pages), which calls this repo's CLI through its `LEDE_CLI` variable.
+Lede is a line-oriented document format that AI models write instead of HTML. It compiles to one self-contained HTML page (charts, diagrams, light/dark, phone layouts) with no script; `--shell` adds one fixed, hashed script for pages that ask questions. The GitHub repo is `lede-lang/lede`, created at launch from one commit; the earlier history is in the private archive, `lede-lang/lede-archive`. The domain is `ledelang.dev`; this repo holds the spec, compiler, CLI, skill and benchmark. The website lives in a separate repo, `lede-site` (CDK app plus compiled pages), which calls this repo's CLI through its `LEDE_CLI` variable.
 
 ## Commands
 
@@ -23,6 +23,8 @@ pnpm test:pack                  # build, `pnpm pack` the three packages, npm-ins
 node --test packages/core/test/fix.test.ts          # one test file
 node --test --test-name-pattern="<part of the test name>" packages/core/test/grammar.test.ts   # one test by name
 UPDATE=1 node --test conformance/run.test.ts        # regenerate expected AST/diagnostics after an intentional parser change; review the JSON diff
+node scripts/gen-runtime.ts                         # after editing packages/render-html/src/shell-runtime.js: rewrites shell-runtime.ts and the hash file (--check fails when stale)
+LEDE_REQUIRE_CHROME=1 pnpm test                     # make the question words' and the shell's browser checks fail, not skip, without Chromium (CI sets CI, which does the same)
 pnpm lede build page.lede -o page.html   # also: check [--json] [--fix], watch, ast
 ```
 
@@ -34,8 +36,9 @@ Three packages, one pipeline: `core` parses, `render-html` draws, `cli` wires th
 
 - `packages/core`: `LedeParser` (`parser.ts`) turns lines into typed blocks plus `Diagnostic`s (each has line, col, a code, and an optional machine-readable `detail`). `LedeStream` wraps it for incremental model output (`write` returns finished blocks, `snapshot` returns a renderable document for the text so far), so anything added to the parser must keep working mid-stream. `fix.ts` repairs source text from those diagnostics: it re-parses after each pass and discards a pass that adds errors.
 - `packages/render-html`: `render`/`compile` (`index.ts`) turn a `LedeDocument` into HTML; `chart.ts`, `diagram.ts` (elkjs layout), `sequence.ts`, `theme.ts` (CSS) are the drawers. Output is sanitized and fetches nothing remote unless `--allow-remote`. Rendering is async because of elkjs.
+- The shell (D63): `--shell` adds `shell.ts`'s JSON data block and the one script in `shell-runtime.js`, named by hash in the page policy. Edit only the `.js`, then run `gen-runtime.ts`; `pnpm build` fails when the generated module is stale or the runtime passes 8 KiB. The runtime stays ASCII and LF, and may write only `textContent`, the `hidden` attribute and radio `checked`; `shell.test.ts` scans for anything else. `export.ts` is the reference serializer the runtime is tested against.
 - `packages/cli`: `data x < file.csv` loads are confined to the document's directory tree (symlinks resolved on both sides); keep that check when touching file loading.
-- Key invariants: keyword lines fail loudly (a prose line starting with a keyword needs a `\` escape); a diagram name must not equal a data name; table and data cells need quotes around `,` and `;`.
+- Key invariants: keyword lines fail loudly (a prose line starting with a keyword needs a `\` escape); a diagram name must not equal a data name; question names (`ask`, `choose`, `confirm`) are unique per page; table and data cells need quotes around `,` and `;`.
 
 Source of truth is split on purpose, and the pieces must stay in step:
 - `spec/lede-0.1.md` (full reference with EBNF) versus `spec/model-spec.md` (the text a model reads, capped at 2,910 tokens on the Claude 5.5 tokenizer, D55, counted with `count_tokens` as `bench/src/recount.ts` does; the cap is a decision, D35, and the file sits at the limit).
@@ -45,7 +48,7 @@ Source of truth is split on purpose, and the pieces must stay in step:
 ## Process rules specific to this repo
 
 - This repo is public. Internal material lives in the private repo `lede-lang/meta` (local clone `../lede-meta`): `HANDOFF.md`, `HUMAN_ACTIONS.md`, `ROADMAP.md`, Kiro specs, spike notes, reports and the internal `DECISIONS.md` (D45). Do not recreate any of them here; anything naming accounts, AWS profiles, hosting, domains or launch logistics goes there too.
-- `DECISIONS.md` is the record for public design, format, renderer and benchmark-method decisions: add a numbered entry for any such decision, and read the relevant ones before changing the grammar, renderer or spec. Internal decisions go in `lede-lang/meta`'s `DECISIONS.md` with a one-line stub here (`## Dn. (internal; recorded in the private planning repo)`). Both files share one sequence: the next number is one past the highest in either file and in open PR branches of either repo. D10 (compiled output is zero-JS) is the launch safety claim; the opt-in interaction shell (D39, approved as a spike per the D43 stub) must not leak into ordinary `build`.
+- `DECISIONS.md` is the record for public design, format, renderer and benchmark-method decisions: add a numbered entry for any such decision, and read the relevant ones before changing the grammar, renderer or spec. Internal decisions go in `lede-lang/meta`'s `DECISIONS.md` with a one-line stub here (`## Dn. (internal; recorded in the private planning repo)`). Both files share one sequence: the next number is one past the highest in either file and in open PR branches of either repo. D10 (compiled output is zero-JS) is the launch safety claim; the opt-in interaction shell (D63, `--shell`) must not leak into ordinary `build`.
 - Frozen artifacts: `bench/prompts/C-lede-0.1.md` through `0.4.md` and the held-out tasks in `bench/tasks/` tie published numbers to a commit. Do not edit them; write a new prompt file (`C-lede-0.5.md` is current) and note it in `DECISIONS.md`.
 - Benchmark and probe writers are isolated subagents that read only the writer prompt and write once with no validation; judges are blind. Fresh tasks come from an agent that has not seen the spec or renderer, hashed before any renderer change (D34). Do not plant failures to test the linter; let them occur and report them.
 - Specs are Kiro-style under `.kiro/specs/<feature>/` in `lede-lang/meta`, not here (intent, requirements, design, tasks). Tick tasks and update `HANDOFF.md` there after each one; code comments cite a spec as "(internal spec, lede-lang/meta)", never by a path in this repo.
