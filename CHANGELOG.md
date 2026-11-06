@@ -1,5 +1,11 @@
 # Changelog
 
+## <small>0.2.1 (2026-11-06)</small>
+
+* Merge pull request #36 from lede-lang/claude/project-thread-oh4wq1 ([b3902dc](https://github.com/lede-lang/lede/commit/b3902dc)), closes [#36](https://github.com/lede-lang/lede/issues/36)
+* fix: three streaming and parsing slips from the 0.2.0 review, plus cleanups ([d62eec9](https://github.com/lede-lang/lede/commit/d62eec9))
+* test(bench): add the Sonnet refinement pilot on 12 tuning tasks, not the D67 verdict ([d92c10d](https://github.com/lede-lang/lede/commit/d92c10d))
+
 ## 0.2.0 (2026-11-06)
 
 * Merge pull request #31 from lede-lang/claude/project-thread-9piydq ([69a1aeb](https://github.com/lede-lang/lede/commit/69a1aeb)), closes [#31](https://github.com/lede-lang/lede/issues/31)
