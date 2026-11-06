@@ -125,10 +125,12 @@ as the page heading and `#` headings shift down one level), `subtitle`, `descrip
 `accent` must be a CSS hex color (`#rgb`, `#rgba`, `#rrggbb` or `#rrggbbaa`); any other value is W
 `accent-value` and the house accent is used. The accent colors link and label text, so it needs WCAG AA
 text contrast, 4.5:1, against the theme's page background, card surface and note tint; below that it is W
-`accent-contrast` on the `@accent` line (a translucent accent is composited first). The theme checked is
+`accent-contrast` on the `@accent` line (a translucent accent is composited first), and the house accent is used,
+as for `accent-value`: a page's text contrast does not depend on the writer's color. The theme checked is
 the one the accent lands on: with no `theme` the accent applies to the light theme and dark mode keeps the
 house accent, so only light is checked; with `theme dark` the dark theme is. The check runs once the whole
-document is read, so `@theme` may come after `@accent`. The compiler does not adjust the color.
+document is read, so `@theme` may come after `@accent`. The compiler never darkens or lightens a color: it uses yours whole
+or not at all.
 
 ### 4.4 Headings
 `#`, `##`, `###`. Deeper levels: W `heading-depth`, rendered as `###`. Empty text: E

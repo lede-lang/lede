@@ -930,3 +930,15 @@ the options in the shell's data block and exporting by index, as `bucket` items 
 changes the runtime's hash and spends room under its 8 KiB cap for a case no real page has. Bucket set names are not affected: a
 set name reaches a radio `value` too, but the runtime reads a bucket pick by index into the data block, so the export keeps the name
 exactly (checked with a NUL in a set name).
+
+## D77. An `@accent` that fails AA text contrast is not painted; the house accent is used
+D49 checked a writer's `@accent` for 4.5:1 text contrast but only warned, and the page still painted the color. The accessibility gate
+(D71) showed the cost: `conformance/errors/e19-accent.lede` (`@accent #ffd700`, 1.21:1 on the light theme) fails axe `color-contrast` on
+links at both widths, and the focus ring, note labels and table headers draw in the same color. The owner chose on 2026-11-06 that a
+failing accent falls back to the house accent, as an invalid one already does (`accent-value`). One rule holds it: `usableAccent(accent,
+theme)` in core's `contrast.ts` accepts a hex color whose lowest contrast on the theme it lands on (light, or dark with `@theme dark`; a
+translucent color composited first) is at least 4.5:1. `css()` paints only that, and the parser's `accent-contrast` warning (same code, same
+`detail`) now ends "the house accent is used", so the page and the warning cannot disagree. Rejected: exempting such pages from the gate
+(the guarantee would carry a stated exception, and a focus ring below 3:1 would stay), darkening or lightening the writer's color (the
+compiler would invent a color nobody chose), and making it an error (a pale brand color is worth a warning, not a failed build). Only a page
+whose accent already drew a warning changes its output (two conformance error cases). Internal spec `lede-accessibility`, lede-lang/meta.

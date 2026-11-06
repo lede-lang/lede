@@ -28,7 +28,7 @@ import type {
 } from './ast.ts';
 import { num, parseInlineCsv, parseOpts, pipeOutsideQuotes, readQuoted, tokens } from './lex.ts';
 import { EMPTY, FIELD_KINDS, NOT_CHOSEN, SLOT_RE } from './fields.ts';
-import { AA_NON_TEXT, AA_TEXT, HEX_COLOR, accentContrast } from './contrast.ts';
+import { AA_NON_TEXT, AA_TEXT, HEX_COLOR, accentContrast, accentTheme } from './contrast.ts';
 import { browserUrl, imageSrcKind } from './url.ts';
 import { walkBlocks } from './walk.ts';
 
@@ -346,7 +346,7 @@ export class LedeParser {
   private checkAccent(): void {
     const accent = this.doc.meta.accent;
     if (!this.accentAt || !accent) return;
-    const theme = this.doc.meta.theme === 'dark' ? 'dark' : 'light';
+    const theme = accentTheme(this.doc.meta.theme);
     const c = accentContrast(accent, theme);
     if (!c || c.ratio >= AA_TEXT) return;
     const surface = { bg: 'page background', surface: 'card surface', 'accent-tint': 'note tint' }[c.against] ?? c.against;
@@ -354,7 +354,7 @@ export class LedeParser {
     this.diag(
       'warning',
       'accent-contrast',
-      `@accent ${accent} has ${c.ratio}:1 contrast on the ${theme} theme's ${surface}; link and label text needs ${AA_TEXT}:1${marks}. Pick a ${theme === 'dark' ? 'lighter' : 'darker'} accent`,
+      `@accent ${accent} has ${c.ratio}:1 contrast on the ${theme} theme's ${surface}; link and label text needs ${AA_TEXT}:1${marks}; the house accent is used. Pick a ${theme === 'dark' ? 'lighter' : 'darker'} accent`,
       this.accentAt.line,
       this.accentAt.col,
       { accent, theme, ratio: c.ratio, required: AA_TEXT, against: c.against },

@@ -1,7 +1,7 @@
 // The compiler owns the design: every color is a token, redefined for dark mode.
 // Categorical series colors are the validated eight-slot order from the dataviz
 // reference palette (adjacent-pair CVD ΔE ≥ 8 in both modes).
-import { HEX_COLOR } from '@lede-lang/core';
+import { usableAccent } from '@lede-lang/core';
 
 const LIGHT = `
   --bg:#fbfbfa; --surface:#ffffff; --fg:#16181d; --fg2:#4d515c; --muted:#6b707c; --line:#dcdde1; --line2:#c4c6cc;
@@ -88,7 +88,9 @@ const EDITORS = `/* editor words */
 `;
 
 export function css(opts: { accent?: string; theme?: string; wide?: boolean; controls?: boolean; editors?: boolean }): string {
-  const accent = opts.accent && HEX_COLOR.test(opts.accent) ? `--accent:${opts.accent};--accent-ink:${opts.accent};` : '';
+  // Only a hex color that passes AA text contrast reaches the stylesheet (D49, D77); the parser warns on the rest.
+  const picked = usableAccent(opts.accent, opts.theme);
+  const accent = picked ? `--accent:${picked};--accent-ink:${picked};` : '';
   const forced =
     opts.theme === 'dark'
       ? `:root{${DARK}}`
