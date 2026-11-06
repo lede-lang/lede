@@ -1,6 +1,7 @@
 // The export of a page's answers (spec §4.18, §4.19): the shape an agent reads back. This is the reference serializer. It draws the
 // fill-in template of an ordinary page (the export of the page as written) and is the oracle the shell runtime is tested against.
 import {
+  EMPTY,
   NOT_CHOSEN,
   SLOT_RE,
   type BucketBlock,
@@ -21,7 +22,6 @@ export type Answer = string | null;
 export type Value = Answer | number | string[];
 
 /** The Markdown placeholders (NOT_CHOSEN is core's, since the parser refuses an option spelled like it); an `ask` value spelled like one is fenced. */
-const EMPTY = '(empty)';
 /** An empty bucket's line, and the spelling of a lone item text that would otherwise read as empty. */
 const NONE = '(none)';
 
@@ -135,7 +135,7 @@ function bucketItem(f: BucketBlock, v: string[]): string[] {
   return [
     `- ${f.name}:`,
     ...f.buckets.map((b) => {
-      const texts = f.items.filter((_, k) => v[k] === b).map((i) => cell(i.text));
+      const texts = inBucket(f, v, b).map(cell);
       return `  - ${flat(b)}: ${texts.length ? texts.join(', ') : NONE}`;
     }),
   ];
@@ -174,8 +174,6 @@ function changes(fields: QuestionBlock[], vals: Value[], was: Value[]): { lines:
             if (v[k] !== w[k]) line(f.name, [`- ${f.name}: ${quoted(it.text)} moved to ${flat(v[k])} (was ${flat(w[k])})`]);
           });
         break;
-      case 'template':
-        break;
     }
   });
   return { lines, changed };
@@ -194,8 +192,7 @@ export function serializeExport(format: ExportFormat, page: string | undefined, 
     const answers = Object.fromEntries(
       fields.map((f, i) => {
         const v = vals[i];
-        if (f.type === 'bucket' && Array.isArray(v))
-          return [f.name, Object.fromEntries(f.buckets.map((b) => [b, f.items.filter((_, k) => v[k] === b).map((it) => it.text)]))];
+        if (f.type === 'bucket' && Array.isArray(v)) return [f.name, Object.fromEntries(f.buckets.map((b) => [b, inBucket(f, v, b)]))];
         return [f.name, v];
       }),
     );
@@ -239,4 +236,9 @@ export function serializeExport(format: ExportFormat, page: string | undefined, 
     ...(hasToggle ? [`Blocked: ${blocked.length ? blocked.join(', ') : 'none'}`] : []),
     ...(items.length ? ['', ...items] : []),
   ].join('\n');
+}
+
+/** The texts of the items of bucket set `f` that the values `v` put in bucket `b`, in the set's order. */
+function inBucket(f: BucketBlock, v: string[], b: string): string[] {
+  return f.items.filter((_, k) => v[k] === b).map((it) => it.text);
 }

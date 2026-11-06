@@ -784,3 +784,8 @@ test('tail() never returns a keyword line as text, and calling it after every ch
     }
   }
 });
+
+test('a group line that replaces a node and then fails on a bad member still sends an update', () => {
+  const ev = new LedeStream().events(['diagram d', 'd: g -> x', 'para', 'd: group g "G" y, b@d', ''].join('\n'));
+  assert.equal(names(ev).filter((n) => n === 'update:diagram').length, 2, names(ev).join(' '));
+});

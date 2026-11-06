@@ -4,6 +4,9 @@ import { walkBlocks } from './walk.ts';
 /** The Markdown export's placeholder for an unpicked `choose`; the parser refuses an option spelled like it. */
 export const NOT_CHOSEN = '(not chosen)';
 
+/** The Markdown export's placeholder for an empty `ask` or bucket; a bucket may not be named like it either. */
+export const EMPTY = '(empty)';
+
 /**
  * The kinds of field (spec §4.18, §4.19). `fillable`: the field holds a value the reader sets, so a `{slot}` or a `preset` key may name
  * it. `editor`: it is one of the editor words, which is when a page carries their CSS. A `preset` has a name but no value in the

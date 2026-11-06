@@ -20,7 +20,7 @@ import sanitizeHtml from 'sanitize-html';
 import { renderChart } from './chart.ts';
 import { renderFlow } from './diagram.ts';
 import { renderSequence } from './sequence.ts';
-import { serializeExport, settle, type Value } from './export.ts';
+import { blankAnswers, serializeExport, type Value } from './export.ts';
 import {
   askHtml,
   bucketHtml,
@@ -474,7 +474,7 @@ export class Ctx {
    * the templates filled. Worked out when read, from the fields as they are then, so it follows a page still being written.
    */
   get written(): Value[] {
-    return settle(this.fields, []);
+    return blankAnswers(this.fields);
   }
 
   constructor(doc: LedeDocument, opts: RenderOptions, fields: QuestionBlock[] = fieldsOf(doc.blocks)) {
@@ -489,9 +489,18 @@ export class Ctx {
    * the shell's data block), not when the context is made, so it follows a page still being written.
    */
   get page(): string | undefined {
-    const h1 = this.doc.blocks.find((b) => b.type === 'heading' && b.level === 1);
-    return plain(this.doc.meta.title || (h1 && h1.type === 'heading' ? h1.text : '')).trim() || undefined;
+    // The incremental renderer only appends to `doc.blocks`, so the first h1, once found, stays found and a scan never repeats.
+    const bs = this.doc.blocks;
+    if (bs !== this.h1Blocks) [this.h1Blocks, this.h1Scan, this.h1Text] = [bs, 0, undefined];
+    for (; this.h1Text === undefined && this.h1Scan < bs.length; this.h1Scan++) {
+      const b = bs[this.h1Scan];
+      if (b.type === 'heading' && b.level === 1) this.h1Text = b.text;
+    }
+    return plain(this.doc.meta.title || (this.h1Text ?? '')).trim() || undefined;
   }
+  private h1Blocks: Block[] | null = null;
+  private h1Scan = 0;
+  private h1Text: string | undefined = undefined;
 
   uid(prefix: string): string {
     return `${prefix}${++this.n}`;
@@ -726,9 +735,13 @@ export class Ctx {
     return other(k);
   }
 
-  private cardHtml(c: CardItem, kids: string[]): string {
+  /** A card's title. Taken before its children are drawn, so its id is numbered in page order on the async path too. */
+  private cardHead(c: CardItem): string {
+    return this.heading({ type: 'heading', level: 3, text: c.title, line: c.line });
+  }
+
+  private cardHtml(c: CardItem, h: string, kids: string[]): string {
     const rec = /recommended/i.test(plain(c.title)) ? ' rec' : '';
-    const h = this.heading({ type: 'heading', level: 3, text: c.title, line: c.line });
     return `<section class="card lc${rec}">${h}${kids.join('')}</section>`;
   }
 
@@ -737,24 +750,31 @@ export class Ctx {
     const f = this.cardsFrame(b, top);
     const cards = await Promise.all(
       b.items.map(async (c) => {
+        const h = this.cardHead(c);
         const kids = await Promise.all(c.blocks.map(async (k) => this.cardKid(k, f, (x) => this.block(x, false))));
-        return this.cardHtml(c, kids);
+        return this.cardHtml(c, h, kids);
       }),
     );
-    return `<div class="cards lcards${f.wide ? ' wide' : ''}" style="--cols:${f.cols}">${cards.join('')}</div>`;
+    return cardsHtml(f, cards);
   }
 
   cardsSync(b: CardsBlock, top: boolean): string {
     if (!b.items.length) return '';
     const f = this.cardsFrame(b, top);
-    const cards = b.items.map((c) =>
-      this.cardHtml(
+    const cards = b.items.map((c) => {
+      const h = this.cardHead(c);
+      return this.cardHtml(
         c,
+        h,
         c.blocks.map((k) => this.cardKid(k, f, (x) => this.blockSync(x, false))),
-      ),
-    );
-    return `<div class="cards lcards${f.wide ? ' wide' : ''}" style="--cols:${f.cols}">${cards.join('')}</div>`;
+      );
+    });
+    return cardsHtml(f, cards);
   }
+}
+
+function cardsHtml(f: { wide: boolean; cols: number }, cards: string[]): string {
+  return `<div class="cards lcards${f.wide ? ' wide' : ''}" style="--cols:${f.cols}">${cards.join('')}</div>`;
 }
 
 function gridHtml(b: GridBlock, kids: string[]): string {
@@ -969,6 +989,12 @@ export function picksOf(bs: Block[]): string[] {
   return scan.picks;
 }
 
+const pickRe = (verbs: string) =>
+  new RegExp(`^(?:we\\s+)?(?:${verbs})\\s+(.+?)(?:[.,;:!(]|\\s+(?:with|because|mainly|for|over|as|and|now|today|instead)\\b|$)`, 'i');
+/** The pick a note names, and the wider set a paragraph under a recommendation heading may use ("Use X"). */
+const PICK_IN_NOTE = pickRe('choose|recommend(?:ation)?:?|go with|pick|adopt');
+const PICK_UNDER_REC = pickRe('choose|recommend(?:ation)?:?|go with|pick|adopt|use|buy|select');
+
 /** Read the next block of a page for `picksOf`. Blocks must come in order, once each. */
 export function pickStep(scan: PickScan, b: Block): void {
   // A note may say "Choose X" anywhere; a paragraph counts only under a Recommendation or
@@ -976,13 +1002,7 @@ export function pickStep(scan: PickScan, b: Block): void {
   // are full of "Use X" steps.
   if (b.type === 'heading') scan.underRec = /recommend|decision|verdict|choice|conclusion/i.test(b.text);
   if (b.type !== 'note' && !(b.type === 'paragraph' && scan.underRec)) return;
-  const verbs = scan.underRec
-    ? 'choose|recommend(?:ation)?:?|go with|pick|adopt|use|buy|select'
-    : 'choose|recommend(?:ation)?:?|go with|pick|adopt';
-  const m = new RegExp(
-    `^(?:we\\s+)?(?:${verbs})\\s+(.+?)(?:[.,;:!(]|\\s+(?:with|because|mainly|for|over|as|and|now|today|instead)\\b|$)`,
-    'i',
-  ).exec(
+  const m = (scan.underRec ? PICK_UNDER_REC : PICK_IN_NOTE).exec(
     plain(b.text)
       .replace(/^\s*recommendation:\s*/i, 'choose ')
       .trim(),
