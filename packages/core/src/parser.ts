@@ -27,7 +27,7 @@ import type {
   ToggleBlock,
 } from './ast.ts';
 import { num, parseInlineCsv, parseOpts, pipeOutsideQuotes, readQuoted, tokens } from './lex.ts';
-import { FIELD_KINDS, NOT_CHOSEN, SLOT_RE } from './fields.ts';
+import { EMPTY, FIELD_KINDS, NOT_CHOSEN, SLOT_RE } from './fields.ts';
 import { AA_NON_TEXT, AA_TEXT, HEX_COLOR, accentContrast } from './contrast.ts';
 import { browserUrl, imageSrcKind } from './url.ts';
 import { walkBlocks } from './walk.ts';
@@ -107,7 +107,7 @@ const SHAPES: Partial<Record<string, RegExp>> = {
   preset: editorShape('preset'),
 };
 /** Marks a `bucket` name the export would write for something else (`choose` reserves `(not chosen)` the same way). */
-const BUCKET_RESERVED = [NOT_CHOSEN, '(empty)'];
+const BUCKET_RESERVED = [NOT_CHOSEN, EMPTY];
 type Space = 'data' | 'diagram' | 'bucket';
 const SPACES: readonly Space[] = ['data', 'diagram', 'bucket'];
 /** How a message names the kind of name that is taken. */
@@ -182,16 +182,7 @@ function accBlock(a: Acc): Block {
  * become new strings.
  */
 function copyAcc(a: Acc): Acc {
-  switch (a.kind) {
-    case 'list':
-      return { ...a, items: a.items.map((i) => ({ ...i })) };
-    case 'kpis':
-      return { ...a, items: a.items.map((i) => ({ ...i })) };
-    case 'steps':
-      return { ...a, items: a.items.map((i) => ({ ...i })) };
-    default:
-      return a;
-  }
+  return 'items' in a ? ({ ...a, items: a.items.map((i) => ({ ...i })) } as Acc) : a;
 }
 
 /** The lines a fence holds, with the common indentation stripped so an indented fence reads like an unindented one. */
@@ -827,7 +818,7 @@ export class LedeParser {
 
   /** The index of the `|` that ends the head of a question or editor line, or -1 after reporting that the line has none. */
   private bar(word: string, usage: string, rest: string, col: number): number {
-    const bar = rest.indexOf('|');
+    const bar = barOutsideQuotes(rest);
     if (bar < 0)
       this.diag('error', 'question-syntax', `${word} needs \`${usage}\` (start the line with \\ if it is prose)`, this.lineNo, col, {
         word,
@@ -2174,13 +2165,14 @@ export class LedeParser {
       }
       // An id first used in an edge (`prodvpc -> tgw`) and later declared as a group is that group:
       // its edges attach to the group's boundary.
+      const removed = id && d.nodes.some((n) => n.id === gid);
+      if (removed) d.nodes = d.nodes.filter((n) => n.id !== gid);
       const nodesBefore = d.nodes.length;
-      if (id) d.nodes = d.nodes.filter((n) => n.id !== gid);
       for (const m of members) {
         if (!ID.test(m)) {
           this.diag('error', 'diagram-syntax', `bad member id "${m}"`, L, col);
-          // The members before it were added already.
-          return d.nodes.length !== nodesBefore;
+          // The node the group replaced is gone and the members before it were added already.
+          return removed || d.nodes.length !== nodesBefore;
         }
         if (!d.groups.some((g) => g.id === m)) this.node(d, m);
       }
@@ -2492,4 +2484,14 @@ export function parse(src: string, opts: ParseOptions = {}): LedeDocument {
   const p = new LedeParser(opts);
   for (const line of src.split('\n')) p.pushLine(line);
   return p.end();
+}
+
+/** The first `|` not inside a `"…"` option value (`unit="km|h"` keeps its pipe), or the first `|` at all when the quotes do not close. */
+function barOutsideQuotes(s: string): number {
+  let quoted = false;
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] === '"') quoted = !quoted;
+    else if (s[i] === '|' && !quoted) return i;
+  }
+  return s.indexOf('|');
 }

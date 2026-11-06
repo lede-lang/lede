@@ -1272,3 +1272,32 @@ browserTest(
   },
   240_000,
 );
+
+test('a card title inside an FAQ answer with a flow diagram takes its heading id in page order on the async path', async () => {
+  const src = [
+    '# Questions',
+    '## Why?',
+    'cards',
+    '### Alpha',
+    'One.',
+    '### Beta',
+    'Two.',
+    '## How?',
+    'diagram f',
+    'f: a -> b',
+    '',
+    '## When?',
+    'Soon.',
+    '## Alpha',
+    'Later one.',
+    '## Beta',
+    'Later two.',
+    '',
+  ].join('\n');
+  const expected = await whole(src);
+  for (const chunk of [1, 7, 64]) {
+    const d = await drive(src, { chunk, parse: parseOpts });
+    assert.equal(streamed(d), expected, `chunks of ${chunk}`);
+    assert.equal(d.end.equal, true, `chunks of ${chunk}: no settle`);
+  }
+});

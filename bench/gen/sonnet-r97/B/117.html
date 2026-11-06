@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>A Letter About Elm Street - Corbel &amp; Finch Books</title>
+<style>
+:root{
+  --bg:#f6f0e4; --paper:#fffdf8; --text:#2b231b; --muted:#6d6254; --line:#e3d8c3; --accent:#8a3b22; --soft:#f4e9d6;
+  --green:#2f6b4f; --greenbg:#e3efe6; --bar1:#b9ab92; --bar2:#8a3b22; --track:#e8dcc4;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#15110d; --paper:#1d1812; --text:#efe6d6; --muted:#b5a893; --line:#3a3125; --accent:#e59a7a; --soft:#2a2118;
+    --green:#7fc7a1; --greenbg:#1c2a22; --bar1:#6b604f; --bar2:#e59a7a; --track:#3a3125;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:18px/1.7 Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Times New Roman",serif}
+.wrap{max-width:760px;margin:0 auto;padding:20px 14px 56px}
+.paper{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:28px 20px 30px;box-shadow:0 1px 0 var(--line)}
+.ui{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.brand{font:700 .8rem/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 4px}
+h1{font-size:1.9rem;line-height:1.2;margin:0 0 6px;font-weight:700}
+.date{font:.9rem/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--muted);margin:0 0 22px}
+h2{font:700 1.2rem/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--accent);margin:40px 0 10px;letter-spacing:.01em;padding-top:18px;border-top:2px solid var(--line)}
+h3{font:700 1rem/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;margin:0 0 4px}
+p{margin:0 0 14px}
+.salutation{margin-top:0}
+.lead{font-size:1.08rem}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:18px 0 8px}
+.stat{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:14px 14px 12px}
+.stat b{display:block;font:700 2.1rem/1 Georgia,serif;color:var(--accent);letter-spacing:-.01em}
+.stat span{display:block;margin-top:6px;font:.85rem/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--muted)}
+.stat.wide{grid-column:1/-1}
+
+/* figures */
+figure{margin:18px 0 8px;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:14px 14px 10px}
+figcaption{font:.85rem/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--muted);margin-top:8px}
+.ftitle{font:700 .95rem/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;margin:0 0 8px}
+svg{display:block;width:100%;height:auto}
+svg text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;fill:var(--text)}
+svg .m{fill:var(--muted)}
+.charts{display:grid;grid-template-columns:1fr;gap:14px}
+
+/* cards */
+.cards{display:grid;grid-template-columns:1fr;gap:10px;margin:14px 0 18px}
+.card{border:1px solid var(--line);border-radius:8px;padding:14px 16px;background:var(--soft)}
+.card p{margin:0;font-size:.98rem;line-height:1.55}
+.card .tag{font:700 .72rem/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--green);display:block;margin-bottom:8px}
+.card.pr{background:var(--greenbg)}
+.card.pr b.big{display:block;font:700 1.9rem/1 Georgia,serif;color:var(--green);margin-bottom:4px}
+
+/* steps */
+.steps{list-style:none;margin:16px 0 18px;padding:0;counter-reset:s}
+.steps li{position:relative;counter-increment:s;padding:2px 0 22px 54px;font-size:1rem;line-height:1.5}
+.steps li:last-child{padding-bottom:2px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:36px;height:36px;border-radius:50%;background:var(--accent);color:var(--paper);font:700 1rem/36px system-ui,sans-serif;text-align:center}
+.steps li::after{content:"";position:absolute;left:17px;top:40px;bottom:4px;width:2px;background:var(--line)}
+.steps li:last-child::after{display:none}
+.steps .d{display:block;font:700 .95rem/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--accent)}
+
+.sign{margin-top:28px}
+.sign .name{font-size:1.6rem;font-style:italic;margin:2px 0 0;color:var(--text)}
+
+@media (min-width:640px){
+  .wrap{padding:44px 20px 80px}
+  .paper{padding:48px 52px 52px}
+  h1{font-size:2.4rem}
+  .stats{grid-template-columns:repeat(4,1fr)}
+  .stat.wide{grid-column:auto}
+  .cards.three{grid-template-columns:repeat(3,1fr)}
+  .charts{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<article class="paper">
+  <p class="brand">Corbel &amp; Finch Books</p>
+  <h1>A letter about Elm Street</h1>
+  <p class="date">To our customers, from Marguerite Pell</p>
+
+  <p class="salutation">Dear friends,</p>
+  <p class="lead">We have some hard news, and we would rather you heard it from us than from a sign in the window. Here it is plainly, and then the rest of what we want to say.</p>
+
+  <div class="stats" role="list">
+    <div class="stat" role="listitem"><b>17</b><span>years open on Elm Street</span></div>
+    <div class="stat" role="listitem"><b>70%</b><span>rent rise at the 1 January 2027 renewal</span></div>
+    <div class="stat" role="listitem"><b>20%</b><span>off all Elm Street stock from 28 November</span></div>
+    <div class="stat" role="listitem"><b>6</b><span>booksellers moving to Harbor Road</span></div>
+  </div>
+
+  <h2>What is changing</h2>
+  <p>Our Elm Street shop, open for 17 years, will close for good after we trade on 23 December 2026.</p>
+  <p>Everything else carries on. Our Harbor Road shop, our online shop and our school book fairs all continue.</p>
+
+  <div class="cards three">
+    <div class="card"><span class="tag">Closing</span><h3>Elm Street shop</h3><p>Closes for good after trading on 23 December 2026.</p></div>
+    <div class="card pr"><span class="tag">Continues</span><h3>Harbor Road shop and online shop</h3><p>Both carry on, as they do today.</p></div>
+    <div class="card pr"><span class="tag">Continues</span><h3>School book fairs</h3><p>They carry on, as they do today.</p></div>
+  </div>
+
+  <h2>Why</h2>
+  <p>Two things came together. The rent on Elm Street will rise 70 percent when the lease renews on 1 January 2027. And more than half of our sales now happen at Harbor Road or online.</p>
+
+  <div class="charts">
+    <figure>
+      <p class="ftitle">Elm Street rent, before and after renewal</p>
+      <svg viewBox="0 0 320 150" role="img" aria-labelledby="t1 d1">
+        <title id="t1">Elm Street rent: today compared with after the 1 January 2027 renewal</title>
+        <desc id="d1">Two bars drawn to scale. Today's rent is 100. After renewal it is 170, which is 70 percent higher.</desc>
+        <text x="0" y="16" font-size="12" class="m">Rent today (= 100)</text>
+        <rect x="0" y="24" width="160" height="30" rx="4" fill="var(--bar1)"/>
+        <text x="168" y="44" font-size="14" font-weight="700">100</text>
+        <text x="0" y="84" font-size="12" class="m">Rent after 1 January 2027</text>
+        <rect x="0" y="92" width="272" height="30" rx="4" fill="var(--bar2)"/>
+        <text x="280" y="112" font-size="14" font-weight="700">170</text>
+        <line x1="160" y1="58" x2="160" y2="128" stroke="var(--muted)" stroke-dasharray="3 3"/>
+        <text x="164" y="142" font-size="12" font-weight="700" fill="var(--accent)" style="fill:var(--accent)">+70 percent</text>
+      </svg>
+      <figcaption>Index, today's rent = 100. Bars to scale.</figcaption>
+    </figure>
+    <figure>
+      <p class="ftitle">Where our sales now happen</p>
+      <svg viewBox="0 0 320 150" role="img" aria-labelledby="t2 d2">
+        <title id="t2">Share of sales at Harbor Road and online</title>
+        <desc id="d2">A bar with a halfway line. Harbor Road and online together are more than half of sales; Elm Street is the rest.</desc>
+        <defs>
+          <pattern id="h" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="3" height="6" fill="var(--green)"/></pattern>
+        </defs>
+        <rect x="0" y="40" width="320" height="34" rx="4" fill="var(--track)"/>
+        <rect x="0" y="40" width="160" height="34" rx="4" fill="var(--green)"/>
+        <rect x="160" y="40" width="50" height="34" fill="url(#h)" opacity=".75"/>
+        <line x1="160" y1="30" x2="160" y2="84" stroke="var(--text)" stroke-width="2"/>
+        <text x="160" y="24" font-size="12" text-anchor="middle" class="m">halfway (50 percent)</text>
+        <text x="8" y="62" font-size="13" font-weight="700" style="fill:#fff">Harbor Road + online</text>
+        <text x="0" y="104" font-size="13" font-weight="700" style="fill:var(--green)">More than half of sales</text>
+        <text x="0" y="124" font-size="12" class="m">The hatched stretch means "and more"; the exact</text>
+        <text x="0" y="140" font-size="12" class="m">share is not drawn.</text>
+      </svg>
+      <figcaption>Harbor Road and online together pass the halfway line.</figcaption>
+    </figure>
+  </div>
+
+  <p style="margin-top:18px">We looked at those numbers for a long time. In the end, we chose to keep the two places that are growing. It was not an easy choice, and we did not make it lightly. We will miss Elm Street very much.</p>
+
+  <h2>What stays the same</h2>
+  <p>You can still find us at Harbor Road, online and at your child's school book fair. And you will find the same people.</p>
+  <div class="cards three">
+    <div class="card pr"><b class="big" style="font-size:1.9rem">6</b><h3>Our booksellers</h3><p>The Elm Street team of 6 booksellers will move to Harbor Road. The faces will be the same.</p></div>
+    <div class="card pr"><span class="tag">Until 31 December 2027</span><h3>Gift certificates and store credit</h3><p>We will honor them at Harbor Road and online until 31 December 2027.</p></div>
+    <div class="card pr"><span class="tag">Automatic</span><h3>Loyalty points</h3><p>They move over automatically. There is nothing for you to do.</p></div>
+  </div>
+
+  <figure>
+    <p class="ftitle">Gift certificates and store credit: honored at Harbor Road and online</p>
+    <svg viewBox="0 0 320 70" role="img" aria-labelledby="t3 d3">
+      <title id="t3">Honoring period for gift certificates and store credit</title>
+      <desc id="d3">A bar running from the Elm Street closing on 23 December 2026 to 31 December 2027, drawn to scale.</desc>
+      <rect x="0" y="22" width="320" height="16" rx="8" fill="var(--track)"/>
+      <rect x="0" y="22" width="320" height="16" rx="8" fill="var(--green)"/>
+      <text x="0" y="14" font-size="12" class="m">23 December 2026</text>
+      <text x="320" y="14" font-size="12" text-anchor="end" class="m">31 December 2027</text>
+      <text x="0" y="60" font-size="12">Elm Street closes</text>
+      <text x="320" y="60" font-size="12" text-anchor="end">Last day to use them</text>
+    </svg>
+    <figcaption>A full year, plus eight days, at Harbor Road and online.</figcaption>
+  </figure>
+
+  <h2>How to say goodbye</h2>
+  <p>We would love to see you before we close. Here is what we have planned, in order.</p>
+
+  <figure>
+    <p class="ftitle">Elm Street's last weeks, 28 November to 23 December 2026 (to scale)</p>
+    <svg viewBox="0 0 600 170" role="img" aria-labelledby="t4 d4">
+      <title id="t4">Timeline of the last weeks at Elm Street</title>
+      <desc id="d4">A timeline from 28 November to 23 December 2026, drawn to scale. The 20 percent discount runs the whole span. Numbered markers: 1, 28 November discount begins; 2, 19 December story hour at 11:00; 3, 22 December farewell evening 17:00 to 20:00; 4, 23 December last day of trading.</desc>
+      <rect x="30" y="76" width="540" height="18" rx="9" fill="var(--bar2)" opacity=".85"/>
+      <text x="300" y="89" font-size="12" font-weight="700" text-anchor="middle" style="fill:var(--paper)">20 percent off, every day</text>
+      <g stroke="var(--muted)" stroke-width="1">
+        <line x1="30" y1="96" x2="30" y2="104"/>
+        <line x1="192" y1="96" x2="192" y2="104"/>
+        <line x1="354" y1="96" x2="354" y2="104"/>
+        <line x1="516" y1="96" x2="516" y2="104"/>
+        <line x1="570" y1="96" x2="570" y2="104"/>
+      </g>
+      <g font-size="13" class="m" text-anchor="middle">
+        <text x="30" y="120" style="fill:var(--muted)" text-anchor="start">28 Nov</text>
+        <text x="192" y="120" style="fill:var(--muted)">5 Dec</text>
+        <text x="354" y="120" style="fill:var(--muted)">12 Dec</text>
+        <text x="516" y="120" style="fill:var(--muted)" text-anchor="end">19 Dec</text>
+      </g>
+      <!-- markers: day 0, 21, 24, 25 ; x = 30 + day*21.6 -->
+      <g font-size="14" font-weight="700" text-anchor="middle">
+        <line x1="30" y1="44" x2="30" y2="76" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="30" cy="30" r="15" fill="var(--accent)"/><text x="30" y="35" style="fill:var(--paper)">1</text>
+        <line x1="483.6" y1="44" x2="483.6" y2="76" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="483.6" cy="30" r="15" fill="var(--accent)"/><text x="483.6" y="35" style="fill:var(--paper)">2</text>
+        <line x1="548.4" y1="44" x2="548.4" y2="76" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="548.4" cy="30" r="15" fill="var(--accent)"/><text x="548.4" y="35" style="fill:var(--paper)">3</text>
+        <line x1="570" y1="94" x2="570" y2="130" stroke="var(--accent)" stroke-width="2"/>
+        <circle cx="570" cy="142" r="15" fill="var(--accent)"/><text x="570" y="147" style="fill:var(--paper)">4</text>
+      </g>
+      <g font-size="12" class="m">
+        <text x="56" y="35" style="fill:var(--text)">Discount begins</text>
+        <text x="462" y="35" text-anchor="end" style="fill:var(--text)">Story hour</text>
+        <text x="548" y="62" text-anchor="middle" style="fill:var(--text)" font-size="11">Farewell</text>
+        <text x="546" y="147" text-anchor="end" style="fill:var(--text)">Last day</text>
+      </g>
+    </svg>
+    <figcaption>One tick per week. Each day is the same width, so you can see how close the last three events are.</figcaption>
+  </figure>
+
+  <ol class="steps">
+    <li><span class="d">From 28 November</span>Everything in the Elm Street shop is 20 percent off.</li>
+    <li><span class="d">Saturday 19 December, 11:00</span>The last Saturday story hour.</li>
+    <li><span class="d">22 December, 17:00 to 20:00</span>A farewell evening with our staff and local authors.</li>
+    <li><span class="d">23 December</span>Our last day of trading at Elm Street.</li>
+  </ol>
+
+  <p>If you cannot make it, we understand. Come to Harbor Road, or order online, and tell us a story about the shop. We would like to hear it.</p>
+  <p>Thank you. For 17 years you have trusted us with your shelves, your gifts, your children's first books and your Saturday mornings. We have been lucky to be part of that, and we are grateful for every one of you.</p>
+
+  <div class="sign">
+    <p>With warmth and thanks,</p>
+    <p class="name">Marguerite Pell</p>
+  </div>
+</article>
+</div>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{"judge":"claude-sonnet-5-5","prompt":"judge-v2.md"}
+{"pair":"P001","winner":"LEFT","reason":"The left diagram is compact and readable with clear lanes and labels, while the right diagram has large empty gaps and tiny monospace labels."}
+{"pair":"P002","winner":"RIGHT","reason":"The right sequence diagram has large readable labels, colored alt regions and a legend, while the left uses tiny monospace text."}
+{"pair":"P008","winner":"RIGHT","reason":"The right page has clear horizontal bar charts with the premium delta highlighted and a well-organized plan card layout, while the left is plainer."}
+{"pair":"P009","winner":"RIGHT","reason":"The right option cards with status chips and the cost bars showing the Kafka premium make the comparison easier to scan than the left's dense table."}
+{"pair":"P011","winner":"RIGHT","reason":"The right page's donut KPI, larger annotated chart and labeled progress bars are more polished and legible than the left's basic charts."}
+{"pair":"P020","winner":"RIGHT","reason":"The left schedule timeline has circle markers overlapping the item titles, while the right schedule is clean and readable."}

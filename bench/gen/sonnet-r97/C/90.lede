@@ -1,0 +1,65 @@
+@title Open House Guide for Families
+@subtitle Cedarwood Elementary
+@author Dr. Leonie Osei, Principal
+
+Welcome! We cannot wait to meet you and show you our school.
+
+kpi Open house | Thursday 2026-11-12 | 17:30 to 19:30
+kpi Tour groups | 8 families | about 30 minutes each
+kpi Free parking | 60 spaces | Elm Street lot
+
+## When and where
+
+kpi Thursday 2026-11-12 | 17:30 to 19:30 | Main building, 410 Elm Street
+
+! Join us in the main building at 410 Elm Street. Come for the whole evening or just a part.
+
+## Schedule
+
+step Welcome from the principal | 17:30 | Gym
+step Classroom tours | 17:50 | Groups of 8 families, about 30 minutes each
+step Kindergarten information session | 18:30 | Library
+step After-school program table | 18:45 | Cafeteria
+step Closing words | 19:15
+
+## What to bring
+
+Planning to register for 2027-28 kindergarten? Bring these three items.
+
+cards
+### A birth certificate
+For your child's registration.
+### Proof of address
+Bring it with you on the night.
+### Immunization records
+Keep them handy for the form.
+
+kpi Registration opens | 2027-01-12 | 2027-28 kindergarten
+
+## Getting here
+
+cards
+### Free parking
+Use the Elm Street lot. It has 60 spaces.
+### Free shuttle
+A shuttle runs every 10 minutes from the Pine Street church lot.
+### Sibling childcare
+Childcare for siblings is offered in the music room.
+
+diagram route dir=LR title="Ways to reach the open house"
+route: car "Drive" user
+route: lot "Elm Street lot" svc "60 spaces, free" focus
+route: church "Pine Street church lot" ext
+route: shuttle "Free shuttle" svc "every 10 minutes"
+route: school "Main building" svc "410 Elm Street" focus
+route: car -> lot : park
+route: lot -> school : walk in
+route: church -> shuttle : board
+route: shuttle -> school : arrive
+
+## Questions
+
+kpi Call | 555-0166
+kpi Write | office@cedarwood.example
+
+We are happy to help. Call 555-0166 or write to office@cedarwood.example.

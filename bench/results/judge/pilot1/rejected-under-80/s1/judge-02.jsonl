@@ -1,0 +1,7 @@
+{"judge":"claude-sonnet-5-5","prompt":"judge-v2.md"}
+{"pair":"P007","winner":"RIGHT","reason":"LEFT has run-together 'CHECK 1Have' checklist text and a tiny unreadable timeline on the phone, while RIGHT is clean and legible at both widths."}
+{"pair":"P008","winner":"RIGHT","reason":"LEFT clips the '3.4 / 5.' bar label and shrinks its phone charts to near-unreadable size, whereas RIGHT's charts and cards stay legible despite some empty card space on desktop."}
+{"pair":"P009","winner":"LEFT","reason":"RIGHT has overlapping labels in the category cards (e.g. 'RESPONSE3.1 HOURS') and a collided y-axis label on the backlog chart, while LEFT is clean and well scaled."}
+{"pair":"P010","winner":"LEFT","reason":"LEFT is a tight, polished layout with a clear stacked-column chart, while RIGHT leaves tall empty cards on desktop."}
+{"pair":"P011","winner":"LEFT","reason":"RIGHT's 'What stays' table is garbled into a single column of mismatched cells, while LEFT is a warm, coherent letter with clear to-scale charts."}
+{"pair":"P012","winner":"LEFT","reason":"RIGHT has a broken checklist item ('Variances   and   over') and a timeline that shrinks to unreadable on the phone, while LEFT is clean at both widths."}

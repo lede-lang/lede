@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Open House Guide | Cedarwood Elementary</title>
+<style>
+:root{
+  --bg:#fdf8ee; --surface:#ffffff; --ink:#2a2430; --muted:#6a6070; --line:#eadfc9;
+  --accent:#c2551e; --accent-soft:#fbe8d8; --leaf:#2f7a5b; --leaf-soft:#e2f1ea; --on-accent:#ffffff; --link:#1f5f95;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#17141a; --surface:#211d26; --ink:#f0ebf2; --muted:#aaa0b2; --line:#352f3c;
+    --accent:#f0996a; --accent-soft:#3a251b; --leaf:#6ccaa0; --leaf-soft:#173025; --on-accent:#1c0f08; --link:#8fc3f0;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--link);font-weight:650}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 56px}
+header{padding:32px 0 6px}
+.eyebrow{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 6px}
+h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2rem,8vw,3rem);line-height:1.08;margin:0 0 10px}
+.lede{margin:0;color:var(--muted)}
+section{margin-top:40px}
+h2{font-family:Georgia,"Times New Roman",serif;font-size:1.5rem;margin:0 0 14px}
+p{margin:0 0 12px}
+.hero{margin-top:18px;background:var(--accent);color:var(--on-accent);border-radius:18px;padding:22px 22px 20px;display:grid;gap:14px;grid-template-columns:1fr 1fr}
+.hero .day{font-family:Georgia,serif;font-size:1.7rem;font-weight:700;line-height:1.15}
+.hero .time{font-size:2.2rem;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+.hero small{display:block;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;opacity:.85;margin-bottom:2px}
+.hero .where{grid-column:1/-1;border-top:1px solid currentColor;padding-top:12px;font-weight:650;opacity:.95}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 10px;text-align:center}
+.stat b{display:block;font-family:Georgia,serif;font-size:2.2rem;line-height:1.05;color:var(--accent)}
+.stat span{display:block;font-size:.8rem;color:var(--muted);line-height:1.3;margin-top:4px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 12px}
+.chart{display:block;width:100%;height:auto;max-width:560px;margin:0 auto}
+.chart text{fill:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.chart .tm{font-weight:750;font-size:14px;text-anchor:end}
+.chart .ti{font-weight:700;font-size:14px}
+.chart .su{fill:var(--muted);font-size:12px}
+.chart .tk{fill:var(--muted);font-size:11px;text-anchor:end}
+.chart .axis{stroke:var(--line);stroke-width:3}
+.chart .grid{stroke:var(--line);stroke-width:1;stroke-dasharray:3 4}
+.chart .dot{fill:var(--surface);stroke:var(--accent);stroke-width:3}
+.chart .span{fill:var(--accent);opacity:.85}
+.chart .pill{fill:var(--leaf-soft)}
+.chart .pt{fill:var(--leaf);font-size:11px;font-weight:700}
+.cap{font-size:.85rem;color:var(--muted);margin:10px 4px 0;text-align:center}
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 14px;font-weight:600;text-align:center}
+.item svg{display:block;margin:0 auto 8px;width:34px;height:34px;stroke:var(--leaf);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.steps{list-style:none;margin:16px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;counter-reset:s}
+.steps li{counter-increment:s;background:var(--accent-soft);border-radius:12px;padding:12px 12px 12px 14px;font-size:.95rem;position:relative}
+.steps li::before{content:counter(s);display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--on-accent);font-weight:800;font-size:.85rem;margin-bottom:6px}
+.steps b{display:block}
+.go{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.go div{background:var(--leaf-soft);border-radius:14px;padding:16px;font-size:.95rem}
+.go h3{margin:0 0 4px;font-size:1rem;color:var(--leaf)}
+.go .big{display:block;font-family:Georgia,serif;font-size:2.6rem;line-height:1;color:var(--leaf);font-weight:700}
+.go .big small{font-size:.9rem;font-family:system-ui,sans-serif;font-weight:600}
+.contacts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.contact{background:var(--surface);border:2px solid var(--accent);border-radius:14px;padding:18px}
+.contact small{display:block;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.contact a{font-size:1.2rem;overflow-wrap:anywhere}
+.sign{margin-top:28px;font-family:Georgia,serif;font-style:italic;color:var(--muted)}
+.sign b{display:block;color:var(--ink);font-style:normal}
+@media (max-width:600px){
+  .stats{grid-template-columns:1fr 1fr}
+  .cols,.steps,.go,.contacts{grid-template-columns:1fr}
+  .hero{grid-template-columns:1fr}
+  .item{display:flex;align-items:center;gap:12px;text-align:left;padding:12px 14px}
+  .item svg{margin:0;flex:0 0 auto}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Cedarwood Elementary</p>
+  <h1>Open house: come and see us</h1>
+  <p class="lede">A warm welcome to every family. We would love to show you around.</p>
+</header>
+
+<section aria-labelledby="when" style="margin-top:8px">
+  <h2 id="when">When and where</h2>
+  <div class="hero">
+    <div><small>Date</small><div class="day">Thursday, November 12, 2026</div></div>
+    <div><small>Time</small><div class="time">5:30 to 7:30 pm</div></div>
+    <div class="where">Main building, 410 Elm Street</div>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>8</b><span>families in each tour group</span></div>
+    <div class="stat"><b>30</b><span>minutes for each classroom tour</span></div>
+    <div class="stat"><b>60</b><span>free parking spaces</span></div>
+    <div class="stat"><b>10</b><span>minutes between free shuttles</span></div>
+  </div>
+</section>
+
+<section aria-labelledby="sched">
+  <h2 id="sched">Schedule</h2>
+  <div class="card">
+    <svg class="chart" viewBox="0 0 360 660" role="img" aria-labelledby="tl-t tl-d">
+      <title id="tl-t">Open house timeline, 5:30 to 7:30 pm, drawn to scale</title>
+      <desc id="tl-d">5:30 welcome from the principal in the gym. 5:50 classroom tours in groups of 8 families, each about 30 minutes. 6:30 kindergarten information session in the library. 6:45 after-school program table in the cafeteria. 7:15 closing words.</desc>
+      <!-- scale: 5 px per minute, 5:30 pm at y=30, 7:30 pm at y=630 -->
+      <line class="grid" x1="70" y1="30" x2="352" y2="30"/>
+      <line class="grid" x1="70" y1="180" x2="352" y2="180"/>
+      <line class="grid" x1="70" y1="330" x2="352" y2="330"/>
+      <line class="grid" x1="70" y1="480" x2="352" y2="480"/>
+      <line class="grid" x1="70" y1="630" x2="352" y2="630"/>
+      <text class="tk" x="352" y="26">5:30</text>
+      <text class="tk" x="352" y="176">6:00</text>
+      <text class="tk" x="352" y="326">6:30</text>
+      <text class="tk" x="352" y="476">7:00</text>
+      <text class="tk" x="352" y="626">7:30</text>
+      <line class="axis" x1="70" y1="30" x2="70" y2="630"/>
+      <rect class="span" x="66" y="130" width="8" height="150" rx="4"/>
+
+      <circle class="dot" cx="70" cy="30" r="7"/>
+      <text class="tm" x="58" y="35">5:30</text>
+      <text class="ti" x="90" y="35">Welcome from the principal</text>
+      <rect class="pill" x="90" y="43" width="42" height="18" rx="9"/>
+      <text class="pt" x="99" y="56">Gym</text>
+
+      <circle class="dot" cx="70" cy="130" r="7"/>
+      <text class="tm" x="58" y="135">5:50</text>
+      <text class="ti" x="90" y="135">Classroom tours</text>
+      <text class="su" x="90" y="155">Groups of 8 families</text>
+      <text class="su" x="90" y="173">Each tour about 30 minutes</text>
+
+      <circle class="dot" cx="70" cy="330" r="7"/>
+      <text class="tm" x="58" y="335">6:30</text>
+      <text class="ti" x="90" y="335">Kindergarten information session</text>
+      <rect class="pill" x="90" y="343" width="58" height="18" rx="9"/>
+      <text class="pt" x="99" y="356">Library</text>
+
+      <circle class="dot" cx="70" cy="405" r="7"/>
+      <text class="tm" x="58" y="410">6:45</text>
+      <text class="ti" x="90" y="410">After-school program table</text>
+      <rect class="pill" x="90" y="418" width="68" height="18" rx="9"/>
+      <text class="pt" x="99" y="431">Cafeteria</text>
+
+      <circle class="dot" cx="70" cy="555" r="7"/>
+      <text class="tm" x="58" y="560">7:15</text>
+      <text class="ti" x="90" y="560">Closing words</text>
+    </svg>
+    <p class="cap">Timeline drawn to scale, 5:30 to 7:30 pm. The thick bar marks the 30-minute classroom tours.</p>
+  </div>
+</section>
+
+<section aria-labelledby="bring">
+  <h2 id="bring">What to bring</h2>
+  <p>Planning to register for 2027-28 kindergarten? Please bring:</p>
+  <div class="cols">
+    <div class="item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18H5zM9 8h6M9 12h6M9 16h3"/></svg>A birth certificate</div>
+    <div class="item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8M5 10v10h14V10M10 20v-6h4v6"/></svg>Proof of address</div>
+    <div class="item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v8M8 12h8"/><rect x="4" y="4" width="16" height="16" rx="3"/></svg>Immunization records</div>
+  </div>
+  <ol class="steps">
+    <li><b>Visit us</b>Join the open house on November 12, 2026.</li>
+    <li><b>Gather your papers</b>Collect the three items above.</li>
+    <li><b>Register</b>Registration opens on <strong>January 12, 2027</strong>.</li>
+  </ol>
+</section>
+
+<section aria-labelledby="getting">
+  <h2 id="getting">Getting here</h2>
+  <div class="go">
+    <div><h3>Parking</h3><span class="big">60</span>Free parking spaces in the Elm Street lot.</div>
+    <div><h3>Free shuttle</h3><span class="big">10 <small>min</small></span>A shuttle runs every 10 minutes from the Pine Street church lot.</div>
+    <div><h3>Childcare</h3><span class="big">Free</span>We offer childcare for siblings in the music room.</div>
+  </div>
+</section>
+
+<section aria-labelledby="q">
+  <h2 id="q">Questions</h2>
+  <div class="contacts">
+    <div class="contact"><small>Call</small><a href="tel:5550166">555-0166</a></div>
+    <div class="contact"><small>Write</small><a href="mailto:office@cedarwood.example">office@cedarwood.example</a></div>
+  </div>
+  <p class="sign">We look forward to meeting you.<b>Dr. Leonie Osei, Principal</b></p>
+</section>
+</div>
+</body>
+</html>

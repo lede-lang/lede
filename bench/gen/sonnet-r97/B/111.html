@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Q3 2026 Sales Summary - Foxglove Garden Centers</title>
+<style>
+:root{
+  --bg:#f3f6f1; --surface:#ffffff; --surface2:#eef3ee; --text:#1a2620; --muted:#55645b; --line:#d9e1d8;
+  --accent:#2c6a4d; --accent-bg:#e3f1e9; --on-accent:#ffffff;
+  --warn-bg:#fff4e3; --warn-line:#e0a34a; --warn-text:#7a4a05;
+  --c-plants:#2c7a58; --c-tools:#3a6ca6; --c-furn:#b25f26; --c-season:#87559f; --on-c:#ffffff;
+  --shadow:0 1px 2px rgba(20,40,30,.06),0 4px 14px rgba(20,40,30,.05);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1411; --surface:#17201c; --surface2:#1d2823; --text:#e8efea; --muted:#9fb0a6; --line:#2b3832;
+    --accent:#6cc79b; --accent-bg:#183326; --on-accent:#0c1310;
+    --warn-bg:#2e2412; --warn-line:#c48a2e; --warn-text:#f1c783;
+    --c-plants:#4fb487; --c-tools:#6ba2e3; --c-furn:#e69a5c; --c-season:#bb8ad8; --on-c:#0c1310;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:16px 16px 48px}
+.hero{background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 55%,var(--c-tools)));color:var(--on-accent);border-radius:18px;padding:22px 18px;box-shadow:var(--shadow)}
+.eyebrow{font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;font-weight:700;margin:0 0 6px;opacity:.9}
+h1{font-size:1.65rem;line-height:1.2;margin:0 0 8px}
+.sub{margin:0;font-size:.92rem;opacity:.92}
+.hero-num{margin-top:16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px}
+.hero-num .big{font-size:3rem;font-weight:800;line-height:1;letter-spacing:-.02em}
+.hero-num .pill{background:rgba(255,255,255,.2);border-radius:999px;padding:3px 12px;font-weight:700;font-size:.95rem}
+@media (prefers-color-scheme:dark){.hero-num .pill{background:rgba(0,0,0,.2)}}
+.hero-num .of{font-size:.92rem;opacity:.92;flex-basis:100%}
+h2{font-size:1.3rem;margin:34px 0 12px;display:flex;align-items:center;gap:10px}
+h2::before{content:"";width:6px;height:1.3em;border-radius:3px;background:var(--accent)}
+h3{font-size:1rem;margin:0 0 4px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow)}
+.card + .card, .grid + .card, .card + .grid, .grid + .grid{margin-top:12px}
+.hint{font-size:.85rem;color:var(--muted);margin:0 0 10px}
+.cap{font-size:.86rem;color:var(--muted);margin:10px 0 0}
+.grid{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:1fr 1fr}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow)}
+.kpi .l{font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.kpi .v{font-size:1.75rem;font-weight:800;line-height:1.15;margin:2px 0}
+.kpi .n{font-size:.86rem;color:var(--muted)}
+.kpi.wide{grid-column:1/-1}
+.up{color:var(--accent);font-weight:700}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0 0 10px;padding:0;list-style:none;font-size:.88rem}
+.legend li{display:flex;align-items:center;gap:6px}
+.sw,.dot{width:12px;height:12px;border-radius:3px;display:inline-block;flex:none}
+.dot{margin-right:6px}
+.p{background:var(--c-plants)}.t{background:var(--c-tools)}.f{background:var(--c-furn)}.s{background:var(--c-season)}
+svg{display:block;width:100%;height:auto;max-width:600px;margin:0 auto}
+svg text{font-family:inherit}
+.ax{fill:var(--muted);font-size:11px}
+.axt{fill:var(--muted);font-size:11px;font-weight:600}
+.tot{fill:var(--text);font-size:12px;font-weight:700}
+.gl{stroke:var(--line);stroke-width:1}
+.seg{stroke:var(--surface);stroke-width:1.5}
+.vl{fill:var(--on-c);font-size:11px;font-weight:700}
+/* horizontal bars */
+.hb{display:grid;grid-template-columns:minmax(84px,32%) 1fr;gap:6px 10px;align-items:center;margin:8px 0}
+.hb .lab{font-size:.88rem;font-weight:600}
+.hb .track{background:var(--surface2);border-radius:8px;height:26px;position:relative;overflow:hidden}
+.hb .fill{height:100%;border-radius:8px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;color:var(--on-c);font-size:.8rem;font-weight:700;min-width:44px}
+.fill.a{background:var(--accent);color:var(--on-accent)}
+.fill.n{background:var(--muted);color:var(--surface)}
+.mix{margin:8px 0}
+.mix .row{display:grid;grid-template-columns:34px 1fr;align-items:center;gap:10px;margin:8px 0}
+.mix .m{font-weight:700;font-size:.9rem}
+.bar{display:flex;height:36px;border-radius:8px;overflow:hidden;gap:2px;background:var(--surface)}
+.bar span{display:flex;align-items:center;justify-content:center;color:var(--on-c);font-size:.78rem;font-weight:700;min-width:0}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{padding:9px 8px;text-align:right;font-size:.92rem;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left;padding-left:4px}
+thead th{font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+td.q,th.q{font-weight:700;background:var(--surface2)}
+tr.total td{font-weight:800;border-bottom:0;border-top:2px solid var(--line)}
+/* timeline */
+.tl{position:relative;height:96px;margin:6px 6px 0}
+.tl .axis{position:absolute;left:0;right:0;top:44px;height:8px;border-radius:4px;background:var(--surface2);border:1px solid var(--line);overflow:hidden;display:flex}
+.tl .axis i{display:block;height:100%;border-right:1px solid var(--line)}
+.tl .axis i:nth-child(1){flex:31}.tl .axis i:nth-child(2){flex:31;background:color-mix(in srgb,var(--line) 50%,transparent)}.tl .axis i:nth-child(3){flex:30;border-right:0}
+.tl .mk{position:absolute;top:0;transform:translateX(-50%);text-align:center;font-size:.74rem;line-height:1.25;width:130px}
+.tl .mk b{display:block;font-size:.8rem}
+.tl .pin{position:absolute;top:26px;bottom:34px;width:2px;background:var(--c-season);left:75.8%}
+.tl .dotm{position:absolute;top:40px;width:16px;height:16px;border-radius:50%;background:var(--c-season);border:3px solid var(--surface);left:75.8%;transform:translateX(-50%)}
+.tl .mon{position:absolute;top:60px;font-size:.78rem;color:var(--muted);font-weight:600}
+.tl .mon.j{left:0}.tl .mon.a{left:34%}.tl .mon.s{left:68%}
+.tl .end{position:absolute;right:0;top:60px;font-size:.78rem;color:var(--muted)}
+/* steps */
+.steps{list-style:none;margin:0;padding:0;counter-reset:st;display:grid;gap:10px;grid-template-columns:1fr}
+.steps li{counter-increment:st;position:relative;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 12px 12px 52px}
+.steps li::before{content:counter(st);position:absolute;left:12px;top:12px;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--on-accent);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.steps li.last::before{background:var(--warn-line);color:#1a1205}
+.steps b{display:block}
+.steps span{color:var(--muted);font-size:.88rem}
+/* watch */
+.watch{border:1px solid var(--warn-line);border-left:6px solid var(--warn-line);background:var(--warn-bg);color:var(--warn-text);border-radius:14px;padding:14px 16px}
+.watch .tag{display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:var(--warn-line);color:#1a1205;padding:2px 10px;border-radius:999px;margin-bottom:6px}
+.watch h3{font-size:1.1rem;margin:2px 0 6px;color:var(--warn-text)}
+.watch p{margin:6px 0}
+.watch .nums{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.watch .nums div{background:rgba(255,255,255,.35);border:1px solid var(--warn-line);border-radius:10px;padding:6px 10px;font-size:.82rem}
+@media (prefers-color-scheme:dark){.watch .nums div{background:rgba(0,0,0,.25)}}
+.watch .nums strong{display:block;font-size:1.15rem}
+.note{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow)}
+.note p{margin:4px 0}
+.note .big{font-size:1.5rem;font-weight:800;line-height:1.1}
+.note.s{border-top:4px solid var(--c-season);background:var(--surface)}
+.note.p{border-top:4px solid var(--c-plants);background:var(--surface)}
+footer{margin-top:34px;color:var(--muted);font-size:.84rem;border-top:1px solid var(--line);padding-top:12px}
+@media (min-width:640px){
+  .wrap{padding:28px 24px 64px}
+  .hero{padding:30px 28px}
+  h1{font-size:2.1rem}
+  .grid.g3{grid-template-columns:repeat(3,1fr)}
+  .grid.k{grid-template-columns:repeat(3,1fr)}
+  .kpi.wide{grid-column:auto}
+  .steps{grid-template-columns:repeat(4,1fr)}
+  .steps li{padding:50px 12px 12px}
+  .steps li::before{top:12px}
+  .grid.two{grid-template-columns:1fr 1fr}
+}
+.grid.two{grid-template-columns:1fr}
+@media (min-width:640px){.grid.two{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <p class="eyebrow">Foxglove Garden Centers - Retail Finance</p>
+  <h1>Q3 2026 sales summary</h1>
+  <p class="sub">July to September 2026, for store managers. Prepared for Imani Okoro, retail finance lead. Revenue is in thousands of dollars unless stated.</p>
+  <div class="hero-num">
+    <span class="big">$5,870K</span>
+    <span class="pill">Up 8.3%</span>
+    <span class="of">Q3 revenue, on $5,420K in the same quarter last year</span>
+  </div>
+</header>
+
+<h2>Q3 at a glance</h2>
+<div class="grid k">
+  <div class="kpi"><div class="l">Q3 revenue</div><div class="v">$5,870K</div><div class="n"><span class="up">Up 8.3%</span> on $5,420K in Q3 2025</div></div>
+  <div class="kpi"><div class="l">Best month</div><div class="v">September</div><div class="n">$2,240K, vs $1,850K in July</div></div>
+  <div class="kpi wide"><div class="l">Average basket</div><div class="v">$38.40 to $42.70</div><div class="n">July $38.40, August $39.10, September $42.70</div></div>
+</div>
+
+<div class="grid two" style="margin-top:12px">
+  <div class="card">
+    <h3>Q3 2026 vs Q3 2025</h3>
+    <p class="hint">Revenue, $ thousands, bars to scale from zero</p>
+    <div class="hb"><div class="lab">Q3 2026</div><div class="track"><div class="fill a" style="width:100%">5,870</div></div></div>
+    <div class="hb"><div class="lab">Q3 2025</div><div class="track"><div class="fill n" style="width:92.3%">5,420</div></div></div>
+    <p class="cap">Up 8.3% on the same quarter last year.</p>
+  </div>
+  <div class="card">
+    <h3>Average basket by month</h3>
+    <p class="hint">Dollars, bars to scale from zero</p>
+    <div class="hb"><div class="lab">July</div><div class="track"><div class="fill a" style="width:89.9%">$38.40</div></div></div>
+    <div class="hb"><div class="lab">August</div><div class="track"><div class="fill a" style="width:91.6%">$39.10</div></div></div>
+    <div class="hb"><div class="lab">September</div><div class="track"><div class="fill a" style="width:100%">$42.70</div></div></div>
+    <p class="cap">Scale: September $42.70 is the full bar.</p>
+  </div>
+</div>
+
+<div class="grid g3" style="margin-top:12px">
+  <div class="note s"><h3>September best</h3><p class="big">23.2%</p><p>Seasonal and holiday share of September revenue once autumn displays went up on 2026-09-08.</p></div>
+  <div class="note p"><h3>Plants leads</h3><p class="big">42.4%</p><p>Plants is still the biggest category, as a share of the quarter.</p></div>
+  <div class="note" style="border-top:4px solid var(--c-furn)"><h3>Furniture down</h3><p class="big">-32.1%</p><p>Furniture fell from July to September as patio season ended. It is the one category that needs a clearance decision.</p></div>
+</div>
+
+<h2>Revenue by category</h2>
+<div class="card">
+  <h3>Monthly revenue by category</h3>
+  <p class="hint">Stacked columns, $ thousands, drawn to scale from zero</p>
+  <ul class="legend" aria-label="Legend">
+    <li><span class="sw p"></span>Plants</li>
+    <li><span class="sw t"></span>Tools and supplies</li>
+    <li><span class="sw f"></span>Furniture</li>
+    <li><span class="sw s"></span>Seasonal and holiday</li>
+  </ul>
+  <svg viewBox="0 0 400 300" role="img" aria-label="Stacked column chart of monthly revenue by category in thousands of dollars. July 1850, August 1780, September 2240. Seasonal and holiday grows from 90 to 150 to 520 while Furniture shrinks from 530 to 480 to 360.">
+    <g class="gl">
+      <line x1="46" y1="260" x2="392" y2="260"/>
+      <line x1="46" y1="200" x2="392" y2="200"/>
+      <line x1="46" y1="140" x2="392" y2="140"/>
+      <line x1="46" y1="80" x2="392" y2="80"/>
+      <line x1="46" y1="20" x2="392" y2="20"/>
+    </g>
+    <g class="ax" text-anchor="end">
+      <text x="40" y="264">0</text><text x="40" y="204">600</text><text x="40" y="144">1,200</text><text x="40" y="84">1,800</text><text x="40" y="24">2,400</text>
+    </g>
+    <text class="axt" x="46" y="12">$ thousands</text>
+    <!-- July -->
+    <rect class="seg" x="70" y="178" width="70" height="82" fill="var(--c-plants)"><title>Plants July 820</title></rect>
+    <rect class="seg" x="70" y="137" width="70" height="41" fill="var(--c-tools)"><title>Tools and supplies July 410</title></rect>
+    <rect class="seg" x="70" y="84" width="70" height="53" fill="var(--c-furn)"><title>Furniture July 530</title></rect>
+    <rect class="seg" x="70" y="75" width="70" height="9" fill="var(--c-season)"><title>Seasonal and holiday July 90</title></rect>
+    <text class="vl" x="105" y="223" text-anchor="middle">820</text>
+    <text class="vl" x="105" y="161" text-anchor="middle">410</text>
+    <text class="vl" x="105" y="114" text-anchor="middle">530</text>
+    <text class="tot" x="105" y="68" text-anchor="middle">1,850</text>
+    <!-- August -->
+    <rect class="seg" x="185" y="184" width="70" height="76" fill="var(--c-plants)"><title>Plants August 760</title></rect>
+    <rect class="seg" x="185" y="145" width="70" height="39" fill="var(--c-tools)"><title>Tools and supplies August 390</title></rect>
+    <rect class="seg" x="185" y="97" width="70" height="48" fill="var(--c-furn)"><title>Furniture August 480</title></rect>
+    <rect class="seg" x="185" y="82" width="70" height="15" fill="var(--c-season)"><title>Seasonal and holiday August 150</title></rect>
+    <text class="vl" x="220" y="226" text-anchor="middle">760</text>
+    <text class="vl" x="220" y="168" text-anchor="middle">390</text>
+    <text class="vl" x="220" y="125" text-anchor="middle">480</text>
+    <text class="tot" x="220" y="75" text-anchor="middle">1,780</text>
+    <!-- September -->
+    <rect class="seg" x="300" y="169" width="70" height="91" fill="var(--c-plants)"><title>Plants September 910</title></rect>
+    <rect class="seg" x="300" y="124" width="70" height="45" fill="var(--c-tools)"><title>Tools and supplies September 450</title></rect>
+    <rect class="seg" x="300" y="88" width="70" height="36" fill="var(--c-furn)"><title>Furniture September 360</title></rect>
+    <rect class="seg" x="300" y="36" width="70" height="52" fill="var(--c-season)"><title>Seasonal and holiday September 520</title></rect>
+    <text class="vl" x="335" y="218" text-anchor="middle">910</text>
+    <text class="vl" x="335" y="150" text-anchor="middle">450</text>
+    <text class="vl" x="335" y="110" text-anchor="middle">360</text>
+    <text class="vl" x="335" y="65" text-anchor="middle">520</text>
+    <text class="tot" x="335" y="29" text-anchor="middle">2,240</text>
+    <g class="ax" text-anchor="middle" style="font-size:12px">
+      <text x="105" y="278">Jul</text><text x="220" y="278">Aug</text><text x="335" y="278">Sep</text>
+    </g>
+    <text class="axt" x="220" y="296" text-anchor="middle">Month, Q3 2026 (totals above columns)</text>
+  </svg>
+  <p class="cap">Furniture (orange) shrinks every month while Seasonal and holiday (purple) grows from a sliver to the second-largest slice in September.</p>
+</div>
+
+<div class="card">
+  <h3>How the mix shifted, share of each month</h3>
+  <p class="hint">Each bar is 100% of that month's revenue</p>
+  <ul class="legend" aria-label="Legend">
+    <li><span class="sw p"></span>Plants</li>
+    <li><span class="sw t"></span>Tools and supplies</li>
+    <li><span class="sw f"></span>Furniture</li>
+    <li><span class="sw s"></span>Seasonal and holiday</li>
+  </ul>
+  <div class="mix" role="img" aria-label="Share of monthly revenue by category. July: Plants 44.3 percent, Tools and supplies 22.2, Furniture 28.6, Seasonal and holiday 4.9. August: Plants 42.7, Tools 21.9, Furniture 27.0, Seasonal 8.4. September: Plants 40.6, Tools 20.1, Furniture 16.1, Seasonal 23.2.">
+    <div class="row"><div class="m">Jul</div><div class="bar">
+      <span class="p" style="width:44.3%">44%</span><span class="t" style="width:22.2%">22%</span><span class="f" style="width:28.6%">29%</span><span class="s" style="width:4.9%"></span></div></div>
+    <div class="row"><div class="m">Aug</div><div class="bar">
+      <span class="p" style="width:42.7%">43%</span><span class="t" style="width:21.9%">22%</span><span class="f" style="width:27%">27%</span><span class="s" style="width:8.4%">8%</span></div></div>
+    <div class="row"><div class="m">Sep</div><div class="bar">
+      <span class="p" style="width:40.6%">41%</span><span class="t" style="width:20.1%">20%</span><span class="f" style="width:16.1%">16%</span><span class="s" style="width:23.2%">23%</span></div></div>
+  </div>
+  <p class="cap">Seasonal and holiday went from 4.9% of July to 8.4% of August to 23.2% of September. Furniture went from 28.6% down to 16.1%.</p>
+</div>
+
+<div class="card">
+  <h3>Quarter total by category</h3>
+  <p class="hint">Q3 revenue, $ thousands, bars to scale from zero (axis maximum 3,000)</p>
+  <div class="hb"><div class="lab"><span class="dot p"></span>Plants</div><div class="track"><div class="fill p" style="width:83%">2,490</div></div></div>
+  <div class="hb"><div class="lab"><span class="dot t"></span>Tools and supplies</div><div class="track"><div class="fill t" style="width:41.7%">1,250</div></div></div>
+  <div class="hb"><div class="lab"><span class="dot f"></span>Furniture</div><div class="track"><div class="fill f" style="width:45.7%">1,370</div></div></div>
+  <div class="hb"><div class="lab"><span class="dot s"></span>Seasonal and holiday</div><div class="track"><div class="fill s" style="width:25.3%">760</div></div></div>
+  <p class="cap">Plants was 42.4% of the Q3 total of 5,870.</p>
+</div>
+
+<div class="card">
+  <h3>The figures, $ thousands</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Category</th><th>Jul</th><th>Aug</th><th>Sep</th><th class="q">Q3</th></tr></thead>
+    <tbody>
+      <tr><td><span class="dot p"></span>Plants</td><td>820</td><td>760</td><td>910</td><td class="q">2,490</td></tr>
+      <tr><td><span class="dot t"></span>Tools and supplies</td><td>410</td><td>390</td><td>450</td><td class="q">1,250</td></tr>
+      <tr><td><span class="dot f"></span>Furniture</td><td>530</td><td>480</td><td>360</td><td class="q">1,370</td></tr>
+      <tr><td><span class="dot s"></span>Seasonal and holiday</td><td>90</td><td>150</td><td>520</td><td class="q">760</td></tr>
+      <tr class="total"><td>Total</td><td>1,850</td><td>1,780</td><td>2,240</td><td class="q">5,870</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="cap">Q3 2025 total for the same quarter: 5,420. Plants was 42.4% of the Q3 total.</p>
+</div>
+
+<div class="card">
+  <h3>Quarter timeline</h3>
+  <p class="hint">July 1 to September 30, drawn to scale by day</p>
+  <div class="tl" role="img" aria-label="Timeline of Q3 2026 from July to September to scale. Autumn displays went up on 2026-09-08, about three quarters of the way through the quarter.">
+    <div class="axis"><i></i><i></i><i></i></div>
+    <div class="pin"></div>
+    <div class="dotm"></div>
+    <div class="mk" style="left:75.8%"><b>2026-09-08</b>Autumn displays go up</div>
+    <span class="mon j">Jul</span><span class="mon a">Aug</span><span class="mon s">Sep</span>
+  </div>
+  <p class="cap">After the displays went up, Seasonal and holiday reached 520 in September, from 150 in August.</p>
+</div>
+
+<h2>Watch items</h2>
+<div class="watch" role="note">
+  <span class="tag">Decision needed</span>
+  <h3>Furniture: clearance</h3>
+  <p>Furniture fell 32.1% from July (530) to September (360) as patio season ended. It is the only category that shrank across the quarter, and it needs a clearance decision.</p>
+  <div class="nums">
+    <div><strong>530</strong>July</div>
+    <div><strong>480</strong>August</div>
+    <div><strong>360</strong>September</div>
+    <div><strong>-32.1%</strong>July to September</div>
+  </div>
+  <p><strong>Ask:</strong> decide whether to clear remaining patio stock now or carry it over. Please send your view to retail finance.</p>
+</div>
+
+<h3 style="margin:18px 0 8px">How Furniture got here</h3>
+<ol class="steps">
+  <li><b>July</b><span>Furniture at 530, 28.6% of the month.</span></li>
+  <li><b>August</b><span>Furniture at 480, 27.0% of the month.</span></li>
+  <li><b>September</b><span>Furniture at 360, 16.1% of the month, as patio season ended.</span></li>
+  <li class="last"><b>Decision</b><span>Clear remaining patio stock now, or carry it over.</span></li>
+</ol>
+
+<div class="grid two" style="margin-top:14px">
+  <div class="note s">
+    <h3>Seasonal and holiday: keep the momentum</h3>
+    <p>Revenue rose from 90 in July to 520 in September after autumn displays went up on 2026-09-08. It was 23.2% of September revenue.</p>
+  </div>
+  <div class="note p">
+    <h3>Plants: steady leader</h3>
+    <p>Plants is the biggest category at 42.4% of the quarter (2,490 of 5,870) and had its best month in September at 910.</p>
+  </div>
+</div>
+
+<footer>Foxglove Garden Centers, retail finance. Q3 2026 (July to September). Figures in thousands of dollars, except average basket size.</footer>
+</div>
+</body>
+</html>

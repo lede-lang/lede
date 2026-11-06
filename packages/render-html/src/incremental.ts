@@ -129,6 +129,19 @@ export const normalize = (html: string): string => html.replace(/>\s+</g, '><').
 const STYLE_KEYS = ['accent', 'theme', 'width'] as const;
 const MAST_KEYS = ['title', 'subtitle', 'author', 'date'] as const;
 
+/** Adds `to` to the targets of `from`. */
+function add(next: Map<string, string[]>, from: string, to: string): void {
+  const out = next.get(from);
+  if (out) out.push(to);
+  else next.set(from, [to]);
+}
+
+/** `xs.map(f)`, or `xs` itself when `f` returned every element unchanged, so an untouched tree keeps its identity. */
+function mapSame<T>(xs: T[], f: (x: T) => T): T[] {
+  const out = xs.map(f);
+  return out.every((x, i) => x === xs[i]) ? xs : out;
+}
+
 /**
  * The height of the slot a diagram holds until it is drawn. A sequence diagram is 72 + 36 per message + 24 per alt/opt frame. A
  * flow diagram is 64 + 72 per layer, a layer being a step of the longest simple chain of edges so far, capped at 480. It
@@ -138,8 +151,8 @@ function estimateHeight(d: DiagramBlock): number {
   if (d.kind === 'sequence') return 72 + 36 * d.edges.length + 24 * (d.frames?.length ?? 0);
   const next = new Map<string, string[]>();
   for (const e of d.edges) {
-    next.set(e.from, [...(next.get(e.from) ?? []), e.to]);
-    if (e.both) next.set(e.to, [...(next.get(e.to) ?? []), e.from]);
+    add(next, e.from, e.to);
+    if (e.both) add(next, e.to, e.from);
   }
   // Six layers already reach the cap, so the search stops there.
   let best = 1;
@@ -298,9 +311,6 @@ class Renderer implements Incremental {
   private readonly fields: QuestionBlock[] = [];
   private controls = false;
   private editors = false;
-  /** The bucket items of those fields, kept as the sets grow (`countItems`): what `exportKey()` reads, so it costs nothing per call. */
-  private items = 0;
-  private readonly counted = new Map<BucketBlock, number>();
   /** The committed units that hold an `export`. */
   private readonly exportUnits: U[] = [];
 
@@ -388,23 +398,14 @@ class Renderer implements Incremental {
    * first editor word (a `preset` too, which is no field) adds the editors'; true when this block did either, so the caller emits
    * the style (the first block's style is `begin`'s).
    */
-  private takeQuestions(block: Block, temporary = false): boolean {
+  private takeQuestions(block: Block): boolean {
     const { fields: found, presets, hasExport } = questionsIn(block);
     this.fields.push(...found);
-    // The bucket items an `export` lists are counted for the fields that stay; a temporary field (below) is dropped again.
-    if (!temporary) for (const f of found) if (f.type === 'bucket') this.countItems(f);
     const controls = !this.controls && (found.length > 0 || hasExport);
     const editors = !this.editors && usesEditors(found, presets);
     if (controls) this.controls = true;
     if (editors) this.editors = true;
     return controls || editors;
-  }
-
-  /** Bring the running count of bucket items up to the items `set` has now. Counting a set again, or one that has not grown, adds nothing. */
-  private countItems(set: BucketBlock): void {
-    const n = set.items.length;
-    this.items += n - (this.counted.get(set) ?? 0);
-    this.counted.set(set, n);
   }
 
   /** The page stylesheet for `meta`, with the controls' and the editors' rules once a field, an `export` or an editor word has arrived. */
@@ -431,7 +432,9 @@ class Renderer implements Incremental {
 
   /** What an `export` lists: the number of fields and of bucket items (they only ever grow) and the title. */
   private exportKey(): string {
-    return `${this.fields.length}:${this.items}:${this.ctx.page ?? ''}`;
+    let items = 0;
+    for (const f of this.fields) if (f.type === 'bucket') items += f.items.length;
+    return `${this.fields.length}:${items}:${this.ctx.page ?? ''}`;
   }
 
   /**
@@ -566,8 +569,8 @@ class Renderer implements Incremental {
   /** A grouped unit whose sections hold the `view` of their blocks: a kpi in an FAQ answer has its value like any other. */
   private viewUnit(unit: Exclude<Unit, { kind: 'block' }>): Exclude<Unit, { kind: 'block' }> {
     const sec = (s: Section): Section => {
-      const body = s.body.map((b) => this.view(b));
-      return body.every((b, i) => b === s.body[i]) ? s : { h: s.h, body };
+      const body = mapSame(s.body, (b) => this.view(b));
+      return body === s.body ? s : { h: s.h, body };
     };
     if (unit.kind === 'rec') return { ...unit, section: sec(unit.section) };
     if (unit.kind === 'proscons') return { ...unit, pro: sec(unit.pro), con: sec(unit.con) };
@@ -583,15 +586,15 @@ class Renderer implements Incremental {
       return copy;
     }
     if (b.type === 'grid') {
-      const kids = b.children.map((c) => this.view(c));
-      return kids.every((k, i) => k === b.children[i]) ? b : { ...b, children: kids };
+      const kids = mapSame(b.children, (c) => this.view(c));
+      return kids === b.children ? b : { ...b, children: kids };
     }
     if (b.type === 'cards') {
-      const items = b.items.map((c) => {
-        const kids = c.blocks.map((k) => this.view(k));
-        return kids.every((k, i) => k === c.blocks[i]) ? c : { ...c, blocks: kids };
+      const items = mapSame(b.items, (c) => {
+        const kids = mapSame(c.blocks, (k) => this.view(k));
+        return kids === c.blocks ? c : { ...c, blocks: kids };
       });
-      return items.every((c, i) => c === b.items[i]) ? b : { ...b, items };
+      return items === b.items ? b : { ...b, items };
     }
     return b;
   }
@@ -605,7 +608,7 @@ class Renderer implements Incremental {
     // dropped again below, and added for good when the run is pushed.
     const known = this.fields.length;
     let gained = false;
-    for (const b of blocks) gained = this.takeQuestions(b, true) || gained;
+    for (const b of blocks) gained = this.takeQuestions(b) || gained;
     if (!this.begun && shown.length) ops.push(...this.begin(shown[0]).ops);
     else if (gained) ops.push({ op: 'style', css: this.style(this.startMeta) });
     this.mode = 'tail';
@@ -653,7 +656,6 @@ class Renderer implements Incremental {
    */
   private grew(set: BucketBlock): Pushed {
     const out = new Batch();
-    if (this.counted.has(set)) this.countItems(set);
     const u = this.byBucket.get(set);
     if (u) {
       out.add(this.redraw(u));
@@ -730,9 +732,7 @@ class Renderer implements Incremental {
     this.seq++;
     // What is held can group now: every section has ended.
     this.commit(batch, true);
-    // The fields and the title are final: an `export` drawn before the last of them is drawn again. A consumer that did not pass on the
-    // updates of a bucket set has not had the running count of its items kept, so it is made right here.
-    for (const set of this.counted.keys()) this.countItems(set);
+    // The fields and the title are final: an `export` drawn before the last of them is drawn again.
     this.reexport(batch);
     // Diagrams still being written are finished: the stream ended.
     for (const d of this.byDiagram.keys()) if (!this.sealed.has(d)) batch.add(this.seal(d));

@@ -783,3 +783,9 @@ test('every code carries the detail keys the spec lists', () => {
     assert.deepEqual(Object.keys(d.detail ?? {}).toSorted(), keys.toSorted(), code);
   }
 });
+
+test('a quoted option value before the | may hold a pipe', () => {
+  const [p] = only<ParamBlock>('param x unit="km|h" | Speed | 5 0 10 1', 'param');
+  assert.equal(p.unit, 'km|h');
+  assert.equal(p.text, 'Speed');
+});

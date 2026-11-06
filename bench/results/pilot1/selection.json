@@ -1,0 +1,30 @@
+{
+ "seed": 20261106,
+ "method": "random.Random(seed).sample(ids,2) per category, categories in sorted order, from tasks 71-130",
+ "tasks": {
+  "architecture": [
+   71,
+   72
+  ],
+  "comparison": [
+   78,
+   79
+  ],
+  "data": [
+   81,
+   111
+  ],
+  "prose": [
+   90,
+   117
+  ],
+  "runbook": [
+   91,
+   125
+  ],
+  "status": [
+   97,
+   99
+  ]
+ }
+}
