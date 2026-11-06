@@ -888,3 +888,11 @@ pairings `editorial`, `clean`, `book`, `modern`, `humanist`, `slab`, palettes `p
 skill's on-demand `meta.md` (D72) after its probe round; the model reference (D55) does not change. Lands only after D67 step 1 records
 its verdict; the token rename re-runs the D66 artifact check and the D68 stream bench as release gates. Internal spec
 `lede-page-identity`, lede-lang/meta.
+
+## D75. A minor release is cut on purpose with a `chore(minor):` commit
+D54 makes every commit type a patch and caps a breaking marker at a minor, and the commit rules forbid breaking markers, so the
+version could only ever move by patches. The owner chose to ship the shell editor words and the streaming renderer (#31) as
+0.2.0. `.releaserc.json` gains one rule: a commit typed `chore` with the scope `minor` is a minor release. The commit that asks for
+a minor says so in its subject (`chore(minor): cut 0.2.0 ...`) and its body names what the minor carries; everything else stays a
+patch, breaking markers stay forbidden, and every version stays `0.x` (`scripts/set-version.ts` and D61 unchanged). The npm
+step is unchanged: `release.yml` stages the version and the owner approves it (D58, D61).
