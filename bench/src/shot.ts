@@ -4,23 +4,42 @@ import { resolve } from 'node:path';
 import { existsSync, readdirSync } from 'node:fs';
 import { homedir } from 'node:os';
 
-/** CHROME, else the Claude Code cloud image path, else the newest Playwright Chromium in the macOS cache. */
-export function resolveChrome(): string | null {
-  const cloud = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
-  if (process.env.CHROME) return existsSync(process.env.CHROME) ? process.env.CHROME : null;
-  if (existsSync(cloud)) return cloud;
-  const cache = `${homedir()}/Library/Caches/ms-playwright`;
+/**
+ * The newest Playwright Chromium under `cache` for the given per-build paths, or null. Builds are numbered, so the highest number is the
+ * newest; a `chromium_headless_shell-*` or `ffmpeg-*` directory next to them is not a Chromium and does not match.
+ */
+function newestChromium(cache: string, paths: string[]): string | null {
   if (!existsSync(cache)) return null;
   for (const d of readdirSync(cache)
     .filter((n) => /^chromium-\d+$/.test(n))
-    .sort()
-    .reverse()) {
-    for (const arch of ['chrome-mac-arm64', 'chrome-mac-x64', 'chrome-mac']) {
-      const p = `${cache}/${d}/${arch}/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing`;
+    .sort((a, b) => Number(b.slice(9)) - Number(a.slice(9)))) {
+    for (const rel of paths) {
+      const p = `${cache}/${d}/${rel}`;
       if (existsSync(p)) return p;
     }
   }
   return null;
+}
+
+/**
+ * CHROME, else the Claude Code cloud image path, else the newest Playwright Chromium in the Linux cache (PLAYWRIGHT_BROWSERS_PATH or
+ * ~/.cache/ms-playwright, which is where `playwright-core install chromium` puts it on a CI runner), else the one in the macOS cache.
+ */
+export function resolveChrome(): string | null {
+  const cloud = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
+  if (process.env.CHROME) return existsSync(process.env.CHROME) ? process.env.CHROME : null;
+  if (existsSync(cloud)) return cloud;
+  // Older Playwright builds unpack to chrome-linux/, newer ones to chrome-linux64/. A PLAYWRIGHT_BROWSERS_PATH that holds no Chromium
+  // (it can also be "0", meaning inside node_modules) does not stop the lookup in the default cache.
+  for (const cache of [process.env.PLAYWRIGHT_BROWSERS_PATH, `${homedir()}/.cache/ms-playwright`]) {
+    const linux = cache ? newestChromium(cache, ['chrome-linux/chrome', 'chrome-linux64/chrome']) : null;
+    if (linux) return linux;
+  }
+  const app = 'Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing';
+  return newestChromium(
+    `${homedir()}/Library/Caches/ms-playwright`,
+    ['chrome-mac-arm64', 'chrome-mac-x64', 'chrome-mac'].map((arch) => `${arch}/${app}`),
+  );
 }
 /** Re-exported so tests outside bench/ can drive Chromium without their own playwright-core dependency. */
 export { chromium };

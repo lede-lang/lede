@@ -1,16 +1,15 @@
 // Vocabulary v0.4, stream S3 (diagrams): the flow `legend` key and the sequence-diagram defect fixes.
 // `legend` is set on the parsed block here, so these tests do not depend on the parser emitting it.
-// The browser checks skip, with a message, when no Chromium resolves (set CHROME to one).
+// The browser checks skip, with a message, when no Chromium resolves (set CHROME to one); they fail instead when CI or LEDE_REQUIRE_CHROME is set.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createRequire } from 'node:module';
-import { mkdtempSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { parse, type DiagramBlock, type LedeDocument } from '@lede-lang/core';
 import { render } from '../src/index.ts';
 import { css } from '../src/theme.ts';
-import { resolveChrome } from '../../../bench/src/shot.ts';
+import { AXE, browserTest, type Browser } from './chrome.ts';
 
 const doc = (src: string, legend?: boolean): LedeDocument => {
   const d = parse(src);
@@ -222,10 +221,6 @@ test('sequence: desktop text is no longer under 10px in the css (tags 10, number
 
 // ------------------------------------------------------------------ browser
 
-const chrome = resolveChrome();
-const skip = chrome ? false : 'no Chromium found: set CHROME to run the v0.4 diagram layout checks';
-if (skip) console.warn(`v04 diagram layout checks skipped: ${skip}`);
-
 // Runs in the page. Visible svgs only; text measured after the viewBox scale; clipping is against the svg's own box
 // (the viewBox clips there, inside the figure's padding).
 const MEASURE = `(() => {
@@ -293,24 +288,9 @@ net: users -x- db : never direct`,
   'seq-four-notes': { src: FOUR },
 };
 
-async function check(): Promise<string[]> {
-  const req = createRequire(new URL('../../../bench/package.json', import.meta.url));
-  // playwright-core lives in bench/ (not a dependency of this package), so it is typed here by the little used.
-  interface Pg {
-    goto(u: string, o: object): Promise<unknown>;
-    waitForTimeout(n: number): Promise<void>;
-    evaluate(f: string): Promise<unknown>;
-    addScriptTag(o: { path: string }): Promise<unknown>;
-  }
-  interface Br {
-    newContext(o: object): Promise<{ newPage(): Promise<Pg>; close(): Promise<void> }>;
-    close(): Promise<void>;
-  }
-  const { chromium } = req('playwright-core') as { chromium: { launch(o: { executablePath: string }): Promise<Br> } };
-  const axe = req.resolve('axe-core/axe.min.js');
+async function check(browser: Browser): Promise<string[]> {
   const dir = mkdtempSync(join(tmpdir(), 'lede-v04-dg-'));
   const bad: string[] = [];
-  const browser = await chromium.launch({ executablePath: chrome! });
   try {
     for (const [name, f] of Object.entries(FIXTURES)) {
       const d = parse(`@title ${name}\n# ${name}\n\n${f.src}`);
@@ -335,7 +315,7 @@ async function check(): Promise<string[]> {
           const over = (await page.evaluate('document.scrollingElement.scrollWidth - innerWidth')) as number;
           if (over > 0) bad.push(`${at}: page scrolls sideways by ${over}px`);
         }
-        await page.addScriptTag({ path: axe });
+        await page.addScriptTag({ path: AXE });
         const n = (await page.evaluate(
           `axe.run(document, { runOnly: ['color-contrast'] }).then(r => r.violations.reduce((a, v) => a + v.nodes.length, 0))`,
         )) as number;
@@ -344,26 +324,30 @@ async function check(): Promise<string[]> {
       }
     }
   } finally {
-    await browser.close();
+    rmSync(dir, { recursive: true, force: true });
   }
   return bad;
 }
 
 let measured: Promise<string[]> | undefined;
-const findings = () => (measured ??= check());
+const findings = (browser: Browser) => (measured ??= check(browser));
 
-test(
+browserTest(
   'browser: v0.4 flow keys and sequence diagrams have no overflow, no clipped text, text of 11px or more on phones',
-  { skip, timeout: 300_000 },
-  async () => {
-    const bad = (await findings()).filter((f) => !/contrast violation/.test(f));
+  async (browser) => {
+    const bad = (await findings(browser)).filter((f) => !/contrast violation/.test(f));
     assert.deepEqual(bad, []);
   },
+  300_000,
 );
 
-test('browser: zero contrast violations in both themes at both widths', { skip, timeout: 300_000 }, async () => {
-  assert.deepEqual(
-    (await findings()).filter((f) => /contrast violation/.test(f)),
-    [],
-  );
-});
+browserTest(
+  'browser: zero contrast violations in both themes at both widths',
+  async (browser) => {
+    assert.deepEqual(
+      (await findings(browser)).filter((f) => /contrast violation/.test(f)),
+      [],
+    );
+  },
+  300_000,
+);

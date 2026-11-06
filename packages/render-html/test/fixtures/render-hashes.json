@@ -814,9 +814,9 @@
     "artifact": "10af5a92c2d9bede57e29951ab2babaf624902dc8b5afbf2557a01be9fa76bc2"
   },
   "conformance/errors/e06-misc.lede": {
-    "ordinary": "58944c5e9a8a6220afab842e0346cc173e3c99163d3bea21b6f1fb2d9843cdb7",
+    "ordinary": "f4ceac0ac7abfcd03c1f862efd1c177183a7194573c583e9e786cb2d9bd87341",
     "fragment": "627daf7558bddf04ceea596390b2d054b03ba7f3d3e1eb9e9a635a1cf9188f08",
-    "artifact": "72952095a2a07cac205f4673b276c1cf9ae40fc90e265a20f504c7f846f06452"
+    "artifact": "2fcd1e11c13c694cbed381f5dcde40eaf3cd95ddf47c6002bc3d9be3ab5dfc5c"
   },
   "conformance/errors/e07-chart-mark.lede": {
     "ordinary": "8e51966e7f01d86eec06ee32e1d41307ffe54b6ca4f0f9e1b7206ed57fb08413",
@@ -879,14 +879,14 @@
     "artifact": "fd0384fddf79022933f3fb11a2b8aedeac17eacc19ee60dac5b94fc344f3be96"
   },
   "conformance/errors/e19-accent.lede": {
-    "ordinary": "5201b414af67084e8dc7ed7a1540284a0cc20a5b62d610b9fc2214bf62da9a31",
+    "ordinary": "27513e4cba26af8e25ec6af1324a46c9f823355dcdda8db243136266fb91b228",
     "fragment": "01b029b8b8ed8a2b614de0b32550d630bb8493d19ec5b7b130e809c448961b32",
-    "artifact": "9efed566d80215994d8dcdf8bb8fbce4ceb4b23b81d974dd6bb6cdea7a27c1e9"
+    "artifact": "a2489219738cd8e60eee523e6c9d3d2649fd59696eda1481c52da7af393354a2"
   },
   "conformance/errors/e20-accent-dark.lede": {
-    "ordinary": "f435dc6d7ae0c8b4bd15e22d91a7c14edeb559807024bfb1563275696c286887",
+    "ordinary": "8281aff87b12ccb62d3e5bda11daf622aa75d405a5a9337a18ddfe6fc1d1db48",
     "fragment": "b16f82b32f21181a8033a54a1bf493915cdbc3775213fcf8b9dc4626c0ec172c",
-    "artifact": "56efdec012ffcff2fa13a8c49f4e3011f3832e6f73eb874bc6a5d1c5490d764b"
+    "artifact": "1b61a59c4a1b213c2a5a37811d607ba0999d8673532bcd3fda394ad17ae329b7"
   },
   "conformance/errors/e21-question-prose.lede": {
     "ordinary": "5a96461ba626b2ecce23054b47216c52109037a358b23b1349aaa7a71fba2888",
@@ -1050,6 +1050,17 @@
     "fragment": "9eb94cb16585410f2bbbdc4ceb3a415e348fd7aa7f95143c3ec53ab7af55ea9b",
     "artifact": "37af2dc6af1a3bdd083fcc8edbaed42e8b24b8a35a87df66d9f1f7948adae3d0",
     "shell": "04027d27e70f2285b7f55ce91c850e0b80e1260fedaf221d75165921843eca2c"
+  },
+  "conformance/errors/e44-choose-control.lede": {
+    "ordinary": "0455dbb23ada6c112abb59f3a9c1777e35e098d604b9b42dda9c2ff4bafe4d88",
+    "fragment": "53c8a3cb67f74223f3bdfc9943edcbb3a37749e648587fd668f80bd7d45b1a29",
+    "artifact": "851c8baa90ee06c6b1f4021aa79298ba7d72ecdad8b7549343157d89ab83d530",
+    "shell": "1bdccf298e9d5427ec69dff5566fe4afed88018d7e3c7c73be91fdc103181721"
+  },
+  "conformance/errors/e45-heading-skip.lede": {
+    "ordinary": "496e3691e45c061001b395538176246ab803fcbc601cb89f6d8dfbdefb313685",
+    "fragment": "3682727788a71ffcdc19981691e8848e58d52bc4b3e4a6bfc6df57454f1783d7",
+    "artifact": "1b25fe3d186e79bf7b88eae6f0139c92e1f5da211b995cb0a83ce700a4dc73a2"
   },
   "examples/article/01-options-grid.lede": {
     "ordinary": "f6dd15e31e5c9617c27e800aa362f66f89e1fd0ba22c5779af5159aab9119c39",

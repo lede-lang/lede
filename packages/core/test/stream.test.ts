@@ -60,6 +60,24 @@ test('partial last line is not parsed until its newline arrives', () => {
   assert.deepEqual(s.snapshot().blocks, [{ type: 'heading', level: 1, text: 'Hello', line: 1 }]);
 });
 
+test('heading-skip compares a heading with the one before it whatever the chunking, and a fence in between hides nothing', () => {
+  const src = '# A\n\n```\n### not a heading\n```\n\n### B\n\n## C\n\n#### D\n';
+  const want = parse(src).diagnostics;
+  assert.deepEqual(
+    want.map((d) => [d.code, d.line, d.detail ?? null]),
+    [
+      ['heading-skip', 7, { from: 1, to: 3 }],
+      ['heading-skip', 11, { from: 2, to: 4 }],
+      ['heading-depth', 11, null],
+    ],
+  );
+  for (const n of [1, 2, 3, 7, 50]) {
+    const s = new LedeStream();
+    for (let i = 0; i < src.length; i += n) s.write(src.slice(i, i + n));
+    assert.deepEqual(s.end().diagnostics, want, `chunks of ${n}`);
+  }
+});
+
 test('a half-written bucket set is its legend and the items so far; each item line adds one and nothing drawn moves (Req 7.1)', () => {
   const s = new LedeStream();
   const emitted = s.write('bucket triage | Now, Next, Later | Where does each go?\n');

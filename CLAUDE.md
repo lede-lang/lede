@@ -24,7 +24,7 @@ node --test packages/core/test/fix.test.ts          # one test file
 node --test --test-name-pattern="<part of the test name>" packages/core/test/grammar.test.ts   # one test by name
 UPDATE=1 node --test conformance/run.test.ts        # regenerate expected AST/diagnostics after an intentional parser change; review the JSON diff
 node scripts/gen-runtime.ts                         # after editing packages/render-html/src/shell-runtime.js: rewrites shell-runtime.ts and the hash file (--check fails when stale)
-LEDE_REQUIRE_CHROME=1 pnpm test                     # make the question words', the editor words' and the shell's browser checks fail, not skip, without Chromium (CI sets CI, which does the same)
+LEDE_REQUIRE_CHROME=1 pnpm test                     # make every browser check (question words, editor words, shell, layout, chart, diagram and block batteries) fail, not skip, without Chromium (CI sets CI, which does the same, and points CHROME at the Chromium it installs)
 pnpm lede build page.lede -o page.html   # also: check [--json] [--fix], watch, ast
 ```
 

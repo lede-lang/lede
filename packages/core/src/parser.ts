@@ -28,7 +28,7 @@ import type {
 } from './ast.ts';
 import { num, parseInlineCsv, parseOpts, pipeOutsideQuotes, readQuoted, tokens } from './lex.ts';
 import { EMPTY, FIELD_KINDS, NOT_CHOSEN, SLOT_RE } from './fields.ts';
-import { AA_NON_TEXT, AA_TEXT, HEX_COLOR, accentContrast } from './contrast.ts';
+import { AA_NON_TEXT, AA_TEXT, HEX_COLOR, accentContrast, accentTheme } from './contrast.ts';
 import { browserUrl, imageSrcKind } from './url.ts';
 import { walkBlocks } from './walk.ts';
 
@@ -84,6 +84,12 @@ const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const KEYWORD_RE = new RegExp(`^(${KEYWORDS.join('|')})(?=\\s|$)`);
 /** A question or diagram name. */
 const NAME_RE = /^[A-Za-z][\w-]*$/;
+/**
+ * A C0 control character other than tab (U+0009), as a `choose` option may not hold one (spec §4.18): a browser rewrites NUL and CR in a form
+ * control's value, so the exported option would differ from the written one. DEL and the C1 controls are not C0 and stay allowed.
+ */
+// oxlint-disable-next-line no-control-regex -- the control characters are what this pattern is for
+const OPTION_CONTROL_RE = /[\u0000-\u0008\u000A-\u001F]/;
 /** The same pattern as source text, to build the line shapes below from. */
 const NAME = NAME_RE.source.slice(1, -1);
 /**
@@ -216,6 +222,8 @@ export class LedeParser {
   /** The open alt/opt frame per sequence diagram, and how many rejected nested openers still await their `end`. */
   private seq = new WeakMap<DiagramBlock, { open: DiagramFrame | null; skip: number }>();
   private lineNo = 0;
+  /** The level of the last heading as written (before the `heading-depth` clamp), for W `heading-skip`; null before the first. */
+  private lastHeading: number | null = null;
   /** The `export` formats seen, to the line that first used each. */
   private exports = new Map<string, number>();
   /**
@@ -338,7 +346,7 @@ export class LedeParser {
   private checkAccent(): void {
     const accent = this.doc.meta.accent;
     if (!this.accentAt || !accent) return;
-    const theme = this.doc.meta.theme === 'dark' ? 'dark' : 'light';
+    const theme = accentTheme(this.doc.meta.theme);
     const c = accentContrast(accent, theme);
     if (!c || c.ratio >= AA_TEXT) return;
     const surface = { bg: 'page background', surface: 'card surface', 'accent-tint': 'note tint' }[c.against] ?? c.against;
@@ -346,7 +354,7 @@ export class LedeParser {
     this.diag(
       'warning',
       'accent-contrast',
-      `@accent ${accent} has ${c.ratio}:1 contrast on the ${theme} theme's ${surface}; link and label text needs ${AA_TEXT}:1${marks}. Pick a ${theme === 'dark' ? 'lighter' : 'darker'} accent`,
+      `@accent ${accent} has ${c.ratio}:1 contrast on the ${theme} theme's ${surface}; link and label text needs ${AA_TEXT}:1${marks}; the house accent is used. Pick a ${theme === 'dark' ? 'lighter' : 'darker'} accent`,
       this.accentAt.line,
       this.accentAt.col,
       { accent, theme, ratio: c.ratio, required: AA_TEXT, against: c.against },
@@ -396,6 +404,18 @@ export class LedeParser {
     if (h && (h[2] !== undefined || s.length === h[1].length)) {
       this.flush();
       let level = h[1].length;
+      // Compared at the level as written, before the clamp below; the first heading of a document has nothing above it.
+      if (this.lastHeading !== null && level > this.lastHeading + 1) {
+        this.diag(
+          'warning',
+          'heading-skip',
+          `heading jumps from ${'#'.repeat(this.lastHeading)} to ${h[1]}; use ${'#'.repeat(this.lastHeading + 1)}, one level deeper than the heading above`,
+          L,
+          lead + 1,
+          { from: this.lastHeading, to: level },
+        );
+      }
+      this.lastHeading = level;
       if (level > 3) {
         this.diag('warning', 'heading-depth', `headings go to ### (got ${h[1]}); write ###, which is how it renders`, L, lead + 1);
         level = 3;
@@ -721,6 +741,15 @@ export class LedeParser {
         this.diag('warning', 'choose-dup-option', `choose ${name} lists "${t}" twice; the first is kept`, L, col, { option: t });
       }
       const options = list.items;
+      const dirty = options.find((opt) => OPTION_CONTROL_RE.test(opt));
+      if (dirty !== undefined) {
+        const char = `U+${dirty.charCodeAt(dirty.search(OPTION_CONTROL_RE)).toString(16).toUpperCase().padStart(4, '0')}`;
+        fail(
+          'choose-options',
+          `choose ${name}: option ${JSON.stringify(dirty)} holds the control character ${char}; remove it (a tab is the only control character an option may hold)`,
+          { kind: 'control', option: dirty, char },
+        );
+      }
       const reserved = options.includes(NOT_CHOSEN);
       if (list.empty || reserved || options.length < 2) {
         const why = list.empty
