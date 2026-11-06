@@ -896,3 +896,15 @@ version could only ever move by patches. The owner chose to ship the shell edito
 a minor says so in its subject (`chore(minor): cut 0.2.0 ...`) and its body names what the minor carries; everything else stays a
 patch, breaking markers stay forbidden, and every version stays `0.x` (`scripts/set-version.ts` and D61 unchanged). The npm
 step is unchanged: `release.yml` stages the version and the owner approves it (D58, D61).
+
+## D76. A `choose` option may not hold a C0 control character; the page is told, not silently changed
+Issue #22: `choose c | a<NUL>x, b` kept the NUL in the option, the browser rewrote it to U+FFFD in the radio's `value`, and the
+runtime then exported a string that the reference serializer, given the AST, would not write. Two ways out were open, strip or
+reject. Stripping would change what the writer wrote without saying so, and `lede check` is the place a slip like this is meant to
+surface, so the parser refuses: E `choose-options` with `detail {kind:"control", option, char}` for any option that holds a C0
+control other than tab (U+0000 to U+0008, U+000A to U+001F), checked on the options as kept, after trimming, so a vertical tab, form
+feed or carriage return at an option's edge goes with the rest of the trim and only one inside an option is an error. DEL and the C1
+controls are not C0 and stay allowed (they survive a form control's value). Question names already reject controls through
+`NAME_RE`, and an editor-word line whose name holds one stays prose, so names are unchanged. The change touches one diagnostic,
+documented in §9 with a conformance case (`e44-choose-control`); no render output of an error-free page moves. Open: bucket set
+names reach a radio `value` in the same way and have not been checked for the same defect.
