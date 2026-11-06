@@ -16,7 +16,7 @@
 // {id, category, brief} with ids <stem>-01 to <stem>-12, one paragraph each, and no technology word (check-tasks.ts's list). Run it
 // before the briefs are hashed; the orchestrator does not read them (D34). Exit 1 on any failure.
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { fix, KEYWORDS, parse, type Diagnostic } from '@lede-lang/core';
 import { sha256Hex } from './count-text.ts';
@@ -361,7 +361,8 @@ export function runProbe(run: ProbeRun): number {
     }
     if (existsSync(dir)) for (const f of readdirSync(dir)) if (!ids.some((id) => f === `${id}.lede`)) unexpected.push(`${tier}/${f}`);
   }
-  const reference = join('skill', 'lede', 'reference', `${run.stem}.md`);
+  // The file that was scored, relative to the repository, so the same input gives the same bytes wherever the repository sits.
+  const reference = relative(REPO, run.reference);
   const result = summarize(
     {
       stem: run.stem,

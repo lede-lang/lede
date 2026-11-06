@@ -927,5 +927,6 @@ controls are not C0 and stay allowed (they survive a form control's value). Ques
 `NAME_RE`, and an editor-word line whose name holds one stays prose, so names are unchanged. The change touches one diagnostic,
 documented in §9 with a conformance case (`e44-choose-control`); no render output of an error-free page moves. Rejected: carrying
 the options in the shell's data block and exporting by index, as `bucket` items are, which would let NUL and CR survive exactly but
-changes the runtime's hash and spends room under its 8 KiB cap for a case no real page has. Open: bucket set names reach a radio
-`value` in the same way and have not been checked for the same defect.
+changes the runtime's hash and spends room under its 8 KiB cap for a case no real page has. Bucket set names are not affected: a
+set name reaches a radio `value` too, but the runtime reads a bucket pick by index into the data block, so the export keeps the name
+exactly (checked with a NUL in a set name).
