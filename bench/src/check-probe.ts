@@ -15,11 +15,11 @@
 // --briefs checks only the structure of briefs.json and prints counts and the rule that failed, never a brief: twelve entries
 // {id, category, brief} with ids <stem>-01 to <stem>-12, one paragraph each, and no technology word (check-tasks.ts's list). Run it
 // before the briefs are hashed; the orchestrator does not read them (D34). Exit 1 on any failure.
-import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { fix, KEYWORDS, parse, type Diagnostic } from '@lede-lang/core';
+import { sha256Hex } from './count-text.ts';
 import { TECHNOLOGY } from './task-vocab.ts';
 
 export const TIERS = ['haiku', 'sonnet', 'opus'] as const;
@@ -64,10 +64,9 @@ function pageLines(src: string): string[] {
  * ending in `=`, a token that starts with it (`kpi ... spark=...`).
  */
 export function usedWords(src: string, teaches: string[]): string[] {
-  const lines = pageLines(src);
-  const uses = (word: string, line: string): boolean => {
+  const lines = pageLines(src).map((line) => ({ line, tokens: line.split(/\s+/) }));
+  const uses = (word: string, { line, tokens: [first, ...rest] }: (typeof lines)[number]): boolean => {
     if (word.startsWith('@')) return line === word || line.startsWith(`${word} `);
-    const [first, ...rest] = line.split(/\s+/);
     if (word === 'at') return first === 'at' && /^\d+$/.test(rest[0] ?? '');
     if (first === word) return true;
     return (KEYWORDS as readonly string[]).includes(first) && rest.some((t) => t === word || (word.endsWith('=') && t.startsWith(word)));
@@ -95,8 +94,10 @@ export interface PageScore {
 /** Scores one page's text. */
 export function scorePage(src: string, teaches: string[]): PageScore {
   const errors = parse(src).diagnostics.filter((d) => d.severity === 'error');
+  // `fix` re-parses after every pass, so its `remaining` is exactly what parsing `repaired.src` gives (the as-written diagnostics when
+  // no repair was made); every severity is in it, not only the errors.
   const repaired = fix(src);
-  const after = parse(repaired.src).diagnostics;
+  const after = repaired.remaining;
   const remaining = after.filter((d) => d.severity === 'error');
   return {
     firstTry: errors.length === 0,
@@ -277,8 +278,6 @@ export interface ProbeRun {
   err: (text: string) => void;
 }
 
-const sha256 = (data: Uint8Array) => createHash('sha256').update(data).digest('hex');
-
 /** Reads briefs.json; null (after printing why) when it is missing or not JSON. */
 function readBriefs(run: ProbeRun): { bytes: Buffer; data: unknown } | null {
   const path = join(run.dir, 'briefs.json');
@@ -299,7 +298,7 @@ export function runBriefs(run: ProbeRun): number {
   const n = Array.isArray(briefs.data) ? briefs.data.length : 0;
   run.out(`briefs ${join(run.dir, 'briefs.json')}: ${n} of ${BRIEFS} entries\n`);
   for (const p of problems) run.out(`FAIL ${p}\n`);
-  run.out(problems.length > 0 ? `${problems.length} failures\n` : `sha256 ${sha256(briefs.bytes)}\nok\n`);
+  run.out(problems.length > 0 ? `${problems.length} failures\n` : `sha256 ${sha256Hex(briefs.bytes)}\nok\n`);
   return problems.length > 0 ? 1 : 0;
 }
 
@@ -368,7 +367,7 @@ export function runProbe(run: ProbeRun): number {
       stem: run.stem,
       reference,
       prompt: run.prompt,
-      briefs: { sha256: sha256(briefs.bytes), count: ids.length },
+      briefs: { sha256: sha256Hex(briefs.bytes), count: ids.length },
       teaches,
       unexpected: unexpected.toSorted(),
     },

@@ -3,24 +3,23 @@
 // and is only compared here. The checks that need a count, a table or a frozen prompt that does not exist yet skip with a message
 // and start to run when it does; the checks themselves are exercised on synthetic text so they are not untested until then.
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { test } from 'node:test';
-import { META_KEYS, parse } from '@lede-lang/core';
+import { KEYWORDS, META_KEYS, parse } from '@lede-lang/core';
+import { teachesOf } from '../../../bench/src/check-probe.ts';
+import { type BudgetEntry, parseBudgets, referenceFiles, sha256Hex, WRITER_MODELS } from '../../../bench/src/count-text.ts';
 
 const ROOT = new URL('../../../', import.meta.url).pathname;
 const REFERENCE = join(ROOT, 'skill', 'lede', 'reference');
 const SKILL = join(ROOT, 'skill', 'lede', 'SKILL.md');
 const PROMPTS = join(ROOT, 'bench', 'prompts');
 const CLI = join(ROOT, 'packages', 'cli', 'src', 'cli.ts');
-const MODELS = ['claude-haiku-5-5', 'claude-sonnet-5-5', 'claude-opus-5-5'];
 
 const read = (path: string) => readFileSync(path, 'utf8');
-const sha256 = (data: string | Uint8Array) => createHash('sha256').update(data).digest('hex');
 const files = readdirSync(REFERENCE);
-const mdFiles = files.filter((f) => f.endsWith('.md')).toSorted();
+const mdFiles = referenceFiles(REFERENCE);
 
 // ----------------------------------------------------------------------------------------------------------------- the checks
 
@@ -66,15 +65,15 @@ function scan(text: string): Scan {
 
 const TEACHES = /^<!-- teaches: (.+) -->$/;
 
-/** The words in the `teaches` comment on the last line, or null when the last line is not one. */
-function teachesOf(text: string): string[] | null {
-  const m = TEACHES.exec(text.replace(/\n$/, '').split('\n').at(-1) ?? '');
-  return m ? m[1].split(',').map((w) => w.trim()) : null;
-}
+/**
+ * The editor words are keyword lines only with a name and a `|` after it, so `toggle the flag on Monday` stays prose; `fold` and `swatch`
+ * are page words the parser does not list in KEYWORDS.
+ */
+const EDITOR_WORDS = ['param', 'toggle', 'bucket', 'template', 'preset'];
+const PLAIN_WORDS = [...KEYWORDS.filter((k) => !EDITOR_WORDS.includes(k)), 'fold', 'swatch'];
 
 /** A line a Lede page would read as a block, which a `text` fence (an export, a non-Lede sample) must not hold. */
-const KEYWORD_LINE =
-  /^(?:(?:data|chart|table|kpi|diagram|image|grid|cards|step|ask|choose|confirm|export|fold|swatch)(?=\s|$)|at \d|(?:param|toggle|bucket|template|preset)\s+\S+\s*\|)/;
+const KEYWORD_LINE = new RegExp(`^(?:(?:${PLAIN_WORDS.join('|')})(?=\\s|$)|at \\d|(?:${EDITOR_WORDS.join('|')})\\s+\\S+\\s*\\|)`);
 
 /** What is wrong with a file's fences: unclosed ones, Lede fences that do not parse, `text` fences that hold a keyword line. */
 function fenceProblems(text: string): string[] {
@@ -94,11 +93,16 @@ function fenceProblems(text: string): string[] {
   return problems;
 }
 
-/** The `--flag`s `lede --help` prints. */
+let flagsOfHelp: Set<string> | undefined;
+
+/** The `--flag`s `lede --help` prints; the CLI runs once for the whole file. */
 function helpFlags(): Set<string> {
-  const run = spawnSync(process.execPath, [CLI, '--help'], { encoding: 'utf8' });
-  assert.equal(run.status, 0, run.stderr);
-  return new Set(run.stdout.match(/--[a-z][a-z-]*/g));
+  if (flagsOfHelp === undefined) {
+    const run = spawnSync(process.execPath, [CLI, '--help'], { encoding: 'utf8' });
+    assert.equal(run.status, 0, run.stderr);
+    flagsOfHelp = new Set(run.stdout.match(/--[a-z][a-z-]*/g));
+  }
+  return flagsOfHelp;
 }
 
 /** What is wrong with a file's prose: renderer internals, a key that is not a meta key, a flag the CLI does not have. */
@@ -129,24 +133,21 @@ function shapeProblems(text: string): string[] {
   if (!/^# Lede reference: \S/.test(lines[0])) problems.push('the first line is not "# Lede reference: <topic>"');
   if (!lines[1] || /^(#|\||---)/.test(lines[1])) problems.push('the second line is not the scope sentence');
   if (!text.endsWith('-->\n') || text.endsWith('\n\n')) problems.push('the file does not end with the teaches comment and one newline');
-  const words = teachesOf(text);
-  if (words === null) problems.push('the last line is not "<!-- teaches: a, b, c -->"');
-  else if (words.some((w) => w === '')) problems.push('the teaches comment has an empty word');
+  // teachesOf is null for a last line that is not the comment and for one with an empty word; the two are told apart here.
+  if (teachesOf(text) === null)
+    problems.push(
+      TEACHES.test(text.replace(/\n$/, '').split('\n').at(-1) ?? '')
+        ? 'the teaches comment has an empty word'
+        : 'the last line is not "<!-- teaches: a, b, c -->"',
+    );
   if ((text.match(/<!-- teaches:/g) ?? []).length > 1) problems.push('more than one teaches comment');
   return problems;
 }
 
-// One file's line in budgets.json: three states (see count-text.ts), or invalid with the reason.
-interface Entry {
-  budget: number;
-  count: number | null;
-  counts: Record<string, number>;
-  sha256: string;
-  measured: string;
-}
+// One file's line in budgets.json (BudgetEntry): three states (see count-text.ts), or invalid with the reason.
 type State = { state: 'reserved' | 'unmeasured' | 'measured' } | { state: 'invalid'; why: string };
 
-function classify(e: Entry): State {
+function classify(e: BudgetEntry): State {
   const no = (why: string): State => ({ state: 'invalid', why });
   const bare = Object.keys(e.counts).length === 0;
   if (!Number.isInteger(e.budget) || e.budget <= 0) return no('budget is not a positive integer');
@@ -160,24 +161,24 @@ function classify(e: Entry): State {
   if (!/^[0-9a-f]{64}$/.test(e.sha256)) return no('a measured entry without the sha256 of the file');
   if (!/^\d{4}-\d{2}-\d{2}$/.test(e.measured)) return no('a measured entry without an ISO date');
   const keys = Object.keys(e.counts).toSorted();
-  if (keys.join() !== MODELS.toSorted().join())
+  if (keys.join() !== WRITER_MODELS.toSorted().join())
     return no(`counts is keyed by ${keys.join(', ') || 'nothing'}, not the three writer models`);
-  const counts = MODELS.map((m) => e.counts[m]);
+  const counts = WRITER_MODELS.map((m) => e.counts[m] ?? 0);
   if (!counts.every((n) => Number.isInteger(n) && n > 0)) return no('a count in counts is not a positive whole number');
   if (e.count !== Math.max(...counts)) return no(`count ${e.count} is not the largest of counts (${Math.max(...counts)})`);
   return { state: 'measured' };
 }
 
 /** What is wrong with one file's entry given the file's bytes (null: the file is absent). */
-function budgetProblems(entry: Entry | undefined, bytes: Buffer | null): string[] {
+function budgetProblems(entry: BudgetEntry | undefined, bytes: Buffer | null): string[] {
   if (!entry) return bytes ? ['the file has no entry in budgets.json'] : [];
   const s = classify(entry);
   if (s.state === 'invalid') return [s.why];
   if (bytes === null) return s.state === 'reserved' ? [] : ['an entry that is not reserved belongs to a file that is gone'];
   if (s.state === 'reserved') return ['the file exists but its entry is still a reserved budget; count it with `count-text.ts --budgets`'];
   const problems: string[] = [];
-  if (sha256(bytes) !== entry.sha256)
-    problems.push(`sha256 ${sha256(bytes)} is not the recorded ${entry.sha256}: the file changed without a recount`);
+  if (sha256Hex(bytes) !== entry.sha256)
+    problems.push(`sha256 ${sha256Hex(bytes)} is not the recorded ${entry.sha256}: the file changed without a recount`);
   if (s.state === 'measured' && (entry.count ?? 0) > entry.budget) problems.push(`count ${entry.count} is over the budget ${entry.budget}`);
   return problems;
 }
@@ -259,7 +260,7 @@ test('the folder holds only .md files and budgets.json, and each .md starts with
 });
 
 test('budgets.json: every file has an entry, a reserved entry has no file, the hash matches the file and a measured count holds', (t) => {
-  const budgets = JSON.parse(read(join(REFERENCE, 'budgets.json'))) as Record<string, Entry>;
+  const budgets = parseBudgets(read(join(REFERENCE, 'budgets.json')));
   const names = new Set([...Object.keys(budgets), ...mdFiles]);
   const unmeasured: string[] = [];
   for (const name of [...names].toSorted()) {
@@ -299,7 +300,7 @@ test('the table names exactly the files in the folder, each row has three cells 
 test("each Tokens cell is within 10 of the file's recorded count", (t) => {
   const table = referenceTable(read(SKILL));
   if (table === null) return t.skip('SKILL.md has no "## Reference files" section yet');
-  const budgets = JSON.parse(read(join(REFERENCE, 'budgets.json'))) as Record<string, Entry>;
+  const budgets = parseBudgets(read(join(REFERENCE, 'budgets.json')));
   const skipped: string[] = [];
   for (const row of table.rows) {
     const file = /^`reference\/([^`]+)`$/.exec(row[0])?.[1] ?? '';
@@ -440,11 +441,11 @@ test('shapeProblems: title, scope line, teaches comment as the single last line'
 test('classify: reserved, not counted and measured entries are accepted; everything else says why not', () => {
   const sum = 'a'.repeat(64);
   const counts = { 'claude-haiku-5-5': 180, 'claude-sonnet-5-5': 201, 'claude-opus-5-5': 190 };
-  const base: Entry = { budget: 250, count: 0, counts: {}, sha256: '', measured: '' };
+  const base: BudgetEntry = { budget: 250, count: 0, counts: {}, sha256: '', measured: '' };
   assert.equal(classify(base).state, 'reserved');
   assert.equal(classify({ ...base, count: null, sha256: sum }).state, 'unmeasured');
   assert.equal(classify({ ...base, count: 201, counts, sha256: sum, measured: '2026-11-06' }).state, 'measured');
-  const why = (e: Partial<Entry>) => JSON.stringify(classify({ ...base, ...e }));
+  const why = (e: Partial<BudgetEntry>) => JSON.stringify(classify({ ...base, ...e }));
   assert.match(why({ count: null }), /without the sha256/);
   assert.match(why({ sha256: sum }), /reserved/);
   assert.match(why({ count: 201, counts, sha256: sum }), /ISO date/);
@@ -459,9 +460,9 @@ test('classify: reserved, not counted and measured entries are accepted; everyth
 test('budgetProblems: a file needs an entry, a hash that matches and a count within budget; an unmeasured file skips only the count', () => {
   const bytes = Buffer.from('text\n');
   const counts = { 'claude-haiku-5-5': 180, 'claude-sonnet-5-5': 201, 'claude-opus-5-5': 190 };
-  const reserved: Entry = { budget: 250, count: 0, counts: {}, sha256: '', measured: '' };
-  const uncounted: Entry = { budget: 250, count: null, counts: {}, sha256: sha256(bytes), measured: '' };
-  const measured: Entry = { budget: 250, count: 201, counts, sha256: sha256(bytes), measured: '2026-11-06' };
+  const reserved: BudgetEntry = { budget: 250, count: 0, counts: {}, sha256: '', measured: '' };
+  const uncounted: BudgetEntry = { budget: 250, count: null, counts: {}, sha256: sha256Hex(bytes), measured: '' };
+  const measured: BudgetEntry = { budget: 250, count: 201, counts, sha256: sha256Hex(bytes), measured: '2026-11-06' };
   assert.deepEqual(budgetProblems(reserved, null), [], 'a reserved entry for a file not written yet');
   assert.match(budgetProblems(reserved, bytes).join(), /still a reserved budget/);
   assert.match(budgetProblems(undefined, bytes).join(), /no entry/);

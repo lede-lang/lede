@@ -741,16 +741,14 @@ export class LedeParser {
         this.diag('warning', 'choose-dup-option', `choose ${name} lists "${t}" twice; the first is kept`, L, col, { option: t });
       }
       const options = list.items;
-      for (const option of options) {
-        const control = OPTION_CONTROL_RE.exec(option)?.[0];
-        if (control === undefined) continue;
-        const char = `U+${control.charCodeAt(0).toString(16).toUpperCase().padStart(4, '0')}`;
+      const dirty = options.find((opt) => OPTION_CONTROL_RE.test(opt));
+      if (dirty !== undefined) {
+        const char = `U+${dirty.charCodeAt(dirty.search(OPTION_CONTROL_RE)).toString(16).toUpperCase().padStart(4, '0')}`;
         fail(
           'choose-options',
-          `choose ${name}: option ${JSON.stringify(option)} holds the control character ${char}; remove it (a tab is the only control character an option may hold)`,
-          { kind: 'control', option, char },
+          `choose ${name}: option ${JSON.stringify(dirty)} holds the control character ${char}; remove it (a tab is the only control character an option may hold)`,
+          { kind: 'control', option: dirty, char },
         );
-        break;
       }
       const reserved = options.includes(NOT_CHOSEN);
       if (list.empty || reserved || options.length < 2) {

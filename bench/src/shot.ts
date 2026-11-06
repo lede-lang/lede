@@ -35,18 +35,11 @@ export function resolveChrome(): string | null {
     const linux = cache ? newestChromium(cache, ['chrome-linux/chrome', 'chrome-linux64/chrome']) : null;
     if (linux) return linux;
   }
-  const cache = `${homedir()}/Library/Caches/ms-playwright`;
-  if (!existsSync(cache)) return null;
-  for (const d of readdirSync(cache)
-    .filter((n) => /^chromium-\d+$/.test(n))
-    .sort()
-    .reverse()) {
-    for (const arch of ['chrome-mac-arm64', 'chrome-mac-x64', 'chrome-mac']) {
-      const p = `${cache}/${d}/${arch}/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing`;
-      if (existsSync(p)) return p;
-    }
-  }
-  return null;
+  const app = 'Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing';
+  return newestChromium(
+    `${homedir()}/Library/Caches/ms-playwright`,
+    ['chrome-mac-arm64', 'chrome-mac-x64', 'chrome-mac'].map((arch) => `${arch}/${app}`),
+  );
 }
 /** Re-exported so tests outside bench/ can drive Chromium without their own playwright-core dependency. */
 export { chromium };
