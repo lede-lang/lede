@@ -1,0 +1,7 @@
+{"judge":"claude-sonnet-5-5","prompt":"judge-v2.md"}
+{"pair":"P001","winner":"LEFT","reason":"The left pipeline diagram is compact with readable labels at both widths, while the right one has a huge empty on-site box and tiny monospace labels."}
+{"pair":"P002","winner":"RIGHT","reason":"The right sequence diagram has larger readable labels, colored alt branches and a legend, whereas the left uses tiny monospace text that breaks into awkward wraps on the phone."}
+{"pair":"P008","winner":"RIGHT","reason":"The right page's option cards, annotated cost bars and operations chart present the comparison more clearly than the left page's dense table."}
+{"pair":"P009","winner":"RIGHT","reason":"The right page's plan cards and annotated premium bars read well, while the left phone chart drops the SQS with SNS axis label."}
+{"pair":"P011","winner":"RIGHT","reason":"The right page's donut, labelled bars and busiest-month callout are more polished, despite the awkward 'wrap-/up' title break."}
+{"pair":"P020","winner":"RIGHT","reason":"The left schedule timeline has circle markers overlapping the item titles, a visible defect, while the right schedule is clean at both widths."}

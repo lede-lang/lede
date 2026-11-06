@@ -1,0 +1,173 @@
+{
+ "tiers": {
+  "sonnet": {
+   "tasks": 12,
+   "baseline": {
+    "pairs": 12,
+    "unjudged": 0,
+    "samples": {
+     "s1": {
+      "wins": 2,
+      "ties": 0,
+      "pairs": 12
+     },
+     "s2": {
+      "wins": 2,
+      "ties": 0,
+      "pairs": 12
+     }
+    },
+    "winOrTie": 16.666666666666668,
+    "tieRate": 0.0
+   },
+   "primary": {
+    "pairs": 12,
+    "unjudged": 0,
+    "samples": {
+     "s1": {
+      "wins": 2,
+      "ties": 0,
+      "pairs": 12
+     },
+     "s2": {
+      "wins": 1,
+      "ties": 0,
+      "pairs": 12
+     }
+    },
+    "winOrTie": 12.5,
+    "tieRate": 0.0
+   },
+   "hint": {
+    "pairs": 1,
+    "unjudged": 0,
+    "samples": {
+     "s1": {
+      "wins": 0,
+      "ties": 0,
+      "pairs": 1
+     },
+     "s2": {
+      "wins": 0,
+      "ties": 0,
+      "pairs": 1
+     }
+    },
+    "winOrTie": 0.0,
+    "tieRate": 0.0,
+    "hintedPages": 1,
+    "baselineSameTasks": {
+     "pairs": 1,
+     "unjudged": 0,
+     "samples": {
+      "s1": {
+       "wins": 0,
+       "ties": 0,
+       "pairs": 1
+      },
+      "s2": {
+       "wins": 0,
+       "ties": 0,
+       "pairs": 1
+      }
+     },
+     "winOrTie": 0.0,
+     "tieRate": 0.0
+    }
+   },
+   "delta": {
+    "primary": {
+     "points": -4.166666666666667,
+     "pairs": -0.5
+    },
+    "hint": {
+     "points": 0.0,
+     "pairs": 0.0,
+     "against": "baseline on the hint arm's tasks"
+    },
+    "hintVsAllBaseline": {
+     "points": -16.666666666666668,
+     "pairs": -0.16666666666666666
+    }
+   },
+   "extraTokens": {
+    "primary": {
+     "pages": 0,
+     "median": null,
+     "p90": null,
+     "mean": null
+    },
+    "hint": {
+     "pages": 0,
+     "median": null,
+     "p90": null,
+     "mean": null
+    },
+    "revisedHtml": {
+     "pages": 0,
+     "median": null,
+     "p90": null,
+     "mean": null
+    }
+   },
+   "revisedHtmlToLedeRatio": null,
+   "qualifiers": {
+    "medianExtraAtMost150": false,
+    "ratioAtLeast4": false
+   }
+  }
+ },
+ "selfAgreement": {
+  "base": {
+   "agree": 12,
+   "pairs": 12,
+   "rate": 1.0,
+   "perTier": {
+    "sonnet": {
+     "agree": 12,
+     "pairs": 12
+    }
+   }
+  },
+  "primary": {
+   "agree": 11,
+   "pairs": 12,
+   "rate": 0.9166666666666666,
+   "perTier": {
+    "sonnet": {
+     "agree": 11,
+     "pairs": 12
+    }
+   }
+  },
+  "hint": {
+   "agree": 1,
+   "pairs": 1,
+   "rate": 1.0,
+   "perTier": {
+    "sonnet": {
+     "agree": 1,
+     "pairs": 1
+    }
+   }
+  }
+ },
+ "reJudge": [],
+ "judge": [
+  {
+   "judge": "claude-sonnet-5-5",
+   "prompt": "judge-v2.md"
+  }
+ ],
+ "warnings": [],
+ "verdict": "renderer reading",
+ "costly": false,
+ "label": "renderer reading",
+ "bars": {
+  "writerReadingPoints": 10,
+  "hintPoints": 10,
+  "primaryUnderPoints": 5,
+  "rendererMaxPoints": 5
+ },
+ "unresolved": "per tier, from the owner's spot check (task 5); not computed here"
+}

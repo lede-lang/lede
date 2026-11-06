@@ -1,0 +1,7 @@
+{"judge":"claude-sonnet-5-5","prompt":"judge-v2.md"}
+{"pair":"P007","winner":"RIGHT","reason":"LEFT has garbled check labels (\"CHECK 1Have\") and a tiny unreadable trigger chart on phone, while RIGHT is clean, with a readable bar chart and a clear step table."}
+{"pair":"P008","winner":"LEFT","reason":"RIGHT has tall empty deal cards and duplicated deal details on desktop, plus a truncated \"3.4 / 5.\" on LEFT is minor against RIGHT's layout flaws and a bare \"60\" tile."}
+{"pair":"P009","winner":"RIGHT","reason":"LEFT's line chart has overlapping labels near the 500 axis and an oversized chart, while RIGHT's category cards and timeline are clearer and the phone layout is a cleaner stack."}
+{"pair":"P010","winner":"LEFT","reason":"RIGHT has large empty cards on desktop with charts squeezed into a narrow column, whereas LEFT is dense, well organized and legible with stacked charts drawn to scale."}
+{"pair":"P011","winner":"LEFT","reason":"RIGHT's \"What stays\" table is broken into a single scrambled column, while LEFT is a cohesive, warm letter with clear charts and a good timeline."}
+{"pair":"P012","winner":"RIGHT","reason":"RIGHT's day-by-day cards and clock-scaled timeline are richer and readable on desktop, though its phone timeline is tiny and a checklist label is garbled, but LEFT's Gantt chart is plainer and the page is sparser."}

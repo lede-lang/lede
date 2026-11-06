@@ -1,0 +1,7 @@
+{"judge":"claude-sonnet-5-5","prompt":"judge-v2.md"}
+{"pair":"P001","winner":"RIGHT","reason":"The right diagram is larger and cleaner, with readable labels, and its to-scale retention and outage bars are clearer than the left's long empty connector and tiny diagram text."}
+{"pair":"P002","winner":"RIGHT","reason":"The right sequence diagram is larger and colour-coded, with readable labels on the approve and decline branches, and it adds a side-by-side outcomes summary that the left's small monospace diagram lacks."}
+{"pair":"P003","winner":"RIGHT","reason":"The right page draws the plan cards and to-scale charts more clearly, highlights the recommended plan, and has a stronger hierarchy than the left's plain table and grey bars."}
+{"pair":"P004","winner":"LEFT","reason":"The left page has a compact comparison and a clear recommendation, while the right has very tall mostly empty columns that stretch wider than the content and a redundant nested comparison."}
+{"pair":"P005","winner":"LEFT","reason":"The left page is more polished, with a hero, a donut, a timeline strip and a clear age-group breakdown, despite a small 'Sep 12' label overlap on the phone."}
+{"pair":"P006","winner":"RIGHT","reason":"The right page has a to-scale schedule timeline, a prominent date and time card, and icon cards that fit warmly and read well on phone, while the left's small diagram and plain lists are weaker."}

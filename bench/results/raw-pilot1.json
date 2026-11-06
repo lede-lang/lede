@@ -1,0 +1,5518 @@
+[
+ {
+  "key": "sonnet/B/100",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "100",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list"
+  ],
+  "srcBytes": 6169,
+  "tokens": 2326,
+  "pageBytes": 6169,
+  "ttfmrTokens": 1478,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/101",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "101",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 10943,
+  "tokens": 3993,
+  "pageBytes": 10943,
+  "ttfmrTokens": 1594,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/102",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "102",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 13070,
+  "tokens": 4844,
+  "pageBytes": 13070,
+  "ttfmrTokens": 1884,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/103",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "103",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 9711,
+  "tokens": 3649,
+  "pageBytes": 9711,
+  "ttfmrTokens": 1659,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/104",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "104",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 10409,
+  "tokens": 3808,
+  "pageBytes": 10409,
+  "ttfmrTokens": 1602,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/105",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "105",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 12187,
+  "tokens": 4448,
+  "pageBytes": 12187,
+  "ttfmrTokens": 1680,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9130434782608696,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "10 seconds",
+    "30 seconds"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/106",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "106",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 8449,
+  "tokens": 3041,
+  "pageBytes": 8449,
+  "ttfmrTokens": 1537,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/107",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "107",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 10396,
+  "tokens": 3862,
+  "pageBytes": 10396,
+  "ttfmrTokens": 1701,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/108",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "108",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 9994,
+  "tokens": 3790,
+  "pageBytes": 9994,
+  "ttfmrTokens": 1675,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/109",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "109",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 8203,
+  "tokens": 2963,
+  "pageBytes": 8203,
+  "ttfmrTokens": 1564,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/110",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "110",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 11713,
+  "tokens": 4480,
+  "pageBytes": 11713,
+  "ttfmrTokens": 1861,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.875,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "180 to 240",
+    "310 to 380",
+    "1350 to 1600"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/111",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "111",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 12498,
+  "tokens": 4688,
+  "pageBytes": 12498,
+  "ttfmrTokens": 2026,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/112",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "112",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 11933,
+  "tokens": 4363,
+  "pageBytes": 11933,
+  "ttfmrTokens": 1991,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/113",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "113",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list"
+  ],
+  "srcBytes": 10500,
+  "tokens": 4047,
+  "pageBytes": 10500,
+  "ttfmrTokens": 1500,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/114",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "114",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 12902,
+  "tokens": 4975,
+  "pageBytes": 12902,
+  "ttfmrTokens": 1840,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/115",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "115",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 11196,
+  "tokens": 4372,
+  "pageBytes": 11196,
+  "ttfmrTokens": 1962,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.935483870967742,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "988 million",
+    "1639 million"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/116",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "116",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 5554,
+  "tokens": 2069,
+  "pageBytes": 5554,
+  "ttfmrTokens": 1237,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9545454545454546,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2026-11-01"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/117",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "117",
+  "category": "prose",
+  "needs": [
+   "callout"
+  ],
+  "srcBytes": 5146,
+  "tokens": 1772,
+  "pageBytes": 5146,
+  "ttfmrTokens": 1044,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.7142857142857143,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2026-12-23",
+    "2027-01-01",
+    "2027-12-31",
+    "2026-11-28",
+    "2026-12-19",
+    "2026-12-22"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/118",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "118",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 6687,
+  "tokens": 2346,
+  "pageBytes": 6687,
+  "ttfmrTokens": 1409,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/119",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "119",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 7787,
+  "tokens": 2888,
+  "pageBytes": 7787,
+  "ttfmrTokens": 1862,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.75,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2026-11-05",
+    "2026-11-06",
+    "2026-10-26",
+    "2026-11-09",
+    "2026-11-13",
+    "2026-12-18",
+    "38 volunteers"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/120",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "120",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 12710,
+  "tokens": 4803,
+  "pageBytes": 12710,
+  "ttfmrTokens": 2002,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/121",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "121",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout",
+   "table"
+  ],
+  "srcBytes": 8217,
+  "tokens": 3027,
+  "pageBytes": 8217,
+  "ttfmrTokens": 1362,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/122",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "122",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout",
+   "table"
+  ],
+  "srcBytes": 7079,
+  "tokens": 2590,
+  "pageBytes": 7079,
+  "ttfmrTokens": 1467,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9615384615384616,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2 percent"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/123",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "123",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 6206,
+  "tokens": 2320,
+  "pageBytes": 6206,
+  "ttfmrTokens": 1466,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/124",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "124",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 6436,
+  "tokens": 2299,
+  "pageBytes": 6436,
+  "ttfmrTokens": 1432,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/125",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "125",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout",
+   "table"
+  ],
+  "srcBytes": 6599,
+  "tokens": 2434,
+  "pageBytes": 6599,
+  "ttfmrTokens": 1543,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/126",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "126",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 10090,
+  "tokens": 3892,
+  "pageBytes": 10090,
+  "ttfmrTokens": 1710,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 1,
+  "overflow-light": 0,
+  "contrast-400-light": 1,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.84375,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1.58 million",
+    "2.10 million",
+    "0.93 million",
+    "0.39 million",
+    "0.58 million"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/127",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "127",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 8821,
+  "tokens": 3403,
+  "pageBytes": 8821,
+  "ttfmrTokens": 1693,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8611111111111112,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "9.1 million",
+    "14.2 million",
+    "2026-10-23",
+    "2026-10-27",
+    "2026-10-26"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/128",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "128",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 8557,
+  "tokens": 3281,
+  "pageBytes": 8557,
+  "ttfmrTokens": 1612,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/129",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "129",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 8385,
+  "tokens": 3364,
+  "pageBytes": 8385,
+  "ttfmrTokens": 1596,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 1,
+  "overflow-light": 0,
+  "contrast-400-light": 1,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9459459459459459,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "41.5 million",
+    "27.8 million"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/130",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "130",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 8582,
+  "tokens": 3396,
+  "pageBytes": 8582,
+  "ttfmrTokens": 1567,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9705882352941176,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "14 of 18"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/71",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "71",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 11353,
+  "tokens": 4271,
+  "pageBytes": 11353,
+  "ttfmrTokens": 1922,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9615384615384616,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "24 shards"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/72",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "72",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 11293,
+  "tokens": 4262,
+  "pageBytes": 11293,
+  "ttfmrTokens": 2124,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/73",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "73",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 10649,
+  "tokens": 3912,
+  "pageBytes": 10649,
+  "ttfmrTokens": 1855,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/74",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "74",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table"
+  ],
+  "srcBytes": 9314,
+  "tokens": 3557,
+  "pageBytes": 9314,
+  "ttfmrTokens": 1681,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8888888888888888,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "8 vCores",
+    "5 minutes",
+    "1 hour"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/75",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "75",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 14397,
+  "tokens": 5524,
+  "pageBytes": 14397,
+  "ttfmrTokens": 2175,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/76",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "76",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 9198,
+  "tokens": 3538,
+  "pageBytes": 9198,
+  "ttfmrTokens": 1904,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/77",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "77",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 13746,
+  "tokens": 5439,
+  "pageBytes": 13746,
+  "ttfmrTokens": 2069,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/78",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "78",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 10156,
+  "tokens": 3781,
+  "pageBytes": 10156,
+  "ttfmrTokens": 1958,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8571428571428572,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "14 dollars",
+    "28 dollars",
+    "41 dollars",
+    "63 dollars"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/79",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "79",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 11720,
+  "tokens": 4291,
+  "pageBytes": 11720,
+  "ttfmrTokens": 2088,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/80",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "80",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 12844,
+  "tokens": 4934,
+  "pageBytes": 12844,
+  "ttfmrTokens": 2188,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 2,
+  "overflow-light": 0,
+  "contrast-400-light": 2,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.5172413793103448,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2640000",
+    "2415000",
+    "2875000",
+    "2400000",
+    "7400000",
+    "7050000",
+    "7900000",
+    "6800000",
+    "7150000",
+    "4760000",
+    "4635000",
+    "5025000",
+    "4160000",
+    "4750000"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/81",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "81",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table"
+  ],
+  "srcBytes": 7851,
+  "tokens": 2909,
+  "pageBytes": 7851,
+  "ttfmrTokens": 1529,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9523809523809523,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2026-09-12"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/82",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "82",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 8150,
+  "tokens": 3029,
+  "pageBytes": 8150,
+  "ttfmrTokens": 1415,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 1,
+  "overflow-light": 0,
+  "contrast-400-light": 1,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9393939393939394,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2026-10-17",
+    "2026-10-08"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/83",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "83",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list"
+  ],
+  "srcBytes": 11319,
+  "tokens": 4563,
+  "pageBytes": 11319,
+  "ttfmrTokens": 1975,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9777777777777777,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2026-10-10"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/84",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "84",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 10893,
+  "tokens": 3969,
+  "pageBytes": 10893,
+  "ttfmrTokens": 2145,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8928571428571429,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1.2",
+    "2026-12-01",
+    "2027-02-28"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/85",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "85",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list"
+  ],
+  "srcBytes": 11679,
+  "tokens": 4562,
+  "pageBytes": 11679,
+  "ttfmrTokens": 2218,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 2,
+  "overflow-light": 0,
+  "contrast-400-light": 2,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.825,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1842000",
+    "1756000",
+    "1968000",
+    "2134000",
+    "7700000",
+    "1117000",
+    "2026-05-18"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/86",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "86",
+  "category": "prose",
+  "needs": [
+   "list",
+   "table"
+  ],
+  "srcBytes": 6506,
+  "tokens": 2447,
+  "pageBytes": 6506,
+  "ttfmrTokens": 1780,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.7931034482758621,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2026-11-14",
+    "2027-05-09",
+    "18 dollars",
+    "14 dollars",
+    "120 dollars",
+    "2026-11-13"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/87",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "87",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 7531,
+  "tokens": 2929,
+  "pageBytes": 7531,
+  "ttfmrTokens": 1676,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2027-01-01",
+    "500 dollars",
+    "40 dollars",
+    "250 dollars"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/88",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "88",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 7251,
+  "tokens": 2230,
+  "pageBytes": 7251,
+  "ttfmrTokens": 1082,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.7916666666666666,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2025-04-07",
+    "2026-10-02",
+    "4 people",
+    "2 more people",
+    "6 months"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/89",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "89",
+  "category": "prose",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 9133,
+  "tokens": 3530,
+  "pageBytes": 9133,
+  "ttfmrTokens": 1836,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 3,
+  "overflow-light": 0,
+  "contrast-400-light": 2,
+  "overflow-dark": 0,
+  "contrast-400-dark": 1,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "30 m3",
+    "72 m3",
+    "2 dollars"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/90",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "90",
+  "category": "prose",
+  "needs": [
+   "list",
+   "table"
+  ],
+  "srcBytes": 6383,
+  "tokens": 2455,
+  "pageBytes": 6383,
+  "ttfmrTokens": 1538,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 5,
+  "overflow-light": 0,
+  "contrast-400-light": 5,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.6799999999999999,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2026-11-12",
+    "17:30",
+    "19:30",
+    "17:50",
+    "18:30",
+    "18:45",
+    "19:15",
+    "2027-01-12"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/91",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "91",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 7346,
+  "tokens": 2688,
+  "pageBytes": 7346,
+  "ttfmrTokens": 1678,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/92",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "92",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 7715,
+  "tokens": 2863,
+  "pageBytes": 7715,
+  "ttfmrTokens": 1841,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.967741935483871,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "95 minutes"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/93",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "93",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 8372,
+  "tokens": 3068,
+  "pageBytes": 8372,
+  "ttfmrTokens": 2029,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.92,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2 and 8 degrees",
+    "12 degrees"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/94",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "94",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 11560,
+  "tokens": 4171,
+  "pageBytes": 11560,
+  "ttfmrTokens": 2119,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8333333333333334,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "3 days",
+    "4 days",
+    "6 days",
+    "2 days"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/95",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "95",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 7626,
+  "tokens": 2695,
+  "pageBytes": 7626,
+  "ttfmrTokens": 1598,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/96",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "96",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 8311,
+  "tokens": 3146,
+  "pageBytes": 8311,
+  "ttfmrTokens": 1996,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 1,
+  "overflow-light": 0,
+  "contrast-400-light": 1,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/97",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "97",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 10139,
+  "tokens": 3956,
+  "pageBytes": 10139,
+  "ttfmrTokens": 1931,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.926829268292683,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "84000",
+    "900000",
+    "750000"
+   ]
+  }
+ },
+ {
+  "key": "sonnet/B/98",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "98",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 8151,
+  "tokens": 3127,
+  "pageBytes": 8151,
+  "ttfmrTokens": 1799,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet/B/99",
+  "model": "sonnet",
+  "arm": "B",
+  "id": "99",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 9900,
+  "tokens": 3885,
+  "pageBytes": 9900,
+  "ttfmrTokens": 1705,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/100",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "100",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list"
+  ],
+  "srcBytes": 863,
+  "tokens": 300,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 40333,
+  "ttfmrTokens": 70,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/101",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "101",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1913,
+  "tokens": 480,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 50830,
+  "ttfmrTokens": 72,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/102",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "102",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1577,
+  "tokens": 405,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 45860,
+  "ttfmrTokens": 70,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9545454545454546,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "99 percent"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/103",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "103",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1804,
+  "tokens": 468,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 48941,
+  "ttfmrTokens": 78,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/104",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "104",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1702,
+  "tokens": 451,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 56384,
+  "ttfmrTokens": 69,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/105",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "105",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1799,
+  "tokens": 450,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 56378,
+  "ttfmrTokens": 70,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/106",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "106",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1667,
+  "tokens": 457,
+  "errors": [],
+  "warnings": [
+   "10:1 grid-unfilled grid expected 3 blocks but a heading came after 0; to set ### sections side by side, write `cards` instead"
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 41245,
+  "ttfmrTokens": 86,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.7083333333333333,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "85 million",
+    "310 million",
+    "940 million",
+    "22 million",
+    "31 million",
+    "44 million",
+    "50 percent"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/107",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "107",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1700,
+  "tokens": 501,
+  "errors": [],
+  "warnings": [
+   "12:1 grid-unfilled grid expected 3 blocks but a heading came after 0; to set ### sections side by side, write `cards` instead"
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 44953,
+  "ttfmrTokens": 100,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/108",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "108",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1280,
+  "tokens": 371,
+  "errors": [],
+  "warnings": [
+   "10:7 table-option ignored table option \"vendors\"; an inline table has no name: write `table = ...`, or `data vendors = ...` then `table vendors`"
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 45438,
+  "ttfmrTokens": 74,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/109",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "109",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1606,
+  "tokens": 435,
+  "errors": [],
+  "warnings": [
+   "12:1 grid-unfilled grid expected 3 blocks but a heading came after 0; to set ### sections side by side, write `cards` instead"
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 41429,
+  "ttfmrTokens": 88,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9565217391304348,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "18 percent"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/110",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "110",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1442,
+  "tokens": 419,
+  "errors": [],
+  "warnings": [
+   "10:1 grid-unfilled grid expected 3 blocks but a heading came after 0; to set ### sections side by side, write `cards` instead"
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 44616,
+  "ttfmrTokens": 103,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.75,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "180 to 240",
+    "310 to 380",
+    "1350 to 1600",
+    "72000 to 96000",
+    "124000 to 152000",
+    "540000 to 640000"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/111",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "111",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1770,
+  "tokens": 547,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 53404,
+  "ttfmrTokens": 68,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9615384615384616,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "5420"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/112",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "112",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1816,
+  "tokens": 500,
+  "errors": [
+   "22:7 unknown-column districts has no column customers sort (columns: district, customers, events, minutes, target); did you mean customers?"
+  ],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 49520,
+  "ttfmrTokens": 74,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9705882352941176,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "1.8 million"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/113",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "113",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1444,
+  "tokens": 447,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 50739,
+  "ttfmrTokens": 83,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/114",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "114",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 2263,
+  "tokens": 735,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 59307,
+  "ttfmrTokens": 70,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/115",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "115",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1418,
+  "tokens": 510,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 48098,
+  "ttfmrTokens": 71,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.7419354838709677,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "412 million",
+    "988 million",
+    "143 million",
+    "96 million",
+    "1639 million",
+    "3.9 million",
+    "3.1 million",
+    "21.3 million"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/116",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "116",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 1323,
+  "tokens": 386,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 40209,
+  "ttfmrTokens": 66,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9090909090909091,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "25 dollars",
+    "10 dollars"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/117",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "117",
+  "category": "prose",
+  "needs": [
+   "callout"
+  ],
+  "srcBytes": 1523,
+  "tokens": 425,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 39784,
+  "ttfmrTokens": 55,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8571428571428572,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "70 percent",
+    "20 percent",
+    "6 booksellers"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/118",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "118",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1580,
+  "tokens": 407,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 40191,
+  "ttfmrTokens": 84,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9285714285714286,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "30 to 60 minutes"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/119",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "119",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 1184,
+  "tokens": 371,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 40685,
+  "ttfmrTokens": 47,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9642857142857143,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "5 dollars"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/120",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "120",
+  "category": "prose",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1695,
+  "tokens": 502,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 41564,
+  "ttfmrTokens": 51,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8846153846153846,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "5.2 percent",
+    "1.5 percent",
+    "20 percent"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/121",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "121",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout",
+   "table"
+  ],
+  "srcBytes": 2025,
+  "tokens": 514,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 41384,
+  "ttfmrTokens": 115,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8461538461538461,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "92 percent",
+    "97 percent",
+    "100 percent",
+    "95 percent"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/122",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "122",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout",
+   "table"
+  ],
+  "srcBytes": 1722,
+  "tokens": 467,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 40904,
+  "ttfmrTokens": 115,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.7307692307692308,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2 percent",
+    "5 percent",
+    "10 percent",
+    "25 percent",
+    "50 percent",
+    "100 percent",
+    "1 percent"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/123",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "123",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1523,
+  "tokens": 413,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 40699,
+  "ttfmrTokens": 112,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8235294117647058,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "41 degrees",
+    "45 degrees",
+    "4 hours below 38 degrees"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/124",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "124",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1812,
+  "tokens": 448,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 40904,
+  "ttfmrTokens": 107,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/125",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "125",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout",
+   "table"
+  ],
+  "srcBytes": 1445,
+  "tokens": 387,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 41114,
+  "ttfmrTokens": 101,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8421052631578947,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "50 dollars",
+    "5 percent",
+    "10000 dollars"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/126",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "126",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1216,
+  "tokens": 402,
+  "errors": [],
+  "warnings": [
+   "24:5 kpi-bar bar needs a value that is a percent or a number from 0 to 100 (got \"$96,000\"); no bar drawn; make the value a percent from 0 to 100 and move $96,000 to the change field, or drop bar"
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 42245,
+  "ttfmrTokens": 68,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.71875,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "3.42 million",
+    "5.0 million",
+    "1.58 million",
+    "2.10 million",
+    "0.93 million",
+    "0.39 million",
+    "4.0 million",
+    "0.58 million",
+    "0.5 million"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/127",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "127",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1302,
+  "tokens": 397,
+  "errors": [],
+  "warnings": [
+   "8:5 kpi-bar bar needs a value that is a percent or a number from 0 to 100 (got \"74 of 120\"); no bar drawn; write the percent as the value: `kpi Lane-miles done | 61.7% | 74 of 120 | bar`",
+   "9:5 kpi-bar bar needs a value that is a percent or a number from 0 to 100 (got \"$9.1M of $14.2M\"); no bar drawn; write the percent as the value: `kpi Budget spent | 64.1% | $9.1M of $14.2M | bar`"
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 41776,
+  "ttfmrTokens": 68,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9444444444444444,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "9.1 million",
+    "14.2 million"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/128",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "128",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1217,
+  "tokens": 369,
+  "errors": [],
+  "warnings": [
+   "10:5 kpi-bar bar needs a value that is a percent or a number from 0 to 100 (got \"$1.74M\"); no bar drawn; write the percent as the value: `kpi Spent | 66.9% | $1.74M | bar`"
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 40893,
+  "ttfmrTokens": 57,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8620689655172413,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2.6 million",
+    "1.74 million",
+    "2.78 million",
+    "0.18 million"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/129",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "129",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1382,
+  "tokens": 435,
+  "errors": [],
+  "warnings": [
+   "9:5 kpi-bar bar needs a value that is a percent or a number from 0 to 100 (got \"60,480 of 96,000\"); no bar drawn; write the percent as the value: `kpi Panels installed | 63.0% | 60,480 of 96,000 | bar`",
+   "10:5 kpi-bar bar needs a value that is a percent or a number from 0 to 100 (got \"14 of 20\"); no bar drawn; write the percent as the value: `kpi Inverters installed | 70% | 14 of 20 | bar`",
+   "11:5 kpi-bar bar needs a value that is a percent or a number from 0 to 100 (got \"$27.8M of $41.5M\"); no bar drawn; write the percent as the value: `kpi Budget spent | 67.0% | $27.8M of $41.5M | bar`"
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 46860,
+  "ttfmrTokens": 63,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9459459459459459,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "41.5 million",
+    "27.8 million"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/130",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "130",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1415,
+  "tokens": 410,
+  "errors": [],
+  "warnings": [
+   "9:5 kpi-bar bar needs a value that is a percent or a number from 0 to 100 (got \"31 of 40\"); no bar drawn; write the percent as the value: `kpi Features complete | 77.5% | 31 of 40 | bar`"
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 47091,
+  "ttfmrTokens": 78,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/71",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "71",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1884,
+  "tokens": 512,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 53432,
+  "ttfmrTokens": 86,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/72",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "72",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1155,
+  "tokens": 339,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 51421,
+  "ttfmrTokens": 52,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/73",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "73",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list"
+  ],
+  "srcBytes": 1340,
+  "tokens": 366,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 52756,
+  "ttfmrTokens": 46,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/74",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "74",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table"
+  ],
+  "srcBytes": 1384,
+  "tokens": 442,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 53480,
+  "ttfmrTokens": 76,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.962962962962963,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "60 percent"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/75",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "75",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1405,
+  "tokens": 386,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 47456,
+  "ttfmrTokens": 68,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/76",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "76",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1483,
+  "tokens": 458,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 44436,
+  "ttfmrTokens": 101,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/77",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "77",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1420,
+  "tokens": 478,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 42093,
+  "ttfmrTokens": 62,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/78",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "78",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1371,
+  "tokens": 420,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 46255,
+  "ttfmrTokens": 54,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8571428571428572,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "14 dollars",
+    "28 dollars",
+    "41 dollars",
+    "63 dollars"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/79",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "79",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1753,
+  "tokens": 480,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 45807,
+  "ttfmrTokens": 120,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/80",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "80",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1586,
+  "tokens": 544,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 44898,
+  "ttfmrTokens": 73,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.6896551724137931,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2640000",
+    "2415000",
+    "2875000",
+    "2400000",
+    "7400000",
+    "7050000",
+    "7900000",
+    "6800000",
+    "7150000"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/81",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "81",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table"
+  ],
+  "srcBytes": 969,
+  "tokens": 282,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 43993,
+  "ttfmrTokens": 50,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/82",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "82",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1243,
+  "tokens": 409,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 52321,
+  "ttfmrTokens": 65,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/83",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "83",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list"
+  ],
+  "srcBytes": 1501,
+  "tokens": 563,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 53363,
+  "ttfmrTokens": 50,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/84",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "84",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1352,
+  "tokens": 395,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 52101,
+  "ttfmrTokens": 52,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9285714285714286,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "61",
+    "65.0"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/85",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "85",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "table",
+   "chart",
+   "list"
+  ],
+  "srcBytes": 1446,
+  "tokens": 549,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 54677,
+  "ttfmrTokens": 71,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.95,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "7700000",
+    "1117000"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/86",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "86",
+  "category": "prose",
+  "needs": [
+   "list",
+   "table"
+  ],
+  "srcBytes": 1221,
+  "tokens": 348,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 40398,
+  "ttfmrTokens": 56,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.896551724137931,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "18 dollars",
+    "14 dollars",
+    "120 dollars"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/87",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "87",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 1058,
+  "tokens": 288,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 39574,
+  "ttfmrTokens": 58,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "50 percent",
+    "500 dollars",
+    "40 dollars",
+    "250 dollars"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/88",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "88",
+  "category": "prose",
+  "needs": [
+   "list"
+  ],
+  "srcBytes": 4262,
+  "tokens": 1006,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 42676,
+  "ttfmrTokens": 134,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.875,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "21 percent",
+    "9 percent",
+    "31 percent"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/89",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "89",
+  "category": "prose",
+  "needs": [
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1451,
+  "tokens": 477,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 41041,
+  "ttfmrTokens": 66,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "80 percent",
+    "2 dollars",
+    "5 percent"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/90",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "90",
+  "category": "prose",
+  "needs": [
+   "list",
+   "table"
+  ],
+  "srcBytes": 962,
+  "tokens": 272,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 39807,
+  "ttfmrTokens": 48,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/91",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "91",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1590,
+  "tokens": 448,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 40492,
+  "ttfmrTokens": 76,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8333333333333334,
+   "missSections": [],
+   "missVisible": [
+    "certctl request --profile edge-prod",
+    "openssl s_client"
+   ],
+   "missValues": [
+    "0.1 percent",
+    "2 percent"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/92",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "92",
+  "category": "runbook",
+  "needs": [
+   "kpi",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1651,
+  "tokens": 464,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 41043,
+  "ttfmrTokens": 95,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.967741935483871,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "95 minutes"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/93",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "93",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1463,
+  "tokens": 382,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 41012,
+  "ttfmrTokens": 90,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.92,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2 and 8 degrees",
+    "12 degrees"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/94",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "94",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "table",
+   "callout"
+  ],
+  "srcBytes": 1773,
+  "tokens": 462,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 41508,
+  "ttfmrTokens": 69,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8333333333333334,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "3 days",
+    "4 days",
+    "6 days",
+    "2 days"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/95",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "95",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1437,
+  "tokens": 385,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 40185,
+  "ttfmrTokens": 80,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.95,
+   "missSections": [],
+   "missVisible": [
+    "kubectl -n dispatch get hpa dispatch-consumer"
+   ],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/96",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "96",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1141,
+  "tokens": 335,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 41043,
+  "ttfmrTokens": 151,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/97",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "97",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1209,
+  "tokens": 466,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 48164,
+  "ttfmrTokens": 127,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9512195121951219,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "900000",
+    "750000"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r6/C/98",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "98",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1171,
+  "tokens": 385,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 42620,
+  "ttfmrTokens": 96,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r6/C/99",
+  "model": "sonnet-r6",
+  "arm": "C",
+  "id": "99",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1150,
+  "tokens": 408,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 53834,
+  "ttfmrTokens": 120,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r97/B/111",
+  "model": "sonnet-r97",
+  "arm": "B",
+  "id": "111",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 21901,
+  "tokens": 8173,
+  "pageBytes": 21901,
+  "ttfmrTokens": 3716,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 1,
+  "overflow-light": 0,
+  "contrast-400-light": 1,
+  "overflow-dark": 0,
+  "contrast-400-dark": 1,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r97/B/117",
+  "model": "sonnet-r97",
+  "arm": "B",
+  "id": "117",
+  "category": "prose",
+  "needs": [
+   "callout"
+  ],
+  "srcBytes": 15098,
+  "tokens": 5311,
+  "pageBytes": 15098,
+  "ttfmrTokens": 1918,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.7142857142857143,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2026-12-23",
+    "2027-01-01",
+    "2027-12-31",
+    "2026-11-28",
+    "2026-12-19",
+    "2026-12-22"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r97/B/125",
+  "model": "sonnet-r97",
+  "arm": "B",
+  "id": "125",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout",
+   "table"
+  ],
+  "srcBytes": 12118,
+  "tokens": 4491,
+  "pageBytes": 12118,
+  "ttfmrTokens": 2392,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r97/B/71",
+  "model": "sonnet-r97",
+  "arm": "B",
+  "id": "71",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 16918,
+  "tokens": 6275,
+  "pageBytes": 16918,
+  "ttfmrTokens": 2598,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9615384615384616,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "24 shards"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r97/B/72",
+  "model": "sonnet-r97",
+  "arm": "B",
+  "id": "72",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 19918,
+  "tokens": 7311,
+  "pageBytes": 19918,
+  "ttfmrTokens": 3371,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r97/B/78",
+  "model": "sonnet-r97",
+  "arm": "B",
+  "id": "78",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 16633,
+  "tokens": 6178,
+  "pageBytes": 16633,
+  "ttfmrTokens": 2495,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8571428571428572,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "14 dollars",
+    "28 dollars",
+    "41 dollars",
+    "63 dollars"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r97/B/79",
+  "model": "sonnet-r97",
+  "arm": "B",
+  "id": "79",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 15970,
+  "tokens": 5828,
+  "pageBytes": 15970,
+  "ttfmrTokens": 2571,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r97/B/81",
+  "model": "sonnet-r97",
+  "arm": "B",
+  "id": "81",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table"
+  ],
+  "srcBytes": 13687,
+  "tokens": 5098,
+  "pageBytes": 13687,
+  "ttfmrTokens": 2867,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 3,
+  "overflow-light": 0,
+  "contrast-400-light": 3,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9523809523809523,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2026-09-12"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r97/B/90",
+  "model": "sonnet-r97",
+  "arm": "B",
+  "id": "90",
+  "category": "prose",
+  "needs": [
+   "list",
+   "table"
+  ],
+  "srcBytes": 10816,
+  "tokens": 4067,
+  "pageBytes": 10816,
+  "ttfmrTokens": 2150,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 8,
+  "overflow-light": 0,
+  "contrast-400-light": 8,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.64,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "2026-11-12",
+    "17:30",
+    "19:30",
+    "17:50",
+    "18:30",
+    "18:45",
+    "19:15",
+    "2027-01-12",
+    "60 spaces"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r97/B/91",
+  "model": "sonnet-r97",
+  "arm": "B",
+  "id": "91",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 18175,
+  "tokens": 6485,
+  "pageBytes": 18175,
+  "ttfmrTokens": 2490,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r97/B/97",
+  "model": "sonnet-r97",
+  "arm": "B",
+  "id": "97",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 14936,
+  "tokens": 5858,
+  "pageBytes": 14936,
+  "ttfmrTokens": 2456,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.926829268292683,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "84000",
+    "900000",
+    "750000"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r97/B/99",
+  "model": "sonnet-r97",
+  "arm": "B",
+  "id": "99",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 15905,
+  "tokens": 6103,
+  "pageBytes": 15905,
+  "ttfmrTokens": 2605,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r97/C/111",
+  "model": "sonnet-r97",
+  "arm": "C",
+  "id": "111",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 2848,
+  "tokens": 881,
+  "errors": [],
+  "warnings": [
+   "53:1 grid-unfilled grid expected 2 blocks but a new grid or cards came after 0; put 2 blocks between `grid` and the next heading, or lower the count"
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 68420,
+  "ttfmrTokens": 68,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r97/C/117",
+  "model": "sonnet-r97",
+  "arm": "C",
+  "id": "117",
+  "category": "prose",
+  "needs": [
+   "callout"
+  ],
+  "srcBytes": 2316,
+  "tokens": 663,
+  "errors": [
+   "44:89 data-row-width row \"They will move to Harbor Road,so the faces will be the same\" has 2 fields; _table1 has 1 columns (what stays); put a cell that contains , in double quotes (\"like, this\")",
+   "44:269 data-row-width row \"Move over automatically,with nothing for you to do\" has 2 fields; _table1 has 1 columns (what stays); put a cell that contains , in double quotes (\"like, this\")"
+  ],
+  "warnings": [
+   "36:1 grid-unfilled grid expected 3 blocks but a heading came after 0; to set ### sections side by side, write `cards` instead"
+  ],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 44987,
+  "ttfmrTokens": 144,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8571428571428572,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "70 percent",
+    "20 percent",
+    "6 booksellers"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r97/C/125",
+  "model": "sonnet-r97",
+  "arm": "C",
+  "id": "125",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout",
+   "table"
+  ],
+  "srcBytes": 1903,
+  "tokens": 524,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 46912,
+  "ttfmrTokens": 109,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8421052631578947,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "50 dollars",
+    "5 percent",
+    "10000 dollars"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r97/C/71",
+  "model": "sonnet-r97",
+  "arm": "C",
+  "id": "71",
+  "category": "architecture",
+  "needs": [
+   "diagram",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1943,
+  "tokens": 529,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 56134,
+  "ttfmrTokens": 86,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r97/C/72",
+  "model": "sonnet-r97",
+  "arm": "C",
+  "id": "72",
+  "category": "architecture",
+  "needs": [
+   "sequence",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1540,
+  "tokens": 440,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 53168,
+  "ttfmrTokens": 89,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r97/C/78",
+  "model": "sonnet-r97",
+  "arm": "C",
+  "id": "78",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1897,
+  "tokens": 568,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 48983,
+  "ttfmrTokens": 103,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8571428571428572,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "14 dollars",
+    "28 dollars",
+    "41 dollars",
+    "63 dollars"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r97/C/79",
+  "model": "sonnet-r97",
+  "arm": "C",
+  "id": "79",
+  "category": "comparison",
+  "needs": [
+   "table",
+   "chart",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 2787,
+  "tokens": 747,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 52944,
+  "ttfmrTokens": 120,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r97/C/81",
+  "model": "sonnet-r97",
+  "arm": "C",
+  "id": "81",
+  "category": "data",
+  "needs": [
+   "kpi",
+   "chart",
+   "table"
+  ],
+  "srcBytes": 1500,
+  "tokens": 451,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 49548,
+  "ttfmrTokens": 54,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r97/C/90",
+  "model": "sonnet-r97",
+  "arm": "C",
+  "id": "90",
+  "category": "prose",
+  "needs": [
+   "list",
+   "table"
+  ],
+  "srcBytes": 1899,
+  "tokens": 541,
+  "errors": [],
+  "warnings": [
+   "49:1 cards-content diagram route cannot sit inside a card; it is shown after the cards"
+  ],
+  "geometry": {
+   "diagrams": 1,
+   "collisions": []
+  },
+  "pageBytes": 48600,
+  "ttfmrTokens": 96,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r97/C/91",
+  "model": "sonnet-r97",
+  "arm": "C",
+  "id": "91",
+  "category": "runbook",
+  "needs": [
+   "list",
+   "callout"
+  ],
+  "srcBytes": 2580,
+  "tokens": 722,
+  "errors": [
+   "50:232 data-row-width row \"5,Roll out to the other 17 proxies,Batches of 3,5 minutes apart\" has 4 fields; _table1 has 3 columns (step,what,when); put a cell that contains , in double quotes (\"like, this\")"
+  ],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 48672,
+  "ttfmrTokens": 76,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8333333333333334,
+   "missSections": [],
+   "missVisible": [
+    "certctl request --profile edge-prod",
+    "openssl s_client"
+   ],
+   "missValues": [
+    "0.1 percent",
+    "2 percent"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r97/C/97",
+  "model": "sonnet-r97",
+  "arm": "C",
+  "id": "97",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1749,
+  "tokens": 661,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 59025,
+  "ttfmrTokens": 150,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.9512195121951219,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "900000",
+    "750000"
+   ]
+  }
+ },
+ {
+  "key": "sonnet-r97/C/99",
+  "model": "sonnet-r97",
+  "arm": "C",
+  "id": "99",
+  "category": "status",
+  "needs": [
+   "kpi",
+   "chart",
+   "table",
+   "list",
+   "callout"
+  ],
+  "srcBytes": 1422,
+  "tokens": 486,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 55472,
+  "ttfmrTokens": 120,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 1,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": []
+  }
+ },
+ {
+  "key": "sonnet-r97h/C/117",
+  "model": "sonnet-r97h",
+  "arm": "C",
+  "id": "117",
+  "category": "prose",
+  "needs": [
+   "callout"
+  ],
+  "srcBytes": 1519,
+  "tokens": 422,
+  "errors": [],
+  "warnings": [],
+  "geometry": {
+   "diagrams": 0,
+   "collisions": []
+  },
+  "pageBytes": 40095,
+  "ttfmrTokens": 55,
+  "mermaidErrors": 0,
+  "mermaidBlocks": 0,
+  "overflow-1280-light": 0,
+  "contrast-1280-light": 0,
+  "overflow-light": 0,
+  "contrast-400-light": 0,
+  "overflow-dark": 0,
+  "contrast-400-dark": 0,
+  "overflow-1280-dark": 0,
+  "jsErrors": [],
+  "fidelity": {
+   "score": 0.8571428571428572,
+   "missSections": [],
+   "missVisible": [],
+   "missValues": [
+    "70 percent",
+    "20 percent",
+    "6 booksellers"
+   ]
+  }
+ }
+]

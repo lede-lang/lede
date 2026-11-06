@@ -1,0 +1,7 @@
+{"judge":"claude-sonnet-5-5","prompt":"judge-v2.md"}
+{"pair":"P001","winner":"RIGHT","reason":"The right diagram is compact and legible with readable labels, while the left diagram has a long empty stretch between the on-site and cloud boxes and tiny monospace labels."}
+{"pair":"P002","winner":"RIGHT","reason":"The right sequence diagram has readable labels and clear colored alt/else regions, while the left one uses tiny, cramped monospace labels."}
+{"pair":"P003","winner":"RIGHT","reason":"The right page has clear plan cards with a highlighted recommendation and to-scale bar charts, and it holds up better at phone width."}
+{"pair":"P004","winner":"LEFT","reason":"The left page is well organized with a clear recommendation and comparison cards, while the right page has tall comparison columns that are mostly empty and repeats the same content in a second block."}
+{"pair":"P005","winner":"LEFT","reason":"The left page has a stronger hierarchy and a readable monthly chart with good styling, though a small label overlaps in the phone timeline; the right page repeats its charts as tables."}
+{"pair":"P006","winner":"RIGHT","reason":"The right page's to-scale schedule timeline and icon cards are polished and clear, while the left page's tiny diagram is cramped and its layout is plain."}

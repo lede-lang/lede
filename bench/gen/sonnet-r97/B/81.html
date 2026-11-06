@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Summer Reading 2026 Wrap-up | Hollis Public Library</title>
+<style>
+:root{
+  --bg:#faf8f3; --surface:#ffffff; --ink:#1e2530; --muted:#5a6372; --line:#e4e0d6;
+  --accent:#1d6b5a; --accent-2:#8cc4b6; --accent-soft:#e1f0eb; --on-accent:#ffffff;
+  --track:#ece8de; --gold:#b4690e; --gold-soft:#f8ead4;
+  --c1:#1d6b5a; --c2:#b4690e; --c3:#3b5f9e;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#11161b; --surface:#192027; --ink:#e9edf1; --muted:#9ba5b3; --line:#2a333d;
+    --accent:#5cc2a6; --accent-2:#2f6b5d; --accent-soft:#17302a; --on-accent:#0b1512;
+    --track:#26303a; --gold:#e3a14f; --gold-soft:#33291a;
+    --c1:#5cc2a6; --c2:#e3a14f; --c3:#8fb0ee;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 56px}
+header{margin:16px 0 0;padding:28px 20px;border-radius:18px;background:var(--accent);color:var(--on-accent)}
+.eyebrow{font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;font-weight:700;margin:0 0 6px;opacity:.85}
+h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(1.9rem,7vw,2.8rem);line-height:1.12;margin:0 0 10px;font-weight:700}
+.lede{margin:0;font-size:1.05rem;opacity:.92}
+section{margin-top:36px}
+h2{font-family:Georgia,"Times New Roman",serif;font-size:1.45rem;margin:0 0 14px;line-height:1.25}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.hero{display:flex;gap:20px;align-items:center}
+.ring{flex:0 0 auto;width:140px;height:140px}
+.ring .bg{stroke:var(--track)}
+.ring .fg{stroke:var(--accent)}
+.ring text{fill:var(--ink);font-family:system-ui,sans-serif}
+.hero p{margin:0}
+.hero .big{font-family:Georgia,serif;font-size:1.8rem;line-height:1.15;font-weight:700}
+.hero .sub{color:var(--muted);margin-top:6px}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:12px;padding:14px 12px 12px}
+.tile:nth-child(2){border-top-color:var(--gold)}
+.tile:nth-child(3){border-top-color:var(--c3)}
+.tile .n{font-family:Georgia,serif;font-size:2rem;font-weight:700;line-height:1.1}
+.tile .l{font-size:.85rem;color:var(--muted);margin-top:4px;line-height:1.3}
+.sub-h{font-size:.8rem;letter-spacing:.07em;text-transform:uppercase;font-weight:700;color:var(--muted);margin:0 0 12px}
+.tl{margin-top:12px}
+.tl-bar{position:relative;display:flex;height:30px;border-radius:8px;overflow:hidden}
+.tl-bar span{display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:var(--on-accent)}
+.m1{background:var(--c1)}.m2{background:var(--c2)}.m3{background:var(--c3)}
+.tl-bar .m2,.tl-bar .m3{color:#fff}
+@media (prefers-color-scheme: dark){.tl-bar .m2,.tl-bar .m3{color:#0b1512}}
+.tl-axis{position:relative;height:56px;margin-top:0}
+.tick{position:absolute;top:0;transform:translateX(-50%);text-align:center;font-size:.75rem;color:var(--muted);line-height:1.25;white-space:nowrap}
+.tick::before{content:"";display:block;width:1px;height:8px;background:var(--muted);margin:0 auto 3px}
+.tick.first{transform:none;text-align:left}.tick.first::before{margin-left:0}
+.tick.last{transform:translateX(-100%);text-align:right;color:var(--gold);font-weight:700}
+.tick.last::before{margin-right:0;margin-left:auto;background:var(--gold);width:2px;height:12px}
+.steps{list-style:none;margin:14px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;counter-reset:s}
+.steps li{counter-increment:s;background:var(--accent-soft);border-radius:12px;padding:12px;font-size:.88rem;line-height:1.35}
+.steps li::before{content:counter(s);display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--on-accent);font-weight:700;font-size:.8rem;margin-bottom:6px}
+.steps li b{display:block;font-size:.95rem}
+.steps li.party{background:var(--gold-soft)}
+.steps li.party::before{background:var(--gold);color:#fff}
+.callout{margin-top:12px;background:var(--accent-soft);border-radius:12px;padding:12px 14px;font-size:.95rem}
+svg.chart{display:block;width:100%;height:auto}
+svg.chart text{fill:var(--muted);font:12px system-ui,sans-serif}
+svg.chart .val{fill:var(--ink);font-weight:700;font-size:14px}
+svg.chart .tag{fill:var(--gold);font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+svg.chart .axt{font-size:11px}
+svg.chart .grid{stroke:var(--line);stroke-width:1}
+svg.chart .base{stroke:var(--muted);stroke-width:1}
+svg.chart .bar{fill:var(--accent-2)}
+svg.chart .bar.peak{fill:var(--accent)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.82rem;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.mstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.mstat{border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.mstat.peak{background:var(--accent-soft);border-color:var(--accent)}
+.mstat .k{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.mstat .v{font-family:Georgia,serif;font-size:1.4rem;font-weight:700}
+.mstat .s{font-size:.8rem;color:var(--muted)}
+.caption{color:var(--muted);font-size:.88rem;margin:12px 0 0}
+.stack{display:flex;height:34px;border-radius:8px;overflow:hidden;gap:2px}
+.stack span{display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff}
+@media (prefers-color-scheme: dark){.stack span{color:#0b1512}}
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.col{border:1px solid var(--line);border-radius:12px;padding:14px 12px;border-top:4px solid var(--c1)}
+.col:nth-child(2){border-top-color:var(--c2);background:var(--gold-soft)}
+.col:nth-child(3){border-top-color:var(--c3)}
+.col .g{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.col .n{font-family:Georgia,serif;font-size:2rem;font-weight:700;line-height:1.15}
+.col .u{font-size:.85rem;color:var(--muted)}
+.track{height:10px;background:var(--track);border-radius:6px;overflow:hidden;margin-top:10px}
+.fill{height:100%;border-radius:6px}
+.col .share{color:var(--muted);font-size:.82rem;margin-top:6px}
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
+@media (max-width:560px){
+  .hero{flex-direction:column;align-items:flex-start}
+  .tiles,.mstats,.cols{grid-template-columns:1fr}
+  .tile,.mstat,.col{display:block}
+  .steps{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Hollis Public Library</p>
+  <h1>Summer Reading 2026: the wrap-up</h1>
+  <p class="lede">June to August 2026. Thank you to every reader, parent and volunteer who made this summer a good one.</p>
+</header>
+
+<section aria-labelledby="glance">
+  <h2 id="glance">Summer at a glance</h2>
+  <div class="card hero">
+    <svg class="ring" viewBox="0 0 120 120" role="img" aria-label="Progress ring: 54.7 percent of registered readers finished the program">
+      <circle class="bg" cx="60" cy="60" r="52" fill="none" stroke-width="12"/>
+      <circle class="fg" cx="60" cy="60" r="52" fill="none" stroke-width="12" stroke-linecap="round" stroke-dasharray="178.7 326.7" transform="rotate(-90 60 60)"/>
+      <text x="60" y="64" text-anchor="middle" font-size="22" font-weight="700">54.7%</text>
+      <text x="60" y="82" text-anchor="middle" font-size="10">finished</text>
+    </svg>
+    <div>
+      <p class="big">683 of 1,248 readers finished</p>
+      <p class="sub">1,248 children and teens registered, and more than half of them completed the program.</p>
+    </div>
+  </div>
+  <div class="tiles">
+    <div class="tile"><div class="n">8,325</div><div class="l">books logged in total</div></div>
+    <div class="tile"><div class="n">6.7</div><div class="l">books per registered reader</div></div>
+    <div class="tile"><div class="n">310</div><div class="l">people at the closing party, September 12</div></div>
+  </div>
+
+  <div class="card tl" role="group" aria-label="Timeline of the summer, drawn to scale by days, June 1 to September 12">
+    <p class="sub-h">The summer in order</p>
+    <div class="tl-bar">
+      <span class="m1" style="width:29.1%">Jun</span>
+      <span class="m2" style="width:30.1%">Jul</span>
+      <span class="m3" style="width:30.1%">Aug</span>
+      <span style="width:10.7%;background:var(--gold)">&#9733;</span>
+    </div>
+    <div class="tl-axis">
+      <div class="tick first" style="left:0">Jun 1</div>
+      <div class="tick" style="left:29.1%">Jul 1</div>
+      <div class="tick" style="left:59.2%">Aug 1</div>
+      <div class="tick" style="left:89.3%">Sep 1</div>
+      <div class="tick last" style="left:100%">Sep 12<br>Closing party</div>
+    </div>
+    <ol class="steps">
+      <li><b>June</b>Readers sign up and start logging books.</li>
+      <li><b>July</b>The busiest month of the summer.</li>
+      <li><b>August</b>Final stretch to finish the program.</li>
+      <li class="party"><b>September 12</b>Closing party, 310 people.</li>
+    </ol>
+  </div>
+</section>
+
+<section aria-labelledby="months">
+  <h2 id="months">Books logged by month</h2>
+  <div class="card">
+    <svg class="chart" viewBox="0 0 360 226" role="img" aria-label="Bar chart of books logged: June 2,340, July 3,115, August 2,870">
+      <text class="axt" x="44" y="12">Books logged per month</text>
+      <line class="grid" x1="44" x2="350" y1="137.1" y2="137.1"/>
+      <line class="grid" x1="44" x2="350" y1="94.3" y2="94.3"/>
+      <line class="grid" x1="44" x2="350" y1="51.4" y2="51.4"/>
+      <text x="38" y="184" text-anchor="end">0</text>
+      <text x="38" y="141" text-anchor="end">1,000</text>
+      <text x="38" y="98" text-anchor="end">2,000</text>
+      <text x="38" y="55" text-anchor="end">3,000</text>
+      <rect class="bar" x="59" y="79.7" width="72" height="100.3" rx="4"/>
+      <rect class="bar peak" x="149" y="46.5" width="72" height="133.5" rx="4"/>
+      <rect class="bar" x="239" y="57" width="72" height="123" rx="4"/>
+      <line class="base" x1="44" x2="350" y1="180" y2="180"/>
+      <text class="val" x="95" y="73" text-anchor="middle">2,340</text>
+      <text class="val" x="185" y="40" text-anchor="middle">3,115</text>
+      <text class="val" x="275" y="51" text-anchor="middle">2,870</text>
+      <text class="tag" x="185" y="26" text-anchor="middle">Busiest</text>
+      <text x="95" y="198" text-anchor="middle">Jun</text>
+      <text x="185" y="198" text-anchor="middle">Jul</text>
+      <text x="275" y="198" text-anchor="middle">Aug</text>
+      <text class="axt" x="197" y="218" text-anchor="middle">Month, 2026</text>
+    </svg>
+    <div class="mstats">
+      <div class="mstat"><div class="k">June</div><div class="v">2,340</div><div class="s">books</div></div>
+      <div class="mstat peak"><div class="k">July, busiest</div><div class="v">3,115</div><div class="s">books</div></div>
+      <div class="mstat"><div class="k">August</div><div class="v">2,870</div><div class="s">books</div></div>
+    </div>
+    <p class="caption">July was the busiest month, with 3,115 books, about 37 percent of the summer's total of 8,325.</p>
+  </div>
+</section>
+
+<section aria-labelledby="ages">
+  <h2 id="ages">Readers by age group</h2>
+  <div class="card">
+    <p class="sub-h">Share of all 1,248 registered readers, drawn to scale</p>
+    <div class="stack" role="img" aria-label="Stacked bar of registered readers: under 8, 402; 8 to 12, 561; 13 to 17, 285">
+      <span style="width:32.2%;background:var(--c1)">402</span>
+      <span style="width:44.95%;background:var(--c2)">561</span>
+      <span style="width:22.85%;background:var(--c3)">285</span>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--c1)"></i>Under 8</span>
+      <span><i style="background:var(--c2)"></i>8 to 12</span>
+      <span><i style="background:var(--c3)"></i>13 to 17</span>
+    </div>
+    <div class="cols">
+      <div class="col">
+        <div class="g">Under 8</div>
+        <div class="n">402</div>
+        <div class="u">readers</div>
+        <div class="track" role="img" aria-label="Under 8: 402 of 1,248 readers"><div class="fill" style="width:32.2%;background:var(--c1)"></div></div>
+        <div class="share">32 percent of registrants</div>
+      </div>
+      <div class="col">
+        <div class="g">8 to 12</div>
+        <div class="n">561</div>
+        <div class="u">readers</div>
+        <div class="track" role="img" aria-label="8 to 12: 561 of 1,248 readers"><div class="fill" style="width:44.95%;background:var(--c2)"></div></div>
+        <div class="share">45 percent of registrants, the largest group</div>
+      </div>
+      <div class="col">
+        <div class="g">13 to 17</div>
+        <div class="n">285</div>
+        <div class="u">readers</div>
+        <div class="track" role="img" aria-label="13 to 17: 285 of 1,248 readers"><div class="fill" style="width:22.85%;background:var(--c3)"></div></div>
+        <div class="share">23 percent of registrants</div>
+      </div>
+    </div>
+    <p class="caption">Together these add up to all 1,248 registered readers.</p>
+  </div>
+</section>
+
+<footer>Hollis Public Library. Thank you for reading with us this summer.</footer>
+</div>
+</body>
+</html>

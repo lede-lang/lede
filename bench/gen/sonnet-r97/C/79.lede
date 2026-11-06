@@ -1,0 +1,66 @@
+@title Message backbone for the settlement service
+@subtitle Fernhill Payments, architecture review
+@author Ewan Calloway, Platform lead
+@date 2026-11-09
+
+kpi Peak load | 4200 msg/s
+kpi Consuming services | 6
+kpi Replay window | 7 days
+kpi Ordering | per account
+
+We need ordering per customer account and replay of the last 7 days for audits. Three options: Managed Kafka, SQS with SNS, and a self-run RabbitMQ cluster.
+
+## Comparison
+
+cards
+
+### Managed Kafka
+- Ordering: yes, through partition keys
+- Replay of 7 days: built in
+- Operations effort: 12 hours a month
+
+### SQS with SNS
+- Ordering: yes, through FIFO queues, but each queue is capped near 3000 messages per second so we would need two
+- Replay of 7 days: not available, we would have to archive to storage ourselves
+- Operations effort: 3 hours a month
+
+### Self-run RabbitMQ
+- Ordering: yes, through queue sharding that we would build ourselves
+- Replay of 7 days: possible only with the streams plugin, which the team has not used
+- Operations effort: 30 hours a month
+
+table = requirement,Managed Kafka,SQS with SNS,Self-run RabbitMQ; Ordering per account,"Yes, through partition keys","Yes, through FIFO queues, but each queue is capped near 3000 messages per second so we would need two","Yes, through queue sharding that we would build ourselves"; Replay of 7 days,Built in,"Not available, we would have to archive to storage ourselves","Possible only with the streams plugin, which the team has not used"; Operations effort,12 hours a month,3 hours a month,30 hours a month
+
+data ops = option,hours; Managed Kafka,12; SQS with SNS,3; Self-run RabbitMQ,30
+
+chart hbar ops y=hours unit=" h" labels title="Operations effort, hours per month"
+
+## Monthly cost
+
+data cost = option,monthly,annual; Managed Kafka,5850,70200; SQS with SNS,2100,25200; Self-run RabbitMQ,3400,40800
+
+kpi Kafka premium over SQS | $3,750 a month | vs SQS | bad
+
+grid 2
+
+chart bar cost y=monthly unit=$ labels title="Monthly cost" focus="Managed Kafka"
+
+chart bar cost y=annual unit=$ labels title="Annual cost" focus="Managed Kafka"
+
+table cost cols=option,monthly,annual bar=monthly title="Monthly and annual cost in dollars"
+
+## Risks
+
+!! Only 2 of our 9 engineers have run Kafka before, so we budget 5 days of training.
+
+- SQS has no replay, so audits would depend on an archive we build and run ourselves.
+- RabbitMQ replay depends on a plugin the team has not used, and 30 hours a month of operations.
+
+kpi Engineers who have run Kafka | 2 of 9 | 5 days of training budgeted | neutral
+
+## Recommendation
+
+! We recommend **Managed Kafka**, even though it costs $3,750 a month more than SQS, because replay of the last 7 days is an audit requirement.
+
+step Decide on Managed Kafka | 2026-11-09
+step Budget 5 days of Kafka training | 5 days

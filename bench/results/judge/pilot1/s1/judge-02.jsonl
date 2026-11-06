@@ -1,0 +1,7 @@
+{"judge":"claude-sonnet-5-5","prompt":"judge-v2.md"}
+{"pair":"P007","winner":"RIGHT","reason":"Right is clean and legible at both widths with a clear bar chart, while left has run-together 'CHECK 1Have...' labels and a trigger chart that shrinks to unreadable on phone."}
+{"pair":"P008","winner":"LEFT","reason":"Left has a strong hero, large readable charts and tidy deal cards, whereas right has tall empty deal cards with duplicated nested content, despite left's clipped '3.4 / 5.' label."}
+{"pair":"P009","winner":"LEFT","reason":"Left's charts and table are clean and readable, while right's line chart has overlapping axis and data labels and its category cards have cramped run-together labels."}
+{"pair":"P010","winner":"LEFT","reason":"Left is consistently polished with well-labeled stacked charts, whereas right has three stretched, mostly empty cards at desktop width."}
+{"pair":"P011","winner":"LEFT","reason":"Right's 'What stays' table is garbled into a single column of mismatched cells, while left presents the same content cleanly with accurate to-scale diagrams."}
+{"pair":"P012","winner":"RIGHT","reason":"Right's to-scale clock timeline and day-by-day cards communicate the runbook better than left's plain Gantt, despite a tiny timeline on phone."}

@@ -1,0 +1,24 @@
+refinement test (D67)  base=pilot1-base  primary=pilot1  hint=pilot1h
+judge: claude-sonnet-5-5 judge-v2.md
+
+sonnet  (12 tasks)
+  baseline  s1 2+0/12  s2 2+0/12             mean win-or-tie 16.7%  ties 0.0%
+  primary   s1 2+0/12  s2 1+0/12             mean win-or-tie 12.5%  ties 0.0%
+  hint      s1 0+0/1  s2 0+0/1               mean win-or-tie 0.0%   ties 0.0%
+  baseline on the hint arm's 1 tasks  s1 0+0/1  s2 0+0/1 mean win-or-tie 0.0%   ties 0.0%
+  delta primary   -4.2 points (-0.5 pairs)
+  delta hint      +0.0 points (+0.0 pairs)  against the baseline on the same tasks; -16.7 points (-0.2 pairs) against all 12
+  hint-arm pages  1 in the key, 1 hinted in hints-pilot1.json
+  extra tokens, primary:     no pages
+  extra tokens, hint:        no pages
+  extra tokens, revised HTML: no pages
+  revised HTML-to-Lede token ratio  n/a
+  qualifiers  median extra <= 150: NO   ratio >= 4: NO
+
+self-agreement (same side, or both tie)
+  base     12/12 = 100.0%   (sonnet 12/12)
+  primary  11/12 = 91.7%   (sonnet 11/12)
+  hint     1/1 = 100.0%   (sonnet 1/1)
+
+verdict: renderer reading
+the owner's spot check can still make a tier unresolved (agreement under 7 of 12, or a delta of the opposite sign or three pairs apart)
