@@ -1,0 +1,32 @@
+[
+  {
+    "severity": "error",
+    "code": "name-clash",
+    "line": 2,
+    "col": 8
+  },
+  {
+    "severity": "error",
+    "code": "name-clash",
+    "line": 5,
+    "col": 8
+  },
+  {
+    "severity": "error",
+    "code": "name-clash",
+    "line": 8,
+    "col": 13
+  },
+  {
+    "severity": "error",
+    "code": "name-clash",
+    "line": 11,
+    "col": 9
+  },
+  {
+    "severity": "warning",
+    "code": "diagram-empty",
+    "line": 11,
+    "col": 1
+  }
+]

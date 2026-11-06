@@ -1,0 +1,50 @@
+{
+  "id": "167-discount-code-review",
+  "category": "code-review",
+  "title": "Kettle & Crumb discount review",
+  "brief": "I'm Niamh Gallagher and I just reviewed pull request 884 at Kettle & Crumb, an online bakery, from Tomás Velasco, dated 2026-10-22. Make me a page for Tomás to read at his desk on a laptop, where each note sits on the exact line it is about and carries a severity: blocker, major, minor or nit. Under \"Code under review\" show this code with line numbers:\n1 def apply_discount(cart, code, today):\n2     promo = PROMOS.get(code)\n3     if promo is None:\n4         return cart\n5     if promo['expires'] <= today:\n6         return cart\n7     total = 0\n8     for item in cart.items:\n9         price = item.price * item.qty\n10        if item.category in promo['categories']:\n11            price = price * (1 - promo['percent'] / 100)\n12        total += price\n13    cart.total = total\n14    if promo['uses'] > 0:\n15        promo['uses'] -= 1\n16    return cart\nUnder \"Review notes\", tie these to their lines: line 14, blocker, a code with 0 uses left still gives the discount, because the check only guards the decrement; line 11, major, money is calculated with fractions and never rounded to cents; line 15, major, two checkouts at the same moment can both take the last use; line 5, minor, a code that expires today is rejected because the comparison is not strict; line 2, nit, codes are case sensitive, so save10 fails where SAVE10 works. Under \"Summary\": 1 blocker, 2 major, 1 minor, 1 nit, and the verdict: changes requested.",
+  "checklist": {
+    "sections": [
+      "Code under review",
+      "Review notes",
+      "Summary"
+    ],
+    "visible": [
+      "apply_discount",
+      "Niamh Gallagher",
+      "Tomás Velasco",
+      "blocker",
+      "major",
+      "minor",
+      "nit",
+      "changes requested"
+    ],
+    "values": [
+      "884",
+      "2026-10-22",
+      "14",
+      "11",
+      "15",
+      "5",
+      "2",
+      "SAVE10",
+      "save10"
+    ]
+  },
+  "needs": [
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add a minor note on line 8 saying an empty cart is not handled, and change the summary counts to 1 blocker, 2 major, 2 minor, 1 nit.",
+    "expect_visible": [
+      "empty cart"
+    ],
+    "expect_values": [
+      "2 minor"
+    ],
+    "expect_absent": [
+      "1 minor"
+    ]
+  }
+}

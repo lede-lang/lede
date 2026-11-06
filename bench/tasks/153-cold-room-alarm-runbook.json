@@ -1,0 +1,53 @@
+{
+  "id": "153-cold-room-alarm-runbook",
+  "category": "runbook",
+  "title": "Fairhaven cold room alarm runbook",
+  "brief": "I'm the operations manager at Fairhaven Foods and I need a runbook for when a cold room temperature alarm goes off, for warehouse shift leads who will read it on a handheld phone at the dock, wearing gloves, so short steps and big thresholds. Dated 2026-10-14. Under \"When to use this\": the alarm sounds when Cold Room 1 or Cold Room 2 reads above 5 degrees Celsius for 10 minutes. Under \"Steps\" in order, with who and by when counted from the alarm: 1, the shift lead checks the door is shut and the compressor light is on, within 5 minutes; 2, the shift lead calls the refrigeration engineer on duty, within 10 minutes; 3, if the room reads above 8 degrees, forklift driver Bogdan Kowal and a picker start moving chilled pallets to the other cold room, within 15 minutes, finishing within 45; 4, the quality officer Ines Carvalho writes the start time and the highest reading in the log, within 30 minutes; 5, the shift lead tells the duty manager Callum Fraser, within 30 minutes. Under \"Thresholds\" as a table: up to 5 degrees, normal; above 5 for 10 minutes, alarm and steps 1 and 2; above 8, move stock; above 8 for a total of 4 hours, discard all chilled stock in that room and do not ship it. Under \"Contacts\": refrigeration engineer 0800 555 0188, Ines ext 3302, Callum ext 3300. Highlight the 4 hour discard rule as a warning.",
+  "checklist": {
+    "sections": [
+      "When to use this",
+      "Steps",
+      "Thresholds",
+      "Contacts"
+    ],
+    "visible": [
+      "Cold Room 1",
+      "Cold Room 2",
+      "Bogdan Kowal",
+      "Ines Carvalho",
+      "Callum Fraser",
+      "refrigeration engineer"
+    ],
+    "values": [
+      "2026-10-14",
+      "5 degrees",
+      "10 minutes",
+      "5 minutes",
+      "15 minutes",
+      "45",
+      "30 minutes",
+      "8 degrees",
+      "4 hours",
+      "0800 555 0188",
+      "3302",
+      "3300"
+    ]
+  },
+  "needs": [
+    "list",
+    "table",
+    "callout"
+  ],
+  "edit": {
+    "request": "The alarm should now sound at 4 degrees instead of 5, and the discard rule becomes 3 hours instead of 4.",
+    "expect_visible": [],
+    "expect_values": [
+      "4 degrees",
+      "3 hours"
+    ],
+    "expect_absent": [
+      "5 degrees",
+      "4 hours"
+    ]
+  }
+}

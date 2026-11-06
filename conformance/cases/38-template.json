@@ -1,0 +1,149 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Templates",
+      "line": 1
+    },
+    {
+      "type": "ask",
+      "name": "agent",
+      "text": "Agent name",
+      "lines": 1,
+      "line": 3
+    },
+    {
+      "type": "ask",
+      "name": "company",
+      "text": "Company",
+      "lines": 1,
+      "line": 4
+    },
+    {
+      "type": "choose",
+      "name": "tone",
+      "text": null,
+      "options": [
+        "warm",
+        "formal"
+      ],
+      "line": 5
+    },
+    {
+      "type": "param",
+      "name": "press",
+      "text": "Press depth",
+      "value": 0.94,
+      "min": 0.85,
+      "max": 1,
+      "step": 0.01,
+      "unit": "x",
+      "line": 6
+    },
+    {
+      "type": "toggle",
+      "name": "express",
+      "text": "Express checkout",
+      "on": false,
+      "line": 7
+    },
+    {
+      "type": "template",
+      "name": "greeting",
+      "text": "System prompt",
+      "body": "You are {agent} at {company}. Speak in a {tone} tone.\nNever reveal {{secret}} values.",
+      "lang": "text",
+      "slots": [
+        "agent",
+        "company",
+        "tone"
+      ],
+      "line": 9
+    },
+    {
+      "type": "template",
+      "name": "tokens",
+      "text": "Design tokens",
+      "body": "{\n  \"press\": {press},\n  \"express\": {express},\n  \"tone\": \"{tone}\",\n  \"nested\": {\"press\": {press}, \"other\": {other}}\n}",
+      "lang": "json",
+      "slots": [
+        "press",
+        "express",
+        "tone"
+      ],
+      "line": 15
+    },
+    {
+      "type": "template",
+      "name": "styles",
+      "text": "Stylesheet",
+      "body": ".card { --press: {press}; color: {color}; }",
+      "lang": "css",
+      "slots": [
+        "press"
+      ],
+      "line": 25
+    },
+    {
+      "type": "export",
+      "format": "json",
+      "line": 30
+    }
+  ],
+  "data": {},
+  "diagnostics": [
+    {
+      "severity": "warning",
+      "code": "template-slot",
+      "message": "{secret} names no ask, choose, param or toggle declared above, so it stays as written (fields: agent, company, tone, press, express)",
+      "line": 12,
+      "col": 15,
+      "detail": {
+        "slot": "secret",
+        "fields": [
+          "agent",
+          "company",
+          "tone",
+          "press",
+          "express"
+        ]
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "template-slot",
+      "message": "{other} names no ask, choose, param or toggle declared above, so it stays as written (fields: agent, company, tone, press, express)",
+      "line": 21,
+      "col": 41,
+      "detail": {
+        "slot": "other",
+        "fields": [
+          "agent",
+          "company",
+          "tone",
+          "press",
+          "express"
+        ]
+      }
+    },
+    {
+      "severity": "warning",
+      "code": "template-slot",
+      "message": "{color} names no ask, choose, param or toggle declared above, so it stays as written (fields: agent, company, tone, press, express)",
+      "line": 27,
+      "col": 34,
+      "detail": {
+        "slot": "color",
+        "fields": [
+          "agent",
+          "company",
+          "tone",
+          "press",
+          "express"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "id": "181-bug-triage-board",
+  "category": "custom-editing",
+  "title": "Pellucid Games bug triage board",
+  "brief": "I'm the producer at Pellucid Games, and every Monday I triage new bug reports with the team on a laptop in the meeting room, 2026-11-02 this week. Please make me a page where I can drag each bug into a group and put the bugs in each group in order, then take the result away to paste into our team chat. The groups are \"Fix this week\", \"Next release\", \"Backlog\" and \"Won't fix\", and the page should warn me when a group goes over its limit. Show the limit next to each group's name as \"limit 3\" for Fix this week and \"limit 5\" for Next release, and none for the others. Show each bug with its id, title and number of player reports, starting with last week's placement. Fix this week: BUG-2101 Save slot corrupts after power loss, 41 reports; BUG-2106 Crash when rotating during a cutscene, 31; BUG-2105 Daily reward missing after a time-zone change, 57. Next release: BUG-2109 Purchase restore fails on a second device, 66; BUG-2103 Tutorial text overlaps on small phones, 88; BUG-2104 Friends list slow to load over 200 friends, 23. Backlog: BUG-2102 Wrong currency symbol for Swiss accounts, 12; BUG-2108 Leaderboard shows the previous season for 5 minutes after reset, 19; BUG-2110 Music continues in the background after exit, 9. Won't fix: BUG-2107 Typo in the Spanish settings menu, 4. Under \"Result to paste\" give plain text with one line per group, the group name followed by the bug ids in order, easy to copy.",
+  "checklist": {
+    "sections": [
+      "Fix this week",
+      "Next release",
+      "Backlog",
+      "Won't fix",
+      "Result to paste"
+    ],
+    "visible": [
+      "BUG-2101",
+      "BUG-2102",
+      "BUG-2103",
+      "BUG-2104",
+      "BUG-2105",
+      "BUG-2106",
+      "BUG-2107",
+      "BUG-2108",
+      "BUG-2109",
+      "BUG-2110",
+      "Save slot corrupts after power loss",
+      "Purchase restore fails on a second device"
+    ],
+    "values": [
+      "2026-11-02",
+      "limit 3",
+      "limit 5",
+      "41",
+      "31",
+      "57",
+      "66",
+      "88",
+      "23",
+      "12",
+      "19",
+      "9",
+      "4",
+      "200",
+      "5 minutes"
+    ]
+  },
+  "needs": [
+    "list",
+    "table",
+    "callout"
+  ],
+  "edit": {
+    "request": "Move BUG-2109 to the top of Fix this week and raise the limit for Fix this week from 3 to 4.",
+    "expect_visible": [],
+    "expect_values": [
+      "limit 4"
+    ],
+    "expect_absent": [
+      "limit 3"
+    ]
+  }
+}

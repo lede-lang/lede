@@ -1,0 +1,56 @@
+{
+  "id": "170-rate-cache-pr",
+  "category": "code-review",
+  "title": "Quillfeather rate cache pull request",
+  "brief": "I'm Hana Sjöberg, a developer at Quillfeather Travel Money, and I need a pull request page for pull request 619 that reviewers will read projected in our Wednesday huddle on 2026-10-28. The change caches exchange rates for 15 minutes, so quotes stop calling the rates provider every time. Sections: \"Summary\": provider calls drop from about 38 per second at the peak to about 2.8 a minute, since we trade 42 currency pairs and refresh each at most once every 900 seconds; the product owner accepted that a quote may use a rate up to 15 minutes old, within a tolerance of 0.3 percent. \"Quote sequence\": the exchange between Customer App, Quote Service, Rate Cache and Rates Provider, in order: Customer App to Quote Service \"request quote GBP to EUR\"; Quote Service to Rate Cache \"get rate\"; Rate Cache to Quote Service \"hit, age 4 minutes\"; Quote Service to Customer App \"quote with cached rate\"; then a later miss: Quote Service to Rate Cache \"get rate\"; Rate Cache to Rates Provider \"fetch rate, entry older than 900 seconds\"; Rates Provider to Rate Cache \"new rate\"; Rate Cache to Quote Service \"new rate stored\". \"The change\": show the code with line numbers:\n1 def get_rate(pair, now):\n2     entry = CACHE.get(pair)\n3     if entry and now - entry.time < TTL_SECONDS:\n4         return entry.rate\n5     rate = provider.fetch(pair)\n6     CACHE[pair] = Entry(rate, now)\n7     return rate\n\"Risks\": a list: if the provider is down, line 5 raises and quotes fail even though an old rate exists; many requests missing at the same moment all call the provider because nothing locks; and the cache never drops pairs we stop trading. Highlight the provider-down case as a warning.",
+  "checklist": {
+    "sections": [
+      "Summary",
+      "Quote sequence",
+      "The change",
+      "Risks"
+    ],
+    "visible": [
+      "Hana Sjöberg",
+      "Customer App",
+      "Quote Service",
+      "Rate Cache",
+      "Rates Provider",
+      "request quote GBP to EUR",
+      "quote with cached rate",
+      "new rate stored"
+    ],
+    "values": [
+      "619",
+      "2026-10-28",
+      "15 minutes",
+      "38",
+      "2.8",
+      "42",
+      "900 seconds",
+      "0.3 percent",
+      "4 minutes"
+    ]
+  },
+  "needs": [
+    "sequence",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the cache time from 15 minutes to 10 minutes, which is 600 seconds, the tolerance to 0.2 percent, and the provider calls to about 4.2 a minute.",
+    "expect_visible": [],
+    "expect_values": [
+      "10 minutes",
+      "600 seconds",
+      "0.2 percent",
+      "4.2"
+    ],
+    "expect_absent": [
+      "15 minutes",
+      "900 seconds",
+      "0.3 percent",
+      "2.8"
+    ]
+  }
+}

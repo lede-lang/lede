@@ -1,0 +1,66 @@
+{
+  "id": "155-pharmacy-label-outage",
+  "category": "runbook",
+  "title": "Wimbourne pharmacy label outage report",
+  "brief": "I'm the pharmacy systems manager at Wimbourne General Hospital and I need the incident report for the dispensing label outage on Tuesday 2026-10-06, for the hospital's quality committee, who will read it on laptops before their meeting. Open with the impact: 158 minutes with no label printing in the pharmacy, 214 prescriptions delayed by an average of 47 minutes, a peak of 66 prescriptions waiting at 08:30, and no wrong-drug events. Under \"Waiting prescriptions\" chart the queue at half-hour marks: 07:00 0, 07:30 12, 08:00 41, 08:30 66, 09:00 38, 09:30 9, 10:00 0. Under \"Timeline\": 07:12 the label print server ran out of disk space and stopped; 07:24 pharmacists noticed labels not printing; 07:41 the helpdesk ticket was escalated to Anil Deshmukh; 08:03 paper labels began under pharmacy lead Dr. Helen Okafor; 09:12 Anil freed space and restarted the server; 09:50 the backlog was cleared. Under \"Cause\": a driver update on 2026-10-01 doubled the size of the logs, and nothing watched the disk. Under \"Follow-ups\", with owner and date: alert when the disk passes 80 percent, Anil Deshmukh, 2026-10-16; rotate and cap the logs, Mei Tanaka, 2026-10-13; rehearse the paper label fallback with night staff, Dr. Helen Okafor, 2026-11-06. Flag that it took 39 minutes from noticing the fault to starting paper labels, which is too slow.",
+  "checklist": {
+    "sections": [
+      "Waiting prescriptions",
+      "Timeline",
+      "Cause",
+      "Follow-ups"
+    ],
+    "visible": [
+      "Anil Deshmukh",
+      "Dr. Helen Okafor",
+      "Mei Tanaka",
+      "print server",
+      "paper labels"
+    ],
+    "values": [
+      "2026-10-06",
+      "158",
+      "214",
+      "47",
+      "66",
+      "08:30",
+      "12",
+      "41",
+      "38",
+      "9",
+      "07:00",
+      "10:00",
+      "07:12",
+      "07:24",
+      "07:41",
+      "08:03",
+      "09:12",
+      "09:50",
+      "2026-10-01",
+      "80 percent",
+      "2026-10-16",
+      "2026-10-13",
+      "2026-11-06",
+      "39 minutes"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the paper-label rehearsal date to 2026-11-20, and correct the peak waiting figure from 66 to 71 in both the headline and the chart.",
+    "expect_visible": [],
+    "expect_values": [
+      "71",
+      "2026-11-20"
+    ],
+    "expect_absent": [
+      "66",
+      "2026-11-06"
+    ]
+  }
+}

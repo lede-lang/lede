@@ -632,8 +632,9 @@ design: `param NAME [unit=U] | LABEL | DEFAULT MIN MAX STEP` (a slider with a nu
 reader sorts, counted live; items never move in the page, so no drag), `template NAME | LABEL` over a fence in which `{name}` is a slot
 only when `name` is a fillable field declared above it (every other brace is literal text, so JSON and CSS bodies compile; an
 undeclared `{word}` is a warning), and `preset NAME | LABEL | key=value; …` (one click sets several fields). All five are keyword lines
-only in that shape (a name after the word, then `|`, or for `toggle` `on`, `off` or `needs=`), as `export` is only when alone or with
-one word, so `toggle the flag on Monday` stays prose; a line with the shape that is malformed after it fails loudly (D64). All are
+only in that shape (a name after the word and a `|` later on the line, or for `toggle` `on`, `off` or `needs=`), as `export` is only
+when alone or with one word, so `toggle the flag on Monday` stays prose; an option the word does not take before the `|` is a warning, and
+a line with the shape that is malformed after it fails loudly (D64). All are
 blocks in both modes: `build` draws native controls with the written value pre-filled and the export template, with no script or
 button; `--shell` adds behaviour through the one fixed runtime, which stays under 8 KiB and now writes `value` and `aria-invalid`
 beside what D63 allows. If the words do not fit the limit, `preset` goes first, then the template's live count, then its live fill; the
@@ -719,7 +720,9 @@ that open tail, a diagram holds a placeholder of about its height until a line t
 `end()` settles the page against the whole-page render. The settle is a safety net, not the proof: the tests and the bench measure the
 page before it. Element ids are unchanged and `render()` bytes are pinned by a new per-file hash fixture, so compiled pages do not
 move. The flow layout engine (elkjs) becomes a lazily loaded chunk in `@lede-lang/html` and runs in a Web Worker in the viewer, so a
-text-only page loads no chunk and starts no Worker. Core gains `LedeStream.events()` and `tail()` (spec §6). The packages gain a browser
+text-only page loads no chunk and starts no Worker. Core gains `LedeStream.events()` and `tail()` (spec §6); the editor words of D65
+stream with them: a `bucket` set grows by item lines, so it is a `bucket-update` per item and a `bucket-seal` at the first other line, as a diagram
+has `update` and `seal` (the bucket events are kinds of their own, so `update` and `seal` always carry a diagram), and an open `template` fence is in the tail as the template. The packages gain a browser
 build (`dist/browser/`, esbuild at build time), which lets the site's playground stop bundling from a checkout. Acceptance, measured by
 `bench/src/stream-bench.ts` on the 180 v0.4 pages at 50 tokens a second against the same tasks' HTML streamed the same way: first block
 painted within one frame (16.7 ms) of its newline, cumulative layout shift under 0.05, final DOM equal to `lede build` before the settle
@@ -727,6 +730,16 @@ on at least 95% of pages. Results: appended below when the first run completes (
 whole-page re-render per token, deciding layout only at the end, an unlatched prose rule, a shadow root instead of a frame, ids from
 line numbers, a subpath of `@lede-lang/html`, an asynchronous push, running the `--shell` runtime inside the viewer.
 
+## D69. Fresh held-out set, tasks 131-185, written and hashed before the refinement test
+Five tasks per category over eleven categories, written in one pass by an isolated Sonnet 5.5 subagent whose whole prompt was
+`bench/prompts/tasks-writer.md` followed by the verbatim `bench/tasks/41-*.json` to `50-*.json` (handed to it as one file it read;
+it never saw the spec, the renderer, any `.lede` or `.html`, any other prompt or report, and read no other file; it appended its
+55 lines to one output file in ten writes). Split into one file per task by its `id` without the orchestrator reading the briefs.
+`node bench/src/check-tasks.ts 131 185`: 55 of 55 files, ids contiguous, five per category, all fields present, `needs` within
+the closed set, no technology word in a brief; passed on the first run, so the writer was not re-run. Not opened again except
+through `check-tasks.ts` and the round-3 harness (D67). SHA-256 of the 55 files concatenated in numeric id order:
+`for n in $(seq 131 185); do cat bench/tasks/$n-*.json; done | shasum -a 256` = `47e032ceebbff3671833be3126a9420b196a3cfc4c358b03e72602cce2f15e17`.
+Commit: this one; parser, renderer and spec files are unchanged at this point (HEAD before it: `6daa270`).
 
 ## D70. Page chrome is a compiler default: stable anchors, a contents bar on long pages, share metadata, no script
 Owner's decision (2026-11-04, answers 2, 3, 5 and 6 of the ten questions). Concerns the compiler can own become compiler defaults at
@@ -875,3 +888,11 @@ pairings `editorial`, `clean`, `book`, `modern`, `humanist`, `slab`, palettes `p
 skill's on-demand `meta.md` (D72) after its probe round; the model reference (D55) does not change. Lands only after D67 step 1 records
 its verdict; the token rename re-runs the D66 artifact check and the D68 stream bench as release gates. Internal spec
 `lede-page-identity`, lede-lang/meta.
+
+## D75. A minor release is cut on purpose with a `chore(minor):` commit
+D54 makes every commit type a patch and caps a breaking marker at a minor, and the commit rules forbid breaking markers, so the
+version could only ever move by patches. The owner chose to ship the shell editor words and the streaming renderer (#31) as
+0.2.0. `.releaserc.json` gains one rule: a commit typed `chore` with the scope `minor` is a minor release. The commit that asks for
+a minor says so in its subject (`chore(minor): cut 0.2.0 ...`) and its body names what the minor carries; everything else stays a
+patch, breaking markers stay forbidden, and every version stays `0.x` (`scripts/set-version.ts` and D61 unchanged). The npm
+step is unchanged: `release.yml` stages the version and the owner approves it (D58, D61).

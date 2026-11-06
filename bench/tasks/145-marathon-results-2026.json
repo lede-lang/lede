@@ -1,0 +1,71 @@
+{
+  "id": "145-marathon-results-2026",
+  "category": "data",
+  "title": "Larkspur Coast Marathon results",
+  "brief": "I'm the race director of the Larkspur Coast Marathon and I'm writing up the 2026 results for the committee, who will look at it projected at the debrief on 2026-11-04. Open with headline numbers: 3310 finishers, a record, 4.1 percent who started but did not finish, and winning times of 2:14:08 for the men's race and 2:31:52 for the women's. Under \"Finishers by year\" chart: 2019 2410, 2020 0 (cancelled), 2021 1130, 2022 2050, 2023 2480, 2024 2790, 2025 3020, 2026 3310. Under \"Age groups\" give a table of finishers and median finish time: 18 to 29, 612, 4:02; 30 to 39, 1104, 3:55; 40 to 49, 897, 4:01; 50 to 59, 521, 4:14; 60 and over, 176, 4:41. Under \"Things to note\" a list: 2020 was cancelled, so its zero is not a drop in interest; the 60 and over group was the slowest, at a median of 4:41; the aid station at 30 km ran out of water at 11:20; and the timing mats at the finish failed for 6 minutes at 12:48, so 38 times were entered by hand. The water shortage is the item the committee must act on.",
+  "checklist": {
+    "sections": [
+      "Finishers by year",
+      "Age groups",
+      "Things to note"
+    ],
+    "visible": [
+      "18 to 29",
+      "30 to 39",
+      "40 to 49",
+      "50 to 59",
+      "60 and over",
+      "aid station",
+      "timing mats"
+    ],
+    "values": [
+      "2026-11-04",
+      "3310",
+      "4.1",
+      "2:14:08",
+      "2:31:52",
+      "2410",
+      "0",
+      "1130",
+      "2050",
+      "2480",
+      "2790",
+      "3020",
+      "612",
+      "4:02",
+      "1104",
+      "3:55",
+      "897",
+      "4:01",
+      "521",
+      "4:14",
+      "176",
+      "4:41",
+      "30 km",
+      "11:20",
+      "12:48",
+      "6 minutes",
+      "38"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add the 2027 target of 3600 finishers to the chart, and change the 60 and over median finish time from 4:41 to 4:38 everywhere.",
+    "expect_visible": [
+      "2027"
+    ],
+    "expect_values": [
+      "3600",
+      "4:38"
+    ],
+    "expect_absent": [
+      "4:41"
+    ]
+  }
+}

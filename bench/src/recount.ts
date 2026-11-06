@@ -1,12 +1,17 @@
-// Recounts the v0.4 benchmark sources (results/raw-v04.json) with each writer's own tokenizer, through the
-// count_tokens endpoint, and writes results/recount-v04.json. raw-v04.json stays as published: its counts come from
-// @anthropic-ai/tokenizer, a legacy tokenizer that is not the one the models bill by (D12), and its ratios differ too (D50).
-// Costs cover the page's own output tokens only: not thinking, and not the skill or brief the writer reads.
-//   ANTHROPIC_API_KEY=... node bench/src/recount.ts
+// Recounts a round's benchmark sources with each writer's own tokenizer, through the count_tokens endpoint. With no flag it
+// recounts the v0.4 round (results/raw-v04.json) and writes results/recount-v04.json. raw-v04.json stays as published: its
+// counts come from @anthropic-ai/tokenizer, a legacy tokenizer that is not the one the models bill by (D12), and its ratios
+// differ too (D50). Costs cover the page's own output tokens only: not thinking, and not the skill or brief the writer reads.
+//   ANTHROPIC_API_KEY=... node bench/src/recount.ts [--rows raw-refine1] [--dry]
+// `--rows <name>` reads results/<name>.json (the rows run.ts wrote) and writes results/recount-<name without raw->.json, so
+// `--rows raw-heldout3` writes recount-heldout3.json. A row's writer is its directory without the round and arm letter:
+// sonnet-r7h counts with Sonnet's tokenizer. `--dry` resolves the files and the writers, prints them and calls nothing.
 // An `ant auth login` token also works (ANTHROPIC_AUTH_TOKEN=$(ant auth print-credentials --access-token)); either way the org needs credit.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import Anthropic from '@anthropic-ai/sdk';
+import { countTokens, overheadOf } from './count-tokens.ts';
+import { recountFiles, writerOf } from './rounds.ts';
 
 const ROOT = join(import.meta.dirname, '..');
 const REPO = join(ROOT, '..');
@@ -23,25 +28,39 @@ type Arm = keyof typeof EXT;
 const TOKENS_PER_SECOND = 60;
 const REFERENCES = ['spec/model-spec.md', 'skill/lede/SKILL.md'];
 
+const FILES = recountFiles(process.argv.slice(2));
+const ROWS_FLAG = process.argv.includes('--rows');
+type Row = { model: string; arm: Arm; id: string; tokens: number };
+// Rows of other arms (run.ts also renders Markdown, `A`) have no recount: the round compares Lede with HTML.
+const rows: Row[] = (JSON.parse(readFileSync(join(ROOT, 'results', FILES.rows), 'utf8')) as Row[]).filter((r) => r.arm in EXT);
+
+/** The writer a row's directory ran on (`sonnet-r7h` is Sonnet's); a directory no writer owns stops the run before any call. */
+function writerFor(r: Row): Writer {
+  const writer = writerOf(r.model);
+  if (!(writer in WRITERS))
+    throw new Error(`${FILES.rows}: ${r.model}/${r.arm}/${r.id} is not a ${Object.keys(WRITERS).join(', ')} directory`);
+  return writer as Writer;
+}
+for (const r of rows) writerFor(r);
+
+if (process.argv.includes('--dry')) {
+  const perWriter = Object.fromEntries(Object.keys(WRITERS).map((w) => [w, rows.filter((r) => writerFor(r) === w).length]));
+  console.log(
+    JSON.stringify({ rows: join('results', FILES.rows), out: join('results', FILES.out), count: rows.length, perWriter }, null, 2),
+  );
+  process.exit(0);
+}
+
 const client = new Anthropic();
 
-const countRaw = async (model: string, text: string) =>
-  (await client.messages.countTokens({ model, messages: [{ role: 'user', content: text }] })).input_tokens;
-
-/**
- * count_tokens wraps the text in a user message, which adds a fixed number of tokens. Counting "a", assumed to be
- * one token on every tokenizer, measures that overhead.
- */
+/** The tokens count_tokens adds to any text, per model (see count-tokens.ts). */
 const overhead = Object.fromEntries(
-  await Promise.all(Object.values(WRITERS).map(async ({ model }) => [model, (await countRaw(model, 'a')) - 1] as const)),
+  await Promise.all(Object.values(WRITERS).map(async ({ model }) => [model, await overheadOf(client, model)] as const)),
 );
-const count = async (model: string, text: string) => (await countRaw(model, text)) - overhead[model];
-
-type Row = { model: string; arm: Arm; id: string; tokens: number };
-const rows: Row[] = JSON.parse(readFileSync(join(ROOT, 'results', 'raw-v04.json'), 'utf8'));
+const count = (model: string, text: string) => countTokens(client, model, text, overhead[model]);
 
 async function recount(r: Row) {
-  const writer = r.model.replace(/-r\d+$/, '') as Writer;
+  const writer = writerFor(r);
   const { model } = WRITERS[writer];
   const src = readFileSync(join(ROOT, 'gen', r.model, r.arm, `${r.id}.${EXT[r.arm]}`), 'utf8');
   return {
@@ -111,6 +130,18 @@ const summary = Object.fromEntries(
   }),
 );
 
+// A round with several page sets per writer (refine1: baseline, revised and hinted Lede, baseline and revised HTML) is not one
+// pair of means per writer, so `--rows` also records the mean per directory and arm; the per-writer summary above is for
+// rounds that hold one set per writer, as v0.4 and the held-out rounds do.
+const byModelArm = ROWS_FLAG
+  ? Object.fromEntries(
+      [...new Set(out.map((r) => r.key.split('/').slice(0, 2).join('/')))].sort().map((k) => {
+        const mine = out.filter((r) => r.key.startsWith(`${k}/`));
+        return [k, { pages: mine.length, meanTokens: Math.round(mean(mine.map((r) => r.tokens))) }] as const;
+      }),
+    )
+  : undefined;
+
 const reference = await referencePromise;
 /** The model reference's cap in these units (D55). Nothing else enforces it, so a recount that finds it exceeded fails. */
 const SPEC_CAP = 2910;
@@ -122,7 +153,7 @@ if (overCap.length) {
 
 const countedAt = new Date().toISOString().slice(0, 10);
 writeFileSync(
-  join(ROOT, 'results', 'recount-v04.json'),
-  `${JSON.stringify({ countedAt, overhead, tokensPerSecond: TOKENS_PER_SECOND, summary, reference, rows: out }, null, 2)}\n`,
+  join(ROOT, 'results', FILES.out),
+  `${JSON.stringify({ countedAt, overhead, tokensPerSecond: TOKENS_PER_SECOND, summary, ...(byModelArm && { byModelArm }), reference, rows: out }, null, 2)}\n`,
 );
 console.log(JSON.stringify({ summary, reference }, null, 2));

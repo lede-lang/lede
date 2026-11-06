@@ -1,0 +1,60 @@
+{
+  "id": "152-ferry-booking-outage",
+  "category": "runbook",
+  "title": "Larchmont Ferry booking outage report",
+  "brief": "I'm the head of operations at Larchmont Ferry and I need the incident write-up for the online booking outage on Saturday 2026-10-03, for the executive team who will read it printed at Tuesday's review. Open with the impact as headline numbers: 98 minutes without online bookings, 1340 failed booking attempts, 61000 dollars of estimated lost sales, and 212 calls to the contact center in that hour, against a normal 40. Under \"Timeline\", with times that day: 08:12 the payment provider certificate expired and card payments began failing; 08:19 the booking success rate alert fired; 08:41 an incident was declared by Corinne Abara; 09:05 the cause was identified; 09:28 a new certificate was installed by Deepak Menon; 09:50 booking success returned to normal. Under \"Cause\": the certificate was not in the renewal inventory because it was bought under a former supplier contract in 2023 and lasted 3 years, and the expiry reminder went to a mailbox that nobody has used since 2025. Under \"Follow-ups\", a list with owner and date: add all certificates to one inventory with 30-day warnings, Deepak Menon, 2026-10-23; move reminders to the team channel, Corinne Abara, 2026-10-12; run a drill of the phone booking fallback, Yasmin Kerr, 2026-11-13. Call out that the fallback phone line was overloaded for 71 minutes of the outage.",
+  "checklist": {
+    "sections": [
+      "Timeline",
+      "Cause",
+      "Follow-ups"
+    ],
+    "visible": [
+      "Corinne Abara",
+      "Deepak Menon",
+      "Yasmin Kerr",
+      "renewal inventory",
+      "fallback phone line"
+    ],
+    "values": [
+      "2026-10-03",
+      "98",
+      "1340",
+      "61000",
+      "212",
+      "40",
+      "08:12",
+      "08:19",
+      "08:41",
+      "09:05",
+      "09:28",
+      "09:50",
+      "2023",
+      "3 years",
+      "2025",
+      "30-day",
+      "2026-10-23",
+      "2026-10-12",
+      "2026-11-13",
+      "71 minutes"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Correct the estimated lost sales to 57500 dollars, and move the certificate inventory follow-up to 2026-10-30.",
+    "expect_visible": [],
+    "expect_values": [
+      "57500",
+      "2026-10-30"
+    ],
+    "expect_absent": [
+      "61000",
+      "2026-10-23"
+    ]
+  }
+}

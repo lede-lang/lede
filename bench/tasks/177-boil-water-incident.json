@@ -1,0 +1,72 @@
+{
+  "id": "177-boil-water-incident",
+  "category": "reports",
+  "title": "Kingsbridge boil-water notice incident report",
+  "brief": "I'm the operations director at Kingsbridge Water and I need the incident report for the boil-water notice of 2026-10-09, for the town council's scrutiny panel, who were not there and will read it printed. Open with the impact: 4200 homes under a notice for 31 hours, 3 care homes supplied by tanker, and 118 calls to our helpline in the first hour. Under \"Chlorine level\" chart the residual chlorine in milligrams per liter at the treatment works, against a minimum of 0.5: 06:00 0.9, 06:30 0.8, 07:00 0.5, 07:30 0.3, 08:00 0.2, 08:30 0.2, 09:00 0.6, 09:30 0.9. Under \"Timeline\", on 2026-10-09: 06:42 the duty chlorine dosing pump tripped on low oil pressure; 06:55 the standby pump failed to start because it had been isolated for maintenance on 2026-10-07 and not returned to service; 07:25 the low chlorine alarm was escalated to the duty manager Fiona Aldred; 07:50 the boil-water notice was issued; 08:40 technician Luis Ferrer restarted the duty pump; 09:10 chlorine was back above 0.5. The notice was lifted on 2026-10-10 at 14:50 after two clear samples. Under \"Cause\": the standby pump was left isolated because our permit-to-work process has no check that equipment is back in service, and the alarm waited 43 minutes for escalation. Under \"Follow-ups\", with owner and date: add a return-to-service check to every permit, Imogen Pryce, 2026-11-06; escalate chlorine alarms to the duty manager within 10 minutes, Fiona Aldred, 2026-10-23; fit a third dosing pump, Tariq Bosworth, 2027-03-31. Highlight the missed return-to-service check as the root cause.",
+  "checklist": {
+    "sections": [
+      "Chlorine level",
+      "Timeline",
+      "Cause",
+      "Follow-ups"
+    ],
+    "visible": [
+      "Fiona Aldred",
+      "Luis Ferrer",
+      "Imogen Pryce",
+      "Tariq Bosworth",
+      "standby pump",
+      "permit-to-work"
+    ],
+    "values": [
+      "4200",
+      "31 hours",
+      "3",
+      "118",
+      "0.5",
+      "0.9",
+      "0.8",
+      "0.3",
+      "0.2",
+      "0.6",
+      "06:00",
+      "09:30",
+      "06:42",
+      "06:55",
+      "07:25",
+      "07:50",
+      "08:40",
+      "09:10",
+      "2026-10-07",
+      "2026-10-09",
+      "2026-10-10",
+      "14:50",
+      "43 minutes",
+      "10 minutes",
+      "2026-11-06",
+      "2026-10-23",
+      "2027-03-31"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Correct the number of homes to 4350 and the helpline calls in the first hour to 124, and move the third dosing pump date to 2027-04-30.",
+    "expect_visible": [],
+    "expect_values": [
+      "4350",
+      "124",
+      "2027-04-30"
+    ],
+    "expect_absent": [
+      "4200",
+      "118",
+      "2027-03-31"
+    ]
+  }
+}

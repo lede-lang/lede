@@ -10,7 +10,9 @@ for sd in sorted(glob.glob(os.path.join(d, 's[0-9]*'))):
     for f in glob.glob(os.path.join(sd, 'judge-*.jsonl')):
         for l in open(f):
             if l.strip():
-                r = json.loads(l); m[r['pair']] = r['winner']
+                r = json.loads(l)
+                if 'pair' not in r: continue  # the header record a batch file opens with (judge model and prompt file)
+                m[r['pair']] = r['winner']
     samples[os.path.basename(sd)] = m
 def side(p, w):
     if w not in ('LEFT', 'RIGHT'): return 'tie'

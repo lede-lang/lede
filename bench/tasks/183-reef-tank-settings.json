@@ -1,0 +1,69 @@
+{
+  "id": "183-reef-tank-settings",
+  "category": "custom-editing",
+  "title": "Hollowell reef tank settings check",
+  "brief": "I'm the head aquarist at Hollowell Aquarium and I need a page I can use on a laptop in the tank room to set up the controller for the new reef tank, checking each setting against its allowed range before I take the values away. Each setting should be one I can change, and the page should flag any value outside its range and any pair that breaks a rule. Settings, my proposed value, and the allowed range: Water temperature target, 25 degrees, 22 to 27; Heater cutoff, 26.5 degrees, 26 to 30; pH target, 8.5, 7.8 to 8.4; Salinity, 1.025, 1.022 to 1.027; Lights on, 07:30, 06:00 to 09:00; Lights off, 19:30, 17:00 to 21:00; Feeding, 6 grams a day, 2 to 8; Pump flow, 900 liters per hour, 600 to 1200. Two rules link settings: the heater cutoff must be at least 2 degrees above the temperature target, and the lights may be on for no more than 12 hours. Under \"Settings\" show the editable table with a status for each. Under \"Problems\" list what is wrong, in a highlighted callout: right now pH 8.5 is above its maximum of 8.4, and the heater cutoff is only 1.5 above the target. Under \"Settings to paste\" give plain lines, one per setting, in the form name equals value with unit, ready to copy into the controller notes. I will check this by 2026-11-06.",
+  "checklist": {
+    "sections": [
+      "Settings",
+      "Problems",
+      "Settings to paste"
+    ],
+    "visible": [
+      "Water temperature target",
+      "Heater cutoff",
+      "pH target",
+      "Salinity",
+      "Lights on",
+      "Lights off",
+      "Feeding",
+      "Pump flow"
+    ],
+    "values": [
+      "25",
+      "22",
+      "27",
+      "26.5",
+      "26",
+      "30",
+      "8.5",
+      "7.8",
+      "8.4",
+      "1.025",
+      "1.022",
+      "1.027",
+      "07:30",
+      "06:00",
+      "09:00",
+      "19:30",
+      "17:00",
+      "21:00",
+      "6",
+      "2",
+      "8",
+      "900",
+      "600",
+      "1200",
+      "12 hours",
+      "1.5",
+      "2026-11-06"
+    ]
+  },
+  "needs": [
+    "table",
+    "callout",
+    "list"
+  ],
+  "edit": {
+    "request": "Set the pH target to 8.2 and the heater cutoff to 27.5.",
+    "expect_visible": [],
+    "expect_values": [
+      "8.2",
+      "27.5"
+    ],
+    "expect_absent": [
+      "8.5",
+      "26.5"
+    ]
+  }
+}

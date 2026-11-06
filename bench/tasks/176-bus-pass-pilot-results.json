@@ -1,0 +1,74 @@
+{
+  "id": "176-bus-pass-pilot-results",
+  "category": "reports",
+  "title": "Elmbridge free bus pass results",
+  "brief": "I'm the transport policy officer at Elmbridge Council and I need a results report on the free bus pass pilot for councillors who were not involved and who will read it on laptops before the vote on 2026-11-24. The pilot gave 1200 residents aged 65 and over a free pass from 2026-06-01 to 2026-09-30, at a cost of 38400 dollars, or 32 per pass. Open with the headline numbers: rides per pass per fortnight rose from 7 to 12, 71 percent of the 412 passholders surveyed say they visit the town centre more often, and 18 percent say they made fewer car trips. Under \"Rides over time\" chart the average rides per pass in each of the eight fortnights: F1 7, F2 8, F3 9, F4 10, F5 10, F6 11, F7 12, F8 12. Under \"By ward\" give a table of passes, average rides per fortnight at the end and cost in dollars: Hillside 340, 13.1, 10900; Marsh End 310, 11.2, 9900; Kingsgate 290, 12.4, 9300; Weir Lane 260, 10.3, 8300. Weir Lane is the lowest, because the number 14 bus there runs only hourly. Under \"What we learned\" give a list of three findings: use grew every fortnight and had not leveled off, passholders were more likely to shop locally, and 9 percent of passholders never used their pass. Under \"Recommendation\": extend the pass to all residents aged 65 and over from 2027-01-04, at an estimated yearly cost of 410000, and make that stand out.",
+  "checklist": {
+    "sections": [
+      "Rides over time",
+      "By ward",
+      "What we learned",
+      "Recommendation"
+    ],
+    "visible": [
+      "Hillside",
+      "Marsh End",
+      "Kingsgate",
+      "Weir Lane",
+      "F1",
+      "F8",
+      "number 14 bus"
+    ],
+    "values": [
+      "2026-11-24",
+      "1200",
+      "38400",
+      "32",
+      "7",
+      "12",
+      "71",
+      "412",
+      "18",
+      "8",
+      "9",
+      "10",
+      "11",
+      "340",
+      "13.1",
+      "10900",
+      "310",
+      "11.2",
+      "9900",
+      "290",
+      "12.4",
+      "9300",
+      "260",
+      "10.3",
+      "8300",
+      "2026-06-01",
+      "2026-09-30",
+      "2027-01-04",
+      "410000",
+      "9 percent"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "The extension would start on 2027-02-01 instead, at a yearly cost of 395000.",
+    "expect_visible": [],
+    "expect_values": [
+      "2027-02-01",
+      "395000"
+    ],
+    "expect_absent": [
+      "2027-01-04",
+      "410000"
+    ]
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "id": "144-borough-energy-use",
+  "category": "data",
+  "title": "Fenwick Borough energy use",
+  "brief": "I'm the energy officer at Fenwick Borough Council and I'm preparing the sustainability committee page for 2026-11-18, which councillors will read on tablets. For the twelve months October 2025 to September 2026 our five buildings used 5280 megawatt-hours of electricity, 13.7 percent more than the previous twelve months (4645); show these as headline numbers. Under \"Monthly use\" chart the total per month in megawatt-hours: Oct 410, Nov 440, Dec 470, Jan 540, Feb 560, Mar 480, Apr 420, May 380, Jun 360, Jul 370, Aug 390, Sep 460. Under \"By site\" give a table of the latest twelve months, the previous twelve months and the percentage change: Civic Centre 1240, 1310, minus 5.3; Fenwick Pool 1980, 1230, plus 61.0; Town Library 410, 430, minus 4.7; Depot 760, 770, minus 1.3; Sports Hall 890, 905, minus 1.7. Under \"Pool boiler\" explain that the pool's heating boiler failed on 2026-01-12 and portable electric heaters ran until the replacement went in on 2026-02-21; without that episode the whole portfolio would be down, and the pool is the one result to explain to the committee. Make it a warning that stands out. Finish with \"Next steps\": a boiler service contract by 2026-12-15 and a sub-meter on the pool plant room.",
+  "checklist": {
+    "sections": [
+      "Monthly use",
+      "By site",
+      "Pool boiler",
+      "Next steps"
+    ],
+    "visible": [
+      "Civic Centre",
+      "Fenwick Pool",
+      "Town Library",
+      "Depot",
+      "Sports Hall"
+    ],
+    "values": [
+      "2026-11-18",
+      "5280",
+      "13.7",
+      "4645",
+      "410",
+      "440",
+      "470",
+      "540",
+      "560",
+      "480",
+      "420",
+      "380",
+      "360",
+      "370",
+      "390",
+      "460",
+      "1240",
+      "1310",
+      "5.3",
+      "1980",
+      "1230",
+      "61.0",
+      "430",
+      "4.7",
+      "760",
+      "770",
+      "1.3",
+      "890",
+      "905",
+      "1.7",
+      "2026-01-12",
+      "2026-02-21",
+      "2026-12-15"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "callout",
+    "list"
+  ],
+  "edit": {
+    "request": "Fenwick Pool's latest-twelve-months figure was misreported: change it from 1980 to 1890, so its change is plus 53.7 percent and the total becomes 5190, plus 11.7 percent. Also change the January monthly figure from 540 to 450.",
+    "expect_visible": [],
+    "expect_values": [
+      "1890",
+      "53.7",
+      "5190",
+      "11.7",
+      "450"
+    ],
+    "expect_absent": [
+      "1980",
+      "61.0",
+      "5280",
+      "13.7",
+      "540"
+    ]
+  }
+}

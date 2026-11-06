@@ -1,0 +1,53 @@
+{
+  "id": "182-festival-rota-check",
+  "category": "custom-editing",
+  "title": "Lowmoor Festival volunteer rota check",
+  "brief": "I'm the volunteer coordinator for the Lowmoor Food Festival and I need a page for my laptop at the planning desk where I can edit the Saturday 2026-11-14 rota and see at once where it breaks our rules, then copy the final rota to paste into the volunteers' group message. The rules: nobody works more than 6 hours in the day, nobody can be in two places at the same time, and the Gate needs at least 2 people from 09:00 to 17:00. The current rota, as shift, place, volunteer, start and end: S1, Gate, Priya Raman, 09:00, 13:00; S2, Gate, Marcus Oduya, 09:00, 13:00; S3, Gate, Priya Raman, 13:00, 17:00; S4, Gate, Dana Whitlock, 13:00, 17:00; S5, Info desk, Marcus Oduya, 11:00, 15:00; S6, Info desk, Tom Beresford, 09:00, 11:00; S7, Kitchen, Dana Whitlock, 08:00, 12:00. Let me change the volunteer and the times of any shift. Under \"Shifts\" show the editable table. Under \"Conflicts\" list each broken rule in words, highlighted: right now Priya, Marcus and Dana each have 8 hours, and Marcus is double-booked on the Gate and the Info desk from 11:00 to 13:00. Under \"Hours per volunteer\" show each person's total hours next to the limit, written as \"limit of 6 hours\". Under \"Rota to paste\" give the final rota as plain lines, one per shift, ready to copy.",
+  "checklist": {
+    "sections": [
+      "Shifts",
+      "Conflicts",
+      "Hours per volunteer",
+      "Rota to paste"
+    ],
+    "visible": [
+      "Priya Raman",
+      "Marcus Oduya",
+      "Dana Whitlock",
+      "Tom Beresford",
+      "Gate",
+      "Info desk",
+      "Kitchen",
+      "S1",
+      "S7"
+    ],
+    "values": [
+      "2026-11-14",
+      "limit of 6 hours",
+      "8 hours",
+      "2 people",
+      "08:00",
+      "09:00",
+      "11:00",
+      "12:00",
+      "13:00",
+      "15:00",
+      "17:00"
+    ]
+  },
+  "needs": [
+    "table",
+    "callout",
+    "list"
+  ],
+  "edit": {
+    "request": "Change the daily limit from 6 hours to 8 hours, and give shift S5 to Tom Beresford instead of Marcus Oduya.",
+    "expect_visible": [],
+    "expect_values": [
+      "limit of 8 hours"
+    ],
+    "expect_absent": [
+      "limit of 6 hours"
+    ]
+  }
+}

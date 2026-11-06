@@ -1,0 +1,12 @@
+# Switches
+
+toggle dark | Dark mode
+toggle beta on | Beta features
+toggle checkout_v2 off | New checkout
+toggle express needs=checkout_v2 | Express checkout
+toggle ai on needs=checkout_v2,beta | AI assistant
+toggle sync needs="beta, ai" on | Sync with a | in the label
+toggle early needs=late | Needs a toggle declared below
+toggle late | Declared later
+
+export markdown

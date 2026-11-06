@@ -1,0 +1,64 @@
+{
+  "id": "138-ticketing-software-choice",
+  "category": "comparison",
+  "title": "Linnet ticketing software decision",
+  "brief": "Linnet Telecom's support director needs a decision page on which ticketing software to buy, to be projected at the vendor review on 2026-11-10. Our load is 60 agents handling 14000 tickets a month, rising to 21000 a month from the year-end billing peak starting 2026-12-14. Open with the load as headline numbers. Then under \"Options\" compare four on cost per agent per month, setup cost, time to migrate and first-year cost: Helpwell, 49 dollars, 12000, 6 weeks, 47280; Ticketrail, 38 dollars, 18000, 9 weeks, 45360; Openline, self-run free software, about 3900 a month all in, 41000 setup, 16 weeks, 87800; and staying with Legacy Queue at 3100 a month, nothing to migrate, 37200 for the year but vendor support ends on 2027-06-30. Under \"Fit\" give a short list of what matters: automatic routing of tickets to the right team, reports by agent, and a phone integration. Helpwell and Ticketrail have all three, Openline needs custom work for the phone integration, and Legacy Queue has no routing. Under \"Recommendation\": Helpwell, because starting on 2026-10-28 it is live by 2026-12-09, before the peak, while Ticketrail would finish after it. Add a warning that Legacy Queue is only cheap until support ends.",
+  "checklist": {
+    "sections": [
+      "Options",
+      "Fit",
+      "Recommendation"
+    ],
+    "visible": [
+      "Helpwell",
+      "Ticketrail",
+      "Openline",
+      "Legacy Queue",
+      "automatic routing",
+      "phone integration"
+    ],
+    "values": [
+      "2026-11-10",
+      "60",
+      "14000",
+      "21000",
+      "2026-12-14",
+      "49",
+      "12000",
+      "6 weeks",
+      "47280",
+      "38",
+      "18000",
+      "9 weeks",
+      "45360",
+      "3900",
+      "41000",
+      "16 weeks",
+      "87800",
+      "3100",
+      "37200",
+      "2027-06-30",
+      "2026-10-28",
+      "2026-12-09"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Ticketrail's vendor has cut its price to 31 dollars per agent per month, so its first-year cost is now 40320. Also add to the Fit list that Helpwell includes a chat widget for the website.",
+    "expect_visible": [
+      "chat widget"
+    ],
+    "expect_values": [
+      "31",
+      "40320"
+    ],
+    "expect_absent": [
+      "45360"
+    ]
+  }
+}

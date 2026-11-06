@@ -1,0 +1,67 @@
+{
+  "id": "180-manuscript-review-path",
+  "category": "reports",
+  "title": "Roanoke Review manuscript path",
+  "brief": "I'm the managing editor of the Roanoke Review, a literary journal, and I want a page for our new editorial board members, who will read it on tablets before their first meeting on 2026-11-09, that explains how a manuscript moves through the journal and where it gets stuck. Under \"The path\" draw it as a flow. It starts at \"Submission received\", then \"Desk check\". Desk check either rejects it, going to \"Desk reject\", or passes it to \"Find two reviewers\", then \"Peer review\", then \"Editor decision\". The editor decision has three outcomes: \"Reject\", \"Accept\", or \"Request revision\". Request revision goes to \"Author revises\", which returns to \"Editor decision\" labeled \"revised version\". Accept goes to \"Copyedit\", then \"Proofs\", then \"Published\". Under \"Time at each stage\" give a table of target and actual median days: Desk check 7, 5; Find two reviewers 14, 19; Peer review 28, 41; Editor decision 7, 9; Author revises 30, 62; Copyedit 14, 12; Proofs 7, 6. Under \"Where it gets stuck\" a list: finding reviewers, where 1 in 3 invitations is declined; peer review itself, where reviewers are 13 days late at the median; and authors, who take twice the allowed time to revise. Add a note that the first decision takes 74 days against a target of 56, out of 480 submissions a year and an acceptance rate of 11 percent.",
+  "checklist": {
+    "sections": [
+      "The path",
+      "Time at each stage",
+      "Where it gets stuck"
+    ],
+    "visible": [
+      "Submission received",
+      "Desk check",
+      "Desk reject",
+      "Find two reviewers",
+      "Peer review",
+      "Editor decision",
+      "Request revision",
+      "Author revises",
+      "Copyedit",
+      "Proofs",
+      "Published",
+      "revised version"
+    ],
+    "values": [
+      "2026-11-09",
+      "7",
+      "5",
+      "14",
+      "19",
+      "28",
+      "41",
+      "9",
+      "30",
+      "62",
+      "12",
+      "6",
+      "1 in 3",
+      "13 days",
+      "74 days",
+      "56",
+      "480",
+      "11 percent"
+    ]
+  },
+  "needs": [
+    "diagram",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add a step \"Plagiarism check\" between Desk check and Find two reviewers, and change the Peer review actual from 41 to 35 days and the first decision time from 74 days to 68 days.",
+    "expect_visible": [
+      "Plagiarism check"
+    ],
+    "expect_values": [
+      "35",
+      "68 days"
+    ],
+    "expect_absent": [
+      "41",
+      "74 days"
+    ]
+  }
+}

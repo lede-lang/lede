@@ -1,0 +1,51 @@
+{
+  "id": "135-portal-sign-in-flow",
+  "category": "architecture",
+  "title": "Wrenfield portal sign-in flow",
+  "brief": "Please write up for the IT help desk of Wrenfield University how a student gets signed in to the course portal, as a page they will read on laptops while taking calls, dated 2026-10-26. Section \"Sign-in sequence\": five parties, named exactly Student Browser, Course Portal, Identity Provider, Directory, Session Store. In order: Student Browser to Course Portal \"open course list\"; Course Portal to Student Browser \"redirect to sign-in\"; Student Browser to Identity Provider \"password and authenticator code\"; Identity Provider to Directory \"check account and groups\"; Directory to Identity Provider \"active, groups: undergrad, library\"; Identity Provider to Student Browser \"signed token, valid 8 hours\"; Student Browser to Course Portal \"present token\"; Course Portal to Identity Provider \"verify token\"; Identity Provider to Course Portal \"token valid\"; Course Portal to Session Store \"create session, 30 minute idle limit\"; Course Portal to Student Browser \"course list\". Section \"Time limits\" as a table: signed token, 8 hours; idle session, 30 minutes; authenticator code, 30 seconds; lockout after 5 wrong passwords, 15 minutes. Section \"Common calls\", three cases with what the help desk does: account locked after 5 wrong passwords, so wait 15 minutes or ask a supervisor to unlock it; student says the code is always wrong, so check the phone clock is set automatically; session ended mid-quiz, so the 30 minute idle limit applies and quiz timers keep running. Remind agents prominently that they must never ask a student to read out a password.",
+  "checklist": {
+    "sections": [
+      "Sign-in sequence",
+      "Time limits",
+      "Common calls"
+    ],
+    "visible": [
+      "Student Browser",
+      "Course Portal",
+      "Identity Provider",
+      "Directory",
+      "Session Store",
+      "redirect to sign-in",
+      "check account and groups",
+      "signed token, valid 8 hours",
+      "create session, 30 minute idle limit",
+      "course list"
+    ],
+    "values": [
+      "2026-10-26",
+      "8 hours",
+      "30 minutes",
+      "30 seconds",
+      "5",
+      "15 minutes"
+    ]
+  },
+  "needs": [
+    "sequence",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the signed token validity from 8 hours to 12 hours, and add a last message after the course list: Student Browser to Course Portal \"request first lesson\".",
+    "expect_visible": [
+      "request first lesson"
+    ],
+    "expect_values": [
+      "12 hours"
+    ],
+    "expect_absent": [
+      "8 hours"
+    ]
+  }
+}

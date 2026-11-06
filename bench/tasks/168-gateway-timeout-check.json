@@ -1,0 +1,54 @@
+{
+  "id": "168-gateway-timeout-check",
+  "category": "code-review",
+  "title": "Bramblewick gateway timeout check",
+  "brief": "I'm Tobias Ekwueme on the platform team at Bramblewick Marketplace, and for the configuration review on 2026-11-05, which we will project in the meeting room, I want a page that shows what our gateway settings really do to a caller, not what they look like they do. Here are the settings, pasted as they are:\ndefault.timeout_seconds = 30\ndefault.retries = 2\nroute.search.timeout_seconds = 5\nroute.search.retries = 3\nroute.export.timeout_seconds = 120\nroute.export.retries = 0\nroute.login.timeout_seconds = 8\nupstream.max_wait_seconds = 60\nThe rules: a route uses its own value if it has one, otherwise the default; retries are extra attempts, so attempts = retries + 1; each attempt can take up to the timeout; and the total wait for a caller is capped by upstream.max_wait_seconds. Under \"Settings\" show them as written. Under \"What really happens\" give a table for the routes /search, /export, /login and /health (which has no overrides): timeout, attempts, uncapped worst case and the real worst case in seconds. That is /search 5, 4, 20, 20; /export 120, 1, 120, 60; /login 8, 3, 24, 24; /health 30, 3, 90, 60. Under \"Surprises\" a list: the export timeout of 120 can never be reached because the cap cuts it at 60, /health can hang a caller for 60 seconds, which is far too long for a health check, and /login with 3 attempts can take 24 seconds. Under \"What to change\": give /health its own timeout of 3 and 0 retries. Make the /health finding stand out.",
+  "checklist": {
+    "sections": [
+      "Settings",
+      "What really happens",
+      "Surprises",
+      "What to change"
+    ],
+    "visible": [
+      "/search",
+      "/export",
+      "/login",
+      "/health",
+      "upstream.max_wait_seconds"
+    ],
+    "values": [
+      "2026-11-05",
+      "30",
+      "2",
+      "5",
+      "3",
+      "120",
+      "0",
+      "8",
+      "60",
+      "4",
+      "1",
+      "20",
+      "24",
+      "90"
+    ]
+  },
+  "needs": [
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Set upstream.max_wait_seconds to 45 and the export timeout to 40; then /health can hang for 45 seconds and /export for 40.",
+    "expect_visible": [],
+    "expect_values": [
+      "45",
+      "40"
+    ],
+    "expect_absent": [
+      "60",
+      "120"
+    ]
+  }
+}

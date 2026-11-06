@@ -1,0 +1,57 @@
+{
+  "id": "172-garden-show-looks",
+  "category": "design",
+  "title": "Fernhill Garden Show looks",
+  "brief": "I'm the organizer of the Fernhill Garden Show, and our committee has to choose how the show's page should look. We will sit around a table with the page projected, so please show the same content three times, side by side, in three different looks, each labeled. The content: the show runs 2027-05-14 to 2027-05-16 at Fernhill Park; tickets are adult 14 dollars, concession 9 dollars, and children under 12 free; the highlights are Friday 10:00 opening by the mayor, Saturday 11:00 rose pruning demonstration, and Sunday 14:00 children's seed workshop. A note says Saturday tickets sell out, so book ahead. Look 1 is called \"Botanical\": deep green #1F4D3A on cream #F6F1E4, an elegant serif for headings, generous space. Look 2 is called \"Poster\": bold sunflower yellow #FFC400 with black #111111, very large heavy headings, tight and loud. Look 3 is called \"Quiet\": almost all white #FFFFFF with slate #3C4A57 text and thin lines, small neat type. Under each look, list its colors with their hex values. Add a short \"Which to choose\" section from me: Botanical suits our older visitors, Poster suits social media, Quiet suits printing, and I lean towards Botanical.",
+  "checklist": {
+    "sections": [
+      "Botanical",
+      "Poster",
+      "Quiet",
+      "Which to choose"
+    ],
+    "visible": [
+      "Fernhill Garden Show",
+      "Fernhill Park",
+      "adult",
+      "concession",
+      "rose pruning demonstration",
+      "seed workshop"
+    ],
+    "values": [
+      "2027-05-14",
+      "2027-05-16",
+      "14",
+      "9",
+      "12",
+      "10:00",
+      "11:00",
+      "14:00",
+      "#1F4D3A",
+      "#F6F1E4",
+      "#FFC400",
+      "#111111",
+      "#FFFFFF",
+      "#3C4A57"
+    ]
+  },
+  "needs": [
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add a fourth look called \"Retro\": orange #E8590C on off-white #FFF4E6 with rounded friendly lettering, and change the Saturday demonstration time to 12:30.",
+    "expect_visible": [
+      "Retro"
+    ],
+    "expect_values": [
+      "#E8590C",
+      "#FFF4E6",
+      "12:30"
+    ],
+    "expect_absent": [
+      "11:00"
+    ]
+  }
+}

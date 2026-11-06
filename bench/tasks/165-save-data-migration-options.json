@@ -1,0 +1,54 @@
+{
+  "id": "165-save-data-migration-options",
+  "category": "specs-planning",
+  "title": "Sandcastle save data migration options",
+  "brief": "I'm an engineering manager at Sandcastle Studios, and I want a planning page that compares three ways of moving our 4.2 million player progress records to the new storage before the winter event, to be shared on screen in the engineering leads' call on 2026-11-04. Under \"Context\": the event starts on 2026-12-03, the old storage is switched off on 2027-01-15, and we cannot take the game offline for more than 30 minutes. Under \"Options\", as a table with effort, extra cost, risk and what finishes when: A, migrate each player when they next sign in, 5 engineer-weeks, no extra cost, risk that players who do not return before 2027-01-15, an estimated 14 percent or 590000 records, are left behind; B, one batch migration over a weekend downtime, 3 engineer-weeks, 8000 dollars, risk that the batch overruns the 30-minute limit, since a test run took 41 minutes; C, write to both storages and cut over after a check, 9 engineer-weeks, 21000 dollars, risk of the two copies disagreeing. Under \"If it fails\", what would have to be undone: A, run a catch-up batch for the 590000 stragglers; B, restore the old storage from the snapshot taken just before, which takes 2 hours; C, switch reads back to the old storage within minutes, the cheapest to undo. Under \"Recommendation\": C, starting 2026-11-09, as it is the only one that is safe to reverse; accept the 9 engineer-weeks.",
+  "checklist": {
+    "sections": [
+      "Context",
+      "Options",
+      "If it fails",
+      "Recommendation"
+    ],
+    "visible": [
+      "player progress records",
+      "snapshot",
+      "catch-up batch",
+      "winter event"
+    ],
+    "values": [
+      "2026-11-04",
+      "4.2 million",
+      "2026-12-03",
+      "2027-01-15",
+      "30 minutes",
+      "5 engineer-weeks",
+      "14 percent",
+      "590000",
+      "3 engineer-weeks",
+      "8000",
+      "41 minutes",
+      "9 engineer-weeks",
+      "21000",
+      "2 hours",
+      "2026-11-09"
+    ]
+  },
+  "needs": [
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "The batch test run now takes 24 minutes, which fits the limit, and the batch cost is 6000 dollars. Update option B accordingly.",
+    "expect_visible": [],
+    "expect_values": [
+      "24 minutes",
+      "6000"
+    ],
+    "expect_absent": [
+      "41 minutes",
+      "8000"
+    ]
+  }
+}

@@ -2,13 +2,13 @@
 // lede build | watch | check | ast
 import { readFileSync, writeFileSync, watch as fsWatch, existsSync, realpathSync, statSync } from 'node:fs';
 import { dirname, resolve, basename, sep } from 'node:path';
-import { parse, fix, type Diagnostic, type LedeDocument } from '@lede-lang/core';
+import { parse, fix, artifactDiagnostics, type Diagnostic, type LedeDocument } from '@lede-lang/core';
 import { render, wantsShell } from '@lede-lang/html';
 
 const USAGE = `usage:
   lede build <file.lede> [-o out.html] [--force] [--unsafe-html] [--allow-remote] [--artifact] [--shell]
   lede watch <file.lede> [-o out.html]
-  lede check <file.lede>... [--json] [--fix [--dry-run]]
+  lede check <file.lede>... [--json] [--fix [--dry-run]] [--artifact]
   lede ast   <file.lede>
   lede help`;
 
@@ -26,9 +26,12 @@ options:
   --force         build: write the page even if it has errors
   --unsafe-html   build: keep raw \`html\` blocks unsanitized (local files only)
   --allow-remote  build: load remote images (links never need it)
-  --artifact      build: write only <title>, <style> and <main>, for the Claude Artifact tool, which wraps them in its own page
-  --shell         build/watch: add the interaction shell to a page with ask, choose or confirm lines and an export line: one fixed
-                  script, pinned by hash in the page's policy, that keeps the answers and copies them out. Not with --unsafe-html
+  --artifact      build: write only <title>, <style> and <main>, for the Claude Artifact tool, which wraps them in its own page;
+                  check/build: also warn about an image path the host cannot serve (W artifact-image)
+  --shell         build/watch: add the interaction shell to a page with a field (ask, choose, confirm, param, toggle, bucket or template)
+                  and an export line (export json, markdown or prompt): one fixed script, pinned by hash in the page's policy, that
+                  keeps the answers and copies them out. Not with --unsafe-html. A page that cannot take it gets a note on stderr
+                  (in watch, once, not on every save)
   --json          check: print diagnostics as JSON, keyed by file; each has severity, code, message,
                   line, col and, for some codes, a machine-readable \`detail\` object
   --fix           check: rewrite the file to repair mechanical slips (unquoted , or ; in cells,
@@ -54,9 +57,12 @@ function parseOptions(file: string) {
   };
 }
 
-function load(file: string): { src: string; doc: LedeDocument } {
+/** Read and parse `file`. With `artifact`, its diagnostics also hold the warnings only an Artifact host needs. */
+function load(file: string, artifact = false): { src: string; doc: LedeDocument } {
   const src = readFileSync(file, 'utf8');
-  return { src, doc: parse(src, parseOptions(file)) };
+  const doc = parse(src, parseOptions(file));
+  if (artifact) doc.diagnostics.push(...artifactDiagnostics(doc));
+  return { src, doc };
 }
 
 function report(file: string, src: string, diags: Diagnostic[]): void {
@@ -76,8 +82,13 @@ function summary(errors: number, warnings: number): string {
   return counts.length ? counts.join(', ') : 'ok';
 }
 
-async function build(file: string, out: string | null, flags: Set<string>): Promise<boolean> {
-  const { src, doc } = load(file);
+/** What `watch` remembers between rebuilds: whether the last one said `--shell` had no effect, so the next says it only when that starts to hold. */
+interface Watching {
+  shellIdle: boolean;
+}
+
+async function build(file: string, out: string | null, flags: Set<string>, watching?: Watching): Promise<boolean> {
+  const { src, doc } = load(file, flags.has('--artifact'));
   report(file, src, doc.diagnostics);
   const errors = doc.diagnostics.filter((d) => d.severity === 'error').length;
   if (errors && !flags.has('--force')) {
@@ -91,8 +102,12 @@ async function build(file: string, out: string | null, flags: Set<string>): Prom
     artifact: flags.has('--artifact'),
     shell,
   });
-  if (shell && !wantsShell(doc))
-    process.stderr.write(`${file}: --shell had no effect: the page needs an ask, choose or confirm line and an export line\n`);
+  const idle = shell && !wantsShell(doc);
+  if (idle && !watching?.shellIdle)
+    process.stderr.write(
+      `${file}: --shell had no effect: the page needs a field (ask, choose, confirm, param, toggle, bucket or template) and an export line\n`,
+    );
+  if (watching) watching.shellIdle = idle;
   if (out) writeFileSync(out, html);
   else process.stdout.write(html);
   if (out)
@@ -148,7 +163,7 @@ async function main(argv: string[]): Promise<number> {
             });
           } else if (r.src !== before) writeFileSync(f, r.src);
         }
-        const { src, doc } = load(f);
+        const { src, doc } = load(f, flags.has('--artifact'));
         all[f] = doc.diagnostics;
         if (!flags.has('--json')) report(f, src, doc.diagnostics);
         bad += doc.diagnostics.filter((d) => d.severity === 'error').length;
@@ -163,11 +178,12 @@ async function main(argv: string[]): Promise<number> {
       return 0;
     case 'watch': {
       const target = out ?? resolve(dirname(files[0]), `${basename(files[0], '.lede')}.html`);
-      await build(files[0], target, new Set([...flags, '--force']));
+      const watching: Watching = { shellIdle: false };
+      await build(files[0], target, new Set([...flags, '--force']), watching);
       let timer: NodeJS.Timeout | null = null;
       fsWatch(files[0], () => {
         if (timer) clearTimeout(timer);
-        timer = setTimeout(() => void build(files[0], target, new Set([...flags, '--force'])), 60);
+        timer = setTimeout(() => void build(files[0], target, new Set([...flags, '--force']), watching), 60);
       });
       process.stderr.write(`watching ${files[0]} → ${target}\n`);
       return await new Promise<number>(() => {});

@@ -1,5 +1,6 @@
 import type {
   Block,
+  BucketBlock,
   CardItem,
   CardsBlock,
   ChartBlock,
@@ -17,14 +18,40 @@ import type {
   KpiBlock,
   ListItem,
   LedeDocument,
+  ParamBlock,
+  PresetBlock,
   QuestionBlock,
   Step,
   TableBlock,
+  TemplateBlock,
+  ToggleBlock,
 } from './ast.ts';
 import { num, parseInlineCsv, parseOpts, pipeOutsideQuotes, readQuoted, tokens } from './lex.ts';
-import { NOT_CHOSEN } from './fields.ts';
+import { FIELD_KINDS, NOT_CHOSEN, SLOT_RE } from './fields.ts';
 import { AA_NON_TEXT, AA_TEXT, HEX_COLOR, accentContrast } from './contrast.ts';
 import { browserUrl, imageSrcKind } from './url.ts';
+import { walkBlocks } from './walk.ts';
+
+/**
+ * Callbacks for a streaming consumer, the second argument of `new LedeParser` (`LedeStream.events` installs them). Each runs after
+ * the line has been applied. They are not a `ParseOptions` field, so `parse` and the snapshot parser cannot take them.
+ */
+export interface ParseHooks {
+  /**
+   * A `name:` line was read for the diagram `block` declared earlier. `changed` is false when the line was rejected or repeated what
+   * the diagram already has (its nodes, edges, groups, notes, frames and legend are as they were); it is still a line of the diagram.
+   */
+  onDiagramLine(block: DiagramBlock, changed: boolean): void;
+  /**
+   * A `NAME: ITEM | BUCKET` line was read for the bucket set `block` declared earlier (spec §4.19). `changed` is true when the item
+   * was added, and false when the line was rejected (no text, no bucket, an unknown bucket) or repeated an item the set has. The
+   * line is a statement of the set either way, as a rejected line is a statement of a diagram. Optional, so a hooks object written
+   * before bucket sets existed keeps working.
+   */
+  onBucketItem?(block: BucketBlock, changed: boolean): void;
+  /** `data NAME += rows` appended rows to the data set `name`. */
+  onDataAppend(name: string): void;
+}
 
 export interface ParseOptions {
   /** Resolves `data name < path`. Without it, file data is an error (browsers, sandboxes). */
@@ -45,6 +72,11 @@ export const KEYWORDS = [
   'choose',
   'confirm',
   'export',
+  'param',
+  'toggle',
+  'bucket',
+  'template',
+  'preset',
 ] as const;
 export const META_KEYS = ['title', 'subtitle', 'description', 'author', 'date', 'accent', 'theme', 'lang', 'width', 'fonts'];
 const CHART_KINDS: ChartKind[] = ['line', 'area', 'bar', 'hbar', 'range'];
@@ -52,6 +84,49 @@ const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const KEYWORD_RE = new RegExp(`^(${KEYWORDS.join('|')})(?=\\s|$)`);
 /** A question or diagram name. */
 const NAME_RE = /^[A-Za-z][\w-]*$/;
+/** The same pattern as source text, to build the line shapes below from. */
+const NAME = NAME_RE.source.slice(1, -1);
+/**
+ * An editor word's line: the word, a name, then anything up to a `|` on the same line, or else one of the `alt` openings (a regex source:
+ * the options that make a line a keyword line before any `|` is written, so that the missing `|` fails loudly).
+ */
+const editorShape = (word: string, alt = ''): RegExp => new RegExp(`^${word}\\s+${NAME}(?:(?=[\\s|])[^|]*\\|${alt ? `|${alt}` : ''})`);
+/**
+ * Keyword lines that are keyword lines only in their shape (spec §4.18, §4.19), because prose may start with the word: `cards` takes
+ * nothing after it and `export` at most one word, and an editor word needs its name and then, somewhere on the line, a `|` (for `param`
+ * also `unit=`, for `toggle` also `on`, `off` or `needs=`, which fail loudly without one). `cards on the table`, `export the data` and
+ * `toggle the flag on Monday` are prose. Any other keyword is a keyword line whatever follows.
+ */
+const SHAPES: Partial<Record<string, RegExp>> = {
+  cards: /^cards$/,
+  export: /^export(?:\s+\S+)?$/,
+  param: editorShape('param', '\\s+unit='),
+  toggle: editorShape('toggle', '\\s+(?:on|off)(?=[\\s|]|$)|\\s+needs='),
+  bucket: editorShape('bucket'),
+  template: editorShape('template'),
+  preset: editorShape('preset'),
+};
+/** Marks a `bucket` name the export would write for something else (`choose` reserves `(not chosen)` the same way). */
+const BUCKET_RESERVED = [NOT_CHOSEN, '(empty)'];
+type Space = 'data' | 'diagram' | 'bucket';
+const SPACES: readonly Space[] = ['data', 'diagram', 'bucket'];
+/** How a message names the kind of name that is taken. */
+const NOUN: Record<Space, string> = { data: 'data', diagram: 'diagram', bucket: 'bucket set' };
+const RENAME_DIAGRAM = (name: string) => `rename the diagram (e.g. \`diagram ${name}-flow\`)`;
+/**
+ * A name declared as one kind when another already has it, keyed `declared>had`: what the message says to rename, and the key of the
+ * diagnostic's `detail` (the name itself under that key), if it has one. `lede check --fix` reads the `diagram` key.
+ */
+const CLASH: Record<string, [fix: (name: string) => string, key: 'diagram' | 'bucket' | null]> = {
+  'data>diagram': [RENAME_DIAGRAM, null],
+  'data>bucket': [(name) => `rename the data (e.g. \`data ${name}-rows\`)`, 'bucket'],
+  'diagram>data': [RENAME_DIAGRAM, 'diagram'],
+  'diagram>bucket': [RENAME_DIAGRAM, 'bucket'],
+  'bucket>data': [() => 'rename the bucket set', 'bucket'],
+  'bucket>diagram': [() => 'rename the bucket set', 'bucket'],
+};
+/** Tolerance when a number is tested against a step grid or the 1,000-step cap. */
+const EPS = 1e-9;
 
 type Acc =
   | { kind: 'paragraph'; lines: string[]; line: number }
@@ -73,12 +148,68 @@ interface Fence {
   raw: boolean;
   lines: string[];
   line: number;
+  /** Set when the fence is a `template`'s body; closing it emits the template, not a code block. */
+  template?: PendingTemplate;
+}
+
+/** A `template NAME | LABEL` line waiting for its fence: it takes its name when the fence closes. */
+interface PendingTemplate {
+  name: string;
+  text: string;
+  line: number;
+  col: number;
+}
+
+/** The block an accumulator (paragraph, list, quote, kpi row, step run) becomes when it is flushed. */
+function accBlock(a: Acc): Block {
+  if (a.kind === 'paragraph') return { type: 'paragraph', text: a.lines.join(' '), line: a.line };
+  if (a.kind === 'list') return { type: 'list', ordered: a.ordered, start: a.start, items: a.items, line: a.line };
+  if (a.kind === 'kpis') return { type: 'kpis', items: a.items, line: a.line } satisfies KpiBlock;
+  if (a.kind === 'steps') return { type: 'steps', items: a.items, line: a.line };
+  let cite: string | null = null;
+  const lines = [...a.lines];
+  const last = lines[lines.length - 1];
+  if (lines.length > 1 && /^(—|--|–)\s*/.test(last)) {
+    cite = last.replace(/^(—|--|–)\s*/, '');
+    lines.pop();
+  }
+  return { type: 'quote', text: lines.join(' '), cite, line: a.line };
+}
+
+/**
+ * An accumulator the block `peek` builds from it can own. A list, kpi row or step run hands its items to the block it becomes, and
+ * the parser keeps adding to them, so those are copied (each item is a flat object of strings and flags); a paragraph and a quote
+ * become new strings.
+ */
+function copyAcc(a: Acc): Acc {
+  switch (a.kind) {
+    case 'list':
+      return { ...a, items: a.items.map((i) => ({ ...i })) };
+    case 'kpis':
+      return { ...a, items: a.items.map((i) => ({ ...i })) };
+    case 'steps':
+      return { ...a, items: a.items.map((i) => ({ ...i })) };
+    default:
+      return a;
+  }
+}
+
+/** The lines a fence holds, with the common indentation stripped so an indented fence reads like an unindented one. */
+function fenceBody(f: Fence): string {
+  const ind = Math.min(...f.lines.filter((l) => l.trim()).map((l) => l.length - l.trimStart().length), Infinity);
+  return f.lines.map((l) => (Number.isFinite(ind) ? l.slice(ind) : l)).join('\n');
+}
+
+/** The `code` (or raw `html`) block a fence becomes with the lines it holds. */
+function fenceBlock(f: Fence): Block {
+  const body = fenceBody(f);
+  return f.raw ? { type: 'html', html: body, line: f.line } : { type: 'code', lang: f.lang, text: body, line: f.line };
 }
 
 /**
  * Line-at-a-time parser. `pushLine` returns the top-level blocks that became
  * final with that line; a block never changes after it is returned, except a
- * diagram (later `name:` lines add to it) and a table/chart whose data gets
+ * diagram or a bucket set (later `name:` lines add to it) and a table/chart whose data gets
  * `+=` rows. Both are resolved again at render time. A `cards` run (v0.4) is
  * held back until it ends; blocks around it still stream as usual.
  */
@@ -94,18 +225,26 @@ export class LedeParser {
   /** The open alt/opt frame per sequence diagram, and how many rejected nested openers still await their `end`. */
   private seq = new WeakMap<DiagramBlock, { open: DiagramFrame | null; skip: number }>();
   private lineNo = 0;
-  /** Question names to the line that first used them (a Map, so `constructor` is an ordinary name), and the `export` formats seen. */
-  private names = new Map<string, number>();
+  /** The `export` formats seen, to the line that first used each. */
   private exports = new Map<string, number>();
+  /**
+   * The fields (spec §4.18, §4.19) by name, in source order: the block, and where the text after its word started, for the checks
+   * `end()` makes. A Map, so `constructor` is an ordinary name. A preset has a name but no value in the export, so it is kept apart.
+   */
+  private fields = new Map<string, { block: QuestionBlock; col: number }>();
+  private presetNames = new Map<string, number>();
+  private tpl: PendingTemplate | null = null;
   /** Where the last valid `@accent` was written; its contrast is checked in `end()`, once `@theme` is known. */
   private accentAt: { line: number; col: number } | null = null;
   private out: Block[] = [];
   private anon = 0;
 
   private readonly opts: ParseOptions;
+  private readonly hooks: ParseHooks | undefined;
 
-  constructor(opts: ParseOptions = {}) {
+  constructor(opts: ParseOptions = {}, hooks?: ParseHooks) {
     this.opts = opts;
+    this.hooks = hooks;
   }
 
   pushLine(raw: string): Block[] {
@@ -144,10 +283,49 @@ export class LedeParser {
       this.grid = null;
       this.doc.blocks.push(g);
     }
+    this.checkEditors();
     this.checkAccent();
     this.checkExport();
     resolve(this.doc);
     return this.doc;
+  }
+
+  /**
+   * The blocks `end()` would still add, without ending the parser or changing anything: the open paragraph, list, quote, kpi
+   * row, step run or fence, the `cards` run and the `grid` as they stand. The result is what a snapshot of the lines so
+   * far shows beyond the blocks already returned by `pushLine`. Costs the size of the open block. A keyword line is never
+   * part of it (it is a block or a diagnostic on its own line), but the fence a `template` line opened is: it is the template
+   * block, with the text so far as its body. A `template` line with no fence yet adds nothing.
+   */
+  peek(): Block[] {
+    const f = this.fence;
+    // An open `template` fence is the template block the lines so far make (not registered: only its closing fence does that).
+    let open: Block | null = f
+      ? f.template
+        ? this.templateBlock(f, f.template, this.scanTemplate(f).slots)
+        : fenceBlock(f)
+      : this.acc
+        ? accBlock(copyAcc(this.acc))
+        : null;
+    const out: Block[] = [];
+    const c = this.cards;
+    // `emit` hands the open block to the open card, else the open grid, else the page.
+    if (open && !c?.card && !this.grid) {
+      out.push(open);
+      open = null;
+    }
+    if (c && c.block.items.length > 0) {
+      const items = [...c.block.items];
+      if (c.card && open) {
+        items[items.length - 1] = { ...c.card, blocks: [...c.card.blocks, open] };
+        open = null;
+      }
+      out.push({ ...c.block, items }, ...c.deferred);
+    }
+    if (this.grid) {
+      out.push({ ...this.grid, children: open ? [...this.grid.children, open] : [...this.grid.children] });
+    }
+    return out;
   }
 
   // ------------------------------------------------------------ accent (D49)
@@ -192,14 +370,21 @@ export class LedeParser {
       this.flush();
       return;
     }
+    const fm = /^(`{3,})\s*(=?)([\w+-]*)\s*$/.exec(s);
+    // A `template` line takes the next non-blank line as its fence; any other line, or a raw html fence, leaves it without one.
+    const template = this.tpl ?? undefined;
+    if (template) {
+      this.tpl = null;
+      if (!fm || fm[2] === '=') this.templateFence(template);
+    }
     if (s.startsWith('\\')) {
       this.textLine(s.slice(1));
       return;
     }
-    const fm = /^(`{3,})\s*(=?)([\w+-]*)\s*$/.exec(s);
     if (fm) {
       this.flush();
       this.fence = { ticks: fm[1].length, raw: fm[2] === '=', lang: fm[3], lines: [], line: L };
+      if (template && fm[2] !== '=') this.fence.template = template;
       if (fm[2] === '=' && fm[3] !== 'html') {
         this.diag('error', 'raw-format', `raw fence must be \`\`\`=html, not =${fm[3]}`, L, lead + 1);
       }
@@ -287,18 +472,26 @@ export class LedeParser {
       return;
     }
     const kw = KEYWORD_RE.exec(s);
-    // `cards` takes nothing after it: `cards on the table` stays prose. `export` takes at most one word: `export the data` does too.
-    if (kw && !(kw[1] === 'cards' && s !== 'cards') && !(kw[1] === 'export' && s.split(/\s+/).length > 2)) {
+    // Some keywords start a keyword line only in their shape; the rest of the time the line is prose (see SHAPES).
+    if (kw && (SHAPES[kw[1]]?.test(s) ?? true)) {
       const rest = s.slice(kw[1].length).trim();
       const restCol = lead + 1 + s.indexOf(rest, kw[1].length);
       this.keyword(kw[1], rest, restCol, lead);
       return;
     }
     const dl = /^([A-Za-z][\w-]*):\s*(.*)$/.exec(s);
-    if (dl && this.diagrams.has(dl[1])) {
+    // A `NAME:` line binds to a bucket set before it can bind to a diagram (a set and a diagram never share a name).
+    const owner = dl ? (this.bucketSet(dl[1]) ?? this.diagrams.get(dl[1])) : undefined;
+    if (dl && owner) {
       this.flush();
       const col = lead + 1 + s.indexOf(':') + 1 + (s.slice(s.indexOf(':') + 1).length - s.slice(s.indexOf(':') + 1).trimStart().length);
-      this.diagramLine(this.diagrams.get(dl[1])!, dl[2].trim(), col);
+      if (owner.type === 'bucket') {
+        const changed = this.bucketItem(owner, dl[2].trim(), col);
+        this.hooks?.onBucketItem?.(owner, changed);
+      } else {
+        const changed = this.diagramLine(owner, dl[2].trim(), col);
+        this.hooks?.onDiagramLine(owner, changed);
+      }
       return;
     }
     if (dl && /(-->|->|<->)/.test(dl[2])) {
@@ -357,20 +550,7 @@ export class LedeParser {
     const a = this.acc;
     if (!a) return;
     this.acc = null;
-    if (a.kind === 'paragraph') this.emit({ type: 'paragraph', text: a.lines.join(' '), line: a.line });
-    else if (a.kind === 'list') this.emit({ type: 'list', ordered: a.ordered, start: a.start, items: a.items, line: a.line });
-    else if (a.kind === 'kpis') this.emit({ type: 'kpis', items: a.items, line: a.line } satisfies KpiBlock);
-    else if (a.kind === 'steps') this.emit({ type: 'steps', items: a.items, line: a.line });
-    else {
-      let cite: string | null = null;
-      const lines = [...a.lines];
-      const last = lines[lines.length - 1];
-      if (lines.length > 1 && /^(—|--|–)\s*/.test(last)) {
-        cite = last.replace(/^(—|--|–)\s*/, '');
-        lines.pop();
-      }
-      this.emit({ type: 'quote', text: lines.join(' '), cite, line: a.line });
-    }
+    this.emit(accBlock(a));
   }
 
   private fenceLine(raw: string): void {
@@ -386,11 +566,8 @@ export class LedeParser {
   private closeFence(): void {
     const f = this.fence!;
     this.fence = null;
-    // Strip the common indentation so an indented fence reads like an unindented one.
-    const ind = Math.min(...f.lines.filter((l) => l.trim()).map((l) => l.length - l.trimStart().length), Infinity);
-    const body = f.lines.map((l) => (Number.isFinite(ind) ? l.slice(ind) : l)).join('\n');
-    if (f.raw) this.emit({ type: 'html', html: body, line: f.line });
-    else this.emit({ type: 'code', lang: f.lang, text: body, line: f.line });
+    if (f.template) this.closeTemplate(f, f.template);
+    else this.emit(fenceBlock(f));
   }
 
   private emit(b: Block): void {
@@ -470,6 +647,16 @@ export class LedeParser {
         return this.questionLine(kw, rest, col);
       case 'export':
         return this.exportLine(rest, col);
+      case 'param':
+        return this.paramLine(rest, col);
+      case 'toggle':
+        return this.toggleLine(rest, col);
+      case 'bucket':
+        return this.bucketLine(rest, col);
+      case 'template':
+        return this.templateLine(rest, col);
+      case 'preset':
+        return this.presetLine(rest, col);
       case 'cards': {
         if (this.cards) this.closeCards();
         if (this.grid) this.closeGrid(true);
@@ -517,36 +704,18 @@ export class LedeParser {
    */
   private questionLine(word: 'ask' | 'choose' | 'confirm', rest: string, col: number): void {
     const L = this.lineNo;
-    const bar = rest.indexOf('|');
-    if (bar < 0) {
-      this.diag('error', 'question-syntax', `${word} needs \`${word} NAME | text\` (start the line with \\ if it is prose)`, L, col, {
-        word,
-      });
-      return;
-    }
+    const usage = `${word} NAME | text`;
+    const bar = this.bar(word, usage, rest, col);
+    if (bar < 0) return;
     const o = parseOpts(rest.slice(0, bar));
     const right = rest.slice(bar + 1);
     const name = o.words[0] ?? '';
-    let bad = false;
+    let bad = this.badName(word, name, usage, col);
     const fail = (code: string, message: string, detail?: Record<string, unknown>) => {
       bad = true;
       this.diag('error', code, message, L, col, detail);
     };
-    if (!name) fail('question-syntax', `${word} needs a name before the |: \`${word} NAME | text\``, { word });
-    else if (!NAME_RE.test(name)) {
-      fail('question-name', `${name} is not a name: use a letter, then letters, digits, _ or -`, { word, name });
-    } else if (this.names.has(name)) {
-      fail('question-dup', `${name} is already used on line ${this.names.get(name)}; every question needs its own name`, {
-        name,
-        first: this.names.get(name),
-      });
-    }
-    for (const w of [...o.words.slice(1), ...o.flags, ...o.quoted.map((q) => `"${q}"`)])
-      this.diag('warning', 'question-option', `ignored ${w} before the | of ${word} ${name}`, L, col, { option: w });
-    for (const k of Object.keys(o.kv)) {
-      if (word === 'ask' && k === 'lines') continue;
-      this.diag('warning', 'question-option', `ignored ${k}= on ${word} ${name}`, L, col, { option: `${k}=` });
-    }
+    this.ignoreOptions(word, name, { ...o, words: o.words.slice(1) }, word === 'ask' ? ['lines'] : [], col);
     let lines = 1;
     if (word === 'ask' && o.kv.lines !== undefined) {
       const n = /^\d+$/.test(o.kv.lines) ? Number(o.kv.lines) : NaN;
@@ -555,46 +724,50 @@ export class LedeParser {
     }
     let block: QuestionBlock;
     if (word === 'choose') {
-      const cut = pipeOutsideQuotes(right);
-      const csv = parseInlineCsv(cut < 0 ? right : right.slice(0, cut));
-      if (csv.unclosedAt !== null) fail('csv-quote', 'unclosed " in choose options');
-      const options: string[] = [];
-      let empty = false;
-      for (const t of csv.rows.flat().map((x) => x.trim())) {
-        if (t === '') empty = true;
-        else if (options.includes(t))
-          this.diag('warning', 'choose-dup-option', `choose ${name} lists "${t}" twice; the first is kept`, L, col, { option: t });
-        else options.push(t);
+      const list = this.nameList(right, 'choose options', col);
+      bad ||= list.unclosed;
+      for (const t of list.dups) {
+        this.diag('warning', 'choose-dup-option', `choose ${name} lists "${t}" twice; the first is kept`, L, col, { option: t });
       }
+      const options = list.items;
       const reserved = options.includes(NOT_CHOSEN);
-      if (empty || reserved || options.length < 2) {
-        const why = empty
+      if (list.empty || reserved || options.length < 2) {
+        const why = list.empty
           ? 'an option is empty (check for a doubled or trailing comma)'
           : reserved
             ? `${NOT_CHOSEN} is reserved`
             : 'choose needs at least two different options';
-        fail('choose-options', `choose ${name}: ${why}; write \`choose ${name} | one, two\``, { count: options.length, empty, reserved });
+        fail('choose-options', `choose ${name}: ${why}; write \`choose ${name} | one, two\``, {
+          count: options.length,
+          empty: list.empty,
+          reserved,
+        });
       }
-      const text = cut < 0 ? '' : right.slice(cut + 1).trim();
-      block = { type: 'choose', name, text: text || null, options, line: L };
+      block = { type: 'choose', name, text: list.text, options, line: L };
     } else {
       const text = right.trim();
       if (!text) fail('question-syntax', `${word} ${name} needs text after the |`, { word });
       block = word === 'ask' ? { type: 'ask', name, text, lines, line: L } : { type: 'confirm', name, text, line: L };
     }
     if (bad) return;
-    this.names.set(name, L);
-    this.emit(block);
+    this.register(block, col);
   }
 
-  /** `export [json|markdown]`: one per format. A bare `export` is markdown. */
+  /** `export [json|markdown|prompt]`: one per format. A bare `export` is markdown. */
   private exportLine(rest: string, col: number): void {
     const L = this.lineNo;
     const format = rest === '' ? 'markdown' : rest;
-    if (format !== 'json' && format !== 'markdown') {
-      this.diag('error', 'export-format', `export takes json or markdown (got "${rest}"); start the line with \\ if it is prose`, L, col, {
-        format: rest,
-      });
+    if (format !== 'json' && format !== 'markdown' && format !== 'prompt') {
+      this.diag(
+        'error',
+        'export-format',
+        `export takes json, markdown or prompt (got "${rest}"); start the line with \\ if it is prose`,
+        L,
+        col,
+        {
+          format: rest,
+        },
+      );
       return;
     }
     const first = this.exports.get(format);
@@ -609,19 +782,539 @@ export class LedeParser {
 
   /** Whole-page checks for the question words; they run in `end()`, so a snapshot of a prefix may warn about an `export` still to come. */
   private checkExport(): void {
-    const fields = this.names.size;
+    const fields = this.fields.size;
     if (fields > 0 && this.exports.size === 0) {
       this.diag(
         'warning',
         'export-missing',
         'this page asks questions but has no export line, so the answers cannot be copied; add `export json` or `export markdown`',
-        Math.min(...this.names.values()),
+        Math.min(...[...this.fields.values()].map((d) => d.block.line)),
         1,
         { fields },
       );
     } else if (fields === 0 && this.exports.size > 0) {
-      this.diag('warning', 'export-orphan', 'export has no ask, choose or confirm line to export', Math.min(...this.exports.values()), 1);
+      this.diag(
+        'warning',
+        'export-orphan',
+        'export has no ask, choose, confirm, param, toggle, bucket or template line to export',
+        Math.min(...this.exports.values()),
+        1,
+      );
     }
+  }
+
+  // ------------------------------------------------------------ editor words (spec §4.19)
+
+  /** The line that first used a name: a field, or a preset (which has a name but no value in the export). */
+  private taken(name: string): number | undefined {
+    return this.fields.get(name)?.block.line ?? this.presetNames.get(name);
+  }
+
+  /** Names of the fields a `{slot}` or a `preset` key may name, in source order. */
+  private fillable(): string[] {
+    return [...this.fields.values()].filter((d) => FIELD_KINDS[d.block.type].fillable).map((d) => d.block.name);
+  }
+
+  /** The fields of one kind, in source order. */
+  private fieldsOfKind<T extends QuestionBlock['type']>(type: T): { block: Extract<QuestionBlock, { type: T }>; col: number }[] {
+    return [...this.fields.values()].filter((d): d is { block: Extract<QuestionBlock, { type: T }>; col: number } => d.block.type === type);
+  }
+
+  private bucketSet(name: string): BucketBlock | undefined {
+    const block = this.fields.get(name)?.block;
+    return block?.type === 'bucket' ? block : undefined;
+  }
+
+  /** The index of the `|` that ends the head of a question or editor line, or -1 after reporting that the line has none. */
+  private bar(word: string, usage: string, rest: string, col: number): number {
+    const bar = rest.indexOf('|');
+    if (bar < 0)
+      this.diag('error', 'question-syntax', `${word} needs \`${usage}\` (start the line with \\ if it is prose)`, this.lineNo, col, {
+        word,
+      });
+    return bar;
+  }
+
+  /** Reports why `name` cannot name a field (it is missing, not a name, or taken) and returns true, or returns false when it can. */
+  private badName(word: string, name: string, usage: string, col: number): boolean {
+    const L = this.lineNo;
+    if (!name) {
+      this.diag('error', 'question-syntax', `${word} needs a name before the |: \`${usage}\``, L, col, { word });
+      return true;
+    }
+    if (!NAME_RE.test(name)) {
+      this.diag('error', 'question-name', `${name} is not a name: use a letter, then letters, digits, _ or -`, L, col, { word, name });
+      return true;
+    }
+    const first = this.taken(name);
+    if (first === undefined) return false;
+    this.diag('error', 'question-dup', `${name} is already used on line ${first}; every question needs its own name`, L, col, {
+      name,
+      first,
+    });
+    return true;
+  }
+
+  /**
+   * The part every editor word shares: the text before the first `|` is `NAME` and options, and the name must be free. Returns the
+   * name, the option text and the text after the `|`, or null after reporting why the line is no block.
+   */
+  private editorHead(word: string, rest: string, col: number, usage: string): { name: string; opts: string; right: string } | null {
+    const bar = this.bar(word, usage, rest, col);
+    if (bar < 0) return null;
+    const left = rest.slice(0, bar).trim();
+    const cut = left.search(/\s/);
+    const name = cut < 0 ? left : left.slice(0, cut);
+    if (this.badName(word, name, usage, col)) return null;
+    return { name, opts: cut < 0 ? '' : left.slice(cut).trim(), right: rest.slice(bar + 1) };
+  }
+
+  /** W `question-option` for every option before the `|` that the word does not take. */
+  private ignoreOptions(word: string, name: string, o: ReturnType<typeof parseOpts>, keep: string[], col: number): void {
+    const L = this.lineNo;
+    for (const w of [...o.words, ...o.flags, ...o.quoted.map((q) => `"${q}"`)])
+      this.diag('warning', 'question-option', `ignored ${w} before the | of ${word} ${name}`, L, col, { option: w });
+    for (const k of Object.keys(o.kv)) {
+      if (!keep.includes(k)) this.diag('warning', 'question-option', `ignored ${k}= on ${word} ${name}`, L, col, { option: `${k}=` });
+    }
+  }
+
+  /**
+   * `A, B, C [| TEXT]` as `choose` and `bucket` read it: the names up to the first `|` outside quotes, trimmed, and what follows it.
+   * `items` keeps the first of each name; `dups` has one entry per later repeat, and `empty` says a name was blank. An unclosed
+   * quote is reported here, as `what` (the words of its message).
+   */
+  private nameList(right: string, what: string, col: number) {
+    const cut = pipeOutsideQuotes(right);
+    const csv = parseInlineCsv(cut < 0 ? right : right.slice(0, cut));
+    const unclosed = csv.unclosedAt !== null;
+    if (unclosed) this.diag('error', 'csv-quote', `unclosed " in ${what}`, this.lineNo, col);
+    const items: string[] = [];
+    const dups: string[] = [];
+    let empty = false;
+    for (const t of csv.rows.flat().map((x) => x.trim())) {
+      if (t === '') empty = true;
+      else if (items.includes(t)) dups.push(t);
+      else items.push(t);
+    }
+    const text = cut < 0 ? '' : right.slice(cut + 1).trim();
+    return { items, dups, empty, unclosed, text: text || null };
+  }
+
+  /** Records a field once its block parsed: its name is taken, and `end()` and the `preset` and `template` checks can find it. */
+  private register(block: QuestionBlock, col: number): void {
+    this.fields.set(block.name, { block, col });
+    this.emit(block);
+  }
+
+  /** `param NAME [unit=U] | LABEL | DEFAULT MIN MAX STEP` (spec §4.19). */
+  private paramLine(rest: string, col: number): void {
+    const L = this.lineNo;
+    const usage = 'param NAME [unit=U] | LABEL | DEFAULT MIN MAX STEP';
+    const h = this.editorHead('param', rest, col, usage);
+    if (!h) return;
+    const { name } = h;
+    const o = parseOpts(h.opts);
+    this.ignoreOptions('param', name, o, ['unit'], col);
+    const bar = h.right.lastIndexOf('|');
+    const text = bar < 0 ? '' : h.right.slice(0, bar).trim();
+    if (bar < 0 || !text) {
+      this.diag('error', 'question-syntax', `${name}: write \`${usage}\` (the label and the four numbers are each after a |)`, L, col, {
+        word: 'param',
+      });
+      return;
+    }
+    const words = h.right
+      .slice(bar + 1)
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+    const nums = words.map((w) => paramNumber(w));
+    if (nums.length !== 4 || nums.some((n) => n === null)) {
+      const comma = words.some((w) => w.includes(',') && paramNumber(w) === null);
+      this.diag(
+        'error',
+        'question-syntax',
+        `param ${name} needs four numbers after the last |: DEFAULT MIN MAX STEP (got "${words.join(' ')}")${
+          comma ? '; a comma only separates thousands (1,500), so write a decimal point, not 1,5' : ''
+        }`,
+        L,
+        col,
+        { word: 'param' },
+      );
+      return;
+    }
+    const [value, min, max, step] = nums as [number, number, number, number];
+    // The first rule that fails, in this order, is the one reported.
+    const rules: [rule: string, failed: boolean, why: string][] = [
+      ['order', !(min < max), `MIN ${min} must be below MAX ${max}`],
+      ['step', !(step > 0), `STEP ${step} must be above 0`],
+      ['range', value < min || value > max, `DEFAULT ${value} must lie from MIN ${min} to MAX ${max}`],
+      ['grid', !onGrid(value - min, step), `DEFAULT ${value} must be MIN ${min} plus a whole number of steps of ${step}`],
+      [
+        'grid-max',
+        !onGrid(max - min, step),
+        `MAX ${max} must be MIN ${min} plus a whole number of steps of ${step} (the last one ends at ${lastStep(min, step, max)}); change MAX or STEP`,
+      ],
+      ['count', (max - min) / step > 1000 + EPS, `MIN ${min} to MAX ${max} is more than 1000 steps of ${step}; raise STEP`],
+    ];
+    const broken = rules.find(([, failed]) => failed);
+    if (broken) {
+      const [rule, , why] = broken;
+      this.diag('error', 'param-range', `param ${name}: ${why}`, L, col, { value, min, max, step, rule });
+      return;
+    }
+    const unit = o.kv.unit ?? '';
+    this.register({ type: 'param', name, text, value, min, max, step, ...(unit ? { unit } : {}), line: L } satisfies ParamBlock, col);
+  }
+
+  /** `toggle NAME [on|off] [needs=A,B] | LABEL` (spec §4.19). `needs` is checked in `end()`, so it may name a later toggle. */
+  private toggleLine(rest: string, col: number): void {
+    const L = this.lineNo;
+    const usage = 'toggle NAME [on|off] [needs=A,B] | LABEL';
+    const h = this.editorHead('toggle', rest, col, usage);
+    if (!h) return;
+    const { name } = h;
+    const o = parseOpts(h.opts, ['on', 'off']);
+    // The first state word wins; a second is an option that does nothing.
+    this.ignoreOptions('toggle', name, { ...o, flags: o.flags.slice(1) }, ['needs'], col);
+    const text = h.right.trim();
+    if (!text) {
+      this.diag('error', 'question-syntax', `toggle ${name} needs text after the |: \`${usage}\``, L, col, { word: 'toggle' });
+      return;
+    }
+    const needs = [
+      ...new Set(
+        (o.kv.needs ?? '')
+          .split(',')
+          .map((n) => n.trim())
+          .filter(Boolean),
+      ),
+    ];
+    const block: ToggleBlock = { type: 'toggle', name, text, on: o.flags[0] === 'on', ...(needs.length ? { needs } : {}), line: L };
+    this.register(block, col);
+  }
+
+  /** `bucket NAME | B1, B2 … [| QUESTION]` declares a bucket set; `NAME: ITEM | B` lines then fill it (spec §4.19). */
+  private bucketLine(rest: string, col: number): void {
+    const L = this.lineNo;
+    const h = this.editorHead('bucket', rest, col, 'bucket NAME | B1, B2 … [| QUESTION]');
+    if (!h) return;
+    const { name } = h;
+    // A `html: …` line is a raw block before any `NAME:` line is tried, so a set called html could never take an item (diagramDecl too).
+    if (name === 'html') {
+      this.diag(
+        'error',
+        'question-name',
+        'html cannot name a bucket set: a line starting `html:` is a raw HTML block, so it could never be an item; pick another name',
+        L,
+        col,
+        { word: 'bucket', name },
+      );
+      return;
+    }
+    this.ignoreOptions('bucket', name, parseOpts(h.opts), [], col);
+    const list = this.nameList(h.right, 'bucket names', col);
+    const buckets = list.items;
+    let bad = list.unclosed;
+    const dup = list.dups.length > 0;
+    const reserved = buckets.some((b) => BUCKET_RESERVED.includes(b));
+    if (list.empty || dup || reserved || buckets.length < 2 || buckets.length > 8) {
+      bad = true;
+      const why = list.empty
+        ? 'a bucket name is empty (check for a doubled or trailing comma)'
+        : dup
+          ? 'a bucket name is repeated'
+          : reserved
+            ? `${BUCKET_RESERVED.join(' and ')} are reserved`
+            : 'a bucket set needs two to eight buckets';
+      this.diag('error', 'bucket-names', `bucket ${name}: ${why}; write \`bucket ${name} | Now, Next, Later\``, L, col, {
+        count: buckets.length,
+        empty: list.empty,
+        dup,
+        reserved,
+      });
+    }
+    // A bucket set that clashes is refused, and one error says so.
+    if (this.clash('bucket', name, col, true).length > 0) bad = true;
+    if (bad) return;
+    this.register({ type: 'bucket', name, text: list.text, buckets, items: [], line: L } satisfies BucketBlock, col);
+  }
+
+  /**
+   * `NAME: ITEM TEXT | B` where NAME is a bucket set. The item is added to the emitted block, as a diagram gains statements; true
+   * when it was added, false when the line was rejected or repeated an item.
+   */
+  private bucketItem(set: BucketBlock, rest: string, col: number): boolean {
+    const L = this.lineNo;
+    const hint = `\`${set.name}: ITEM TEXT | ${set.buckets[0]}\`; the buckets are ${set.buckets.join(', ')}. Start the line with \\ if it is prose`;
+    let text = '';
+    let target = '';
+    let found = false;
+    // A quoted item text may hold a |; otherwise the item runs to the last |.
+    if (rest.startsWith('"')) {
+      const q = readQuoted(rest, 0);
+      const after = q.closed ? rest.slice(q.end).trimStart() : '';
+      if (after.startsWith('|') && !after.includes('|', 1)) {
+        text = q.value.trim();
+        target = after.slice(1).trim();
+        found = true;
+      }
+    }
+    if (!found) {
+      const cut = rest.lastIndexOf('|');
+      if (cut >= 0) {
+        text = rest.slice(0, cut).trim();
+        target = rest.slice(cut + 1).trim();
+      }
+    }
+    if (!text || !target) {
+      this.diag('error', 'bucket-item', `${set.name}: an item needs its text and its bucket after a |: ${hint}`, L, col, {
+        name: set.name,
+      });
+      return false;
+    }
+    if (!set.buckets.includes(target)) {
+      this.diag(
+        'error',
+        'bucket-unknown',
+        `${set.name}: "${target}" is not one of its buckets (${set.buckets.join(', ')}); the name must match exactly`,
+        L,
+        col,
+        {
+          bucket: target,
+          buckets: set.buckets,
+        },
+      );
+      return false;
+    }
+    const first = set.items.find((i) => i.text === text);
+    if (first) {
+      this.diag('warning', 'bucket-dup-item', `${set.name} lists "${text}" twice; the first, on line ${first.line}, is kept`, L, col, {
+        text,
+        first: first.line,
+      });
+      return false;
+    }
+    set.items.push({ text, bucket: target, line: L });
+    return true;
+  }
+
+  /** `template NAME | LABEL`: the next non-blank line must open a fence, which becomes the body (spec §4.19). */
+  private templateLine(rest: string, col: number): void {
+    const usage = 'template NAME | LABEL';
+    const h = this.editorHead('template', rest, col, usage);
+    if (!h) return;
+    this.ignoreOptions('template', h.name, parseOpts(h.opts), [], col);
+    const text = h.right.trim();
+    if (!text) {
+      this.diag(
+        'error',
+        'question-syntax',
+        `template ${h.name} needs text after the |: \`${usage}\` and a fence on the next line`,
+        this.lineNo,
+        col,
+        {
+          word: 'template',
+        },
+      );
+      return;
+    }
+    this.tpl = { name: h.name, text, line: this.lineNo, col };
+  }
+
+  /** The fence a `template` waited for did not come. */
+  private templateFence(t: PendingTemplate): void {
+    this.diag(
+      'error',
+      'template-fence',
+      `template ${t.name} needs a code fence on the next line: \`\`\`text … \`\`\` holds its body`,
+      t.line,
+      t.col,
+      {
+        name: t.name,
+      },
+    );
+  }
+
+  /**
+   * The slots of a template's fence as it stands: each `{name}` that is a fillable field declared above, once and in the order of
+   * first use, and each other word between braces, once, with where it is. Reads the fields as they are now and changes nothing.
+   */
+  private scanTemplate(f: Fence): { slots: string[]; stray: { word: string; line: number; col: number }[]; fields: string[] } {
+    const fields = this.fillable();
+    const slots: string[] = [];
+    const stray: { word: string; line: number; col: number }[] = [];
+    f.lines.forEach((raw, k) => {
+      for (const m of raw.matchAll(SLOT_RE)) {
+        const word = m[1];
+        if (fields.includes(word)) {
+          if (!slots.includes(word)) slots.push(word);
+        } else if (!stray.some((x) => x.word === word)) {
+          stray.push({ word, line: f.line + 1 + k, col: m.index + 1 });
+        }
+      }
+    });
+    return { slots, stray, fields };
+  }
+
+  private templateBlock(f: Fence, t: PendingTemplate, slots: string[]): TemplateBlock {
+    return {
+      type: 'template',
+      name: t.name,
+      text: t.text,
+      body: fenceBody(f),
+      ...(f.lang ? { lang: f.lang } : {}),
+      slots,
+      line: t.line,
+    };
+  }
+
+  /** The fence of a `template` closed: warn about braces that name nothing and about a body with no slot, and emit the block. */
+  private closeTemplate(f: Fence, t: PendingTemplate): void {
+    const { slots, stray, fields } = this.scanTemplate(f);
+    for (const { word, line, col } of stray) {
+      this.diag(
+        'warning',
+        'template-slot',
+        `{${word}} names no ask, choose, param or toggle declared above, so it stays as written (fields: ${fields.join(', ') || 'none'})`,
+        line,
+        col,
+        { slot: word, fields },
+      );
+    }
+    if (slots.length === 0)
+      this.diag('warning', 'template-empty', `template ${t.name} has no {slot}, so its text is shown as written`, t.line, t.col, {
+        name: t.name,
+      });
+    this.register(this.templateBlock(f, t, slots), t.col);
+  }
+
+  /** `preset NAME | LABEL | key=value; key=value`: sets fields declared above it. A bad assignment makes no block. */
+  private presetLine(rest: string, col: number): void {
+    const L = this.lineNo;
+    const usage = 'preset NAME | LABEL | key=value; key=value';
+    const h = this.editorHead('preset', rest, col, usage);
+    if (!h) return;
+    const { name } = h;
+    this.ignoreOptions('preset', name, parseOpts(h.opts), [], col);
+    const bar = h.right.indexOf('|');
+    const text = bar < 0 ? '' : h.right.slice(0, bar).trim();
+    const pairs = bar < 0 ? [] : assignments(h.right.slice(bar + 1));
+    if (!text || pairs.length === 0 || pairs.some((p) => p.value === null || p.key === '')) {
+      this.diag(
+        'error',
+        'question-syntax',
+        `preset ${name} needs a label and at least one key=value after the second |: \`${usage}\``,
+        L,
+        col,
+        {
+          word: 'preset',
+        },
+      );
+      return;
+    }
+    const fields = this.fillable();
+    const values: { name: string; value: string }[] = [];
+    let bad = false;
+    for (const { key, value: raw } of pairs) {
+      const given = raw ?? '';
+      if (values.some((v) => v.name === key)) {
+        this.diag('warning', 'question-option', `preset ${name} sets ${key} twice; the first is kept`, L, col, { option: `${key}=` });
+        continue;
+      }
+      const field = this.fields.get(key)?.block;
+      if (!field || !FIELD_KINDS[field.type].fillable) {
+        bad = true;
+        this.diag(
+          'error',
+          'preset-key',
+          `preset ${name}: ${key} is not an ask, choose, param or toggle declared above it (fields: ${fields.join(', ') || 'none'})`,
+          L,
+          col,
+          { key, fields },
+        );
+        continue;
+      }
+      const value = presetValue(field, given);
+      if (value === null) {
+        bad = true;
+        this.diag('error', 'preset-value', `preset ${name}: "${given}" is not a value for ${key}; ${presetHint(field, given)}`, L, col, {
+          key,
+          value: given,
+          kind: field.type,
+        });
+        continue;
+      }
+      values.push({ name: key, value });
+    }
+    if (bad) return;
+    this.presetNames.set(name, L);
+    this.emit({ type: 'preset', name, text, values, line: L } satisfies PresetBlock);
+  }
+
+  /** Whole-document checks for the editor words; they run in `end()`, so a snapshot of a prefix may report what a later line settles. */
+  private checkEditors(): void {
+    const toggles = this.fieldsOfKind('toggle');
+    const names = toggles.map((t) => t.block.name);
+    for (const { block, col } of toggles) {
+      for (const need of block.needs ?? []) {
+        if (need !== block.name && names.includes(need)) continue;
+        const why =
+          need === block.name ? 'a toggle cannot need itself' : `${need} is not a toggle on this page (toggles: ${names.join(', ')})`;
+        this.diag('error', 'toggle-needs', `toggle ${block.name} needs ${need}: ${why}`, block.line, col, {
+          name: block.name,
+          needs: need,
+          toggles: names,
+        });
+      }
+    }
+    for (const { block: b, col } of this.fieldsOfKind('bucket')) {
+      if (b.items.length === 0)
+        this.diag(
+          'warning',
+          'bucket-empty',
+          `bucket ${b.name} has no item; add lines like \`${b.name}: ITEM TEXT | ${b.buckets[0]}\``,
+          b.line,
+          col,
+          {
+            name: b.name,
+          },
+        );
+    }
+    if (this.tpl) {
+      this.templateFence(this.tpl);
+      this.tpl = null;
+    }
+  }
+
+  // ------------------------------------------------------------ names shared by data, diagrams and bucket sets
+
+  /** Whether a data set, a diagram or a bucket set already has the name. */
+  private holds(space: Space, name: string): boolean {
+    // Own property only: `constructor` or `toString` is on the prototype of any object, not a data set.
+    return space === 'data' ? Object.hasOwn(this.doc.data, name) : space === 'diagram' ? this.diagrams.has(name) : !!this.bucketSet(name);
+  }
+
+  /**
+   * Data sets, diagrams and bucket sets share one namespace, since a `NAME:` line must mean one of them. Reports `name` as an error for
+   * each of the other two that already has it (`once`: only the first) and returns those it found. The caller decides whether the
+   * declaration goes on.
+   */
+  private clash(declaring: Space, name: string, col: number, once = false): Space[] {
+    const held = SPACES.filter((s) => s !== declaring && this.holds(s, name));
+    for (const had of once ? held.slice(0, 1) : held) {
+      const [fix, key] = CLASH[`${declaring}>${had}`];
+      this.diag(
+        'error',
+        'name-clash',
+        `${name} is already a ${NOUN[had]} name; ${fix(name)}`,
+        this.lineNo,
+        col,
+        key ? { [key]: name } : undefined,
+      );
+    }
+    return held;
   }
 
   private dataLine(rest: string, col: number): void {
@@ -681,6 +1374,7 @@ export class LedeParser {
       return;
     }
     this.addRows(d, csv.rows, csv.offsets, bodyCol);
+    this.hooks?.onDataAppend(name);
   }
 
   private defineData(name: string, rows: string[][], offsets: number[], bodyCol: number): void {
@@ -691,8 +1385,7 @@ export class LedeParser {
     }
     if (this.doc.data[name])
       this.diag('warning', 'data-redefined', `data ${name} is redefined; the new definition replaces it`, L, bodyCol);
-    if (this.diagrams.has(name))
-      this.diag('error', 'name-clash', `${name} is already a diagram name; rename the diagram (e.g. \`diagram ${name}-flow\`)`, L, bodyCol);
+    this.clash('data', name, bodyCol);
     const columns = rows[0].map((c) => c.trim());
     const dup = columns.find((c, i) => columns.indexOf(c) !== i);
     if (dup) this.diag('error', 'data-dup-column', `data ${name} has two columns named ${dup}`, L, bodyCol);
@@ -1291,10 +1984,7 @@ export class LedeParser {
       this.diag('error', 'diagram-redeclared', `diagram ${name} is already declared on line ${this.diagrams.get(name)!.line}`, L, col);
       return;
     }
-    if (this.doc.data[name])
-      this.diag('error', 'name-clash', `${name} is already a data name; rename the diagram (e.g. \`diagram ${name}-flow\`)`, L, col, {
-        diagram: name,
-      });
+    this.clash('diagram', name, col);
     const o = parseOpts(rest.slice(t[1]?.offset ?? rest.length), ['flow', 'sequence']);
     for (const w of o.words) this.diag('warning', 'diagram-option', `ignored diagram option "${w}"`, L, col);
     const kind = o.flags.includes('sequence') ? 'sequence' : 'flow';
@@ -1326,8 +2016,8 @@ export class LedeParser {
     return n;
   }
 
-  /** alt/opt/else/end in a sequence diagram. Frames are flat: one open at a time, positions are edge indexes. */
-  private frameLine(d: DiagramBlock, word: 'alt' | 'opt' | 'else' | 'end', rest: string, col: number): void {
+  /** alt/opt/else/end in a sequence diagram. Frames are flat: one open at a time, positions are edge indexes. True when a frame was opened, got a branch or was closed. */
+  private frameLine(d: DiagramBlock, word: 'alt' | 'opt' | 'else' | 'end', rest: string, col: number): boolean {
     const L = this.lineNo;
     const st = this.seq.get(d) ?? { open: null, skip: 0 };
     this.seq.set(d, st);
@@ -1343,7 +2033,7 @@ export class LedeParser {
           L,
           col,
         );
-        return;
+        return false;
       }
       if (!cond)
         this.diag(
@@ -1363,11 +2053,11 @@ export class LedeParser {
       };
       (d.frames ??= []).push(f);
       st.open = f;
-      return;
+      return true;
     }
     if (st.skip) {
       if (word === 'end') st.skip--;
-      return;
+      return false;
     }
     const f = st.open;
     if (!f) {
@@ -1380,7 +2070,7 @@ export class LedeParser {
         L,
         col,
       );
-      return;
+      return false;
     }
     if (word === 'else') {
       if (f.kind === 'opt') {
@@ -1391,33 +2081,38 @@ export class LedeParser {
           L,
           col,
         );
-        return;
+        return false;
       }
       f.branches[f.branches.length - 1].to = at;
       f.branches.push({ label: cond, from: at, to: null, line: L });
-      return;
+      return true;
     }
     if (rest) this.diag('warning', 'diagram-block-syntax', `end takes nothing after it; "${rest}" is ignored`, L, col);
     f.branches[f.branches.length - 1].to = at;
     f.to = at;
     f.endLine = L;
     st.open = null;
+    return true;
   }
 
-  private diagramLine(d: DiagramBlock, s: string, col: number): void {
+  /** Apply a `name:` line to the diagram. True when it changed the diagram: a rejected line, and one that repeats what is there, did not. */
+  private diagramLine(d: DiagramBlock, s: string, col: number): boolean {
     const L = this.lineNo;
     const ID = /^[A-Za-z0-9_][\w.-]*$/;
     if (s === '') {
       this.diag('warning', 'diagram-empty-line', `empty ${d.name}: line`, L, col);
-      return;
+      return false;
     }
 
     // NAME: legend (v0.4): a key of node kinds and arrow styles. Flow diagrams only.
     if (s === 'legend') {
       if (d.kind === 'sequence')
         this.diag('warning', 'legend-kind', `legend applies to flow diagrams; ignored on sequence diagram ${d.name}`, L, col);
-      else d.legend = true;
-      return;
+      else if (d.legend !== true) {
+        d.legend = true;
+        return true;
+      }
+      return false;
     }
 
     // alt "cond" / opt "cond" / else ["cond"] / end   (sequence only). A line that starts with one of
@@ -1425,8 +2120,7 @@ export class LedeParser {
     if (d.kind === 'sequence') {
       const bm = /^(alt|opt|else|end)(?:\s+(.*))?$/.exec(s);
       if (bm && !/^(<->|-->|->|,)/.test(bm[2] ?? '')) {
-        this.frameLine(d, bm[1] as 'alt' | 'opt' | 'else' | 'end', (bm[2] ?? '').trim(), col);
-        return;
+        return this.frameLine(d, bm[1] as 'alt' | 'opt' | 'else' | 'end', (bm[2] ?? '').trim(), col);
       }
     }
 
@@ -1439,13 +2133,13 @@ export class LedeParser {
         .filter(Boolean);
       if (!over.every((x) => ID.test(x))) {
         this.diag('error', 'diagram-syntax', 'note needs `note id : text`', L, col);
-        return;
+        return false;
       }
       if (d.kind !== 'sequence') this.diag('warning', 'diagram-note', 'notes only render in sequence diagrams', L, col);
       over.forEach((x) => this.node(d, x));
       // `after` places the note between messages: it follows the first `after` edges.
       d.notes.push({ over, text: nm[2].trim(), after: d.edges.length, line: L });
-      return;
+      return true;
     }
 
     // group [id] "Label" a, b, c
@@ -1460,7 +2154,7 @@ export class LedeParser {
       }
       if (body[i] !== '"') {
         this.diag('error', 'diagram-syntax', 'group needs `group [id] "Label" member, member`', L, col);
-        return;
+        return false;
       }
       const q = readQuoted(body, i);
       const members = body
@@ -1470,21 +2164,23 @@ export class LedeParser {
         .filter(Boolean);
       if (!members.length) {
         this.diag('error', 'diagram-syntax', `group "${q.value}" has no members`, L, col);
-        return;
+        return false;
       }
       const gid = id ?? `group${d.groups.length + 1}`;
       const declared = this.declared.get(d) ?? new Set<string>();
       if (d.groups.some((g) => g.id === gid) || (id && declared.has(gid))) {
         this.diag('error', 'diagram-syntax', `group id ${gid} is already used`, L, col);
-        return;
+        return false;
       }
       // An id first used in an edge (`prodvpc -> tgw`) and later declared as a group is that group:
       // its edges attach to the group's boundary.
+      const nodesBefore = d.nodes.length;
       if (id) d.nodes = d.nodes.filter((n) => n.id !== gid);
       for (const m of members) {
         if (!ID.test(m)) {
           this.diag('error', 'diagram-syntax', `bad member id "${m}"`, L, col);
-          return;
+          // The members before it were added already.
+          return d.nodes.length !== nodesBefore;
         }
         if (!d.groups.some((g) => g.id === m)) this.node(d, m);
       }
@@ -1492,7 +2188,7 @@ export class LedeParser {
       if (owner)
         this.diag('warning', 'diagram-group', `a node is in both "${owner.label}" and "${q.value}"; it is drawn in the first`, L, col);
       d.groups.push({ id: gid, label: q.value, members });
-      return;
+      return true;
     }
 
     // edges: a -> b, c --> d : label
@@ -1510,13 +2206,13 @@ export class LedeParser {
           if (!ID.test(id)) {
             const hint = id.includes('"') ? ' (declare labels on their own line: `x "Label"`)' : '';
             this.diag('error', 'diagram-syntax', `bad node id "${id}" in edge${hint}`, L, col);
-            return;
+            return false;
           }
         }
       }
       if (d.kind === 'sequence' && steps.some((x) => x.length > 1)) {
         this.diag('error', 'diagram-syntax', 'sequence messages go between exactly two participants', L, col);
-        return;
+        return false;
       }
       for (let i = 0; i < ops.length; i++) {
         for (const a of steps[i])
@@ -1535,7 +2231,7 @@ export class LedeParser {
             d.edges.push(e);
           }
       }
-      return;
+      return true;
     }
 
     // node: id "Label" [kind] [focus] ["sub label"]
@@ -1549,12 +2245,14 @@ export class LedeParser {
         L,
         col,
       );
-      return;
+      return false;
     }
     if (d.groups.some((g) => g.id === id)) {
       this.diag('error', 'diagram-syntax', `${id} is a group id`, L, col);
-      return;
+      return false;
     }
+    const existing = d.nodes.find((x) => x.id === id);
+    const was = existing && JSON.stringify(existing);
     const n = this.node(d, id);
     if (!this.declared.has(d)) this.declared.set(d, new Set());
     this.declared.get(d)!.add(id);
@@ -1571,6 +2269,7 @@ export class LedeParser {
       else if (kv.key === 'kind') n.kind = kv.text;
       else this.diag('warning', 'diagram-option', `ignored ${kv.key}= on node ${id}`, L, col + kv.offset);
     }
+    return JSON.stringify(n) !== was;
   }
 
   private diag(
@@ -1583,6 +2282,93 @@ export class LedeParser {
   ): void {
     this.doc.diagnostics.push({ severity, code, message, line, col: Math.max(1, col), ...(detail ? { detail } : {}) });
   }
+}
+
+/** `d` is a whole number of `step`s, within a rounding error (0.94 - 0.85 is not exactly 9 steps of 0.01 in floating point). */
+function onGrid(d: number, step: number): boolean {
+  const q = d / step;
+  return Math.abs(q - Math.round(q)) <= EPS;
+}
+
+/**
+ * A number of a `param` line or a `preset` value (spec §4.19): as a chart reads a cell (§4.11), except that a `,` must separate
+ * thousands (`1,500`). A chart drops every comma, which would read `1,5` as 15 and a decimal comma as a bigger number.
+ */
+function paramNumber(w: string): number | null {
+  if (w.includes(',')) {
+    const head = /^[-+−]?[$€£]?(?:\d{1,3}(?:,\d{3})+|\d+)(?![\d,])/.exec(w);
+    if (!head || w.slice(head[0].length).includes(',')) return null;
+  }
+  return num(w);
+}
+
+/** The last point of the grid that does not pass `max`, without the noise of the multiplication (`0.1 + 3 * 0.1` is not `0.4`). */
+function lastStep(min: number, step: number, max: number): number {
+  return Number((min + Math.floor((max - min) / step + EPS) * step).toFixed(9));
+}
+
+/**
+ * The assignments of a `preset`: `key=value` separated by `;`. The first `=` splits key from value and the value runs to the next
+ * `;`, so an `ask` value may hold `=` and `|`. A value that starts with `"` and closes before a `;` is quoted, which lets it hold a
+ * `;`. An assignment with no `=` has a null value.
+ */
+function assignments(body: string): { key: string; value: string | null }[] {
+  const out: { key: string; value: string | null }[] = [];
+  let i = 0;
+  while (i < body.length) {
+    while (i < body.length && /[\s;]/.test(body[i])) i++;
+    if (i >= body.length) break;
+    const eq = body.indexOf('=', i);
+    const semi = body.indexOf(';', i);
+    if (eq < 0 || (semi >= 0 && semi < eq)) {
+      const end = semi < 0 ? body.length : semi;
+      out.push({ key: body.slice(i, end).trim(), value: null });
+      i = end + 1;
+      continue;
+    }
+    const key = body.slice(i, eq).trim();
+    i = eq + 1;
+    while (i < body.length && /[ \t]/.test(body[i])) i++;
+    if (body[i] === '"') {
+      const q = readQuoted(body, i);
+      const tail = /^\s*(;|$)/.exec(body.slice(q.end));
+      if (q.closed && tail) {
+        out.push({ key, value: q.value });
+        i = q.end + tail[0].length;
+        continue;
+      }
+    }
+    const end = body.indexOf(';', i) < 0 ? body.length : body.indexOf(';', i);
+    out.push({ key, value: body.slice(i, end).trim() });
+    i = end + 1;
+  }
+  return out;
+}
+
+/** The value a `preset` sets on a field as the export will hold it, or null when the field cannot take it. */
+function presetValue(field: QuestionBlock, value: string): string | null {
+  switch (field.type) {
+    case 'ask':
+      return value;
+    case 'choose':
+      return field.options.includes(value) ? value : null;
+    case 'toggle':
+      return value === 'on' || value === 'off' ? value : null;
+    case 'param': {
+      const n = paramNumber(value);
+      return n !== null && n >= field.min - EPS && n <= field.max + EPS && onGrid(n - field.min, field.step) ? String(n) : null;
+    }
+    default:
+      return null;
+  }
+}
+
+function presetHint(field: QuestionBlock, given: string): string {
+  if (field.type === 'choose') return `choose one of ${field.options.join(', ')}`;
+  if (field.type === 'toggle') return 'a toggle takes on or off';
+  if (field.type === 'param')
+    return `a number from ${field.min} to ${field.max} in steps of ${field.step}${given.includes(',') ? ' (a comma only separates thousands, as in 1,500)' : ''}`;
+  return 'it does not take a value';
 }
 
 export function mergeThousands(r: string[], want: number): { row: string[]; merged: string[] } | null {
@@ -1627,58 +2413,53 @@ export function findCol(d: DataSet, name: string): string | null {
 
 /** Post-parse resolution: kpi references and diagram sanity checks. Idempotent. */
 export function resolve(doc: LedeDocument): void {
-  const visit = (blocks: Block[]) => {
-    for (const b of blocks) {
-      if (b.type === 'grid') visit(b.children);
-      if (b.type === 'cards') for (const c of b.items) visit(c.blocks);
-      if (b.type === 'kpis') for (const k of b.items) resolveKpi(doc, k);
-      if (b.type === 'diagram') {
-        if (b.nodes.length === 0) {
+  walkBlocks(doc.blocks, (b) => {
+    if (b.type === 'kpis') for (const k of b.items) resolveKpi(doc, k);
+    if (b.type === 'diagram') {
+      if (b.nodes.length === 0) {
+        doc.diagnostics.push({
+          severity: 'warning',
+          code: 'diagram-empty',
+          message: `diagram ${b.name} has no nodes (lines must start with \`${b.name}:\`)`,
+          line: b.line,
+          col: 1,
+        });
+      }
+      for (const f of b.frames ?? []) {
+        if (f.to === null) {
           doc.diagnostics.push({
-            severity: 'warning',
-            code: 'diagram-empty',
-            message: `diagram ${b.name} has no nodes (lines must start with \`${b.name}:\`)`,
-            line: b.line,
+            severity: 'error',
+            code: 'diagram-block-unclosed',
+            message: `${f.kind} opened on line ${f.line} is never closed; add \`${b.name}: end\` after its last message`,
+            line: f.line,
             col: 1,
           });
         }
-        for (const f of b.frames ?? []) {
-          if (f.to === null) {
+      }
+      const gids = new Set(b.groups.map((g) => g.id));
+      // Group cycles: a group may not contain itself through nesting.
+      for (const g of b.groups) {
+        const seen = new Set<string>();
+        const walk = (id: string): boolean => {
+          if (seen.has(id)) return true;
+          seen.add(id);
+          const gg = b.groups.find((x) => x.id === id);
+          return !!gg && gg.members.some((m) => gids.has(m) && walk(m));
+        };
+        if (walk(g.id) && g.members.some((m) => gids.has(m))) {
+          const cyc = g.members.find((m) => gids.has(m) && b.groups.find((x) => x.id === m)!.members.includes(g.id));
+          if (cyc)
             doc.diagnostics.push({
               severity: 'error',
-              code: 'diagram-block-unclosed',
-              message: `${f.kind} opened on line ${f.line} is never closed; add \`${b.name}: end\` after its last message`,
-              line: f.line,
+              code: 'diagram-group-cycle',
+              message: `groups ${g.id} and ${cyc} contain each other`,
+              line: b.line,
               col: 1,
             });
-          }
-        }
-        const gids = new Set(b.groups.map((g) => g.id));
-        // Group cycles: a group may not contain itself through nesting.
-        for (const g of b.groups) {
-          const seen = new Set<string>();
-          const walk = (id: string): boolean => {
-            if (seen.has(id)) return true;
-            seen.add(id);
-            const gg = b.groups.find((x) => x.id === id);
-            return !!gg && gg.members.some((m) => gids.has(m) && walk(m));
-          };
-          if (walk(g.id) && g.members.some((m) => gids.has(m))) {
-            const cyc = g.members.find((m) => gids.has(m) && b.groups.find((x) => x.id === m)!.members.includes(g.id));
-            if (cyc)
-              doc.diagnostics.push({
-                severity: 'error',
-                code: 'diagram-group-cycle',
-                message: `groups ${g.id} and ${cyc} contain each other`,
-                line: b.line,
-                col: 1,
-              });
-          }
         }
       }
     }
-  };
-  visit(doc.blocks);
+  });
 }
 
 function resolveKpi(doc: LedeDocument, k: Kpi): void {

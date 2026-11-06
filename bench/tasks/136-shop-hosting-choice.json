@@ -1,0 +1,67 @@
+{
+  "id": "136-shop-hosting-choice",
+  "category": "comparison",
+  "title": "Kestrel online shop hosting choice",
+  "brief": "We need a decision page on how to host the new online shop for Kestrel Cycles, to be read on laptops at the leadership meeting on 2026-11-03, where we must choose before the busy season. The shop averages 820 orders a day, and the busiest week last year was Black Friday week. Under \"The load\" show the expected orders per day for the next six weeks as a chart: W44 820, W45 860, W46 910, W47 2300, W48 6500, W49 3100. Under \"Options side by side\" compare three options on monthly cost at normal load, cost in the peak week, engineer-days to launch and the most orders per day each can take: A, a managed storefront service, 2400 dollars a month, 5100 in the peak week, 15 engineer-days, 10000 orders per day; B, containers on a cloud provider, 1900 dollars a month, 3300 in the peak week, 55 engineer-days, 8000 orders per day; C, serverless functions with a static front, 1300 dollars a month, 2100 in the peak week, 80 engineer-days, 20000 orders per day. Under \"Risks\" note that B needs a night on-call rota we do not have, and that C needs 80 engineer-days when only 30 are free before 2026-11-23, the freeze date. Under \"Recommendation\": choose A for this season and revisit in spring, because it is the only option that can be live before the freeze. Make the recommendation easy to spot.",
+  "checklist": {
+    "sections": [
+      "The load",
+      "Options side by side",
+      "Risks",
+      "Recommendation"
+    ],
+    "visible": [
+      "managed storefront service",
+      "containers on a cloud provider",
+      "serverless functions",
+      "engineer-days",
+      "on-call"
+    ],
+    "values": [
+      "2026-11-03",
+      "820",
+      "860",
+      "910",
+      "2300",
+      "6500",
+      "3100",
+      "W44",
+      "W49",
+      "2400",
+      "5100",
+      "15",
+      "10000",
+      "1900",
+      "3300",
+      "55",
+      "8000",
+      "1300",
+      "2100",
+      "80",
+      "20000",
+      "30",
+      "2026-11-23"
+    ]
+  },
+  "needs": [
+    "chart",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change option B to 2200 dollars a month and 3900 in the peak week, and add W50 at 1750 orders per day to the chart.",
+    "expect_visible": [
+      "W50"
+    ],
+    "expect_values": [
+      "2200",
+      "3900",
+      "1750"
+    ],
+    "expect_absent": [
+      "1900",
+      "3300"
+    ]
+  }
+}

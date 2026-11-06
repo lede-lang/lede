@@ -1,0 +1,65 @@
+{
+  "id": "140-meeting-venue-choice",
+  "category": "comparison",
+  "title": "Hartwell annual meeting venue",
+  "brief": "Hello from the events office at the Hartwell Medical Society. We need to pick a venue for the annual meeting on 18 to 20 March 2027, and the committee will go through this page on a projector on 2026-11-09. Under \"Registrations so far\" chart the weekly sign-ups: W36 40, W37 55, W38 62, W39 48, W40 61, W41 74, a total of 340, which is the number we plan for. Under \"Venues\" compare three on hall capacity, hall hire for the 3 days, catering per head per day, extra costs and total: Quay Hotel, 450 seats, 18000 dollars, 62, none, 81240, 400 meters from the station, with 120 rooms held at 189 per night; Lakeside Centre, 380 seats, 24000, 54, a shuttle from the station costing 6200, 85280, rooms on site, 90 of them at 149 per night; University Great Hall, 360 seats, 9500, 71, none, 81920, 1.8 kilometers from the station with no rooms, so everyone books elsewhere. Under \"Concerns\" note that 360 seats leaves only 20 spare, which is risky if registrations keep climbing, and that the Lakeside shuttle adds 6200 to its price. Under \"Recommendation\": Quay Hotel, because it is close to the station, has the roomiest hall, and is the cheapest total once the shuttle is counted. Make the recommendation easy to find.",
+  "checklist": {
+    "sections": [
+      "Registrations so far",
+      "Venues",
+      "Concerns",
+      "Recommendation"
+    ],
+    "visible": [
+      "Quay Hotel",
+      "Lakeside Centre",
+      "University Great Hall"
+    ],
+    "values": [
+      "2026-11-09",
+      "W36",
+      "W41",
+      "40",
+      "55",
+      "62",
+      "48",
+      "61",
+      "74",
+      "340",
+      "450",
+      "380",
+      "360",
+      "18000",
+      "24000",
+      "9500",
+      "71",
+      "81240",
+      "85280",
+      "81920",
+      "6200",
+      "189",
+      "149",
+      "120",
+      "90"
+    ]
+  },
+  "needs": [
+    "chart",
+    "table",
+    "callout",
+    "list"
+  ],
+  "edit": {
+    "request": "Registrations for W42 came in at 30, so the total is now 370, which is more than the University Great Hall seats. Add W42 to the chart and mark the Great Hall as unsuitable.",
+    "expect_visible": [
+      "unsuitable"
+    ],
+    "expect_values": [
+      "W42",
+      "370"
+    ],
+    "expect_absent": [
+      "340"
+    ]
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "id": "141-q3-revenue-by-region",
+  "category": "data",
+  "title": "Sundial Outdoor Q3 revenue",
+  "brief": "I'm the finance analyst at Sundial Outdoor, and the regional sales directors will read a revenue page on their phones between meetings after the Q3 close on 2026-10-30. Start with the headline numbers: Q3 2026 revenue of 4560 thousand dollars, down 3.2 percent from Q3 2025's 4710, with Pacific the strongest region at plus 17.4 percent and Southeast the weakest at minus 43.9 percent. Under \"Revenue by quarter\" chart total revenue in thousands of dollars for the last seven quarters: Q1 2025 3120, Q2 2025 4380, Q3 2025 4710, Q4 2025 5240, Q1 2026 3390, Q2 2026 4820, Q3 2026 4560. Under \"Regions\" give a table of Q3 2025, Q3 2026 and the change for each region, in thousands of dollars: Pacific 1380, 1620, plus 17.4 percent; Mountain 1130, 1210, plus 7.1 percent; Midwest 1060, 1090, plus 2.8 percent; Southeast 1140, 640, minus 43.9 percent. Under \"The Southeast outlier\": 11 of our 19 Southeast stores were closed for part of September because of the storm that hit on 2026-09-09, 6 of them for more than two weeks. All reopened by 2026-09-28, and October is tracking at 260 thousand dollars, against 380 last October. Make that warning impossible to miss.",
+  "checklist": {
+    "sections": [
+      "Revenue by quarter",
+      "Regions",
+      "The Southeast outlier"
+    ],
+    "visible": [
+      "Pacific",
+      "Mountain",
+      "Midwest",
+      "Southeast",
+      "Q1 2025",
+      "Q3 2026"
+    ],
+    "values": [
+      "4560",
+      "3.2",
+      "4710",
+      "17.4",
+      "43.9",
+      "3120",
+      "4380",
+      "5240",
+      "3390",
+      "4820",
+      "1380",
+      "1620",
+      "1130",
+      "1210",
+      "1060",
+      "1090",
+      "1140",
+      "640",
+      "7.1",
+      "2.8",
+      "11",
+      "19",
+      "2026-09-09",
+      "2026-09-28",
+      "260",
+      "380",
+      "2026-10-30"
+    ]
+  },
+  "needs": [
+    "kpi",
+    "chart",
+    "table",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add Q4 2026 at 5400 to the chart, labeled as a forecast, and add a line under Regions saying Southeast is expected to recover to 900 in Q4.",
+    "expect_visible": [
+      "Q4 2026",
+      "forecast"
+    ],
+    "expect_values": [
+      "5400",
+      "900"
+    ],
+    "expect_absent": []
+  }
+}

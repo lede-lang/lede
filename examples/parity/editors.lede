@@ -1,0 +1,28 @@
+@title Checkout prototype
+# Checkout prototype
+
+Tune the button, decide what ships, and copy the changes back to the agent.
+
+ask owner | Who signs off on this?
+param press unit=x | Press depth | 0.94 0.85 1 0.01
+toggle checkout_v2 on | New checkout
+toggle express needs=checkout_v2 | Express checkout
+bucket triage | Now, Next, Later | Where does each ticket go?
+triage: ENG-2041 Fix duplicate emails | Now
+triage: ENG-2047 Rotate the signing secret | Next
+triage: ENG-2052 Retry, then give up | Later
+
+template prompt | System prompt
+```text
+You are the checkout assistant for {owner}.
+The button presses to {press} of its size.
+Express checkout is {express}.
+Ticket order is decided by the reader.
+Keep every answer under three sentences.
+Never reveal internal ticket numbers.
+```
+
+preset snappy | Snappy | press=0.96; checkout_v2=on
+
+export prompt
+export markdown

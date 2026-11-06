@@ -1,0 +1,61 @@
+{
+  "id": "178-planning-application-flow",
+  "category": "reports",
+  "title": "Thornby planning application flow",
+  "brief": "Our democratic services team at Thornby Borough Council needs a page that explains to new councillors how a planning application moves from arrival to decision, with the branches and the places where it gets stuck, to go into their welcome pack on 2026-11-12, printed. Under \"How an application moves\" draw it as a flow. It starts at \"Application received\", then \"Validation check\". If the application is incomplete, it goes to \"Return to applicant\" and comes back to \"Validation check\" labeled \"resubmitted\". If complete, it goes to \"Public consultation\", then \"Case officer report\", then the question \"Fewer than 5 objections and not major?\". If yes, it goes to \"Delegated decision\"; if no, to \"Committee decision\". Both end at \"Decision issued\". Under \"Time at each stage\" give a table of target and actual median working days: Validation 5, 4; Return to applicant 10, 16; Public consultation 21, 24; Case officer report 10, 15; Committee wait 20, 26. Under \"Where it gets stuck\" a list of three places: incomplete applications bounce on average 1.8 times before passing validation; consultation waits for the highways team, who reply late on 41 percent of cases; and the committee meets once a month, so an application that misses the agenda waits 26 days or more. Add a highlighted note that only 62 percent of the 1840 applications last year were decided within the 8 week target, against a goal of 70 percent.",
+  "checklist": {
+    "sections": [
+      "How an application moves",
+      "Time at each stage",
+      "Where it gets stuck"
+    ],
+    "visible": [
+      "Application received",
+      "Validation check",
+      "Return to applicant",
+      "Public consultation",
+      "Case officer report",
+      "Fewer than 5 objections and not major?",
+      "Delegated decision",
+      "Committee decision",
+      "Decision issued",
+      "resubmitted"
+    ],
+    "values": [
+      "2026-11-12",
+      "5",
+      "4",
+      "10",
+      "16",
+      "21",
+      "24",
+      "15",
+      "20",
+      "26",
+      "1.8",
+      "41 percent",
+      "62 percent",
+      "1840",
+      "8 week",
+      "70 percent"
+    ]
+  },
+  "needs": [
+    "diagram",
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Add a step \"Site visit\" between Public consultation and Case officer report, and change the committee wait from 26 to 31 days everywhere.",
+    "expect_visible": [
+      "Site visit"
+    ],
+    "expect_values": [
+      "31"
+    ],
+    "expect_absent": [
+      "26 days"
+    ]
+  }
+}

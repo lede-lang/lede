@@ -1,0 +1,57 @@
+{
+  "id": "162-claim-photo-options",
+  "category": "specs-planning",
+  "title": "Polaris claim photo options",
+  "brief": "I'm a product manager at Polaris Insurance and I need a page that sets out three genuinely different ways to let customers submit claim photos, for the product leadership review on 2026-11-12, which will be projected in the room. Under \"The problem\": 7 in 10 of our 5200 monthly claims arrive with missing or unusable photos, and each one costs a handler about 25 minutes of follow-up. Under \"The options\", as a table with effort, running cost per month, risk and time to launch: A, build our own guided photo capture into the app, 14 engineer-months, 6000 dollars a month to run, risk that it slips past the 2027-02-01 renewals season, 5 months; B, buy a photo-capture service from Pixelvault, 3 engineer-months, 0.80 dollars per claim so about 4160 a month, risk of depending on one vendor and a data review that takes 6 weeks, 10 weeks to launch; C, send customers a link to a simple upload form, 1 engineer-month, 900 dollars a month, risk that photo quality barely improves, 4 weeks. Under \"What we would undo\": A, 14 engineer-months of work cannot be recovered; B, switching vendor needs a contract exit of 90 days; C, the form is thrown away at almost no loss. Under \"Recommendation\": start with C in 4 weeks to cut follow-ups now, run B in parallel for the busy season, and defer A. Highlight the recommendation.",
+  "checklist": {
+    "sections": [
+      "The problem",
+      "The options",
+      "What we would undo",
+      "Recommendation"
+    ],
+    "visible": [
+      "Pixelvault",
+      "guided photo capture",
+      "upload form",
+      "renewals season"
+    ],
+    "values": [
+      "2026-11-12",
+      "5200",
+      "25 minutes",
+      "14 engineer-months",
+      "6000",
+      "2027-02-01",
+      "5 months",
+      "3 engineer-months",
+      "0.80",
+      "4160",
+      "6 weeks",
+      "10 weeks",
+      "1 engineer-month",
+      "900",
+      "4 weeks",
+      "90 days"
+    ]
+  },
+  "needs": [
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Option B now costs 0.65 dollars per claim, about 3380 a month, and the data review takes 3 weeks instead of 6.",
+    "expect_visible": [],
+    "expect_values": [
+      "0.65",
+      "3380",
+      "3 weeks"
+    ],
+    "expect_absent": [
+      "0.80",
+      "4160",
+      "6 weeks"
+    ]
+  }
+}

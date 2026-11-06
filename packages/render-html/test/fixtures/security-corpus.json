@@ -1,5 +1,5 @@
 {
- "about": "Security corpus for the HTML renderer (D49). `strings` are injected into every `contexts` template ({T} raw text, {Q} inside a quoted option, {C} a quoted CSV cell; a context skips the strings its `skip` regex matches, because a diagram line with an arrow anywhere is read as an edge); each of `cases` is one document. Run by packages/render-html/test/security-corpus.test.ts. Remote payloads use the reserved host xss.example.",
+ "about": "Security corpus for the HTML renderer (D49). `strings` are injected into every `contexts` template ({T} raw text, {Q} inside a quoted option, {C} a quoted CSV cell; a context skips the strings its `skip` regex matches, because a diagram line with an arrow anywhere is read as an edge); each of `cases` is one document. Run by packages/render-html/test/security-corpus.test.ts. Remote payloads use the reserved host xss.example. The editor words (spec 4.19) have their own contexts and cases: a context with `errors` is built on its own for every string and must fail with one of those codes; a shell case may set `payload` (what the driven pass types into every text control) and `inert` (texts of forged elements that must survive the driven pass unchanged).",
  "strings": [
   "<script>alert(1)</script>",
   "<SCRIPT SRC=//xss.example/x.js></SCRIPT>",
@@ -275,6 +275,60 @@
   {
    "name": "question inside cards",
    "lede": "cards\n### Mk53\nconfirm c9 | Mk54 {T}\n## Mk55"
+  },
+  {
+   "name": "param label",
+   "lede": "param pa1 | Mk56 {T} | 5 0 10 1"
+  },
+  {
+   "name": "param unit, quoted",
+   "lede": "param pa2 unit=\"{Q}\" | Mk57 | 5 0 10 1"
+  },
+  {
+   "name": "toggle label",
+   "lede": "toggle ta1 | Mk58 {T}"
+  },
+  {
+   "name": "toggle needs name (no toggle has it)",
+   "errors": [
+    "toggle-needs",
+    "question-name"
+   ],
+   "lede": "toggle ta2 needs={T} | Mk59",
+   "skip": "^\\s"
+  },
+  {
+   "name": "bucket question and item",
+   "lede": "bucket ba1 | One, Two | Mk60 {T}\nba1: Mk61 item | One"
+  },
+  {
+   "name": "bucket name",
+   "lede": "bucket ba2 | {C}, Mk62\nba2: Mk62 item | Mk62"
+  },
+  {
+   "name": "bucket item text",
+   "lede": "bucket ba3 | One, Two\nba3: Mk63 {T} | One\nba3: {C} | Two"
+  },
+  {
+   "name": "template label",
+   "lede": "template tb1 | Mk64 {T}\n```text\nMk65 {pa1} body\n```"
+  },
+  {
+   "name": "template body",
+   "lede": "template tb2 | Mk66\n```text\nMk67 {T} {pa1} {{T}} {pa3}\n```"
+  },
+  {
+   "name": "preset label",
+   "lede": "param pa3 | Mk68 | 5 0 10 1\ntoggle ta3 | x\npreset pb1 | Mk69 {T} | pa3=5; ta3=on"
+  },
+  {
+   "name": "preset value, quoted",
+   "lede": "ask pa4 | Mk70\npreset pb2 | Mk71 | pa4=\"{Q}\""
+  },
+  {
+   "name": "preset value, an option",
+   "lede": "choose pa5 | {C}, Mk72\npreset pb3 | Mk73 | pa5=\"{Q}\"",
+   "skip": "^\\s|\\s$"
   }
  ],
  "cases": [
@@ -2040,6 +2094,197 @@
    "shell": true,
    "has": [
     "\"page\":\"Real title\""
+   ]
+  },
+  {
+   "id": "editors-01",
+   "src": "@title </script><meta http-equiv=refresh content=0>\nparam p unit=x | P | 5 0 10 1\ntoggle t | T\ntoggle u needs=t | U\nbucket b | Now, Next\nb: one | Now\nask a | A\ntemplate tpl | Tpl\n```text\n{a} {p} {t}\n```\npreset ps | Ps | p=7\nexport prompt",
+   "hasNot": [
+    "<meta http-equiv=refresh"
+   ]
+  },
+  {
+   "id": "editors-02",
+   "src": "param pa | <img src=x onerror=alert(1)> | 5 0 10 1\nparam pb unit=\"<img src=x onerror=alert(1)>\" | L | 5 0 10 1\ntoggle ta | <img src=x onerror=alert(1)>\nbucket bq | One, Two | <img src=x onerror=alert(1)>\nbq: <img src=x onerror=alert(1)> | One\nbucket bn | \"<img src=x onerror=alert(1)>\", Two\nbn: x | Two\ntemplate tq | <img src=x onerror=alert(1)>\n```text\n<img src=x onerror=alert(1)> {pa}\n```\nask av | q\npreset pq | <img src=x onerror=alert(1)> | av=\"<img src=x onerror=alert(1)>\"\nexport prompt",
+   "hasNot": [
+    "<img src=x",
+    "<script"
+   ]
+  },
+  {
+   "id": "editors-03",
+   "src": "param pa | javascript:alert(1) | 5 0 10 1\nparam pb unit=\"javascript:alert(1)\" | L | 5 0 10 1\ntoggle ta | javascript:alert(1)\nbucket bq | One, Two | javascript:alert(1)\nbq: javascript:alert(1) | One\nbucket bn | \"javascript:alert(1)\", Two\nbn: x | Two\ntemplate tq | javascript:alert(1)\n```text\njavascript:alert(1) {pa}\n```\nask av | q\npreset pq | javascript:alert(1) | av=\"javascript:alert(1)\"\nexport markdown",
+   "hasNot": [
+    "href=\"javascript",
+    "src=\"javascript",
+    "<script"
+   ]
+  },
+  {
+   "id": "editors-04",
+   "src": "param pj unit=\"javascript:alert(1)\" | L | 1 0 2 1\nparam pk unit=javascript:alert(1) | L | 1 0 2 1\nexport json",
+   "has": [
+    "javascript:alert(1)"
+   ],
+   "hasNot": [
+    "href=\"javascript",
+    "src=\"javascript",
+    "onerror"
+   ]
+  },
+  {
+   "id": "editors-05",
+   "src": "bucket bn | Now</legend>, \"Next</fieldset><script>alert(1)</script>\"\nbn: one | Now</legend>\nbn: two | Next</fieldset><script>alert(1)</script>\nexport json",
+   "hasNot": [
+    "<script>alert(1)",
+    "</legend>,",
+    "Now</legend>"
+   ]
+  },
+  {
+   "id": "editors-06",
+   "src": "bucket sb | (not chosen), (empty)\nsb: x | (empty)\nexport json",
+   "errors": [
+    "bucket-names"
+   ]
+  },
+  {
+   "id": "editors-07",
+   "src": "bucket sc | Now, Next\nsc: (not chosen) | Now\nsc: (empty) | Next\nsc: (none) | Now\nexport json\nexport markdown\nexport prompt"
+  },
+  {
+   "id": "editors-08",
+   "src": "bucket bw | A, B\nbw:    | A\nbw: x | B\nexport json",
+   "errors": [
+    "bucket-item"
+   ]
+  },
+  {
+   "id": "editors-09",
+   "src": "toggle a needs=<img src=x onerror=alert(1)> | A\ntoggle b needs=javascript:alert(1) | B\nexport json",
+   "errors": [
+    "toggle-needs"
+   ],
+   "hasNot": [
+    "<img src=x"
+   ]
+  },
+  {
+   "id": "editors-10",
+   "src": "ask av | q\npreset p1 | L | <script>alert(1)</script>=1\npreset p2 | L | av=<img src=x onerror=alert(1)>; av=javascript:alert(1)\nexport json",
+   "errors": [
+    "preset-key"
+   ],
+   "hasNot": [
+    "<script>alert(1)",
+    "<img src=x"
+   ]
+  },
+  {
+   "id": "editors-11",
+   "src": "param <script>alert(1)</script> | L | 1 0 2 1\ntoggle <img src=x onerror=alert(1)> | T\nbucket <b> | A, B\ntemplate <i> | T\npreset <u> | L | a=1\nexport json",
+   "hasNot": [
+    "<script>alert(1)",
+    "<img src=x"
+   ]
+  },
+  {
+   "id": "editors-12",
+   "src": "ask a | A\ntemplate tpl | Tpl\n```text\n</code></pre><script>alert(1)</script> {a} <!-- ]]> </textarea>\n```\nexport json",
+   "hasNot": [
+    "<script>alert(1)"
+   ]
+  },
+  {
+   "id": "shell-07",
+   "src": "@title </script><meta http-equiv=refresh content=0>\nparam p unit=x | P | 5 0 10 1\ntoggle t | T\ntoggle u needs=t | U\nbucket b | Now, Next\nb: one | Now\nask a | A\ntemplate tpl | Tpl\n```text\n{a} {p} {t}\n```\npreset ps | Ps | p=7\nexport prompt",
+   "shell": true,
+   "has": [
+    "\"page\":\"\\u003c/script\\u003e\\u003cmeta http-equiv=refresh content=0\\u003e\""
+   ],
+   "hasNot": [
+    "<meta http-equiv=refresh"
+   ]
+  },
+  {
+   "id": "shell-08",
+   "src": "param pa | <img src=x onerror=alert(1)> | 5 0 10 1\nparam pb unit=\"<img src=x onerror=alert(1)>\" | L | 5 0 10 1\ntoggle ta | <img src=x onerror=alert(1)>\nbucket bq | One, Two | <img src=x onerror=alert(1)>\nbq: <img src=x onerror=alert(1)> | One\nbucket bn | \"<img src=x onerror=alert(1)>\", Two\nbn: x | Two\ntemplate tq | <img src=x onerror=alert(1)>\n```text\n<img src=x onerror=alert(1)> {pa}\n```\nask av | q\npreset pq | <img src=x onerror=alert(1)> | av=\"<img src=x onerror=alert(1)>\"\nexport json\nexport markdown\nexport prompt",
+   "shell": true,
+   "hasNot": [
+    "<img src=x",
+    "onerror=alert(1)>"
+   ]
+  },
+  {
+   "id": "shell-09",
+   "src": "param pa | javascript:alert(1) | 5 0 10 1\nparam pb unit=\"javascript:alert(1)\" | L | 5 0 10 1\ntoggle ta | javascript:alert(1)\nbucket bq | One, Two | javascript:alert(1)\nbq: javascript:alert(1) | One\nbucket bn | \"javascript:alert(1)\", Two\nbn: x | Two\ntemplate tq | javascript:alert(1)\n```text\njavascript:alert(1) {pa}\n```\nask av | q\npreset pq | javascript:alert(1) | av=\"javascript:alert(1)\"\nexport json\nexport markdown\nexport prompt",
+   "shell": true,
+   "payload": "javascript:alert(1)",
+   "hasNot": [
+    "href=\"javascript",
+    "src=\"javascript"
+   ]
+  },
+  {
+   "id": "shell-10",
+   "src": "ask a | A\nask b | B\ntemplate tpl | Tpl\n```text\na={a} b={b} {{a}} {\"k\": {b}}\n```\nexport json\nexport markdown\nexport prompt",
+   "shell": true,
+   "payload": "{b}</code><script>alert(1)</script>{a}"
+  },
+  {
+   "id": "shell-11",
+   "src": "ask a | A\nbucket bn | Now</legend>, \"Next</fieldset>\"\nbn: one | Now</legend>\nbn: two | Next</fieldset>\nexport json\nexport markdown\nexport prompt",
+   "shell": true,
+   "hasNot": [
+    "Now</legend>"
+   ]
+  },
+  {
+   "id": "shell-12",
+   "src": "bucket sc | Now, Next\nsc: (not chosen) | Now\nsc: (empty) | Next\nsc: (none) | Now\nask a | A\nexport json\nexport markdown\nexport prompt",
+   "shell": true
+  },
+  {
+   "id": "shell-13",
+   "src": "ask pa | x\nask pb | y\nchoose pc | \"<img src=x onerror=alert(1)>\", z\nparam pd unit=ms | P | 5 0 10 1\ntoggle pe | T\npreset pp | L | pa=\"<img src=x onerror=alert(1)>\"; pb=\"javascript:alert(1)\"; pc=\"<img src=x onerror=alert(1)>\"; pd=10; pe=on\nexport json\nexport markdown\nexport prompt",
+   "shell": true,
+   "hasNot": [
+    "<img src=x"
+   ]
+  },
+  {
+   "id": "shell-14",
+   "src": "html: <span class=\"q-seg\" title=\"forged-seg\">KEEP-SEG</span><span class=\"q-pre\" title=\"forged-pre\">KEEP-PRE</span><span class=\"q-n\">KEEP-N</span><ul class=\"q-bk\"><li><span class=\"q-n\">KEEP-TILE</span> X</li></ul><figure class=\"q-tpl\"><pre><code>KEEP-CODE</code></pre><p class=\"q-cnt\"><span class=\"q-n\">KEEP-COUNT</span></p></figure><div class=\"q-preset\"><span class=\"q-pv\">KEEP-PV</span></div><span class=\"q-st\">KEEP-ST</span><span class=\"q-nd\">KEEP-ND</span><input type=range name=zz min=0 max=1><input type=checkbox name=yy><button class=\"q-pre\">KEEP-BUTTON</button>\nask a | A\nparam p | P | 5 0 10 1\ntoggle t | T\nbucket b | One, Two\nb: x | One\nb: y | Two\ntemplate tpl | Tpl\n```text\n{a} {p} {t}\n```\npreset ps | Ps | p=7; t=on\nexport json\nexport markdown\nexport prompt",
+   "shell": true,
+   "has": [
+    "class=\"q-seg\" title=\"forged-seg\"",
+    "class=\"q-pre\" title=\"forged-pre\"",
+    "<span class=\"q-n\">KEEP-N</span>"
+   ],
+   "hasNot": [
+    "name=\"zz\"",
+    "name=\"yy\"",
+    "KEEP-BUTTON</button>"
+   ],
+   "inert": [
+    "KEEP-SEG",
+    "KEEP-PRE",
+    "KEEP-N",
+    "KEEP-TILE",
+    "KEEP-CODE",
+    "KEEP-COUNT",
+    "KEEP-PV",
+    "KEEP-ST",
+    "KEEP-ND",
+    "KEEP-BUTTON"
+   ]
+  },
+  {
+   "id": "shell-15",
+   "src": "ask a | </script><script>alert(1)</script>\nparam p unit=\"</script>\" | <!-- | 5 0 10 1\ntoggle t | ]]>\ntoggle u needs=t | </style>\nbucket b | \"</script>\", \"<!--\" | </textarea>\nb: </script><script>alert(1)</script> | </script>\nb: <!-- | <!--\ntemplate tpl | </title>\n```text\n</script><script>alert(1)</script> {a} {p} {t}\n```\npreset ps | </script> | a=\"</script>\"; p=7\nexport json\nexport markdown\nexport prompt",
+   "shell": true,
+   "hasNot": [
+    "<script>alert(1)"
    ]
   }
  ]

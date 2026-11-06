@@ -1,0 +1,54 @@
+{
+  "id": "154-crowd-surge-runbook",
+  "category": "runbook",
+  "title": "Stonebridge Arena crowd surge runbook",
+  "brief": "I'm the safety officer at Stonebridge Arena and I need a runbook for a crowd surge at the gates on event days, to be laminated and kept in the control room, where the duty team reads it on a wall screen and on paper. Dated 2026-10-27, for the arena of 18000 seats. Under \"When to use this\": use it when the queue at any gate passes 1500 people, or when stewards report density above 4 people per square meter anywhere outside the gates. Under \"Steps\" in order, with who and by when counted from the call: 1, the control room supervisor Rana Idris declares a surge on the radio, immediately; 2, the announcer reads the queue message, within 2 minutes; 3, gate stewards under Pieter Haas open overflow gates B and C, within 4 minutes; 4, Rana calls the police liaison, within 5 minutes; 5, the medical lead Dr. Sunita Bhatt stages two teams near the gates, within 6 minutes; 6, the transport desk asks the tram operator to hold arrivals for 10 minutes, within 8 minutes. Under \"Thresholds\" as a table: amber, 4 people per square meter or a queue over 1500; red, 5 people per square meter, stop entry at that gate and keep the exits clear. Under \"Contacts\": radio channel 3 for stewards, channel 5 for medical, police liaison on 0800 555 0163. Put the red threshold in a highlighted warning.",
+  "checklist": {
+    "sections": [
+      "When to use this",
+      "Steps",
+      "Thresholds",
+      "Contacts"
+    ],
+    "visible": [
+      "Rana Idris",
+      "Pieter Haas",
+      "Dr. Sunita Bhatt",
+      "overflow gates B and C",
+      "police liaison"
+    ],
+    "values": [
+      "2026-10-27",
+      "18000",
+      "1500",
+      "4 people per square meter",
+      "2 minutes",
+      "4 minutes",
+      "5 minutes",
+      "6 minutes",
+      "8 minutes",
+      "10 minutes",
+      "5 people per square meter",
+      "channel 3",
+      "channel 5",
+      "0800 555 0163"
+    ]
+  },
+  "needs": [
+    "list",
+    "table",
+    "callout"
+  ],
+  "edit": {
+    "request": "Move the amber queue threshold from 1500 to 1200 people, and change the tram hold from 10 minutes to 15 minutes.",
+    "expect_visible": [],
+    "expect_values": [
+      "1200",
+      "15 minutes"
+    ],
+    "expect_absent": [
+      "1500",
+      "10 minutes"
+    ]
+  }
+}

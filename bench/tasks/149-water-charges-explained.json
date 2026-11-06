@@ -1,0 +1,56 @@
+{
+  "id": "149-water-charges-explained",
+  "category": "prose",
+  "title": "Eldermoor water charges explained",
+  "brief": "I'm the communications officer at Eldermoor Water Board and customers keep asking why their bill rose, so I need an explainer that we will print as a double-sided leaflet and also put on the website. Write it in plain words for ordinary customers: mostly headings and paragraphs, with one table and one note. Sections: \"What your bill pays for\": the average household bill this year is 468 dollars, up from 441 last year, a rise of 6.1 percent; of every bill, 52 percent pays for clean water supply, 31 percent for sewage treatment and 17 percent for replacing old pipes. Put that split in a table. \"How the rate is set\": the board's 9 elected members vote once a year, on 2026-12-01 this year, after a public meeting on 2026-11-17, and the rate cannot rise by more than the regulator's cap of 7.5 percent. \"Why bills rose this year\": electricity for pumping cost more, and the board is replacing 12 kilometers of pipe in the Alder Vale district this winter, pipe that dates from 1961. \"If you are struggling to pay\": call 0800 555 0142 before a bill is overdue, because a payment plan over 12 months can be set up, and a discount of 25 percent exists for households on low incomes. Make that last section stand out as a note, and avoid jargon.",
+  "checklist": {
+    "sections": [
+      "What your bill pays for",
+      "How the rate is set",
+      "Why bills rose this year",
+      "If you are struggling to pay"
+    ],
+    "visible": [
+      "clean water supply",
+      "sewage treatment",
+      "replacing old pipes",
+      "Alder Vale",
+      "payment plan"
+    ],
+    "values": [
+      "468",
+      "441",
+      "6.1",
+      "52",
+      "31",
+      "17",
+      "9",
+      "2026-12-01",
+      "2026-11-17",
+      "7.5",
+      "12 kilometers",
+      "1961",
+      "0800 555 0142",
+      "12 months",
+      "25 percent"
+    ]
+  },
+  "needs": [
+    "table",
+    "callout"
+  ],
+  "edit": {
+    "request": "The board vote is moving to 2026-12-08 and the public meeting to 2026-11-24, and the discount for low-income households rises to 30 percent.",
+    "expect_visible": [],
+    "expect_values": [
+      "2026-12-08",
+      "2026-11-24",
+      "30 percent"
+    ],
+    "expect_absent": [
+      "2026-12-01",
+      "2026-11-17",
+      "25 percent"
+    ]
+  }
+}

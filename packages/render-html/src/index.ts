@@ -3,22 +3,36 @@ import type {
   LedeDocument,
   TableBlock,
   DataSet,
+  DiagramBlock,
   KpiBlock,
   ListBlock,
   ListItem,
   HeadingBlock,
+  CardItem,
   CardsBlock,
+  GridBlock,
   StepsBlock,
   Kpi,
   QuestionBlock,
 } from '@lede-lang/core';
-import { browserUrl, exportsOf, fieldsOf, imageSrcKind, num, parse, type ParseOptions } from '@lede-lang/core';
+import { browserUrl, exportsOf, fieldsOf, imageSrcKind, num, parse, presetsOf, type ParseOptions } from '@lede-lang/core';
 import sanitizeHtml from 'sanitize-html';
 import { renderChart } from './chart.ts';
 import { renderFlow } from './diagram.ts';
 import { renderSequence } from './sequence.ts';
-import { serializeExport } from './export.ts';
-import { askHtml, chooseHtml, confirmHtml, exportHtml } from './question.ts';
+import { serializeExport, settle, type Value } from './export.ts';
+import {
+  askHtml,
+  bucketHtml,
+  chooseHtml,
+  confirmHtml,
+  exportHtml,
+  paramHtml,
+  presetHtml,
+  templateHtml,
+  toggleHtml,
+  usesEditors,
+} from './question.ts';
 import { SCRIPT_SRC, shellScripts } from './shell.ts';
 import { css } from './theme.ts';
 import { esc, fmtCell, inline, plain, slug, textWidth } from './util.ts';
@@ -49,48 +63,16 @@ export async function render(doc: LedeDocument, opts: RenderOptions = {}): Promi
     throw new Error('shell cannot be combined with unsafeHtml: raw html could plant its own controls and data block');
   const fields = fieldsOf(doc.blocks);
   const exports = exportsOf(doc.blocks);
+  const presets = presetsOf(doc.blocks);
   const shell = !!opts.shell && !opts.fragment && fields.length > 0 && exports.length > 0;
   const ctx = new Ctx(doc, { ...opts, shell }, fields);
-  const blocks = doc.blocks.filter((b) => b.type !== 'data');
-  let firstH1 = blocks.find((b) => b.type === 'heading' && b.level === 1);
-  const title = doc.meta.title || (firstH1 && firstH1.type === 'heading' ? plain(firstH1.text) : 'Untitled');
-  const sub = doc.meta.subtitle ? `<p class="subtitle">${inline(doc.meta.subtitle)}</p>` : '';
-  const by = byline(doc.meta.author, doc.meta.date);
-  const head: string[] = [];
-  let rest = blocks;
-  // @title that no `#` heading repeats becomes the page heading, and the document's own
-  // headings move down a level so the page keeps one h1.
-  if (doc.meta.title && (!firstH1 || (firstH1.type === 'heading' && plain(firstH1.text).trim() !== plain(doc.meta.title).trim()))) {
-    head.push(`<h1>${inline(doc.meta.title)}</h1>`, sub, by);
-    if (firstH1) ctx.shift = 1;
-    firstH1 = undefined;
-  } else if (firstH1 && blocks[0] === firstH1) {
-    head.push(await ctx.block(firstH1, true), sub, by);
-    rest = blocks.slice(1);
-    firstH1 = undefined;
-  } else if (!firstH1) {
-    head.push(sub, by);
-  }
-  const body: string[] = [];
-  const masthead = head.filter(Boolean);
-  if (masthead.length) body.push(`<header class="mast">${masthead.join('')}</header>`);
-  const prose = doc.meta.width !== 'wide' && isProse(rest);
-  for (const u of plan(rest, prose)) {
-    if (u.kind === 'block') {
-      const b = u.block;
-      // A short paragraph straight after the title is the standfirst.
-      const lead = b.type === 'paragraph' && b === rest[0] && masthead.length > 0 && (prose || plain(b.text).length <= 360);
-      // oxlint-disable-next-line eslint/no-await-in-loop -- sequential on purpose: uid() numbers ids in document order
-      body.push(lead ? `<p class="lead">${inline(b.type === 'paragraph' ? b.text : '')}</p>` : await ctx.block(b, true));
-      if (b === firstH1) body.push(sub, by);
-      // oxlint-disable-next-line eslint/no-await-in-loop -- sequential on purpose: uid() numbers ids in document order
-    } else body.push(await ctx.unit(u));
-  }
-  const main = `<main class="doc${prose ? ' prose' : ''}">\n${body.filter(Boolean).join('\n')}\n</main>`;
+  const mh = masthead(doc, ctx);
+  const { body, prose } = await renderMain(doc, ctx, mh);
+  const title = mh.title;
+  const main = mainElement(body, prose);
   if (opts.fragment) return main;
-  const controls = fields.length > 0 || exports.length > 0;
-  const style = `<style>${css({ accent: doc.meta.accent, theme: doc.meta.theme, wide: doc.meta.width === 'wide', controls })}</style>`;
-  const scripts = shell ? `${shellScripts(ctx.page, fields, exports)}\n` : '';
+  const style = `<style>${styleOf(doc.meta, fields.length > 0 || exports.length > 0, usesEditors(fields, presets))}</style>`;
+  const scripts = shell ? `${shellScripts(ctx.page, fields, exports, presets)}\n` : '';
   if (opts.artifact) return `<title>${esc(title)}</title>\n${style}\n${main}\n${scripts}`;
   const desc = doc.meta.description ? `\n<meta name="description" content="${esc(doc.meta.description)}">` : '';
   const lang = /^[a-z]{2,3}(-[A-Za-z0-9]+)*$/.test(doc.meta.lang ?? '') ? doc.meta.lang : 'en';
@@ -109,6 +91,94 @@ ${main}
 ${scripts}</body>
 </html>
 `;
+}
+
+/** `@width wide`. */
+export const isWide = (meta: Record<string, string>): boolean => meta.width === 'wide';
+
+/**
+ * The page stylesheet for a document's meta. `controls`: the page has a question field or an `export`, which add their own rules.
+ * `editors`: it draws an editor word (`param`, `toggle`, `bucket`, `template` or `preset`), which adds more (`usesEditors`).
+ */
+export const styleOf = (meta: Record<string, string>, controls = false, editors = false): string =>
+  css({ accent: meta.accent, theme: meta.theme, wide: isWide(meta), controls, editors });
+
+/** `<main>` around the page's top-level children (empty ones left out). */
+export const mainElement = (children: string[], prose: boolean): string =>
+  `<main class="doc${prose ? ' prose' : ''}">\n${children.filter(Boolean).join('\n')}\n</main>`;
+
+/** A short paragraph straight after the title is the standfirst: its markup, or null when `b` is not one. `first` is the first body block. */
+export function standfirst(b: Block, first: Block | undefined, header: string, prose: boolean): string | null {
+  if (b.type !== 'paragraph' || b !== first || header === '' || !(prose || plain(b.text).length <= 360)) return null;
+  return `<p class="lead">${inline(b.text)}</p>`;
+}
+
+/** What `render` decides before the body: the page title, the header, and the blocks left for the body. */
+export interface Masthead {
+  title: string;
+  /** `<header class="mast">…</header>`, or '' when the page has none. */
+  header: string;
+  /** The blocks after the masthead (a `data` block never reaches the body). */
+  rest: Block[];
+  /** The `#` heading that opens the page body, when the masthead did not take it. */
+  firstH1: Block | undefined;
+  sub: string;
+  by: string;
+}
+
+/**
+ * Decides the title, the header (title, subtitle, byline) and the heading shift. `ctx.shift` is set here: an `@title` that
+ * no `#` heading repeats becomes the page heading, and the document's own headings move down a level.
+ */
+export function masthead(doc: LedeDocument, ctx: Ctx): Masthead {
+  const blocks = doc.blocks.filter((b) => b.type !== 'data');
+  let firstH1 = blocks.find((b) => b.type === 'heading' && b.level === 1);
+  const title = doc.meta.title || (firstH1 && firstH1.type === 'heading' ? plain(firstH1.text) : 'Untitled');
+  const sub = doc.meta.subtitle ? `<p class="subtitle">${inline(doc.meta.subtitle)}</p>` : '';
+  const by = byline(doc.meta.author, doc.meta.date);
+  const head: string[] = [];
+  let rest = blocks;
+  // @title that no `#` heading repeats becomes the page heading, and the document's own
+  // headings move down a level so the page keeps one h1.
+  if (doc.meta.title && (!firstH1 || (firstH1.type === 'heading' && plain(firstH1.text).trim() !== plain(doc.meta.title).trim()))) {
+    head.push(`<h1>${inline(doc.meta.title)}</h1>`, sub, by);
+    if (firstH1) ctx.shift = 1;
+    firstH1 = undefined;
+  } else if (firstH1 && blocks[0] === firstH1) {
+    head.push(ctx.blockSync(firstH1, true), sub, by);
+    rest = blocks.slice(1);
+    firstH1 = undefined;
+  } else if (!firstH1) {
+    head.push(sub, by);
+  }
+  const shown = head.filter(Boolean);
+  return { title, header: shown.length ? `<header class="mast">${shown.join('')}</header>` : '', rest, firstH1, sub, by };
+}
+
+/**
+ * The page body as top-level children, in order (the header first), and whether the page is set as prose. Every block is
+ * drawn by `ctx`, in document order, so that ids are numbered in document order.
+ */
+export async function renderMain(doc: LedeDocument, ctx: Ctx, mh: Masthead): Promise<{ body: string[]; prose: boolean; h1At: number }> {
+  const { rest, firstH1, sub, by } = mh;
+  const body: string[] = [];
+  if (mh.header) body.push(mh.header);
+  const prose = !isWide(doc.meta) && isProse(rest);
+  // Where the heading that carries the subtitle and byline is in `body` (they follow it as children of their own), or -1.
+  let h1At = -1;
+  for (const u of plan(rest, prose)) {
+    if (u.kind === 'block') {
+      const b = u.block;
+      // oxlint-disable-next-line eslint/no-await-in-loop -- sequential on purpose: uid() numbers ids in document order
+      body.push(standfirst(b, rest[0], mh.header, prose) ?? (await ctx.block(b, true)));
+      if (b === firstH1) {
+        h1At = body.length - 1;
+        body.push(sub, by);
+      }
+      // oxlint-disable-next-line eslint/no-await-in-loop -- sequential on purpose: uid() numbers ids in document order
+    } else body.push(await ctx.unit(u));
+  }
+  return { body, prose, h1At };
 }
 
 /** Parse and render in one call. */
@@ -135,8 +205,8 @@ function byline(author?: string, date?: string): string {
 // Patterns writers already produce are recognized from the block sequence; there is no syntax
 // for them. A page without these patterns renders block by block, as before.
 
-type Section = { h: HeadingBlock; body: Block[] };
-type Unit =
+export type Section = { h: HeadingBlock; body: Block[] };
+export type Unit =
   | { kind: 'block'; block: Block }
   | { kind: 'faq'; sections: Section[] }
   | { kind: 'proscons'; pro: Section; con: Section }
@@ -148,12 +218,32 @@ const PROS = /^(pros|advantages|upsides|strengths|benefits|for|do|dos|do's|what 
 const CONS =
   /^(cons|drawbacks|downsides|weaknesses|disadvantages|against|avoid|don't|dont|don'ts|donts|what (did not|didn't) go well|what went wrong|what (did not|didn't) work)$/i;
 
-function section(bs: Block[], i: number): Section | null {
+/**
+ * `probe` (the incremental renderer only): set to `open` when the result depends on blocks that have not arrived, that is when a
+ * section was asked for at the end of `bs`, or when a section that runs to the end of `bs` has its body read.
+ */
+export interface Probe {
+  open: boolean;
+}
+
+function section(bs: Block[], i: number, probe?: Probe): Section | null {
   const h = bs[i];
-  if (!h || h.type !== 'heading') return null;
+  if (!h) {
+    if (probe) probe.open = true;
+    return null;
+  }
+  if (h.type !== 'heading') return null;
   let j = i + 1;
   while (j < bs.length && !(bs[j].type === 'heading' && (bs[j] as HeadingBlock).level <= h.level)) j++;
-  return { h, body: bs.slice(i + 1, j) };
+  const body = bs.slice(i + 1, j);
+  if (!probe || j < bs.length) return { h, body };
+  return {
+    h,
+    get body() {
+      probe.open = true;
+      return body;
+    },
+  };
 }
 
 const REC = /^(recommendation|decision|verdict|conclusion)s?$/i;
@@ -177,32 +267,32 @@ const boldLabel = (b: Block) => b.type === 'paragraph' && /^\*\*[^*]{1,40}\*\*:?
 function plan(bs: Block[], prose = false): Unit[] {
   const out: Unit[] = [];
   for (let i = 0; i < bs.length;) {
-    const s = section(bs, i);
-    if (s) {
-      // Recommendation card: checked first, so no set or option-card run below can swallow it.
-      if (recCard(s)) {
-        out.push({ kind: 'rec', section: s });
-        i += span(s);
-        continue;
-      }
-      // FAQ: three or more sibling headings that are questions, each with an answer.
-      const faq: Section[] = [];
-      for (
-        let k = i, t = section(bs, k);
-        t && t.h.level === s.h.level && /\?\s*$/.test(plain(t.h.text)) && t.body.length > 0 && !t.body.some((b) => b.type === 'heading');
-        k += span(t), t = section(bs, k)
-      )
-        faq.push(t);
-      if (faq.length >= 3) {
-        out.push({ kind: 'faq', sections: faq });
-        i += faq.reduce((n, t) => n + span(t), 0);
-        continue;
-      }
-      // Pros / Cons: two sibling headings, each over one bullet list.
-      const t = section(bs, i + span(s));
+    const { unit, n } = planAt(bs, i, prose);
+    out.push(unit);
+    i += n;
+  }
+  return out;
+}
+
+/** The unit that starts at `bs[i]` and how many blocks it takes. `plan` is this, repeated; nothing before `i` is read. */
+export function planAt(bs: Block[], i: number, prose = false, probe?: Probe): { unit: Unit; n: number } {
+  const s = section(bs, i, probe);
+  if (s) {
+    // Recommendation card: checked first, so no set or option-card run below can swallow it.
+    if (recCard(s)) return { unit: { kind: 'rec', section: s }, n: span(s) };
+    // FAQ: three or more sibling headings that are questions, each with an answer.
+    const faq: Section[] = [];
+    for (
+      let k = i, t = section(bs, k, probe);
+      t && t.h.level === s.h.level && /\?\s*$/.test(plain(t.h.text)) && t.body.length > 0 && !t.body.some((b) => b.type === 'heading');
+      k += span(t), t = section(bs, k, probe)
+    )
+      faq.push(t);
+    if (faq.length >= 3) return { unit: { kind: 'faq', sections: faq }, n: faq.reduce((n, t) => n + span(t), 0) };
+    // Pros / Cons: two sibling headings, each over one bullet list.
+    if (s.h.level > 1 && PROS.test(plain(s.h.text).trim())) {
+      const t = section(bs, i + span(s), probe);
       if (
-        s.h.level > 1 &&
-        PROS.test(plain(s.h.text).trim()) &&
         t &&
         t.h.level === s.h.level &&
         CONS.test(plain(t.h.text).trim()) &&
@@ -210,51 +300,70 @@ function plan(bs: Block[], prose = false): Unit[] {
         bulletList(s.body[0]) &&
         t.body.length === 1 &&
         bulletList(t.body[0])
-      ) {
-        out.push({ kind: 'proscons', pro: s, con: t });
-        i += span(s) + span(t);
-        continue;
-      }
-      // Option cards: two to six sibling h3 sections holding only short bullet lists
-      // (optionally under bold labels like **Pros**).
-      const cards: Section[] = [];
-      for (
-        let k = i, c = section(bs, k);
-        c && c.h.level === 3 && cards.length < 6 && !recCard(c) && cardable(c);
-        k += span(c), c = section(bs, k)
       )
-        cards.push(c);
-      if (cards.length >= 2) {
-        out.push({ kind: 'cards', sections: cards });
-        i += cards.reduce((n, c) => n + span(c), 0);
-        continue;
-      }
-      // Parallel sections: three or more sibling sections with the same short shape
-      // (principles, people, options) read as a set of cards. Not on essays.
-      const set: Section[] = [];
-      if (!prose && s.h.level > 1 && setable(s)) {
-        for (let k = i, c = section(bs, k); c && c.h.level === s.h.level && set.length < 8; k += span(c), c = section(bs, k)) {
-          if (recCard(c)) break;
-          if (setable(c) && shape(c) === shape(s)) {
-            set.push(c);
-            continue;
-          }
-          // The last section may run on into closing blocks (a rule, a quote): take its matching head.
-          const head = { h: c.h, body: c.body.slice(0, s.body.length) };
-          if (set.length >= 2 && setable(head) && shape(head) === shape(s) && !c.body.some((b) => b.type === 'heading')) set.push(head);
-          break;
+        return { unit: { kind: 'proscons', pro: s, con: t }, n: span(s) + span(t) };
+    }
+    // Option cards: two to six sibling h3 sections holding only short bullet lists
+    // (optionally under bold labels like **Pros**).
+    const cards: Section[] = [];
+    for (
+      let k = i, c = section(bs, k, probe);
+      c && c.h.level === 3 && cards.length < 6 && !recCard(c) && cardable(c);
+      k += span(c), c = section(bs, k, probe)
+    )
+      cards.push(c);
+    if (cards.length >= 2) return { unit: { kind: 'cards', sections: cards }, n: cards.reduce((n, c) => n + span(c), 0) };
+    // Parallel sections: three or more sibling sections with the same short shape
+    // (principles, people, options) read as a set of cards. Not on essays.
+    const set: Section[] = [];
+    if (!prose && s.h.level > 1 && setable(s)) {
+      for (let k = i, c = section(bs, k, probe); c && c.h.level === s.h.level && set.length < 8; k += span(c), c = section(bs, k, probe)) {
+        if (recCard(c)) break;
+        if (setable(c) && shape(c) === shape(s)) {
+          set.push(c);
+          continue;
         }
-      }
-      if (set.length >= 3) {
-        out.push({ kind: 'set', sections: set });
-        i += set.reduce((n, c) => n + span(c), 0);
-        continue;
+        // The last section may run on into closing blocks (a rule, a quote): take its matching head.
+        const head = { h: c.h, body: c.body.slice(0, s.body.length) };
+        if (set.length >= 2 && setable(head) && shape(head) === shape(s) && !c.body.some((b) => b.type === 'heading')) set.push(head);
+        break;
       }
     }
-    out.push({ kind: 'block', block: bs[i] });
-    i++;
+    if (set.length >= 3) return { unit: { kind: 'set', sections: set }, n: set.reduce((n, c) => n + span(c), 0) };
   }
-  return out;
+  return { unit: { kind: 'block', block: bs[i] }, n: 1 };
+}
+
+/**
+ * Whether the heading at `bs[i]` could still start a grouped unit (a recommendation, FAQ, pros and cons, option cards or a set)
+ * once more blocks arrive. Each test is the necessary part of the matching rule in `planAt`, judged on the section as it
+ * stands: a bound the section has already passed (too many blocks, too long, a disqualifying block) cannot be undone by
+ * more blocks, and a minimum it has not reached yet (an answer, a list) still can. The incremental renderer holds a heading
+ * back while this is true and releases it as a plain block as soon as it is false.
+ */
+export function mayGroup(bs: Block[], i: number, prose = false): boolean {
+  const s = section(bs, i);
+  if (!s) return false;
+  const open = i + span(s) >= bs.length;
+  const text = plain(s.h.text);
+  const lvl = s.h.level;
+  const body = s.body;
+  const textual = body.every((b) => b.type === 'paragraph' || b.type === 'list' || b.type === 'note');
+  const chars = body.reduce((n, b) => n + textLen(b), 0);
+  // recommendation: recCard
+  if (lvl >= 2 && REC.test(text.trim()) && body.length <= 4 && textual && chars <= 600 && (open || body.length >= 1)) return true;
+  // FAQ: a question heading over an answer that holds no heading
+  if (/\?\s*$/.test(text) && !body.some((b) => b.type === 'heading') && (open || body.length > 0)) return true;
+  // pros and cons: a pros heading over one bullet list
+  if (lvl > 1 && PROS.test(text.trim()) && body.length <= 1 && body.every(bulletList) && (open || body.length === 1)) return true;
+  // option cards: an h3 over short bullet lists
+  if (lvl === 3 && text.length <= 60 && body.every((b) => bulletList(b) || boldLabel(b)) && (open || body.some(bulletList))) {
+    const items = body.flatMap((b) => (b.type === 'list' ? b.items : []));
+    if (items.length <= 12 && items.every((it) => plain(it.text).length <= 160)) return true;
+  }
+  // set: a short section of text, outside essays
+  if (!prose && lvl > 1 && text.length <= 70 && body.length <= 3 && textual && chars <= 700 && (open || body.length >= 1)) return true;
+  return false;
 }
 
 const textLen = (b: Block): number =>
@@ -282,14 +391,36 @@ function cardable(s: Section): boolean {
   return items.length <= 12 && items.every((i) => plain(i.text).length <= 160);
 }
 
+/** Blocks no essay, letter or post holds. */
+export const NOT_ESSAY = new Set<string>(['chart', 'table', 'kpis', 'diagram', 'grid', 'html', 'code', 'cards', 'steps']);
+
+/** What the essay test counts: the paragraphs, the characters in them, and the characters in every block. */
+export interface ProseTally {
+  paras: number;
+  pchars: number;
+  all: number;
+}
+
+/** Add `b` to the tally. */
+export function tallyProse(t: ProseTally, b: Block): void {
+  const len = textLen(b);
+  if (b.type === 'paragraph') {
+    t.paras++;
+    t.pchars += len;
+  }
+  t.all += len;
+}
+
+/** Mostly paragraphs, long ones: the shape of an essay, letter or post, given the tally of a page that holds no data block. */
+export const proseShape = (t: ProseTally): boolean =>
+  t.paras >= 4 && t.pchars >= 1200 && t.pchars / Math.max(1, t.all) >= 0.6 && t.pchars / t.paras >= 140;
+
 /** Mostly paragraphs, no data blocks: an essay, letter or post. */
-function isProse(bs: Block[]): boolean {
-  if (bs.some((b) => ['chart', 'table', 'kpis', 'diagram', 'grid', 'html', 'code', 'cards', 'steps'].includes(b.type))) return false;
-  const len = textLen;
-  const paras = bs.filter((b) => b.type === 'paragraph');
-  const pchars = paras.reduce((n, b) => n + len(b), 0);
-  const all = bs.reduce((n, b) => n + len(b), 0);
-  return paras.length >= 4 && pchars >= 1200 && pchars / Math.max(1, all) >= 0.6 && pchars / paras.length >= 140;
+export function isProse(bs: Block[]): boolean {
+  if (bs.some((b) => NOT_ESSAY.has(b.type))) return false;
+  const t: ProseTally = { paras: 0, pchars: 0, all: 0 };
+  for (const b of bs) tallyProse(t, b);
+  return proseShape(t);
 }
 
 // "Pro: x", "**Do:** x", "Avoid: x": a verdict prefix the writer typed on a list item.
@@ -297,45 +428,115 @@ const YES = /^(\*\*)?(pros?|do|advantage|upside|strength)(:\*\*|\*\*:|:)\s*/i;
 const NO = /^(\*\*)?(cons?|don't|dont|avoid|drawback|downside|weakness)(:\*\*|\*\*:|:)\s*/i;
 const verdict = (t: string): 'yes' | 'no' | '' => (YES.test(t) ? 'yes' : NO.test(t) ? 'no' : '');
 
-class Ctx {
+/** What `rewind` puts back: the id counter and how many heading ids had been taken. */
+export interface CtxMark {
+  n: number;
+  taken: number;
+}
+
+/**
+ * One page's drawing state: ids are numbered in document order, so a block must be drawn in order. `render()` draws through the
+ * async `block`/`unit`. The incremental renderer draws through `blockSync`/`unitSync`, and `mark`/`rewind` let it draw a unit
+ * again with the ids that unit had (internal spec, lede-lang/meta).
+ */
+export class Ctx {
   private n = 0;
   shift = 0;
-  private ids = new Set<string>();
+  /**
+   * The heading ids in the order they were taken, and where each was taken. An id is in use when it was taken before the position
+   * being drawn (`taken`), so `mark` and `rewind` only move `taken`: nothing is copied, and a rewind can go forward again to a
+   * later mark, as the incremental renderer does when it draws a unit again between two units. The entries past `taken` are the
+   * ids of what was drawn there before; drawing the same blocks takes the same ids at the same places.
+   */
+  private readonly idAt: string[] = [];
+  private readonly idPos = new Map<string, number>();
+  private taken = 0;
   private readonly doc: LedeDocument;
   private readonly opts: RenderOptions;
-  private readonly picks: string[];
-  /** The page's question fields in source order, and its title for the export (none when it has no title). */
+  picks: string[];
+  /**
+   * Set by the incremental renderer only. For a diagram `blockSync` meets, returns the markup of a slot to show in its place
+   * (a figure of the right height, the drawing comes later) or null to draw it. A flow diagram cannot be drawn by `blockSync`.
+   */
+  slot: ((b: DiagramBlock, wide: boolean) => string | null) | null = null;
+  /**
+   * Set by the incremental renderer only, for itself and for the whole-page render it checks the page against: a flow diagram is laid
+   * out once while its block reads the same, however often it is drawn. A page drawn once does not pay for the key.
+   */
+  cacheLayouts = false;
+  /**
+   * The page's question fields in source order. `render()` passes the finished page's; the incremental renderer passes an array it
+   * grows as fields arrive, so an `export` drawn mid-stream lists the fields read so far (internal spec, lede-lang/meta).
+   */
   readonly fields: QuestionBlock[];
-  readonly page: string | undefined;
+  /**
+   * The page as written, which a `template`'s filled body and an `export`'s template are drawn from: each field's value (spec §3.2),
+   * the templates filled. Worked out when read, from the fields as they are then, so it follows a page still being written.
+   */
+  get written(): Value[] {
+    return settle(this.fields, []);
+  }
 
-  constructor(doc: LedeDocument, opts: RenderOptions, fields: QuestionBlock[]) {
+  constructor(doc: LedeDocument, opts: RenderOptions, fields: QuestionBlock[] = fieldsOf(doc.blocks)) {
     this.doc = doc;
     this.opts = opts;
     this.picks = picksOf(doc.blocks);
     this.fields = fields;
-    const h1 = doc.blocks.find((b) => b.type === 'heading' && b.level === 1);
-    this.page = plain(doc.meta.title || (h1 && h1.type === 'heading' ? h1.text : '')).trim() || undefined;
+  }
+
+  /**
+   * The page's title for the export: `@title`, else the first `#` heading, else none. Read when an `export` is drawn (and once for
+   * the shell's data block), not when the context is made, so it follows a page still being written.
+   */
+  get page(): string | undefined {
+    const h1 = this.doc.blocks.find((b) => b.type === 'heading' && b.level === 1);
+    return plain(this.doc.meta.title || (h1 && h1.type === 'heading' ? h1.text : '')).trim() || undefined;
   }
 
   uid(prefix: string): string {
     return `${prefix}${++this.n}`;
   }
 
+  mark(): CtxMark {
+    return { n: this.n, taken: this.taken };
+  }
+
+  rewind(m: CtxMark): void {
+    this.n = m.n;
+    this.taken = m.taken;
+  }
+
+  private idTaken(id: string): boolean {
+    const at = this.idPos.get(id);
+    return at !== undefined && at < this.taken && this.idAt[at] === id;
+  }
+
   heading(b: HeadingBlock, cls = ''): string {
     let id = slug(b.text);
-    while (this.ids.has(id)) id += '-x';
-    this.ids.add(id);
+    while (this.idTaken(id)) id += '-x';
+    this.idAt[this.taken] = id;
+    this.idPos.set(id, this.taken++);
     const lvl = Math.min(4, b.level + this.shift);
     return `<h${lvl} id="${id}"${cls ? ` class="${cls}"` : ''}>${inline(b.text)}</h${lvl}>`;
   }
 
+  /** A grouped unit. Only an FAQ answer can hold a flow diagram, which needs the async path. */
   async unit(u: Exclude<Unit, { kind: 'block' }>): Promise<string> {
-    const inner = async (bs: Block[]) => (await Promise.all(bs.map((b) => this.block(b, false)))).join('');
+    if (u.kind === 'faq' && u.sections.some((s) => s.body.some(holdsFlow))) {
+      const inner = async (bs: Block[]) => (await Promise.all(bs.map((b) => this.block(b, false)))).join('');
+      const cards = await Promise.all(
+        u.sections.map(async (s) => `<section class="card faq">${this.heading(s.h)}${await inner(s.body)}</section>`),
+      );
+      return `<div class="faqs">${cards.join('')}</div>`;
+    }
+    return this.unitSync(u);
+  }
+
+  unitSync(u: Exclude<Unit, { kind: 'block' }>): string {
+    const inner = (bs: Block[]) => bs.map((b) => this.blockSync(b, false)).join('');
     if (u.kind === 'faq' || u.kind === 'set') {
       const cls = u.kind === 'faq' ? 'faq' : 'set';
-      const cards = await Promise.all(
-        u.sections.map(async (s) => `<section class="card ${cls}">${this.heading(s.h)}${await inner(s.body)}</section>`),
-      );
+      const cards = u.sections.map((s) => `<section class="card ${cls}">${this.heading(s.h)}${inner(s.body)}</section>`);
       // Short parallel sections sit side by side; longer ones stack like FAQ cards.
       const small = u.kind === 'set' && u.sections.every((s) => s.body.reduce((n, b) => n + textLen(b), 0) <= 240);
       return small ? `<div class="cards n3">${cards.join('')}</div>` : `<div class="faqs">${cards.join('')}</div>`;
@@ -348,8 +549,8 @@ class Ctx {
         const m = /^\*\*[^*]+\*\*/.exec((first as { text: string }).text)!;
         const rest = (first as { text: string }).text.slice(m[0].length).trim();
         head = `<p class="rec-t">${inline(m[0])}</p>${rest ? `<p>${inline(rest)}</p>` : ''}`;
-      } else head = await inner([first]);
-      return `<section class="card rec">${this.heading(u.section.h)}${head}${await inner(more)}</section>`;
+      } else head = inner([first]);
+      return `<section class="card rec">${this.heading(u.section.h)}${head}${inner(more)}</section>`;
     }
     if (u.kind === 'proscons') {
       const side = (s: Section, tone: 'yes' | 'no') =>
@@ -375,8 +576,24 @@ class Ctx {
     return `<div class="cards n${n === 4 || n === 2 ? 2 : 3}">${cards.join('')}</div>`;
   }
 
-  // oxlint-disable-next-line eslint/consistent-return -- exhaustive over Block
+  /** A block drawn the way `render()` draws it: a flow diagram is laid out (async), and so is a grid that holds one. */
   async block(b: Block, top: boolean): Promise<string> {
+    if (b.type === 'diagram' && b.kind !== 'sequence') {
+      if (b.nodes.length === 0) return '';
+      const svg = await renderFlow(b, this.uid('d'), this.cacheLayouts);
+      return top ? svg.replace('<figure class="viz dg-fig', '<figure class="viz dg-fig wide') : svg;
+    }
+    if (b.type === 'grid') {
+      const kids = await Promise.all(b.children.map(async (c) => this.gridKid(b, c, (x) => this.block(x, false))));
+      return gridHtml(b, kids);
+    }
+    if (b.type === 'cards') return this.cards(b, top);
+    return this.blockSync(b, top);
+  }
+
+  /** Every block but a flow diagram, drawn at once. A diagram the `slot` callback claims is a slot; a flow diagram otherwise throws. */
+  // oxlint-disable-next-line eslint/consistent-return -- exhaustive over Block
+  blockSync(b: Block, top: boolean): string {
     const wide = top && WIDE.has(b.type) ? ' wide' : '';
     switch (b.type) {
       case 'heading':
@@ -417,7 +634,7 @@ class Ctx {
         return d ? table(b, d, this.picks) : '';
       }
       case 'cards':
-        return this.cards(b, top);
+        return this.cardsSync(b, top);
       case 'steps':
         return steps(b);
       case 'ask':
@@ -426,8 +643,18 @@ class Ctx {
         return chooseHtml(b, !!this.opts.shell);
       case 'confirm':
         return confirmHtml(b, !!this.opts.shell);
+      case 'param':
+        return paramHtml(b);
+      case 'toggle':
+        return toggleHtml(b);
+      case 'bucket':
+        return bucketHtml(b);
+      case 'template':
+        return templateHtml(b, String(this.written[this.fields.indexOf(b)]));
+      case 'preset':
+        return presetHtml(b, !!this.opts.shell, this.fields);
       case 'export':
-        return exportHtml(b, serializeExport(b.format, this.page, this.fields), !!this.opts.shell);
+        return exportHtml(b, serializeExport(b.format, this.page, this.fields, this.written), !!this.opts.shell);
       case 'kpis':
         return kpis(b, wide, top);
       case 'image': {
@@ -440,24 +667,30 @@ class Ctx {
         }
         return `<figure class="img"><img src="${esc(browserUrl(b.src))}" alt="${esc(b.alt)}" loading="lazy" decoding="async">${cap}</figure>`;
       }
-      case 'grid': {
-        // A chart in a cell of the 64rem (1024px) grid is drawn at the cell's own width: the grid's
-        // gaps are 16px, and the figure's padding and border take 34px from the cell.
-        const cellWidth = Math.floor((1024 - 16 * (b.columns - 1)) / b.columns) - 34;
-        const kids = await Promise.all(
-          b.children.map(async (c) => {
-            const d = c.type === 'chart' && b.columns >= 2 ? this.doc.data[c.data] : undefined;
-            return c.type === 'chart' && d ? renderChart(c, d, this.uid('c'), { cellWidth }) : this.block(c, false);
-          }),
+      case 'grid':
+        return gridHtml(
+          b,
+          b.children.map((c) => this.gridKid(b, c, (x) => this.blockSync(x, false))),
         );
-        return `<div class="lgrid wide" style="--cols:${b.columns}">${kids.join('')}</div>`;
-      }
       case 'diagram': {
+        const slot = this.slot?.(b, wide !== '');
+        if (slot != null) {
+          this.uid('d');
+          return slot;
+        }
         if (b.nodes.length === 0) return '';
-        const svg = b.kind === 'sequence' ? renderSequence(b, this.uid('d')) : await renderFlow(b, this.uid('d'));
+        if (b.kind !== 'sequence') throw new Error('blockSync cannot draw a flow diagram: use block()');
+        const svg = renderSequence(b, this.uid('d'));
         return wide ? svg.replace('<figure class="viz dg-fig', '<figure class="viz dg-fig wide') : svg;
       }
     }
+  }
+
+  /** A chart in a cell of the 64rem (1024px) grid is drawn at the cell's own width: the grid's gaps are 16px, and the figure's padding and border take 34px from the cell. */
+  private gridKid<T>(b: GridBlock, c: Block, other: (c: Block) => T): string | T {
+    const cellWidth = Math.floor((1024 - 16 * (b.columns - 1)) / b.columns) - 34;
+    const d = c.type === 'chart' && b.columns >= 2 ? this.doc.data[c.data] : undefined;
+    return c.type === 'chart' && d ? renderChart(c, d, this.uid('c'), { cellWidth }) : other(c);
   }
 
   /**
@@ -466,41 +699,71 @@ class Ctx {
    * render as anywhere else, sized to the card: charts get the card's width, tables stack or
    * tighten against it.
    */
-  async cards(b: CardsBlock, top: boolean): Promise<string> {
+  private cardsFrame(b: CardsBlock, top: boolean) {
     const n = b.items.length;
-    if (!n) return '';
     const cols = n === 1 ? 1 : n === 2 || n === 4 ? 2 : 3;
     // A trio breaks out of the text column only when a card holds a chart or table that needs the room;
     // cards of prose and bullets stay in the column (D38).
     const needsRoom = b.items.some((c) => c.blocks.some((k) => k.type === 'chart' || k.type === 'table'));
     const wide = top && cols >= 3 && needsRoom;
-    const box = wide || this.doc.meta.width === 'wide' ? 1024 : 736;
+    const box = wide || isWide(this.doc.meta) ? 1024 : 736;
     // Card padding and border take 42px; a chart figure's own padding and border take 34px.
     const inner = Math.floor((box - 16 * (cols - 1)) / cols) - 42;
     // A phone card is 400 - 32 (page gutter) - 34 (card padding, border) wide.
     const fit = Math.min(inner, 334);
+    return { cols, wide, inner, fit };
+  }
+
+  private cardKid<T>(k: Block, f: { inner: number; fit: number }, other: (k: Block) => T): string | T {
+    if (k.type === 'chart') {
+      const d = this.doc.data[k.data];
+      return d ? renderChart(k, d, this.uid('c'), { cellWidth: f.inner - 34 }) : '';
+    }
+    if (k.type === 'table') {
+      const d = this.doc.data[k.data];
+      return d ? table(k, d, this.picks, f.fit) : '';
+    }
+    return other(k);
+  }
+
+  private cardHtml(c: CardItem, kids: string[]): string {
+    const rec = /recommended/i.test(plain(c.title)) ? ' rec' : '';
+    const h = this.heading({ type: 'heading', level: 3, text: c.title, line: c.line });
+    return `<section class="card lc${rec}">${h}${kids.join('')}</section>`;
+  }
+
+  async cards(b: CardsBlock, top: boolean): Promise<string> {
+    if (!b.items.length) return '';
+    const f = this.cardsFrame(b, top);
     const cards = await Promise.all(
       b.items.map(async (c) => {
-        const kids = await Promise.all(
-          c.blocks.map(async (k) => {
-            if (k.type === 'chart') {
-              const d = this.doc.data[k.data];
-              return d ? renderChart(k, d, this.uid('c'), { cellWidth: inner - 34 }) : '';
-            }
-            if (k.type === 'table') {
-              const d = this.doc.data[k.data];
-              return d ? table(k, d, this.picks, fit) : '';
-            }
-            return this.block(k, false);
-          }),
-        );
-        const rec = /recommended/i.test(plain(c.title)) ? ' rec' : '';
-        const h = this.heading({ type: 'heading', level: 3, text: c.title, line: c.line });
-        return `<section class="card lc${rec}">${h}${kids.join('')}</section>`;
+        const kids = await Promise.all(c.blocks.map(async (k) => this.cardKid(k, f, (x) => this.block(x, false))));
+        return this.cardHtml(c, kids);
       }),
     );
-    return `<div class="cards lcards${wide ? ' wide' : ''}" style="--cols:${cols}">${cards.join('')}</div>`;
+    return `<div class="cards lcards${f.wide ? ' wide' : ''}" style="--cols:${f.cols}">${cards.join('')}</div>`;
   }
+
+  cardsSync(b: CardsBlock, top: boolean): string {
+    if (!b.items.length) return '';
+    const f = this.cardsFrame(b, top);
+    const cards = b.items.map((c) =>
+      this.cardHtml(
+        c,
+        c.blocks.map((k) => this.cardKid(k, f, (x) => this.blockSync(x, false))),
+      ),
+    );
+    return `<div class="cards lcards${f.wide ? ' wide' : ''}" style="--cols:${f.cols}">${cards.join('')}</div>`;
+  }
+}
+
+function gridHtml(b: GridBlock, kids: string[]): string {
+  return `<div class="lgrid wide" style="--cols:${b.columns}">${kids.join('')}</div>`;
+}
+
+/** A flow diagram that `render()` lays out, in `b` or in a grid `b` holds. */
+export function holdsFlow(b: Block): boolean {
+  return b.type === 'diagram' ? b.kind !== 'sequence' && b.nodes.length > 0 : b.type === 'grid' && b.children.some(holdsFlow);
 }
 
 // ---------------------------------------------------------------- steps and chips
@@ -693,30 +956,38 @@ function kbar(value: string, tone: Kpi['tone']): string {
 
 const BOLD_CELL = /^\s*\*\*[^*]+\*\*\s*$/;
 
+/** Where `pickStep` stands: the names found so far, and whether the last heading opens a Recommendation-like section. */
+export interface PickScan {
+  picks: string[];
+  underRec: boolean;
+}
+
 /** Names a page recommends: a note or paragraph opening "Choose X", "Recommend X", "Go with X", "Use X". */
-function picksOf(bs: Block[]): string[] {
+export function picksOf(bs: Block[]): string[] {
+  const scan: PickScan = { picks: [], underRec: false };
+  for (const b of bs) pickStep(scan, b);
+  return scan.picks;
+}
+
+/** Read the next block of a page for `picksOf`. Blocks must come in order, once each. */
+export function pickStep(scan: PickScan, b: Block): void {
   // A note may say "Choose X" anywhere; a paragraph counts only under a Recommendation or
   // Decision heading, and only there does a plain imperative ("Use X") count, since runbooks
   // are full of "Use X" steps.
-  const out: string[] = [];
-  let underRec = false;
-  for (const b of bs) {
-    if (b.type === 'heading') underRec = /recommend|decision|verdict|choice|conclusion/i.test(b.text);
-    if (b.type !== 'note' && !(b.type === 'paragraph' && underRec)) continue;
-    const verbs = underRec
-      ? 'choose|recommend(?:ation)?:?|go with|pick|adopt|use|buy|select'
-      : 'choose|recommend(?:ation)?:?|go with|pick|adopt';
-    const m = new RegExp(
-      `^(?:we\\s+)?(?:${verbs})\\s+(.+?)(?:[.,;:!(]|\\s+(?:with|because|mainly|for|over|as|and|now|today|instead)\\b|$)`,
-      'i',
-    ).exec(
-      plain(b.text)
-        .replace(/^\s*recommendation:\s*/i, 'choose ')
-        .trim(),
-    );
-    if (m && m[1].length <= 40) out.push(m[1].trim().toLowerCase());
-  }
-  return out;
+  if (b.type === 'heading') scan.underRec = /recommend|decision|verdict|choice|conclusion/i.test(b.text);
+  if (b.type !== 'note' && !(b.type === 'paragraph' && scan.underRec)) return;
+  const verbs = scan.underRec
+    ? 'choose|recommend(?:ation)?:?|go with|pick|adopt|use|buy|select'
+    : 'choose|recommend(?:ation)?:?|go with|pick|adopt';
+  const m = new RegExp(
+    `^(?:we\\s+)?(?:${verbs})\\s+(.+?)(?:[.,;:!(]|\\s+(?:with|because|mainly|for|over|as|and|now|today|instead)\\b|$)`,
+    'i',
+  ).exec(
+    plain(b.text)
+      .replace(/^\s*recommendation:\s*/i, 'choose ')
+      .trim(),
+  );
+  if (m && m[1].length <= 40) scan.picks.push(m[1].trim().toLowerCase());
 }
 
 function keyMatch(cellText: string, pick: string): boolean {
@@ -1054,4 +1325,14 @@ export { RUNTIME, RUNTIME_SHA256 } from './shell-runtime.ts';
 export { wantsShell } from './shell.ts';
 export { css } from './theme.ts';
 export { layoutFlow } from './diagram.ts';
+export { setLayoutEngine, type LayoutFn } from './elk.ts';
+export {
+  createIncremental,
+  type Incremental,
+  type IncrementalEnd,
+  type IncrementalOp,
+  type IncrementalOptions,
+  type Pushed,
+  type SettleCause,
+} from './incremental.ts';
 export { niceTicks } from './chart.ts';

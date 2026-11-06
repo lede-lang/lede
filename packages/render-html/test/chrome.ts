@@ -6,6 +6,7 @@ import { createRequire } from 'node:module';
 import { after, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { chromium, resolveChrome } from '../../../bench/src/shot.ts';
+import { RUNTIME } from '../src/index.ts';
 
 export type Browser = Awaited<ReturnType<typeof chromium.launch>>;
 
@@ -39,4 +40,38 @@ export function browserTest(name: string, fn: (browser: Browser) => Promise<void
     assert.ok(exe, 'no Chromium found, and CI or LEDE_REQUIRE_CHROME is set: set LEDE_SHELL_CHROME or CHROME');
     await fn(await shared(exe));
   });
+}
+
+/** The stub origin a served page lives at. */
+export const PAGE_URL = 'https://lede.test/page.html';
+
+/**
+ * Opens `html` in a new context at a stub https origin, so the page keeps its policy (the shell runs only if its hash is the page's) and
+ * the Clipboard API has a secure context. `clipboard` grants read and write, `init` runs before the page's own scripts, and `logs`
+ * collects the console. Close the returned context when the check is done.
+ */
+export async function serve(
+  browser: Browser,
+  html: string,
+  o: { width?: number; init?: string | undefined; javaScriptEnabled?: boolean; clipboard?: boolean } = {},
+) {
+  const ctx = await browser.newContext({
+    viewport: { width: o.width ?? 1280, height: 900 },
+    javaScriptEnabled: o.javaScriptEnabled ?? true,
+  });
+  if (o.clipboard) await ctx.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(PAGE_URL).origin });
+  const page = await ctx.newPage();
+  const logs: string[] = [];
+  page.on('console', (m) => logs.push(m.text()));
+  if (o.init) await page.addInitScript(o.init);
+  await page.route(PAGE_URL, (r) => r.fulfill({ status: 200, contentType: 'text/html', body: html }));
+  await page.goto(PAGE_URL);
+  return { ctx, page, logs };
+}
+
+/** The same page with its runtime changed by one byte: the policy stops the script, so the page is what a reader without script sees. */
+export function tamper(html: string): string {
+  const out = html.replace(`<script>${RUNTIME}</script>`, () => `<script>${RUNTIME} </script>`);
+  assert.notEqual(out, html);
+  return out;
 }

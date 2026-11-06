@@ -1,0 +1,50 @@
+{
+  "id": "147-dispatch-team-charter",
+  "category": "prose",
+  "title": "Calder Bay dispatch team charter",
+  "brief": "I'm Dilys Penhallow, team lead of the Calder Bay Coast Dispatch Centre, and I want a team charter that all 14 of us can read and sign at the start of our new rota on 2026-11-02. It will be printed and pinned in the break room, so it needs to read well on paper, mostly as headings and plain paragraphs. Sections: \"Why we exist\": we answer emergency calls from the coast between Harrow Point and Selden Sands, and for the person on the line we are the first thing that goes right. \"How we work\": 12-hour shifts, a 15-minute handover with the next shift, calls answered within 10 seconds 95 percent of the time, and no one working more than 4 night shifts in a row. \"How we decide\": the shift supervisor decides in the moment, the team decides rules at the monthly meeting on the first Tuesday, and anyone may stop a handover to ask a question. \"What we promise each other\": a short list of four promises, we say when we are struggling, we cover each other's breaks, we debrief after every serious call within 24 hours, and we never blame a person for a system problem. Close with a highlighted line: nobody takes a hard call alone. Say that the charter is reviewed on 2027-03-01.",
+  "checklist": {
+    "sections": [
+      "Why we exist",
+      "How we work",
+      "How we decide",
+      "What we promise each other"
+    ],
+    "visible": [
+      "Dilys Penhallow",
+      "Calder Bay Coast Dispatch Centre",
+      "Harrow Point",
+      "Selden Sands",
+      "nobody takes a hard call alone"
+    ],
+    "values": [
+      "14",
+      "2026-11-02",
+      "12-hour",
+      "15-minute",
+      "10 seconds",
+      "95 percent",
+      "4 night shifts",
+      "24 hours",
+      "2027-03-01"
+    ]
+  },
+  "needs": [
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change the answer target from 10 seconds to 8 seconds and the review date to 2027-04-01, and add a fifth promise: \"we always eat a proper meal on shift\".",
+    "expect_visible": [
+      "we always eat a proper meal on shift"
+    ],
+    "expect_values": [
+      "8 seconds",
+      "2027-04-01"
+    ],
+    "expect_absent": [
+      "10 seconds",
+      "2027-03-01"
+    ]
+  }
+}

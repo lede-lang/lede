@@ -1,0 +1,4 @@
+toggle a needs=b | Needs a toggle declared below
+toggle b needs=b | Needs itself
+toggle c needs=a,missing | Needs a real toggle and a missing one
+export json

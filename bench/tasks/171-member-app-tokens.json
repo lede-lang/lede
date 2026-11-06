@@ -1,0 +1,66 @@
+{
+  "id": "171-member-app-tokens",
+  "category": "design",
+  "title": "Tidewater design token reference",
+  "brief": "I'm the design lead at Tidewater Credit Union and I need a design token reference sheet for our new member app, for the developers and designers who will keep it open on laptops beside their work. Dated 2026-10-19. Under \"Colors\" show each swatch with its name, hex value and role: Harbor Blue #0B5FA5 primary actions; Deep Harbor #083F70 pressed state and headers; Buoy Gold #F2A900 highlights and badges only; Mist #F7F9FB page background; Ink #1B2733 body text; Fern #1E8A4C success; Brick #C0392B errors. Under \"Type scale\" show each size in pixels with a sample line set at that size: caption 12, body 16, lead 20, heading 3 24, heading 2 32, heading 1 44. Under \"Spacing\" show the steps 4, 8, 12, 16, 24, 32 and 48 pixels as bars with their names space-1 to space-7. Under \"In use\" show three real examples built from the tokens: a primary button reading Pay now in Harbor Blue with white text, a card on Mist with Ink text and 16 pixels of padding showing the balance 2486.30 dollars, and an error message in Brick reading Card number is incomplete. Note in a highlighted callout that Buoy Gold must never be used for text on Mist, because the contrast is only about 1.9 to 1.",
+  "checklist": {
+    "sections": [
+      "Colors",
+      "Type scale",
+      "Spacing",
+      "In use"
+    ],
+    "visible": [
+      "Harbor Blue",
+      "Deep Harbor",
+      "Buoy Gold",
+      "Mist",
+      "Ink",
+      "Fern",
+      "Brick",
+      "Pay now",
+      "Card number is incomplete",
+      "space-1",
+      "space-7"
+    ],
+    "values": [
+      "2026-10-19",
+      "#0B5FA5",
+      "#083F70",
+      "#F2A900",
+      "#F7F9FB",
+      "#1B2733",
+      "#1E8A4C",
+      "#C0392B",
+      "12",
+      "16",
+      "20",
+      "24",
+      "32",
+      "44",
+      "4",
+      "8",
+      "48",
+      "2486.30",
+      "1.9 to 1"
+    ]
+  },
+  "needs": [
+    "table",
+    "list",
+    "callout"
+  ],
+  "edit": {
+    "request": "Change Harbor Blue to #0A58C2 and add a color named Sky, #DCEBFA, for selected rows.",
+    "expect_visible": [
+      "Sky"
+    ],
+    "expect_values": [
+      "#0A58C2",
+      "#DCEBFA"
+    ],
+    "expect_absent": [
+      "#0B5FA5"
+    ]
+  }
+}
