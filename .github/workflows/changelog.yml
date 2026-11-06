@@ -6,6 +6,10 @@ name: changelog
 # Public repository only; in a private one the job is skipped. It needs a v0.* tag on main (v0.1.0 is the first): with no
 # tag semantic-release would start at 1.0.0, and every package stays on 0.x.
 #
+# The notes end with `Shell runtime SHA-256: <hex>` when packages/render-html/src/shell-runtime.sha256 differs from the previous release
+# tag's, and carry nothing about it otherwise (an exec step in .releaserc.json running scripts/runtime-hash-note.ts), so a reviewer who
+# pins a `--shell` page's policy sees the new hash in CHANGELOG.md and the GitHub release.
+#
 # The release commit goes to main with a GitHub App token, because the ruleset on main requires a pull request and the app is its
 # bypass actor. The checkout keeps no credentials, so install scripts never see the token. Repository secrets:
 # SEMANTIC_RELEASE_APP_ID and SEMANTIC_RELEASE_PRIVATE_KEY.
