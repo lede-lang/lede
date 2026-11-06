@@ -1,5 +1,5 @@
 {
- "about": "Security corpus for the HTML renderer (D49). `strings` are injected into every `contexts` template ({T} raw text, {Q} inside a quoted option, {C} a quoted CSV cell; a context skips the strings its `skip` regex matches, because a diagram line with an arrow anywhere is read as an edge); each of `cases` is one document. Run by packages/render-html/test/security-corpus.test.ts. Remote payloads use the reserved host xss.example. The editor words (spec 4.19) have their own contexts and cases: a context with `errors` is built on its own for every string and must fail with one of those codes; a shell case may set `payload` (what the driven pass types into every text control) and `inert` (texts of forged elements that must survive the driven pass unchanged).",
+ "about": "Security corpus for the HTML renderer (D49). `strings` are injected into every `contexts` template ({T} raw text, {Q} inside a quoted option, {C} a quoted CSV cell; a context skips the strings its `skip` regex matches, because a diagram line with an arrow anywhere is read as an edge); each of `cases` is one document. Run by packages/render-html/test/security-corpus.test.ts. Remote payloads use the reserved host xss.example. The editor words (spec 4.19) have their own contexts and cases: a context with `errors` is built on its own for every string and must fail with one of those codes; a choose option may not hold a C0 control character other than tab (spec 4.18), so the two contexts that put a string in an option skip the strings that do, and a context with `errors` takes exactly those (its `skip` is their complement); a shell case may set `payload` (what the driven pass types into every text control) and `inert` (texts of forged elements that must survive the driven pass unchanged).",
  "strings": [
   "<script>alert(1)</script>",
   "<SCRIPT SRC=//xss.example/x.js></SCRIPT>",
@@ -266,7 +266,16 @@
   },
   {
    "name": "choose option",
-   "lede": "choose p1 | {C}, Mk51"
+   "lede": "choose p1 | {C}, Mk51",
+   "skip": "[\\u0000-\\u0008\\u000B\\u000C\\u000E-\\u001F]"
+  },
+  {
+   "name": "choose option with a control character (refused)",
+   "errors": [
+    "choose-options"
+   ],
+   "lede": "choose p1x | {C}, Mk74",
+   "skip": "^[^\\u0000-\\u0008\\u000B\\u000C\\u000E-\\u001F]*$"
   },
   {
    "name": "choose question and export",
@@ -328,7 +337,7 @@
   {
    "name": "preset value, an option",
    "lede": "choose pa5 | {C}, Mk72\npreset pb3 | Mk73 | pa5=\"{Q}\"",
-   "skip": "^\\s|\\s$"
+   "skip": "^\\s|\\s$|[\\u0000-\\u0008\\u000B\\u000C\\u000E-\\u001F]"
   }
  ],
  "cases": [

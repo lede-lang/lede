@@ -137,6 +137,77 @@ test('choose errors: too few, empty, reserved, unclosed quote, repeats', () => {
   assert.deepEqual(d.detail, { count: 1, empty: false, reserved: false });
 });
 
+// Issue #22: the HTML parser turns a NUL in an attribute value into U+FFFD and a CR into LF, so the radio's `value` would differ from the
+// option in the AST and the runtime would export a different string than the reference serializer. C0 controls other than tab are refused
+// at parse time (spec §4.18); DEL and the C1 controls are not C0 and stay allowed.
+test('choose options: a C0 control character other than tab is an error, whichever it is and wherever it sits', () => {
+  const c0 = Array.from({ length: 32 }, (_, i) => String.fromCharCode(i)).filter((c) => c !== '\t' && c !== '\n');
+  assert.equal(c0.length, 30);
+  // VT, FF and CR are whitespace to the trim that every option gets, so at an option's edge they are gone before the check (see below).
+  const trimmed = new Set(['\x0B', '\x0C', '\r']);
+  for (const c of c0) {
+    const srcs = [`choose c | a${c}x, b\nexport`, `choose c | ok, "q${c}x"\nexport`];
+    if (!trimmed.has(c)) srcs.push(`choose c | ok, ${c}x\nexport`, `choose c | ok, x${c}\nexport`);
+    for (const src of srcs) {
+      assert.deepEqual(errs(src), ['error:choose-options@1'], JSON.stringify(src));
+      assert.equal(only<ChooseBlock>(src, 'choose').length, 0, 'an option with a control character makes no block');
+    }
+  }
+  // What the check sees is what is kept: whitespace controls at an option's edge are trimmed like a space, so none reaches the page.
+  const kept = only<ChooseBlock>('choose c | a\x0B, \x0Cb, c\r\nexport', 'choose')[0];
+  assert.deepEqual(kept.options, ['a', 'b', 'c']);
+  assert.deepEqual(errs('choose c | a\x0B, \x0Cb, c\nexport'), []);
+});
+
+test('choose options: tab, DEL and the C1 controls are allowed in an option', () => {
+  for (const c of ['\t', '\x7F', '\x80', '\x9F', '\u2028']) {
+    const src = `choose c | a${c}x, b\nexport`;
+    assert.deepEqual(errs(src), [], JSON.stringify(c));
+    assert.deepEqual(only<ChooseBlock>(src, 'choose')[0].options, [`a${c}x`, 'b']);
+  }
+});
+
+test('choose options: the control-character error names the option and the character; the other choose-options details are unchanged', () => {
+  const d = parse('choose c | ok, a\0x, b\nexport').diagnostics.find((e) => e.code === 'choose-options')!;
+  assert.equal(d.severity, 'error');
+  assert.deepEqual([d.line, d.col], [1, 8]);
+  assert.deepEqual(d.detail, { kind: 'control', option: 'a\0x', char: 'U+0000' });
+  assert.match(d.message, /choose c: option "a\\u0000x" holds the control character U\+0000/);
+  // The first option that holds one is the one named; a line with two such options is still one error.
+  const two = parse('choose c | a\x01x, b\x1Fy\nexport').diagnostics.filter((e) => e.code === 'choose-options');
+  assert.equal(two.length, 1);
+  assert.deepEqual(two[0].detail, { kind: 'control', option: 'a\x01x', char: 'U+0001' });
+  // Every other reason keeps its detail, with no `kind`.
+  const few = parse('choose c | x, x\nexport').diagnostics.find((e) => e.code === 'choose-options')!;
+  assert.deepEqual(few.detail, { count: 1, empty: false, reserved: false });
+  // A control character and another fault are two errors, each with its own detail.
+  const both = parse('choose c | only\x01\nexport').diagnostics.filter((e) => e.code === 'choose-options');
+  assert.deepEqual(
+    both.map((e) => e.detail),
+    [
+      { kind: 'control', option: 'only\x01', char: 'U+0001' },
+      { count: 1, empty: false, reserved: false },
+    ],
+  );
+});
+
+test('field names cannot hold a control character: NAME is [A-Za-z][\\w-]*, so ask, choose and confirm refuse it, and an editor line with one is prose', () => {
+  for (const c of ['\0', '\x01', '\x1B']) {
+    for (const w of ['ask', 'confirm'])
+      assert.deepEqual(errs(`${w} na${c}me | q\nexport`), ['error:question-name@1'], `${w} ${JSON.stringify(c)}`);
+    assert.deepEqual(errs(`choose na${c}me | x, y\nexport`), ['error:question-name@1']);
+    assert.deepEqual(parse(`choose na${c}me | x, y`).diagnostics[0].detail, { word: 'choose', name: `na${c}me` });
+    // The editor words are keyword lines only with a name and a `|` (D65): a name with a control character is not a name, so the line is text.
+    for (const w of ['param', 'toggle', 'bucket', 'template', 'preset']) {
+      assert.deepEqual(
+        blocks(`${w} na${c}me | x`).map((b) => b.type),
+        ['paragraph'],
+        `${w} ${JSON.stringify(c)}`,
+      );
+    }
+  }
+});
+
 test('export warnings: orphan, missing, repeated', () => {
   assert.deepEqual(diags('export json'), ['warning:export-orphan@1']);
   assert.deepEqual(diags('ask a | q\nask b | r'), ['warning:export-missing@1']);
@@ -184,5 +255,30 @@ test('a streamed document gives the same blocks as the whole text, and any prefi
   assert.deepEqual(
     partial.snapshot().diagnostics.map((d) => d.code),
     ['export-missing'],
+  );
+});
+
+test('a control character in a choose option is the same error when streamed, and no snapshot ever holds the choose', () => {
+  const src = 'ask a | q\nchoose b | x\u0000y, z\nexport json\n';
+  const stream = new LedeStream();
+  for (const ch of src) {
+    stream.write(ch);
+    assert.deepEqual(
+      stream
+        .snapshot()
+        .blocks.filter((b) => b.type === 'choose')
+        .map((b) => b.type),
+      [],
+    );
+  }
+  const streamed = stream.end();
+  assert.deepEqual(streamed.diagnostics, parse(src).diagnostics);
+  assert.deepEqual(
+    streamed.diagnostics.map((d) => `${d.severity}:${d.code}@${d.line}`),
+    ['error:choose-options@2'],
+  );
+  assert.deepEqual(
+    streamed.blocks.map((b) => b.type),
+    ['ask', 'export'],
   );
 });

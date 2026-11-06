@@ -280,20 +280,25 @@ choose NAME | OPTION, OPTION … [| QUESTION]
 confirm NAME | STATEMENT
 export [json|markdown|prompt]
 ```
-- NAME matches `[A-Za-z][\w-]*` and is unique on the page; it is the key in the export. QUESTION and STATEMENT are inline text to
+- NAME matches `[A-Za-z][\w-]*` (so it never holds a control character) and is unique on the page; it is the key in the export. QUESTION and STATEMENT are inline text to
   the end of the line, `|` included. A `choose` with no QUESTION is labelled by its name.
 - `ask`: `lines=` is a whole number from 1 to 12; above 1 the field is a text area. `confirm`: an approve-or-reject pair; it takes
   no reason, so a reason is a separate `ask`.
 - `choose`: options are separated by `,` or `;` and read as data cells (§4.11): a quoted option may hold `,`, `;` and `|`, and the
   options end at the first `|` outside quotes. Repeated options are removed (W `choose-dup-option`); at least two must remain, none
-  may be empty, and `(not chosen)` is reserved (E `choose-options`). Option text is plain text.
+  may be empty, and `(not chosen)` is reserved (E `choose-options`). Option text is plain text, and it holds no C0 control
+  character other than tab (U+0000 to U+0008 and U+000A to U+001F; E `choose-options`, below): a browser rewrites a NUL or a CR in
+  a form control's value, so the exported option would differ from the written one. DEL (U+007F) and the C1 controls are allowed.
+  The check is made on the options as kept, after each is trimmed, so a vertical tab, form feed or carriage return at an option's
+  edge is dropped with the rest of its whitespace and only one inside an option is an error.
 - `export`: a bare `export` is `markdown`; `prompt` is the third format (§4.19); one per format (W `export-dup`). The page's export lists every field in source order,
   including fields inside `cards` and `grid`. Fields do not appear in table rows.
 - A line that is `ask`, `choose` or `confirm` alone or followed by whitespace is a question line, and fails loudly if malformed
   (§1.5); `export` is a question line only when alone or followed by one word, so `export the data` is text. All four are lowercase:
   `Ask the team` is text, and `\ask the team` writes lowercase text (§4.2). A line with an error makes no block and takes no name.
 - E `question-syntax` `{word}`, `question-name` `{word, name}`, `question-dup` `{name, first}`, `choose-options` `{count, empty,
-  reserved}`, `ask-lines` `{value}`, `export-format` `{format}`, `csv-quote`. W `question-option` `{option}`, `choose-dup-option`
+  reserved}` or, for an option with a control character, `{kind, option, char}` (`kind` is `control`, `option` is the option as read and
+  `char` the first such character as `U+XXXX`; one error for the line, naming the first such option), `ask-lines` `{value}`, `export-format` `{format}`, `csv-quote`. W `question-option` `{option}`, `choose-dup-option`
   `{option}`, `export-dup` `{format, first}`, `export-orphan` (an `export` and no field), `export-missing` `{fields}` (fields and no
   `export`). The last two are reported when the document ends, so a snapshot of a prefix (§6) may show `export-missing` before
   the `export` line arrives.
@@ -602,7 +607,8 @@ the common codes end with what to write instead (`...; put a cell that contains 
 delay ms?`). `detail` is optional and machine-readable. Codes the fixer reads carry it: `unknown-column` `{column, columns}`,
 `data-row-width` `{fields, want, name}`, `csv-thousands` `{fields, want, name}` (`fields` counted before the merge),
 `name-clash` `{diagram}` (a diagram named like a data set; a clash with a bucket set carries `{bucket}` instead, and `--fix` leaves
-it). The question-word codes (§4.18) carry `detail` too, and so do the editor-word codes (§4.19): `param-range` `{value, min, max,
+it). The question-word codes (§4.18) carry `detail` too (`choose-options` has `{count, empty, reserved}`, or `{kind, option, char}` with
+`kind` `control` when an option holds a C0 control character other than tab), and so do the editor-word codes (§4.19): `param-range` `{value, min, max,
 step, rule}` (`rule` is `order`, `step`, `range`, `grid`, `grid-max` or `count`), `toggle-needs` `{name, needs, toggles}`, `bucket-names`
 `{count, empty, dup, reserved}`, `bucket-unknown` `{bucket, buckets}`, `bucket-item` `{name}`, `bucket-dup-item` `{text, first}`,
 `bucket-empty` `{name}`, `template-fence` `{name}`, `template-slot` `{slot, fields}`, `template-empty` `{name}`, `preset-key`
@@ -1001,3 +1007,11 @@ hash in their page policy change; with the two script elements and that hash tak
 other file builds as without `--shell` (D64). The markup, the CSS and the `prompt` note exist only on a page that has an editor word or
 `export prompt`. A page with an editor word draws the controls of §4.19, and under `--shell` the runtime acts on them. The shell's
 behaviour on a question-only page is unchanged.
+
+### G.3 Control characters in `choose` options
+A `choose` option that holds a C0 control character other than tab is now E `choose-options` with `detail {kind: "control", option, char}`
+(§4.18, issue #22). It parsed before, with the character kept, and a browser then rewrote it in the radio's `value` (NUL became U+FFFD,
+CR became LF), so a `--shell` page exported text that the AST did not hold. A question name is unchanged: `[A-Za-z][\w-]*` has never
+allowed a control character (E `question-name`), and an editor word whose name has one is not an editor line. None of the 858 `.lede`
+files tracked on `main` at `0184535` holds a C0 control character other than tab and line feed, so none can reach the new error.
+Conformance error e44 is normative.

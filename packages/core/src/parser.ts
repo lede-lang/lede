@@ -84,6 +84,12 @@ const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const KEYWORD_RE = new RegExp(`^(${KEYWORDS.join('|')})(?=\\s|$)`);
 /** A question or diagram name. */
 const NAME_RE = /^[A-Za-z][\w-]*$/;
+/**
+ * A C0 control character other than tab (U+0009), as a `choose` option may not hold one (spec §4.18): a browser rewrites NUL and CR in a form
+ * control's value, so the exported option would differ from the written one. DEL and the C1 controls are not C0 and stay allowed.
+ */
+// oxlint-disable-next-line no-control-regex -- the control characters are what this pattern is for
+const OPTION_CONTROL_RE = /[\u0000-\u0008\u000A-\u001F]/;
 /** The same pattern as source text, to build the line shapes below from. */
 const NAME = NAME_RE.source.slice(1, -1);
 /**
@@ -721,6 +727,17 @@ export class LedeParser {
         this.diag('warning', 'choose-dup-option', `choose ${name} lists "${t}" twice; the first is kept`, L, col, { option: t });
       }
       const options = list.items;
+      for (const option of options) {
+        const control = OPTION_CONTROL_RE.exec(option)?.[0];
+        if (control === undefined) continue;
+        const char = `U+${control.charCodeAt(0).toString(16).toUpperCase().padStart(4, '0')}`;
+        fail(
+          'choose-options',
+          `choose ${name}: option ${JSON.stringify(option)} holds the control character ${char}; remove it (a tab is the only control character an option may hold)`,
+          { kind: 'control', option, char },
+        );
+        break;
+      }
       const reserved = options.includes(NOT_CHOSEN);
       if (list.empty || reserved || options.length < 2) {
         const why = list.empty

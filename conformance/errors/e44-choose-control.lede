@@ -1,0 +1,8 @@
+choose soh | one, two
+choose esc | "qx", other
+choose lead | x, y
+choose tab | tab	ok, fine
+choose del | delok, fine
+choose fine | a, b
+ask name | Who?
+export
