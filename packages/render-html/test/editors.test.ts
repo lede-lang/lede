@@ -2,6 +2,7 @@
 // Requirement numbers are those of the internal spec (lede-lang/meta).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { fieldsOf, LedeStream, parse, type BucketBlock, type ParamBlock, type QuestionBlock, type TemplateBlock } from '@lede-lang/core';
 import { compile, render } from '../src/index.ts';
 import { blankAnswers, cleanText, serializeExport, type Value } from '../src/export.ts';
@@ -451,8 +452,8 @@ test('5.3 prompt: changed fields in source order as name: value (was old), a mov
       '- triage: "ENG-2047 Rotate the signing secret" moved to Cut (was Next)',
       '',
       'Blocked: express',
-      'Unchanged: css',
     ].join('\n'),
+    'css fills from owner, press and easing, which changed, so it is not unchanged',
   );
   // Open names what is still undecided and is not repeated under Unchanged; Blocked appears only when something is.
   assert.equal(
@@ -463,8 +464,9 @@ test('5.3 prompt: changed fields in source order as name: value (was old), a mov
       '- press: 0.96 x (was 0.94 x)',
       '',
       'Open: easing, ship',
-      'Unchanged: owner, checkout_v2, express, triage, css',
+      'Unchanged: owner, checkout_v2, express, triage',
     ].join('\n'),
+    'css fills from press, which changed, so it is not unchanged either',
   );
 });
 
@@ -479,6 +481,117 @@ test('5.3 prompt: no title, nothing changed (one line, even with fields open), a
     'blocked as written is not a change',
   );
   assert.equal(serialize('prompt', undefined, t, ['on', 'on']), 'Apply these changes:\n\n- a: on (was off)\n\nUnchanged: b');
+});
+
+test('5.3 prompt: a template is unchanged only when none of the fields its slots name changed, and its text is never repeated', () => {
+  // The page of the example that found this: owner, press and express feed the template, checkout_v2 and the bucket set do not.
+  const f = fieldsFor(readFileSync(new URL('../../../examples/parity/editors.lede', import.meta.url), 'utf8'));
+  assert.deepEqual(
+    f.map((x) => x.name),
+    ['owner', 'press', 'checkout_v2', 'express', 'triage', 'prompt'],
+  );
+  const out = serialize('prompt', 'Checkout prototype', f, ['Dana', 0.88, 'on', 'on', ['Now', 'Next', 'Now'], null]);
+  assert.equal(
+    out,
+    [
+      'Apply these changes to Checkout prototype:',
+      '',
+      '- owner: Dana (was empty)',
+      '- press: 0.88 x (was 0.94 x)',
+      '- express: on (was off)',
+      '- triage: "ENG-2052 Retry, then give up" moved to Now (was Later)',
+      '',
+      'Unchanged: checkout_v2',
+    ].join('\n'),
+    'the template is in no line: the text it would show is not repeated, and the fields it follows are the lines above',
+  );
+  assert.equal(out.includes('Dana.'), false, 'the filled text is not repeated');
+  // One slot is enough, and a field that is not a slot does not count.
+  const rest = (v: Value[]) => serialize('prompt', undefined, f, v).split('\n\n').slice(1).join('\n\n');
+  assert.equal(rest(['', 0.94, 'on', 'off', ['Now', 'Next', 'Later'], null]), 'No changes.', 'nothing changed');
+  assert.equal(
+    rest(['Dana', 0.94, 'on', 'off', ['Now', 'Next', 'Later'], null]),
+    '- owner: Dana (was empty)\n\nUnchanged: press, checkout_v2, express, triage',
+    'owner is a slot',
+  );
+  assert.equal(
+    rest(['', 0.94, 'on', 'on', ['Now', 'Next', 'Later'], null]),
+    '- express: on (was off)\n\nUnchanged: owner, press, checkout_v2, triage',
+    'express is a slot',
+  );
+  assert.equal(
+    rest(['', 0.94, 'off', 'off', ['Now', 'Next', 'Later'], null]),
+    '- checkout_v2: off (was on)\n\nUnchanged: owner, press, express, triage, prompt',
+    'checkout_v2 is not a slot, so the template is unchanged',
+  );
+  assert.equal(
+    rest(['', 0.94, 'on', 'off', ['Next', 'Next', 'Later'], null]),
+    '- triage: "ENG-2041 Fix duplicate emails" moved to Next (was Now)\n\nUnchanged: owner, press, checkout_v2, express, prompt',
+    'nor is the bucket set',
+  );
+});
+
+test('5.3 prompt: each template follows its own slots, and an open or blocked slot is not a change', () => {
+  const f = fieldsFor(
+    [
+      'ask a | A',
+      'choose c | x, y',
+      'toggle t1 | T1',
+      'toggle t2 on needs=t1 | T2',
+      'confirm d | D',
+      'template ta | Ta',
+      '```text',
+      '{a}',
+      '```',
+      'template tc | Tc',
+      '```text',
+      '{c} {t2}',
+      '```',
+      'template none | None',
+      '```text',
+      '{d} and braces {x}',
+      '```',
+      'template ab | Ab',
+      '```text',
+      '{a} {t1}',
+      '```',
+    ].join('\n'),
+  );
+  assert.deepEqual(
+    f.filter((x) => x.type === 'template').map((x) => x.slots),
+    [['a'], ['c', 't2'], [], ['a', 't1']],
+    'a confirm is no slot, so the template that names only one has none',
+  );
+  const asked = (v: Value[]) => serialize('prompt', undefined, f, [...v, null, null, null, null]);
+  const head = 'Apply these changes:\n\n';
+  // The page as written leaves t2 on and blocked (t1 is off) and c and d open; none of that is a change.
+  assert.equal(asked(['', null, 'off', 'on', 'open']), `${head}No changes.`);
+  assert.equal(
+    asked(['x', null, 'off', 'on', 'open']),
+    `${head}- a: x (was empty)\n\nOpen: c, d\nBlocked: t2\nUnchanged: t1, tc, none`,
+    'ta and ab follow a; tc follows c and t2, which are open and blocked, not changed; none has no slot',
+  );
+  assert.equal(
+    asked(['', 'y', 'off', 'on', 'open']),
+    `${head}- c: y (was not chosen)\n\nOpen: d\nBlocked: t2\nUnchanged: a, t1, ta, none, ab`,
+    'tc follows c',
+  );
+  assert.equal(
+    asked(['', null, 'on', 'on', 'open']),
+    `${head}- t1: on (was off)\n\nOpen: c, d\nUnchanged: a, t2, ta, tc, none`,
+    'ab follows t1; t2 is no longer blocked and is listed again',
+  );
+  assert.equal(
+    asked(['', null, 'off', 'off', 'open']),
+    `${head}- t2: off (was on)\n\nOpen: c, d\nUnchanged: a, t1, ta, none, ab`,
+    'tc follows t2',
+  );
+  // Everything changed: no Unchanged line, whatever the templates are.
+  assert.equal(
+    asked(['x', 'y', 'on', 'off', 'approved']),
+    `${head}- a: x (was empty)\n- c: y (was not chosen)\n- t1: on (was off)\n- t2: off (was on)\n- d: approved (was open)\n\nUnchanged: none`,
+    'only the slot-less template has nothing to follow',
+  );
 });
 
 test('5.3 prompt: a multi-line ask uses the fence form with (was empty) on the name line; sentinel-looking text is fenced too', () => {
@@ -757,6 +870,10 @@ const RT = (items1: string[], items2: string[]) =>
     '```text',
     'a={a} b={b} c={c} p={p} t1={t1} t2={t2}',
     '```',
+    'template tpl2 | Tpl2',
+    '```text',
+    'only {t1}',
+    '```',
     'export json',
     'export markdown',
     'export prompt',
@@ -793,6 +910,7 @@ test('5.4 and 5.5 JSON, Markdown and prompt each return what was set, for 300 se
       set1.items.map(() => pick(set1.buckets)),
       set2.items.map(() => pick(set2.buckets)),
       null,
+      null,
     ];
     const group = (set: typeof set1, assign: Value) =>
       Object.fromEntries(set.buckets.map((b) => [b, set.items.filter((_, k) => (assign as string[])[k] === b).map((i) => i.text)]));
@@ -808,6 +926,7 @@ test('5.4 and 5.5 JSON, Markdown and prompt each return what was set, for 300 se
       s2: group(set2, v[8]),
     };
     want.tpl = fill('a={a} b={b} c={c} p={p} t1={t1} t2={t2}', ['a', 'b', 'c', 'p', 't1', 't2'], want, f);
+    want.tpl2 = fill('only {t1}', ['t1'], want, f);
     const open = [...(want.c === null ? ['c'] : []), ...(want.d === 'open' ? ['d'] : [])];
     const blocked = want.t2 === 'on' && want.t1 === 'off' ? ['t2'] : [];
 
@@ -841,14 +960,17 @@ test('5.4 and 5.5 JSON, Markdown and prompt each return what was set, for 300 se
       state[mv.set] = group(set, assigned.get(mv.set)!);
     }
     state.tpl = fill('a={a} b={b} c={c} p={p} t1={t1} t2={t2}', ['a', 'b', 'c', 'p', 't1', 't2'], state, f);
+    state.tpl2 = fill('only {t1}', ['t1'], state, f);
     if (pr.none) assert.deepEqual(state, want, `seed ${seed} prompt (no changes)`);
     else {
       assert.deepEqual(state, want, `seed ${seed} prompt`);
       assert.deepEqual([pr.open, pr.blocked], [open, blocked], `seed ${seed} prompt`);
       const changed = new Set([...Object.keys(pr.changes), ...pr.moves.map((m) => m.set)]);
+      // A template is unchanged only when none of the fields its slots name changed (it has no line of its own either way).
+      const follows = (x: QuestionBlock) => x.type === 'template' && x.slots.some((n) => changed.has(n));
       assert.deepEqual(
         pr.unchanged,
-        f.map((x) => x.name).filter((n) => !changed.has(n) && !open.includes(n) && !blocked.includes(n)),
+        f.filter((x) => !changed.has(x.name) && !open.includes(x.name) && !blocked.includes(x.name) && !follows(x)).map((x) => x.name),
         `seed ${seed} unchanged`,
       );
     }

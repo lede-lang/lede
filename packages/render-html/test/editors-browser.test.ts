@@ -177,6 +177,52 @@ browserTest('4.4 template: refilled in one pass on every change, braces literal,
   await ctx.close();
 });
 
+browserTest(
+  '4.4 prompt: a template that follows a changed field is not listed as unchanged, and one that follows none still is',
+  async (browser) => {
+    const { html } = await compile(EDITORS, { shell: true });
+    const { ctx, page } = await serve(browser, html);
+    const unchanged = async () => /^Unchanged: (.*)$/m.exec((await code(page, 'prompt'))!)?.[1];
+    assert.equal(await code(page, 'prompt'), 'Apply these changes to Checkout prototype:\n\nNo changes.');
+    // A change to a field no slot names: the template (owner, press and express) is still unchanged.
+    await page.locator('input[name="triage:2"][value=Now]').check();
+    assert.equal(await unchanged(), 'owner, press, checkout_v2, express, prompt');
+    await page.locator('input[name="triage:2"][value=Later]').check();
+    assert.match((await code(page, 'prompt'))!, /^No changes\.$/m);
+    // Set owner, press and express, then move ENG-2052 to Now: the template follows three changed fields and is in no line.
+    await page.locator('input[name=owner]').fill('Dana');
+    await page.locator('input[type=number][name=press]').fill('0.88');
+    await page.locator('input[name=express]').check();
+    await page.locator('input[name="triage:2"][value=Now]').check();
+    assert.equal(
+      await code(page, 'prompt'),
+      [
+        'Apply these changes to Checkout prototype:',
+        '',
+        '- owner: Dana (was empty)',
+        '- press: 0.88 x (was 0.94 x)',
+        '- express: on (was off)',
+        '- triage: "ENG-2052 Retry, then give up" moved to Now (was Later)',
+        '',
+        'Unchanged: checkout_v2',
+      ].join('\n'),
+    );
+    assert.match(
+      (await page.locator('figure.q-tpl code').textContent())!,
+      /for Dana\.\nThe button presses to 0\.88 x of its size\.\nExpress checkout is on\./,
+      'the page shows the filled text',
+    );
+    // One changed slot is enough: put them back one at a time, and the template is unchanged again only when the last one is.
+    await page.locator('input[name=owner]').fill('');
+    assert.equal(await unchanged(), 'owner, checkout_v2');
+    await page.locator('input[type=number][name=press]').fill('0.94');
+    assert.equal(await unchanged(), 'owner, press, checkout_v2');
+    await page.locator('input[name=express]').uncheck();
+    assert.equal(await unchanged(), 'owner, press, checkout_v2, express, prompt', 'the move alone does not touch the template');
+    await ctx.close();
+  },
+);
+
 // ---------------------------------------------------------------- Req 4.5: preset
 
 const PRESET_SRC = [
@@ -308,6 +354,19 @@ const PARITY_SRC = [
   'template tpl | Tpl',
   '```text',
   'a={a} b={b} c={c} p={p} q={q} t1={t1} t2={t2} t3={t3} {{a}} {"k": {a}} {d}',
+  '```',
+  // Templates that follow few fields, so the states reach both sides of the Unchanged rule (a template is listed only when no slot changed).
+  'template tpl1 | Tpl1',
+  '```text',
+  'one {t1}',
+  '```',
+  'template tpl23 | Tpl23',
+  '```text',
+  'two {t2}, three {t3}',
+  '```',
+  'template tpl0 | Tpl0',
+  '```text',
+  'no slot here {d}',
   '```',
   'preset one | One | a=x; c=four; p=75; t2=on',
   'export json',
