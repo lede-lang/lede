@@ -925,5 +925,7 @@ control other than tab (U+0000 to U+0008, U+000A to U+001F), checked on the opti
 feed or carriage return at an option's edge goes with the rest of the trim and only one inside an option is an error. DEL and the C1
 controls are not C0 and stay allowed (they survive a form control's value). Question names already reject controls through
 `NAME_RE`, and an editor-word line whose name holds one stays prose, so names are unchanged. The change touches one diagnostic,
-documented in §9 with a conformance case (`e44-choose-control`); no render output of an error-free page moves. Open: bucket set
-names reach a radio `value` in the same way and have not been checked for the same defect.
+documented in §9 with a conformance case (`e44-choose-control`); no render output of an error-free page moves. Rejected: carrying
+the options in the shell's data block and exporting by index, as `bucket` items are, which would let NUL and CR survive exactly but
+changes the runtime's hash and spends room under its 8 KiB cap for a case no real page has. Open: bucket set names reach a radio
+`value` in the same way and have not been checked for the same defect.
