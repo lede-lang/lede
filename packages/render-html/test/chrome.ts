@@ -1,7 +1,6 @@
-// Browser checks for the question words and the shell. Not a `*.test.ts`, so the runner does not collect it.
-// A check skips, with a message, when no Chromium resolves, and fails instead when CI or LEDE_REQUIRE_CHROME is set (internal spec, lede-lang/meta).
-// LEDE_SHELL_CHROME is read before CHROME so CI can enable these checks without switching on the older Chromium batteries.
-import { existsSync } from 'node:fs';
+// Browser checks: the question words, the shell, the editor words, the layout, chart, diagram and block batteries. Not a `*.test.ts`, so the
+// runner does not collect it. A check skips, with a message, when no Chromium resolves (`CHROME`, the cloud image path, or the macOS Playwright
+// cache: `resolveChrome` in bench/src/shot.ts), and fails instead when CI or LEDE_REQUIRE_CHROME is set (internal spec, lede-lang/meta).
 import { createRequire } from 'node:module';
 import { after, test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -10,8 +9,6 @@ import { RUNTIME } from '../src/index.ts';
 
 export type Browser = Awaited<ReturnType<typeof chromium.launch>>;
 
-const own = process.env.LEDE_SHELL_CHROME;
-const chromePath = (): string | null => (own ? (existsSync(own) ? own : null) : resolveChrome());
 const required = Boolean(process.env.CI || process.env.LEDE_REQUIRE_CHROME);
 
 /** axe-core is a bench dependency; it is resolved from there. */
@@ -31,13 +28,13 @@ export function browserTest(name: string, fn: (browser: Browser) => Promise<void
     closer = true;
     after(async () => (await launched)?.close());
   }
-  const exe = chromePath();
+  const exe = resolveChrome();
   if (!exe && !required) {
-    test(name, { skip: 'no Chromium found: set LEDE_SHELL_CHROME or CHROME' }, () => {});
+    test(name, { skip: 'no Chromium found: set CHROME' }, () => {});
     return;
   }
   test(name, { timeout }, async () => {
-    assert.ok(exe, 'no Chromium found, and CI or LEDE_REQUIRE_CHROME is set: set LEDE_SHELL_CHROME or CHROME');
+    assert.ok(exe, 'no Chromium found, and CI or LEDE_REQUIRE_CHROME is set: set CHROME');
     await fn(await shared(exe));
   });
 }
