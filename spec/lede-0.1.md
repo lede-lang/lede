@@ -132,7 +132,8 @@ document is read, so `@theme` may come after `@accent`. The compiler does not ad
 
 ### 4.4 Headings
 `#`, `##`, `###`. Deeper levels: W `heading-depth`, rendered as `###`. Empty text: E
-`empty-heading`. A heading closes an open grid (§4.16).
+`empty-heading`. A heading closes an open grid (§4.16). A heading more than one level deeper than the heading before it is W
+`heading-skip` with `detail {from, to}` (levels as written); the compiler does not change it.
 
 ### 4.5 Lists
 `- item`, `1. item` (or `1)`), `- [ ] task`, `- [x] done`. Consecutive items of the same kind
@@ -615,7 +616,8 @@ step, rule}` (`rule` is `order`, `step`, `range`, `grid`, `grid-max` or `count`)
 `{key, fields}` and `preset-value` `{key, value, kind}`; `export-format` `{format}` now names `prompt` too. So does `accent-contrast` (§4.3) `{accent, theme, ratio, required, against}`:
 `theme` is `light` or `dark`, `ratio` is the lowest contrast found rounded down to two decimals, `required` is `4.5`, and `against` names
 the surface (`bg`, `surface` or `accent-tint`). So does `artifact-image` `{src, kind}`: `src` is the image path as written and `kind` is
-`local`. New keys may be added; existing ones are not removed or retyped within 0.x.
+`local`. So does `heading-skip` (§4.4) `{from, to}`: the level of the heading before and of this one, as written (`--fix` leaves it).
+New keys may be added; existing ones are not removed or retyped within 0.x.
 
 `--fix` rewrites each file to repair mechanical slips and prints one line per repair. It repairs:
 - a `####` or deeper heading (to `###`);

@@ -222,6 +222,8 @@ export class LedeParser {
   /** The open alt/opt frame per sequence diagram, and how many rejected nested openers still await their `end`. */
   private seq = new WeakMap<DiagramBlock, { open: DiagramFrame | null; skip: number }>();
   private lineNo = 0;
+  /** The level of the last heading as written (before the `heading-depth` clamp), for W `heading-skip`; null before the first. */
+  private lastHeading: number | null = null;
   /** The `export` formats seen, to the line that first used each. */
   private exports = new Map<string, number>();
   /**
@@ -402,6 +404,18 @@ export class LedeParser {
     if (h && (h[2] !== undefined || s.length === h[1].length)) {
       this.flush();
       let level = h[1].length;
+      // Compared at the level as written, before the clamp below; the first heading of a document has nothing above it.
+      if (this.lastHeading !== null && level > this.lastHeading + 1) {
+        this.diag(
+          'warning',
+          'heading-skip',
+          `heading jumps from ${'#'.repeat(this.lastHeading)} to ${h[1]}; use ${'#'.repeat(this.lastHeading + 1)}, one level deeper than the heading above`,
+          L,
+          lead + 1,
+          { from: this.lastHeading, to: level },
+        );
+      }
+      this.lastHeading = level;
       if (level > 3) {
         this.diag('warning', 'heading-depth', `headings go to ### (got ${h[1]}); write ###, which is how it renders`, L, lead + 1);
         level = 3;

@@ -55,5 +55,17 @@
     }
   ],
   "data": {},
-  "diagnostics": []
+  "diagnostics": [
+    {
+      "severity": "warning",
+      "code": "heading-skip",
+      "message": "heading jumps from # to ###; use ##, one level deeper than the heading above",
+      "line": 7,
+      "col": 1,
+      "detail": {
+        "from": 1,
+        "to": 3
+      }
+    }
+  ]
 }
