@@ -205,11 +205,13 @@ export function serializeExport(format: ExportFormat, page: string | undefined, 
     const head = `Apply these changes${page ? ` to ${flat(page)}` : ''}:`;
     const { lines, changed } = changes(fields, vals, blankAnswers(fields));
     if (lines.length === 0) return [head, '', 'No changes.'].join('\n');
-    const unchanged = fields.map((f) => f.name).filter((n) => !changed.has(n) && !open.includes(n) && !blocked.includes(n));
+    // A template has no line of its own: it is derived, and its text is not repeated. It is unchanged only when none of its slots changed.
+    const follows = (f: QuestionBlock) => f.type === 'template' && f.slots.some((n) => changed.has(n));
+    const unchanged = fields.filter((f) => !changed.has(f.name) && !open.includes(f.name) && !blocked.includes(f.name) && !follows(f));
     const tail = [
       ...(open.length ? [`Open: ${open.join(', ')}`] : []),
       ...(blocked.length ? [`Blocked: ${blocked.join(', ')}`] : []),
-      ...(unchanged.length ? [`Unchanged: ${unchanged.join(', ')}`] : []),
+      ...(unchanged.length ? [`Unchanged: ${unchanged.map((f) => f.name).join(', ')}`] : []),
     ];
     return [head, '', ...lines, ...(tail.length ? ['', ...tail] : [])].join('\n');
   }

@@ -451,9 +451,12 @@ puts it, each `template` filled from those, each `ask` empty, `choose` unpicked 
   sentinel `ask` writes `- NAME: (was empty)` and then the fence form of §4.18), and `- SET: "ITEM TEXT" moved to B (was A)` with the
   item text always a quoted cell (`"` doubled), so a `:` or `(was` inside it cannot be misread. A reader takes a line of a bucket set's
   name for a move and any other for a field. After a blank line: `Open: a, b` when any field is open, `Blocked: a, b` when any toggle is
-  blocked, and `Unchanged: a, b` for every field that has no line, is not open and is not blocked (a template always, a set whose items
-  all stayed). A line is left out when its list is empty. When nothing changed the text is the heading, a blank line and `No changes.`,
-  with no other line, even if a field is open. A template's text is not repeated: its slots are fields and appear by name.
+  blocked, and `Unchanged: a, b` for every field that has no line, is not open and is not blocked (a set whose items all stayed, and a
+  template none of whose slots has a line). A line is left out when its list is empty. When nothing changed the text is the heading, a
+  blank line and `No changes.`, with no other line, even if a field is open. A template is derived, so it never has a line of its own and
+  its filled text is not repeated: its slots are fields, and a changed one appears by name. A template is listed under `Unchanged` only
+  when none of the fields its `{slots}` name changed; when any did, the template is in no list, because what its text now says follows
+  from those lines.
 
 **Under `--shell`.** The fixed runtime (§7) acts on all seven field kinds, and every export it writes is, character for character, what the
 rules above give for the values the controls hold. On every change it rewrites each export, the warnings, the counts and the filled

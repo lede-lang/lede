@@ -1,4 +1,4 @@
-/* Lede shell runtime (spec 4.18, 4.19 and 7; D63, D65): one fixed script, pinned by hash in the page's policy. */
+/* Lede shell runtime (spec 4.18, 4.19, 7; D63, D65): one fixed script, pinned by hash in the policy. */
 (function () {
   'use strict';
   var m = document.querySelector('main');
@@ -102,7 +102,8 @@
       }
     });
     if (fmt === 'prompt') {
-      var rest = N.filter((n) => !pl.some((l) => l.indexOf('- ' + n + ': ') === 0) && open.indexOf(n) < 0 && blocked.indexOf(n) < 0);
+      var ch = (n) => pl.some((l) => l.startsWith('- ' + n + ': '));
+      var rest = N.filter((n, j) => !(F[j].s || [n]).some(ch) && open.indexOf(n) < 0 && blocked.indexOf(n) < 0);
       var tail = [['Open', open], ['Blocked', blocked], ['Unchanged', rest]].filter((a) => a[1].length).map((a) => a[0] + ': ' + a[1].join(', '));
       return ['Apply these changes' + (c.page ? ' to ' + flat(c.page) : '') + ':', '']
         .concat(pl.length ? pl.concat(tail.length ? [''].concat(tail) : []) : 'No changes.')
