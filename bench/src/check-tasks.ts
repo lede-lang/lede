@@ -6,12 +6,11 @@
 // tasks until the held-out round. Exit status 1 on any failure.
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { CATEGORIES, NEEDS } from './task-vocab.ts';
+import { CATEGORIES, NEEDS, TECHNOLOGY } from './task-vocab.ts';
 
 const ROOT = join(import.meta.dirname, '..');
 const PER_CATEGORY = 5;
 const FILES = CATEGORIES.length * PER_CATEGORY;
-const TECHNOLOGY = /\b(Lede|HTML|CSS|Markdown|Mermaid|React|SVG|JavaScript)\b/;
 
 const args = process.argv.slice(2);
 const at = args.indexOf('--dir');
