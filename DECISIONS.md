@@ -826,6 +826,25 @@ editing `C-lede-0.5.md` to append the files; a checkbox fold so print could forc
 the reader left it, which the file's rules say). Results (the counts, the briefs hashes, the round numbers, the prompt file) are
 appended below as they are measured. Internal spec `lede-reference-files`, lede-lang/meta.
 
+Result 2026-11-06, wave A: the probe harness is `bench/prompts/probe-writer.md` (frozen) and `bench/src/check-probe.ts`; `meta.md` is in
+the reference folder with its SHA-256 and no count, because the session had no API key and `count-text.ts --budgets` has not run (a
+character-based estimate puts it over its 250-token budget, so once it is counted the text is cut or the budget is raised by the
+owner). Twelve briefs per file, each file written once by one isolated Sonnet 5.5 subagent that read only the filled-in
+`probe-writer.md`, never a spec, renderer, page or reference file; the orchestrator did not read them, and `check-probe.ts --briefs`
+passed on all six (twelve entries, one paragraph each, no technology word). SHA-256 of `bench/probe/<file>/briefs.json`, committed
+before any wave 2 renderer change, on top of HEAD 771df38 (which carries only the D76 control-character check, the empty-title
+fallback and the `heading-skip` warning, none of them seen by a brief writer):
+`meta` a86a305f518649ef8b05453a827681db188376d1d740b254b6b20f175a5e4b1b,
+`pages` e3c932ee79b3d797f72077cf800e205396b668dd13e27b403b63d4e6936a26c1,
+`diagrams` 11498cc060deec546db95a3bbb42a1e3920ff76022baa3e059a3add8957803b2,
+`charts` 11a730cff1a6be60c181ac5d6ff0f29228b5a7af3e1528ecf02b49615dd9d917,
+`data` 4f0fabc7bff3c702acb7987bc9e47f2a99fb2e604669ca990dc8487fe6dc24c4,
+`shell` 484312fbb11c41bbdc1dd149a27525237393ea831c7f264f7f9884dea0adc4d4.
+The slugs for `meta` and `pages` are the ones in D72's design and those for `diagrams` are D73's; the specs for `charts` (RFC #33)
+and `data` (RFC #34) fix only a count, so the orchestrator chose their twelve slugs, and `shell` uses four use cases (a checkout, a
+triage, per-environment switches, a prompt template) in three variants each, because the article's own prompts that the design cites
+are in neither repository.
+
 
 ## D73. Layers on flow diagrams: one layout, radio pills, CSS dimming; `layer` reserved now, implemented after D67's verdict
 Owner's decision (2026-11-04, question 8). A flow diagram may carry up to six statements `NAME: layer "Label" member, member…`, a
@@ -896,3 +915,30 @@ version could only ever move by patches. The owner chose to ship the shell edito
 a minor says so in its subject (`chore(minor): cut 0.2.0 ...`) and its body names what the minor carries; everything else stays a
 patch, breaking markers stay forbidden, and every version stays `0.x` (`scripts/set-version.ts` and D61 unchanged). The npm
 step is unchanged: `release.yml` stages the version and the owner approves it (D58, D61).
+
+## D76. A `choose` option may not hold a C0 control character; the page is told, not silently changed
+Issue #22: `choose c | a<NUL>x, b` kept the NUL in the option, the browser rewrote it to U+FFFD in the radio's `value`, and the
+runtime then exported a string that the reference serializer, given the AST, would not write. Two ways out were open, strip or
+reject. Stripping would change what the writer wrote without saying so, and `lede check` is the place a slip like this is meant to
+surface, so the parser refuses: E `choose-options` with `detail {kind:"control", option, char}` for any option that holds a C0
+control other than tab (U+0000 to U+0008, U+000A to U+001F), checked on the options as kept, after trimming, so a vertical tab, form
+feed or carriage return at an option's edge goes with the rest of the trim and only one inside an option is an error. DEL and the C1
+controls are not C0 and stay allowed (they survive a form control's value). Question names already reject controls through
+`NAME_RE`, and an editor-word line whose name holds one stays prose, so names are unchanged. The change touches one diagnostic,
+documented in §9 with a conformance case (`e44-choose-control`); no render output of an error-free page moves. Rejected: carrying
+the options in the shell's data block and exporting by index, as `bucket` items are, which would let NUL and CR survive exactly but
+changes the runtime's hash and spends room under its 8 KiB cap for a case no real page has. Bucket set names are not affected: a
+set name reaches a radio `value` too, but the runtime reads a bucket pick by index into the data block, so the export keeps the name
+exactly (checked with a NUL in a set name).
+
+## D77. An `@accent` that fails AA text contrast is not painted; the house accent is used
+D49 checked a writer's `@accent` for 4.5:1 text contrast but only warned, and the page still painted the color. The accessibility gate
+(D71) showed the cost: `conformance/errors/e19-accent.lede` (`@accent #ffd700`, 1.21:1 on the light theme) fails axe `color-contrast` on
+links at both widths, and the focus ring, note labels and table headers draw in the same color. The owner chose on 2026-11-06 that a
+failing accent falls back to the house accent, as an invalid one already does (`accent-value`). One rule holds it: `usableAccent(accent,
+theme)` in core's `contrast.ts` accepts a hex color whose lowest contrast on the theme it lands on (light, or dark with `@theme dark`; a
+translucent color composited first) is at least 4.5:1. `css()` paints only that, and the parser's `accent-contrast` warning (same code, same
+`detail`) now ends "the house accent is used", so the page and the warning cannot disagree. Rejected: exempting such pages from the gate
+(the guarantee would carry a stated exception, and a focus ring below 3:1 would stay), darkening or lightening the writer's color (the
+compiler would invent a color nobody chose), and making it an error (a pale brand color is worth a warning, not a failed build). Only a page
+whose accent already drew a warning changes its output (two conformance error cases). Internal spec `lede-accessibility`, lede-lang/meta.

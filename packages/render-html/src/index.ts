@@ -133,7 +133,8 @@ export interface Masthead {
 export function masthead(doc: LedeDocument, ctx: Ctx): Masthead {
   const blocks = doc.blocks.filter((b) => b.type !== 'data');
   let firstH1 = blocks.find((b) => b.type === 'heading' && b.level === 1);
-  const title = doc.meta.title || (firstH1 && firstH1.type === 'heading' ? plain(firstH1.text) : 'Untitled');
+  // A bare `#` has no text; an empty <title> fails WCAG 2.4.2, so it falls back like a page with no heading at all.
+  const title = doc.meta.title || (firstH1 && firstH1.type === 'heading' ? plain(firstH1.text).trim() : '') || 'Untitled';
   const sub = doc.meta.subtitle ? `<p class="subtitle">${inline(doc.meta.subtitle)}</p>` : '';
   const by = byline(doc.meta.author, doc.meta.date);
   const head: string[] = [];

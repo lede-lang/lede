@@ -19,6 +19,15 @@ test('kitchen sink renders a complete page with no executable script', async () 
   assert.match(html, /Content-Security-Policy" content="default-src 'none'/);
 });
 
+test('a page whose only title source is an empty heading still has a non-empty <title> (WCAG 2.4.2)', async () => {
+  for (const src of ['#\n\nText.', '# \n\nText.', '@title   \n#\n\nText.']) {
+    const { html } = await compile(src);
+    assert.match(html, /<title>Untitled<\/title>/, JSON.stringify(src));
+    const art = (await compile(src, { artifact: true })).html;
+    assert.match(art, /^<title>Untitled<\/title>/, `artifact ${JSON.stringify(src)}`);
+  }
+});
+
 test('every region that can scroll sideways takes focus and has a name (WCAG 2.1.1)', async () => {
   const { html } = await compile(ks + '\n```ts\nconst x = 1;\n```\n\n```\nplain\n```\n');
   const scrollers = html.match(/<(?:pre class="code"|div class="scroll[^"]*")[^>]*>/g) ?? [];

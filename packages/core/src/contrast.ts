@@ -58,3 +58,19 @@ export function accentContrast(accent: string, theme: ThemeName): { ratio: numbe
   }
   return worst;
 }
+
+/** The theme an `@accent` lands on: `dark` with `@theme dark`, else `light` (dark mode keeps the house accent). */
+export function accentTheme(theme: string | undefined): ThemeName {
+  return theme === 'dark' ? 'dark' : 'light';
+}
+
+/**
+ * The accent the renderer paints (D49, D77): a hex color that meets AA text contrast, 4.5:1, on the theme it lands on.
+ * Anything else, a failing color included, is null and the house accent is used, so the page's text contrast never
+ * depends on a writer's choice. The parser warns on exactly the colors this refuses (`accent-contrast`).
+ */
+export function usableAccent(accent: string | undefined, theme: string | undefined): string | null {
+  if (!accent) return null;
+  const c = accentContrast(accent, accentTheme(theme));
+  return c && c.ratio >= AA_TEXT ? accent : null;
+}

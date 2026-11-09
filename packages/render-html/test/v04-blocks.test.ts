@@ -1,17 +1,17 @@
 // v0.4 blocks (stream S2, vocabulary-v04 design F.1, F.3, F.4, F.5 and the known
 // defects). The parser for these lands in another stream, so each case builds a LedeDocument by hand
 // and calls render(). The browser battery at the end renders every construct at 400px dark and
-// 1280px light and measures overflow and contrast; it is skipped, with a message, without Chromium.
+// 1280px light and measures overflow and contrast; it is skipped, with a message, without Chromium, and fails instead when CI or
+// LEDE_REQUIRE_CHROME is set.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs';
-import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import type { Block, DataSet, Kpi, LedeDocument, TableBlock, ChartBlock } from '@lede-lang/core';
 import { compile, render, dateLike } from '../src/index.ts';
 import { inline } from '../src/util.ts';
-import { resolveChrome } from '../../../bench/src/shot.ts';
+import { AXE, browserTest } from './chrome.ts';
 
 // ---- builders -----------------------------------------------------------------------------------
 
@@ -495,10 +495,6 @@ const fixtures: Record<string, () => Promise<string>> = {
   page85: async () => (await compile(page85())).html,
 };
 
-const require = createRequire(new URL('../../../bench/package.json', import.meta.url));
-const skip = resolveChrome() ? false : 'no Chromium found: set CHROME to run the v0.4 block battery';
-if (skip) console.warn(`v0.4 block battery skipped: ${skip}`);
-
 const MEASURE = `(() => {
   const out = [];
   const desc = el => el.tagName.toLowerCase() + (typeof el.className === 'string' && el.className ? '.' + el.className.trim().split(/\\s+/).join('.') : '');
@@ -529,35 +525,36 @@ const MEASURE = `(() => {
   return out;
 })()`;
 
-test('v0.4 blocks (browser): no overflow and no contrast failures at 400px dark and 1280px light', { skip, timeout: 300_000 }, async () => {
-  const { chromium } = require('playwright-core') as typeof import('../../../bench/node_modules/playwright-core/index.js');
-  const browser = await chromium.launch({ executablePath: resolveChrome()! });
-  // LEDE_V04_KEEP=dir keeps the rendered fixtures there for a look.
-  const dir = process.env.LEDE_V04_KEEP || mkdtempSync(join(tmpdir(), 'lede-v04-'));
-  const found: string[] = [];
-  try {
-    for (const [name, make] of Object.entries(fixtures)) {
-      const file = join(dir, `${name}.html`);
-      writeFileSync(file, await make());
-      for (const [width, scheme] of [
-        [400, 'dark'],
-        [1280, 'light'],
-      ] as const) {
-        const ctx = await browser.newContext({ viewport: { width, height: 900 }, colorScheme: scheme, bypassCSP: true });
-        const page = await ctx.newPage();
-        await page.goto(`file://${file}`, { waitUntil: 'load' });
-        for (const m of (await page.evaluate(MEASURE)) as string[]) found.push(`${name} @${width} ${scheme}: ${m}`);
-        await page.addScriptTag({ path: require.resolve('axe-core/axe.min.js') });
-        const bad = (await page.evaluate(
-          `axe.run(document, { runOnly: ['color-contrast'] }).then(r => r.violations.flatMap(v => v.nodes.map(n => n.target.join(' '))))`,
-        )) as string[];
-        for (const t of bad) found.push(`${name} @${width} ${scheme}: contrast ${t}`);
-        await ctx.close();
+browserTest(
+  'v0.4 blocks (browser): no overflow and no contrast failures at 400px dark and 1280px light',
+  async (browser) => {
+    // LEDE_V04_KEEP=dir keeps the rendered fixtures there for a look.
+    const dir = process.env.LEDE_V04_KEEP || mkdtempSync(join(tmpdir(), 'lede-v04-'));
+    const found: string[] = [];
+    try {
+      for (const [name, make] of Object.entries(fixtures)) {
+        const file = join(dir, `${name}.html`);
+        writeFileSync(file, await make());
+        for (const [width, scheme] of [
+          [400, 'dark'],
+          [1280, 'light'],
+        ] as const) {
+          const ctx = await browser.newContext({ viewport: { width, height: 900 }, colorScheme: scheme, bypassCSP: true });
+          const page = await ctx.newPage();
+          await page.goto(`file://${file}`, { waitUntil: 'load' });
+          for (const m of (await page.evaluate(MEASURE)) as string[]) found.push(`${name} @${width} ${scheme}: ${m}`);
+          await page.addScriptTag({ path: AXE });
+          const bad = (await page.evaluate(
+            `axe.run(document, { runOnly: ['color-contrast'] }).then(r => r.violations.flatMap(v => v.nodes.map(n => n.target.join(' '))))`,
+          )) as string[];
+          for (const t of bad) found.push(`${name} @${width} ${scheme}: contrast ${t}`);
+          await ctx.close();
+        }
       }
+    } finally {
+      if (!process.env.LEDE_V04_KEEP) rmSync(dir, { recursive: true, force: true });
     }
-  } finally {
-    await browser.close();
-    if (!process.env.LEDE_V04_KEEP) rmSync(dir, { recursive: true, force: true });
-  }
-  assert.deepEqual(found, []);
-});
+    assert.deepEqual(found, []);
+  },
+  300_000,
+);

@@ -1,16 +1,16 @@
 // Vocabulary v0.4 charts (stream v04-1): chart range, labels=end / labels=all, hatch, semantic series colours.
 // The parser does not emit the v0.4 chart fields yet, so these tests build ChartBlock literals over data sets that
-// the parser reads, and call render(). The last tests open the same pages in Chromium (skipped without one).
+// the parser reads, and call render(). The last test opens the same pages in Chromium (skipped without one; failing, not skipped, when CI or
+// LEDE_REQUIRE_CHROME is set).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createRequire } from 'node:module';
-import { mkdtempSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { parse, type ChartBlock, type LedeDocument, type Block } from '@lede-lang/core';
 import { render } from '../src/index.ts';
 import { isoDay, fmtDay, semanticClass } from '../src/chart.ts';
-import { resolveChrome } from '../../../bench/src/shot.ts';
+import { AXE, browserTest, type Browser } from './chrome.ts';
 
 const DATA = [
   'data plan = phase,start,end,now; Discovery,2026-01-05,2026-02-13,2026-02-01; Build,2026-02-09,2026-04-24,2026-03-10; Beta,2026-04-20,2026-05-29,; Launch,2026-06-01,2026-06-05,; Broken,soon,2026-07-01,',
@@ -286,9 +286,6 @@ test('charts with no v0.4 fields carry none of the v0.4 classes', async () => {
 
 // ---- Browser battery for the v0.4 charts (a copy of the subset of bench/src/layout-check.ts MEASURE that applies). ----
 
-const chrome = resolveChrome();
-const skip = chrome ? false : 'no Chromium found: set CHROME to run the v0.4 chart layout battery';
-
 const FIXTURES: [string, Block[]][] = [
   [
     'range-short-long',
@@ -402,21 +399,8 @@ const MEASURE = `(() => {
 })()`;
 
 let pages: Promise<string[]> | undefined;
-async function battery(): Promise<string[]> {
-  const req = createRequire(new URL('../../../bench/package.json', import.meta.url));
-  // playwright-core lives in bench/; it is loaded by path, so it is typed loosely here.
-  type Page = {
-    goto(u: string, o: object): Promise<unknown>;
-    evaluate(s: string): Promise<unknown>;
-    addScriptTag(o: { path: string }): Promise<unknown>;
-  };
-  type Browser = { newContext(o: object): Promise<{ newPage(): Promise<Page>; close(): Promise<void> }>; close(): Promise<void> };
-  type Chromium = { launch(o: { executablePath: string }): Promise<Browser> };
-  const pw = (await import(req.resolve('playwright-core'))) as { chromium?: Chromium; default?: { chromium: Chromium } };
-  const chromium = pw.chromium ?? pw.default!.chromium;
-  const axe = req.resolve('axe-core/axe.min.js');
+async function battery(browser: Browser): Promise<string[]> {
   const dir = mkdtempSync(join(tmpdir(), 'lede-v04-'));
-  const browser = await chromium.launch({ executablePath: chrome! });
   const found: string[] = [];
   try {
     for (const [name, cs] of FIXTURES) {
@@ -432,7 +416,7 @@ async function battery(): Promise<string[]> {
         const page = await ctx.newPage();
         await page.goto(`file://${file}`, { waitUntil: 'load' });
         for (const msg of (await page.evaluate(MEASURE)) as string[]) found.push(`${name} @${width} ${scheme}: ${msg}`);
-        await page.addScriptTag({ path: axe });
+        await page.addScriptTag({ path: AXE });
         const bad = (await page.evaluate(
           `axe.run(document, { runOnly: ['color-contrast'] }).then(r => r.violations.reduce((a, v) => a + v.nodes.length, 0))`,
         )) as number;
@@ -441,15 +425,15 @@ async function battery(): Promise<string[]> {
       }
     }
   } finally {
-    await browser.close();
+    rmSync(dir, { recursive: true, force: true });
   }
   return found;
 }
 
-test(
+browserTest(
   'v0.4 charts in the browser: no sideways scroll, text >= 12px desktop / 11px phone, nothing clipped, no tick or annotation overlap, zero contrast failures',
-  { skip, timeout: 300_000 },
-  async () => {
-    assert.deepEqual(await (pages ??= battery()), []);
+  async (browser) => {
+    assert.deepEqual(await (pages ??= battery(browser)), []);
   },
+  300_000,
 );
