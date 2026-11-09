@@ -1,5 +1,27 @@
 # Changelog
 
+## <small>0.2.2 (2026-11-09)</small>
+
+* Merge pull request #37 from lede-lang/claude/project-thread-4kyzhx ([7cce9f9](https://github.com/lede-lang/lede/commit/7cce9f9)), closes [#37](https://github.com/lede-lang/lede/issues/37)
+* ci: accessibility gate over every shipped page ([5f7b9a5](https://github.com/lede-lang/lede/commit/5f7b9a5))
+* ci: list the shell runtime hash in the release notes when it changes ([c2ca2ab](https://github.com/lede-lang/lede/commit/c2ca2ab)), closes [#19](https://github.com/lede-lang/lede/issues/19)
+* ci: run the older Chromium batteries on Linux through browserTest ([3512bef](https://github.com/lede-lang/lede/commit/3512bef)), closes [#21](https://github.com/lede-lang/lede/issues/21)
+* fix(html): give a page with an empty heading a title ([6d2d89d](https://github.com/lede-lang/lede/commit/6d2d89d))
+* fix: paint only an @accent that passes AA text contrast (D77) ([5686a8c](https://github.com/lede-lang/lede/commit/5686a8c))
+* fix(bench): record the reference file that was scored in result.json ([e442a9a](https://github.com/lede-lang/lede/commit/e442a9a))
+* fix(core): reject control characters in choose options and question names ([86bf0ce](https://github.com/lede-lang/lede/commit/86bf0ce)), closes [#22](https://github.com/lede-lang/lede/issues/22)
+* refactor: share the budget and probe helpers instead of copying them ([c7544c1](https://github.com/lede-lang/lede/commit/c7544c1))
+* docs: note the rejected data-block alternative under D76 ([1f4c544](https://github.com/lede-lang/lede/commit/1f4c544))
+* docs: record that choose options refuse C0 controls (D76) ([81def9e](https://github.com/lede-lang/lede/commit/81def9e))
+* test(bench): add the probe-round harness and the brief writer's prompt ([e19181a](https://github.com/lede-lang/lede/commit/e19181a))
+* test(cli): check the skill's reference files, their budgets and the SKILL.md table ([3abd543](https://github.com/lede-lang/lede/commit/3abd543))
+* test: find the Playwright Chromium on Linux ([dc81b55](https://github.com/lede-lang/lede/commit/dc81b55))
+* test(render-html): pin that the stylesheet holds no unguarded motion ([3347eb1](https://github.com/lede-lang/lede/commit/3347eb1))
+* test(bench): write and hash the twelve probe briefs for six reference files ([cb3b1af](https://github.com/lede-lang/lede/commit/cb3b1af))
+* feat(skill): add the page-metadata reference file, not yet named in SKILL.md ([8d15c0c](https://github.com/lede-lang/lede/commit/8d15c0c))
+* feat(bench): count the reference files on three writer models with --budgets ([d886a77](https://github.com/lede-lang/lede/commit/d886a77))
+* feat(core): warn when a heading skips a level (heading-skip) ([771df38](https://github.com/lede-lang/lede/commit/771df38))
+
 ## <small>0.2.1 (2026-11-06)</small>
 
 * Merge pull request #36 from lede-lang/claude/project-thread-oh4wq1 ([b3902dc](https://github.com/lede-lang/lede/commit/b3902dc)), closes [#36](https://github.com/lede-lang/lede/issues/36)
