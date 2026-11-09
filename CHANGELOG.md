@@ -1,5 +1,10 @@
 # Changelog
 
+## <small>0.2.3 (2026-11-09)</small>
+
+* Merge pull request #38 from lede-lang/claude/project-thread-3w4dja ([7e27ce7](https://github.com/lede-lang/lede/commit/7e27ce7)), closes [#38](https://github.com/lede-lang/lede/issues/38)
+* ci(release): install Chromium before the release build's tests ([ef511af](https://github.com/lede-lang/lede/commit/ef511af)), closes [#21](https://github.com/lede-lang/lede/issues/21)
+
 ## <small>0.2.2 (2026-11-09)</small>
 
 * Merge pull request #37 from lede-lang/claude/project-thread-4kyzhx ([7cce9f9](https://github.com/lede-lang/lede/commit/7cce9f9)), closes [#37](https://github.com/lede-lang/lede/issues/37)
