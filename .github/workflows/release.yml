@@ -35,7 +35,8 @@ jobs:
   # Everything that runs repository and dependency code happens here, without an OIDC token or the npm secret.
   build:
     if: ${{ !github.event.repository.private }}
-    runs-on: ubuntu-latest
+    # Pinned: Playwright's Chromium install does not support the newest ubuntu-latest image yet.
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     permissions:
       contents: read
@@ -62,6 +63,11 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
       - run: pnpm check:examples
+      # The browser checks fail, not skip, when `CI` is set, as in ci.yml; they find this Chromium through CHROME.
+      - name: Install Chromium for the browser checks
+        run: |
+          pnpm --filter ./bench exec playwright-core install --with-deps chromium
+          echo "CHROME=$(pnpm --filter ./bench exec node -e "import('playwright-core').then(m=>console.log(m.chromium.executablePath()))")" >> "$GITHUB_ENV"
       - run: pnpm test
       - run: pnpm test:pack
       - name: Pack
