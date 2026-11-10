@@ -1114,9 +1114,9 @@ function table(b: TableBlock, d: DataSet, picks: string[] = [], fit = 364): stri
   let rows = [...d.rows];
   if (b.sort) {
     const i = d.columns.indexOf(b.sort.col);
-    const numeric = rows.every((r) => r[i] === '' || num(r[i]) !== null);
+    const numeric = rows.every((r) => r[i] === '' || num(bare(r[i])) !== null);
     rows.sort((r1, r2) => {
-      const c = numeric ? (num(r1[i]) ?? -Infinity) - (num(r2[i]) ?? -Infinity) : r1[i].localeCompare(r2[i]);
+      const c = numeric ? (num(bare(r1[i])) ?? -Infinity) - (num(bare(r2[i])) ?? -Infinity) : r1[i].localeCompare(r2[i]);
       return b.sort!.desc ? -c : c;
     });
   }
@@ -1216,8 +1216,8 @@ function table(b: TableBlock, d: DataSet, picks: string[] = [], fit = 364): stri
   // column is missing or not numeric.
   const ti = b.targetCol && b.bars?.length ? d.columns.indexOf(b.targetCol) : -1;
   const tvals =
-    ti >= 0 && rows.some((r) => (r[ti] ?? '').trim() !== '') && rows.every((r) => (r[ti] ?? '').trim() === '' || num(r[ti]) !== null)
-      ? rows.map((r) => ((r[ti] ?? '').trim() === '' ? null : num(r[ti])))
+    ti >= 0 && rows.some((r) => (r[ti] ?? '').trim() !== '') && rows.every((r) => (r[ti] ?? '').trim() === '' || num(bare(r[ti])) !== null)
+      ? rows.map((r) => ((r[ti] ?? '').trim() === '' ? null : num(bare(r[ti]))))
       : [];
   const bar = cols.map((_, j) =>
     barOn[j] && numeric[j]

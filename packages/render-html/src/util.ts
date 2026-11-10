@@ -180,7 +180,10 @@ export function textWidth(s: string, size: number, opts: { mono?: boolean; bold?
  * and gets more when the text as drawn (at `drawn`) is wider than that (a run of wide capitals).
  */
 export const edgeLabelW = (s: string, size: number, drawn = size): number =>
-  Math.max(textWidth(s, size, { mono: true }), textWidth(s, drawn) * 1.06);
+  Math.max(textWidth(s, size, { mono: true }), sansLabelW(s, drawn));
+
+/** Estimated width of a label drawn in the interface sans at weight 500, with the usual margin for a wider real font. */
+export const sansLabelW = (s: string, size: number): number => textWidth(s, size) * 1.06;
 
 /** Greedy word wrap of `label` to lines of at most `max` units at `size` (a single word is never split). */
 export function wrapTo(label: string, max: number, size = 13, opts: { mono?: boolean; bold?: boolean } = { bold: true }): string[] {

@@ -1,5 +1,5 @@
 import type { DiagramBlock, DiagramFrame } from '@lede-lang/core';
-import { esc, maxOf, plain, snap4, textWidth } from './util.ts';
+import { esc, maxOf, plain, sansLabelW, snap4, textWidth } from './util.ts';
 import { figure, kindClass, markers, nodeSvg, svgOpen } from './diagram.ts';
 
 const ELABEL = 12; // message labels, desktop (up from 10)
@@ -7,8 +7,6 @@ const PHONE_W = 360;
 const NOTE_MAX = 320; // desktop notes wrap at this width
 const SAFE = 1.05; // estimates are approximate; wrap a little early rather than clip
 
-/** Message label width: the interface sans, as written (D79), at weight 500. */
-const labelW = (s: string, size: number) => textWidth(s, size) * 1.08;
 const TAGW = (kind: string, size: number) => Math.ceil(kind.length * size * 0.68) + 14;
 
 /**
@@ -158,7 +156,7 @@ function drawSeq(d: DiagramBlock, uid: string, phone: boolean): { svg: string; W
   const idx = new Map(parts.map((p, i) => [p.id, i]));
   const FS = 12; // frame and note text, sans (desktop was 11: at 0.97 scale it fell under 11px)
   const LH = 14;
-  const msgs = msgsOf(d, idx, (s) => labelW(s, ELABEL) + 24);
+  const msgs = msgsOf(d, idx, (s) => sansLabelW(s, ELABEL) + 24);
   const pad = phone ? 8 : 16;
   /** Desktop note box: centred over the participants it names, wide enough to span them. */
   const deskNote = (n: (typeof d.notes)[number], at: number[]) => {
@@ -320,7 +318,7 @@ function drawSeq(d: DiagramBlock, uid: string, phone: boolean): { svg: string; W
     );
     return Math.max(1, ls.length) * LH + base;
   };
-  const lm = (l: string) => labelW(l, ELABEL);
+  const lm = (l: string) => sansLabelW(l, ELABEL);
   for (const it of items) {
     if (it.k === 'open') {
       y += 6;

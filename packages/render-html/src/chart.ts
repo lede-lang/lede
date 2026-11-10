@@ -4,6 +4,7 @@ import { esc, fmtNum, inline, maxOf, minOf, plain, textWidth, wrapTo } from './u
 
 const FONT = 12;
 const TARGET_FONT = 12;
+const X_LINE = 14; // height of a second line of x labels
 
 export function niceTicks(lo: number, hi: number, n = 5): number[] {
   // A range that is not a range (an end that is not finite, or `hi` below `lo`) still gets an axis: a renderer never writes NaN.
@@ -423,7 +424,7 @@ function svg(
     const lines = xs.map((x) => wrapTo(x, (band - XGAP) / FS, FONT, {}));
     return lines.every((l) => l.length <= 2 && l.every((t) => w(t) <= band - XGAP)) ? lines : null;
   })();
-  const B = xLines ? 42 : 28;
+  const B = 28 + (xLines ? X_LINE : 0);
   const kBars = stacked ? 1 : series.length;
   const bw = Math.max(2, (band * (narrow ? 0.76 : 0.68) - 2 * (kBars - 1)) / kBars); // Req 3.8: >= 60% / 70% of the band
   const groupW = bw * kBars + 2 * (kBars - 1);
@@ -492,7 +493,7 @@ function svg(
   /** Geometry for `m` px of extra head room (labels that had to be lifted clear of their neighbours). */
   const geom = (m: number) => {
     const flagBand = flags ? flags.lanes * FLAG_LANE + 6 + m : 0;
-    const H = (narrow ? 220 : 280) + flagBand + (B - 28); // a second line of x labels adds to the height, not to the plot
+    const H = (narrow ? 220 : 280) + flagBand + (xLines ? X_LINE : 0); // a second line of x labels adds to the height, not to the plot
     const T = t0 + (flags ? flagBand : m);
     const ph = H - T - B;
     return { H, T, ph, sy: (v: number) => T + ph - ((v - lo) / (hi - lo)) * ph };
@@ -712,61 +713,62 @@ function svg(
       `<text class="target-l" x="${best.x.toFixed(1)}" y="${best.y.toFixed(1)}" text-anchor="${tl.anchor}">${shown === text ? '' : `<title>${esc(text)}</title>`}${esc(shown)}</text>`,
     );
   }
-  // x labels (Req 3.1): first and last are always kept, marked categories next, then every step-th label, with the
-  // smallest step at which no two labels touch. The estimate carries a safety margin because the real font may be wider.
-  const must = new Set(allMarks.map((mk) => mk.i));
-  const spans = xs.map((x, i) => {
-    const w = textWidth(x, FONT, { bold: must.has(i) }) * FS;
-    let anchor: 'start' | 'middle' | 'end' = 'middle';
-    if (c.kind !== 'bar' && n > 1 && i === 0) anchor = 'start';
-    if (c.kind !== 'bar' && n > 1 && i === n - 1) anchor = 'end';
-    let px = cx(i);
-    let x0 = anchor === 'start' ? px : anchor === 'end' ? px - w : px - w / 2;
-    // Bars centre their label under the bar; one that would leave the drawing is pushed back inside it.
-    if (anchor === 'middle' && x0 < 1) {
-      anchor = 'start';
-      px = x0 = 1;
-    } else if (anchor === 'middle' && x0 + w > W - 1) {
-      anchor = 'end';
-      px = W - 1;
-      x0 = px - w;
-    }
-    return { x0, x1: x0 + w, anchor, px };
-  });
-  const clear = (a: number, b: number): boolean => spans[a].x1 + XGAP <= spans[b].x0 || spans[b].x1 + XGAP <= spans[a].x0;
-  const pickTicks = (step: number): number[] | null => {
-    const keep: number[] = [];
-    for (const i of [0, n - 1, ...[...must].toSorted((a, b) => a - b)])
-      if (!keep.includes(i) && keep.every((k) => clear(k, i))) keep.push(i);
-    const required = keep.slice();
-    for (let i = step; i < n - 1; i += step) {
-      if (keep.includes(i)) continue;
-      if (keep.every((k) => clear(k, i))) keep.push(i);
-      else if (!required.some((k) => !clear(k, i))) return null; // blocked by another regular label: this step is too tight
-    }
-    return keep;
-  };
-  let kept: number[] = [];
-  for (let step = 1; step <= Math.max(n, 1); step++) {
-    const got = pickTicks(step);
-    if (got) {
-      kept = got;
-      break;
-    }
-  }
-  if (!kept.length) kept = [0, n - 1].filter((i, k, a) => a.indexOf(i) === k && (k === 0 || clear(0, i)));
-  kept.sort((a, b) => a - b);
   if (xLines) {
     xLines.forEach((lines, i) =>
       lines.forEach((t, k) =>
-        out.push(`<text class="tick" x="${cx(i).toFixed(1)}" y="${H - B + 20 + k * 14}" text-anchor="middle">${esc(t)}</text>`),
+        out.push(`<text class="tick" x="${cx(i).toFixed(1)}" y="${H - B + 20 + k * X_LINE}" text-anchor="middle">${esc(t)}</text>`),
       ),
     );
-  } else
+  } else {
+    // x labels (Req 3.1): first and last are always kept, marked categories next, then every step-th label, with the
+    // smallest step at which no two labels touch. The estimate carries a safety margin because the real font may be wider.
+    const must = new Set(allMarks.map((mk) => mk.i));
+    const spans = xs.map((x, i) => {
+      const w = textWidth(x, FONT, { bold: must.has(i) }) * FS;
+      let anchor: 'start' | 'middle' | 'end' = 'middle';
+      if (c.kind !== 'bar' && n > 1 && i === 0) anchor = 'start';
+      if (c.kind !== 'bar' && n > 1 && i === n - 1) anchor = 'end';
+      let px = cx(i);
+      let x0 = anchor === 'start' ? px : anchor === 'end' ? px - w : px - w / 2;
+      // Bars centre their label under the bar; one that would leave the drawing is pushed back inside it.
+      if (anchor === 'middle' && x0 < 1) {
+        anchor = 'start';
+        px = x0 = 1;
+      } else if (anchor === 'middle' && x0 + w > W - 1) {
+        anchor = 'end';
+        px = W - 1;
+        x0 = px - w;
+      }
+      return { x0, x1: x0 + w, anchor, px };
+    });
+    const clear = (a: number, b: number): boolean => spans[a].x1 + XGAP <= spans[b].x0 || spans[b].x1 + XGAP <= spans[a].x0;
+    const pickTicks = (step: number): number[] | null => {
+      const keep: number[] = [];
+      for (const i of [0, n - 1, ...[...must].toSorted((a, b) => a - b)])
+        if (!keep.includes(i) && keep.every((k) => clear(k, i))) keep.push(i);
+      const required = keep.slice();
+      for (let i = step; i < n - 1; i += step) {
+        if (keep.includes(i)) continue;
+        if (keep.every((k) => clear(k, i))) keep.push(i);
+        else if (!required.some((k) => !clear(k, i))) return null; // blocked by another regular label: this step is too tight
+      }
+      return keep;
+    };
+    let kept: number[] = [];
+    for (let step = 1; step <= Math.max(n, 1); step++) {
+      const got = pickTicks(step);
+      if (got) {
+        kept = got;
+        break;
+      }
+    }
+    if (!kept.length) kept = [0, n - 1].filter((i, k, a) => a.indexOf(i) === k && (k === 0 || clear(0, i)));
+    kept.sort((a, b) => a - b);
     for (const i of kept)
       out.push(
         `<text class="tick${must.has(i) ? ' mk-x' : ''}" x="${spans[i].px.toFixed(1)}" y="${H - 8}" text-anchor="${spans[i].anchor}">${esc(xs[i])}</text>`,
       );
+  }
   if (flags) {
     // Per category: the topmost flag's pole runs down to the baseline (or, on bars, to just above the group's labels).
     const stemEnd = (i: number): number => {
