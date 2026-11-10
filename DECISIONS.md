@@ -942,3 +942,30 @@ translucent color composited first) is at least 4.5:1. `css()` paints only that,
 (the guarantee would carry a stated exception, and a focus ring below 3:1 would stay), darkening or lightening the writer's color (the
 compiler would invent a color nobody chose), and making it an error (a pale brand color is worth a warning, not a failed build). Only a page
 whose accent already drew a warning changes its output (two conformance error cases). Internal spec `lede-accessibility`, lede-lang/meta.
+
+## D78. The command line refuses what it cannot do, and a page prints on the light theme
+A review of the whole tool (2026-11-10) found the command line quiet where it should be loud. `lede build page.lede --shel` built
+an ordinary page and said nothing, because a word starting with `--` that no command knew was dropped; `-o page.lede` wrote the
+HTML over the source; a second `-o`, or one with no value, picked a file by position. Each of these loses work for an agent that
+does not look at the page afterwards. The rule now: an option no command takes is a usage error (exit 2), with the nearest known
+option named when one is within two edits; `-o` needs exactly one value and refuses a path that is one of its inputs (compared by
+device and inode, so a symlink or `./` does not get past); a directory as FILE is a usage error. A failure inside the tool (exit
+70) prints one line, and `LEDE_DEBUG=1` adds the stack. Two things an agent's harness needs were missing and are added: `lede
+--version` (also `-V` and `lede version`), and `-` as FILE for `build`, `check` and `ast`, which reads the document from stdin so a
+model's output can be piped without a temporary file; it is labelled `<stdin>`, loads `data x < file` against the current directory
+under the same confinement, and is refused with `watch`, `--fix` and `--dry-run`, which need a file to rewrite or follow.
+
+Print is the second half. `@theme dark`, or a reader's dark system setting, printed light text on white paper: the print rule turned
+the page background white and left every other token dark. `@media print` now sets the light tokens again (at a specificity that
+beats both the `@theme` rule and the dark media query), keeps a writer's `@accent` only when the page is not `@theme dark` (D77
+validated that accent against the dark background, not against paper), keeps figures, cards, notes and table rows from
+splitting across pages, and wraps long code lines instead of cutting them at the paper's edge. Rejected: printing dark pages dark (ink,
+and browsers drop backgrounds by default, which is how the unreadable page came about).
+
+Also settled here, each with a conformance case or test and a line in the spec: a `data` name an object inherits (`constructor`,
+`__proto__`) is a name like any other; `min=` not below `max=` is a warning and both are ignored, so no axis is drawn without a
+range; a block above a `data x = ...` line that takes away a column it reads is E `data-redefined` and draws nothing; a data file
+is read as RFC 4180 CSV, not line by line as an inline body; a code span closes at a run of backticks as long as the one that
+opened it, bold may hold italic, and a link URL may hold balanced parentheses. None of these adds a word to the format, so none
+waits on D67. A seeded fuzz test (`packages/render-html/test/fuzz.test.ts`) now runs with the suite and holds the properties that
+found them: parse, `LedeStream`, `fix` and `render` agree and do not throw on documents built from every shipped line.
