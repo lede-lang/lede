@@ -582,3 +582,32 @@ test('watch survives the file being deleted, says so once, and rebuilds when it 
     w.child.kill();
   }
 });
+
+test('an outside data path gets one message whether or not it exists, and a missing file inside the tree shows no absolute path', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  const outside = mkdtempSync(join(tmpdir(), 'lede-secret-'));
+  writeFileSync(join(outside, 'secret.csv'), 'k,v\nTOKEN,hunter2\n');
+  mkdirSync(join(dir, 'sub'));
+  const up = `../${outside.split('/').pop()}`;
+  const outsidePaths = [
+    `${up}/secret.csv`,
+    `${up}/nope.csv`,
+    `${up}/nodir/nope.csv`,
+    join(outside, 'secret.csv'),
+    join(outside, 'nope.csv'),
+    '/etc/lede-no-such-file',
+  ];
+  const insidePaths = ['sub/missing.csv', 'nodir/missing.csv', 'sub/../missing.csv'];
+  const page = [...outsidePaths, ...insidePaths].map((p, i) => `data d${i} < ${p}\n`).join('');
+  writeFileSync(join(dir, 'page.lede'), page);
+  const r = run(['check', 'page.lede', '--json'], dir);
+  const msgs = (JSON.parse(r.stdout)['page.lede'] as { code: string; message: string }[])
+    .filter((d) => d.code === 'data-file')
+    .map((d) => d.message);
+  assert.equal(msgs.length, outsidePaths.length + insidePaths.length);
+  outsidePaths.forEach((p, i) => assert.equal(msgs[i], `cannot read ${p}: ${p} is outside the document's directory`));
+  insidePaths.forEach((p, k) => assert.equal(msgs[outsidePaths.length + k], `cannot read ${p}: ${p}: no such file`));
+  assert.doesNotMatch(r.stdout + r.stderr, /ENOENT|hunter2/);
+  // the absolute path of the document's own directory is not in a message either
+  assert.equal(r.stdout.includes(dir), false);
+});

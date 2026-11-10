@@ -3,7 +3,6 @@
 import { readFileSync, writeFileSync, watch as fsWatch, existsSync, realpathSync, statSync } from 'node:fs';
 import { dirname, resolve, basename, sep } from 'node:path';
 import { parse, fix, artifactDiagnostics, type Diagnostic, type LedeDocument } from '@lede-lang/core';
-import { render, wantsShell } from '@lede-lang/html';
 
 const USAGE = `usage:
   lede build <file.lede> [-o out.html] [--force] [--unsafe-html] [--allow-remote] [--artifact] [--shell]
@@ -49,6 +48,9 @@ options:
 An option no command knows is a usage error (exit 2); one that only another command takes is ignored. A failure that is not
 a usage error exits 70 with one line on stderr; set LEDE_DEBUG to add the stack.`;
 
+/** True when `path` is `root` or lies under it. Both are absolute and normalized. */
+const inside = (path: string, root: string): boolean => path === root || path.startsWith(root.endsWith(sep) ? root : root + sep);
+
 /** What a diagnostic calls `file`: `-` is the document on stdin, which has no name. */
 const nameOf = (file: string): string => (file === '-' ? '<stdin>' : file);
 
@@ -60,10 +62,20 @@ function parseOptions(file: string) {
       if (/^[a-z]+:/i.test(p)) throw new Error('only local files can be loaded');
       // Confine data files to the document's own directory tree: a document must not be
       // able to read ~/.ssh or ../../secrets just because someone compiled it.
-      // Resolve symlinks on both sides before comparing, or a link inside the folder escapes it.
-      const root = realpathSync(base);
-      const full = realpathSync(resolve(base, p));
-      if (full !== root && !full.startsWith(root + sep)) throw new Error(`${p} is outside the document's directory`);
+      const outside = new Error(`${p} is outside the document's directory`);
+      // First the path as written, resolved against the directory and nothing else. It must not matter whether a path that escapes
+      // exists: if the answer were "no such file" for one and "outside" for the other, a document could ask which files are there.
+      if (!inside(resolve(base, p), base)) throw outside;
+      // Then with symlinks resolved on both sides, or a link inside the folder escapes it.
+      let full: string;
+      try {
+        full = realpathSync(resolve(base, p));
+      } catch (e) {
+        // Node's message holds the absolute path; the document's author needs only the path they wrote.
+        const code = (e as NodeJS.ErrnoException).code;
+        throw code === 'ENOENT' || code === 'ENOTDIR' ? new Error(`${p}: no such file`) : e;
+      }
+      if (!inside(full, realpathSync(base))) throw outside;
       if (statSync(full).size > 5 * 1024 * 1024) throw new Error(`${p} is larger than 5 MB`);
       return readFileSync(full, 'utf8');
     },
@@ -116,6 +128,8 @@ async function build(file: string, out: string | null, flags: Set<string>, watch
     process.stderr.write(`${name}: ${errors} error(s); not written (use --force to render anyway)\n`);
     return false;
   }
+  // The renderer pulls in elkjs and sanitize-html, about 170 ms that `check`, `ast` and `--help` never need, so it loads only here.
+  const { render, wantsShell } = await import('@lede-lang/html');
   const shell = flags.has('--shell');
   const html = await render(doc, {
     unsafeHtml: flags.has('--unsafe-html'),
