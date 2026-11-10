@@ -500,8 +500,9 @@ and the runtime adds no element and moves none.
 `https`, `mailto`, relative or `#fragment`; others render as plain text. `\` escapes
 `` ` * _ [ ] \ ``. All other text is escaped; inline HTML is not interpreted.
 A code span opened by a run of N backticks closes at the next run of exactly N, so ``` ``a`b`` ``` is the code `` a`b ``; with two
-or more, one space inside each end is dropped (``` `` `a` `` ```). A bold span may hold italic (`**a *b* c**`) but not start with
-`*`. Link text holds no `[` or `]`; a URL holds no space and at most one level of parentheses (`.../Foo_(bar)`).
+or more, one space inside each end is dropped (``` `` `a` `` ```). A run that no later run closes is text, the whole run. A bold
+span may hold italic (`**a *b* c**`) but not start with `*`. Link text holds no `[` or `]`; a URL holds no space and at most one
+level of parentheses (`.../Foo_(bar)`).
 
 ## 6. Streaming
 

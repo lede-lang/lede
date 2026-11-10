@@ -64,7 +64,10 @@ test('a code span written with N backticks closes at the next run of N', () => {
   assert.equal(inline('`a` and ``b`` and ```c```'), '<code>a</code> and <code>b</code> and <code>c</code>');
   assert.equal(inline('` a `'), '<code> a </code>');
   assert.equal(inline('`unclosed'), '`unclosed');
-  assert.equal(inline('``x` y'), '`<code>x</code> y');
+  // A run that nothing closes is text, all of it: no shorter span opens inside it.
+  assert.equal(inline('``x` y'), '``x` y');
+  assert.equal(inline('a ``` b ` c'), 'a ``` b ` c');
+  assert.equal(plain('``x` y'), '``x` y');
   assert.equal(inline('`one and ``two` y'), '<code>one and ``two</code> y');
   assert.equal(plain('``a`b`` and `c`'), 'a`b and c');
 });
@@ -86,6 +89,8 @@ test('inline markup costs the length of the line, not its square', () => {
     `${'[a](x'.repeat(32_000)} )`,
     `${'['.repeat(32_000)}]`,
     '` `` '.repeat(20_000),
+    '`'.repeat(40_000),
+    `${'`'.repeat(40_000)}x${'`'.repeat(40_001)}`,
     '**a *'.repeat(20_000),
   ];
   const t = performance.now();

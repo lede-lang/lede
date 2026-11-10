@@ -63,10 +63,10 @@ function parseOptions(file: string) {
       if (/^[a-z]+:/i.test(p)) throw new Error('only local files can be loaded');
       // Confine data files to the document's own directory tree: a document must not be
       // able to read ~/.ssh or ../../secrets just because someone compiled it.
-      const outside = new Error(`${p} is outside the document's directory`);
+      const outside = () => new Error(`${p} is outside the document's directory`);
       // First the path as written, resolved against the directory and nothing else. It must not matter whether a path that escapes
       // exists: if the answer were "no such file" for one and "outside" for the other, a document could ask which files are there.
-      if (!inside(resolve(base, p), base)) throw outside;
+      if (!inside(resolve(base, p), base)) throw outside();
       // Then with symlinks resolved on both sides, or a link inside the folder escapes it.
       let full: string;
       try {
@@ -76,7 +76,7 @@ function parseOptions(file: string) {
         const code = (e as NodeJS.ErrnoException).code;
         throw code === 'ENOENT' || code === 'ENOTDIR' ? new Error(`${p}: no such file`) : e;
       }
-      if (!inside(full, realpathSync(base))) throw outside;
+      if (!inside(full, realpathSync(base))) throw outside();
       if (statSync(full).size > 5 * 1024 * 1024) throw new Error(`${p} is larger than 5 MB`);
       return readFileSync(full, 'utf8');
     },

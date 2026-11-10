@@ -31,10 +31,12 @@ export function safeUrl(u: string): string | null {
 const LINK = /\[([^\][]+)\]\(((?:[^()\s]|\([^()\s]*\)){1,4096})\)/y;
 
 /**
- * The code span that opens at `i`: a run of N backticks closes at the next run of exactly N, so a span written with two may hold
- * one (``` `` a`b `` ```). With two or more, one space inside each end is dropped, which is how a span starts or ends with a backtick.
+ * The run of backticks at `i`, read as CommonMark reads it: a run of N opens a code span that closes at the next run of exactly N,
+ * so a span written with two may hold one (``` `` a`b `` ```). With two or more, one space inside each end is dropped, which is how
+ * a span starts or ends with a backtick. `code` is the span's text, or null when no run closes it: the whole run is then text (no
+ * shorter span opens inside it, so a line of backticks is read once and not once per backtick). `end` is where reading goes on.
  */
-function codeSpan(src: string, i: number): { text: string; end: number } | null {
+function codeSpan(src: string, i: number): { code: string | null; end: number } {
   let n = 1;
   while (src[i + n] === '`') n++;
   for (let j = src.indexOf('`', i + n); j >= 0; j = src.indexOf('`', j)) {
@@ -43,11 +45,11 @@ function codeSpan(src: string, i: number): { text: string; end: number } | null 
     if (m === n) {
       const body = src.slice(i + n, j);
       const padded = n > 1 && body.length > 2 && body.startsWith(' ') && body.endsWith(' ');
-      return { text: padded ? body.slice(1, -1) : body, end: j + n };
+      return { code: padded ? body.slice(1, -1) : body, end: j + n };
     }
     j += m;
   }
-  return null;
+  return { code: null, end: i + n };
 }
 
 /** Inline markup: `code`, **bold**, *em* or _em_, [text](url). Everything else is escaped text. */
@@ -80,12 +82,13 @@ export function inline(src: string): string {
     }
     if (c === '`') {
       const span = codeSpan(src, i);
-      if (span) {
+      if (span.code === null) text += src.slice(i, span.end);
+      else {
         pushText();
-        out.push(codeTok(span.text));
-        i = span.end;
-        continue;
+        out.push(codeTok(span.code));
       }
+      i = span.end;
+      continue;
     }
     if (c === '[') {
       LINK.lastIndex = i;
@@ -141,8 +144,9 @@ export function plain(src: string): string {
     const span = src[i] === '`' ? codeSpan(src, i) : null;
     LINK.lastIndex = i;
     const link = src[i] === '[' ? LINK.exec(src) : null;
-    s += span?.text ?? link?.[1] ?? src[i];
-    i = span?.end ?? (link ? i + link[0].length : i + 1);
+    const end = span?.end ?? (link ? i + link[0].length : i + 1);
+    s += span?.code ?? link?.[1] ?? src.slice(i, end);
+    i = end;
   }
   return s.replace(BOLD, '$1').replace(/\*([^*]+)\*/g, '$1');
 }

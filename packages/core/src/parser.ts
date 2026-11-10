@@ -2247,7 +2247,7 @@ export class LedeParser {
     }
 
     // edges: a -> b, c --> d : label. An arrow inside a quoted label (`api "Payments -> API" service`) is text, not an edge.
-    if (/(-->|->|<->|\s-x-\s)/.test(s.replace(/"[^"]*"/g, '""'))) {
+    if (/(-->|->|<->|\s-x-\s)/.test(s.includes('"') ? s.replace(/"[^"]*"/g, '""') : s)) {
       const ci = s.indexOf(':');
       const chain = ci >= 0 ? s.slice(0, ci) : s;
       const label = ci >= 0 ? s.slice(ci + 1).trim() : '';
