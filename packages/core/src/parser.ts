@@ -193,7 +193,9 @@ function copyAcc(a: Acc): Acc {
 
 /** The lines a fence holds, with the common indentation stripped so an indented fence reads like an unindented one. */
 function fenceBody(f: Fence): string {
-  const ind = Math.min(...f.lines.filter((l) => l.trim()).map((l) => l.length - l.trimStart().length), Infinity);
+  // A loop, not `Math.min(...)`: a fence may hold more lines than a call takes arguments.
+  let ind = Infinity;
+  for (const l of f.lines) if (l.trim()) ind = Math.min(ind, l.length - l.trimStart().length);
   return f.lines.map((l) => (Number.isFinite(ind) ? l.slice(ind) : l)).join('\n');
 }
 
@@ -1382,7 +1384,7 @@ export class LedeParser {
       this.defineData(name, csv.rows, csv.offsets, bodyCol);
       return;
     }
-    const d = this.doc.data[name];
+    const d = dataSet(this.doc, name);
     if (!d) {
       this.diag(
         'error',
@@ -1403,7 +1405,7 @@ export class LedeParser {
       this.diag('error', 'data-empty', `data ${name} has no header row`, L, bodyCol);
       return;
     }
-    if (this.doc.data[name])
+    if (dataSet(this.doc, name))
       this.diag('warning', 'data-redefined', `data ${name} is redefined; the new definition replaces it`, L, bodyCol);
     this.clash('data', name, bodyCol);
     const columns = rows[0].map((c) => c.trim());
@@ -1411,7 +1413,7 @@ export class LedeParser {
     if (dup) this.diag('error', 'data-dup-column', `data ${name} has two columns named ${dup}`, L, bodyCol);
     const d: DataSet = { name, columns, rows: [], line: L };
     this.addRows(d, rows.slice(1), offsets.slice(1), bodyCol);
-    this.doc.data[name] = d;
+    storeData(this.doc, name, d);
     this.emit({ type: 'data', name, line: L });
   }
 
@@ -1461,7 +1463,7 @@ export class LedeParser {
       this.diag('error', 'missing-data', 'expected a data name', this.lineNo, col);
       return null;
     }
-    const d = this.doc.data[name];
+    const d = dataSet(this.doc, name);
     if (!d) {
       const known = Object.keys(this.doc.data);
       this.diag(
@@ -1602,8 +1604,7 @@ export class LedeParser {
       stack: o.flags.includes('stack'),
       labels,
       unit: o.kv.unit ?? null,
-      min: n('min'),
-      max: n('max'),
+      ...this.axisRange(n('min'), n('max'), col),
       focus: o.kv.focus ?? null,
       target,
       line: L,
@@ -1616,6 +1617,19 @@ export class LedeParser {
   }
 
   /** `hatch="x value"` (repeatable): values of the x column drawn striped. Anything else: W chart-option. */
+  /** `min=` and `max=` of a chart. A pair that leaves no range (`min=10 max=10`, `min=10 max=2`) is reported and neither is kept. */
+  private axisRange(min: number | null, max: number | null, col: number): { min: number | null; max: number | null } {
+    if (min === null || max === null || min < max) return { min, max };
+    this.diag(
+      'warning',
+      'chart-option',
+      `min=${min} is not below max=${max}, so the axis has no range; both are ignored (give min a smaller number than max)`,
+      this.lineNo,
+      col,
+    );
+    return { min: null, max: null };
+  }
+
   private hatchOpt(d: DataSet, x: string, optStr: string, col: number): string[] {
     const xi = d.columns.indexOf(x);
     const out: string[] = [];
@@ -1750,8 +1764,7 @@ export class LedeParser {
       stack: false,
       labels: false,
       unit: o.kv.unit ?? null,
-      min: n('min'),
-      max: n('max'),
+      ...this.axisRange(n('min'), n('max'), col),
       focus,
       target,
       from,
@@ -1783,7 +1796,7 @@ export class LedeParser {
       }
       d = { name, columns: csv.rows[0], rows: [], line: L };
       this.addRows(d, csv.rows.slice(1), csv.offsets.slice(1), bodyCol);
-      this.doc.data[name] = d;
+      storeData(this.doc, name, d);
     } else {
       const t = tokens(rest);
       d = this.requireData(t[0]?.key === undefined ? t[0]?.text : undefined, col);
@@ -1897,7 +1910,7 @@ export class LedeParser {
     const ref = value.startsWith('=') ? value.slice(1).trim() : null;
     if (ref) {
       const m = /^([A-Za-z_][\w-]*)\.(.+)$/.exec(ref);
-      const d = m ? this.doc.data[m[1]] : undefined;
+      const d = m ? dataSet(this.doc, m[1]) : undefined;
       if (!m) this.diag('error', 'kpi-ref', `kpi reference must be =data.column, got =${ref}`, L, col);
       else if (!d) this.requireData(m[1], col);
       else this.requireCol(d, m[2], col);
@@ -1907,7 +1920,7 @@ export class LedeParser {
       let v = value;
       if (ref) {
         const m = /^([A-Za-z_][\w-]*)\.(.+)$/.exec(ref);
-        const d = m ? this.doc.data[m[1]] : undefined;
+        const d = m ? dataSet(this.doc, m[1]) : undefined;
         const c = d && m ? findCol(d, m[2]) : null;
         v = d && c ? (d.rows.map((r) => r[d.columns.indexOf(c)]).findLast((x) => x !== '') ?? '') : '';
       }
@@ -2212,8 +2225,8 @@ export class LedeParser {
       return true;
     }
 
-    // edges: a -> b, c --> d : label
-    if (/(-->|->|<->|\s-x-\s)/.test(s)) {
+    // edges: a -> b, c --> d : label. An arrow inside a quoted label (`api "Payments -> API" service`) is text, not an edge.
+    if (/(-->|->|<->|\s-x-\s)/.test(s.replace(/"[^"]*"/g, '""'))) {
       const ci = s.indexOf(':');
       const chain = ci >= 0 ? s.slice(0, ci) : s;
       const label = ci >= 0 ? s.slice(ci + 1).trim() : '';
@@ -2427,6 +2440,19 @@ export function suggestColumn(columns: string[], name: string): string | null {
 }
 
 /** Resolve a column reference: exact match first, then ignoring case and repeated spaces. */
+/**
+ * The data set called `name`, or undefined. Read `doc.data` through this, not by index: a set may be named `constructor` or
+ * `toString`, and an index finds the inherited member of that name when no such set is declared.
+ */
+export function dataSet(doc: LedeDocument, name: string): DataSet | undefined {
+  return Object.hasOwn(doc.data, name) ? doc.data[name] : undefined;
+}
+
+/** Store `d` under `name` as an own property, so that a set named `__proto__` is a key like any other and not the map's prototype. */
+function storeData(doc: LedeDocument, name: string, d: DataSet): void {
+  Object.defineProperty(doc.data, name, { value: d, enumerable: true, writable: true, configurable: true });
+}
+
 export function findCol(d: DataSet, name: string): string | null {
   if (d.columns.includes(name)) return name;
   return d.columns.find((c) => colKey(c) === colKey(name)) ?? null;
@@ -2457,28 +2483,33 @@ export function resolve(doc: LedeDocument): void {
           });
         }
       }
-      const gids = new Set(b.groups.map((g) => g.id));
-      // Group cycles: a group may not contain itself through nesting.
-      for (const g of b.groups) {
-        const seen = new Set<string>();
-        const walk = (id: string): boolean => {
-          if (seen.has(id)) return true;
-          seen.add(id);
-          const gg = b.groups.find((x) => x.id === id);
-          return !!gg && gg.members.some((m) => gids.has(m) && walk(m));
-        };
-        if (walk(g.id) && g.members.some((m) => gids.has(m))) {
-          const cyc = g.members.find((m) => gids.has(m) && b.groups.find((x) => x.id === m)!.members.includes(g.id));
-          if (cyc)
-            doc.diagnostics.push({
-              severity: 'error',
-              code: 'diagram-group-cycle',
-              message: `groups ${g.id} and ${cyc} contain each other`,
-              line: b.line,
-              col: 1,
-            });
+      // Group cycles: a group may not contain itself, directly or through any depth of nesting. One diagnostic per cycle.
+      const groups = new Map(b.groups.map((g) => [g.id, g]));
+      const done = new Set<string>();
+      const path: string[] = [];
+      const walk = (id: string): void => {
+        const at = path.indexOf(id);
+        if (at >= 0) {
+          const cyc = path.slice(at);
+          doc.diagnostics.push({
+            severity: 'error',
+            code: 'diagram-group-cycle',
+            message:
+              cyc.length === 1
+                ? `group ${id} contains itself`
+                : `groups ${cyc.slice(0, -1).join(', ')} and ${cyc[cyc.length - 1]} contain each other`,
+            line: b.line,
+            col: 1,
+          });
+          return;
         }
-      }
+        if (done.has(id)) return;
+        path.push(id);
+        for (const m of groups.get(id)!.members) if (groups.has(m)) walk(m);
+        path.pop();
+        done.add(id);
+      };
+      for (const g of b.groups) walk(g.id);
     }
   });
 }
@@ -2486,7 +2517,7 @@ export function resolve(doc: LedeDocument): void {
 function resolveKpi(doc: LedeDocument, k: Kpi): void {
   if (!k.ref) return;
   const m = /^([A-Za-z_][\w-]*)\.(.+)$/.exec(k.ref);
-  const d = m && doc.data[m[1]];
+  const d = m && dataSet(doc, m[1]);
   const cname = m && d ? findCol(d, m[2]) : null;
   if (!m || !d || !cname) return;
   const ci = d.columns.indexOf(cname);
@@ -2511,7 +2542,11 @@ function decimals(v: string): number {
 
 export function parse(src: string, opts: ParseOptions = {}): LedeDocument {
   const p = new LedeParser(opts);
-  for (const line of src.split('\n')) p.pushLine(line);
+  const lines = src.split('\n');
+  // A final newline ends the last line; it does not start an empty one. `LedeStream` reads it so, and an unclosed fence at the end
+  // of the text would otherwise gain an empty last line here and not there.
+  if (src.endsWith('\n')) lines.pop();
+  for (const line of lines) p.pushLine(line);
   return p.end();
 }
 

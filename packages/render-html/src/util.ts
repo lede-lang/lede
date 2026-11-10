@@ -1,5 +1,17 @@
 // Escaping, inline markup and text measurement shared by every renderer.
 
+/** `Math.min(...a, init)` and `Math.max(...a, init)` without the spread, which overflows the stack past about 120,000 values. */
+export function minOf(a: readonly number[], init = Infinity): number {
+  let m = init;
+  for (const v of a) if (v < m) m = v;
+  return m;
+}
+export function maxOf(a: readonly number[], init = -Infinity): number {
+  let m = init;
+  for (const v of a) if (v > m) m = v;
+  return m;
+}
+
 export function esc(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }

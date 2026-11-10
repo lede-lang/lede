@@ -117,12 +117,12 @@ export function parseInlineCsv(s: string): { rows: string[][]; offsets: number[]
     if (c === '"' && field.trim() === '') {
       const q = readQuoted(s, i);
       if (!q.closed) unclosedAt = i;
-      field = q.value;
       i = q.end;
       // skip to the next separator
       while (i < s.length && s[i] !== ',' && s[i] !== ';') i++;
-      // keep the quoted value verbatim (no trim of inner spaces)
-      row.push(field);
+      // keep the quoted value verbatim (no trim of inner spaces); text between the closing quote and the separator
+      // (`"Smith, J" (PM)`) is part of the cell, as CSV readers take it, not dropped
+      row.push(q.value + s.slice(q.end, i).trimEnd());
       field = '';
       if (s[i] === ',') {
         i++;

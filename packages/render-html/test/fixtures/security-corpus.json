@@ -1868,10 +1868,7 @@
   },
   {
    "id": "diagram-12",
-   "src": "diagram f\nf: a \"<!--<script>alert(1)</script>-->\" svc\nf: a -> b",
-   "errors": [
-    "diagram-syntax"
-   ]
+   "src": "diagram f\nf: a \"<!--<script>alert(1)</script>-->\" svc\nf: a -> b"
   },
   {
    "id": "diagram-13",

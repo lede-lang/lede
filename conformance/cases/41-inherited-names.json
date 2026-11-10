@@ -1,0 +1,124 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Names that an object inherits",
+      "line": 1
+    },
+    {
+      "type": "data",
+      "name": "constructor",
+      "line": 3
+    },
+    {
+      "type": "data",
+      "name": "__proto__",
+      "line": 4
+    },
+    {
+      "type": "data",
+      "name": "toString",
+      "line": 5
+    },
+    {
+      "type": "chart",
+      "kind": "bar",
+      "data": "constructor",
+      "x": "team",
+      "y": [
+        "open"
+      ],
+      "title": null,
+      "stack": false,
+      "labels": false,
+      "unit": null,
+      "min": null,
+      "max": null,
+      "focus": null,
+      "target": null,
+      "line": 8
+    },
+    {
+      "type": "table",
+      "data": "__proto__",
+      "cols": null,
+      "sort": null,
+      "limit": null,
+      "title": null,
+      "line": 9
+    },
+    {
+      "type": "kpis",
+      "items": [
+        {
+          "label": "Last",
+          "value": "5",
+          "delta": "+2",
+          "tone": null,
+          "note": "",
+          "ref": "toString.v"
+        }
+      ],
+      "line": 10
+    }
+  ],
+  "data": {
+    "constructor": {
+      "name": "constructor",
+      "columns": [
+        "team",
+        "open"
+      ],
+      "rows": [
+        [
+          "Core",
+          "4"
+        ],
+        [
+          "Edge",
+          "9"
+        ]
+      ],
+      "line": 3
+    },
+    "__proto__": {
+      "name": "__proto__",
+      "columns": [
+        "k",
+        "v"
+      ],
+      "rows": [
+        [
+          "a",
+          "1"
+        ],
+        [
+          "b",
+          "2"
+        ]
+      ],
+      "line": 4
+    },
+    "toString": {
+      "name": "toString",
+      "columns": [
+        "k",
+        "v"
+      ],
+      "rows": [
+        [
+          "a",
+          "3"
+        ],
+        [
+          "b",
+          "5"
+        ]
+      ],
+      "line": 5
+    }
+  },
+  "diagnostics": []
+}

@@ -788,6 +788,11 @@
     "fragment": "6c57804c018b0b88c1ebd136c5880ad6eb747666b649529f19cba1cf80ec2a5c",
     "artifact": "62592ab4c67e251f86c06ffae1fe379416317b9fbd310148fd07c77e0b394f12"
   },
+  "conformance/cases/41-inherited-names.lede": {
+    "ordinary": "b6e55c8165de2f41ac959d58d3b7b78c9a9dc8dd0516ae4bb3c192445fc9c52e",
+    "fragment": "1bb7ed1681ce82524fbf5240d383f431179572cd529bf47335ef5bdce20ed65e",
+    "artifact": "6039fbc1c0419e040218ce8042030d861c58bf0f7784639f9bfc85ef76578c7c"
+  },
   "conformance/errors/e01-unknown-data.lede": {
     "ordinary": "fbe554334f54d975ecd4e76cd256d4a7e6d8d1baedac779b29629e73bebc519d",
     "fragment": "650f1173f1435633d2f1b964126f765a726128d053f4c642ec3c28cbf3dbd7fe",
@@ -814,9 +819,9 @@
     "artifact": "10af5a92c2d9bede57e29951ab2babaf624902dc8b5afbf2557a01be9fa76bc2"
   },
   "conformance/errors/e06-misc.lede": {
-    "ordinary": "f4ceac0ac7abfcd03c1f862efd1c177183a7194573c583e9e786cb2d9bd87341",
-    "fragment": "627daf7558bddf04ceea596390b2d054b03ba7f3d3e1eb9e9a635a1cf9188f08",
-    "artifact": "2fcd1e11c13c694cbed381f5dcde40eaf3cd95ddf47c6002bc3d9be3ab5dfc5c"
+    "ordinary": "8334986366269f03c4a8b93198ee26cb6e16f9326d45b5c14ed918e35fb2c928",
+    "fragment": "b04b6ee68af45ac112d94ee987432c7691367080881be01c66e98d72d7097df6",
+    "artifact": "712f86b5eab2fe7492815ebcd13a515469382a8ca5a0d60238d222f5448b9993"
   },
   "conformance/errors/e07-chart-mark.lede": {
     "ordinary": "8e51966e7f01d86eec06ee32e1d41307ffe54b6ca4f0f9e1b7206ed57fb08413",
@@ -1061,6 +1066,16 @@
     "ordinary": "496e3691e45c061001b395538176246ab803fcbc601cb89f6d8dfbdefb313685",
     "fragment": "3682727788a71ffcdc19981691e8848e58d52bc4b3e4a6bfc6df57454f1783d7",
     "artifact": "1b25fe3d186e79bf7b88eae6f0139c92e1f5da211b995cb0a83ce700a4dc73a2"
+  },
+  "conformance/errors/e46-inherited-names.lede": {
+    "ordinary": "fbe554334f54d975ecd4e76cd256d4a7e6d8d1baedac779b29629e73bebc519d",
+    "fragment": "650f1173f1435633d2f1b964126f765a726128d053f4c642ec3c28cbf3dbd7fe",
+    "artifact": "73bd712eb36ed355449accf5b543c00bdd61e37e809e5f4a30adb5b5a0ba2bcf"
+  },
+  "conformance/errors/e47-chart-range.lede": {
+    "ordinary": "8bfdad70a7f835861908dd84a4950d5599b3cec487942052df0d798e479c5632",
+    "fragment": "867926dfcc9725cdd70efd7320492c9882b574fa355082c3492f9c6d18a14b5f",
+    "artifact": "8bbeccba5eaace4c92852c7838cddb25562342b456ba58683e0d190bb9cb6324"
   },
   "examples/article/01-options-grid.lede": {
     "ordinary": "f6dd15e31e5c9617c27e800aa362f66f89e1fd0ba22c5779af5159aab9119c39",

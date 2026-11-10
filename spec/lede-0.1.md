@@ -196,7 +196,7 @@ trailing unit among `ms s gb mb tb x × pt pts` are ignored. Anything else is no
 | `y=col,col` | every other column with a numeric cell | series |
 | `title="…"` | none | caption |
 | `unit=…` | none | `$` `€` `£` prefix the value; `%` suffixes; anything else suffixes after a space |
-| `min=` `max=` | from data | axis range |
+| `min=` `max=` | from data | axis range; `min` must be below `max` |
 | `focus=col` | none | that series takes the first color, the rest grey |
 | `target="N label"` | none | dashed reference line at N (the axis range includes it), labeled |
 | `stack` | off | stack series (`bar`, `hbar`, `area`) |
@@ -206,7 +206,9 @@ Bars and areas always include zero. A line chart starts at zero only when its mi
 half its maximum; otherwise the axis is padded around the data.
 - E `chart-kind`, `missing-data`, `unknown-data`, `unknown-column`, `chart-no-series`,
   `chart-option` (non-numeric `min`/`max`).
-- W `non-numeric` (cells left out), `chart-option` (unknown option or `stack` on a line chart).
+- W `non-numeric` (cells left out), `chart-option` (unknown option, `stack` on a line chart, or `min=` not below `max=`: both
+  are then ignored). One of the two given alone is ignored by the renderer, with no diagnostic, when it would leave no range
+  against the end the data sets (`max=-5` over positive values, `min=100` over smaller ones): the output never holds `NaN`.
 
 ### 4.13 Column references
 Wherever an option names a column (`x y focus cols sort`, and kpi `=data.col`), the name
