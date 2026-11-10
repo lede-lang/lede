@@ -87,6 +87,14 @@ test('a bold span may hold emphasis, and tags never cross', () => {
   assert.equal(inline('*x **a b* c** y*'), '<em>x <strong>a b* c</strong> y</em>');
   assert.equal(inline('_a **b_ c**'), '_a <strong>b_ c</strong>');
   assert.equal(plain('**a *b* c**'), 'a b c');
+  // Bold that ends in italic closes at the last two of the three asterisks.
+  assert.equal(inline('**log of the brig *Hesper***'), '<strong>log of the brig <em>Hesper</em></strong>');
+  assert.equal(plain('**log of the brig *Hesper***'), 'log of the brig Hesper');
+  // The markers hug the text: operators and stray pairs stay as written.
+  assert.equal(inline('x ** 2 * y ** 2'), 'x ** 2 * y ** 2');
+  assert.equal(plain('x ** 2 * y ** 2'), 'x ** 2 * y ** 2');
+  assert.equal(inline('Price** applies. *Terms* vary. Rates** change'), 'Price** applies. <em>Terms</em> vary. Rates** change');
+  assert.equal(inline('**a** and **b**'), '<strong>a</strong> and <strong>b</strong>');
 });
 
 test('inline markup costs the length of the line, not its square', () => {

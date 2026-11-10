@@ -181,6 +181,8 @@ Declares a named table of strings. Types are decided at use (a chart reads cells
   rendering can continue).
 - W `csv-thousands`: a row with too many fields is repaired when merging an unquoted thousands
   separator (`$1,450` read as `$1` and `450`) gives exactly the right width.
+- W `csv-quote`: text follows the closing quote of a cell (`"Smith, J" (PM)`). It stays in the cell, after the quoted text;
+  the same holds in an inline `table` and in the name lists of `choose` and `bucket`.
 - W `data-redefined`: `=` on an existing name replaces it, for the blocks above it too. E `data-redefined`, on a `chart`,
   `table` or `=data.column` kpi above the new definition that reads a column the new one does not have (reported when the
   document ends; `detail {name, columns, redefined}`: the data name, the missing columns, the line of the new definition).
@@ -614,7 +616,8 @@ below) or a FILE that is missing or is a directory; 70 for an internal error, su
 prints one line to stderr, `lede: MESSAGE`; with the environment variable `LEDE_DEBUG` set it prints the stack as well.
 An option that no command knows (`--shel`, `-x`) is a usage error: stderr gets `lede: unknown option --shel; did you mean --shell?` (the
 suggestion is there when a known flag is within two edits of it) and then the usage, so a typo never builds a different page without saying so. A flag that
-some other command knows is still ignored: `lede watch x.lede --json` is `lede watch x.lede`. `--help`, `-h` or `help` prints the help to stdout and exits 0.
+some other command knows is still ignored: `lede watch x.lede --json` is `lede watch x.lede`. Options go after the command (`lede --force build x.lede`
+is a usage error that says so), and after `--` every word is a FILE, so `lede check -- -draft.lede` reads a file whose name starts with `-`. `--help`, `-h` or `help` prints the help to stdout and exits 0.
 
 `FILE` may be `-` in `build`, `check` and `ast`: the document is read from stdin, so a page can be piped in without a temporary file. Diagnostics call it
 `<stdin>`, which is also its key under `check --json`, and a `data x < file.csv` load resolves against the current directory, with the same confinement to that

@@ -106,9 +106,9 @@ export function parseOpts(s: string, flagNames: string[] = [], spanKeys: string[
 /**
  * Inline CSV: rows separated by `;`, fields by `,`. A field wrapped in double
  * quotes may contain `,` and `;`; `""` inside it is a literal quote.
- * Returns each row's fields and the offset where each row starts.
+ * Returns each row's fields, the offset where each row starts, and where a quote is left open or has text after it.
  */
-export function parseInlineCsv(s: string): { rows: string[][]; offsets: number[]; unclosedAt: number | null } {
+export function parseInlineCsv(s: string): { rows: string[][]; offsets: number[]; unclosedAt: number | null; afterQuoteAt: number | null } {
   const rows: string[][] = [];
   const offsets: number[] = [];
   let row: string[] = [];
@@ -116,6 +116,7 @@ export function parseInlineCsv(s: string): { rows: string[][]; offsets: number[]
   let rowStart = 0;
   let i = 0;
   let unclosedAt: number | null = null;
+  let afterQuoteAt: number | null = null;
   const pushRow = () => {
     row.push(field.trim());
     if (row.length > 1 || row[0] !== '') {
@@ -134,8 +135,11 @@ export function parseInlineCsv(s: string): { rows: string[][]; offsets: number[]
       // skip to the next separator
       while (i < s.length && s[i] !== ',' && s[i] !== ';') i++;
       // keep the quoted value verbatim (no trim of inner spaces); text between the closing quote and the separator
-      // (`"Smith, J" (PM)`) is part of the cell, as CSV readers take it, not dropped
-      row.push(q.value + s.slice(q.end, i).trimEnd());
+      // (`"Smith, J" (PM)`) is part of the cell, as CSV readers take it, not dropped. `afterQuoteAt` is where the first such text
+      // starts, so the caller can say so: it may be an option the writer meant for the line (`"Planned" bar=done`).
+      const tail = s.slice(q.end, i).trimEnd();
+      if (tail.trim() !== '') afterQuoteAt ??= q.end + (tail.length - tail.trimStart().length);
+      row.push(q.value + tail);
       field = '';
       if (s[i] === ',') {
         i++;
@@ -179,7 +183,7 @@ export function parseInlineCsv(s: string): { rows: string[][]; offsets: number[]
     i++;
   }
   if (field.trim() !== '' || row.length > 0) pushRow();
-  return { rows, offsets, unclosedAt };
+  return { rows, offsets, unclosedAt, afterQuoteAt };
 }
 
 /**

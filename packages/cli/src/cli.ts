@@ -46,7 +46,8 @@ options:
   -h, --help      show this help
   -V, --version   print the version
 
-An option no command knows is a usage error (exit 2); one that only another command takes is ignored. A failure that is not
+An option no command knows is a usage error (exit 2); one that only another command takes is ignored. After -- every word
+is a FILE, so a name may start with -. A failure that is not
 a usage error exits 70 with one line on stderr; set LEDE_DEBUG to add the stack.`;
 
 /** True when `path` is `root` or lies under it. Both are absolute and normalized. */
@@ -64,21 +65,34 @@ function parseOptions(file: string) {
       // Confine data files to the document's own directory tree: a document must not be
       // able to read ~/.ssh or ../../secrets just because someone compiled it.
       const outside = () => new Error(`${p} is outside the document's directory`);
-      // First the path as written, resolved against the directory and nothing else. It must not matter whether a path that escapes
-      // exists: if the answer were "no such file" for one and "outside" for the other, a document could ask which files are there.
-      if (!inside(resolve(base, p), base)) throw outside();
-      // Then with symlinks resolved on both sides, or a link inside the folder escapes it.
-      let full: string;
+      // It must not matter whether a path that escapes exists: if the answer were "no such file" for one and "outside" for the
+      // other, a document could ask which files are there. So first the path as written, resolved against the directory and
+      // nothing else.
+      const wanted = resolve(base, p);
+      if (!inside(wanted, base)) throw outside();
+      // Then with symlinks resolved on both sides, or a link inside the folder escapes it. A path that does not resolve is judged
+      // by the nearest folder above it that does, so a link out of the tree answers "outside" whether or not the file is there.
+      const real = (path: string): string | NodeJS.ErrnoException => {
+        try {
+          return realpathSync(path);
+        } catch (e) {
+          return e as NodeJS.ErrnoException;
+        }
+      };
+      const full = real(wanted);
+      let nearest = full;
+      for (let at = wanted; typeof nearest !== 'string' && at !== dirname(at); nearest = real(at)) at = dirname(at);
+      if (typeof nearest !== 'string' || !inside(nearest, realpathSync(base))) throw outside();
+      // Node's message holds the absolute path; the document's author needs only the path they wrote.
+      const unreadable = (e: NodeJS.ErrnoException) =>
+        new Error(e.code === 'ENOENT' || e.code === 'ENOTDIR' ? `${p}: no such file` : `${p}: cannot be read (${e.code ?? e.name})`);
+      if (typeof full !== 'string') throw unreadable(full);
       try {
-        full = realpathSync(resolve(base, p));
+        if (statSync(full).size > 5 * 1024 * 1024) throw new Error(`${p} is larger than 5 MB`);
+        return readFileSync(full, 'utf8');
       } catch (e) {
-        // Node's message holds the absolute path; the document's author needs only the path they wrote.
-        const code = (e as NodeJS.ErrnoException).code;
-        throw code === 'ENOENT' || code === 'ENOTDIR' ? new Error(`${p}: no such file`) : e;
+        throw (e as NodeJS.ErrnoException).code === undefined ? e : unreadable(e as NodeJS.ErrnoException);
       }
-      if (!inside(full, realpathSync(base))) throw outside();
-      if (statSync(full).size > 5 * 1024 * 1024) throw new Error(`${p} is larger than 5 MB`);
-      return readFileSync(full, 'utf8');
     },
   };
 }
@@ -198,10 +212,26 @@ async function watchFile(file: string, target: string, flags: Set<string>): Prom
   };
   // Follow a symlinked FILE to the file that is edited; the page is still read through FILE.
   const real = realpathSync(file);
-  const name = basename(real);
+  // Names are compared as a file system that ignores case and normalization would: FILE typed `readme.lede` may be `README.lede`
+  // on disk, and the event carries the name on disk. A neighbour that differs only so costs one rebuild.
+  const key = (n: string) => n.normalize('NFC').toLowerCase();
+  const name = key(basename(real));
+  // Some platforms give no name. Any change in the folder may then be FILE's, and so may the page this command just wrote there,
+  // so such an event counts only when FILE itself has changed since the last one that did.
+  const stamp = (): string => {
+    const s = statSync(file, { throwIfNoEntry: false });
+    return s ? `${s.mtimeMs}:${s.size}` : '';
+  };
+  let seen = stamp();
   let timer: NodeJS.Timeout | null = null;
   const watcher = fsWatch(dirname(real), (_event, changed) => {
-    if (changed !== null && changed !== name) return; // some platforms give no name; then any change may be ours
+    if (changed !== null) {
+      if (key(changed) !== name) return;
+    } else {
+      const now = stamp();
+      if (now === seen) return;
+      seen = now;
+    }
     if (timer) clearTimeout(timer);
     timer = setTimeout(() => void cycle(), 60);
   });
@@ -291,14 +321,20 @@ function unknownOption(arg: string): string {
 function parseArgs(argv: string[]): Args | UsageError {
   const [cmd, ...rest] = argv;
   if (!cmd) return { usage: null };
-  if (cmd.startsWith('-')) return { usage: unknownOption(cmd) };
+  if (cmd.startsWith('-'))
+    return {
+      usage: KNOWN_OPTIONS.includes(cmd.split('=')[0]) ? `${cmd} goes after the command: lede <command> FILE ${cmd}` : unknownOption(cmd),
+    };
   if (!(COMMANDS as readonly string[]).includes(cmd)) return { usage: `unknown command ${cmd}` };
   const flags = new Set<string>();
   const files: string[] = [];
   let out: string | null = null;
+  let options = true; // until `--`, after which every word is a FILE
   for (let i = 0; i < rest.length; i++) {
     const a = rest[i];
-    if (a === '-o' || a.startsWith('-o=')) {
+    if (!options) files.push(a);
+    else if (a === '--') options = false;
+    else if (a === '-o' || a.startsWith('-o=')) {
       // A value that is itself an option is a forgotten value, not a file called --force; -o=--force says it on purpose.
       const value = a === '-o' ? rest[++i] : a.slice(3);
       if (!value || (a === '-o' && value.startsWith('-'))) return { usage: '-o needs a file name' };

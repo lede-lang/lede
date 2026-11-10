@@ -87,6 +87,19 @@ test('text after the closing quote of a cell stays in the cell', () => {
     ['Smith, J (PM)', '3'],
   ]);
   assert.deepEqual(parseInlineCsv('"a" , "b" ; "c"  ').rows, [['a', 'b'], ['c']]);
+  // The writer is told, once a line: the text may have been meant as an option.
+  const doc = parse('table = owner,n; "Smith, J" (PM),1; x,"Planned" bar=done\ntable = a,b; "q" , "r"\n');
+  assert.deepEqual(
+    doc.diagnostics.map((d) => [d.severity, d.code, d.line, d.col]),
+    [['warning', 'csv-quote', 1, 29]],
+  );
+  const choose = parse('choose pick | "A, B" (rec), C | Which one?\nexport json\n');
+  assert.deepEqual(
+    choose.diagnostics.map((d) => [d.severity, d.code]),
+    [['warning', 'csv-quote']],
+  );
+  const q = choose.blocks.find((b) => b.type === 'choose');
+  assert.deepEqual(q?.type === 'choose' && q.options, ['A, B (rec)', 'C']);
 });
 
 test('a group cycle of any length is one error', () => {

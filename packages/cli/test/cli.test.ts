@@ -437,6 +437,29 @@ test('an option no command knows is a usage error that suggests the nearest flag
   // nothing is built when an option is wrong, even with --force
   assert.equal(run(['build', 'p.lede', '--forse', '-o', 'x.html'], dir).status, 2);
   assert.throws(() => readFileSync(join(dir, 'x.html')));
+  // a known option before the command is told where it goes, not offered itself as a correction
+  assert.equal(
+    run(['--force', 'build', 'p.lede'], dir).stderr.split('\n')[0],
+    'lede: --force goes after the command: lede <command> FILE --force',
+  );
+  assert.equal(
+    run(['-o', 'x.html', 'build', 'p.lede'], dir).stderr.split('\n')[0],
+    'lede: -o goes after the command: lede <command> FILE -o',
+  );
+});
+
+test('after -- every word is a file, so a name may start with a hyphen', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  writeFileSync(join(dir, 'p.lede'), '# Hi\n');
+  writeFileSync(join(dir, '-draft.lede'), '# Draft\n');
+  const plain = run(['check', '--', 'p.lede'], dir);
+  assert.equal(plain.status, 0, plain.stderr);
+  assert.equal(plain.stderr, 'ok\n');
+  const hyphen = run(['check', '--json', '--', '-draft.lede', 'p.lede'], dir);
+  assert.equal(hyphen.status, 0, hyphen.stderr);
+  assert.deepEqual(Object.keys(JSON.parse(hyphen.stdout) as object), ['-draft.lede', 'p.lede']);
+  // an option after the marker is a file name, and that file is not there
+  assert.equal(run(['build', 'p.lede', '--', '--force'], dir).status, 2);
 });
 
 test('--version, -V and version print the package version on one line and exit 0, with no file', () => {
@@ -581,6 +604,8 @@ test('an outside data path gets one message whether or not it exists, and a miss
   writeFileSync(join(outside, 'secret.csv'), 'k,v\nTOKEN,hunter2\n');
   mkdirSync(join(dir, 'sub'));
   const up = `../${outside.split('/').pop()}`;
+  // A link inside the tree that points out of it: what lies behind it is outside, there or not.
+  symlinkSync(outside, join(dir, 'sub', 'away'));
   const outsidePaths = [
     `${up}/secret.csv`,
     `${up}/nope.csv`,
@@ -588,6 +613,9 @@ test('an outside data path gets one message whether or not it exists, and a miss
     join(outside, 'secret.csv'),
     join(outside, 'nope.csv'),
     '/etc/lede-no-such-file',
+    'sub/away/secret.csv',
+    'sub/away/nope.csv',
+    'sub/away/nodir/nope.csv',
   ];
   const insidePaths = ['sub/missing.csv', 'nodir/missing.csv', 'sub/../missing.csv'];
   const page = [...outsidePaths, ...insidePaths].map((p, i) => `data d${i} < ${p}\n`).join('');

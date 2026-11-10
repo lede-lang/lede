@@ -126,12 +126,18 @@ function codeTok(raw: string): string {
   return `<code class="brk">${body.replace(/(<wbr>)+$/, '')}</code>`;
 }
 
-/** `**bold**`, whose text may hold single asterisks (`**a *b* c**`) but does not start with one. */
-const BOLD = /\*\*(?!\*)((?:[^*]|\*(?!\*))+?)\*\*/g;
+/**
+ * `**bold**`. Its text may hold single asterisks (`**a *b* c**`) and may end in an italic span (`**a *b***`: the first of the
+ * three asterisks closes the italic), but does not start with an asterisk. The markers hug the text, as in CommonMark:
+ * `x ** 2 * y ** 2` is arithmetic, not bold. The text is read as other characters, whole `*italic*` spans, then lone asterisks.
+ */
+const BOLD = /\*\*(?![*\s])((?:[^*]|\*[^*\s][^*]*?\*(?=\*\*|[^*]|$)|\*(?!\*))+?)(?<!\s)\*\*/g;
+
+/** `*italic*`: the opening asterisk hugs the text and neither asterisk touches a word character or another asterisk outside. */
+const EM_STAR = /(^|[^\w*])\*([^*\s][^*]*?)\*(?![\w*])/g;
 
 function emphasis(s: string): string {
-  const em = (t: string) =>
-    t.replace(/(^|[^\w*])\*([^*\s][^*]*?)\*(?![\w*])/g, '$1<em>$2</em>').replace(/(^|[^\w])_([^_\s][^_]*?)_(?!\w)/g, '$1<em>$2</em>');
+  const em = (t: string) => t.replace(EM_STAR, '$1<em>$2</em>').replace(/(^|[^\w])_([^_\s][^_]*?)_(?!\w)/g, '$1<em>$2</em>');
   // The text of a bold span is finished here. A `*` or `_` left over in it becomes the literal one (the placeholders `inline`
   // restores), so the pass over the whole string cannot pair it with one outside the span and cross the tags.
   return em(s.replace(BOLD, (_, t: string) => `<strong>${em(t).replaceAll('*', '\u0001').replaceAll('_', '\u0002')}</strong>`));
@@ -148,7 +154,7 @@ export function plain(src: string): string {
     s += span?.code ?? link?.[1] ?? src.slice(i, end);
     i = end;
   }
-  return s.replace(BOLD, '$1').replace(/\*([^*]+)\*/g, '$1');
+  return s.replace(BOLD, '$1').replace(EM_STAR, '$1$2');
 }
 
 // Approximate advance widths (em) for a system sans at regular weight.

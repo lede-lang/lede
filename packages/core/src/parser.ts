@@ -913,6 +913,17 @@ export class LedeParser {
       );
   }
 
+  /**
+   * W `csv-quote` when text follows the closing quote of a cell (`"Smith, J" (PM)`, `"Planned" bar=done`). The text stays in the
+   * cell, which is right for the first and not for the second, so the writer is told either way.
+   */
+  private afterQuote(csv: { afterQuoteAt: number | null }, col: number): void {
+    if (csv.afterQuoteAt === null) return;
+    const message =
+      'text after a closing " stays in the cell; move it inside the quotes, or take it off the line if it was meant as an option';
+    this.diag('warning', 'csv-quote', message, this.lineNo, col);
+  }
+
   /** W `question-option` for every option before the `|` that the word does not take. */
   private ignoreOptions(word: string, name: string, o: ReturnType<typeof parseOpts>, keep: string[], col: number): void {
     const L = this.lineNo;
@@ -933,6 +944,7 @@ export class LedeParser {
     const csv = parseInlineCsv(cut < 0 ? right : right.slice(0, cut));
     const unclosed = csv.unclosedAt !== null;
     if (unclosed) this.diag('error', 'csv-quote', `unclosed " in ${what}`, this.lineNo, col);
+    this.afterQuote(csv, col);
     const items: string[] = [];
     const dups: string[] = [];
     let empty = false;
@@ -1400,6 +1412,7 @@ export class LedeParser {
     }
     const csv = parseInlineCsv(body);
     if (csv.unclosedAt !== null) this.diag('error', 'csv-quote', 'unclosed " in data', L, bodyCol + csv.unclosedAt);
+    this.afterQuote(csv, bodyCol + (csv.afterQuoteAt ?? 0));
     if (op === '=') {
       this.defineData(name, csv.rows, csv.offsets, bodyCol);
       return;
@@ -1810,6 +1823,7 @@ export class LedeParser {
       const csv = parseInlineCsv(body);
       const bodyCol = col + eq.index + eq[0].length;
       if (csv.unclosedAt !== null) this.diag('error', 'csv-quote', 'unclosed " in table', L, bodyCol + csv.unclosedAt);
+      this.afterQuote(csv, bodyCol + (csv.afterQuoteAt ?? 0));
       if (csv.rows.length === 0) {
         this.diag('error', 'data-empty', 'inline table has no header row', L, bodyCol);
         return;
@@ -1826,10 +1840,10 @@ export class LedeParser {
     const o = parseOpts(optStr, ['heat'], ['cols', 'sort', 'heat', 'bar', 'target']);
     for (const { text: w, hint: spill } of spilled(o, [...o.words, ...o.quoted])) {
       // `table vendors = ...` names an inline table, which has no name: say how to get one.
-      const hint =
-        eq && w === o.words[0] && /^[A-Za-z_][\w-]*$/.test(w) && !TABLE_OPTIONS.includes(w)
-          ? `; an inline table has no name: write \`table = ...\`, or \`data ${w} = ...\` then \`table ${w}\``
-          : spill || ' (options: cols= sort= limit= title= heat bar= target=)';
+      const named = !spill && eq && w === o.words[0] && /^[A-Za-z_][\w-]*$/.test(w) && !TABLE_OPTIONS.includes(w);
+      const hint = named
+        ? `; an inline table has no name: write \`table = ...\`, or \`data ${w} = ...\` then \`table ${w}\``
+        : spill || ' (options: cols= sort= limit= title= heat bar= target=)';
       this.diag('warning', 'table-option', `ignored table option "${w}"${hint}`, L, col);
     }
     this.openQuotes('table', o, col);
