@@ -396,8 +396,8 @@ function svg(
   const endLabelW = !endLabels
     ? 0
     : mode === 'end'
-      ? Math.max(...series.map((s) => textWidth(`${s.name} ${lastOf(s) === null ? '' : withUnit(lastOf(s)!, c.unit)}`, FONT) * FS)) + 22
-      : Math.max(...series.map((s) => textWidth(s.name, FONT))) + 22;
+      ? maxOf(series.map((s) => textWidth(`${s.name} ${lastOf(s) === null ? '' : withUnit(lastOf(s)!, c.unit)}`, FONT) * FS)) + 22
+      : maxOf(series.map((s) => textWidth(s.name, FONT))) + 22;
   // labels=end reserves the last-value column even on a stack (each series' own last value); labels=all labels in place.
   const lastVal = c.kind !== 'bar' && (mode === 'end' || (c.labels && !stacked && mode !== 'all')) ? valueW + 10 : 0;
   const R = Math.max(12, endLabelW, lastVal);

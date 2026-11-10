@@ -42,13 +42,19 @@ const better = (after: { diagnostics: Diagnostic[] }, before: { diagnostics: Dia
   (count(after, 'error') === count(before, 'error') && count(after, 'warning') < count(before, 'warning'));
 
 export function fix(src: string, opts: ParseOptions = {}): FixResult {
-  // The repairs read lines to their end, so a file with CRLF endings is repaired without them and gets each one back on the
-  // line it was on (a repair never changes the line count). The parser drops a final \r itself, so line and col are the same.
-  const cr = src.includes('\r\n') ? src.split('\n').map((l) => l.endsWith('\r')) : null;
-  if (!cr) return fixLines(src, opts);
-  const r = fixLines(src.replace(/\r\n/g, '\n'), opts);
-  const out = r.src.split('\n').map((l, i) => (cr[i] ? `${l}\r` : l));
-  return { ...r, src: out.join('\n') };
+  // The repairs read lines to their end, so a line's final \r is taken off first, as the parser takes it off (line and col are
+  // the same either way), and goes back on the line it was on: a repair never changes the line count.
+  if (!src.includes('\r')) return fixLines(src, opts);
+  const lines = src.split('\n');
+  const cr = lines.map((l) => l.endsWith('\r'));
+  const r = fixLines(lines.map((l, i) => (cr[i] ? l.slice(0, -1) : l)).join('\n'), opts);
+  return {
+    ...r,
+    src: r.src
+      .split('\n')
+      .map((l, i) => (cr[i] ? `${l}\r` : l))
+      .join('\n'),
+  };
 }
 
 function fixLines(src: string, opts: ParseOptions): FixResult {

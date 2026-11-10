@@ -2489,7 +2489,8 @@ function storeData(doc: LedeDocument, name: string, d: DataSet): void {
 
 /**
  * The columns `b` reads that `d` does not have. A chart or table names its columns from the data as it stood on its own line, so
- * this is empty unless the data was redefined below it (`data d = x,y` ... `chart line d` ... `data d = a,b`).
+ * this is empty unless the data was redefined below it (`data d = x,y` ... `chart line d` ... `data d = a,b`). The match is
+ * exact, as the drawers index columns: a redefinition that only changes a name's case (`Month` to `month`) counts as taking it away.
  */
 export function missingColumns(b: ChartBlock | TableBlock, d: DataSet): string[] {
   const reads =

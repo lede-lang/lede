@@ -40,6 +40,13 @@ test('a chart or table whose column a later redefinition took away draws nothing
   assert.match(html, /Still here\./);
 });
 
+test('a cell or a message with more words than a call takes arguments is drawn', async () => {
+  const words = 'w '.repeat(130_000);
+  const doc = parse(`table = name,n; ${words},1\n\ndiagram s sequence\ns: a -> b : ${words}\n`);
+  assert.deepEqual(doc.diagnostics, []);
+  assert.match(await render(doc, { fragment: true }), /<table[\s\S]*<svg/);
+});
+
 test('a series longer than a call takes arguments is drawn', async () => {
   // `Math.max(...values)` throws a RangeError past about 120,000 values; every kind of chart reads its rows another way.
   const rows = Array.from({ length: 130_000 }, (_, i) => `${i},${i % 97}`).join('; ');

@@ -14,7 +14,7 @@
 // "end-like" are header words (start, begin, from; end, finish, to, until) and a table's columns are those it shows (`cols=`).
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { num, parse, walkBlocks, type Block, type LedeDocument, type TableBlock } from '@lede-lang/core';
+import { dataSet, num, parse, walkBlocks, type Block, type LedeDocument, type TableBlock } from '@lede-lang/core';
 
 /** The sentence every hint line ends with, as D67 words the line. */
 export const KEEP = 'Keep every fact, number and name exactly as it is, and keep the same sections.';
@@ -128,7 +128,7 @@ function rule3(placed: Placed[]): string | null {
 
 /** The columns a table shows, with their cells. */
 function shown(doc: LedeDocument, t: TableBlock): { name: string; cells: string[] }[] {
-  const data = doc.data[t.data];
+  const data = dataSet(doc, t.data);
   if (!data) return [];
   return (t.cols ?? data.columns).map((name) => {
     const at = data.columns.indexOf(name);

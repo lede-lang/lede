@@ -281,4 +281,7 @@ test('--fix repairs a CRLF file as it does an LF one and keeps every line ending
   const mixed = 'data d = a,b; x,1,450\r\n#### Deep\n#### Deeper\r\n';
   assert.equal(fix(mixed).src, 'data d = a,b; x,"1,450"\r\n### Deep\n### Deeper\r\n');
   assert.equal(fix(fix(crlf).src).applied.length, 0);
+  // A last line that ends in \r with no \n after it is repaired too, and keeps the one \r.
+  assert.equal(fix('# a\r\n#### b\r').src, '# a\r\n### b\r');
+  assert.equal(fix('#### b\r').src, '### b\r');
 });

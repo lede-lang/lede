@@ -99,9 +99,9 @@ export function css(opts: { accent?: string; theme?: string; wide?: boolean; con
         : `:root{${LIGHT}}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){${DARK}}}
 :root[data-theme="dark"]{${DARK}}`;
-  // Paper is white whatever the device or `@theme` says, so print takes the light tokens (`:root:root` outranks the dark rules
-  // above). The page's accent goes with them unless it was checked against the dark theme only (`@theme dark`), where the house
-  // accent prints.
+  // Paper is white whatever the device or `@theme` says, so print takes the light tokens (`:root:root` ties the dark rules
+  // above on specificity and comes after them). The page's accent goes with them unless it was checked against the dark theme
+  // only (`@theme dark`), where the house accent prints.
   const PRINT = `:root:root{${LIGHT}${opts.theme === 'dark' ? '' : accent}}
 body{background:#fff} .chart-narrow{display:none!important} .chart-wide{display:block!important} details.data{display:none}
 figure.viz,.kpi,.card,.note,blockquote,tr{break-inside:avoid} h1,h2,h3,h4{break-after:avoid}

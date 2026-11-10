@@ -1,6 +1,6 @@
 import type { DiagramBlock, DiagramEdge, DiagramNode } from '@lede-lang/core';
 import { layout } from './elk.ts';
-import { esc, inline, plain, snap4, textWidth } from './util.ts';
+import { esc, inline, maxOf, plain, snap4, textWidth } from './util.ts';
 
 const NAME = 13; // node name, sans 600
 
@@ -194,7 +194,10 @@ export function decisionGeom(n: DiagramNode, compact = false, tier = 0): { w: nu
   const subH = n.sub ? m.subH : 0;
   const subW = n.sub ? textWidth(n.sub, m.SUB, { mono: true }) : 0;
   const total = textWidth(n.label, NAME, { bold: true });
-  const longest = Math.max(0, ...n.label.split(/\s+/).map((w) => textWidth(w, NAME, { bold: true })));
+  const longest = maxOf(
+    n.label.split(/\s+/).map((w) => textWidth(w, NAME, { bold: true })),
+    0,
+  );
   let best: { w: number; h: number; lines: string[]; area: number } | null = null;
   for (let k = 1; k <= maxLines; k++) {
     let lines = wrapTo(n.label, Math.max(longest, (total / k) * 1.12));

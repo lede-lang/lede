@@ -1142,7 +1142,7 @@ function table(b: TableBlock, d: DataSet, picks: string[] = [], fit = 364): stri
   // words). Wider than the 368px column, it stacks into one labelled card per row.
   const words = (s: string) => plain(s).split(/\s+/);
   const est = idx.reduce((sum, i, j) => {
-    const head = Math.max(...words(cols[j]).map((w) => textWidth(w.toUpperCase(), 11, { bold: true }) * 1.1));
+    const head = maxOf(words(cols[j]).map((w) => textWidth(w.toUpperCase(), 11, { bold: true }) * 1.1));
     const cellW = (raw: string) => {
       const chipped = !!statusOf(raw) || (!(j === 0 && rowHead) && dateLike(raw));
       // A date chip is bold with a border and 8px side padding, wider than a status pill: 38 keeps a date column from overflowing at 400px.
@@ -1151,7 +1151,13 @@ function table(b: TableBlock, d: DataSet, picks: string[] = [], fit = 364): stri
         b.bars?.includes(cols[j]) ? 80 : 0,
       );
       if (numeric[j] || nowrap[j] || chipped) return full;
-      return Math.min(full, Math.max(100, ...words(raw).map((w) => textWidth(w, 13))));
+      return Math.min(
+        full,
+        maxOf(
+          words(raw).map((w) => textWidth(w, 13)),
+          100,
+        ),
+      );
     };
     // 6% margin: the width table is approximate, and a near miss scrolls sideways.
     return (
