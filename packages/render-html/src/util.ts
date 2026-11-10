@@ -24,6 +24,32 @@ export function safeUrl(u: string): string | null {
   return SAFE_URL.test(t) ? t : null;
 }
 
+/**
+ * `[text](url)` at `lastIndex`. The text holds no bracket, so a run of `[` is read once and not once per bracket; the URL may hold
+ * one level of parentheses (`.../Foo_(bar)`) and is bounded, so a line of unclosed links costs its length and not its square.
+ */
+const LINK = /\[([^\][]+)\]\(((?:[^()\s]|\([^()\s]*\)){1,4096})\)/y;
+
+/**
+ * The code span that opens at `i`: a run of N backticks closes at the next run of exactly N, so a span written with two may hold
+ * one (``` `` a`b `` ```). With two or more, one space inside each end is dropped, which is how a span starts or ends with a backtick.
+ */
+function codeSpan(src: string, i: number): { text: string; end: number } | null {
+  let n = 1;
+  while (src[i + n] === '`') n++;
+  for (let j = src.indexOf('`', i + n); j >= 0; j = src.indexOf('`', j)) {
+    let m = 1;
+    while (src[j + m] === '`') m++;
+    if (m === n) {
+      const body = src.slice(i + n, j);
+      const padded = n > 1 && body.length > 2 && body.startsWith(' ') && body.endsWith(' ');
+      return { text: padded ? body.slice(1, -1) : body, end: j + n };
+    }
+    j += m;
+  }
+  return null;
+}
+
 /** Inline markup: `code`, **bold**, *em* or _em_, [text](url). Everything else is escaped text. */
 export function inline(src: string): string {
   // Code spans and links are held out as placeholders and emphasis runs over the whole string,
@@ -53,16 +79,17 @@ export function inline(src: string): string {
       continue;
     }
     if (c === '`') {
-      const j = src.indexOf('`', i + 1);
-      if (j > i) {
+      const span = codeSpan(src, i);
+      if (span) {
         pushText();
-        out.push(codeTok(src.slice(i + 1, j)));
-        i = j + 1;
+        out.push(codeTok(span.text));
+        i = span.end;
         continue;
       }
     }
     if (c === '[') {
-      const m = /^\[([^\]]+)\]\(([^)\s]+)\)/.exec(src.slice(i));
+      LINK.lastIndex = i;
+      const m = LINK.exec(src);
       if (m) {
         const url = safeUrl(m[2]);
         pushText();
@@ -96,20 +123,24 @@ function codeTok(raw: string): string {
   return `<code class="brk">${body.replace(/(<wbr>)+$/, '')}</code>`;
 }
 
+/** `**bold**`, whose text may hold single asterisks (`**a *b* c**`) but does not start with one. */
+const BOLD = /\*\*(?!\*)((?:[^*]|\*(?!\*))+?)\*\*/g;
+
 function emphasis(s: string): string {
-  return s
-    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-    .replace(/(^|[^\w*])\*([^*\s][^*]*?)\*(?![\w*])/g, '$1<em>$2</em>')
-    .replace(/(^|[^\w])_([^_\s][^_]*?)_(?!\w)/g, '$1<em>$2</em>');
+  const em = (t: string) =>
+    t.replace(/(^|[^\w*])\*([^*\s][^*]*?)\*(?![\w*])/g, '$1<em>$2</em>').replace(/(^|[^\w])_([^_\s][^_]*?)_(?!\w)/g, '$1<em>$2</em>');
+  // The text of a bold span is finished here. A `*` or `_` left over in it becomes the literal one (the placeholders `inline`
+  // restores), so the pass over the whole string cannot pair it with one outside the span and cross the tags.
+  return em(s.replace(BOLD, (_, t: string) => `<strong>${em(t).replaceAll('*', '\u0001').replaceAll('_', '\u0002')}</strong>`));
 }
 
 /** Strip inline markup for plain-text contexts (SVG text, aria labels). */
 export function plain(s: string): string {
   return s
-    .replace(/`([^`]*)`/g, '$1')
-    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/(`+)([^`]|[^`].*?[^`])\1(?!`)|``/g, '$2')
+    .replace(BOLD, '$1')
     .replace(/\*([^*]+)\*/g, '$1')
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+    .replace(/\[([^\][]+)\]\((?:[^()]|\([^()]*\))+\)/g, '$1');
 }
 
 // Approximate advance widths (em) for a system sans at regular weight.

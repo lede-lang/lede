@@ -928,12 +928,15 @@ type Fit = { d: DiagramBlock; p: Placed };
 /** The declared direction or its flip, whichever fits `width` at the larger scale; ties keep the declared one. */
 async function bestFit(d: DiagramBlock, compact: boolean, width: number, tier = 0): Promise<Fit> {
   const declared = await layoutFlow(d, compact, tier);
-  const flipped = { ...d, dir: FLIP[d.dir] };
-  const other = await layoutFlow(flipped, compact, tier);
   const scale = (p: Placed) => Math.min(1, width / p.width);
   // Desktop only: a written direction that already renders at 85% or better is kept unless the other one
   // gains at least 15% (a pipeline written left-to-right stays one row instead of becoming a tall column).
   const gain = !compact && scale(declared) >= 0.85 ? 1.15 : 1;
+  // No scale is above 1, so a declared direction that reaches it cannot lose: the flip is not laid out at all. Layout is
+  // nearly all of a diagram's render time, and most diagrams fit as written.
+  if (scale(declared) * gain >= 1) return { d, p: declared };
+  const flipped = { ...d, dir: FLIP[d.dir] };
+  const other = await layoutFlow(flipped, compact, tier);
   return scale(other) > scale(declared) * gain ? { d: flipped, p: other } : { d, p: declared };
 }
 

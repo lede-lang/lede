@@ -99,6 +99,13 @@ export function css(opts: { accent?: string; theme?: string; wide?: boolean; con
         : `:root{${LIGHT}}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){${DARK}}}
 :root[data-theme="dark"]{${DARK}}`;
+  // Paper is white whatever the device or `@theme` says, so print takes the light tokens (`:root:root` outranks the dark rules
+  // above); printed in the dark ones the text was near-white on white. The page's accent goes with them unless it was checked
+  // against the dark theme only (`@theme dark`), where the house accent prints.
+  const PRINT = `:root:root{${LIGHT}${opts.theme === 'dark' ? '' : accent}}
+body{background:#fff} .chart-narrow{display:none!important} .chart-wide{display:block!important} details.data{display:none}
+figure.viz,.kpi,.card,.note,blockquote,tr{break-inside:avoid} h1,h2,h3,h4{break-after:avoid}
+pre.code code{white-space:pre-wrap;overflow-wrap:anywhere}`;
   const col = opts.wide ? '64rem' : '46rem';
   return `${forced}
 :root{${accent}
@@ -345,7 +352,7 @@ figure.img figcaption{text-transform:none;letter-spacing:0;font:14px/1.4 var(--s
 .dg .note-box{fill:var(--warn-bg);stroke:var(--warn-line);stroke-width:1}
 .dg .note-t{font-size:11px;fill:var(--fg)}
 @media (max-width:560px){h1{font-size:1.9rem} h2{font-size:1.3rem} .doc{padding-top:24px} .kv{font-size:1.6rem}}
-@media print{body{background:#fff} .chart-narrow{display:none!important} .chart-wide{display:block!important} details.data{display:none}}
+@media print{${PRINT}}
 /* stream-a: chart event markers */
 .chart .mk-rule{stroke:var(--muted);stroke-width:1;shape-rendering:crispEdges}
 .chart .mk-pole{stroke:var(--fg2);stroke-width:2}

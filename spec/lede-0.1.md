@@ -489,6 +489,9 @@ and the runtime adds no element and moves none.
 `` `code` ``, `**bold**`, `*italic*` or `_italic_`, `[text](url)`. URLs must be `http`,
 `https`, `mailto`, relative or `#fragment`; others render as plain text. `\` escapes
 `` ` * _ [ ] \ ``. All other text is escaped; inline HTML is not interpreted.
+A code span opened by a run of N backticks closes at the next run of exactly N, so ``` ``a`b`` ``` is the code `` a`b ``; with two
+or more, one space inside each end is dropped (``` `` `a` `` ```). A bold span may hold italic (`**a *b* c**`) but not start with
+`*`. Link text holds no `[` or `]`; a URL holds no space and at most one level of parentheses (`.../Foo_(bar)`).
 
 ## 6. Streaming
 
@@ -539,7 +542,8 @@ written anywhere else was given on its declaration.
   fields do not fit their kind, and then does nothing. The model never writes script, in either mode.
 - No remote fetches by default (system font stacks, no remote images).
 - Light and dark themes from CSS custom properties; `prefers-color-scheme` plus
-  `data-theme="light|dark"` on `<html>` to override.
+  `data-theme="light|dark"` on `<html>` to override. Print uses the light tokens whatever the device or `@theme` says (paper is
+  white), keeps a figure, card, note, quote or table row on one page where it fits, and wraps code lines.
 - Usable at 360px wide without page-level horizontal scroll. Charts ship a narrow variant;
   wide tables and diagrams scroll inside their own box.
 - Every SVG has `role="img"` with `<title>` and `<desc>` (charts describe range and extremes;

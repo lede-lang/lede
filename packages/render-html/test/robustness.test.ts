@@ -3,6 +3,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { parse, type ChartBlock } from '@lede-lang/core';
 import { compile, render } from '../src/index.ts';
+import { inline, plain } from '../src/util.ts';
+import { browserTest } from './chrome.ts';
 
 const BAD = /NaN|Infinity|undefined/;
 
@@ -37,4 +39,86 @@ test('a series longer than a call takes arguments is drawn', async () => {
     assert.deepEqual(doc.diagnostics, []);
     assert.match(await render(doc, { fragment: true }), /<svg/, chart);
   }
+});
+
+test('a link URL may hold one level of parentheses', () => {
+  assert.equal(inline('[wiki](https://en.wikipedia.org/wiki/Foo_(bar))'), '<a href="https://en.wikipedia.org/wiki/Foo_(bar)">wiki</a>');
+  assert.equal(inline('(see [b](y))'), '(see <a href="y">b</a>)');
+  assert.equal(inline('[t](javascript:alert(1))'), 't');
+  assert.equal(inline('[see [1](u)'), '[see <a href="u">1</a>');
+  assert.equal(plain('[wiki](https://en.wikipedia.org/wiki/Foo_(bar)) and [b](y)'), 'wiki and b');
+});
+
+test('a code span written with N backticks closes at the next run of N', () => {
+  assert.equal(inline('``a`b``'), '<code>a`b</code>');
+  assert.equal(inline('`` `a` ``'), '<code>`a`</code>');
+  assert.equal(inline('`a` and ``b`` and ```c```'), '<code>a</code> and <code>b</code> and <code>c</code>');
+  assert.equal(inline('` a `'), '<code> a </code>');
+  assert.equal(inline('`unclosed'), '`unclosed');
+  assert.equal(inline('``x` y'), '`<code>x</code> y');
+  assert.equal(inline('`one and ``two` y'), '<code>one and ``two</code> y');
+  assert.equal(plain('``a`b`` and `c`'), 'a`b and c');
+});
+
+test('a bold span may hold emphasis, and tags never cross', () => {
+  assert.equal(inline('**a *b* c**'), '<strong>a <em>b</em> c</strong>');
+  assert.equal(inline('**a _b_ c**'), '<strong>a <em>b</em> c</strong>');
+  assert.equal(inline('***both***'), '<em><strong>both</strong></em>');
+  assert.equal(inline('**Stage on `canary-01` only.**'), '<strong>Stage on <code>canary-01</code> only.</strong>');
+  assert.equal(inline('*x **a b* c** y*'), '<em>x <strong>a b* c</strong> y</em>');
+  assert.equal(inline('_a **b_ c**'), '_a <strong>b_ c</strong>');
+  assert.equal(plain('**a *b* c**'), 'a b c');
+});
+
+test('inline markup costs the length of the line, not its square', () => {
+  const lines = [
+    '[a]('.repeat(32_000),
+    '['.repeat(32_000),
+    `${'[a](x'.repeat(32_000)} )`,
+    `${'['.repeat(32_000)}]`,
+    '` `` '.repeat(20_000),
+    '**a *'.repeat(20_000),
+  ];
+  const t = performance.now();
+  for (const l of lines) inline(l);
+  // These took 5 s and more between them; the bound is loose so a slow runner does not fail it.
+  assert.ok(performance.now() - t < 2000, `${Math.round(performance.now() - t)} ms`);
+});
+
+browserTest('print uses the light tokens on a dark device, under @theme dark and under data-theme="dark"', async (browser) => {
+  const ink = async (html: string, attr = false) => {
+    const ctx = await browser.newContext({ colorScheme: 'dark' });
+    const page = await ctx.newPage();
+    await page.setContent(html);
+    if (attr) await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
+    const read = () =>
+      page.evaluate(() => {
+        const s = getComputedStyle(document.body);
+        const link = document.querySelector('a');
+        return { fg: s.color, bg: s.backgroundColor, link: link ? getComputedStyle(link).color : '' };
+      });
+    const screen = await read();
+    await page.emulateMedia({ media: 'print', colorScheme: 'dark' });
+    const print = await read();
+    await ctx.close();
+    return { screen, print };
+  };
+  const src = '# Title\n\nSome text with [a link](https://example.com).\n';
+  const paper = { fg: 'rgb(22, 24, 29)', bg: 'rgb(255, 255, 255)' };
+  for (const [name, html, attr] of [
+    ['a dark device', (await compile(src)).html, false],
+    ['@theme dark', (await compile(`@theme dark\n${src}`)).html, false],
+    ['data-theme', (await compile(src)).html, true],
+  ] as const) {
+    const { screen, print } = await ink(html, attr);
+    assert.equal(screen.fg, 'rgb(236, 238, 241)', `${name}: the screen is dark`);
+    assert.deepEqual({ fg: print.fg, bg: print.bg }, paper, name);
+    assert.equal(print.link, 'rgb(35, 87, 198)', `${name}: the link takes the light accent`);
+  }
+  // An accent checked against the dark theme only is not printed; one checked against the light theme is.
+  const pale = await ink((await compile(`@theme dark\n@accent #ffd700\n${src}`)).html);
+  assert.equal(pale.screen.link, 'rgb(255, 215, 0)');
+  assert.equal(pale.print.link, 'rgb(35, 87, 198)');
+  const both = await ink((await compile(`@accent #b4372f\n${src}`)).html);
+  assert.equal(both.print.link, 'rgb(180, 55, 47)');
 });
