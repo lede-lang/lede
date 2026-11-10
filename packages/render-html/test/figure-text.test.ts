@@ -100,5 +100,60 @@ test('a number set in bold is still a number, and a closing total row is ruled o
   assert.match(html, /<tr class="tot"[^>]*>.*Total.*<\/tr>/);
   // Not a total: a first row, a short table, or a name that only starts the same way.
   assert.doesNotMatch(await frag('table = k,n; Total,1; B,2; C,3\n'), /class="tot"/);
-  assert.doesNotMatch(await frag('table = k,n; A,1; Totally new,2; B,3; Allowance,4\n'), /class="tot"/);
+  assert.doesNotMatch(await frag('table = k,n; A,1; B,3; Total addressable market,4\n'), /class="tot"/);
+  assert.doesNotMatch(await frag('table = k,n; A,1; B,3; Overall satisfaction,4\n'), /class="tot"/);
+});
+
+test('the total row is not one of the rows: it stays last, is not the pick, and is not ranked or scaled', async () => {
+  const src = 'data d = name,v,t; A,10,20; B,5,8; C,7,9; Total,**22**,37\n';
+  const sorted = await frag(`${src}table d sort=-v\n`);
+  const names = [...sorted.matchAll(/<tr[^>]*><th[^>]*>([^<]*)</g)].map((m) => m[1]);
+  assert.deepEqual(names.slice(-4), ['A', 'C', 'B', 'Total']);
+  assert.match(sorted, /<tr class="tot"/);
+  assert.doesNotMatch(sorted, /pick/);
+  const limited = await frag(`${src}table d sort=-v limit=2\n`);
+  assert.equal(limited.match(/<tr/g)?.length, 4, 'header, two rows, the total');
+  // heat: the largest data value is the top level; the total has none.
+  const heat = await frag(`${src}table d heat\n`);
+  assert.match(heat, /<td class="n h5"[^>]*>10</);
+  assert.doesNotMatch(/<tr class="tot"[\s\S]*<\/tr>/.exec(heat)![0], /h[1-5]/);
+  // bar= and target= are accepted on a column whose total is bold, and the largest data value fills its track.
+  const doc = parse(`${src}table d bar=v target=t\n`);
+  assert.deepEqual(doc.diagnostics, []);
+  const bars = await render(doc, { fragment: true });
+  assert.equal(bars.match(/<span class="cb tgt"/g)?.length, 3);
+  assert.doesNotMatch(/<tr class="tot"[\s\S]*<\/tr>/.exec(bars)![0], /class="cb/);
+});
+
+test('a bar= target= column keeps one layout when a row has no target', async () => {
+  const html = await frag('data e = name,v,t; A,10,20; B,5,; C,7,9\ntable e bar=v target=t\n');
+  assert.equal(html.match(/<span class="cb tgt"/g)?.length, 3);
+  assert.equal(html.match(/<b class="tg"/g)?.length, 2);
+});
+
+test('a year stays a year when one of them is bold', async () => {
+  const html = await frag('table = product,launched; A,2021; B,2022; C,**2024**\n');
+  assert.doesNotMatch(html, /2,02/);
+});
+
+test('a stack whose total is not its height prints nothing unless asked', async () => {
+  const mixed = 'data s = q,a,b; Q1,1,2; Q2,-3,2; Q3,4,1\n';
+  assert.doesNotMatch(await frag(`${mixed}chart bar s stack\n`), /class="val"/);
+  assert.match(await frag(`${mixed}chart bar s stack labels\n`), /class="val"[^>]*>-1</);
+  assert.doesNotMatch(await frag('data s = q,a,b; Q1,1,2; Q2,,; Q3,4,1\nchart bar s stack\n'), /class="val"/);
+  assert.doesNotMatch(await frag('data s = q,a,b; Q1,1,2; Q2,3,3; Q3,4,1\nchart bar s stack max=4\n'), /class="val"/);
+});
+
+test('a stacked hbar total the target rule would cross starts past the rule too', async () => {
+  const html = await frag('data t = cat,a,b; X,6,5.5; Y,2,1\nchart hbar t stack labels target="12 goal"\n');
+  const svg = wide(html);
+  const rule = Number(/<line class="target" x1="([\d.]+)"/.exec(svg)![1]);
+  assert.ok(texts(svg, 'val').find((t) => t.text === '11.5')!.x > rule);
+});
+
+test('a message that is one very long word is cut in linear time', async () => {
+  const t0 = performance.now();
+  const html = await frag(`diagram s sequence\ns: a "A" user\ns: b "B" svc\ns: a -> b : ${'x'.repeat(60_000)}\n`);
+  assert.match(html, /…<\/text>/);
+  assert.ok(performance.now() - t0 < 5000, `${Math.round(performance.now() - t0)} ms`);
 });

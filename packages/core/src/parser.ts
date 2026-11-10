@@ -26,7 +26,7 @@ import type {
   TemplateBlock,
   ToggleBlock,
 } from './ast.ts';
-import { num, parseCsvFile, parseInlineCsv, parseOpts, pipeOutsideQuotes, readQuoted, tokens, type Opts } from './lex.ts';
+import { cellNum, num, parseCsvFile, parseInlineCsv, parseOpts, pipeOutsideQuotes, readQuoted, tokens, type Opts } from './lex.ts';
 import { EMPTY, FIELD_KINDS, NOT_CHOSEN, SLOT_RE } from './fields.ts';
 import { AA_NON_TEXT, AA_TEXT, HEX_COLOR, accentContrast, accentTheme } from './contrast.ts';
 import { browserUrl, imageSrcKind } from './url.ts';
@@ -1867,7 +1867,7 @@ export class LedeParser {
     // A column that does not exist is an error; one that is not numeric is ignored with a warning.
     const numericCol = (c: string) => {
       const i = d.columns.indexOf(c);
-      return d.rows.some((r) => num(r[i]) !== null) && d.rows.every((r) => r[i] === '' || num(r[i]) !== null);
+      return d.rows.some((r) => cellNum(r[i]) !== null) && d.rows.every((r) => r[i] === '' || cellNum(r[i]) !== null);
     };
     const pickCols = (list: string): string[] | null => {
       const named = list

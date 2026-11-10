@@ -312,6 +312,12 @@ function svg(
     const H = T + rowH * xs.length + B;
     const pw = W - L - R;
     const sx = (v: number) => L + ((v - lo) / (hi - lo)) * pw;
+    const ruleX = c.target ? sx(c.target.value) : NaN;
+    /** Where a value label starts beside the bar end at `x` (`dir` 1: to its right): 6px off, or just past the target rule when the rule would strike it through. */
+    const clearOfRule = (x: number, text: string, dir: 1 | -1): number => {
+      const w = textWidth(text, FONT) * FS;
+      return (ruleX - x) * dir > 0 && (ruleX - x) * dir < 8 + w ? ruleX + 5 * dir : x + 6 * dir;
+    };
     out.push(head(H));
     for (let t = 0; t < ticks.length; t++) {
       const x = sx(ticks[t]);
@@ -358,10 +364,7 @@ function svg(
           `<path class="${barCls(s, j, i)}" fill="currentColor" d="${d}"><title>${esc(`${x} · ${s.name}: ${withUnit(v, c.unit)}${est(i)}`)}</title></path>${hatchOver(i, d)}`,
         );
         if (showVals && !stacked && (mode !== 'end' || i === xs.length - 1)) {
-          // A label the target rule would strike through starts just past the rule instead.
-          const tx = c.target ? sx(c.target.value) : NaN;
-          const lw = textWidth(withUnit(v, c.unit), FONT) * FS;
-          const lx = v >= 0 ? (tx > x1 && tx < x1 + 8 + lw ? tx + 5 : x1 + 6) : tx < x0 && tx > x0 - 8 - lw ? tx - 5 : x0 - 6;
+          const lx = v >= 0 ? clearOfRule(x1, withUnit(v, c.unit), 1) : clearOfRule(x0, withUnit(v, c.unit), -1);
           out.push(
             `<text class="val" x="${lx.toFixed(1)}" y="${(yy + barH / 2 + 4).toFixed(1)}" text-anchor="${v >= 0 ? 'start' : 'end'}">${esc(withUnit(v, c.unit))}</text>`,
           );
@@ -375,7 +378,7 @@ function svg(
       });
       if (showVals && stacked && (mode !== 'end' || i === xs.length - 1)) {
         out.push(
-          `<text class="val" x="${(sx(acc) + 6).toFixed(1)}" y="${(y0 + barH / 2 + 4).toFixed(1)}">${esc(withUnit(acc + accN, c.unit))}</text>`,
+          `<text class="val" x="${clearOfRule(sx(acc), withUnit(acc + accN, c.unit), 1).toFixed(1)}" y="${(y0 + barH / 2 + 4).toFixed(1)}">${esc(withUnit(acc + accN, c.unit))}</text>`,
         );
       }
     });
@@ -404,11 +407,12 @@ function svg(
       : maxOf(series.map((s) => textWidth(s.name, FONT))) + 22;
   // labels=end reserves the last-value column even on a stack (each series' own last value); labels=all labels in place.
   // The column holds each series' last value as printed, which can be wider than any tick ("$42.70" beside "$44").
-  const lastValW = maxOf(
-    series.map((s) => (lastOf(s) === null ? 0 : textWidth(withUnit(lastOf(s)!, c.unit), FONT) * FS)),
-    0,
-  );
-  const lastVal = c.kind !== 'bar' && (mode === 'end' || (c.labels && !stacked && mode !== 'all')) ? Math.max(valueW, lastValW) + 10 : 0;
+  const lastValW = (): number =>
+    maxOf(
+      series.map((s) => lastOf(s)).map((v) => (v === null ? 0 : textWidth(withUnit(v, c.unit), FONT) * FS)),
+      0,
+    );
+  const lastVal = c.kind !== 'bar' && (mode === 'end' || (c.labels && !stacked && mode !== 'all')) ? Math.max(valueW, lastValW()) + 10 : 0;
   const R = Math.max(12, endLabelW, lastVal);
   const pw = W - L - R;
   const n = xs.length;
@@ -418,7 +422,7 @@ function svg(
   // A bar chart whose category labels would touch wraps them onto two lines, when every label then fits its band,
   // so no category goes unnamed (D79). Charts with event markers keep the one-line rule below.
   const xLines = ((): string[][] | null => {
-    if (c.kind !== 'bar' || allMarks.length) return null;
+    if (c.kind !== 'bar' || allMarks.length || band < 2 * FONT) return null;
     const w = (t: string) => textWidth(t, FONT) * FS;
     if (xs.every((x, i) => i === 0 || (w(xs[i - 1]) + w(x)) / 2 + XGAP <= band)) return null;
     const lines = xs.map((x) => wrapTo(x, (band - XGAP) / FS, FONT, {}));
@@ -480,12 +484,23 @@ function svg(
   }
   const totals = xs.map((_, i) => series.reduce((a, s) => a + (s.values[i] ?? 0), 0));
   // Value labels by default when every label fits over its own bar.
-  // A stack prints its total the same way (D79): the segments are read from the legend, the height from the number.
-  const totalW = maxOf(
-    totals.map((t) => textWidth(withUnit(t, c.unit), FONT) * FS),
-    0,
-  );
-  const showVals = c.kind === 'bar' && (c.labels || (stacked ? totalW : valLabelW) <= (kBars === 1 ? band * 0.9 : bw + 2));
+  // A stack prints its total the same way (D79), when the total is the height of the stack: every value positive, no
+  // empty category and no pinned axis. Mixed signs net out and are printed only when the writer asks with `labels`.
+  const plainStack = (): boolean =>
+    !pin.min && !pin.max && series.every((s) => s.values.every((v) => v === null || v >= 0)) && stackTop.every((t) => t > 0);
+  const fitsBand = (w: number): boolean => w <= (kBars === 1 ? band * 0.9 : bw + 2);
+  const showVals =
+    c.kind === 'bar' &&
+    (c.labels ||
+      (stacked
+        ? plainStack() &&
+          fitsBand(
+            maxOf(
+              totals.map((t) => textWidth(withUnit(t, c.unit), FONT) * FS),
+              0,
+            ),
+          )
+        : fitsBand(valLabelW)));
   // Event markers: flags sit in a band above the plot, so the plot keeps its size and the axis range is untouched.
   const markX = (i: number): number => (c.kind === 'bar' ? L + (pw / n) * (i + 0.5) : n === 1 ? L + pw / 2 : L + (pw / (n - 1)) * i);
   const flags = allMarks.length ? layoutFlags(allMarks, markX, W, narrow) : null;

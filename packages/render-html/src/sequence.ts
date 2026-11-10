@@ -10,6 +10,21 @@ const SAFE = 1.05; // estimates are approximate; wrap a little early rather than
 const TAGW = (kind: string, size: number) => Math.ceil(kind.length * size * 0.68) + 14;
 
 /**
+ * Length of the longest prefix of `s` that `fits`, by bisection (0 when not even one character does). `fits` reads
+ * every character it is given, and `s` can be the whole of a very long label, so the cut is not found one character at a time.
+ */
+function fitPrefix(s: string, fits: (t: string) => boolean): number {
+  let lo = 0;
+  let hi = s.length;
+  while (lo < hi) {
+    const mid = (lo + hi + 1) >> 1;
+    if (fits(s.slice(0, mid))) lo = mid;
+    else hi = mid - 1;
+  }
+  return lo;
+}
+
+/**
  * Wraps `text` into at most `maxLines` lines of `max` px. A word wider than a line is split when
  * `breakLong`; the last line is cut with an ellipsis if text is still left over.
  */
@@ -19,15 +34,24 @@ function wrap(text: string, max: number, w: (s: string) => number, maxLines: num
   const push = (s: string) => {
     lines.push(s);
   };
-  for (let word of text.split(/\s+/).filter(Boolean)) {
+  const words = text.split(/\s+/).filter(Boolean);
+  for (let wi = 0; wi < words.length; wi++) {
+    let word = words[wi];
+    // Past the last line everything left is cut with one ellipsis below, so it is not measured word by word.
+    if (lines.length > maxLines) {
+      cur = [cur, ...words.slice(wi)].filter(Boolean).join(' ');
+      break;
+    }
     if (breakLong) {
-      while (w(word) > max && word.length > 1) {
+      while (lines.length <= maxLines && word.length > 1 && w(word) > max) {
         if (cur) {
           push(cur);
           cur = '';
         }
-        let k = word.length - 1;
-        while (k > 1 && w(word.slice(0, k)) > max) k--;
+        const k = Math.max(
+          fitPrefix(word.slice(0, -1), (t) => w(t) <= max),
+          1,
+        );
         push(word.slice(0, k));
         word = word.slice(k);
       }
@@ -41,18 +65,14 @@ function wrap(text: string, max: number, w: (s: string) => number, maxLines: num
   if (cur) push(cur);
   if (lines.length > maxLines) {
     let last = lines.slice(maxLines - 1).join(' ');
-    if (w(`${last}…`) > max) {
-      // The longest prefix that fits with its ellipsis, by bisection: `w` reads every character, and the text left
-      // over can be the whole of a very long label.
-      let lo = 1;
-      let hi = last.length - 1;
-      while (lo < hi) {
-        const mid = (lo + hi + 1) >> 1;
-        if (w(`${last.slice(0, mid)}…`) > max) hi = mid - 1;
-        else lo = mid;
-      }
-      last = last.slice(0, lo);
-    }
+    if (w(`${last}…`) > max)
+      last = last.slice(
+        0,
+        Math.max(
+          fitPrefix(last.slice(0, -1), (t) => w(`${t}…`) <= max),
+          1,
+        ),
+      );
     lines.length = maxLines - 1;
     lines.push(`${last}…`);
   }

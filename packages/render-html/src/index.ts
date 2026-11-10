@@ -23,6 +23,8 @@ import {
   missingColumns,
   fieldsOf,
   imageSrcKind,
+  bareCell,
+  cellNum,
   num,
   parse,
   presetsOf,
@@ -1111,26 +1113,32 @@ function barPercents(raws: string[], targets: (number | null)[] = []): (string |
 /** `fit`: the narrowest width the table must read at (the 368px phone column, or a card). */
 function table(b: TableBlock, d: DataSet, picks: string[] = [], fit = 364): string {
   const cols = b.cols ?? d.columns;
+  const idx = cols.map((c) => d.columns.indexOf(c));
   let rows = [...d.rows];
+  // A closing row that sums the table ("Total") is not one of the rows: it stays last through `sort=` and `limit=`,
+  // takes no heat tint or bar, and is never read as the chosen row (D79).
+  const total = rows.length > 2 && TOTAL_ROW.test(plain(rows[rows.length - 1][idx[0]] ?? '').trim()) ? rows.pop()! : null;
   if (b.sort) {
     const i = d.columns.indexOf(b.sort.col);
-    const numeric = rows.every((r) => r[i] === '' || num(bare(r[i])) !== null);
+    const numeric = rows.every((r) => r[i] === '' || cellNum(r[i]) !== null);
     rows.sort((r1, r2) => {
-      const c = numeric ? (num(bare(r1[i])) ?? -Infinity) - (num(bare(r2[i])) ?? -Infinity) : r1[i].localeCompare(r2[i]);
+      const c = numeric ? (cellNum(r1[i]) ?? -Infinity) - (cellNum(r2[i]) ?? -Infinity) : r1[i].localeCompare(r2[i]);
       return b.sort!.desc ? -c : c;
     });
   }
   if (b.limit) rows = rows.slice(0, b.limit);
-  const idx = cols.map((c) => d.columns.indexOf(c));
+  if (total) rows.push(total);
+  /** The cell of a data row as a quantity; the total row's cells are not ranked or scaled. */
+  const qty = (r: string[], i: number): string => (r === total ? '' : bareCell(r[i]));
   if (!b.heat && !b.bars && cols.length === 2 && rows.length > 0 && rows.length <= 14 && timeLike(rows.map((r) => r[idx[0]] ?? '')))
     return timeline(b, rows, idx, cols[0]);
   // A number set in bold or italic ("**5,870**", a total) is still a number: it aligns, ranks and formats as one.
   const numeric = idx.map(
-    (i) => rows.length > 0 && rows.every((r) => r[i] === '' || num(bare(r[i] ?? '')) !== null) && rows.some((r) => r[i] !== ''),
+    (i) => rows.length > 0 && rows.every((r) => r[i] === '' || cellNum(r[i]) !== null) && rows.some((r) => r[i] !== ''),
   );
   // A column of bare four-digit 1900-2100 integers is a column of years, whatever its header says.
   const yearCol = idx.map(
-    (i) => rows.length > 0 && rows.every((r) => r[i] === '' || /^(19|20)\d{2}$/.test((r[i] ?? '').trim())) && rows.some((r) => r[i] !== ''),
+    (i) => rows.length > 0 && rows.every((r) => r[i] === '' || /^(19|20)\d{2}$/.test(bareCell(r[i]))) && rows.some((r) => r[i] !== ''),
   );
   const hdr = cols.map((c, j) => (yearCol[j] ? 'year' : c));
   // The first column names the row when it is text or a unique key (a version, a year): a row
@@ -1185,6 +1193,7 @@ function table(b: TableBlock, d: DataSet, picks: string[] = [], fit = 364): stri
   // Emphasis inferred from content: a fully bold cell marks the chosen row; a blocking status
   // word marks a problem row. Only a minority of rows is ever emphasized.
   const marks = rows.map((r) => {
+    if (r === total) return '';
     const cells = idx.map((i) => r[i] ?? '');
     if (cells.some((c) => statusOf(c) === 'bad')) return 'bad';
     if (cells.some((c) => statusOf(c) === 'warn' && /^(at risk|delayed|slipping|behind|overdue)$/i.test(norm(c)))) return 'warn';
@@ -1209,27 +1218,25 @@ function table(b: TableBlock, d: DataSet, picks: string[] = [], fit = 364): stri
   const byName = (want: string[]) => cols.map((c) => want.some((w) => plain(w).trim().toLowerCase() === plain(c).trim().toLowerCase()));
   const heatOn = !b.heat ? cols.map(() => false) : b.heat === true ? cols.map(() => true) : byName(b.heat);
   const barOn = b.bars?.length ? byName(b.bars) : cols.map(() => false);
-  const level = cols.map((_, j) =>
-    heatOn[j] && numeric[j] ? heatLevels(rows.map((r) => (r[idx[j]] ? num(bare(r[idx[j]])) : null))) : null,
-  );
+  const level = cols.map((_, j) => (heatOn[j] && numeric[j] ? heatLevels(rows.map((r) => num(qty(r, idx[j])))) : null));
   // target=col: each row's tick on its bar, on the bar's scale. Ignored without bars or when the
   // column is missing or not numeric.
   const ti = b.targetCol && b.bars?.length ? d.columns.indexOf(b.targetCol) : -1;
   const tvals =
-    ti >= 0 && rows.some((r) => (r[ti] ?? '').trim() !== '') && rows.every((r) => (r[ti] ?? '').trim() === '' || num(bare(r[ti])) !== null)
-      ? rows.map((r) => ((r[ti] ?? '').trim() === '' ? null : num(bare(r[ti]))))
+    ti >= 0 && rows.some((r) => qty(r, ti) !== '') && rows.every((r) => qty(r, ti) === '' || num(qty(r, ti)) !== null)
+      ? rows.map((r) => num(qty(r, ti)))
       : [];
   const bar = cols.map((_, j) =>
     barOn[j] && numeric[j]
       ? barPercents(
-          rows.map((r) => bare(r[idx[j]] ?? '')),
+          rows.map((r) => qty(r, idx[j])),
           tvals,
         )
       : null,
   );
   // The widest number of the bar columns, in digits: every bar cell reserves it, so the tracks beside them line up.
   const barNw = maxOf(
-    bar.flatMap((col, j) => (col ? rows.map((r) => fmtCell(bare(r[idx[j]] ?? ''), hdr[j]).length) : [])),
+    bar.flatMap((col, j) => (col ? rows.map((r) => fmtCell(qty(r, idx[j]), hdr[j]).length) : [])),
     0,
   );
   const hot = marks.filter(Boolean).length;
@@ -1259,18 +1266,17 @@ function table(b: TableBlock, d: DataSet, picks: string[] = [], fit = 364): stri
           const bp = bar[j]?.[ri];
           const tk = bar[j]?.ticks?.[ri];
           const tick = tk
-            ? `<b class="tg" style="--t:${tk}"><span class="sr">target ${esc(fmtCell((r[ti] ?? '').trim(), plain(b.targetCol ?? '')))}</span></b>`
+            ? `<b class="tg" style="--t:${tk}"><span class="sr">target ${esc(fmtCell(bareCell(r[ti]), plain(b.targetCol ?? '')))}</span></b>`
             : '';
           const inner = bp
-            ? `<span class="cb${tick ? ' tgt' : ''}" style="--p:${bp}"><i></i>${tick}${cell(r[i] ?? '', hdr[j], true)}</span>`
+            ? `<span class="cb${bar[j]?.ticks ? ' tgt' : ''}" style="--p:${bp}"><i></i>${tick}${cell(r[i] ?? '', hdr[j], true)}</span>`
             : cell(r[i] ?? '', hdr[j], true);
           return `<td${tc ? ` class="${tc}"` : ''}${label}${role('cell')}>${inner}</td>`;
         })
         .join('');
       const m = use ? marks[ri] : '';
-      // A closing row that sums the table ("Total", "All regions") is ruled off and set heavier, as a ledger does.
-      const tot = ri === rows.length - 1 && rows.length > 2 && TOTAL_ROW.test(plain(r[idx[0]] ?? '').trim());
-      const rc = [m ? `hl ${m}` : '', tot ? 'tot' : ''].filter(Boolean).join(' ');
+      // The total row is ruled off and set heavier, as a ledger does.
+      const rc = [m ? `hl ${m}` : '', r === total ? 'tot' : ''].filter(Boolean).join(' ');
       return `<tr${rc ? ` class="${rc}"` : ''}${role('row')}>${cells}</tr>`;
     })
     .join('');
@@ -1285,7 +1291,8 @@ function table(b: TableBlock, d: DataSet, picks: string[] = [], fit = 364): stri
   return legend ? `<div class="tblx">${tbl}${legend}</div>` : tbl;
 }
 
-const TOTAL_ROW = /^((grand |sub)?totals?|sum|overall)\b/i;
+/** The whole first cell of a row that sums the table. */
+const TOTAL_ROW = /^((grand |sub)?totals?|sum|overall):?$/i;
 
 // Status words in a table cell render as a labeled pill. The word stays the text, so the
 // meaning never depends on color; writers get this for free by typing the status.
@@ -1317,9 +1324,8 @@ function cell(raw: string, header = '', dates = false): string {
   return inline(em ? `${em[1]}${fmtCell(em[2], header)}${em[1]}` : fmtCell(raw, header));
 }
 
-/** A whole cell set in bold or italic, and the cell without that markup. */
+/** A whole cell set in bold or italic: the marker and the text inside it. */
 const EM = /^(\*{1,2})([^*]+)\1$/;
-const bare = (raw: string): string => raw.trim().replace(EM, '$2');
 
 const ALLOWED = {
   allowedTags: [
