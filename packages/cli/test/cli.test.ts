@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, writeFileSync, symlinkSync, readFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, symlinkSync, readFileSync, linkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
@@ -301,4 +301,128 @@ test('build exits 1 on a question error and 0 with --force, which draws only the
   const forced = run(['build', 'q.lede', '-o', 'out.html', '--force'], dir);
   assert.equal(forced.status, 0);
   assert.equal((readFileSync(join(dir, 'out.html'), 'utf8').match(/<input /g) ?? []).length, 1);
+});
+
+test('-o never overwrites an input file: the same path, a symlink to it, a hard link to it and a not-yet-written name that is not it', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  const src = '# Keep me\n';
+  writeFileSync(join(dir, 'ok.lede'), src);
+  symlinkSync(join(dir, 'ok.lede'), join(dir, 'link.html'));
+  linkSync(join(dir, 'ok.lede'), join(dir, 'hard.html'));
+  for (const target of ['ok.lede', './ok.lede', 'sub/../ok.lede', 'link.html', 'hard.html']) {
+    mkdirSync(join(dir, 'sub'), { recursive: true });
+    for (const args of [
+      ['build', 'ok.lede', '-o', target],
+      ['build', 'ok.lede', `-o=${target}`],
+    ]) {
+      const r = run(args, dir);
+      assert.equal(r.status, 2, `${args.join(' ')}: ${r.stderr}`);
+      assert.equal(r.stderr.trimEnd().split('\n').length, 1, 'one line');
+      assert.match(r.stderr, /^lede: .*same file/);
+      assert.equal(readFileSync(join(dir, 'ok.lede'), 'utf8'), src, 'the source is untouched');
+    }
+  }
+  // any input FILE counts, not only the first one that build compiles
+  writeFileSync(join(dir, 'other.lede'), '# Other\n');
+  assert.equal(run(['build', 'ok.lede', 'other.lede', '-o', 'other.lede'], dir).status, 2);
+  assert.equal(readFileSync(join(dir, 'other.lede'), 'utf8'), '# Other\n');
+  // OUT does not exist yet, and is not the source: written as always
+  assert.equal(run(['build', 'ok.lede', '-o', 'fresh.html'], dir).status, 0);
+  assert.match(readFileSync(join(dir, 'fresh.html'), 'utf8'), /^<!doctype html>/i);
+  // watch refuses before it starts
+  const w = run(['watch', 'ok.lede', '-o', 'ok.lede'], dir);
+  assert.equal(w.status, 2);
+  assert.match(w.stderr, /same file/);
+  assert.equal(readFileSync(join(dir, 'ok.lede'), 'utf8'), src);
+});
+
+test('-o needs a file name: last, before another flag or empty is a usage error; -o=FILE is -o FILE', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  writeFileSync(join(dir, 'p.lede'), '# Hi\n');
+  for (const args of [
+    ['build', 'p.lede', '-o'],
+    ['build', 'p.lede', '-o', '--force'],
+    ['build', '-o', '-', 'p.lede'],
+    ['build', 'p.lede', '-o='],
+    ['watch', 'p.lede', '-o'],
+  ]) {
+    const r = run(args, dir);
+    assert.equal(r.status, 2, args.join(' '));
+    assert.equal(r.stdout, '', 'no page on stdout');
+    assert.match(r.stderr, /^lede: -o needs a file name\n/);
+    assert.match(r.stderr, /usage:\n {2}lede build/);
+  }
+  const twice = run(['build', 'p.lede', '-o', 'a.html', '-o', 'b.html'], dir);
+  assert.equal(twice.status, 2);
+  assert.match(twice.stderr, /^lede: -o given more than once/);
+  const eq = run(['build', 'p.lede', '-o=out.html'], dir);
+  assert.equal(eq.status, 0, eq.stderr);
+  assert.equal(eq.stdout, '');
+  assert.equal(readFileSync(join(dir, 'out.html'), 'utf8'), run(['build', 'p.lede'], dir).stdout);
+  assert.match(run(['--help'], dir).stdout, /-o=FILE/);
+});
+
+test('a directory as FILE is a usage-class error like a missing file; an unwritable OUT is one line, with the stack only under LEDE_DEBUG', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  mkdirSync(join(dir, 'folder.lede'));
+  writeFileSync(join(dir, 'p.lede'), '# Hi\n');
+  for (const cmd of ['build', 'check', 'ast']) {
+    const r = run([cmd, 'folder.lede'], dir);
+    assert.equal(r.status, 2, cmd);
+    assert.equal(r.stderr, 'lede: folder.lede is a directory\n');
+  }
+  assert.equal(run(['check', 'p.lede', 'folder.lede'], dir).status, 2);
+  const missing = run(['build', 'p.lede', '-o', 'nodir/out.html'], dir);
+  assert.equal(missing.status, 70);
+  assert.match(missing.stderr, /^lede: .*ENOENT.*nodir\/out\.html/);
+  assert.equal(missing.stderr.trimEnd().split('\n').length, 1, `one line, no stack: ${missing.stderr}`);
+  const debug = spawnSync(process.execPath, [CLI, 'build', 'p.lede', '-o', 'nodir/out.html'], {
+    cwd: dir,
+    encoding: 'utf8',
+    env: { ...process.env, LEDE_DEBUG: '1' },
+  });
+  assert.equal(debug.status, 70);
+  assert.match(debug.stderr, /^lede: .*ENOENT[\s\S]*\n\s+at /, 'the stack is there when asked for');
+  assert.match(run(['--help'], dir).stdout, /LEDE_DEBUG/);
+});
+
+test('an option no command knows is a usage error that suggests the nearest flag; one that another command knows is ignored', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  writeFileSync(join(dir, 'p.lede'), '# Hi\n');
+  const bad = (args: string[]) => run(args, dir);
+  for (const [args, want] of [
+    [['build', 'p.lede', '--shel'], 'unknown option --shel; did you mean --shell?'],
+    [['build', 'p.lede', '--artifcat'], 'unknown option --artifcat; did you mean --artifact?'],
+    [['check', 'p.lede', '--jsno'], 'unknown option --jsno; did you mean --json?'],
+    [['check', 'p.lede', '-json'], 'unknown option -json; did you mean --json?'],
+    [['build', 'p.lede', '--shell=1'], 'unknown option --shell=1; did you mean --shell?'],
+    [['build', 'p.lede', '--frobnicate-everything'], 'unknown option --frobnicate-everything'],
+    [['build', 'p.lede', '-x'], 'unknown option -x'],
+    [['ast', '-q', 'p.lede'], 'unknown option -q'],
+  ] as const) {
+    const r = bad([...args]);
+    assert.equal(r.status, 2, args.join(' '));
+    assert.equal(r.stdout, '');
+    assert.equal(r.stderr.split('\n')[0], `lede: ${want}`, args.join(' '));
+    assert.match(r.stderr, /usage:\n {2}lede build/);
+  }
+  // A flag that some other command knows is still ignored there (spec section 9), so these behave as before.
+  for (const args of [
+    ['ast', 'p.lede', '--json'],
+    ['build', 'p.lede', '--fix'],
+    ['check', 'p.lede', '--force'],
+    ['check', 'p.lede', '--shell'],
+  ]) {
+    const r = bad(args);
+    assert.notEqual(r.status, 2, `${args.join(' ')}: ${r.stderr}`);
+  }
+  // the command word gets the same treatment, and a bare `lede` still prints just the usage
+  assert.equal(bad(['frob', 'p.lede']).stderr.split('\n')[0], 'lede: unknown command frob');
+  assert.equal(bad(['--shel']).stderr.split('\n')[0], 'lede: unknown option --shel; did you mean --shell?');
+  assert.equal(bad(['build']).stderr.split('\n')[0], 'lede: no file given');
+  assert.match(bad([]).stderr, /^usage:\n/);
+  assert.equal(bad([]).status, 2);
+  // nothing is built when an option is wrong, even with --force
+  assert.equal(bad(['build', 'p.lede', '--forse', '-o', 'x.html']).status, 2);
+  assert.throws(() => readFileSync(join(dir, 'x.html')));
 });

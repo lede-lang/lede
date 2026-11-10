@@ -579,7 +579,9 @@ is no such line. `--artifact` adds the artifact checks (below) to the report; th
 last line is their count, never `ok`. `lede --help` lists every command and flag.
 
 `lede build FILE [-o OUT] [--force] [--unsafe-html] [--allow-remote] [--artifact] [--shell]` compiles the first FILE to one page. Diagnostics go to stderr as
-for `check`. With `-o` the page is written to OUT and a size line goes to stderr; without it the page goes to stdout. A document with
+for `check`. With `-o` the page is written to OUT and a size line goes to stderr; without it the page goes to stdout. `-o=OUT` is the same as `-o OUT`; `-o` with
+no name after it, or with another option after it, is a usage error, and so is a second `-o`. OUT must not be the same file as any FILE (a symlink or hard link to it
+counts, and OUT need not exist yet): `lede` refuses with exit 2 instead of turning the source into HTML. A document with
 an error is not written and exits 1, unless `--force`, which renders it anyway and exits 0. `--unsafe-html` keeps `html` blocks
 unsanitized (§4.10); `--help` marks it for local files only, but nothing checks that. `--allow-remote` lets images load from remote
 URLs (§4.16), in `image` blocks and as `<img>` in `html` blocks. Links render the same with or without it. It adds `https:`, and only
@@ -596,8 +598,12 @@ and stderr says so. With `--artifact` the data block and runtime follow `<main>`
 meta tags are still omitted, so the Artifact host's own policy decides whether the runtime runs. `--shell` with `--unsafe-html` is a
 usage error: raw `html` could plant its own controls and data block. Exit codes for every
 command: 0 on success; 1 for `build` on errors without `--force` and for `check` on errors; 2 for a usage error (no command, an
-unknown command, no FILE, `--shell` with `--unsafe-html`) or a missing file; 70 for an internal error, such as OUT not being writable, printed to stderr. Flags a
-command does not know are ignored. `--help`, `-h` or `help` prints the help to stdout and exits 0.
+unknown command, no FILE, an option no command knows, `-o` without a name, `--shell` with `--unsafe-html`, OUT the same file as a FILE) or a
+FILE that is missing or is a directory; 70 for an internal error, such as OUT not being writable or its directory missing. An exit-70 failure
+prints one line to stderr, `lede: MESSAGE`; with the environment variable `LEDE_DEBUG` set it prints the stack as well.
+An option that no command knows (`--shel`, `-x`) is a usage error: stderr gets `lede: unknown option --shel; did you mean --shell?` (the
+suggestion is there when a known flag is within two edits of it) and then the usage, so a typo never builds a different page without saying so. A flag that
+some other command knows is still ignored: `lede watch x.lede --json` is `lede watch x.lede`. `--help`, `-h` or `help` prints the help to stdout and exits 0.
 
 `lede watch FILE [-o OUT]` builds FILE to OUT, or to `NAME.html` beside `NAME.lede`, then rebuilds on every change until stopped. It always
 renders as if `--force` were given, and honours `--unsafe-html`, `--allow-remote` and `--shell`. With `--shell`, the note that the flag had no
