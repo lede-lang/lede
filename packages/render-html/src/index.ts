@@ -1096,7 +1096,7 @@ function barPercents(raws: string[], targets: (number | null)[] = []): (string |
     ? Math.max(100, tmax)
     : maxOf(
         vals.filter((v): v is number => v !== null),
-        Math.max(0, tmax),
+        tmax,
       );
   const at = (v: number | null) => {
     if (v === null) return null;

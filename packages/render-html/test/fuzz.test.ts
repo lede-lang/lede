@@ -10,7 +10,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { LedeStream, fix, parse, type LedeDocument } from '@lede-lang/core';
 import { render } from '../src/index.ts';
-import { rng } from './fuzz.ts';
+import { UNFORMATTED, rng } from './fuzz.ts';
 
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 
@@ -180,7 +180,7 @@ async function check(seed: number): Promise<void> {
 
   const html = await render(doc, { shell: r() < 0.3 });
   const body = html.replace(/<style>[\s\S]*?<\/style>/g, '').replace(/<script[\s\S]*?<\/script>/g, '');
-  const bad = /NaN|undefined|Infinity|\[object Object\]/.exec(body);
+  const bad = UNFORMATTED.exec(body);
   if (bad && !src.includes(bad[0]))
     assert.fail(`${bad[0]} in the page: ${body.slice(Math.max(0, bad.index - 120), bad.index + 60)}\n${at}`);
   const ids = [...body.matchAll(/\sid="([^"]*)"/g)].map((m) => m[1]);

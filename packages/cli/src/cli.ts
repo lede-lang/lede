@@ -2,6 +2,7 @@
 // lede build | watch | check | ast
 import { readFileSync, writeFileSync, watch as fsWatch, existsSync, realpathSync, statSync } from 'node:fs';
 import { dirname, resolve, basename, sep } from 'node:path';
+import { text as readAll } from 'node:stream/consumers';
 import { parse, fix, artifactDiagnostics, type Diagnostic, type LedeDocument } from '@lede-lang/core';
 
 const USAGE = `usage:
@@ -82,16 +83,9 @@ function parseOptions(file: string) {
   };
 }
 
-async function readStdin(): Promise<string> {
-  process.stdin.setEncoding('utf8');
-  let text = '';
-  for await (const chunk of process.stdin) text += chunk as string;
-  return text;
-}
-
 /** Read and parse `file` (`-` is stdin). With `artifact`, its diagnostics also hold the warnings only an Artifact host needs. */
 async function load(file: string, artifact = false): Promise<{ src: string; doc: LedeDocument }> {
-  const src = file === '-' ? await readStdin() : readFileSync(file, 'utf8');
+  const src = file === '-' ? await readAll(process.stdin) : readFileSync(file, 'utf8');
   const doc = parse(src, parseOptions(file));
   if (artifact) doc.diagnostics.push(...artifactDiagnostics(doc));
   return { src, doc };
@@ -169,17 +163,16 @@ async function watchFile(file: string, target: string, flags: Set<string>): Prom
   /** One rebuild, which never throws: a missing or unreadable FILE is a line on stderr, and the next change tries again. */
   const rebuild = async (): Promise<void> => {
     try {
+      await build(file, target, watched, watching);
+      gone = false;
+      return;
+    } catch (e) {
+      // A file that is there and cannot be built is an error; one that is not there (deleted, or mid-rename in a save) is gone.
       if (existsSync(file)) {
         gone = false;
-        await build(file, target, watched, watching);
-        return;
-      }
-    } catch (e) {
-      if (existsSync(file)) {
         process.stderr.write(failure(e));
         return;
       }
-      // The file vanished between the check and the read, as in a save that renames: gone, not an error.
     }
     if (!gone) process.stderr.write(`lede: ${file} is gone; waiting for it to come back\n`);
     gone = true;
@@ -379,8 +372,9 @@ async function main(argv: string[]): Promise<number> {
     }
   }
   // The page goes to OUT, so OUT must not be the document: `build ok.lede -o ok.lede` would turn the source into HTML.
-  const target = cmd === 'watch' ? watchTarget(files[0], out) : out;
-  const clash = cmd === 'build' || cmd === 'watch' ? files.find((f) => f !== '-' && target !== null && sameFile(f, target)) : undefined;
+  const watched = cmd === 'watch' ? watchTarget(files[0], out) : null;
+  const target = watched ?? (cmd === 'build' ? out : null);
+  const clash = target === null ? undefined : files.find((f) => f !== '-' && sameFile(f, target));
   if (clash !== undefined) {
     process.stderr.write(`lede: ${target} is the same file as ${clash}; not overwriting the source\n`);
     return 2;
@@ -394,7 +388,7 @@ async function main(argv: string[]): Promise<number> {
       process.stdout.write(`${JSON.stringify((await load(files[0])).doc, null, 2)}\n`);
       return 0;
     case 'watch':
-      return await watchFile(files[0], watchTarget(files[0], out), flags);
+      return watched === null ? 2 : await watchFile(files[0], watched, flags);
   }
   return 2;
 }

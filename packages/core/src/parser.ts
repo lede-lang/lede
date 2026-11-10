@@ -1636,7 +1636,6 @@ export class LedeParser {
     this.emit(block);
   }
 
-  /** `hatch="x value"` (repeatable): values of the x column drawn striped. Anything else: W chart-option. */
   /** `min=` and `max=` of a chart. A pair that leaves no range (`min=10 max=10`, `min=10 max=2`) is reported and neither is kept. */
   private axisRange(min: number | null, max: number | null, col: number): { min: number | null; max: number | null } {
     if (min === null || max === null || min < max) return { min, max };
@@ -1650,6 +1649,7 @@ export class LedeParser {
     return { min: null, max: null };
   }
 
+  /** `hatch="x value"` (repeatable): values of the x column drawn striped. Anything else: W chart-option. */
   private hatchOpt(d: DataSet, x: string, optStr: string, col: number): string[] {
     const xi = d.columns.indexOf(x);
     const out: string[] = [];
@@ -2339,23 +2339,21 @@ export class LedeParser {
   }
 }
 
-/** `d` is a whole number of `step`s, within a rounding error (0.94 - 0.85 is not exactly 9 steps of 0.01 in floating point). */
 /**
- * The stray words of an option list, for reporting. Words that spilled out of one unquoted value (`title=Deploys per week`) come
+ * The stray words of an option list (`o.words`, then anything else the caller reports), for reporting. Words that spilled out of one unquoted value (`title=Deploys per week`) come
  * back as one entry, `per week`, with a hint naming the option as it was probably meant; every other word is its own entry.
  */
 function spilled(o: Opts, stray: string[]): { text: string; hint: string }[] {
   const out: { text: string; hint: string }[] = [];
-  const rest = [...stray];
-  for (const s of o.spills) {
-    const at = rest.indexOf(s.words[0]);
-    if (at < 0) continue;
-    rest.splice(at, s.words.length);
-    out.push({ text: s.words.join(' '), hint: `; a value with a space needs quotes: ${s.meant}` });
+  for (let i = 0; i < stray.length; i++) {
+    const s = o.spills.find((x) => x.at === i);
+    out.push(s ? { text: s.words.join(' '), hint: `; a value with a space needs quotes: ${s.meant}` } : { text: stray[i], hint: '' });
+    if (s) i += s.words.length - 1;
   }
-  return [...out, ...rest.map((text) => ({ text, hint: '' }))];
+  return out;
 }
 
+/** `d` is a whole number of `step`s, within a rounding error (0.94 - 0.85 is not exactly 9 steps of 0.01 in floating point). */
 function onGrid(d: number, step: number): boolean {
   const q = d / step;
   return Math.abs(q - Math.round(q)) <= EPS;
@@ -2476,7 +2474,6 @@ export function suggestColumn(columns: string[], name: string): string | null {
   return shorter[0] ?? null;
 }
 
-/** Resolve a column reference: exact match first, then ignoring case and repeated spaces. */
 /**
  * The data set called `name`, or undefined. Read `doc.data` through this, not by index: a set may be named `constructor` or
  * `toString`, and an index finds the inherited member of that name when no such set is declared.
@@ -2502,6 +2499,7 @@ export function missingColumns(b: ChartBlock | TableBlock, d: DataSet): string[]
   return [...new Set(reads)].filter((c): c is string => c !== undefined && !d.columns.includes(c));
 }
 
+/** Resolve a column reference: exact match first, then ignoring case and repeated spaces. */
 export function findCol(d: DataSet, name: string): string | null {
   if (d.columns.includes(name)) return name;
   return d.columns.find((c) => colKey(c) === colKey(name)) ?? null;
@@ -2590,9 +2588,9 @@ function resolveKpi(doc: LedeDocument, k: Kpi): { d: DataSet; column: string } |
   if (!k.ref) return null;
   const m = /^([A-Za-z_][\w-]*)\.(.+)$/.exec(k.ref);
   const d = m && dataSet(doc, m[1]);
-  const cname = m && d ? findCol(d, m[2]) : null;
-  if (m && d && !cname) return { d, column: m[2] };
-  if (!m || !d || !cname) return null;
+  if (!m || !d) return null;
+  const cname = findCol(d, m[2]);
+  if (!cname) return { d, column: m[2] };
   const ci = d.columns.indexOf(cname);
   const vals = d.rows.map((r) => r[ci]).filter((v) => v !== '');
   const last = vals[vals.length - 1] ?? '';

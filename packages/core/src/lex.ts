@@ -8,17 +8,17 @@ export interface Opts {
   /** The text of a `"` that is never closed, which runs to the end of the line, options and all; null when every quote closes. */
   unclosed: string | null;
   /**
-   * Bare words that follow an unquoted `key=value` (`title=Deploys per week`): the words (`per week`, which are in `words` too)
-   * and the option as it was probably meant (`title="Deploys per week"`).
+   * Bare words that follow an unquoted `key=value` (`title=Deploys per week`): the words (`per week`, which are in `words` too,
+   * from index `at`) and the option as it was probably meant (`title="Deploys per week"`).
    */
-  spills: { words: string[]; meant: string }[];
+  spills: { at: number; words: string[]; meant: string }[];
 }
 
 /**
  * Tokenize `key=value key="quoted value" flag "standalone quote" word`.
  * Every token's start offset (within `s`) is kept for diagnostics.
  */
-export function tokens(s: string): { text: string; offset: number; quoted: boolean; key?: string | undefined; unclosed?: true }[] {
+export function tokens(s: string): { text: string; offset: number; quoted: boolean; key?: string | undefined; unclosed?: boolean }[] {
   const out: ReturnType<typeof tokens> = [];
   let i = 0;
   while (i < s.length) {
@@ -33,7 +33,7 @@ export function tokens(s: string): { text: string; offset: number; quoted: boole
     }
     if (s[i] === '"') {
       const { value, end, closed } = readQuoted(s, i);
-      out.push({ text: value, offset: start, quoted: true, key, ...(closed ? {} : { unclosed: true as const }) });
+      out.push({ text: value, offset: start, quoted: true, key, unclosed: !closed });
       i = end;
     } else {
       let j = i;
@@ -84,9 +84,7 @@ export function parseOpts(s: string, flagNames: string[] = [], spanKeys: string[
     if (t.unclosed) o.unclosed = t.text;
     if (t.key !== undefined && spanKeys.includes(t.key) && !t.quoted) {
       let v = t.text;
-      while (i + 1 < ts.length && ts[i + 1].key === undefined && !ts[i + 1].quoted && !flagNames.includes(ts[i + 1].text)) {
-        v += ` ${ts[++i].text}`;
-      }
+      while (bare(i + 1)) v += ` ${ts[++i].text}`;
       o.kv[t.key] = v;
       continue;
     }
@@ -95,7 +93,7 @@ export function parseOpts(s: string, flagNames: string[] = [], spanKeys: string[
       let end = i + 1;
       while (bare(end + 1)) end++;
       const words = ts.slice(i + 1, end + 1).map((w) => w.text);
-      o.spills.push({ words, meant: `${t.key}="${[t.text, ...words].join(' ')}"` });
+      o.spills.push({ at: o.words.length, words, meant: `${t.key}="${[t.text, ...words].join(' ')}"` });
     }
     if (t.key !== undefined) o.kv[t.key] = t.text;
     else if (t.quoted) o.quoted.push(t.text);
@@ -193,7 +191,6 @@ export function parseCsvFile(text: string): { rows: string[][]; unclosedLine: nu
   const s = text.charCodeAt(0) === 0xfeff ? text.slice(1) : text;
   const rows: string[][] = [];
   let row: string[] = [];
-  let blank = true; // the record so far is one empty unquoted field
   let unclosedLine: number | null = null;
   let line = 1;
   let i = 0;
@@ -218,15 +215,14 @@ export function parseCsvFile(text: string): { rows: string[][]; unclosedLine: nu
     while (end < s.length && s[end] !== ',' && s[end] !== '\n') end++;
     const tail = s.slice(i, end);
     row.push(quoted ? value + tail.trimEnd() : tail.trim());
-    blank &&= !quoted && row.length === 1 && row[0] === '';
     i = end + 1;
     if (s[end] === ',') {
       if (i >= s.length) row.push('');
       continue;
     }
-    if (!blank) rows.push(row);
+    // A blank line is one empty unquoted field.
+    if (quoted || row.length > 1 || row[0] !== '') rows.push(row);
     row = [];
-    blank = true;
     line++;
   }
   if (row.length > 0) rows.push(row);

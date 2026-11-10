@@ -124,8 +124,8 @@ test('words that spill out of an unquoted option value are one warning that name
     'warning chart-option: ignored chart option "per week"; a value with a space needs quotes: title="Deploys per week"',
   ]);
   assert.deepEqual(messages('chart bar z nope title=Cost ($K)'), [
-    'warning chart-option: ignored chart option "($K)"; a value with a space needs quotes: title="Cost ($K)"',
     'warning chart-option: ignored chart option "nope"',
+    'warning chart-option: ignored chart option "($K)"; a value with a space needs quotes: title="Cost ($K)"',
   ]);
   assert.deepEqual(messages('table z title=Top five rows limit=1'), [
     'warning table-option: ignored table option "five rows"; a value with a space needs quotes: title="Top five rows"',

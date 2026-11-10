@@ -239,30 +239,43 @@ test('build --shell adds the pinned runtime to a page with questions, and says s
   assert.equal(none.stdout, run(['build', 'plain.lede'], dir).stdout);
 });
 
+/** Start `lede watch` in `dir`. The caller kills `child` in a `finally`; `until` polls with a deadline long enough for a slow machine. */
+function startWatch(dir: string, args: string[]) {
+  const child = spawn(process.execPath, [CLI, 'watch', ...args], { cwd: dir });
+  let err = '';
+  child.stderr.setEncoding('utf8');
+  child.stderr.on('data', (d: string) => (err += d));
+  const until = async (what: string, done: () => boolean) => {
+    for (let i = 0; i < 200 && !done(); i++) await new Promise((r) => setTimeout(r, 50));
+    assert.ok(done(), `timed out waiting for ${what}; stderr so far:\n${err}`);
+  };
+  const html = () => {
+    try {
+      return readFileSync(join(dir, 'page.html'), 'utf8');
+    } catch {
+      return '';
+    }
+  };
+  return { child, until, stderr: () => err, html };
+}
+
 test('watch --shell says once that the flag had no effect, and again only after the page stops taking the shell', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
   const page = join(dir, 'page.lede');
   writeFileSync(page, '# Plain\n\nText\n');
-  const child = spawn(process.execPath, [CLI, 'watch', 'page.lede', '--shell'], { cwd: dir });
-  let err = '';
-  child.stderr.setEncoding('utf8');
-  child.stderr.on('data', (d: string) => (err += d));
-  const count = (re: RegExp) => err.match(re)?.length ?? 0;
+  const w = startWatch(dir, ['page.lede', '--shell']);
+  const count = (re: RegExp) => w.stderr().match(re)?.length ?? 0;
   const builds = () => count(/page\.lede → /g);
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-  const until = async (done: () => boolean) => {
-    for (let i = 0; i < 100 && !done(); i++) await sleep(50);
-    assert.ok(done(), `timed out; stderr so far:\n${err}`);
-  };
   /** Save `text` and wait for the rebuild it causes. */
   const save = async (text: string) => {
     const before = builds();
     writeFileSync(page, text);
-    await until(() => builds() > before);
+    await w.until('a rebuild', () => builds() > before);
     await sleep(150); // a second event for the same save would be a second build, which must not matter
   };
   try {
-    await until(() => builds() >= 1 && err.includes('watching'));
+    await w.until('the first build', () => builds() >= 1 && w.stderr().includes('watching'));
     const none = () => count(/--shell had no effect/g);
     assert.equal(none(), 1, 'the first build says it');
     await save('# Plain\n\nMore text\n');
@@ -276,7 +289,7 @@ test('watch --shell says once that the flag had no effect, and again only after 
     await save('# Plain\n\nText once more\n');
     assert.equal(none(), 2);
   } finally {
-    child.kill();
+    w.child.kill();
   }
 });
 
@@ -309,8 +322,8 @@ test('-o never overwrites an input file: the same path, a symlink to it, a hard 
   writeFileSync(join(dir, 'ok.lede'), src);
   symlinkSync(join(dir, 'ok.lede'), join(dir, 'link.html'));
   linkSync(join(dir, 'ok.lede'), join(dir, 'hard.html'));
+  mkdirSync(join(dir, 'sub'));
   for (const target of ['ok.lede', './ok.lede', 'sub/../ok.lede', 'link.html', 'hard.html']) {
-    mkdirSync(join(dir, 'sub'), { recursive: true });
     for (const args of [
       ['build', 'ok.lede', '-o', target],
       ['build', 'ok.lede', `-o=${target}`],
@@ -389,7 +402,6 @@ test('a directory as FILE is a usage-class error like a missing file; an unwrita
 test('an option no command knows is a usage error that suggests the nearest flag; one that another command knows is ignored', () => {
   const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
   writeFileSync(join(dir, 'p.lede'), '# Hi\n');
-  const bad = (args: string[]) => run(args, dir);
   for (const [args, want] of [
     [['build', 'p.lede', '--shel'], 'unknown option --shel; did you mean --shell?'],
     [['build', 'p.lede', '--artifcat'], 'unknown option --artifcat; did you mean --artifact?'],
@@ -400,7 +412,7 @@ test('an option no command knows is a usage error that suggests the nearest flag
     [['build', 'p.lede', '-x'], 'unknown option -x'],
     [['ast', '-q', 'p.lede'], 'unknown option -q'],
   ] as const) {
-    const r = bad([...args]);
+    const r = run([...args], dir);
     assert.equal(r.status, 2, args.join(' '));
     assert.equal(r.stdout, '');
     assert.equal(r.stderr.split('\n')[0], `lede: ${want}`, args.join(' '));
@@ -413,17 +425,17 @@ test('an option no command knows is a usage error that suggests the nearest flag
     ['check', 'p.lede', '--force'],
     ['check', 'p.lede', '--shell'],
   ]) {
-    const r = bad(args);
+    const r = run(args, dir);
     assert.notEqual(r.status, 2, `${args.join(' ')}: ${r.stderr}`);
   }
   // the command word gets the same treatment, and a bare `lede` still prints just the usage
-  assert.equal(bad(['frob', 'p.lede']).stderr.split('\n')[0], 'lede: unknown command frob');
-  assert.equal(bad(['--shel']).stderr.split('\n')[0], 'lede: unknown option --shel; did you mean --shell?');
-  assert.equal(bad(['build']).stderr.split('\n')[0], 'lede: no file given');
-  assert.match(bad([]).stderr, /^usage:\n/);
-  assert.equal(bad([]).status, 2);
+  assert.equal(run(['frob', 'p.lede'], dir).stderr.split('\n')[0], 'lede: unknown command frob');
+  assert.equal(run(['--shel'], dir).stderr.split('\n')[0], 'lede: unknown option --shel; did you mean --shell?');
+  assert.equal(run(['build'], dir).stderr.split('\n')[0], 'lede: no file given');
+  assert.match(run([], dir).stderr, /^usage:\n/);
+  assert.equal(run([], dir).status, 2);
   // nothing is built when an option is wrong, even with --force
-  assert.equal(bad(['build', 'p.lede', '--forse', '-o', 'x.html']).status, 2);
+  assert.equal(run(['build', 'p.lede', '--forse', '-o', 'x.html'], dir).status, 2);
   assert.throws(() => readFileSync(join(dir, 'x.html')));
 });
 
@@ -511,26 +523,6 @@ test('- is a usage error twice, with watch, and with --fix or --dry-run', () => 
     assert.equal(r.stdout, '');
   }
 });
-
-/** Start `lede watch` in `dir`. The caller kills `child` in a `finally`; `until` polls with a deadline long enough for a slow machine. */
-function startWatch(dir: string, args: string[]) {
-  const child = spawn(process.execPath, [CLI, 'watch', ...args], { cwd: dir });
-  let err = '';
-  child.stderr.setEncoding('utf8');
-  child.stderr.on('data', (d: string) => (err += d));
-  const until = async (what: string, done: () => boolean) => {
-    for (let i = 0; i < 200 && !done(); i++) await new Promise((r) => setTimeout(r, 50));
-    assert.ok(done(), `timed out waiting for ${what}; stderr so far:\n${err}`);
-  };
-  const html = (name = 'page.html') => {
-    try {
-      return readFileSync(join(dir, name), 'utf8');
-    } catch {
-      return '';
-    }
-  };
-  return { child, until, stderr: () => err, html };
-}
 
 test('watch keeps rebuilding after an editor saves by writing a temp file and renaming it over the original', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));

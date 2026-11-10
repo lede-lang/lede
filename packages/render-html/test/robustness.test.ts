@@ -5,8 +5,7 @@ import { parse, type ChartBlock } from '@lede-lang/core';
 import { compile, render } from '../src/index.ts';
 import { inline, plain } from '../src/util.ts';
 import { browserTest } from './chrome.ts';
-
-const BAD = /NaN|Infinity|undefined/;
+import { UNFORMATTED } from './fuzz.ts';
 
 test('no min= or max= writes NaN into a chart', async () => {
   const data = ['data z = a,b; x,5; y,7', 'data zero = a,b; x,0; y,0', 'data neg = a,b; x,-5; y,-7', 'data tiny = a,b; x,1e-300; y,2e-300'];
@@ -18,7 +17,7 @@ test('no min= or max= writes NaN into a chart', async () => {
       for (const o of opts) lines.push(`chart ${k} ${d} ${k === 'range' ? 'from=b to=b ' : ''}${o} ${flags.join(' ')}`.trimEnd());
     }
   const { html } = await compile(`${lines.join('\n')}\n`);
-  for (const svg of html.match(/<svg[\s\S]*?<\/svg>/g) ?? []) assert.doesNotMatch(svg, BAD, svg.slice(0, 300));
+  for (const svg of html.match(/<svg[\s\S]*?<\/svg>/g) ?? []) assert.doesNotMatch(svg, UNFORMATTED, svg.slice(0, 300));
   assert.ok((html.match(/<svg/g) ?? []).length >= 200);
 });
 
@@ -26,16 +25,16 @@ test('a chart block built by hand with an empty range is drawn on the range of i
   const doc = parse('data z = a,b; x,5; y,7\nchart line z\nchart hbar z\n');
   for (const b of doc.blocks) if (b.type === 'chart') Object.assign(b, { min: 10, max: 2 } satisfies Partial<ChartBlock>);
   const bent = await render(doc);
-  assert.doesNotMatch(bent, BAD);
+  assert.doesNotMatch(bent, UNFORMATTED);
   for (const b of doc.blocks) if (b.type === 'chart') Object.assign(b, { min: Number.NaN, max: Number.POSITIVE_INFINITY });
-  assert.doesNotMatch(await render(doc), BAD);
+  assert.doesNotMatch(await render(doc), UNFORMATTED);
 });
 
 test('a chart or table whose column a later redefinition took away draws nothing and does not throw', async () => {
   const doc = parse('data d = x,y; a,1; b,2\nchart area d stack\ntable d sort=y bar=y\n\nStill here.\n\ndata d = p,q; a,5\ntable d\n');
   assert.equal(doc.diagnostics.filter((d) => d.severity === 'error').length, 2);
   const html = await render(doc, { fragment: true });
-  assert.doesNotMatch(html, BAD);
+  assert.doesNotMatch(html, UNFORMATTED);
   assert.doesNotMatch(html, /<svg/);
   assert.equal((html.match(/<table/g) ?? []).length, 1);
   assert.match(html, /Still here\./);

@@ -134,13 +134,17 @@ function emphasis(s: string): string {
   return em(s.replace(BOLD, (_, t: string) => `<strong>${em(t).replaceAll('*', '\u0001').replaceAll('_', '\u0002')}</strong>`));
 }
 
-/** Strip inline markup for plain-text contexts (SVG text, aria labels). */
-export function plain(s: string): string {
-  return s
-    .replace(/(`+)([^`]|[^`].*?[^`])\1(?!`)|``/g, '$2')
-    .replace(BOLD, '$1')
-    .replace(/\*([^*]+)\*/g, '$1')
-    .replace(/\[([^\][]+)\]\((?:[^()]|\([^()]*\))+\)/g, '$1');
+/** Strip inline markup for plain-text contexts (SVG text, aria labels): the spans and links `inline` reads, as their text. */
+export function plain(src: string): string {
+  let s = '';
+  for (let i = 0; i < src.length;) {
+    const span = src[i] === '`' ? codeSpan(src, i) : null;
+    LINK.lastIndex = i;
+    const link = src[i] === '[' ? LINK.exec(src) : null;
+    s += span?.text ?? link?.[1] ?? src[i];
+    i = span?.end ?? (link ? i + link[0].length : i + 1);
+  }
+  return s.replace(BOLD, '$1').replace(/\*([^*]+)\*/g, '$1');
 }
 
 // Approximate advance widths (em) for a system sans at regular weight.
