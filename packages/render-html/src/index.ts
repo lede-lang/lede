@@ -1124,7 +1124,10 @@ function table(b: TableBlock, d: DataSet, picks: string[] = [], fit = 364): stri
   const idx = cols.map((c) => d.columns.indexOf(c));
   if (!b.heat && !b.bars && cols.length === 2 && rows.length > 0 && rows.length <= 14 && timeLike(rows.map((r) => r[idx[0]] ?? '')))
     return timeline(b, rows, idx, cols[0]);
-  const numeric = idx.map((i) => rows.length > 0 && rows.every((r) => r[i] === '' || num(r[i]) !== null) && rows.some((r) => r[i] !== ''));
+  // A number set in bold or italic ("**5,870**", a total) is still a number: it aligns, ranks and formats as one.
+  const numeric = idx.map(
+    (i) => rows.length > 0 && rows.every((r) => r[i] === '' || num(bare(r[i] ?? '')) !== null) && rows.some((r) => r[i] !== ''),
+  );
   // A column of bare four-digit 1900-2100 integers is a column of years, whatever its header says.
   const yearCol = idx.map(
     (i) => rows.length > 0 && rows.every((r) => r[i] === '' || /^(19|20)\d{2}$/.test((r[i] ?? '').trim())) && rows.some((r) => r[i] !== ''),
@@ -1206,7 +1209,9 @@ function table(b: TableBlock, d: DataSet, picks: string[] = [], fit = 364): stri
   const byName = (want: string[]) => cols.map((c) => want.some((w) => plain(w).trim().toLowerCase() === plain(c).trim().toLowerCase()));
   const heatOn = !b.heat ? cols.map(() => false) : b.heat === true ? cols.map(() => true) : byName(b.heat);
   const barOn = b.bars?.length ? byName(b.bars) : cols.map(() => false);
-  const level = cols.map((_, j) => (heatOn[j] && numeric[j] ? heatLevels(rows.map((r) => (r[idx[j]] ? num(r[idx[j]]) : null))) : null));
+  const level = cols.map((_, j) =>
+    heatOn[j] && numeric[j] ? heatLevels(rows.map((r) => (r[idx[j]] ? num(bare(r[idx[j]])) : null))) : null,
+  );
   // target=col: each row's tick on its bar, on the bar's scale. Ignored without bars or when the
   // column is missing or not numeric.
   const ti = b.targetCol && b.bars?.length ? d.columns.indexOf(b.targetCol) : -1;
@@ -1217,10 +1222,15 @@ function table(b: TableBlock, d: DataSet, picks: string[] = [], fit = 364): stri
   const bar = cols.map((_, j) =>
     barOn[j] && numeric[j]
       ? barPercents(
-          rows.map((r) => (r[idx[j]] ?? '').trim()),
+          rows.map((r) => bare(r[idx[j]] ?? '')),
           tvals,
         )
       : null,
+  );
+  // The widest number of the bar columns, in digits: every bar cell reserves it, so the tracks beside them line up.
+  const barNw = maxOf(
+    bar.flatMap((col, j) => (col ? rows.map((r) => fmtCell(bare(r[idx[j]] ?? ''), hdr[j]).length) : [])),
+    0,
   );
   const hot = marks.filter(Boolean).length;
   const use = hot > 0 && hot * 2 <= rows.length;
@@ -1258,7 +1268,10 @@ function table(b: TableBlock, d: DataSet, picks: string[] = [], fit = 364): stri
         })
         .join('');
       const m = use ? marks[ri] : '';
-      return `<tr${m ? ` class="hl ${m}"` : ''}${role('row')}>${cells}</tr>`;
+      // A closing row that sums the table ("Total", "All regions") is ruled off and set heavier, as a ledger does.
+      const tot = ri === rows.length - 1 && rows.length > 2 && TOTAL_ROW.test(plain(r[idx[0]] ?? '').trim());
+      const rc = [m ? `hl ${m}` : '', tot ? 'tot' : ''].filter(Boolean).join(' ');
+      return `<tr${rc ? ` class="${rc}"` : ''}${role('row')}>${cells}</tr>`;
     })
     .join('');
   const cap = b.title ? `<caption>${inline(b.title)}</caption>` : '';
@@ -1268,9 +1281,11 @@ function table(b: TableBlock, d: DataSet, picks: string[] = [], fit = 364): stri
   const legend = level.some(Boolean)
     ? '<div class="heat-legend"><i class="h1"></i><i class="h2"></i><i class="h3"></i><i class="h4"></i><i class="h5"></i> low → high</div>'
     : '';
-  const tbl = `<div class="scroll tbl${stack ? ' stack' : ''}" tabindex="0" role="region" aria-label="${esc(plain(b.title ?? (d.name.startsWith('_') ? 'Table' : `${d.name} table`)))}"><table class="${cls}"${role('table')}>${cap}<thead${role('rowgroup')}><tr${role('row')}>${head}</tr></thead><tbody${role('rowgroup')}>${body}</tbody></table></div>`;
+  const tbl = `<div class="scroll tbl${stack ? ' stack' : ''}" tabindex="0" role="region" aria-label="${esc(plain(b.title ?? (d.name.startsWith('_') ? 'Table' : `${d.name} table`)))}"><table class="${cls}"${barNw ? ` style="--nw:${barNw}ch"` : ''}${role('table')}>${cap}<thead${role('rowgroup')}><tr${role('row')}>${head}</tr></thead><tbody${role('rowgroup')}>${body}</tbody></table></div>`;
   return legend ? `<div class="tblx">${tbl}${legend}</div>` : tbl;
 }
+
+const TOTAL_ROW = /^((grand |sub)?totals?|sum|overall)\b/i;
 
 // Status words in a table cell render as a labeled pill. The word stays the text, so the
 // meaning never depends on color; writers get this for free by typing the status.
@@ -1298,8 +1313,13 @@ function cell(raw: string, header = '', dates = false): string {
   const hit = statusOf(raw);
   if (hit) return `<span class="pill ${hit}">${inline(raw)}</span>`;
   if (dates && dateLike(raw)) return `<span class="chip">${inline(raw)}</span>`;
-  return inline(fmtCell(raw, header));
+  const em = EM.exec(raw.trim());
+  return inline(em ? `${em[1]}${fmtCell(em[2], header)}${em[1]}` : fmtCell(raw, header));
 }
+
+/** A whole cell set in bold or italic, and the cell without that markup. */
+const EM = /^(\*{1,2})([^*]+)\1$/;
+const bare = (raw: string): string => raw.trim().replace(EM, '$2');
 
 const ALLOWED = {
   allowedTags: [

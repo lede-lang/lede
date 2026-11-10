@@ -126,9 +126,9 @@ test('answers leave a diamond by different points', async () => {
 
 test('yes/no answers keep their words and get a color class; other labels do not', async () => {
   const out = await html(`diagram f dir=LR${DEC}f: p -> r : done`.replace('\n', '\n'));
-  assert.match(out, /class="elabel yes"[^>]*>YES</);
-  assert.match(out, /class="elabel no"[^>]*>NO</);
-  assert.match(out, /class="elabel"[^>]*>DONE</);
+  assert.match(out, /class="elabel yes"[^>]*>yes</);
+  assert.match(out, /class="elabel no"[^>]*>no</);
+  assert.match(out, /class="elabel"[^>]*>done</);
 });
 
 test('a decision flow gets a computed phone layout, narrower than the desktop one', async () => {

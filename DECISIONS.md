@@ -974,3 +974,45 @@ italic, and its markers hug the text, so `x ** 2 * y ** 2` is not bold; a link U
 adds a word to the format, so none waits on D67. A seeded fuzz test (`packages/render-html/test/fuzz.test.ts`) now runs with the
 suite and holds the properties that found them: parse, `LedeStream`, `fix` and `render` agree and do not throw on documents built
 from every shipped line.
+
+## D79. Figure text is the page's sans, as written; stacks print totals, crowded bar labels wrap, bar cells get a track
+Evidence first. In the 2026-11-06 pilot (`bench/results/pilot1/`), hand-written HTML beat Lede in 10 of 12 baseline pairs, and the
+judges' one-line reasons name the same few things: "tiny monospace labels" on diagrams and sequence messages, a phone bar chart that
+"drops the SQS with SNS axis label", a target label that "overlaps the 1.6 h bar label", a "truncated $42.7 label", and HTML pages
+whose stacked bars carry totals and whose tables rule off a total row. Side-by-side screenshots of the twelve pairs at 1280 and
+400 px showed two more: figure titles in small mono capitals read as machine output next to a sentence-case title, and a `bar=`
+cell's number was cut by the end of the bar behind it. None of these is a writer's choice, so the compiler owns them. No word is
+added to the format and no page needs editing.
+
+- **Titles.** A chart, table or diagram `title=` is printed as written in the interface sans (14px, weight 600), not in 12px mono
+  capitals. D8's "mono uppercase edge labels" is replaced the same way: an edge label or a sequence message is drawn in the sans,
+  as written, at 11px on a desktop flow diagram and 12px elsewhere. In a flow diagram a label keeps at least the room its mono
+  capitals took, so layouts do not move, and gets more when the text as drawn is wider (a run of wide capitals); a sequence diagram
+  measures the sans, so its lanes sit closer and phone labels wrap less. Kind tags, group labels and sublabels keep D8's small
+  mono: they are tags, not sentences. `yes`/`no` exits keep their colour and weight and are no longer capitalised.
+- **Stack totals.** A stacked `bar` chart prints each stack's total when the totals fit their bands, as an unstacked bar chart
+  already prints its values (Appendix C); `labels` still forces them.
+- **Bar labels.** When two neighbouring category labels of a `bar` chart would touch, and every label fits its band on two lines,
+  the labels wrap and the drawing grows 14px; before, the rule that keeps the first and last label dropped the ones between, which
+  on a phone unnamed the middle bar of three. Charts with `mark=` keep the one-line rule, because a marked label is bold and must stay.
+- **Value labels.** A line's last-value column is as wide as the value printed in it, not as the widest axis label; an `hbar`
+  value label that the `target=` rule would strike through starts just past the rule; every value label has the surface-coloured
+  halo that segment labels had.
+- **Bar cells.** `table … bar=col` draws a track with the bar in it and the number to its right, in a column as wide as the
+  table's widest bar number (`--nw` on the `<table>`), so the tracks line up and no number is crossed by a bar's end. The cell's
+  markup is unchanged; `bar=… target=` keeps its layout (the number above a thin track). The model reference still says "a bar
+  behind that column's numbers"; it is frozen (D35, D55) and the writer's intent is the same, so it is left until the next issue.
+- **Totals and bold numbers.** A table's last row whose first cell starts with Total, Subtotal, Grand total, Sum or Overall
+  (three rows or more) is ruled off and set heavier. A cell that is one bold or italic number (`**5870**`) counts as a number: its
+  column right-aligns, takes `heat` and `bar=`, and gets thousands separators, where one bold total used to turn the whole column
+  into left-aligned text.
+
+Also here: `skill/lede/SKILL.md` gains a short "Composing the page" section outside the frozen reference block (open with the
+answer, title every figure, prefer a component to a paragraph, name the total row, write edge labels as they should read). It is
+advice drawn from the same judge notes and has not been probed; a probe round (D72's harness) is the test of whether it moves pairs.
+
+Cost and gates: the render-hash fixture is regenerated (every page's stylesheet changed). The ellipsis cut in the sequence wrap is
+now a bisection, because measuring a sans label reads every character and a 130,000-word message made the old character-by-character
+cut quadratic (`robustness.test.ts`). Rejected: raising all chart text to 14px (the phone drawing has no room, and D9's two
+drawings already keep 12px text at true size); changing the default font or palette (D74 owns that); totals inside the legend.
+The renderer-defaults spec (wider dashboard column, section surfaces) is untouched and still waits on D67.

@@ -174,6 +174,30 @@ export function textWidth(s: string, size: number, opts: { mono?: boolean; bold?
   return w * size * (opts.bold ? 1.07 : 1);
 }
 
+/**
+ * Room for one line of an edge or message label (D79). The label is drawn in the interface sans exactly as written;
+ * in a flow diagram it keeps at least the width its mono capitals took at `size`, so the layout keeps its size,
+ * and gets more when the text as drawn (at `drawn`) is wider than that (a run of wide capitals).
+ */
+export const edgeLabelW = (s: string, size: number, drawn = size): number =>
+  Math.max(textWidth(s, size, { mono: true }), textWidth(s, drawn) * 1.06);
+
+/** Greedy word wrap of `label` to lines of at most `max` units at `size` (a single word is never split). */
+export function wrapTo(label: string, max: number, size = 13, opts: { mono?: boolean; bold?: boolean } = { bold: true }): string[] {
+  const words = label.split(/\s+/).filter(Boolean);
+  const lines: string[] = [];
+  let cur = '';
+  for (const w of words) {
+    const next = cur ? `${cur} ${w}` : w;
+    if (cur && textWidth(next, size, opts) > max) {
+      lines.push(cur);
+      cur = w;
+    } else cur = next;
+  }
+  if (cur) lines.push(cur);
+  return lines.length ? lines : [''];
+}
+
 export const snap4 = (v: number): number => Math.ceil(v / 4) * 4;
 
 export function slug(s: string): string {

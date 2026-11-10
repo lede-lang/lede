@@ -1,6 +1,6 @@
 import type { ChartBlock, DataSet } from '@lede-lang/core';
 import { num } from '@lede-lang/core';
-import { esc, fmtNum, inline, maxOf, minOf, plain, textWidth } from './util.ts';
+import { esc, fmtNum, inline, maxOf, minOf, plain, textWidth, wrapTo } from './util.ts';
 
 const FONT = 12;
 const TARGET_FONT = 12;
@@ -357,8 +357,12 @@ function svg(
           `<path class="${barCls(s, j, i)}" fill="currentColor" d="${d}"><title>${esc(`${x} · ${s.name}: ${withUnit(v, c.unit)}${est(i)}`)}</title></path>${hatchOver(i, d)}`,
         );
         if (showVals && !stacked && (mode !== 'end' || i === xs.length - 1)) {
+          // A label the target rule would strike through starts just past the rule instead.
+          const tx = c.target ? sx(c.target.value) : NaN;
+          const lw = textWidth(withUnit(v, c.unit), FONT) * FS;
+          const lx = v >= 0 ? (tx > x1 && tx < x1 + 8 + lw ? tx + 5 : x1 + 6) : tx < x0 && tx > x0 - 8 - lw ? tx - 5 : x0 - 6;
           out.push(
-            `<text class="val" x="${(v >= 0 ? x1 + 6 : x0 - 6).toFixed(1)}" y="${(yy + barH / 2 + 4).toFixed(1)}" text-anchor="${v >= 0 ? 'start' : 'end'}">${esc(withUnit(v, c.unit))}</text>`,
+            `<text class="val" x="${lx.toFixed(1)}" y="${(yy + barH / 2 + 4).toFixed(1)}" text-anchor="${v >= 0 ? 'start' : 'end'}">${esc(withUnit(v, c.unit))}</text>`,
           );
         }
         // labels=all on a stack: every segment's own value, centred in the segment (the total still follows the stack).
@@ -388,7 +392,6 @@ function svg(
     return out.join('');
   }
 
-  const B = 28;
   const L = valueW + 12;
   const endLabels = c.kind !== 'bar' && series.length > 1 && series.length <= 4 && !narrow;
   const lastOf = (s: Series): number | null => [...s.values].toReversed().find((v) => v !== null) ?? null;
@@ -399,12 +402,28 @@ function svg(
       ? maxOf(series.map((s) => textWidth(`${s.name} ${lastOf(s) === null ? '' : withUnit(lastOf(s)!, c.unit)}`, FONT) * FS)) + 22
       : maxOf(series.map((s) => textWidth(s.name, FONT))) + 22;
   // labels=end reserves the last-value column even on a stack (each series' own last value); labels=all labels in place.
-  const lastVal = c.kind !== 'bar' && (mode === 'end' || (c.labels && !stacked && mode !== 'all')) ? valueW + 10 : 0;
+  // The column holds each series' last value as printed, which can be wider than any tick ("$42.70" beside "$44").
+  const lastValW = maxOf(
+    series.map((s) => (lastOf(s) === null ? 0 : textWidth(withUnit(lastOf(s)!, c.unit), FONT) * FS)),
+    0,
+  );
+  const lastVal = c.kind !== 'bar' && (mode === 'end' || (c.labels && !stacked && mode !== 'all')) ? Math.max(valueW, lastValW) + 10 : 0;
   const R = Math.max(12, endLabelW, lastVal);
   const pw = W - L - R;
   const n = xs.length;
   // Bars: width, value-label rows and the head room they need are settled before the plot is laid out.
   const band = pw / n;
+  const XGAP = 10; // least gap between two x labels
+  // A bar chart whose category labels would touch wraps them onto two lines, when every label then fits its band,
+  // so no category goes unnamed (D79). Charts with event markers keep the one-line rule below.
+  const xLines = ((): string[][] | null => {
+    if (c.kind !== 'bar' || allMarks.length) return null;
+    const w = (t: string) => textWidth(t, FONT) * FS;
+    if (xs.every((x, i) => i === 0 || (w(xs[i - 1]) + w(x)) / 2 + XGAP <= band)) return null;
+    const lines = xs.map((x) => wrapTo(x, (band - XGAP) / FS, FONT, {}));
+    return lines.every((l) => l.length <= 2 && l.every((t) => w(t) <= band - XGAP)) ? lines : null;
+  })();
+  const B = xLines ? 42 : 28;
   const kBars = stacked ? 1 : series.length;
   const bw = Math.max(2, (band * (narrow ? 0.76 : 0.68) - 2 * (kBars - 1)) / kBars); // Req 3.8: >= 60% / 70% of the band
   const groupW = bw * kBars + 2 * (kBars - 1);
@@ -460,7 +479,12 @@ function svg(
   }
   const totals = xs.map((_, i) => series.reduce((a, s) => a + (s.values[i] ?? 0), 0));
   // Value labels by default when every label fits over its own bar.
-  const showVals = c.kind === 'bar' && (c.labels || (!stacked && valLabelW <= (kBars === 1 ? band * 0.9 : bw + 2)));
+  // A stack prints its total the same way (D79): the segments are read from the legend, the height from the number.
+  const totalW = maxOf(
+    totals.map((t) => textWidth(withUnit(t, c.unit), FONT) * FS),
+    0,
+  );
+  const showVals = c.kind === 'bar' && (c.labels || (stacked ? totalW : valLabelW) <= (kBars === 1 ? band * 0.9 : bw + 2));
   // Event markers: flags sit in a band above the plot, so the plot keeps its size and the axis range is untouched.
   const markX = (i: number): number => (c.kind === 'bar' ? L + (pw / n) * (i + 0.5) : n === 1 ? L + pw / 2 : L + (pw / (n - 1)) * i);
   const flags = allMarks.length ? layoutFlags(allMarks, markX, W, narrow) : null;
@@ -468,7 +492,7 @@ function svg(
   /** Geometry for `m` px of extra head room (labels that had to be lifted clear of their neighbours). */
   const geom = (m: number) => {
     const flagBand = flags ? flags.lanes * FLAG_LANE + 6 + m : 0;
-    const H = (narrow ? 220 : 280) + flagBand;
+    const H = (narrow ? 220 : 280) + flagBand + (B - 28); // a second line of x labels adds to the height, not to the plot
     const T = t0 + (flags ? flagBand : m);
     const ph = H - T - B;
     return { H, T, ph, sy: (v: number) => T + ph - ((v - lo) / (hi - lo)) * ph };
@@ -691,7 +715,6 @@ function svg(
   // x labels (Req 3.1): first and last are always kept, marked categories next, then every step-th label, with the
   // smallest step at which no two labels touch. The estimate carries a safety margin because the real font may be wider.
   const must = new Set(allMarks.map((mk) => mk.i));
-  const XGAP = 10;
   const spans = xs.map((x, i) => {
     const w = textWidth(x, FONT, { bold: must.has(i) }) * FS;
     let anchor: 'start' | 'middle' | 'end' = 'middle';
@@ -733,10 +756,17 @@ function svg(
   }
   if (!kept.length) kept = [0, n - 1].filter((i, k, a) => a.indexOf(i) === k && (k === 0 || clear(0, i)));
   kept.sort((a, b) => a - b);
-  for (const i of kept)
-    out.push(
-      `<text class="tick${must.has(i) ? ' mk-x' : ''}" x="${spans[i].px.toFixed(1)}" y="${H - 8}" text-anchor="${spans[i].anchor}">${esc(xs[i])}</text>`,
+  if (xLines) {
+    xLines.forEach((lines, i) =>
+      lines.forEach((t, k) =>
+        out.push(`<text class="tick" x="${cx(i).toFixed(1)}" y="${H - B + 20 + k * 14}" text-anchor="middle">${esc(t)}</text>`),
+      ),
     );
+  } else
+    for (const i of kept)
+      out.push(
+        `<text class="tick${must.has(i) ? ' mk-x' : ''}" x="${spans[i].px.toFixed(1)}" y="${H - 8}" text-anchor="${spans[i].anchor}">${esc(xs[i])}</text>`,
+      );
   if (flags) {
     // Per category: the topmost flag's pole runs down to the baseline (or, on bars, to just above the group's labels).
     const stemEnd = (i: number): number => {

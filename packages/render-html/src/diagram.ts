@@ -1,6 +1,6 @@
 import type { DiagramBlock, DiagramEdge, DiagramNode } from '@lede-lang/core';
 import { layout } from './elk.ts';
-import { esc, inline, maxOf, plain, snap4, textWidth } from './util.ts';
+import { edgeLabelW, esc, inline, maxOf, plain, snap4, textWidth, wrapTo } from './util.ts';
 
 const NAME = 13; // node name, sans 600
 
@@ -153,22 +153,6 @@ export interface Placed {
 const LINE = 16; // decision label line height
 
 export const isDecision = (n: DiagramNode): boolean => n.kind === 'decision' || n.kind === 'choice';
-
-/** Greedy wrap of `label` to lines no wider than `max` (a single long word keeps its own line). */
-function wrapTo(label: string, max: number, size = NAME, opts: { mono?: boolean; bold?: boolean } = { bold: true }): string[] {
-  const words = label.split(/\s+/).filter(Boolean);
-  const lines: string[] = [];
-  let cur = '';
-  for (const w of words) {
-    const next = cur ? `${cur} ${w}` : w;
-    if (cur && textWidth(next, size, opts) > max) {
-      lines.push(cur);
-      cur = w;
-    } else cur = next;
-  }
-  if (cur) lines.push(cur);
-  return lines.length ? lines : [''];
-}
 
 /** Mono text (sublabels, edge labels) wrapped to `max` units on at most three lines; Infinity keeps one line. */
 function monoLines(s: string, size: number, max: number): string[] {
@@ -378,10 +362,6 @@ function nodeSize(n: DiagramNode, compact = false, tier = 0): { w: number; h: nu
   return { w, h: snap4(Math.max(40, h)) };
 }
 
-function edgeLabelText(e: DiagramEdge): string {
-  return e.label.toUpperCase();
-}
-
 /**
  * Lays out a flow diagram with ELK's layered algorithm and returns absolute geometry. `tier` (phones only,
  * 0 to 2) wraps names, sublabels and edge labels narrower, for drawings the PHONE sizes leave too wide.
@@ -517,7 +497,7 @@ async function layoutOnce(d: DiagramBlock, compact: boolean, prior?: Placed, tie
     // An edge may attach to a group's boundary, but not run between a group and its own contents.
     if (ancestors(e.to).includes(e.from) || ancestors(e.from).includes(e.to)) return;
     if (!elkNodes.has(e.from) || !elkNodes.has(e.to)) return;
-    const text = edgeLabelText(e);
+    const text = e.label;
     const sp = portSide.get(`${i}:s`);
     const tp = portSide.get(`${i}:t`);
     const lines = monoLines(text, m.ELABEL, m.elMax);
@@ -529,7 +509,7 @@ async function layoutOnce(d: DiagramBlock, compact: boolean, prior?: Placed, tie
         ? [
             {
               text,
-              width: Math.ceil(Math.max(...lines.map((l) => textWidth(l, m.ELABEL, { mono: true }))) + 12),
+              width: Math.ceil(Math.max(...lines.map((l) => edgeLabelW(l, m.ELABEL, compact ? m.ELABEL : m.ELABEL + 1))) + 12),
               height: m.elH + (lines.length - 1) * EL_LINE,
               layoutOptions: { 'elk.edgeLabels.inline': compact ? 'true' : 'false' },
             },

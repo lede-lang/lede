@@ -7,8 +7,8 @@ const PHONE_W = 360;
 const NOTE_MAX = 320; // desktop notes wrap at this width
 const SAFE = 1.05; // estimates are approximate; wrap a little early rather than clip
 
-/** Uppercase mono label width including the stylesheet's .04em tracking. */
-const labelW = (s: string, size: number) => s.length * size * 0.66;
+/** Message label width: the interface sans, as written (D79), at weight 500. */
+const labelW = (s: string, size: number) => textWidth(s, size) * 1.08;
 const TAGW = (kind: string, size: number) => Math.ceil(kind.length * size * 0.68) + 14;
 
 /**
@@ -43,7 +43,18 @@ function wrap(text: string, max: number, w: (s: string) => number, maxLines: num
   if (cur) push(cur);
   if (lines.length > maxLines) {
     let last = lines.slice(maxLines - 1).join(' ');
-    while (last.length > 1 && w(`${last}…`) > max) last = last.slice(0, -1);
+    if (w(`${last}…`) > max) {
+      // The longest prefix that fits with its ellipsis, by bisection: `w` reads every character, and the text left
+      // over can be the whole of a very long label.
+      let lo = 1;
+      let hi = last.length - 1;
+      while (lo < hi) {
+        const mid = (lo + hi + 1) >> 1;
+        if (w(`${last.slice(0, mid)}…`) > max) hi = mid - 1;
+        else lo = mid;
+      }
+      last = last.slice(0, lo);
+    }
     lines.length = maxLines - 1;
     lines.push(`${last}…`);
   }
@@ -111,7 +122,7 @@ export function renderSequence(d: DiagramBlock, uid: string): string {
 }
 
 function msgsOf(d: DiagramBlock, idx: Map<string, number>, w: (m: string) => number): Msg[] {
-  return d.edges.map((e) => ({ e, a: idx.get(e.from)!, b: idx.get(e.to)!, w: w(e.label.toUpperCase()) }));
+  return d.edges.map((e) => ({ e, a: idx.get(e.from)!, b: idx.get(e.to)!, w: w(e.label) }));
 }
 
 function seqList(d: DiagramBlock): string {
@@ -346,7 +357,7 @@ function drawSeq(d: DiagramBlock, uid: string, phone: boolean): { svg: string; W
     const x2 = xs[m.b];
     const cls = ['edge', m.e.style === 'dashed' ? 'dash' : ''].filter(Boolean).join(' ');
     const n = String(++msgNo);
-    const text = m.e.label.toUpperCase();
+    const text = m.e.label;
     if (m.a === m.b) {
       const loopTop = y + 8;
       if (!phone) {
