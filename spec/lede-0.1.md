@@ -598,12 +598,18 @@ and stderr says so. With `--artifact` the data block and runtime follow `<main>`
 meta tags are still omitted, so the Artifact host's own policy decides whether the runtime runs. `--shell` with `--unsafe-html` is a
 usage error: raw `html` could plant its own controls and data block. Exit codes for every
 command: 0 on success; 1 for `build` on errors without `--force` and for `check` on errors; 2 for a usage error (no command, an
-unknown command, no FILE, an option no command knows, `-o` without a name, `--shell` with `--unsafe-html`, OUT the same file as a FILE) or a
-FILE that is missing or is a directory; 70 for an internal error, such as OUT not being writable or its directory missing. An exit-70 failure
+unknown command, no FILE, an option no command knows, `-o` without a name, `--shell` with `--unsafe-html`, OUT the same file as a FILE, `-` misused as
+below) or a FILE that is missing or is a directory; 70 for an internal error, such as OUT not being writable or its directory missing. An exit-70 failure
 prints one line to stderr, `lede: MESSAGE`; with the environment variable `LEDE_DEBUG` set it prints the stack as well.
 An option that no command knows (`--shel`, `-x`) is a usage error: stderr gets `lede: unknown option --shel; did you mean --shell?` (the
 suggestion is there when a known flag is within two edits of it) and then the usage, so a typo never builds a different page without saying so. A flag that
 some other command knows is still ignored: `lede watch x.lede --json` is `lede watch x.lede`. `--help`, `-h` or `help` prints the help to stdout and exits 0.
+
+`FILE` may be `-` in `build`, `check` and `ast`: the document is read from stdin, so a page can be piped in without a temporary file. Diagnostics call it
+`<stdin>`, which is also its key under `check --json`, and a `data x < file.csv` load resolves against the current directory, with the same confinement to that
+directory's tree as for a file. `-` may be given once, and not with `watch`, `--fix` or `--dry-run`, which need a file to watch or to rewrite: each is a usage error
+(exit 2). `build -` without `-o` writes the page to stdout as for a file. `lede version`, `lede --version` and `lede -V` print the version of the CLI package, one
+line, to stdout and exit 0; `lede --help` lists them.
 
 `lede watch FILE [-o OUT]` builds FILE to OUT, or to `NAME.html` beside `NAME.lede`, then rebuilds on every change until stopped. It always
 renders as if `--force` were given, and honours `--unsafe-html`, `--allow-remote` and `--shell`. With `--shell`, the note that the flag had no

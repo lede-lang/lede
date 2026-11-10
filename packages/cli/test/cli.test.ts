@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 
 const CLI = new URL('../src/cli.ts', import.meta.url).pathname;
-const run = (args: string[], cwd: string) => spawnSync(process.execPath, [CLI, ...args], { cwd, encoding: 'utf8' });
+const run = (args: string[], cwd: string, input?: string) => spawnSync(process.execPath, [CLI, ...args], { cwd, encoding: 'utf8', input });
 
 test('data files are confined to the document directory, symlinks included', () => {
   const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
@@ -425,4 +425,89 @@ test('an option no command knows is a usage error that suggests the nearest flag
   // nothing is built when an option is wrong, even with --force
   assert.equal(bad(['build', 'p.lede', '--forse', '-o', 'x.html']).status, 2);
   assert.throws(() => readFileSync(join(dir, 'x.html')));
+});
+
+test('--version, -V and version print the package version on one line and exit 0, with no file', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  const { version } = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')) as { version: string };
+  assert.match(version, /^\d+\.\d+\.\d+/);
+  for (const args of [['--version'], ['-V'], ['version']]) {
+    const r = run(args, dir);
+    assert.equal(r.status, 0, args.join(' '));
+    assert.equal(r.stdout, `${version}\n`);
+    assert.equal(r.stderr, '');
+  }
+  assert.equal(run(['--verison'], dir).stderr.split('\n')[0], 'lede: unknown option --verison; did you mean --version?');
+  const help = run(['--help'], dir).stdout;
+  assert.match(help, /lede version/);
+  assert.match(help, /-V, --version/);
+});
+
+test('FILE - reads the document from stdin for build, check and ast, and names it <stdin>', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  const src = '# Piped\n\nkpi p99 | 182 ms | -38% | good\n';
+  writeFileSync(join(dir, 'p.lede'), src);
+  // build: the same page as from a file, on stdout or at -o
+  const page = run(['build', 'p.lede'], dir).stdout;
+  assert.equal(run(['build', '-'], dir, src).stdout, page);
+  const o = run(['build', '-', '-o', 'out.html'], dir, src);
+  assert.equal(o.status, 0, o.stderr);
+  assert.match(o.stderr, /^<stdin> → out\.html \(/);
+  assert.equal(readFileSync(join(dir, 'out.html'), 'utf8'), page);
+  // check: diagnostics are labelled <stdin>, in text and as the --json key
+  const bad = '# Bad\nchart line nope\n';
+  const text = run(['check', '-'], dir, bad);
+  assert.equal(text.status, 1);
+  assert.match(text.stderr, /^<stdin>:2:\d+: \S*error\S* \[/);
+  assert.equal(text.stderr.trimEnd().split('\n').at(-1), '1 error(s)');
+  const json = run(['check', '-', '--json'], dir, bad);
+  assert.deepEqual(Object.keys(JSON.parse(json.stdout)), ['<stdin>']);
+  assert.equal(run(['check', '-'], dir, src).stderr.trimEnd(), 'ok');
+  // check takes stdin beside files; build says so on an error, with the same label
+  const both = JSON.parse(run(['check', 'p.lede', '-', '--json'], dir, bad).stdout) as Record<string, unknown[]>;
+  assert.deepEqual(Object.keys(both), ['p.lede', '<stdin>']);
+  const refused = run(['build', '-'], dir, bad);
+  assert.equal(refused.status, 1);
+  assert.match(refused.stderr, /<stdin>: 1 error\(s\); not written/);
+  assert.equal(refused.stdout, '');
+  // ast prints the document and exits 0 on errors, as for a file
+  const ast = run(['ast', '-'], dir, bad);
+  assert.equal(ast.status, 0);
+  assert.equal((JSON.parse(ast.stdout) as { diagnostics: unknown[] }).diagnostics.length, 1);
+  assert.deepEqual(JSON.parse(run(['ast', '-'], dir, src).stdout), JSON.parse(run(['ast', 'p.lede'], dir).stdout));
+});
+
+test('data loads from stdin resolve against the current directory and stay inside it', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  mkdirSync(join(dir, 'work'));
+  writeFileSync(join(dir, 'work', 'q.csv'), 'a,b\n1,2\n');
+  writeFileSync(join(dir, 'outside.csv'), 'a,b\n3,4\n');
+  const diags = (src: string) => {
+    const r = run(['check', '-', '--json'], join(dir, 'work'), src);
+    return JSON.parse(r.stdout)['<stdin>'] as { code: string; message: string }[];
+  };
+  assert.deepEqual(diags('data q < q.csv\ntable q\n'), []);
+  const out = diags('data o < ../outside.csv\ntable o\n').filter((d) => d.code === 'data-file');
+  assert.equal(out.length, 1);
+  assert.match(out[0].message, /\.\.\/outside\.csv is outside the document's directory/);
+  const asked = run(['build', '-'], join(dir, 'work'), 'data q < q.csv\nchart bar q\n');
+  assert.equal(asked.status, 0, asked.stderr);
+  assert.match(asked.stdout, /<svg/);
+});
+
+test('- is a usage error twice, with watch, and with --fix or --dry-run', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  const cases: [string[], RegExp][] = [
+    [['check', '-', '-'], /^lede: - \(stdin\) can be given only once/],
+    [['check', '-', '--fix'], /^lede: .*--fix.*stdin/],
+    [['check', '--dry-run', '-'], /^lede: .*--dry-run.*stdin/],
+    [['watch', '-'], /^lede: watch needs a file, not - \(stdin\)/],
+  ];
+  for (const [args, message] of cases) {
+    const r = run(args, dir, '# Hi\n');
+    assert.equal(r.status, 2, args.join(' '));
+    assert.match(r.stderr, message);
+    assert.match(r.stderr, /usage:\n/);
+    assert.equal(r.stdout, '');
+  }
 });
