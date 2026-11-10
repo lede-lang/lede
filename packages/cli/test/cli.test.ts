@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, writeFileSync, symlinkSync, readFileSync, linkSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, symlinkSync, readFileSync, linkSync, renameSync, rmSync, unlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
@@ -509,5 +509,76 @@ test('- is a usage error twice, with watch, and with --fix or --dry-run', () => 
     assert.match(r.stderr, message);
     assert.match(r.stderr, /usage:\n/);
     assert.equal(r.stdout, '');
+  }
+});
+
+/** Start `lede watch` in `dir`. The caller kills `child` in a `finally`; `until` polls with a deadline long enough for a slow machine. */
+function startWatch(dir: string, args: string[]) {
+  const child = spawn(process.execPath, [CLI, 'watch', ...args], { cwd: dir });
+  let err = '';
+  child.stderr.setEncoding('utf8');
+  child.stderr.on('data', (d: string) => (err += d));
+  const until = async (what: string, done: () => boolean) => {
+    for (let i = 0; i < 200 && !done(); i++) await new Promise((r) => setTimeout(r, 50));
+    assert.ok(done(), `timed out waiting for ${what}; stderr so far:\n${err}`);
+  };
+  const html = (name = 'page.html') => {
+    try {
+      return readFileSync(join(dir, name), 'utf8');
+    } catch {
+      return '';
+    }
+  };
+  return { child, until, stderr: () => err, html };
+}
+
+test('watch keeps rebuilding after an editor saves by writing a temp file and renaming it over the original', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  const page = join(dir, 'page.lede');
+  writeFileSync(page, '# Heading\n\nalphaword\n');
+  const w = startWatch(dir, ['page.lede']);
+  try {
+    await w.until('the first build', () => w.stderr().includes('watching') && w.html().includes('alphaword'));
+    for (const word of ['bravoword', 'charlieword']) {
+      writeFileSync(`${page}.tmp`, `# Heading\n\n${word}\n`);
+      renameSync(`${page}.tmp`, page); // a new inode under the old name: a watcher on the file itself would now see nothing
+      await w.until(`a rebuild with ${word}`, () => w.html().includes(word));
+    }
+    assert.equal(w.child.exitCode, null, 'still running');
+    assert.doesNotMatch(w.stderr(), /\n\s+at /, 'no stack trace');
+  } finally {
+    w.child.kill();
+  }
+});
+
+test('watch survives the file being deleted, says so once, and rebuilds when it comes back; a read error is one line', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  const page = join(dir, 'page.lede');
+  writeFileSync(page, '# Heading\n\nalphaword\n');
+  const w = startWatch(dir, ['page.lede']);
+  const gone = () => w.stderr().match(/lede: page\.lede is gone; waiting for it to come back/g)?.length ?? 0;
+  try {
+    await w.until('the first build', () => w.stderr().includes('watching') && w.html().includes('alphaword'));
+    unlinkSync(page);
+    await w.until('the note that the file is gone', () => gone() === 1);
+    assert.equal(w.child.exitCode, null, 'still running');
+    writeFileSync(page, '# Heading\n\ndeltaword\n');
+    await w.until('a rebuild after it came back', () => w.html().includes('deltaword'));
+    assert.equal(gone(), 1, 'said once');
+    // A source that cannot be read (here: a directory in its place) is one line on stderr, not the end of the watcher.
+    unlinkSync(page);
+    mkdirSync(page);
+    await w.until('the read error', () => /lede: .*EISDIR.*\n/.test(w.stderr()));
+    assert.equal(w.child.exitCode, null, 'still running');
+    rmSync(page, { recursive: true });
+    writeFileSync(page, '# Heading\n\nechoword\n');
+    await w.until('a rebuild after the error', () => w.html().includes('echoword'));
+    assert.equal(gone(), 1, 'a read error is not "gone"');
+    unlinkSync(page);
+    await w.until('a second note for a second disappearance', () => gone() === 2);
+    assert.doesNotMatch(w.stderr(), /\n\s+at /, 'no stack trace');
+    assert.equal(w.child.exitCode, null);
+  } finally {
+    w.child.kill();
   }
 });

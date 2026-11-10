@@ -613,7 +613,11 @@ line, to stdout and exit 0; `lede --help` lists them.
 
 `lede watch FILE [-o OUT]` builds FILE to OUT, or to `NAME.html` beside `NAME.lede`, then rebuilds on every change until stopped. It always
 renders as if `--force` were given, and honours `--unsafe-html`, `--allow-remote` and `--shell`. With `--shell`, the note that the flag had no
-effect is printed on the first build it holds for, and again only if a page that took the shell stops doing so; it is not repeated on every save. `lede ast FILE` prints the parsed document,
+effect is printed on the first build it holds for, and again only if a page that took the shell stops doing so; it is not repeated on every save. It watches FILE's
+directory and picks FILE's events by name, so an editor's save that writes a temporary file and renames it over FILE is seen like an in-place write. Only the first
+build is fatal (exit 70, as for `build`). After that nothing ends the process but a signal: if FILE is deleted, stderr gets `lede: FILE is gone; waiting for it to
+come back` once and the page is rebuilt when FILE reappears, and any other failed rebuild (FILE unreadable, OUT no longer writable) prints one line, `lede: MESSAGE`,
+and watching goes on. A change that lands during a build causes one more build after it. `lede ast FILE` prints the parsed document,
 diagnostics included, as JSON on stdout and exits 0 even when the document has errors.
 
 `--json` prints one object keyed by file path; each value is an array of diagnostics:

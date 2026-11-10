@@ -17,7 +17,7 @@ const HELP = `${USAGE}
 
 commands:
   build   compile a page to one self-contained HTML file (stdout without -o); refuses on errors
-  watch   rebuild next to the source on every save
+  watch   rebuild next to the source on every save; it keeps going when an editor replaces the file or it is deleted for a while
   check   print file:line:col diagnostics, then a last line: ok if there were none, else the
           counts (a warning is not ok); exit 1 if any is an error, 2 on a usage error
   ast     print the parsed document as JSON
@@ -136,6 +136,75 @@ async function build(file: string, out: string | null, flags: Set<string>, watch
       `${name} → ${out} (${(Buffer.byteLength(src) / 1024).toFixed(1)} KB → ${(Buffer.byteLength(html) / 1024).toFixed(1)} KB)\n`,
     );
   return true;
+}
+
+/** Where `watch` writes: OUT, or `NAME.html` beside `NAME.lede`. */
+const watchTarget = (file: string, out: string | null): string => out ?? resolve(dirname(file), `${basename(file, '.lede')}.html`);
+
+/**
+ * `lede watch`: build once, then rebuild after every change to FILE until stopped. It watches the directory and picks FILE's events
+ * by name: an editor that saves by writing a temp file and renaming it over the original leaves a watcher on the file itself holding
+ * the old inode, which never fires again, and deleting the file would end it.
+ */
+async function watchFile(file: string, target: string, flags: Set<string>): Promise<number> {
+  const watched = new Set([...flags, '--force']);
+  const watching: Watching = { shellIdle: false };
+  // The first build is not guarded: an unreadable FILE or an unwritable OUT stops the command (exit 70), not a loop of the same line.
+  await build(file, target, watched, watching);
+  let gone = false;
+  /** One rebuild, which never throws: a missing or unreadable FILE is a line on stderr, and the next change tries again. */
+  const rebuild = async (): Promise<void> => {
+    try {
+      if (existsSync(file)) {
+        gone = false;
+        await build(file, target, watched, watching);
+        return;
+      }
+    } catch (e) {
+      if (existsSync(file)) {
+        process.stderr.write(failure(e));
+        return;
+      }
+      // The file vanished between the check and the read, as in a save that renames: gone, not an error.
+    }
+    if (!gone) process.stderr.write(`lede: ${file} is gone; waiting for it to come back\n`);
+    gone = true;
+  };
+  // One rebuild at a time: a change that lands during a build asks for one more after it, so the last save always wins.
+  let busy = false;
+  let again = false;
+  const cycle = async (): Promise<void> => {
+    if (busy) {
+      again = true;
+      return;
+    }
+    busy = true;
+    try {
+      await rebuild();
+    } finally {
+      busy = false;
+    }
+    if (again) {
+      again = false;
+      await cycle();
+    }
+  };
+  // Follow a symlinked FILE to the file that is edited; the page is still read through FILE.
+  const real = realpathSync(file);
+  const name = basename(real);
+  let timer: NodeJS.Timeout | null = null;
+  const watcher = fsWatch(dirname(real), (_event, changed) => {
+    if (changed !== null && changed !== name) return; // some platforms give no name; then any change may be ours
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => void cycle(), 60);
+  });
+  process.stderr.write(`watching ${file} → ${target}\n`);
+  return await new Promise<number>((done) => {
+    watcher.on('error', (e) => {
+      process.stderr.write(failure(e));
+      done(70);
+    });
+  });
 }
 
 /** `lede check`: print every diagnostic (or the JSON), repair first under --fix, and exit 1 if any is an error. */
@@ -296,7 +365,7 @@ async function main(argv: string[]): Promise<number> {
     }
   }
   // The page goes to OUT, so OUT must not be the document: `build ok.lede -o ok.lede` would turn the source into HTML.
-  const target = cmd === 'watch' ? (out ?? resolve(dirname(files[0]), `${basename(files[0], '.lede')}.html`)) : out;
+  const target = cmd === 'watch' ? watchTarget(files[0], out) : out;
   const clash = cmd === 'build' || cmd === 'watch' ? files.find((f) => f !== '-' && target !== null && sameFile(f, target)) : undefined;
   if (clash !== undefined) {
     process.stderr.write(`lede: ${target} is the same file as ${clash}; not overwriting the source\n`);
@@ -310,17 +379,8 @@ async function main(argv: string[]): Promise<number> {
     case 'ast':
       process.stdout.write(`${JSON.stringify((await load(files[0])).doc, null, 2)}\n`);
       return 0;
-    case 'watch': {
-      const watching: Watching = { shellIdle: false };
-      await build(files[0], target, new Set([...flags, '--force']), watching);
-      let timer: NodeJS.Timeout | null = null;
-      fsWatch(files[0], () => {
-        if (timer) clearTimeout(timer);
-        timer = setTimeout(() => void build(files[0], target, new Set([...flags, '--force']), watching), 60);
-      });
-      process.stderr.write(`watching ${files[0]} → ${target}\n`);
-      return await new Promise<number>(() => {});
-    }
+    case 'watch':
+      return await watchFile(files[0], watchTarget(files[0], out), flags);
   }
   return 2;
 }
