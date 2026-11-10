@@ -1,0 +1,8 @@
+data z = a,b; x,5; y,7
+chart bar z title=Deploys per week
+chart line z title="Deploys per week y=b
+table z title=Top five rows limit=1
+table z title="Top five
+diagram flow dir=LR title="Order path
+flow: a -> b
+chart bar z title="Deploys per week" labels

@@ -31,6 +31,16 @@ test('a chart block built by hand with an empty range is drawn on the range of i
   assert.doesNotMatch(await render(doc), BAD);
 });
 
+test('a chart or table whose column a later redefinition took away draws nothing and does not throw', async () => {
+  const doc = parse('data d = x,y; a,1; b,2\nchart area d stack\ntable d sort=y bar=y\n\nStill here.\n\ndata d = p,q; a,5\ntable d\n');
+  assert.equal(doc.diagnostics.filter((d) => d.severity === 'error').length, 2);
+  const html = await render(doc, { fragment: true });
+  assert.doesNotMatch(html, BAD);
+  assert.doesNotMatch(html, /<svg/);
+  assert.equal((html.match(/<table/g) ?? []).length, 1);
+  assert.match(html, /Still here\./);
+});
+
 test('a series longer than a call takes arguments is drawn', async () => {
   // `Math.max(...values)` throws a RangeError past about 120,000 values; every kind of chart reads its rows another way.
   const rows = Array.from({ length: 130_000 }, (_, i) => `${i},${i % 97}`).join('; ');

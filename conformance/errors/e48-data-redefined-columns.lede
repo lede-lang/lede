@@ -1,0 +1,7 @@
+data d = x,y; a,1; b,2
+chart area d
+table d sort=y
+table d
+kpi Last | =d.y
+data d = p,q; a,5
+chart bar d

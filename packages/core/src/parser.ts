@@ -26,7 +26,7 @@ import type {
   TemplateBlock,
   ToggleBlock,
 } from './ast.ts';
-import { num, parseInlineCsv, parseOpts, pipeOutsideQuotes, readQuoted, tokens } from './lex.ts';
+import { num, parseCsvFile, parseInlineCsv, parseOpts, pipeOutsideQuotes, readQuoted, tokens, type Opts } from './lex.ts';
 import { EMPTY, FIELD_KINDS, NOT_CHOSEN, SLOT_RE } from './fields.ts';
 import { AA_NON_TEXT, AA_TEXT, HEX_COLOR, accentContrast, accentTheme } from './contrast.ts';
 import { browserUrl, imageSrcKind } from './url.ts';
@@ -891,6 +891,28 @@ export class LedeParser {
     return { name, opts: cut < 0 ? '' : left.slice(cut).trim(), right: rest.slice(bar + 1) };
   }
 
+  /**
+   * W `<kind>-option` for each word the options of a chart or diagram line do not take, saying what was probably meant when the
+   * word spilled out of an unquoted value, and for a `"` that is never closed.
+   */
+  private strayOptions(kind: 'chart' | 'diagram', o: Opts, stray: string[], col: number): void {
+    for (const w of spilled(o, stray))
+      this.diag('warning', `${kind}-option`, `ignored ${kind} option "${w.text}"${w.hint}`, this.lineNo, col);
+    this.openQuotes(kind, o, col);
+  }
+
+  /** W `<kind>-option` for a `"` in an option list that is never closed: the options after it were read as its text. */
+  private openQuotes(kind: 'chart' | 'table' | 'diagram', o: Opts, col: number): void {
+    if (o.unclosed !== null)
+      this.diag(
+        'warning',
+        `${kind}-option`,
+        `a " is never closed, so the rest of the line, ${JSON.stringify(o.unclosed)}, is read as one value; close it before the next option`,
+        this.lineNo,
+        col,
+      );
+  }
+
   /** W `question-option` for every option before the `|` that the word does not take. */
   private ignoreOptions(word: string, name: string, o: ReturnType<typeof parseOpts>, keep: string[], col: number): void {
     const L = this.lineNo;
@@ -1366,10 +1388,8 @@ export class LedeParser {
         this.diag('error', 'data-file', `cannot read ${body}: ${e instanceof Error ? e.message : String(e)}`, L, bodyCol);
         return;
       }
-      const rows = text
-        .split(/\r?\n/)
-        .filter((r) => r.trim())
-        .map((r) => parseInlineCsv(r).rows[0] ?? []);
+      const { rows, unclosedLine } = parseCsvFile(text);
+      if (unclosedLine !== null) this.diag('error', 'csv-quote', `unclosed " on line ${unclosedLine} of ${body.trim()}`, L, bodyCol);
       this.defineData(
         name,
         rows,
@@ -1506,7 +1526,7 @@ export class LedeParser {
       return;
     }
     const o = parseOpts(optStr, ['stack', 'labels'], ['x', 'y', 'focus']);
-    for (const w of [...o.words, ...o.quoted]) this.diag('warning', 'chart-option', `ignored chart option "${w}"`, L, col);
+    this.strayOptions('chart', o, [...o.words, ...o.quoted], col);
     const xRaw = o.kv.x ?? d.columns[0];
     if (!this.requireCol(d, xRaw, col)) return;
     const x = findCol(d, xRaw)!;
@@ -1652,7 +1672,7 @@ export class LedeParser {
   private rangeChart(d: DataSet, optStr: string, col: number): void {
     const L = this.lineNo;
     const o = parseOpts(optStr, ['stack', 'labels'], ['x', 'from', 'to', 'at', 'focus']);
-    for (const w of [...o.words, ...o.quoted]) this.diag('warning', 'chart-option', `ignored chart option "${w}"`, L, col);
+    this.strayOptions('chart', o, [...o.words, ...o.quoted], col);
     const xRaw = o.kv.x ?? d.columns[0];
     if (!this.requireCol(d, xRaw, col)) return;
     const x = findCol(d, xRaw)!;
@@ -1804,14 +1824,15 @@ export class LedeParser {
     }
     if (!d) return;
     const o = parseOpts(optStr, ['heat'], ['cols', 'sort', 'heat', 'bar', 'target']);
-    for (const w of [...o.words, ...o.quoted]) {
+    for (const { text: w, hint: spill } of spilled(o, [...o.words, ...o.quoted])) {
       // `table vendors = ...` names an inline table, which has no name: say how to get one.
       const hint =
         eq && w === o.words[0] && /^[A-Za-z_][\w-]*$/.test(w) && !TABLE_OPTIONS.includes(w)
           ? `; an inline table has no name: write \`table = ...\`, or \`data ${w} = ...\` then \`table ${w}\``
-          : ' (options: cols= sort= limit= title= heat bar= target=)';
+          : spill || ' (options: cols= sort= limit= title= heat bar= target=)';
       this.diag('warning', 'table-option', `ignored table option "${w}"${hint}`, L, col);
     }
+    this.openQuotes('table', o, col);
     let cols: string[] | null = null;
     if (o.kv.cols) {
       cols = o.kv.cols
@@ -2019,7 +2040,7 @@ export class LedeParser {
     }
     this.clash('diagram', name, col);
     const o = parseOpts(rest.slice(t[1]?.offset ?? rest.length), ['flow', 'sequence']);
-    for (const w of o.words) this.diag('warning', 'diagram-option', `ignored diagram option "${w}"`, L, col);
+    this.strayOptions('diagram', o, o.words, col);
     const kind = o.flags.includes('sequence') ? 'sequence' : 'flow';
     const dirRaw = (o.kv.dir ?? (kind === 'sequence' ? 'LR' : 'TB')).toUpperCase();
     const dir = (['LR', 'TB', 'RL', 'BT'].includes(dirRaw) ? dirRaw : 'TB') as DiagramBlock['dir'];
@@ -2319,6 +2340,22 @@ export class LedeParser {
 }
 
 /** `d` is a whole number of `step`s, within a rounding error (0.94 - 0.85 is not exactly 9 steps of 0.01 in floating point). */
+/**
+ * The stray words of an option list, for reporting. Words that spilled out of one unquoted value (`title=Deploys per week`) come
+ * back as one entry, `per week`, with a hint naming the option as it was probably meant; every other word is its own entry.
+ */
+function spilled(o: Opts, stray: string[]): { text: string; hint: string }[] {
+  const out: { text: string; hint: string }[] = [];
+  const rest = [...stray];
+  for (const s of o.spills) {
+    const at = rest.indexOf(s.words[0]);
+    if (at < 0) continue;
+    rest.splice(at, s.words.length);
+    out.push({ text: s.words.join(' '), hint: `; a value with a space needs quotes: ${s.meant}` });
+  }
+  return [...out, ...rest.map((text) => ({ text, hint: '' }))];
+}
+
 function onGrid(d: number, step: number): boolean {
   const q = d / step;
   return Math.abs(q - Math.round(q)) <= EPS;
@@ -2453,6 +2490,18 @@ function storeData(doc: LedeDocument, name: string, d: DataSet): void {
   Object.defineProperty(doc.data, name, { value: d, enumerable: true, writable: true, configurable: true });
 }
 
+/**
+ * The columns `b` reads that `d` does not have. A chart or table names its columns from the data as it stood on its own line, so
+ * this is empty unless the data was redefined below it (`data d = x,y` ... `chart line d` ... `data d = a,b`).
+ */
+export function missingColumns(b: ChartBlock | TableBlock, d: DataSet): string[] {
+  const reads =
+    b.type === 'chart'
+      ? [b.x, ...(b.kind === 'range' ? [b.from, b.to, b.at] : b.y)]
+      : [...(b.cols ?? []), b.sort?.col, ...(Array.isArray(b.heat) ? b.heat : []), ...(b.bars ?? []), b.targetCol];
+  return [...new Set(reads)].filter((c): c is string => c !== undefined && !d.columns.includes(c));
+}
+
 export function findCol(d: DataSet, name: string): string | null {
   if (d.columns.includes(name)) return name;
   return d.columns.find((c) => colKey(c) === colKey(name)) ?? null;
@@ -2461,7 +2510,29 @@ export function findCol(d: DataSet, name: string): string | null {
 /** Post-parse resolution: kpi references and diagram sanity checks. Idempotent. */
 export function resolve(doc: LedeDocument): void {
   walkBlocks(doc.blocks, (b) => {
-    if (b.type === 'kpis') for (const k of b.items) resolveKpi(doc, k);
+    // A block names its columns from the data as it stood on its own line; a later `data NAME =` may have taken one away.
+    // (A column that was never there is an error on the block's own line already, and the data is then above the block.)
+    const redefined = (d: DataSet, gone: string[]) => {
+      if (gone.length === 0 || d.line <= b.line) return;
+      doc.diagnostics.push({
+        severity: 'error',
+        code: 'data-redefined',
+        message: `this ${b.type === 'kpis' ? 'kpi' : b.type} reads ${gone.join(', ')} of ${d.name}, but ${d.name} is redefined on line ${d.line} without ${gone.length === 1 ? 'it' : 'them'}; give the data on line ${d.line} a name of its own`,
+        line: b.line,
+        col: 1,
+        detail: { name: d.name, columns: gone, redefined: d.line },
+      });
+    };
+    if (b.type === 'kpis') {
+      for (const k of b.items) {
+        const lost = resolveKpi(doc, k);
+        if (lost) redefined(lost.d, [lost.column]);
+      }
+    }
+    if (b.type === 'chart' || b.type === 'table') {
+      const d = dataSet(doc, b.data);
+      if (d) redefined(d, missingColumns(b, d));
+    }
     if (b.type === 'diagram') {
       if (b.nodes.length === 0) {
         doc.diagnostics.push({
@@ -2514,12 +2585,14 @@ export function resolve(doc: LedeDocument): void {
   });
 }
 
-function resolveKpi(doc: LedeDocument, k: Kpi): void {
-  if (!k.ref) return;
+/** Fill a `=data.column` kpi from the data. Returns the data set and the column when the set no longer has that column. */
+function resolveKpi(doc: LedeDocument, k: Kpi): { d: DataSet; column: string } | null {
+  if (!k.ref) return null;
   const m = /^([A-Za-z_][\w-]*)\.(.+)$/.exec(k.ref);
   const d = m && dataSet(doc, m[1]);
   const cname = m && d ? findCol(d, m[2]) : null;
-  if (!m || !d || !cname) return;
+  if (m && d && !cname) return { d, column: m[2] };
+  if (!m || !d || !cname) return null;
   const ci = d.columns.indexOf(cname);
   const vals = d.rows.map((r) => r[ci]).filter((v) => v !== '');
   const last = vals[vals.length - 1] ?? '';
@@ -2533,6 +2606,7 @@ function resolveKpi(doc: LedeDocument, k: Kpi): void {
       k.delta = diff === 0 ? '0' : `${diff > 0 ? '+' : '−'}${Math.abs(diff).toFixed(dec)}`;
     }
   }
+  return null;
 }
 
 function decimals(v: string): number {

@@ -1,5 +1,6 @@
 import type {
   Block,
+  ChartBlock,
   LedeDocument,
   TableBlock,
   DataSet,
@@ -15,7 +16,18 @@ import type {
   Kpi,
   QuestionBlock,
 } from '@lede-lang/core';
-import { browserUrl, dataSet, exportsOf, fieldsOf, imageSrcKind, num, parse, presetsOf, type ParseOptions } from '@lede-lang/core';
+import {
+  browserUrl,
+  dataSet,
+  exportsOf,
+  missingColumns,
+  fieldsOf,
+  imageSrcKind,
+  num,
+  parse,
+  presetsOf,
+  type ParseOptions,
+} from '@lede-lang/core';
 import sanitizeHtml from 'sanitize-html';
 import { renderChart } from './chart.ts';
 import { renderFlow } from './diagram.ts';
@@ -635,12 +647,12 @@ export class Ctx {
       case 'data':
         return '';
       case 'chart': {
-        const d = dataSet(this.doc, b.data);
+        const d = this.dataFor(b);
         if (!d) return '';
         return renderChart(b, d, this.uid('c'));
       }
       case 'table': {
-        const d = dataSet(this.doc, b.data);
+        const d = this.dataFor(b);
         return d ? table(b, d, this.picks) : '';
       }
       case 'cards':
@@ -696,10 +708,21 @@ export class Ctx {
     }
   }
 
+  /**
+   * The data a chart or table draws, or undefined when there is nothing it can draw from: no such set, or one that lacks a column
+   * the block reads (the set was redefined below the block, which the parser reports as an error). Such a block draws nothing.
+   * A range chart is handed its set either way: its drawer falls back to the data table when a column is not there.
+   */
+  private dataFor(b: ChartBlock | TableBlock): DataSet | undefined {
+    const d = dataSet(this.doc, b.data);
+    if (b.type === 'chart' && b.kind === 'range') return d;
+    return d && missingColumns(b, d).length === 0 ? d : undefined;
+  }
+
   /** A chart in a cell of the 64rem (1024px) grid is drawn at the cell's own width: the grid's gaps are 16px, and the figure's padding and border take 34px from the cell. */
   private gridKid<T>(b: GridBlock, c: Block, other: (c: Block) => T): string | T {
     const cellWidth = Math.floor((1024 - 16 * (b.columns - 1)) / b.columns) - 34;
-    const d = c.type === 'chart' && b.columns >= 2 ? dataSet(this.doc, c.data) : undefined;
+    const d = c.type === 'chart' && b.columns >= 2 ? this.dataFor(c) : undefined;
     return c.type === 'chart' && d ? renderChart(c, d, this.uid('c'), { cellWidth }) : other(c);
   }
 
@@ -726,11 +749,11 @@ export class Ctx {
 
   private cardKid<T>(k: Block, f: { inner: number; fit: number }, other: (k: Block) => T): string | T {
     if (k.type === 'chart') {
-      const d = dataSet(this.doc, k.data);
+      const d = this.dataFor(k);
       return d ? renderChart(k, d, this.uid('c'), { cellWidth: f.inner - 34 }) : '';
     }
     if (k.type === 'table') {
-      const d = dataSet(this.doc, k.data);
+      const d = this.dataFor(k);
       return d ? table(k, d, this.picks, f.fit) : '';
     }
     return other(k);

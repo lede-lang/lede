@@ -2,6 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { LedeStream, dataSet, parse, parseInlineCsv } from '../src/index.ts';
+import { parseCsvFile } from '../src/lex.ts';
 
 const codes = (src: string) => parse(src).diagnostics.map((d) => d.code);
 
@@ -98,4 +99,69 @@ test('a group cycle of any length is one error', () => {
   assert.deepEqual(cyc('d: group a "A" b, x\nd: group b "B" c\nd: group c "C" a\n'), ['groups a, b and c contain each other']);
   // A group two others hold is nesting twice over, not a cycle.
   assert.deepEqual(cyc('d: group a "A" b, c\nd: group b "B" e\nd: group c "C" e\nd: group e "E" x\n'), []);
+});
+
+test('a block whose column a later redefinition took away is an error, and only then', () => {
+  const doc = parse('data d = x,y; a,1; b,2\nchart area d\ntable d sort=y\ntable d\nkpi Last | =d.y\ndata d = p,q; a,5\nchart bar d\n');
+  assert.deepEqual(
+    doc.diagnostics.map((d) => [d.severity, d.code, d.line, d.detail ?? null]),
+    [
+      ['warning', 'data-redefined', 6, null],
+      ['error', 'data-redefined', 2, { name: 'd', columns: ['x', 'y'], redefined: 6 }],
+      ['error', 'data-redefined', 3, { name: 'd', columns: ['y'], redefined: 6 }],
+      ['error', 'data-redefined', 5, { name: 'd', columns: ['y'], redefined: 6 }],
+    ],
+  );
+  // The same columns under the new definition: only the warning. A column that never was: only the error on its own line.
+  assert.deepEqual(codes('data d = x,y; a,1\nchart line d\nkpi K | =d.y\ndata d = x,y; a,2\n'), ['data-redefined']);
+  assert.deepEqual(codes('data d = x,y; a,1\nkpi K | =d.nope\n'), ['unknown-column']);
+});
+
+test('words that spill out of an unquoted option value are one warning that names the fix, and an open quote is one too', () => {
+  const messages = (line: string) =>
+    parse(`data z = a,b; x,5; y,7\n${line}\n`).diagnostics.map((d) => `${d.severity} ${d.code}: ${d.message}`);
+  assert.deepEqual(messages('chart bar z title=Deploys per week stack'), [
+    'warning chart-option: ignored chart option "per week"; a value with a space needs quotes: title="Deploys per week"',
+  ]);
+  assert.deepEqual(messages('chart bar z nope title=Cost ($K)'), [
+    'warning chart-option: ignored chart option "($K)"; a value with a space needs quotes: title="Cost ($K)"',
+    'warning chart-option: ignored chart option "nope"',
+  ]);
+  assert.deepEqual(messages('table z title=Top five rows limit=1'), [
+    'warning table-option: ignored table option "five rows"; a value with a space needs quotes: title="Top five rows"',
+  ]);
+  assert.deepEqual(messages('chart line z title="Deploys per week y=b'), [
+    'warning chart-option: a " is never closed, so the rest of the line, "Deploys per week y=b", is read as one value; close it before the next option',
+  ]);
+  assert.deepEqual(
+    parse('diagram flow title="Order path dir=LR\nflow: a -> b\n').diagnostics.map((d) => d.code),
+    ['diagram-option'],
+  );
+  // A column name with a space runs on by design, and a closed quote is not a spill.
+  assert.deepEqual(messages('chart bar z x=a y=b title="Deploys per week" labels'), []);
+});
+
+test('a data file is read as CSV: `;` is text, a quoted cell may hold a line break, CRLF and a byte-order mark are dropped', () => {
+  const file = '\ufeffname,note,n\r\n"Smith, J",late; then fixed,1\r\n\r\nx,"line one\nline two",2\r\n"he said ""hi""",C:\\,3\r\n';
+  const doc = parse('data d < f.csv\ntable d\n', { loadFile: () => file });
+  assert.deepEqual(doc.diagnostics, []);
+  assert.deepEqual(dataSet(doc, 'd'), {
+    name: 'd',
+    columns: ['name', 'note', 'n'],
+    rows: [
+      ['Smith, J', 'late; then fixed', '1'],
+      ['x', 'line one\nline two', '2'],
+      ['he said "hi"', 'C:\\', '3'],
+    ],
+    line: 1,
+  });
+  assert.deepEqual(parseCsvFile('a,b\n1,\n,2\n"" \n \nx,y,').rows, [['a', 'b'], ['1', ''], ['', '2'], [''], ['x', 'y', '']]);
+  const open = parse('data d < f.csv\n', { loadFile: () => 'a,b\n1,2\n"open,3\n4,5\n' });
+  assert.deepEqual(
+    open.diagnostics.map((x) => [x.code, x.message]),
+    [
+      ['csv-quote', 'unclosed " on line 3 of f.csv'],
+      ['data-row-width', open.diagnostics[1]?.message],
+    ],
+  );
 });

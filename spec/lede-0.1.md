@@ -181,7 +181,14 @@ Declares a named table of strings. Types are decided at use (a chart reads cells
   rendering can continue).
 - W `csv-thousands`: a row with too many fields is repaired when merging an unquoted thousands
   separator (`$1,450` read as `$1` and `450`) gives exactly the right width.
-- W `data-redefined`: `=` on an existing name replaces it.
+- W `data-redefined`: `=` on an existing name replaces it, for the blocks above it too. E `data-redefined`, on a `chart`,
+  `table` or `=data.column` kpi above the new definition that reads a column the new one does not have (reported when the
+  document ends; `detail {name, columns, redefined}`: the data name, the missing columns, the line of the new definition).
+  Such a block draws nothing (a range chart draws its data table, as it does whenever it has nothing to plot).
+- A file is read as CSV (RFC 4180), not as an inline body: a record ends at a line break and a field at `,`; a field in
+  double quotes may hold `,`, `;` and line breaks, with `""` for a quote; `;` and `\` are ordinary characters. Fields are
+  trimmed outside their quotes; blank lines and a leading byte-order mark are dropped. A quote that never closes is
+  E `csv-quote`, naming the file's line.
 - Data and diagram names share one namespace: E `name-clash`.
 
 Numbers in cells: an optional sign, digits, optional decimals; `,` `$` `€` `£` `%` and a
@@ -207,8 +214,11 @@ half its maximum; otherwise the axis is padded around the data.
 - E `chart-kind`, `missing-data`, `unknown-data`, `unknown-column`, `chart-no-series`,
   `chart-option` (non-numeric `min`/`max`).
 - W `non-numeric` (cells left out), `chart-option` (unknown option, `stack` on a line chart, or `min=` not below `max=`: both
-  are then ignored). One of the two given alone is ignored by the renderer, with no diagnostic, when it would leave no range
-  against the end the data sets (`max=-5` over positive values, `min=100` over smaller ones): the output never holds `NaN`.
+  are then ignored). Words that spill out of an unquoted value (`title=Deploys per week`) are one warning that names the option
+  as it was probably meant (`title="Deploys per week"`), and a `"` that is never closed is a warning too, since the rest of the
+  line became its value; `table-option` and `diagram-option` report both the same way. One of `min=` and `max=` given alone is
+  ignored by the renderer, with no diagnostic, when it would leave no range against the end the data sets (`max=-5` over
+  positive values, `min=100` over smaller ones): the output never holds `NaN`.
 
 ### 4.13 Column references
 Wherever an option names a column (`x y focus cols sort`, and kpi `=data.col`), the name
@@ -221,7 +231,7 @@ matches exactly, or else case-insensitively with runs of spaces collapsed. The c
 right-aligned. A cell whose whole text is a status word from the renderer's lexicon (done, on
 track, ready, at risk, in progress, blocked, failed, go, no-go, …) renders as a pill that keeps
 the word as its text. Sorting is numeric when every cell of the sort column is numeric, else lexical.
-- E `unknown-data`, `unknown-column`, `table-option` (bad `limit`). W `table-option` (ignored).
+- E `unknown-data`, `unknown-column`, `table-option` (bad `limit`). W `table-option` (ignored, or an unclosed `"`).
 
 ### 4.15 KPI
 `kpi LABEL | VALUE [| DELTA [| TONE-OR-NOTE]]`. Consecutive kpi lines form one row of tiles.
@@ -640,7 +650,8 @@ step, rule}` (`rule` is `order`, `step`, `range`, `grid`, `grid-max` or `count`)
 `{key, fields}` and `preset-value` `{key, value, kind}`; `export-format` `{format}` now names `prompt` too. So does `accent-contrast` (§4.3) `{accent, theme, ratio, required, against}`:
 `theme` is `light` or `dark`, `ratio` is the lowest contrast found rounded down to two decimals, `required` is `4.5`, and `against` names
 the surface (`bg`, `surface` or `accent-tint`). So does `artifact-image` `{src, kind}`: `src` is the image path as written and `kind` is
-`local`. So does `heading-skip` (§4.4) `{from, to}`: the level of the heading before and of this one, as written (`--fix` leaves it).
+`local`. So does `heading-skip` (§4.4) `{from, to}`: the level of the heading before and of this one, as written (`--fix` leaves it). So does the error
+form of `data-redefined` (§4.11) `{name, columns, redefined}`; the warning of the same code has none.
 New keys may be added; existing ones are not removed or retyped within 0.x.
 
 `--fix` rewrites each file to repair mechanical slips and prints one line per repair. It repairs:
