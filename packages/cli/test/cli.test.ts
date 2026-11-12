@@ -631,3 +631,185 @@ test('an outside data path gets one message whether or not it exists, and a miss
   // the absolute path of the document's own directory is not in a message either
   assert.equal(r.stdout.includes(dir), false);
 });
+
+// Credentials in these tests are made up and built from pieces, so that no secret scanner reads this file as one.
+const FAKE_AWS_KEY = ['AK', 'IA', 'ABCDEFGH', '12345678'].join('');
+const LEAKY = [
+  '@title Handover',
+  '',
+  'See https://api.acme.io/v1/items and mail ada@acme.io (10.0.0.7).',
+  '',
+  '```',
+  'ssh ops@db.prod.corp',
+  '```',
+  `data t = a,b; ${FAKE_AWS_KEY},2`,
+  'Fine: v1.2.3, 10.5 ms, chart.png, https://example.com/x.',
+  '',
+].join('\n');
+
+test('check --external reports what a page gives away, exits 1 on any finding, and ends with the count', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  writeFileSync(join(dir, 'leak.lede'), LEAKY);
+  writeFileSync(join(dir, 'clean.lede'), '# Hi\n\nSee https://example.com/x, 192.0.2.1 and v1.2.3 at 10:30.\n');
+  const r = run(['check', 'leak.lede', '--external'], dir);
+  assert.equal(r.status, 1);
+  const lines = r.stderr.split('\n').filter((l) => l.startsWith('leak.lede:'));
+  assert.deepEqual(
+    lines.map((l) => l.split(' ').slice(0, 3).join(' ')),
+    [
+      'leak.lede:3:5: warning [external]',
+      'leak.lede:3:43: warning [external]',
+      'leak.lede:3:56: warning [external]',
+      'leak.lede:6:5: warning [external]',
+      'leak.lede:8:15: warning [external]',
+    ],
+  );
+  assert.match(lines[0], /a URL \(https:\/\/api\.acme\.io\/v1\/items\)/);
+  assert.match(lines[4], /a credential/);
+  assert.equal(r.stderr.trimEnd().split('\n').at(-1), '5 warning(s)');
+  // The same file without the flag is clean, and a clean page with the flag is ok at exit 0 (documentation names are never reported).
+  assert.equal(run(['check', 'leak.lede'], dir).status, 0);
+  assert.equal(run(['check', 'leak.lede'], dir).stderr.trimEnd(), 'ok');
+  const clean = run(['check', 'clean.lede', '--external'], dir);
+  assert.equal(clean.status, 0);
+  assert.equal(clean.stderr.trimEnd(), 'ok');
+  // An error is an error beside them, and both are counted.
+  writeFileSync(join(dir, 'both.lede'), `${LEAKY}chart line nope\n`);
+  const both = run(['check', 'both.lede', '--external'], dir);
+  assert.equal(both.status, 1);
+  assert.equal(both.stderr.trimEnd().split('\n').at(-1), '1 error(s), 5 warning(s)');
+  // Stdin is a document too, and is named <stdin>.
+  const piped = run(['check', '-', '--external'], dir, 'x https://acme.io/y\n');
+  assert.equal(piped.status, 1);
+  assert.match(piped.stderr, /^<stdin>:1:3: \S*warning\S* \[external\]/);
+});
+
+test('check --external --json carries each finding with its detail, beside the other diagnostics', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  writeFileSync(join(dir, 'leak.lede'), `${LEAKY}kpi Share | ~75% | roughly | bar\n`);
+  const r = run(['check', 'leak.lede', '--external', '--json'], dir);
+  assert.equal(r.status, 1);
+  const diags = (JSON.parse(r.stdout) as Record<string, { severity: string; code: string; line: number; col: number; detail?: unknown }[]>)[
+    'leak.lede'
+  ];
+  assert.deepEqual(
+    diags.filter((d) => d.code === 'external').map((d) => [d.severity, d.line, d.col, d.detail]),
+    [
+      ['warning', 3, 5, { kind: 'url', text: 'https://api.acme.io/v1/items' }],
+      ['warning', 3, 43, { kind: 'email', text: 'ada@acme.io' }],
+      ['warning', 3, 56, { kind: 'ip', text: '10.0.0.7' }],
+      ['warning', 6, 5, { kind: 'email', text: 'ops@db.prod.corp' }],
+      ['warning', 8, 15, { kind: 'key', text: FAKE_AWS_KEY }],
+    ],
+  );
+  assert.ok(diags.some((d) => d.code === 'kpi-bar'));
+  // Without the flag the JSON has none, and the exit code is 0 on warnings.
+  const plain = JSON.parse(run(['check', 'leak.lede', '--json'], dir).stdout) as Record<string, { code: string }[]>;
+  assert.ok(!plain['leak.lede'].some((d) => d.code === 'external'));
+});
+
+test('--allow leaves the listed hosts and ip literals alone, with the urls on them; the flag may repeat', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  writeFileSync(join(dir, 'leak.lede'), LEAKY);
+  const one = run(['check', 'leak.lede', '--external', '--allow=api.acme.io,10.0.0.7', '--json'], dir);
+  const kinds = (JSON.parse(one.stdout) as Record<string, { detail?: { kind: string; text: string } }[]>)['leak.lede'].map(
+    (d) => d.detail?.kind,
+  );
+  assert.deepEqual(kinds, ['email', 'email', 'key']);
+  const two = run(['check', 'leak.lede', '--external', '--allow=api.acme.io', '--allow=10.0.0.7', '--json'], dir);
+  assert.equal(two.stdout, one.stdout);
+  // Allowed names do not make the page clean of the rest, and under --fix they stay in the source.
+  const fixed = run(['check', 'leak.lede', '--external', '--allow=api.acme.io,10.0.0.7', '--fix'], dir);
+  assert.equal(fixed.status, 0);
+  assert.equal(
+    readFileSync(join(dir, 'leak.lede'), 'utf8'),
+    LEAKY.replace('ada@acme.io', '<email>').replace('ops@db.prod.corp', '<email>').replace(FAKE_AWS_KEY, '<key>'),
+  );
+});
+
+test('check --external --fix replaces each finding with its placeholder, prints each repair, and --dry-run writes nothing', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  writeFileSync(join(dir, 'leak.lede'), LEAKY);
+  const dry = run(['check', 'leak.lede', '--external', '--fix', '--dry-run'], dir);
+  assert.equal(dry.status, 1);
+  assert.match(dry.stderr, /leak\.lede:3: would fix \[external\] replaced url https:\/\/api\.acme\.io\/v1\/items with <url>\n/);
+  assert.match(dry.stderr, /leak\.lede:8: would fix \[external\] replaced key AKIA\S+ with <key>\n/);
+  assert.match(
+    dry.stderr,
+    /leak\.lede:3:\n- See https:\/\/api\.acme\.io\/v1\/items and mail ada@acme\.io \(10\.0\.0\.7\)\.\n\+ See <url> and mail <email> \(<ip>\)\.\n/,
+  );
+  assert.equal(readFileSync(join(dir, 'leak.lede'), 'utf8'), LEAKY);
+
+  const r = run(['check', 'leak.lede', '--external', '--fix'], dir);
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(r.stderr, /leak\.lede:3: fixed \[external\] replaced email ada@acme\.io with <email>/);
+  assert.match(r.stderr, /leak\.lede:6: fixed \[external\] replaced email ops@db\.prod\.corp with <email>/);
+  assert.equal(r.stderr.trimEnd().split('\n').at(-1), 'ok');
+  assert.equal(
+    readFileSync(join(dir, 'leak.lede'), 'utf8'),
+    [
+      '@title Handover',
+      '',
+      'See <url> and mail <email> (<ip>).',
+      '',
+      '```',
+      'ssh <email>',
+      '```',
+      'data t = a,b; <key>,2',
+      'Fine: v1.2.3, 10.5 ms, chart.png, https://example.com/x.',
+      '',
+    ].join('\n'),
+  );
+  // Reading it again finds nothing, and a second --fix changes nothing.
+  assert.equal(run(['check', 'leak.lede', '--external'], dir).status, 0);
+  assert.doesNotMatch(run(['check', 'leak.lede', '--external', '--fix'], dir).stderr, /fixed/);
+});
+
+test('check --external --fix makes the other repairs first, in the same write', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  writeFileSync(join(dir, 'p.lede'), 'data t = a,b; one,Nice; no link\ntable t\n#### Deep\nsee www.acme.io\n');
+  const r = run(['check', 'p.lede', '--external', '--fix'], dir);
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(r.stderr, /p\.lede:1: fixed \[data-row-width\]/);
+  assert.match(r.stderr, /p\.lede:4: fixed \[external\] replaced url www\.acme\.io with <url>/);
+  assert.equal(readFileSync(join(dir, 'p.lede'), 'utf8'), 'data t = a,b; one,"Nice; no link"\ntable t\n### Deep\nsee <url>\n');
+  // Under --fix alone nothing is redacted.
+  writeFileSync(join(dir, 'q.lede'), 'see www.acme.io\n');
+  run(['check', 'q.lede', '--fix'], dir);
+  assert.equal(readFileSync(join(dir, 'q.lede'), 'utf8'), 'see www.acme.io\n');
+});
+
+test('--external and --allow: usage errors, and build ignores both and never redacts', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  writeFileSync(join(dir, 'leak.lede'), LEAKY);
+  for (const [args, want] of [
+    [['check', 'leak.lede', '--external', '--allow'], '--allow needs host names: --allow=host1,host2'],
+    [['check', 'leak.lede', '--external', '--allow='], '--allow needs host names: --allow=host1,host2'],
+    [['check', 'leak.lede', '--external', '--allow=,'], '--allow needs host names: --allow=host1,host2'],
+    [['check', 'leak.lede', '--allow=acme.io'], '--allow only means something with --external'],
+    [['check', 'leak.lede', '--externl'], 'unknown option --externl; did you mean --external?'],
+    [['--external', 'check', 'leak.lede'], '--external goes after the command: lede <command> FILE --external'],
+  ] as const) {
+    const r = run([...args], dir);
+    assert.equal(r.status, 2, args.join(' '));
+    assert.equal(r.stderr.split('\n')[0], `lede: ${want}`, args.join(' '));
+  }
+  const built = run(['build', 'leak.lede', '--external', '--allow=acme.io'], dir);
+  assert.equal(built.status, 0, built.stderr);
+  assert.equal(built.stdout, run(['build', 'leak.lede'], dir).stdout);
+  assert.equal(readFileSync(join(dir, 'leak.lede'), 'utf8'), LEAKY);
+});
+
+test('--help lists --external and --allow, and the exit code that goes with them', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  const r = run(['--help'], dir);
+  assert.match(
+    r.stdout,
+    /lede check <file\.lede>\.\.\. \[--json\] \[--fix \[--dry-run\]\] \[--artifact\] .*\[--external \[--allow=HOST,\.\.\.\]\]/,
+  );
+  assert.match(r.stdout, /--external {6}check: also report what the page gives away/);
+  assert.match(r.stdout, /exit 1 if there is any/);
+  assert.match(r.stdout, /<url>, <ip>, <host>, <account>, <key> or <email>/);
+  assert.match(r.stdout, /--allow=HOSTS {3}check --external: host names and IP addresses to leave alone/);
+  assert.match(r.stdout, /exit 1 if any is an error \(or, with --external, a finding\)/);
+});

@@ -3,14 +3,23 @@
 import { readFileSync, writeFileSync, watch as fsWatch, existsSync, realpathSync, statSync } from 'node:fs';
 import { dirname, resolve, basename } from 'node:path';
 import { text as readAll } from 'node:stream/consumers';
-import { parse, fix, artifactDiagnostics, type Diagnostic, type LedeDocument } from '@lede-lang/core';
+import {
+  parse,
+  fix,
+  artifactDiagnostics,
+  externalDiagnostics,
+  redactExternal,
+  type Diagnostic,
+  type ExternalOptions,
+  type LedeDocument,
+} from '@lede-lang/core';
 import { confine, unreadable } from './confine.ts';
 import { DEFAULT_IMAGE_MAX, inlineImages } from './images.ts';
 
 const USAGE = `usage:
   lede build <file.lede> [-o out.html] [--force] [--unsafe-html] [--allow-remote] [--artifact] [--shell] [--image-max=SIZE] [--link-images]
   lede watch <file.lede> [-o out.html] [--image-max=SIZE] [--link-images]
-  lede check <file.lede>... [--json] [--fix [--dry-run]] [--artifact] [--image-max=SIZE] [--link-images]
+  lede check <file.lede>... [--json] [--fix [--dry-run]] [--artifact] [--image-max=SIZE] [--link-images] [--external [--allow=HOST,...]]
   lede ast   <file.lede>
   lede help
   lede version`;
@@ -22,7 +31,7 @@ commands:
           page as a data: URI, so the page is one file (see --image-max and --link-images)
   watch   rebuild next to the source on every save; it keeps going when an editor replaces the file or it is deleted for a while
   check   print file:line:col diagnostics, then a last line: ok if there were none, else the
-          counts (a warning is not ok); exit 1 if any is an error, 2 on a usage error
+          counts (a warning is not ok); exit 1 if any is an error (or, with --external, a finding), 2 on a usage error
   ast     print the parsed document as JSON
   version print the version of this package (also --version, -V)
 
@@ -50,6 +59,12 @@ options:
                   #### headings, column names, kpi bars, grid before ### sections; spec §9) and
                   print each repair; repairs that pick between readings are marked "a guess"
   --dry-run       check --fix: print the lines that would change and write nothing
+  --external      check: also report what the page gives away, as W external with detail {kind, text}: URLs, IP addresses, host names,
+                  account ids, keys and email addresses, wherever they sit (prose, meta, fences, data, diagrams); exit 1 if there is any,
+                  so it can gate a publish. The documentation names (example.com, 192.0.2.0/24, 2001:db8::/32) are never reported.
+                  With --fix each is replaced by <url>, <ip>, <host>, <account>, <key> or <email> and printed as a repair (--dry-run
+                  previews); build never redacts
+  --allow=HOSTS   check --external: host names and IP addresses to leave alone, comma-separated (the flag may repeat), with the URLs on them
   -h, --help      show this help
   -V, --version   print the version
 
@@ -82,13 +97,19 @@ function parseOptions(file: string) {
 /**
  * Read and parse `file` (`-` is stdin). With `imageMax` (bytes), each local image in the document becomes a data: URI and its
  * diagnostics hold W `image-inline` for the ones that could not; null leaves the paths. With `artifact`, its diagnostics also hold
- * the warnings only an Artifact host needs, for the images that are still paths.
+ * the warnings only an Artifact host needs, for the images that are still paths. With `external`, what the page gives away.
  */
-async function load(file: string, artifact = false, imageMax: number | null = null): Promise<{ src: string; doc: LedeDocument }> {
+async function load(
+  file: string,
+  artifact = false,
+  imageMax: number | null = null,
+  external: ExternalOptions | null = null,
+): Promise<{ src: string; doc: LedeDocument }> {
   const src = file === '-' ? await readAll(process.stdin) : readFileSync(file, 'utf8');
   const doc = parse(src, parseOptions(file));
   if (imageMax !== null) doc.diagnostics.push(...inlineImages(doc, baseOf(file), imageMax));
   if (artifact) doc.diagnostics.push(...artifactDiagnostics(doc));
+  if (external) doc.diagnostics.push(...externalDiagnostics(src, external));
   return { src, doc };
 }
 
@@ -231,10 +252,15 @@ async function watchFile(file: string, target: string, flags: Set<string>, image
   });
 }
 
-/** `lede check`: print every diagnostic (or the JSON), repair first under --fix, and exit 1 if any is an error. */
-async function check(files: string[], flags: Set<string>, imageMax: number | null): Promise<number> {
+/**
+ * `lede check`: print every diagnostic (or the JSON), repair first under --fix, and exit 1 if any is an error. With `--external`, what
+ * the page gives away is reported too, as warnings, and any of it is also exit 1; under --fix it is replaced after the other repairs.
+ */
+async function check(files: string[], flags: Set<string>, imageMax: number | null, allow: string[]): Promise<number> {
+  const external: ExternalOptions | null = flags.has('--external') ? { allow } : null;
   let bad = 0;
   let warned = 0;
+  let leaks = 0;
   const all: Record<string, Diagnostic[]> = {};
   for (const f of files) {
     const dry = flags.has('--dry-run');
@@ -245,34 +271,52 @@ async function check(files: string[], flags: Set<string>, imageMax: number | nul
       const verb = dry ? 'would fix' : 'fixed';
       for (const a of r.applied)
         process.stderr.write(`${f}:${a.line}: ${verb} [${a.code}] ${a.note}${a.guess ? ' (a guess: check it)' : ''}\n`);
+      let after = r.src;
+      if (external) {
+        const e = redactExternal(r.src, external);
+        for (const a of e.applied) process.stderr.write(`${f}:${a.line}: ${verb} [external] ${a.note}\n`);
+        after = e.src;
+      }
       if (dry) {
-        // Fixes never change the line count, so a line-by-line comparison is the whole diff.
+        // Neither kind of repair changes the line count, so a line-by-line comparison is the whole diff.
         const was = before.split('\n');
-        r.src.split('\n').forEach((line, i) => {
+        after.split('\n').forEach((line, i) => {
           if (line !== was[i]) process.stderr.write(`${f}:${i + 1}:\n- ${was[i]}\n+ ${line}\n`);
         });
-      } else if (r.src !== before) writeFileSync(f, r.src);
+      } else if (after !== before) writeFileSync(f, after);
     }
     // Files are reported one after the other, in the order given, and stdin can be read only once.
     // oxlint-disable-next-line eslint/no-await-in-loop -- sequential on purpose
-    const { src, doc } = await load(f, flags.has('--artifact'), imageMax);
+    const { src, doc } = await load(f, flags.has('--artifact'), imageMax, external);
     all[nameOf(f)] = doc.diagnostics;
     if (!flags.has('--json')) report(nameOf(f), src, doc.diagnostics);
     bad += doc.diagnostics.filter((d) => d.severity === 'error').length;
     warned += doc.diagnostics.filter((d) => d.severity === 'warning').length;
+    leaks += doc.diagnostics.filter((d) => d.code === 'external').length;
   }
   if (flags.has('--json')) process.stdout.write(`${JSON.stringify(all, null, 2)}\n`);
   else process.stderr.write(`${summary(bad, warned)}\n`);
-  return bad ? 1 : 0;
+  return bad || leaks ? 1 : 0;
 }
 
 const COMMANDS = ['build', 'watch', 'check', 'ast'] as const;
 type Command = (typeof COMMANDS)[number];
 
 /** Every flag some command takes. A flag no command knows is a usage error; one only another command knows is ignored (spec section 9). */
-const FLAGS = ['--force', '--unsafe-html', '--allow-remote', '--artifact', '--shell', '--json', '--fix', '--dry-run', '--link-images'];
+const FLAGS = [
+  '--force',
+  '--unsafe-html',
+  '--allow-remote',
+  '--artifact',
+  '--shell',
+  '--json',
+  '--fix',
+  '--dry-run',
+  '--link-images',
+  '--external',
+];
 /** What a misspelled option is compared with: the flags, plus the options that take a value and the ones `main` handles before it parses. */
-const KNOWN_OPTIONS = [...FLAGS, '--help', '--version', '-o', '--image-max', '-h', '-V'];
+const KNOWN_OPTIONS = [...FLAGS, '--allow', '--help', '--version', '-o', '--image-max', '-h', '-V'];
 
 interface Args {
   cmd: Command;
@@ -281,6 +325,8 @@ interface Args {
   /** `--image-max` in bytes, or null when it was not given. */
   imageMax: number | null;
   flags: Set<string>;
+  /** The names of `--allow=`, all of them. */
+  allow: string[];
 }
 
 /** A size such as `300k`, `2m` or `524288` (k and m are 1024 and 1024 squared; a trailing b is allowed) in bytes, or null if it is not one or is zero. */
@@ -313,7 +359,7 @@ function unknownOption(arg: string): string {
   return `unknown option ${arg}${near.length ? `; did you mean ${near[0].f}?` : ''}`;
 }
 
-/** Split the command line into the command, its files, `-o` and its flags, or say what is wrong with it. */
+/** Split the command line into the command, its files, `-o`, `--allow=` and its flags, or say what is wrong with it. */
 function parseArgs(argv: string[]): Args | UsageError {
   const [cmd, ...rest] = argv;
   if (!cmd) return { usage: null };
@@ -324,6 +370,7 @@ function parseArgs(argv: string[]): Args | UsageError {
   if (!(COMMANDS as readonly string[]).includes(cmd)) return { usage: `unknown command ${cmd}` };
   const flags = new Set<string>();
   const files: string[] = [];
+  const allow: string[] = [];
   let out: string | null = null;
   let imageMax: number | null = null;
   let options = true; // until `--`, after which every word is a FILE
@@ -341,6 +388,14 @@ function parseArgs(argv: string[]): Args | UsageError {
       const bytes = parseSize((a === '--image-max' ? rest[++i] : a.slice('--image-max='.length)) ?? '');
       if (bytes === null) return { usage: '--image-max needs a size such as 300k or 2m' };
       imageMax = bytes;
+    } else if (a === '--allow' || a.startsWith('--allow=')) {
+      const names = a
+        .slice('--allow='.length)
+        .split(',')
+        .map((n) => n.trim())
+        .filter(Boolean);
+      if (a === '--allow' || !names.length) return { usage: '--allow needs host names: --allow=host1,host2' };
+      allow.push(...names);
     } else if (FLAGS.includes(a)) flags.add(a);
     else if (a !== '-' && a.startsWith('-')) return { usage: unknownOption(a) };
     else files.push(a);
@@ -351,7 +406,9 @@ function parseArgs(argv: string[]): Args | UsageError {
   if (stdin && cmd === 'watch') return { usage: 'watch needs a file, not - (stdin)' };
   if (stdin && (flags.has('--fix') || flags.has('--dry-run')))
     return { usage: '--fix and --dry-run rewrite the file, and a document read from - (stdin) has none' };
-  return { cmd: cmd as Command, files, out, imageMax, flags };
+  // Silence would read as a clean page: a list of names that nothing checks is a mistake, not an ignored flag.
+  if (cmd === 'check' && allow.length && !flags.has('--external')) return { usage: '--allow only means something with --external' };
+  return { cmd: cmd as Command, files, out, imageMax, flags, allow };
 }
 
 /** True when both paths are one existing file, whatever the names: a symlink or a hard link to it counts, and a path not yet written does not. */
@@ -392,7 +449,7 @@ async function main(argv: string[]): Promise<number> {
     process.stderr.write(`${parsed.usage === null ? '' : `lede: ${parsed.usage}\n`}${USAGE}\n`);
     return 2;
   }
-  const { cmd, files, out, imageMax, flags } = parsed;
+  const { cmd, files, out, imageMax, flags, allow } = parsed;
   // What `build`, `watch` and `check` do with local images: inline them up to this many bytes each, or (null) leave the paths.
   const images = flags.has('--link-images') ? null : (imageMax ?? DEFAULT_IMAGE_MAX);
   if ((cmd === 'build' || cmd === 'watch') && flags.has('--shell') && flags.has('--unsafe-html')) {
@@ -422,7 +479,7 @@ async function main(argv: string[]): Promise<number> {
     case 'build':
       return (await build(files[0], out, flags, images)) ? 0 : 1;
     case 'check':
-      return await check(files, flags, images);
+      return await check(files, flags, images, allow);
     case 'ast':
       process.stdout.write(`${JSON.stringify((await load(files[0])).doc, null, 2)}\n`);
       return 0;

@@ -605,12 +605,55 @@ with a migration note; once 1.0 ships, grammar changes follow an RFC process (to
 The command is `lede`, the bin of the npm package `@lede-lang/cli` (Node 22.12+; it runs as compiled JavaScript). The library
 packages are `@lede-lang/core` (parser) and `@lede-lang/html` (renderer). The three share one version (D48).
 
-`lede check FILE... [--json] [--fix [--dry-run]] [--artifact] [--image-max=SIZE] [--link-images]` prints every diagnostic and exits 1 if any is an error, 0 otherwise (2 for
+`lede check FILE... [--json] [--fix [--dry-run]] [--artifact] [--image-max=SIZE] [--link-images] [--external [--allow=HOST,...]]` prints every diagnostic and exits 1 if any is an error, 0 otherwise (2 for
 a usage error or a missing file). Without `--json`, its last line, on stderr, is `ok` only when no file had a diagnostic of either
 severity; otherwise it is the counts summed over every file: `1 warning(s)`, `2 error(s)` or `1 error(s), 2 warning(s)`. A warning leaves
 the exit code at 0 but never gets `ok`: read the diagnostics above that line, since the exit code does not carry them. With `--json` there
 is no such line. `--artifact` adds the artifact checks (below) to the report; they are warnings, so the exit code is unchanged and the
-last line is their count, never `ok`. `lede --help` lists every command and flag.
+last line is their count, never `ok`. `--external` adds the external check (below), whose findings are warnings that exit 1 all the same. `lede --help` lists every command and flag.
+
+`check --external` (D80) reports what a page would give away if it left the building. It is a pass over the source text, line by line, and not over the
+parsed blocks: prose, meta lines, code fences, `data` rows, table rows and diagram lines are all read the same, because a reader sees all of them. Each
+finding is W `external` with `detail {kind, text}`, at the line and column of its first character; `text` is what was written, and `kind` is one of:
+
+- `url`: an `http://`, `https://`, `ftp://` or `s3://` reference, or one that starts `www.`, with its path and query. A URL ends at white space, `<`,
+  `>`, a quote, `,`, `;` or `|`, and sentence or link punctuation at its end is not part of it (a closing `)` or `]` is, if the URL opened one).
+  `https://<host>/x`, `http://$HOST/x` and `https://{tenant}.<domain>/` name nothing and are not findings.
+- `ip`: an IPv4 address (four canonical decimal octets) or an IPv6 literal, with a prefix length if one follows (`10.0.0.0/8`, `fd00::/8`). The
+  documentation ranges 192.0.2.0/24, 198.51.100.0/24, 203.0.113.0/24 and 2001:db8::/32 are not findings. An IPv6 literal needs eight groups or a `::`,
+  and a digit, so a time (`12:30:45`) and `Foo::bar` are not addresses; four-part version numbers such as `1.2.3.4` cannot be told from an address and are.
+- `host`: a dotted name whose last label, in lower case, is `com`, `net`, `org`, `edu`, `gov`, `mil`, `io`, `dev`, `app`, `ai`, `co`, `cloud`, `biz`, `us`,
+  `uk`, `eu`, `de`, `internal`, `local`, `corp`, `lan` or `intra`, and whose label before it has a letter (so `1.2.3.dev` is a version). Lower case is the
+  rule, so `ASP.NET` and `System.Net` are not hosts; a name that opens a run with a single dot (`.env.local`) is a dot file, and one followed at once by `(`
+  (`log.info(`) is a call. File names (`chart.png`, `main.py`, `node.js`), `e.g.`, `i.e.` and numbers (`10.5 ms`, `v0.2.1`) are not hosts.
+- `account`: a 12-digit AWS account id on its own (not part of a longer number, not a time stamp `YYYYMMDDhhmm`, not ending in five zeros), an ARN
+  (`arn:aws...`), an Azure subscription GUID that follows the word `subscription` within 40 characters, and a 10 to 13 digit GCP project number that follows
+  the word `project` (`project number: 1234567890`, `projects/1234567890`).
+- `key`: an AWS access key id (`AKIA` or `ASIA` and 16 more), a GitHub token (`ghp_`, `gho_`, `ghu_`, `ghs_`, `ghr_`, `github_pat_`), a Slack token
+  (`xox?-`), a Stripe live key (`sk_live_`, `rk_live_`), an Anthropic key (`sk-ant-`), an OpenAI key (`sk-` and 20 or more characters that mix digits and both
+  cases), a JWT, a PEM private key header (`-----BEGIN ... PRIVATE KEY-----`), and a run of 32 or more hex or base64 characters that follows `key`, `secret`,
+  `token` or `password` (and the rest of that word: `aws_secret_access_key = ...`) after a separator, if it is hex or mixes digits and both cases.
+  For a PEM header the finding's `text` is the header line, and its span runs on to the matching `-----END ... PRIVATE KEY-----` line, if there is one.
+- `email`: `local@domain` with a dotted domain whose last label is letters.
+
+Names that RFC 2606 reserves for documentation are never findings, in any kind: `example.com`, `example.org`, `example.net` and every name under them, and
+names ending `.example`, `.test` or `.invalid`; an address in a documentation range likewise. Where two findings overlap (a host inside a URL, a host inside
+an email address, a key inside a URL) the longer span is the one finding, and for equal spans `key`, then `url`, `email`, `account`, `ip` and `host`. The
+scan is a set of heuristics with a short list of host suffixes, and is no substitute for a secret scanner: it errs towards reporting a name a writer can
+list with `--allow`.
+
+`--allow=HOST[,HOST...]` leaves host names and IP literals alone, along with the URLs on them. A name is compared whole and in lower case (`docs.acme.io`
+does not allow `a.docs.acme.io`); the flag may repeat. A URL that carries credentials (`user:pw@host`) is reported whatever its host, a key or an email
+address inside an allowed URL is still reported, and an email address is not a host name, so `--allow` does not exempt one. `--allow` with no list, or
+without `--external`, is a usage error.
+
+Any finding makes the exit code 1, as an error would, so the check can gate a publish step; the last line without `--json` counts the findings with the other
+warnings (`3 warning(s)`), and is `ok` only when there are none. With `--json` the findings are records in the same array as the other diagnostics.
+`check --external --fix` makes the repairs below first and then replaces each finding's span with its placeholder, `<url>`, `<ip>`, `<host>`, `<account>`,
+`<key>` or `<email>`, in the same write, and prints one line per replacement, `FILE:LINE: fixed [external] replaced url https://... with <url>` (a long text
+is cut); every span in the file is replaced, a PEM block with its line breaks kept, so the line count never changes. `--dry-run` previews as for the
+other repairs, and its exit code is that of the file as written. Replacements are not marked a guess. Reading the result finds nothing more. `lede build`
+does not read `--external` and never changes the text: redaction is an edit to the source, made once and reviewed, not a transform at build time.
 
 `lede build FILE [-o OUT] [--force] [--unsafe-html] [--allow-remote] [--artifact] [--shell] [--image-max=SIZE] [--link-images]` compiles the first FILE to one page. Diagnostics go to stderr as
 for `check`. With `-o` the page is written to OUT and a size line goes to stderr; without it the page goes to stdout. `-o=OUT` is the same as `-o OUT`; `-o` with
@@ -632,8 +675,8 @@ or `template`) and an `export` line (`export json`, `export markdown` or `export
 and stderr says so. With `--artifact` the data block and runtime follow `<main>` and the
 meta tags are still omitted, so the Artifact host's own policy decides whether the runtime runs. `--shell` with `--unsafe-html` is a
 usage error: raw `html` could plant its own controls and data block. Exit codes for every
-command: 0 on success; 1 for `build` on errors without `--force` and for `check` on errors; 2 for a usage error (no command, an
-unknown command, no FILE, an option no command knows, `-o` without a name, `--image-max` without a size, `--shell` with `--unsafe-html`, OUT the same file as a FILE, `-` misused as
+command: 0 on success; 1 for `build` on errors without `--force` and for `check` on errors or, with `--external`, on any finding; 2 for a usage error (no command, an
+unknown command, no FILE, an option no command knows, `-o` without a name, `--image-max` without a size, `--allow` without a list or without `--external`, `--shell` with `--unsafe-html`, OUT the same file as a FILE, `-` misused as
 below) or a FILE that is missing or is a directory; 70 for an internal error, such as OUT not being writable or its directory missing. An exit-70 failure
 prints one line to stderr, `lede: MESSAGE`; with the environment variable `LEDE_DEBUG` set it prints the stack as well.
 An option that no command knows (`--shel`, `-x`) is a usage error: stderr gets `lede: unknown option --shel; did you mean --shell?` (the
@@ -691,7 +734,7 @@ step, rule}` (`rule` is `order`, `step`, `range`, `grid`, `grid-max` or `count`)
 `bucket-empty` `{name}`, `template-fence` `{name}`, `template-slot` `{slot, fields}`, `template-empty` `{name}`, `preset-key`
 `{key, fields}` and `preset-value` `{key, value, kind}`; `export-format` `{format}` now names `prompt` too. So does `accent-contrast` (§4.3) `{accent, theme, ratio, required, against}`:
 `theme` is `light` or `dark`, `ratio` is the lowest contrast found rounded down to two decimals, `required` is `4.5`, and `against` names
-the surface (`bg`, `surface` or `accent-tint`). So does `artifact-image` `{src, kind}`: `src` is the image path as written and `kind` is
+the surface (`bg`, `surface` or `accent-tint`). So does `external` (above) `{kind, text}`. So does `artifact-image` `{src, kind}`: `src` is the image path as written and `kind` is
 `local`. So does `image-inline` `{src, reason}`: `src` is the path as written and `reason` is `size`, `page-size`, `type`, `missing` or `outside`. So does `heading-skip` (§4.4) `{from, to}`: the level of the heading before and of this one, as written (`--fix` leaves it). So does the error
 form of `data-redefined` (§4.11) `{name, columns, redefined}`; the warning of the same code has none.
 New keys may be added; existing ones are not removed or retyped within 0.x.
