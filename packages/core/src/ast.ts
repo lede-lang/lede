@@ -188,12 +188,16 @@ export interface DiagramNode {
   focus: boolean;
 }
 export type EdgeStyle = 'solid' | 'dashed' | 'blocked';
+/** The status tones an edge or a sequence message may take (D80): `a -> b : allow | good`. */
+export type EdgeTone = 'good' | 'bad' | 'warn' | 'info' | 'neutral';
 export interface DiagramEdge {
   from: string;
   to: string;
   label: string;
   style: EdgeStyle;
   both: boolean;
+  /** The line's last ` | ` field when it is a tone word; every edge a chain or a fan-out makes has it. Omitted when the line has none. */
+  tone?: EdgeTone;
   line: number;
 }
 export interface DiagramGroup {

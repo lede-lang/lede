@@ -579,5 +579,18 @@ ol.steps.sx>li>.sn{grid-column:2;min-width:0;color:var(--fg2);overflow-wrap:anyw
   table.stack td::before{content:attr(data-label);display:block;font:600 10.5px/1.3 var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--fg2);margin-bottom:2px}
 }
 /* end stream v04-2 */
+/* edge tones (D80): a tone sets two custom properties, and the line, arrowhead, label chip and cross of a toned edge read them */
+.t-good{--tn:var(--good);--tf:var(--good-bg)}
+.t-bad{--tn:var(--bad);--tf:var(--bad-bg)}
+.t-warn{--tn:var(--warn);--tf:var(--warn-bg)}
+.t-info{--tn:var(--accent-ink);--tf:var(--accent-tint)}
+.t-neutral{--tn:var(--fg2);--tf:var(--info-bg)}
+:is(.dg,.dgk-sw) .edge.tn{stroke:var(--tn)}
+:is(.dg,.dgk-sw) .ah.tn{fill:var(--tn)}
+.dg .blk.tn :is(circle,path){stroke:var(--tn)}
+.dg .lmask.tn{fill:var(--tf);stroke:color-mix(in srgb,var(--tn) 40%,var(--tf));stroke-width:1;rx:4px}
+.dg .elabel.tn{fill:var(--tn);font-weight:600}
+.et.tn{color:var(--tn);background:var(--tf);border-radius:4px;padding:0 6px;font-weight:600;font-size:14px}
+.dgk-t{min-width:0;overflow-wrap:anywhere}
 ${opts.controls ? CONTROLS : ''}${opts.controls && opts.editors ? EDITORS : ''}`;
 }

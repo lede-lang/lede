@@ -12,6 +12,7 @@ import type {
   DiagramEdge,
   DiagramFrame,
   DiagramNode,
+  EdgeTone,
   ExportBlock,
   GridBlock,
   Kpi,
@@ -78,6 +79,8 @@ export const KEYWORDS = [
   'template',
   'preset',
 ] as const;
+/** The words an edge or message line's last ` | ` field may be (spec §4.17, D80). */
+export const EDGE_TONES: readonly EdgeTone[] = ['good', 'bad', 'warn', 'info', 'neutral'];
 export const META_KEYS = ['title', 'subtitle', 'description', 'author', 'date', 'accent', 'theme', 'lang', 'width', 'fonts'];
 const CHART_KINDS: ChartKind[] = ['line', 'area', 'bar', 'hbar', 'range'];
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -2260,11 +2263,12 @@ export class LedeParser {
       return true;
     }
 
-    // edges: a -> b, c --> d : label. An arrow inside a quoted label (`api "Payments -> API" service`) is text, not an edge.
+    // edges: a -> b, c --> d : label [| tone]. An arrow inside a quoted label (`api "Payments -> API" service`) is text, not an edge.
     if (/(-->|->|<->|\s-x-\s)/.test(s.includes('"') ? s.replace(/"[^"]*"/g, '""') : s)) {
-      const ci = s.indexOf(':');
-      const chain = ci >= 0 ? s.slice(0, ci) : s;
-      const label = ci >= 0 ? s.slice(ci + 1).trim() : '';
+      const tn = splitTone(s);
+      const ci = tn.head.indexOf(':');
+      const chain = ci >= 0 ? tn.head.slice(0, ci) : tn.head;
+      const label = ci >= 0 ? tn.head.slice(ci + 1).trim() : '';
       // `-x-` needs spaces around it so ids such as `a-x-b` stay ids; `-x->` is unambiguous.
       const parts = chain.split(/(\s+-x-\s+|\s*(?:<->|-->|-x->|->)\s*)/).map((p, i) => (i % 2 ? p.trim() : p));
       const steps: string[][] = [];
@@ -2283,18 +2287,30 @@ export class LedeParser {
         this.diag('error', 'diagram-syntax', 'sequence messages go between exactly two participants', L, col);
         return false;
       }
+      if (tn.word !== undefined) {
+        const allowed = [...EDGE_TONES];
+        this.diag(
+          'warning',
+          'edge-tone',
+          `"${tn.word}" is not an edge tone (${allowed.join(', ')}); the edge is drawn without one and the field is dropped`,
+          L,
+          col + tn.at,
+          { value: tn.word, allowed },
+        );
+      }
       for (let i = 0; i < ops.length; i++) {
         for (const a of steps[i])
           for (const b of steps[i + 1]) {
             if (!d.groups.some((g) => g.id === a)) this.node(d, a);
             if (!d.groups.some((g) => g.id === b)) this.node(d, b);
-            // In a chain the label belongs to the last hop: `commit -> build -> deploy : on green`.
+            // In a chain the label belongs to the last hop: `commit -> build -> deploy : on green`. The tone belongs to every hop.
             const e: DiagramEdge = {
               from: a,
               to: b,
               label: i === ops.length - 1 ? label : '',
               style: ops[i] === '-->' ? 'dashed' : ops[i] === '-x-' || ops[i] === '-x->' ? 'blocked' : 'solid',
               both: ops[i] === '<->',
+              ...(tn.tone ? { tone: tn.tone } : {}),
               line: L,
             };
             d.edges.push(e);
@@ -2351,6 +2367,22 @@ export class LedeParser {
   ): void {
     this.doc.diagnostics.push({ severity, code, message, line, col: Math.max(1, col), ...(detail ? { detail } : {}) });
   }
+}
+
+/**
+ * An edge or message line without its tone. The tone is the line's last ` | ` field (`a -> b : allow | good`, `a -> b | warn`): a
+ * pipe with a space on each side, outside any pair of double quotes. The field is `tone` when it is one of EDGE_TONES. A lone other
+ * word is a mistyped tone: `word`, and it is dropped with its pipe (`at` is its offset in `s`). Any other text after the pipe (several
+ * words, a number, punctuation) is label text and stays, as it did before tones.
+ */
+function splitTone(s: string): { head: string; tone?: EdgeTone; word?: string; at: number } {
+  let at = -1;
+  for (const m of s.replace(/"[^"]*"/g, (q) => '_'.repeat(q.length)).matchAll(/\s\|(?=\s)/g)) at = m.index;
+  const field = at < 0 ? '' : s.slice(at + 2).trim();
+  if (!/^[A-Za-z][\w-]*$/.test(field)) return { head: s, at: 0 };
+  const head = s.slice(0, at).trimEnd();
+  const tone = EDGE_TONES.find((t) => t === field);
+  return tone ? { head, tone, at: 0 } : { head, word: field, at: s.lastIndexOf(field) };
 }
 
 /**

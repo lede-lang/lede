@@ -1,0 +1,6 @@
+diagram arch
+arch: web -> api : allow | good
+arch: api -> db : deny | red
+arch: api -> web | Good
+arch: web -> db : read | write
+arch: web -> db : read | write it

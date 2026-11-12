@@ -93,7 +93,8 @@ NAME         = letter , { letter | digit | "_" | "-" } ;
 diagram-stmt = group-stmt | note-stmt | edge-stmt | node-stmt ;
 group-stmt   = "group" , [ WS , NODE-ID ] , WS , quoted-string , WS , member , { ( "," | WS ) , member } ;
 note-stmt    = "note" , WS , NODE-ID , { "," , NODE-ID } , ":" , REST ;
-edge-stmt    = targets , { arrow , targets } , [ ":" , REST ] ;   (* recognised by containing an arrow *)
+edge-stmt    = targets , { arrow , targets } , [ ":" , REST ] , [ WS , "|" , WS , tone ] ;   (* recognised by containing an arrow; 4.17 *)
+tone         = "good" | "bad" | "warn" | "info" | "neutral" ;
 targets      = NODE-ID , { "," , NODE-ID } ;
 arrow        = "->" | "-->" | "<->" ;
 node-stmt    = NODE-ID , { WS , ( quoted-string | kind | "focus" | "*" | option ) } ;
@@ -276,16 +277,31 @@ other blocks. A diagram renders where it is declared.
 - Edge: `a -> b`, `a --> b` (dashed: async, reply, optional), `a <-> b`; chains `a -> b -> c`;
   fan-out `a -> b, c` (every pair across adjacent hops). `: label` after the arrows labels the
   **last hop only**.
+- Edge tone (D80): the last ` | ` field of an edge line is a tone, one of `good`, `bad`, `warn`, `info`, `neutral`:
+  `a -> b : allow | good`, `a -x- b : deny | bad`, `a -> b | warn` (no label). The tone belongs to **every** edge the
+  line makes, across a chain and a fan-out (the label still goes to the last hop only). The separator is a `|` with a
+  space on each side, outside any pair of double quotes (`a -> b : "read | write" | good`); only the last such pipe counts.
+  AST: `DiagramEdge.tone`, omitted when the line has none. The field is a *word*: a last field that is one other
+  word (letters, digits, `_`, `-`, starting with a letter; tone words are lowercase) is a mistyped tone, W `edge-tone`
+  `{value, allowed}` with `allowed` the five words; the edge is drawn untoned and the field is dropped, pipe included.
+  Any other text after a pipe (several words, a number, punctuation: `: yes | no, retry later`, `: 1 | 2`) is label text and
+  stays as it was written. For input that parsed before, the only change is a label whose last ` | ` field is one lone
+  word: it is now a tone, or W `edge-tone` and dropped. The renderer draws a toned edge's line, arrowhead and label chip with
+  the status tokens (`good`, `bad`, `warn`; `info` the accent; `neutral` the grey), in the light and dark themes and in the
+  desktop and phone drawings. The line style keeps its meaning without the color (`-->` dashed, `-x-` blocked with its
+  cross, drawn in the tone), the tone is in the edge's `<title>` and the diagram's `<desc>`, and a phone list shows the label as a chip
+  (or the tone word when the edge has no label).
 - Group: `group [id] "Label" member, member …`. Members are node or group ids; a group listed as
   a member nests inside. A node belongs to the first group that lists it (W `diagram-group`).
   An id that was only *used* in an edge may later be declared as a group; that edge then
   attaches to the group's boundary. Group cycles: E `diagram-group-cycle`.
 - E `undeclared-diagram` (a `name: … -> …` line before `diagram name`), `diagram-name`,
-  `diagram-redeclared`, `diagram-syntax`. W `diagram-empty`, `diagram-option`.
+  `diagram-redeclared`, `diagram-syntax`. W `diagram-empty`, `diagram-option`, `edge-tone` `{value, allowed}`.
 
 **Sequence** statements: participants are node statements (in order of first appearance);
 `a -> b : msg` is a message, `a --> b : msg` a reply, `a -> a : msg` a self-call;
-`note a[, b] : text` places a note after the messages written above it. Fan-out is an error.
+`note a[, b] : text` places a note after the messages written above it. Fan-out is an error. A message takes the same
+` | tone` field as an edge (`a -> b : GET /orders | good`) and is drawn in the same way.
 
 Layout (normative for renderers that claim conformance): flow diagrams use a layered layout
 with orthogonal edge routing; edge labels never overlap other edges or nodes; edges never pass
@@ -668,7 +684,7 @@ the common codes end with what to write instead (`...; put a cell that contains 
 delay ms?`). `detail` is optional and machine-readable. Codes the fixer reads carry it: `unknown-column` `{column, columns}`,
 `data-row-width` `{fields, want, name}`, `csv-thousands` `{fields, want, name}` (`fields` counted before the merge),
 `name-clash` `{diagram}` (a diagram named like a data set; a clash with a bucket set carries `{bucket}` instead, and `--fix` leaves
-it). The question-word codes (§4.18) carry `detail` too (`choose-options` has `{count, empty, reserved}`, or `{kind, option, char}` with
+it), and `edge-tone` `{value, allowed}` (§4.17; `--fix` leaves it). The question-word codes (§4.18) carry `detail` too (`choose-options` has `{count, empty, reserved}`, or `{kind, option, char}` with
 `kind` `control` when an option holds a C0 control character other than tab), and so do the editor-word codes (§4.19): `param-range` `{value, min, max,
 step, rule}` (`rule` is `order`, `step`, `range`, `grid`, `grid-max` or `count`), `toggle-needs` `{name, needs, toggles}`, `bucket-names`
 `{count, empty, dup, reserved}`, `bucket-unknown` `{bucket, buckets}`, `bucket-item` `{name}`, `bucket-dup-item` `{text, first}`,
@@ -1009,7 +1025,8 @@ cell that is only a date/time renders as a chip. No grammar or AST change.
 
 ### F.7 Diagram `legend`
 `NAME: legend` (the word alone) in a flow diagram sets `legend: true`. In a sequence diagram:
-W `legend-kind`, ignored. `NAME: legend "Key"` and edges such as `NAME: x -> legend` still declare or
+W `legend-kind`, ignored. When edges carry tones (§4.17), the key also lists each tone used, in the order first seen: a swatch
+in the tone's color and the label of the first edge of that tone that has one (the tone word when none has). `NAME: legend "Key"` and edges such as `NAME: x -> legend` still declare or
 use a node named `legend`.
 
 ### F.8 Numerals

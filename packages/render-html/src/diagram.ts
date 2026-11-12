@@ -1,4 +1,4 @@
-import type { DiagramBlock, DiagramEdge, DiagramNode } from '@lede-lang/core';
+import type { DiagramBlock, DiagramEdge, DiagramNode, EdgeTone } from '@lede-lang/core';
 import { layout } from './elk.ts';
 import { edgeLabelW, esc, inline, maxOf, plain, snap4, textWidth, wrapTo } from './util.ts';
 
@@ -841,9 +841,30 @@ function roundedPath(pts: P[], r = 6): string {
   return `${d} L${f(last.x)},${f(last.y)}`;
 }
 
-export function markers(uid: string): string {
-  return `<defs><marker id="${uid}-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 Z" class="ah"/></marker></defs>`;
+/**
+ * The arrowhead every edge ends in, and one more per tone in `tones` (D80): a marker is drawn in its own document, so it takes the tone's
+ * colour from a class on its own path and not from the edge that points to it.
+ */
+export function markers(uid: string, tones: Iterable<EdgeTone | undefined> = []): string {
+  const head = (id: string, cls: string) =>
+    `<marker id="${uid}-${id}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 Z" class="${cls}"/></marker>`;
+  const used = new Set<EdgeTone>();
+  for (const t of tones) if (t) used.add(t);
+  return `<defs>${head('a', 'ah')}${[...used].map((t) => head(`a-${t}`, `ah${toneClass(t)}`)).join('')}</defs>`;
 }
+
+/** The classes a toned edge, message, label chip, cross or key swatch adds: `tn` and `t-good`, or nothing without a tone. */
+export const toneClass = (tone: EdgeTone | undefined): string => (tone ? ` tn t-${tone}` : '');
+
+/** The marker a line ends in: the grey arrowhead, or the one drawn in the line's tone. */
+export const arrowRef = (uid: string, tone: EdgeTone | undefined): string => `url(#${uid}-a${tone ? `-${tone}` : ''})`;
+
+/** The edge's label as the lists write it: a toned edge's is a chip, and an unlabeled one shows its tone word. */
+export const listLabel = (e: DiagramEdge): string =>
+  e.tone ? `: <span class="et${toneClass(e.tone)}">${esc(e.label || e.tone)}</span>` : e.label ? `: ${esc(e.label)}` : '';
+
+/** An edge in words, for a `<title>` or a `<desc>`: `label, good` (colour is never the only way to tell the tone). */
+export const edgeWords = (e: DiagramEdge): string => [e.label, e.tone].filter(Boolean).join(', ');
 
 /** A node kind as one class token. The tag shows the kind as written; the class must not add other classes (`kind="x sr"`). */
 export const kindClass = (kind: string): string => `k-${kind.replace(/[^\w-]+/g, '-')}`;
@@ -1074,7 +1095,7 @@ function flowList(d: DiagramBlock): string {
   if (loose.length) out.push(`<li class="frame">${esc(loose.map((n) => n.label).join(', '))}</li>`);
   for (const e of d.edges) {
     out.push(
-      `<li${e.style === 'blocked' ? ' class="blocked"' : ''}><b>${esc(name(e.from))}</b> ${e.both ? '↔' : '→'} <b>${esc(name(e.to))}</b>${e.label ? `: ${esc(e.label)}` : ''}</li>`,
+      `<li${e.style === 'blocked' ? ' class="blocked"' : ''}><b>${esc(name(e.from))}</b> ${e.both ? '↔' : '→'} <b>${esc(name(e.to))}</b>${listLabel(e)}</li>`,
     );
   }
   out.push('</ol>');
@@ -1120,6 +1141,10 @@ function arrowSwatch(k: KeyArrow): string {
   return swatch(34, 14, line + heads);
 }
 
+/** A tone's swatch: a short arrow in the tone's colour, drawn with plain paths like the arrow styles'. */
+const toneSwatch = (t: EdgeTone): string =>
+  swatch(34, 14, `<path class="edge${toneClass(t)}" d="M1,7 H27"/><path class="ah${toneClass(t)}" d="M33,7 L26,3.5 L26,10.5 Z"/>`);
+
 /**
  * The key for `legend`: each node kind used (its tag, beside the shape its nodes are drawn in), a focus swatch if
  * any node is focus, the group boundary if there are groups, then each arrow style used. Items wrap in one row.
@@ -1143,6 +1168,10 @@ function legendKey(d: DiagramBlock): string {
     if (!(e.both && e.style === 'solid')) used.add(e.style);
   }
   for (const k of ['solid', 'dashed', 'both', 'blocked'] as const) if (used.has(k)) item(arrowSwatch(k), KEY_ARROW[k]);
+  // Each tone used: its colour, named by the label of the first edge that has one (the tone word when none does).
+  const tones = new Map<EdgeTone, string>();
+  for (const e of d.edges) if (e.tone && !tones.get(e.tone)) tones.set(e.tone, e.label.trim());
+  for (const [t, text] of tones) item(toneSwatch(t), esc(text || t));
   return items.length ? `<div class="dg-key" role="group" aria-label="Key">${items.join('')}</div>` : '';
 }
 
@@ -1153,7 +1182,12 @@ function drawPlaced(d: DiagramBlock, p: Placed, uid: string, compact: boolean): 
   const out: string[] = [];
   const label = plain(d.title ?? `${d.name} diagram`);
   out.push(svgOpen(uid, W, H, label, describeFlow(d)));
-  out.push(markers(uid));
+  out.push(
+    markers(
+      uid,
+      d.edges.map((e) => e.tone),
+    ),
+  );
   for (const g of [...p.groups].toSorted((a, b) => a.depth - b.depth)) {
     out.push(`<rect class="grp" x="${g.x.toFixed(1)}" y="${g.y.toFixed(1)}" width="${g.w.toFixed(1)}" height="${g.h.toFixed(1)}" rx="8"/>`);
   }
@@ -1167,9 +1201,11 @@ function drawPlaced(d: DiagramBlock, p: Placed, uid: string, compact: boolean): 
     ]
       .filter(Boolean)
       .join(' ');
-    const start = e.edge.both ? ` marker-start="url(#${uid}-a)"` : '';
+    const head = arrowRef(uid, e.edge.tone);
+    const start = e.edge.both ? ` marker-start="${head}"` : '';
+    const words = edgeWords(e.edge);
     out.push(
-      `<path class="${cls}" d="${roundedPath(e.points)}" marker-end="url(#${uid}-a)"${start}><title>${esc(`${e.edge.from} → ${e.edge.to}${e.edge.label ? `: ${e.edge.label}` : ''}`)}</title></path>`,
+      `<path class="${cls}${toneClass(e.edge.tone)}" d="${roundedPath(e.points)}" marker-end="${head}"${start}><title>${esc(`${e.edge.from} → ${e.edge.to}${words ? `: ${words}` : ''}`)}</title></path>`,
     );
   }
   // A blocked edge is crossed out in the middle of its longest straight stretch: a circle over the line with an X in it.
@@ -1178,7 +1214,7 @@ function drawPlaced(d: DiagramBlock, p: Placed, uid: string, compact: boolean): 
     const c = crossPoint(e.points);
     const k = 3;
     out.push(
-      `<g class="blk"><circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="${BLK_R}"/><path d="M${(c.x - k).toFixed(1)},${(c.y - k).toFixed(1)} L${(c.x + k).toFixed(1)},${(c.y + k).toFixed(1)} M${(c.x + k).toFixed(1)},${(c.y - k).toFixed(1)} L${(c.x - k).toFixed(1)},${(c.y + k).toFixed(1)}"/></g>`,
+      `<g class="blk${toneClass(e.edge.tone)}"><circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="${BLK_R}"/><path d="M${(c.x - k).toFixed(1)},${(c.y - k).toFixed(1)} L${(c.x + k).toFixed(1)},${(c.y + k).toFixed(1)} M${(c.x + k).toFixed(1)},${(c.y - k).toFixed(1)} L${(c.x - k).toFixed(1)},${(c.y + k).toFixed(1)}"/></g>`,
     );
   }
   for (const n of p.nodes) out.push(nodeSvgAt(n, compact));
@@ -1207,12 +1243,12 @@ function drawPlaced(d: DiagramBlock, p: Placed, uid: string, compact: boolean): 
     if (!e.label) continue;
     const l = e.label;
     out.push(
-      `<rect class="lmask" x="${l.x.toFixed(1)}" y="${l.y.toFixed(1)}" width="${l.w.toFixed(1)}" height="${l.h.toFixed(1)}" rx="2"/>`,
+      `<rect class="lmask${toneClass(e.edge.tone)}" x="${l.x.toFixed(1)}" y="${l.y.toFixed(1)}" width="${l.w.toFixed(1)}" height="${l.h.toFixed(1)}" rx="2"/>`,
     );
     const lines = l.lines ?? [l.text];
     lines.forEach((t, i) =>
       out.push(
-        `<text class="elabel${yn(d, e.edge)}${e.edge.style === 'blocked' ? ' blocked' : ''}" x="${(l.x + l.w / 2).toFixed(1)}" y="${(l.y + l.h / 2 + m.ELABEL * 0.35 + (i - (lines.length - 1) / 2) * EL_LINE).toFixed(1)}" text-anchor="middle">${esc(t)}</text>`,
+        `<text class="elabel${yn(d, e.edge)}${e.edge.style === 'blocked' ? ' blocked' : ''}${toneClass(e.edge.tone)}" x="${(l.x + l.w / 2).toFixed(1)}" y="${(l.y + l.h / 2 + m.ELABEL * 0.35 + (i - (lines.length - 1) / 2) * EL_LINE).toFixed(1)}" text-anchor="middle">${esc(t)}</text>`,
       ),
     );
   }
@@ -1251,6 +1287,6 @@ function describeFlow(d: DiagramBlock): string {
   const groups = d.groups.map(
     (g) => `${g.label} contains ${g.members.map((m) => d.groups.find((x) => x.id === m)?.label ?? name(m)).join(', ')}`,
   );
-  const edges = d.edges.map((e) => `${name(e.from)} ${e.both ? '↔' : '→'} ${name(e.to)}${e.label ? ` (${e.label})` : ''}`);
+  const edges = d.edges.map((e) => `${name(e.from)} ${e.both ? '↔' : '→'} ${name(e.to)}${edgeWords(e) ? ` (${edgeWords(e)})` : ''}`);
   return [`${d.nodes.length} nodes.`, groups.join('. '), edges.join('; ')].filter(Boolean).join(' ');
 }

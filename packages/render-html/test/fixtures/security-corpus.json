@@ -257,6 +257,16 @@
    "lede": "diagram s sequence title=\"Mk44 {Q}\"\ns: a \"Mk45 {Q}\" user\ns: b \"x\" kind=\"{Q}\"\ns: a -> b : Mk46 {T}\ns: note b : Mk47 {T}\ns: alt \"Mk48 {Q}\"\ns: b --> a : ok\ns: else \"{Q}\"\ns: b --> a : no\ns: end"
   },
   {
+   "name": "flow edge tones and key",
+   "skip": "<?-x?-{1,2}>|-x-",
+   "lede": "diagram ft title=\"Mk75 {Q}\"\nft: n1 \"x\"\nft: n2 \"y\"\nft: n1 -> n2 : Mk76 {T} | good\nft: n2 -x-> n1 : {T} | bad\nft: n1 -> n2 | info\nft: n1 --> n2 : Mk77 | warn\nft: legend"
+  },
+  {
+   "name": "sequence message tones, drawing and list",
+   "skip": "<?-x?-{1,2}>|-x-",
+   "lede": "diagram st sequence title=\"Mk78 {Q}\"\nst: a \"x\"\nst: b \"y\"\nst: a -> b : Mk79 {T} | good\nst: b -> b : {T} | neutral\nst: b --> a | bad\n\ndiagram sl sequence title=\"Mk80\"\nsl: a \"1\"\nsl: b \"2\"\nsl: c \"3\"\nsl: d \"4\"\nsl: e \"5\"\nsl: a -> e : Mk81 {T} | warn\nsl: e --> a | info"
+  },
+  {
    "name": "ask question",
    "lede": "ask q1 | Mk49 {T}"
   },
@@ -1927,6 +1937,25 @@
     "<g class=\"node k-x-sr\">",
     "<g class=\"node k-x-focus\">"
    ]
+  },
+  {
+   "id": "diagram-19",
+   "src": "diagram f\nf: a -> b : <script>alert(1)</script> | good\nf: b -x-> a : \"><img src=x onerror=alert(1)> | bad\nf: a -> b | warn\nf: legend",
+   "has": [
+    "class=\"edge tn t-good\"",
+    "marker id=\"d1-a-bad\""
+   ]
+  },
+  {
+   "id": "diagram-20",
+   "src": "diagram f\nf: a -> b : x | onmouseover\nf: a -> b : y | <script>alert(1)</script>\nf: a -> b : \"z | </text><script>alert(1)</script>\" | good\nf: legend",
+   "warnings": [
+    "edge-tone"
+   ]
+  },
+  {
+   "id": "diagram-21",
+   "src": "diagram s sequence\ns: a \"A\"\ns: b \"B\"\ns: c \"C\"\ns: d \"D\"\ns: e \"E\"\ns: a -> e : <img src=x onerror=alert(1)> | bad\ns: e --> a : </text><script>alert(1)</script> | info\ns: a -> a | warn"
   },
   {
    "id": "blocks-01",
