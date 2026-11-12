@@ -4,11 +4,11 @@
 import type { DecisionBlock, DecisionStatus } from '@lede-lang/core';
 import { esc, inline } from './util.ts';
 
-/** The status chip: the existing status pills, `settled` good, `open` warn and `deferred` the neutral grey (`.pill` with no tone). */
+/** The status chip: the existing status pills, `settled` good, `open` warn and `deferred` the neutral grey (the `neutral` tone, D80). */
 const STATUS: Record<DecisionStatus, { text: string; tone: string }> = {
   settled: { text: 'Settled', tone: 'good' },
   open: { text: 'Open', tone: 'warn' },
-  deferred: { text: 'Deferred', tone: 'info' },
+  deferred: { text: 'Deferred', tone: 'neutral' },
 };
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;

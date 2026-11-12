@@ -18,3 +18,4 @@ export {
   type ExternalOptions,
   type ExternalRepair,
 } from './external.ts';
+export { STATUS_TONES, readStatus, statusKey, type StatusRead, type StatusTone } from './meta.ts';

@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "title": "Release board",
+    "status": "Shipped=good, Parked=neutral, Needs review=warn, Escalated=bad, Beta=info, Blocked=info"
+  },
+  "blocks": [
+    {
+      "type": "table",
+      "data": "_table1",
+      "cols": null,
+      "sort": null,
+      "limit": null,
+      "title": null,
+      "line": 5
+    },
+    {
+      "type": "kpis",
+      "items": [
+        {
+          "label": "Releases",
+          "value": "12",
+          "delta": "Shipped",
+          "tone": null,
+          "note": "Parked",
+          "ref": null
+        }
+      ],
+      "line": 6
+    }
+  ],
+  "data": {
+    "_table1": {
+      "name": "_table1",
+      "columns": [
+        "Item",
+        "State"
+      ],
+      "rows": [
+        [
+          "Login",
+          "Shipped"
+        ],
+        [
+          "Export",
+          "Needs review"
+        ],
+        [
+          "Search",
+          "Blocked"
+        ]
+      ],
+      "line": 5
+    }
+  },
+  "diagnostics": []
+}

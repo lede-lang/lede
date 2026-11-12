@@ -68,11 +68,11 @@ test('the three statuses draw the existing chips: settled good, open warn, defer
     /<span class="pill ([^"]*)">([^<]*)<\/span>/.exec(main((await compile(`decision q "Q?" status=${status}`)).html))!.slice(1, 3);
   assert.deepEqual(await chip('settled'), ['good', 'Settled']);
   assert.deepEqual(await chip('open'), ['warn', 'Open']);
-  // `info` is a tone the status pills already have (not started, on hold) and draws as the plain `.pill`.
-  assert.deepEqual(await chip('deferred'), ['info', 'Deferred']);
+  // `neutral` is the tone of the status pills for "not yet" (not started, on hold, D80) and draws as the plain `.pill`, the one grey.
+  assert.deepEqual(await chip('deferred'), ['neutral', 'Deferred']);
   const css = styleOf((await compile('decision q "Q?"')).html);
   assert.match(css, /\.pill\{[^}]*background:var\(--info-bg\);color:var\(--fg2\)/);
-  assert.doesNotMatch(css, /\.pill\.info/);
+  assert.doesNotMatch(css, /\.pill\.neutral/);
   // No date, no chip for it; a date that is not ISO is a chip without `<time>`.
   assert.doesNotMatch(main((await compile('decision q "Q?"')).html), /class="chip"/);
   const free = main((await compile('decision q "Q?" by=Q1')).html);

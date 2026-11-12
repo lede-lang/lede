@@ -99,7 +99,7 @@ const DASH_RULES = `.doc.dash .lgrid{grid-template-columns:repeat(auto-fit,minma
 
 /**
  * The decision card's rules (spec §4.20), added only to a page that holds a decision, so every other page keeps its bytes. No new tokens:
- * the status chip is the existing `.pill` (`good`, `warn`, and no tone for deferred, which is the neutral grey), the date is the existing
+ * the status chip is the existing `.pill` (`good`, `warn`, and `neutral` for deferred, the grey: the base `.pill`, `--fg2` on `--info-bg`, as the `.t-neutral` edge tone reads it), the date is the existing
  * `.chip`. The list rules are prefixed `.decision` to outrank the prose layout's `.prose li+li`. Nothing here is the only carrier of a
  * state: the status and each verdict are words in the markup, and a rejected label is struck through as well as coloured.
  */
@@ -224,6 +224,7 @@ blockquote cite{display:block;font:600 13px/1.4 var(--sans);font-style:normal;co
 .pill{display:inline-block;font-size:12.5px;font-weight:600;line-height:1.4;padding:1px 8px 1px 18px;border-radius:999px;position:relative;white-space:nowrap;background:var(--info-bg);color:var(--fg2)}
 .pill::before{content:"";position:absolute;left:7px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:currentColor}
 .pill.good{background:var(--good-bg);color:var(--good)} .pill.warn{background:var(--warn-bg);color:var(--warn)} .pill.bad{background:var(--bad-bg);color:var(--bad)}
+.pill.info{background:var(--accent-tint);color:var(--accent-ink)}
 .pill strong{font-weight:inherit}
 ol{list-style:none;padding-left:0;counter-reset:step}
 ol>li{counter-increment:step;position:relative;padding-left:38px;min-height:24px}

@@ -141,11 +141,20 @@ paragraph; a blank line or any other block ends it. Inline markup (§5) applies.
 `@key value`. Known keys: `title` (document title; if no `#` heading repeats it, it is rendered
 as the page heading and `#` headings shift down one level), `subtitle`, `description`, `author`,
 `date`, `accent` (a `#hex` color), `theme` (`light` | `dark` forces one), `lang`, `width`
-(`wide` | `narrow`, below), `fonts`. W `unknown-meta` for other keys (still stored).
+(`wide` | `narrow`, below), `fonts`, `status` (below). W `unknown-meta` for other keys (still stored).
 
 `width` overrides the layout class a page is given from its blocks (§7, D80): `wide` sets the page as a dashboard, with the 64rem
 column, on any page; `narrow` keeps the 46rem column on a page that would be a dashboard. Any other value, `Wide` and the empty value
 included, is ignored without a diagnostic, as an unknown `theme` is, and the layout comes from the blocks.
+
+`status` gives the page its own status words (D80): `@status Shipped=good, Parked=neutral, Needs review=warn`, each entry a word, an
+`=` and one of five tones, `good`, `warn`, `bad`, `info` or `neutral` (`neutral` is a grey chip). The line is repeatable; later lines add.
+A page's words are matched like the built-in lexicon (§4.14: case-insensitive, runs of spaces collapsed, a closing `.` or `!` ignored)
+and take precedence over it, so `@status Blocked=info` re-tones a built-in word. They apply wherever a status word does: table cells,
+a timeline's events, a `kpi` change or note and a `step` due. The tone is the chip's colour; the word stays the text, so meaning
+never depends on colour. An entry with no word, or whose tone is none of the five (or missing), is W `status-value` with
+`detail {word, tone, allowed}` (`tone` as written, `''` when there is no `=`) and is left out. The value is kept in `meta.status` as
+the valid entries, `Word=tone, Word=tone`, in order.
 
 `accent` must be a CSS hex color (`#rgb`, `#rgba`, `#rrggbb` or `#rrggbbaa`); any other value is W
 `accent-value` and the house accent is used. The accent colors link and label text, so it needs WCAG AA
@@ -274,8 +283,8 @@ matches exactly, or else case-insensitively with runs of spaces collapsed. The c
 `table DATA [cols=a,b] [sort=col|-col] [limit=N] [title="…"]`, or the inline one-off form
 `table [options] = header; row; row`, or its block form (D80), below. Numeric columns (every non-empty cell numeric) are
 right-aligned. A cell whose whole text is a status word from the renderer's lexicon (done, on
-track, ready, at risk, in progress, blocked, failed, go, no-go, …) renders as a pill that keeps
-the word as its text. Sorting is numeric when every cell of the sort column is numeric, else lexical.
+track, ready, at risk, in progress, blocked, failed, go, no-go, …), or one the page defines with `@status` (§4.3), renders as a pill that keeps
+the word as its text. The built-in words that mean "not yet" (not started, todo, tbd, skipped, paused, on hold) are the `neutral` tone. Sorting is numeric when every cell of the sort column is numeric, else lexical.
 - E `unknown-data`, `unknown-column`, `table-option` (bad `limit`). W `table-option` (ignored, or an unclosed `"`).
 
 **Block form (D80).** An inline table with a header and no rows on its own line takes its rows from the lines below it:
@@ -879,7 +888,8 @@ step, rule}` (`rule` is `order`, `step`, `range`, `grid`, `grid-max` or `count`)
 `decision` of the same name and `{name, id, first}` for an option id used twice, W `decision-status` `{kind, value}` (`kind` is `status` or
 `verdict`) and W `decision-option`, which has none (as `diagram-option` and `chart-option` have none); `export-format` `{format}` now names `prompt` too. So does `accent-contrast` (§4.3) `{accent, theme, ratio, required, against}`:
 `theme` is `light` or `dark`, `ratio` is the lowest contrast found rounded down to two decimals, `required` is `4.5`, and `against` names
-the surface (`bg`, `surface` or `accent-tint`). So does `external` (above) `{kind, text}`. So does `artifact-image` `{src, kind}`: `src` is the image path as written and `kind` is
+the surface (`bg`, `surface` or `accent-tint`). So does `external` (above) `{kind, text}`. So does `status-value` (§4.3) `{word, tone, allowed}`: the entry as written, with `allowed`
+the five tones. So does `artifact-image` `{src, kind}`: `src` is the image path as written and `kind` is
 `local`. So does `image-inline` `{src, reason}`: `src` is the path as written and `reason` is `size`, `page-size`, `type`, `missing` or `outside`. So does `heading-skip` (§4.4) `{from, to}`: the level of the heading before and of this one, as written (`--fix` leaves it). So does the error
 form of `data-redefined` (§4.11) `{name, columns, redefined}`; the warning of the same code has none.
 New keys may be added; existing ones are not removed or retyped within 0.x.
@@ -1201,7 +1211,7 @@ words that merely start with "step" are prose; `\step …` is prose. Numbered li
 AST: `{ type: 'steps', items: [{ title, due, note, line }], line }`.
 
 ### F.5 Chips
-Renderer only: a status word or a date/time phrase in a kpi delta or note, a step `due`, or a table
+Renderer only: a status word (built-in, or one the page defines with `@status`, §4.3) or a date/time phrase in a kpi delta or note, a step `due`, or a table
 cell that is only a date/time renders as a chip. No grammar or AST change.
 
 ### F.6 Chart annotations

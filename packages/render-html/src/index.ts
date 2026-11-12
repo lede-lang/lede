@@ -29,7 +29,10 @@ import {
   parse,
   presetsOf,
   walkBlocks,
+  readStatus,
+  statusKey,
   type ParseOptions,
+  type StatusTone,
 } from '@lede-lang/core';
 import sanitizeHtml from 'sanitize-html';
 import { renderChart } from './chart.ts';
@@ -575,6 +578,15 @@ export class Ctx {
   private h1Scan = 0;
   private h1Text: string | undefined = undefined;
 
+  /** The page's status lexicon (`@status`, D80). Worked out when read, from the meta as it is then, so it follows a page still being written. */
+  get status(): Status {
+    const spec = this.doc.meta.status ?? '';
+    if (this.statusSpec !== spec || !this.statusFn) [this.statusSpec, this.statusFn] = [spec, statusFor(spec)];
+    return this.statusFn;
+  }
+  private statusSpec: string | undefined = undefined;
+  private statusFn: Status | undefined = undefined;
+
   uid(prefix: string): string {
     return `${prefix}${++this.n}`;
   }
@@ -713,12 +725,12 @@ export class Ctx {
       }
       case 'table': {
         const d = this.dataFor(b);
-        return d ? table(b, d, this.picks) : '';
+        return d ? table(b, d, this.status, this.picks) : '';
       }
       case 'cards':
         return this.cardsSync(b, top);
       case 'steps':
-        return steps(b);
+        return steps(b, this.status);
       case 'ask':
         return askHtml(b);
       case 'choose':
@@ -740,7 +752,7 @@ export class Ctx {
       case 'export':
         return exportHtml(b, serializeExport(b.format, this.page, this.fields, this.written), !!this.opts.shell);
       case 'kpis':
-        return kpis(b, wide, top);
+        return kpis(b, wide, top, this.status);
       case 'image': {
         // Judged as the browser reads the URL, so `/\host` and a leading control character count as remote.
         const kind = imageSrcKind(b.src);
@@ -824,7 +836,7 @@ export class Ctx {
     }
     if (k.type === 'table') {
       const d = this.dataFor(k);
-      return d ? table(k, d, this.picks, f.fit) : '';
+      return d ? table(k, d, this.status, this.picks, f.fit) : '';
     }
     return other(k);
   }
@@ -883,11 +895,11 @@ export function holdsFlow(b: Block): boolean {
 // ---------------------------------------------------------------- steps and chips
 
 /** v0.4 `step` lines: numbered step cards; the deadline is always a chip, a status word a status chip. */
-function steps(b: StepsBlock): string {
+function steps(b: StepsBlock, st: Status): string {
   if (!b.items.length) return '';
   const items = b.items
     .map((s, i) => {
-      const due = s.due.trim() ? chip(s.due, true) : '';
+      const due = s.due.trim() ? chip(st, s.due, true) : '';
       const note = s.note.trim() ? `<div class="sn">${inline(s.note)}</div>` : '';
       return `<li><span class="n">${i + 1}</span><div class="st"><b>${inline(s.title)}</b>${due}</div>${note}</li>`;
     })
@@ -922,8 +934,8 @@ export function dateLike(raw: string): boolean {
 }
 
 /** A status word as a status pill, a date/time phrase as a neutral chip; `force` chips any text. */
-function chip(raw: string, force = false): string {
-  const hit = statusOf(raw);
+function chip(st: Status, raw: string, force = false): string {
+  const hit = st(raw);
   if (hit) return `<span class="pill ${hit}">${inline(raw)}</span>`;
   if (force || dateLike(raw)) return `<span class="chip">${inline(raw)}</span>`;
   return '';
@@ -1028,7 +1040,7 @@ function verdictGroups(b: ListBlock): string {
 // A change that starts with a sign or a number is a delta; anything else is a short note.
 const DELTA = /^[+\-−±▲▼↑↓]?\s*[$€£¥]?\d/;
 
-function kpis(b: KpiBlock, wide: string, top: boolean): string {
+function kpis(b: KpiBlock, wide: string, top: boolean, st: Status): string {
   const hero = top && b.items.length === 1;
   const cells = b.items.map((k) => {
     const dir = /^[+▲↑]/.test(k.delta) ? 'up' : /^[-−▼↓]/.test(k.delta) ? 'down' : '';
@@ -1037,10 +1049,10 @@ function kpis(b: KpiBlock, wide: string, top: boolean): string {
     const sr = k.tone === 'good' ? '<span class="sr"> (good)</span>' : k.tone === 'bad' ? '<span class="sr"> (bad)</span>' : '';
     // A field that is only a status word or a date/time phrase is a chip (F.5), checked before
     // DELTA, which would take "2026-05-18" or "03:00" for a change.
-    const dchip = k.delta ? chip(k.delta) : '';
+    const dchip = k.delta ? chip(st, k.delta) : '';
     const isDelta = !dchip && DELTA.test(k.delta);
     const delta = k.delta && isDelta ? `<span class="kd${tone}">${glyph}${inline(k.delta.replace(/^[▲▼↑↓]\s*/, ''))}${sr}</span>` : '';
-    const notes = [k.delta && !isDelta ? `${dchip || inline(k.delta)}${sr}` : '', k.note ? chip(k.note) || inline(k.note) : ''].filter(
+    const notes = [k.delta && !isDelta ? `${dchip || inline(k.delta)}${sr}` : '', k.note ? chip(st, k.note) || inline(k.note) : ''].filter(
       Boolean,
     );
     // With no numeric change to carry it, the tone describes the metric itself.
@@ -1122,12 +1134,12 @@ function timeLike(cells: string[]): boolean {
   return cells.length > 0 && cells.every((c) => TIME_LIKE.test(plain(c).trim()));
 }
 
-function timeline(b: TableBlock, rows: string[][], idx: number[], head0: string): string {
+function timeline(b: TableBlock, rows: string[][], idx: number[], head0: string, st: Status): string {
   const items = rows
     .map((r) => {
       const [t, e] = [r[idx[0]] ?? '', r[idx[1]] ?? ''];
       const em = BOLD_CELL.test(t) || BOLD_CELL.test(e);
-      return `<li${em ? ' class="em"' : ''}><time>${inline(t)}</time><span>${cell(e)}</span></li>`;
+      return `<li${em ? ' class="em"' : ''}><time>${inline(t)}</time><span>${cell(st, e)}</span></li>`;
     })
     .join('');
   const cap = b.title ? `<p class="tl-cap">${inline(b.title)}</p>` : '';
@@ -1179,7 +1191,7 @@ function barPercents(raws: string[], targets: (number | null)[] = []): (string |
 }
 
 /** `fit`: the narrowest width the table must read at (the 368px phone column, or a card). */
-function table(b: TableBlock, d: DataSet, picks: string[] = [], fit = 364): string {
+function table(b: TableBlock, d: DataSet, st: Status, picks: string[] = [], fit = 364): string {
   const cols = b.cols ?? d.columns;
   const idx = cols.map((c) => d.columns.indexOf(c));
   let rows = [...d.rows];
@@ -1199,7 +1211,7 @@ function table(b: TableBlock, d: DataSet, picks: string[] = [], fit = 364): stri
   /** The cell of a data row as a quantity; the total row's cells are not ranked or scaled. */
   const qty = (r: string[], i: number): string => (r === total ? '' : bareCell(r[i]));
   if (!b.heat && !b.bars && cols.length === 2 && rows.length > 0 && rows.length <= 14 && timeLike(rows.map((r) => r[idx[0]] ?? '')))
-    return timeline(b, rows, idx, cols[0]);
+    return timeline(b, rows, idx, cols[0], st);
   // A number set in bold or italic ("**5,870**", a total) is still a number: it aligns, ranks and formats as one.
   const numeric = idx.map(
     (i) => rows.length > 0 && rows.every((r) => r[i] === '' || cellNum(r[i]) !== null) && rows.some((r) => r[i] !== ''),
@@ -1223,10 +1235,10 @@ function table(b: TableBlock, d: DataSet, picks: string[] = [], fit = 364): stri
   const est = idx.reduce((sum, i, j) => {
     const head = maxOf(words(cols[j]).map((w) => textWidth(w.toUpperCase(), 11, { bold: true }) * 1.1));
     const cellW = (raw: string) => {
-      const chipped = !!statusOf(raw) || (!(j === 0 && rowHead) && dateLike(raw));
+      const chipped = !!st(raw) || (!(j === 0 && rowHead) && dateLike(raw));
       // A date chip is bold with a border and 8px side padding, wider than a status pill: 38 keeps a date column from overflowing at 400px.
       const full = Math.max(
-        textWidth(plain(fmtCell(raw, hdr[j])), 13) + (statusOf(raw) ? 24 : chipped ? 38 : 0),
+        textWidth(plain(fmtCell(raw, hdr[j])), 13) + (st(raw) ? 24 : chipped ? 38 : 0),
         b.bars?.includes(cols[j]) ? 80 : 0,
       );
       if (numeric[j] || nowrap[j] || chipped) return full;
@@ -1263,8 +1275,8 @@ function table(b: TableBlock, d: DataSet, picks: string[] = [], fit = 364): stri
   const marks = rows.map((r) => {
     if (r === total) return '';
     const cells = idx.map((i) => r[i] ?? '');
-    if (cells.some((c) => statusOf(c) === 'bad')) return 'bad';
-    if (cells.some((c) => statusOf(c) === 'warn' && /^(at risk|delayed|slipping|behind|overdue)$/i.test(norm(c)))) return 'warn';
+    if (cells.some((c) => st(c) === 'bad')) return 'bad';
+    if (cells.some((c) => st(c) === 'warn' && /^(at risk|delayed|slipping|behind|overdue)$/i.test(norm(c)))) return 'warn';
     if (cells.some((c) => BOLD_CELL.test(c))) return 'pick';
     return '';
   });
@@ -1321,7 +1333,7 @@ function table(b: TableBlock, d: DataSet, picks: string[] = [], fit = 364): stri
       const cells = idx
         .map((i, j) => {
           const label = stack ? ` data-label="${esc(plain(cols[j]))}"` : '';
-          if (j === 0 && rowHead) return `<th scope="row"${role('rowheader')}>${cell(r[i] ?? '', hdr[j])}</th>`;
+          if (j === 0 && rowHead) return `<th scope="row"${role('rowheader')}>${cell(st, r[i] ?? '', hdr[j])}</th>`;
           const lv = level[j]?.[ri];
           const tc = [
             numeric[j] ? 'n' : nowrap[j] ? 'nw' : '',
@@ -1337,8 +1349,8 @@ function table(b: TableBlock, d: DataSet, picks: string[] = [], fit = 364): stri
             ? `<b class="tg" style="--t:${tk}"><span class="sr">target ${esc(fmtCell(bareCell(r[ti]), plain(b.targetCol ?? '')))}</span></b>`
             : '';
           const inner = bp
-            ? `<span class="cb${bar[j]?.ticks ? ' tgt' : ''}" style="--p:${bp}"><i></i>${tick}${cell(r[i] ?? '', hdr[j], true)}</span>`
-            : cell(r[i] ?? '', hdr[j], true);
+            ? `<span class="cb${bar[j]?.ticks ? ' tgt' : ''}" style="--p:${bp}"><i></i>${tick}${cell(st, r[i] ?? '', hdr[j], true)}</span>`
+            : cell(st, r[i] ?? '', hdr[j], true);
           return `<td${tc ? ` class="${tc}"` : ''}${label}${role('cell')}>${inner}</td>`;
         })
         .join('');
@@ -1364,7 +1376,7 @@ const TOTAL_ROW = /^((grand |sub)?totals?|sum|overall):?$/i;
 
 // Status words in a table cell render as a labeled pill. The word stays the text, so the
 // meaning never depends on color; writers get this for free by typing the status.
-const STATUS: [RegExp, 'good' | 'warn' | 'bad' | 'info'][] = [
+const STATUS: [RegExp, StatusTone][] = [
   [
     /^(done|complete|completed|shipped|ready|on track|pass|passed|passing|go|healthy|ok|green|approved|live|resolved|met|available|enabled|stable|fixed|merged|recommended|chosen|winner|ahead)$/i,
     'good',
@@ -1377,15 +1389,26 @@ const STATUS: [RegExp, 'good' | 'warn' | 'bad' | 'info'][] = [
     /^(blocked|failed|fail|failing|no-go|no go|not ready|not met|off track|red|critical|breached|missed|down|outage|rejected|deprecated|overdue|open incident|sev1|sev 1|p0|exhausted)$/i,
     'bad',
   ],
-  [/^(not started|todo|to do|tbd|skipped|paused|on hold)$/i, 'info'],
+  [/^(not started|todo|to do|tbd|skipped|paused|on hold)$/i, 'neutral'],
 ];
 
 const norm = (raw: string) => plain(raw).trim().replace(/[.!]$/, '');
-const statusOf = (raw: string) => STATUS.find(([re]) => re.test(norm(raw)))?.[1];
+/** The tone of a status word, or undefined when `raw` is not one. */
+export type Status = (raw: string) => StatusTone | undefined;
+const builtinStatus: Status = (raw) => STATUS.find(([re]) => re.test(norm(raw)))?.[1];
+
+/**
+ * The status lexicon of a page: its `@status` words first (D80), matched like the built-in ones (case-insensitive, spaces collapsed,
+ * a closing `.` or `!` ignored), then the built-in lexicon. A page without `@status` gets the built-in function itself.
+ */
+function statusFor(spec: string): Status {
+  const own = new Map(readStatus(spec).entries.map(([word, tone]) => [statusKey(word), tone]));
+  return own.size === 0 ? builtinStatus : (raw) => own.get(statusKey(norm(raw))) ?? builtinStatus(raw);
+}
 
 /** `dates`: a cell that is only a date/time phrase becomes a neutral chip (not in row headers or timelines). */
-function cell(raw: string, header = '', dates = false): string {
-  const hit = statusOf(raw);
+function cell(st: Status, raw: string, header = '', dates = false): string {
+  const hit = st(raw);
   if (hit) return `<span class="pill ${hit}">${inline(raw)}</span>`;
   if (dates && dateLike(raw)) return `<span class="chip">${inline(raw)}</span>`;
   const em = EM.exec(raw.trim());

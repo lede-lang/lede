@@ -372,6 +372,10 @@
   {
    "name": "decision role",
    "lede": "decision dd4 \"Mk91\"\ndd4: role decides \"Mk92 {Q}\"\ndd4: role consulted {C}"
+  },
+  {
+   "name": "status words in a table, a kpi and a step",
+   "lede": "@status {T}=good, Mk75=warn\ntable = h,Mk75; {C},Mk75\nkpi Mk76 | 1 | {T} | {T}\nstep Mk77 | {T}"
   }
  ],
  "cases": [
@@ -2471,6 +2475,59 @@
     "<a href=//",
     "<link ",
     "<img src=//"
+   ]
+  },
+  {
+   "id": "status-01",
+   "src": "@status <img src=x onerror=alert(1)>=good\n\ntable = a,b; \"<img src=x onerror=alert(1)>\",1; ok,2",
+   "has": [
+    "<span class=\"pill good\">&lt;img src=x onerror=alert(1)&gt;</span>"
+   ],
+   "hasNot": [
+    "<img src=x"
+   ]
+  },
+  {
+   "id": "status-02",
+   "src": "@status Done=good<script>alert(1)</script>, \"><script>alert(2)</script>=bad\n\nText.",
+   "warnings": [
+    "status-value"
+   ],
+   "has": [
+    "Text."
+   ],
+   "hasNot": [
+    "<script",
+    "alert("
+   ]
+  },
+  {
+   "id": "status-03",
+   "src": "@status constructor=good, __proto__=bad, toString=info, hasOwnProperty=warn\n\ntable = k,v; constructor,1; __proto__,2; toString,3; hasOwnProperty,4",
+   "has": [
+    "<span class=\"pill good\">constructor</span>",
+    "<span class=\"pill bad\">__proto__</span>",
+    "<span class=\"pill info\">toString</span>",
+    "<span class=\"pill warn\">hasOwnProperty</span>"
+   ]
+  },
+  {
+   "id": "status-04",
+   "src": "@status a=good\" onclick=\"x, b=good bad, c=good;background:url(//xss.example/a.png), d=\n\ntable = k,v; a,1; b,2; c,3; d,4",
+   "warnings": [
+    "status-value"
+   ],
+   "hasNot": [
+    "onclick",
+    "xss.example",
+    "class=\"pill"
+   ]
+  },
+  {
+   "id": "status-05",
+   "src": "@status Blocked=good\n@status blocked=info\n\ntable = k,v; Blocked,1; Done,2",
+   "has": [
+    "<span class=\"pill info\">Blocked</span>"
    ]
   }
  ]

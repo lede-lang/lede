@@ -45,6 +45,7 @@ import {
 import { EMPTY, FIELD_KINDS, NOT_CHOSEN, SLOT_RE } from './fields.ts';
 import { AA_NON_TEXT, AA_TEXT, HEX_COLOR, accentContrast, accentTheme } from './contrast.ts';
 import { browserUrl, imageSrcKind } from './url.ts';
+import { STATUS_TONES, readStatus } from './meta.ts';
 import { walkBlocks } from './walk.ts';
 
 /**
@@ -102,7 +103,7 @@ export const KEYWORDS = [
 ] as const;
 /** The words an edge or message line's last ` | ` field may be (spec §4.17, D80). */
 export const EDGE_TONES: readonly EdgeTone[] = ['good', 'bad', 'warn', 'info', 'neutral'];
-export const META_KEYS = ['title', 'subtitle', 'description', 'author', 'date', 'accent', 'theme', 'lang', 'width', 'fonts'];
+export const META_KEYS = ['title', 'subtitle', 'description', 'author', 'date', 'accent', 'theme', 'lang', 'width', 'fonts', 'status'];
 const CHART_KINDS: ChartKind[] = ['line', 'area', 'bar', 'hbar', 'range'];
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const KEYWORD_RE = new RegExp(`^(${KEYWORDS.join('|')})(?=\\s|$)`);
@@ -401,6 +402,42 @@ export class LedeParser {
     return out;
   }
 
+  // ------------------------------------------------------------ status words (D80)
+
+  /**
+   * `@status Word=tone, Other word=tone` (spec §4.3). Repeatable: each line adds its valid entries to `meta.status`, as the
+   * normalized text `Word=tone, Other word=tone` (`readStatus` reads it back). An entry with no word or a tone that is none of
+   * `STATUS_TONES` is W `status-value` and is left out.
+   */
+  private statusMeta(value: string, L: number, col: number): void {
+    const { entries, bad } = readStatus(value);
+    if (value === '') bad.push({ word: '', tone: '' });
+    const allowed = [...STATUS_TONES];
+    for (const b of bad) {
+      const why =
+        b.word === ''
+          ? 'an entry needs a word before the `=`'
+          : b.tone === ''
+            ? `"${b.word}" has no \`=tone\``
+            : `"${b.tone}" is not a tone for "${b.word}"`;
+      this.diag(
+        'warning',
+        'status-value',
+        `@status: ${why} (write Word=tone, tones: ${allowed.join(', ')}); the entry is ignored`,
+        L,
+        col,
+        {
+          word: b.word,
+          tone: b.tone,
+          allowed,
+        },
+      );
+    }
+    if (entries.length === 0) return;
+    const added = entries.map(([word, tone]) => `${word}=${tone}`).join(', ');
+    this.doc.meta.status = this.doc.meta.status ? `${this.doc.meta.status}, ${added}` : added;
+  }
+
   // ------------------------------------------------------------ accent (D49)
 
   private accentMeta(v: string, L: number, col: number): void {
@@ -479,8 +516,10 @@ export class LedeParser {
       if (!META_KEYS.includes(key)) {
         this.diag('warning', 'unknown-meta', `unknown meta key @${key} (known: ${META_KEYS.join(', ')})`, L, lead + 1);
       }
-      this.doc.meta[key] = (meta[2] ?? '').trim();
-      if (key === 'accent') this.accentMeta(this.doc.meta[key], L, lead + 1);
+      const value = (meta[2] ?? '').trim();
+      if (key === 'status') this.statusMeta(value, L, lead + 1);
+      else this.doc.meta[key] = value;
+      if (key === 'accent') this.accentMeta(value, L, lead + 1);
       return;
     }
     const h = /^(#{1,6})(\s+(.*))?$/.exec(s);
