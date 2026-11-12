@@ -2067,6 +2067,7 @@ export class LedeParser {
       name,
       kind,
       dir,
+      ...(o.kv.dir !== undefined && dirRaw === dir ? { dirExplicit: true as const } : {}),
       title: o.kv.title ?? null,
       nodes: [],
       edges: [],

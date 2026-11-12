@@ -18,6 +18,7 @@ export { normalize } from '../../packages/render-html/src/incremental.ts';
 export class StringModel {
   header = '';
   prose = false;
+  dash = false;
   css = '';
   tail = '';
   /** The units in order. */
@@ -34,6 +35,9 @@ export class StringModel {
           break;
         case 'prose':
           this.prose = op.on;
+          break;
+        case 'dash':
+          this.dash = op.on;
           break;
         case 'append':
         case 'placeholder':
@@ -70,7 +74,7 @@ export class StringModel {
 
   /** `<main>` as `render(..., { fragment: true })` writes it, plus the tail. */
   main(): string {
-    return mainElement([...this.children(), this.tail], this.prose);
+    return mainElement([...this.children(), this.tail], this.prose, this.dash);
   }
 }
 

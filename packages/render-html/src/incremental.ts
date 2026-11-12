@@ -1,7 +1,7 @@
 // The incremental renderer (internal spec, lede-lang/meta): blocks go in one at a time as they become final, DOM operations come
 // out with the HTML of the unit they touch, and the markup that results is the markup `render()` writes for the whole page.
-// Six decisions in `render()` read the whole document; each has a rule below (prose layout, grouping, the standfirst, the
-// heading shift, picks, late meta). The question words and the editor words add a seventh, the `export` (see `reexport`), and a
+// Seven decisions in `render()` read the whole document; each has a rule below (prose layout, dashboard layout, grouping, the
+// standfirst, the heading shift, picks, late meta). The question words and the editor words add an eighth, the `export` (see `reexport`), and a
 // block that grows besides the diagram, the bucket set (see `grew`). `end()` checks the result against the whole-page render and
 // corrects what the rules missed (the settle); the tests and the bench switch the correction off, so they measure the rules and not
 // the safety net.
@@ -9,7 +9,9 @@ import type { Block, BucketBlock, DataSet, DiagramBlock, LedeDocument, PresetBlo
 import { FIELD_KINDS, resolve, walkBlocks } from '@lede-lang/core';
 import {
   Ctx,
+  DASH,
   NOT_ESSAY,
+  hasProseSection,
   holdsFlow,
   isWide,
   masthead,
@@ -38,6 +40,8 @@ export type IncrementalOp =
   | { op: 'masthead'; html: string }
   /** Set or clear the `prose` class of `<main>`. */
   | { op: 'prose'; on: boolean }
+  /** Set or clear the `dash` class of `<main>`: the page is a dashboard (spec §7, D80). The `style` op that comes with it adds or drops the dashboard rules. */
+  | { op: 'dash'; on: boolean }
   /** A sealed unit, after the last one and before the tail. */
   | { op: 'append'; id: number; html: string }
   /** The unit `id` is drawn again (an update, a repick, a drawing, a settle). An empty `html` means it has no element. */
@@ -61,7 +65,7 @@ export interface Pushed {
  * Why a child of `<main>` was settled. `masthead`: the header, or the heading that carries the subtitle and byline, which the
  * first block alone could not decide (the first `#` heading came later and rules out or moves the header).
  */
-export type SettleCause = 'prose' | 'shift' | 'lead' | 'picks' | 'masthead' | 'other';
+export type SettleCause = 'prose' | 'layout' | 'shift' | 'lead' | 'picks' | 'masthead' | 'other';
 
 export interface IncrementalEnd {
   ops: IncrementalOp[];
@@ -71,7 +75,7 @@ export interface IncrementalEnd {
   countMismatch: boolean;
   /** The first child that differed (0 is the header when there is one), or null. */
   firstDiff: number | null;
-  /** One cause per child that differed, and 'prose' when only the class of `<main>` differed. */
+  /** One cause per child that differed, and 'prose' or 'layout' when only the class of `<main>` differed. */
   causes: SettleCause[];
   /** True when `<main>` needed no settle at all: no child, no count and no class differed. */
   equal: boolean;
@@ -85,6 +89,8 @@ export interface IncrementalEnd {
   lateMeta: number;
   /** Times the prose class went on mid-stream (0 or 1). */
   proseFlips: number;
+  /** Times the dashboard class went on mid-stream (0 or 1; 0 when `@width wide` set it from the first block). */
+  dashFlips: number;
   /** The shift was assumed, not read: an `@title` page whose first heading is below h1, taken to have no `#` of its own. */
   shiftAssumed: boolean;
   /** How long each block that was held back waited before it was committed, in `now()` units. */
@@ -316,6 +322,10 @@ class Renderer implements Incremental {
 
   private prose = false;
   private proseFrozen = false;
+  /** The page is a dashboard so far (`layoutClass`): latched by the first block a dashboard has (`latchDash`), or by `@width wide`. */
+  private dash = false;
+  private dashFrozen = false;
+  private dashFlips = 0;
   /** The essay test's counts over the blocks read so far, while the layout is still undecided. */
   private readonly tally: ProseTally = { paras: 0, pchars: 0, all: 0 };
   private proseFlips = 0;
@@ -385,6 +395,7 @@ class Renderer implements Incremental {
     }
     this.rest.push(block);
     this.latchProse(block, out.ops);
+    this.latchDash(block, out.ops);
     this.held.push(block);
     this.heldAt.push(this.now());
     this.heldSeq.push(this.seq);
@@ -409,8 +420,8 @@ class Renderer implements Incremental {
   }
 
   /** The page stylesheet for `meta`, with the controls' and the editors' rules once a field, an `export` or an editor word has arrived. */
-  private style(meta: Record<string, string>): string {
-    return styleOf(meta, this.controls, this.editors);
+  private style(meta: Record<string, string>, dash = this.dash): string {
+    return styleOf(meta, this.controls, this.editors, dash);
   }
 
   /**
@@ -450,7 +461,10 @@ class Renderer implements Incremental {
     this.begun = true;
     const m = this.meta();
     this.startMeta = { ...m };
+    // `@width wide` is a dashboard from the first block.
+    this.dash = this.ctx.dash = isWide(m);
     const ops: IncrementalOp[] = [{ op: 'style', css: this.style(m) }];
+    if (this.dash) ops.push({ op: 'dash', on: true });
     const mh = masthead({ meta: m, blocks: [first], data: {}, diagnostics: [] }, this.ctx);
     const consumed = mh.rest.length === 0;
     this.titleBranch = Boolean(m.title) && !consumed;
@@ -487,6 +501,21 @@ class Renderer implements Incremental {
       this.proseFlips++;
       ops.push({ op: 'prose', on: true });
     }
+  }
+
+  /**
+   * The dashboard layout is decided at the first block a dashboard has (kpis, a chart, table, diagram, cards, steps or a grid) unless
+   * a section of prose was read before it, the page is set as prose, or `@width narrow` says no; then it is fixed. Nothing drawn
+   * before that block reads the class (only cards, a grid and a flow diagram do), so the page widens and no unit is drawn again.
+   * A section of prose that comes later is a settle case: the class goes off at `end()` (cause `layout`).
+   */
+  private latchDash(block: Block, ops: IncrementalOp[]): void {
+    if (this.dashFrozen || this.dash || this.prose || !DASH.has(block.type)) return;
+    this.dashFrozen = true;
+    if (this.meta().width === 'narrow' || hasProseSection(this.rest)) return;
+    this.dash = this.ctx.dash = true;
+    this.dashFlips++;
+    ops.push({ op: 'style', css: this.style(this.startMeta) }, { op: 'dash', on: true });
   }
 
   /** A note or paragraph under a heading can name the choice a table is about: draw the tables again when the picks change. */
@@ -748,7 +777,7 @@ class Renderer implements Incremental {
     const whole = new Ctx(doc, this.renderOpts);
     whole.cacheLayouts = true;
     const mh = masthead(doc, whole);
-    const { body, prose, h1At } = await renderMain(doc, whole, mh);
+    const { body, prose, dash, h1At } = await renderMain(doc, whole, mh);
     // The subtitle and byline that follow the first `#` heading are children of `<main>` of their own in `render()`, and part of
     // that heading's unit here: the heading is the one unit a late masthead decision changes.
     if (h1At >= 0) body.splice(h1At, 3, body[h1At] + body[h1At + 1] + body[h1At + 2]);
@@ -791,7 +820,12 @@ class Renderer implements Incremental {
       causes.push('prose');
       edits.push({ op: 'prose', on: prose });
     }
-    const equal = settled === 0 && !proseChanged;
+    const dashChanged = dash !== this.dash;
+    if (dashChanged) {
+      causes.push('layout');
+      edits.push({ op: 'dash', on: dash }, { op: 'style', css: this.style(m, dash) });
+    }
+    const equal = settled === 0 && !proseChanged && !dashChanged;
     if (this.settleOn) ops.push(...edits);
     return {
       ops,
@@ -805,6 +839,7 @@ class Renderer implements Incremental {
       reseals: this.reseals,
       lateMeta,
       proseFlips: this.proseFlips,
+      dashFlips: this.dashFlips,
       shiftAssumed: this.shiftAssumed,
       holdMs: this.holdMs,
       heldGrouped: this.heldGrouped,
@@ -860,6 +895,7 @@ class Renderer implements Incremental {
     const picked = whole.picks.length !== this.ctx.picks.length || whole.picks.some((p, i) => p !== this.ctx.picks[i]);
     if ((u ? u.picks : /<table\b/.test(other)) && picked) return 'picks';
     if (prose !== this.prose) return 'prose';
+    if (whole.dash !== this.dash) return 'layout';
     return 'other';
   }
 }

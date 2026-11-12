@@ -121,7 +121,11 @@ paragraph; a blank line or any other block ends it. Inline markup (§5) applies.
 `@key value`. Known keys: `title` (document title; if no `#` heading repeats it, it is rendered
 as the page heading and `#` headings shift down one level), `subtitle`, `description`, `author`,
 `date`, `accent` (a `#hex` color), `theme` (`light` | `dark` forces one), `lang`, `width`
-(`wide` widens the reading column), `fonts`. W `unknown-meta` for other keys (still stored).
+(`wide` | `narrow`, below), `fonts`. W `unknown-meta` for other keys (still stored).
+
+`width` overrides the layout class a page is given from its blocks (§7, D80): `wide` sets the page as a dashboard, with the 64rem
+column, on any page; `narrow` keeps the 46rem column on a page that would be a dashboard. Any other value, `Wide` and the empty value
+included, is ignored without a diagnostic, as an unknown `theme` is, and the layout comes from the blocks.
 
 `accent` must be a CSS hex color (`#rgb`, `#rgba`, `#rrggbb` or `#rrggbbaa`); any other value is W
 `accent-value` and the house accent is used. The accent colors link and label text, so it needs WCAG AA
@@ -306,7 +310,10 @@ other blocks. A diagram renders where it is declared.
 Layout (normative for renderers that claim conformance): flow diagrams use a layered layout
 with orthogonal edge routing; edge labels never overlap other edges or nodes; edges never pass
 through non-endpoint nodes; node sizes sit on a 4px grid. A left-to-right diagram wider than a
-phone also gets a top-to-bottom layout that the page uses at phone widths.
+phone also gets a top-to-bottom layout that the page uses at phone widths. A flow with no `dir=`
+may be drawn left to right on a dashboard page (§7); the parsed document tells the two apart: its
+`dirExplicit` is `true` when the writer gave a valid `dir=`, and the key is omitted otherwise (a
+`dir` that is not LR, TB, RL or BT is W `diagram-option` and counts as not given).
 
 ### 4.18 Questions and the export
 Four lines let a page ask and collect. They are blocks in every build mode: `lede build` draws each as a plain control with no
@@ -574,6 +581,21 @@ written anywhere else was given on its declaration.
   number or range control and the `checked` state of a radio or checkbox (both only to follow a twin control or apply a preset), the
   `hidden` attribute, `aria-invalid` on a toggle's checkbox, and the selection. It rejects a block whose version is not 2 or whose
   fields do not fit their kind, and then does nothing. The model never writes script, in either mode.
+- Each page has one of three layout classes (D80), decided from its blocks and `@width` alone, so `--artifact` output and the incremental
+  form see the same choice. `prose`: mostly long paragraphs and no data block, which is set as an essay (`<main class="doc prose">`).
+  `dashboard`: not prose, at least one top-level `kpi`, `chart`, `table`, `diagram`, `cards`, `step` or `grid`, and no section of
+  prose, a section being the blocks from a `#` or `##` heading to the next (the lead before the first heading is one) and a section of
+  prose four or more paragraphs of 140 characters on average, 1,200 in all, that make up at least 60% of its text. `document`:
+  everything else, in today's 46rem column. `@width wide` makes any page a dashboard; `@width narrow` makes a page that would be a
+  dashboard a document (§4.3). A dashboard is `<main class="doc dash">` with a 64rem column (`min(64rem, 100%)`, so a narrow host frame
+  never overflows), and its stylesheet differs from any other page's in the column and one added rule: a `grid` keeps as many columns as it names while each
+  cell would be at least 420px wide, and has as many as fit below that, down to one, where a `grid` on any other page stacks at a 720px
+  viewport whatever its count; so on the 64rem column `grid 2` is two across from a 888px viewport and `grid 3` or `grid 4` is two across
+  and stacks to one below that. A flow diagram with no `dir=` on a dashboard page is drawn left to right when its layering, taken from
+  the edge list with the longest path to each node as its rank and a cycle broken at the edge that closes it, has more ranks than nodes in
+  its widest rank; the figure then carries `data-dir="LR"`, which no figure on another page does, and the phone drawing keeps the
+  diagram's own direction (§4.17). Even then the renderer keeps the direction that fits the column better, as for any diagram. Every
+  other page's `<main>` and `<style>` are the same bytes they were before D80.
 - No remote fetches by default (system font stacks, no remote images).
 - Light and dark themes from CSS custom properties; `prefers-color-scheme` plus
   `data-theme="light|dark"` on `<html>` to override. Print uses the light tokens whatever the device or `@theme` says (paper is
@@ -588,7 +610,10 @@ written anywhere else was given on its declaration.
 - The package also exposes an incremental form, `createIncremental(meta, data, opts)`, that takes the blocks of a
   `LedeStream` (§6) as they become final and returns DOM operations carrying the HTML of the unit each one touches; after
   the stream ends, the markup it has built equals the `<main>` that `render()` writes for the whole document, and it carries
-  no script. Question words (§4.18) stream as the controls `render()` draws, and so do the editor words (§4.19): `param`, `toggle`,
+  no script. The layout class is decided as the blocks arrive: `@width wide` is a dashboard from the first block, and otherwise
+  the page becomes one at the first block a dashboard has, unless a section of prose, the prose layout or `@width narrow` came first;
+  a `dash` operation sets the class of `<main>` (as `prose` does) and a `style` operation adds the dashboard rule. A section of prose
+  that arrives later takes the class off when the stream ends, and so does the settle. Question words (§4.18) stream as the controls `render()` draws, and so do the editor words (§4.19): `param`, `toggle`,
   `preset` and `template` are drawn when read, a `bucket` set is drawn again in place for each item line (the `bucket-update` of §6; its
   `bucket-seal` adds nothing, since every update drew it in full), and a `template` fence still open is drawn, with the text so far, in the open
   block the consumer reads. The page's stylesheet gains the controls' rules when the first field or `export` arrives and the editors' when
@@ -713,7 +738,8 @@ directory and picks FILE's events by name, so an editor's save that writes a tem
 build is fatal (exit 70, as for `build`). After that nothing ends the process but a signal: if FILE is deleted, stderr gets `lede: FILE is gone; waiting for it to
 come back` once and the page is rebuilt when FILE reappears, and any other failed rebuild (FILE unreadable, OUT no longer writable) prints one line, `lede: MESSAGE`,
 and watching goes on. A change that lands during a build causes one more build after it. `lede ast FILE` prints the parsed document,
-diagnostics included, as JSON on stdout and exits 0 even when the document has errors.
+diagnostics included, as JSON on stdout and exits 0 even when the document has errors. A `diagram` block in it has `"dirExplicit": true`
+when the writer gave a valid `dir=` (§4.17) and no such key otherwise.
 
 `--json` prints one object keyed by file path; each value is an array of diagnostics:
 

@@ -236,6 +236,8 @@ export interface DiagramBlock {
   name: string;
   kind: 'flow' | 'sequence';
   dir: 'LR' | 'TB' | 'RL' | 'BT';
+  /** The writer gave a valid `dir=`. Omitted when `dir` is the default, which a renderer may replace (D80). */
+  dirExplicit?: true;
   title: string | null;
   nodes: DiagramNode[];
   edges: DiagramEdge[];

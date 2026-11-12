@@ -1032,13 +1032,75 @@ async function phoneFit(d: DiagramBlock): Promise<Fit | null> {
   return best.p.width <= PHONE_MAX ? best : null;
 }
 
-/** The two layouts `renderFlow` draws from. */
+/**
+ * The shape of a flow diagram's layering, from the edge list alone (no layout engine): each node's rank is the longest path to it,
+ * a cycle is broken at the edge that closes it, an edge to a group goes to the first node the group holds, and a `<->` edge counts as
+ * one edge, from the first node to the second. `layers` is the number of ranks and `breadth` the most nodes in one; a node no edge
+ * touches is in the first rank, as the layered layout puts it.
+ */
+export function rankShape(d: DiagramBlock): { layers: number; breadth: number } {
+  const groups = new Map(d.groups.map((g) => [g.id, g.members]));
+  const leaf = (id: string, seen = new Set<string>()): string | null => {
+    const members = groups.get(id);
+    if (!members) return id;
+    if (seen.has(id)) return null;
+    seen.add(id);
+    for (const m of members) {
+      const l = leaf(m, seen);
+      if (l !== null) return l;
+    }
+    return null;
+  };
+  const preds = new Map<string, string[]>();
+  for (const e of d.edges) {
+    const [from, to] = [leaf(e.from), leaf(e.to)];
+    if (from === null || to === null || from === to) continue;
+    const list = preds.get(to);
+    if (list) list.push(from);
+    else preds.set(to, [from]);
+  }
+  const rank = new Map<string, number>();
+  const open = new Set<string>();
+  const up = (n: string): number => {
+    const known = rank.get(n);
+    if (known !== undefined) return known;
+    open.add(n);
+    let r = 0;
+    for (const p of preds.get(n) ?? []) if (!open.has(p)) r = Math.max(r, up(p) + 1);
+    open.delete(n);
+    rank.set(n, r);
+    return r;
+  };
+  const sizes = new Map<number, number>();
+  for (const n of d.nodes) {
+    if (groups.has(n.id)) continue;
+    const r = up(n.id);
+    sizes.set(r, (sizes.get(r) ?? 0) + 1);
+  }
+  return { layers: sizes.size, breadth: Math.max(0, ...sizes.values()) };
+}
+
+/**
+ * A flow diagram with no `dir=` on a dashboard page runs left to right when it has more layers than nodes in its widest one: top to
+ * bottom it would be a tall, narrow column in a wide page (D80). A written `dir=` is never changed.
+ */
+function wantsLeftToRight(d: DiagramBlock): boolean {
+  if (d.dirExplicit) return false;
+  const { layers, breadth } = rankShape(d);
+  return layers > breadth;
+}
+
+/** The two layouts `renderFlow` draws from. `lr`: the desktop drawing prefers left to right (the phone drawing keeps the diagram's own direction). */
 interface Layouts {
   desk: Fit;
   phone: Fit | null;
+  lr: boolean;
 }
 
-const layoutsFor = async (d: DiagramBlock): Promise<Layouts> => ({ desk: await bestFit(d, false, FIT_DESKTOP), phone: await phoneFit(d) });
+const layoutsFor = async (d: DiagramBlock, dash: boolean): Promise<Layouts> => {
+  const lr = dash && d.dir !== 'LR' && wantsLeftToRight(d);
+  return { desk: await bestFit(lr ? { ...d, dir: 'LR' } : d, false, FIT_DESKTOP), phone: await phoneFit(d), lr };
+};
 
 /**
  * The layouts of each flow diagram, kept while the block reads the same, so drawing it again (the incremental renderer draws a
@@ -1048,11 +1110,11 @@ const layoutsFor = async (d: DiagramBlock): Promise<Layouts> => ({ desk: await b
  */
 const laidOut = new WeakMap<DiagramBlock, { key: string; layouts: Promise<Layouts> }>();
 
-function cachedLayoutsOf(d: DiagramBlock): Promise<Layouts> {
-  const key = JSON.stringify(d);
+function cachedLayoutsOf(d: DiagramBlock, dash: boolean): Promise<Layouts> {
+  const key = `${dash ? 'dash:' : ''}${JSON.stringify(d)}`;
   const hit = laidOut.get(d);
   if (hit?.key === key) return hit.layouts;
-  const layouts = layoutsFor(d);
+  const layouts = layoutsFor(d, dash);
   laidOut.set(d, { key, layouts });
   // A layout that failed is not kept.
   layouts.catch(() => {
@@ -1069,15 +1131,29 @@ function cachedLayoutsOf(d: DiagramBlock): Promise<Layouts> {
  * A phone drawing too wide for 11px text is laid out again (`phoneFit`). If nothing fits, the phone gets the
  * diagram as a numbered list (`ol.seqlist.flowlist`) instead of an unreadable or sideways-scrolling drawing.
  */
-export async function renderFlow(d: DiagramBlock, uid: string, cached = false): Promise<string> {
-  const { desk, phone } = await (cached ? cachedLayoutsOf(d) : layoutsFor(d));
+export async function renderFlow(d: DiagramBlock, uid: string, cached = false, dash = false): Promise<string> {
+  const { desk, phone, lr } = await (cached ? cachedLayoutsOf(d, dash) : layoutsFor(d, dash));
   const h = drawPlaced(desk.d, desk.p, uid, false);
+  // `data-dir` names the direction only when the renderer chose it: a diagram left to right that was not written so.
+  const chose = lr && desk.d.dir === 'LR' ? ' data-dir="LR"' : '';
   if (!phone) {
-    const fig = figure(d, `<div class="dg-h">${h.svg}</div><div class="dg-v" data-flow style="--wv:560px">${flowList(d)}</div>`, h.W, 240);
+    const fig = figure(
+      d,
+      `<div class="dg-h">${h.svg}</div><div class="dg-v" data-flow style="--wv:560px">${flowList(d)}</div>`,
+      h.W,
+      240,
+      chose,
+    );
     return withLegend(d, fig);
   }
   const v = drawPlaced(phone.d, phone.p, `${uid}v`, true);
-  const fig = figure(d, `<div class="dg-h">${h.svg}</div><div class="dg-v" data-flow style="--wv:${v.W}px">${v.svg}</div>`, h.W, v.W);
+  const fig = figure(
+    d,
+    `<div class="dg-h">${h.svg}</div><div class="dg-v" data-flow style="--wv:${v.W}px">${v.svg}</div>`,
+    h.W,
+    v.W,
+    chose,
+  );
   return withLegend(d, fig);
 }
 
@@ -1273,13 +1349,13 @@ export function svgOpen(uid: string, W: number, H: number, label: string, desc: 
   return `<svg class="dg${cls ? ` ${cls}` : ''}" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-labelledby="${uid}-t ${uid}-d"><title id="${uid}-t">${esc(label)}</title><desc id="${uid}-d">${esc(desc)}</desc>`;
 }
 
-export function figure(d: DiagramBlock, svg: string, W: number, narrowW?: number): string {
+export function figure(d: DiagramBlock, svg: string, W: number, narrowW?: number, attrs = ''): string {
   const title = d.title ? `<figcaption>${inline(d.title)}</figcaption>` : '';
   // Shrink to fit down to 70% scale; beyond that the figure scrolls sideways instead of shrinking text.
   // The figure is as wide as the drawing (capped by the page), so the caption sits on the drawing's left edge.
   // --w and --wv are the figure's outer widths: the drawing plus the card's 34px of padding and border, so a drawing
   // renders at 1:1. On phones the card is sized from the phone drawing (--wv), not the desktop one.
-  return `<figure class="viz dg-fig" style="--w:${W + 34}px${narrowW ? `;--wv:${narrowW + 34}px` : ''}">${title}<div class="scroll" tabindex="0" role="group" aria-label="${esc(plain(d.title ?? d.name))}"><div class="dg-wrap" style="--minw:${Math.round(W * 0.7)}px${narrowW ? `;--minwv:${Math.round(narrowW * 0.7)}px` : ''}">${svg}</div></div></figure>`;
+  return `<figure class="viz dg-fig"${attrs} style="--w:${W + 34}px${narrowW ? `;--wv:${narrowW + 34}px` : ''}">${title}<div class="scroll" tabindex="0" role="group" aria-label="${esc(plain(d.title ?? d.name))}"><div class="dg-wrap" style="--minw:${Math.round(W * 0.7)}px${narrowW ? `;--minwv:${Math.round(narrowW * 0.7)}px` : ''}">${svg}</div></div></figure>`;
 }
 
 function describeFlow(d: DiagramBlock): string {

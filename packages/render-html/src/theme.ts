@@ -87,7 +87,26 @@ const EDITORS = `/* editor words */
 @media (prefers-reduced-motion:reduce){.q-seg label{transition:none}}
 `;
 
-export function css(opts: { accent?: string; theme?: string; wide?: boolean; controls?: boolean; editors?: boolean }): string {
+/**
+ * The rules of a dashboard page (`<main class="doc dash">`, D80), added to the stylesheet of such a page only, so every other page's
+ * sheet is unchanged. A `grid` keeps as many columns as it names while each cell is at least 420px wide (the gap is 16px); below
+ * that it has as many as fit, down to one, so a cell is never narrower than a chart needs. The cap is the cell width of the
+ * written count: `max(420px, (100% - gaps) / --cols)` is a track floor that is the share itself when the share is 420px or more,
+ * so no more than `--cols` tracks fit. `min(420px, 100%)` lets a container narrower than 420px hold one track.
+ */
+const DASH_RULES = `.doc.dash .lgrid{grid-template-columns:repeat(auto-fit,minmax(max(min(420px,100%),calc((100% - 16px * (var(--cols) - 1)) / var(--cols))),1fr))}
+`;
+
+export function css(opts: {
+  accent?: string;
+  theme?: string;
+  /** The 64rem column alone. */
+  wide?: boolean;
+  /** A dashboard page (`layoutClass`): the 64rem column and the dashboard rules. */
+  dash?: boolean;
+  controls?: boolean;
+  editors?: boolean;
+}): string {
   // Only a hex color that passes AA text contrast reaches the stylesheet (D49, D77); the parser warns on the rest.
   const picked = usableAccent(opts.accent, opts.theme);
   const accent = picked ? `--accent:${picked};--accent-ink:${picked};` : '';
@@ -106,7 +125,7 @@ export function css(opts: { accent?: string; theme?: string; wide?: boolean; con
 body{background:#fff} .chart-narrow{display:none!important} .chart-wide{display:block!important} details.data{display:none}
 figure.viz,.kpi,.card,.note,blockquote,tr{break-inside:avoid} h1,h2,h3,h4{break-after:avoid}
 pre.code code{white-space:pre-wrap;overflow-wrap:anywhere}`;
-  const col = opts.wide ? '64rem' : '46rem';
+  const col = opts.wide || opts.dash ? '64rem' : '46rem';
   return `${forced}
 :root{${accent}
   --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,ui-serif,serif;
@@ -592,5 +611,5 @@ ol.steps.sx>li>.sn{grid-column:2;min-width:0;color:var(--fg2);overflow-wrap:anyw
 .dg .elabel.tn{fill:var(--tn);font-weight:600}
 .et.tn{color:var(--tn);background:var(--tf);border-radius:4px;padding:0 6px;font-weight:600;font-size:14px}
 .dgk-t{min-width:0;overflow-wrap:anywhere}
-${opts.controls ? CONTROLS : ''}${opts.controls && opts.editors ? EDITORS : ''}`;
+${opts.controls ? CONTROLS : ''}${opts.controls && opts.editors ? EDITORS : ''}${opts.dash ? DASH_RULES : ''}`;
 }

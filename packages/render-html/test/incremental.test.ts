@@ -173,7 +173,109 @@ test('prose: a page that shows a data-like block before four paragraphs is never
   const src = ['# T', '', 'kpi A | 1 | | x', '', ...[0, 1, 2, 3, 4].flatMap((i) => [sentences(4, i), ''])].join('\n');
   const d = await drive(src, { chunk: 11, parse: parseOpts });
   assert.equal(d.end.proseFlips, 0);
-  assert.equal(streamed(d), await whole(src));
+  // The kpi made the page a dashboard when it arrived and the run of paragraphs after it is a section of prose, so the finished
+  // page is a document: one settle case, the class (cause layout), and no unit differs.
+  assert.equal(d.end.dashFlips, 1);
+  assert.equal(d.end.equal, false);
+  assert.deepEqual(d.end.causes, ['layout']);
+  const on = await drive(src, { chunk: 11, parse: parseOpts, settle: true });
+  assert.equal(streamed(on), await whole(src));
+});
+
+// ---- the dashboard latch (D80) -------------------------------------------------------------------------------------------------
+
+const dashOps = (d: Driven) => d.model.log.filter((o) => o.op === 'dash').map((o) => (o.op === 'dash' ? o.on : null));
+
+test('dashboard: the class goes on with the first block a dashboard has, once, and no unit is drawn again for it', async () => {
+  const src = [
+    '# T',
+    '',
+    'Short intro.',
+    '',
+    '## Numbers',
+    '',
+    'kpi A | 1 | | x',
+    '',
+    '## Table',
+    '',
+    'table = a,b; 1,2',
+    '',
+    'More text.',
+    '',
+  ].join('\n');
+  for (const chunk of [1, 7, 64]) {
+    const d = await drive(src, { chunk, parse: parseOpts });
+    assert.equal(d.end.dashFlips, 1, `chunks of ${chunk}`);
+    assert.deepEqual(dashOps(d), [true]);
+    assert.equal(d.end.equal, true);
+    assert.equal(streamed(d), await whole(src));
+    assert.ok(d.model.main().startsWith('<main class="doc dash">'));
+    // The stylesheet is the page's own until the class goes on, and carries the dashboard rules after.
+    const styles = d.model.log.flatMap((o) => (o.op === 'style' ? [o.css] : []));
+    assert.equal(styles.length, 2);
+    assert.ok(!styles[0].includes('.doc.dash'));
+    assert.ok(styles[1].includes('.doc.dash .lgrid{'));
+    // The intro and the headings before the kpi are drawn once and never again.
+    assert.deepEqual(
+      d.model.log.filter((o) => o.op === 'replace'),
+      [],
+    );
+  }
+});
+
+test('dashboard: @width wide is a dashboard from the first block, and @width narrow or an essay is never latched', async () => {
+  const wide = await drive('@width wide\n# T\n\nShort.\n', { chunk: 5, parse: parseOpts });
+  assert.equal(wide.end.dashFlips, 0);
+  assert.deepEqual(dashOps(wide), [true]);
+  assert.ok(wide.model.css.includes('.doc.dash .lgrid{'));
+  assert.equal(streamed(wide), await whole('@width wide\n# T\n\nShort.\n'));
+  const narrow = '@width narrow\n# T\n\ntable = a,b; 1,2\n';
+  const n = await drive(narrow, { chunk: 5, parse: parseOpts });
+  assert.deepEqual([n.end.dashFlips, dashOps(n), n.end.equal], [0, [], true]);
+  assert.equal(streamed(n), await whole(narrow));
+  // An essay that is prose when a table arrives stays prose until the settle: no dashboard class on top of it.
+  const d = await drive(essay(0) + '\ntable = a,b; 1,2\n', { chunk: 9, parse: parseOpts });
+  assert.deepEqual([d.end.proseFlips, d.end.dashFlips], [1, 0]);
+});
+
+test('dashboard: a section of prose after the first data block takes the class off at the settle, and only the class', async () => {
+  const src = ['# T', '', 'table = a,b; 1,2', '', '## Story', '', ...[0, 1, 2, 3, 4].flatMap((i) => [sentences(4, i), ''])].join('\n');
+  const off = await drive(src, { chunk: 9, parse: parseOpts, settle: false });
+  assert.deepEqual([off.end.dashFlips, off.end.equal, off.end.settled], [1, false, 0]);
+  assert.deepEqual(off.end.causes, ['layout']);
+  const on = await drive(src, { chunk: 9, parse: parseOpts, settle: true });
+  assert.deepEqual(dashOps(on), [true, false]);
+  assert.ok(!on.model.css.includes('.doc.dash'));
+  assert.equal(streamed(on), await whole(src));
+});
+
+test('dashboard: a card, grid or flow diagram drawn after the class went on is the unit the whole-page render draws', async () => {
+  const src = [
+    '# T',
+    '',
+    'table = a,b; 1,2',
+    '',
+    'data t = m,v; Jan,3; Feb,5',
+    '',
+    'grid 3',
+    'chart bar t',
+    'chart line t',
+    'chart bar t',
+    '',
+    'diagram p',
+    'p: a "A"',
+    'p: b "B"',
+    'p: c "C"',
+    'p: d "D"',
+    'p: a -> b -> c -> d',
+    '',
+  ].join('\n');
+  for (const chunk of [3, 40]) {
+    const d = await drive(src, { chunk, parse: parseOpts });
+    assert.equal(d.end.equal, true, `chunks of ${chunk}`);
+    assert.equal(streamed(d), await whole(src));
+    assert.ok(d.model.main().includes('data-dir="LR"'));
+  }
 });
 
 // ---- the shift, lead and picks rules ------------------------------------------------------------------------------------------
@@ -1176,6 +1278,9 @@ async function shiftOf(page: Page, frameWidth: number, styles: string, recorded:
             }
             case 'prose':
               main.classList.toggle('prose', op.on as boolean);
+              break;
+            case 'dash':
+              main.classList.toggle('dash', op.on as boolean);
               break;
             case 'append':
             case 'placeholder':

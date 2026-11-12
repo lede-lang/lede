@@ -81,11 +81,11 @@ export async function render(doc: LedeDocument, opts: RenderOptions = {}): Promi
   const shell = !!opts.shell && !opts.fragment && fields.length > 0 && exports.length > 0;
   const ctx = new Ctx(doc, { ...opts, shell }, fields);
   const mh = masthead(doc, ctx);
-  const { body, prose } = await renderMain(doc, ctx, mh);
+  const { body, prose, dash } = await renderMain(doc, ctx, mh);
   const title = mh.title;
-  const main = mainElement(body, prose);
+  const main = mainElement(body, prose, dash);
   if (opts.fragment) return main;
-  const style = `<style>${styleOf(doc.meta, fields.length > 0 || exports.length > 0, usesEditors(fields, presets))}</style>`;
+  const style = `<style>${styleOf(doc.meta, fields.length > 0 || exports.length > 0, usesEditors(fields, presets), dash)}</style>`;
   const scripts = shell ? `${shellScripts(ctx.page, fields, exports, presets)}\n` : '';
   if (opts.artifact) return `<title>${esc(title)}</title>\n${style}\n${main}\n${scripts}`;
   const desc = doc.meta.description ? `\n<meta name="description" content="${esc(doc.meta.description)}">` : '';
@@ -113,13 +113,14 @@ export const isWide = (meta: Record<string, string>): boolean => meta.width === 
 /**
  * The page stylesheet for a document's meta. `controls`: the page has a question field or an `export`, which add their own rules.
  * `editors`: it draws an editor word (`param`, `toggle`, `bucket`, `template` or `preset`), which adds more (`usesEditors`).
+ * `dash`: the page is a dashboard (`layoutClass`), which takes the 64rem column and the dashboard rules (D80).
  */
-export const styleOf = (meta: Record<string, string>, controls = false, editors = false): string =>
-  css({ accent: meta.accent, theme: meta.theme, wide: isWide(meta), controls, editors });
+export const styleOf = (meta: Record<string, string>, controls = false, editors = false, dash = false): string =>
+  css({ accent: meta.accent, theme: meta.theme, dash, controls, editors });
 
-/** `<main>` around the page's top-level children (empty ones left out). */
-export const mainElement = (children: string[], prose: boolean): string =>
-  `<main class="doc${prose ? ' prose' : ''}">\n${children.filter(Boolean).join('\n')}\n</main>`;
+/** `<main>` around the page's top-level children (empty ones left out). `dash`: a dashboard page (`layoutClass`). */
+export const mainElement = (children: string[], prose: boolean, dash = false): string =>
+  `<main class="doc${prose ? ' prose' : dash ? ' dash' : ''}">\n${children.filter(Boolean).join('\n')}\n</main>`;
 
 /** A short paragraph straight after the title is the standfirst: its markup, or null when `b` is not one. `first` is the first body block. */
 export function standfirst(b: Block, first: Block | undefined, header: string, prose: boolean): string | null {
@@ -171,14 +172,22 @@ export function masthead(doc: LedeDocument, ctx: Ctx): Masthead {
 }
 
 /**
- * The page body as top-level children, in order (the header first), and whether the page is set as prose. Every block is
- * drawn by `ctx`, in document order, so that ids are numbered in document order.
+ * The page body as top-level children, in order (the header first), and whether the page is set as prose or as a dashboard
+ * (`layoutClass`, which also sets `ctx.dash`). Every block is drawn by `ctx`, in document order, so that ids are numbered in
+ * document order.
  */
-export async function renderMain(doc: LedeDocument, ctx: Ctx, mh: Masthead): Promise<{ body: string[]; prose: boolean; h1At: number }> {
+export async function renderMain(
+  doc: LedeDocument,
+  ctx: Ctx,
+  mh: Masthead,
+): Promise<{ body: string[]; prose: boolean; dash: boolean; h1At: number }> {
   const { rest, firstH1, sub, by } = mh;
   const body: string[] = [];
   if (mh.header) body.push(mh.header);
-  const prose = !isWide(doc.meta) && isProse(rest);
+  const layout = layoutClass(rest, doc.meta);
+  const prose = layout === 'prose';
+  const dash = layout === 'dashboard';
+  ctx.dash = dash;
   // Where the heading that carries the subtitle and byline is in `body` (they follow it as children of their own), or -1.
   let h1At = -1;
   for (const u of plan(rest, prose)) {
@@ -193,7 +202,7 @@ export async function renderMain(doc: LedeDocument, ctx: Ctx, mh: Masthead): Pro
       // oxlint-disable-next-line eslint/no-await-in-loop -- sequential on purpose: uid() numbers ids in document order
     } else body.push(await ctx.unit(u));
   }
-  return { body, prose, h1At };
+  return { body, prose, dash, h1At };
 }
 
 /** Parse and render in one call. */
@@ -438,6 +447,38 @@ export function isProse(bs: Block[]): boolean {
   return proseShape(t);
 }
 
+/** How a page is laid out (spec §7, D80): the reading column of an essay, today's column, or the wide column of a dashboard. */
+export type Layout = 'prose' | 'document' | 'dashboard';
+
+/** The top-level blocks that make a page something to look at: with one of them, and no section of prose, a page is a dashboard. */
+export const DASH = new Set<string>(['kpis', 'chart', 'table', 'diagram', 'cards', 'steps', 'grid']);
+
+/** Whether a section is an essay's: `proseShape` over the blocks from a `#` or `##` heading to the next one (the lead before the first counts as one). */
+export function hasProseSection(bs: Block[]): boolean {
+  let t: ProseTally = { paras: 0, pchars: 0, all: 0 };
+  for (const b of bs) {
+    if (b.type === 'heading' && b.level <= 2) {
+      if (proseShape(t)) return true;
+      t = { paras: 0, pchars: 0, all: 0 };
+    }
+    tallyProse(t, b);
+  }
+  return proseShape(t);
+}
+
+/**
+ * The layout class of the blocks after the masthead, from the blocks and `@width` alone. `@width wide` is a dashboard on any page
+ * (and never prose, as before). Otherwise a page of mostly long paragraphs is `prose`; `@width narrow` keeps every other page in today's
+ * column; and a page with a top-level kpis, chart, table, diagram, cards, steps or grid and no section of prose is a `dashboard`. Any other `@width`
+ * value is ignored, as an unknown `@theme` is.
+ */
+export function layoutClass(bs: Block[], meta: Record<string, string>): Layout {
+  if (isWide(meta)) return 'dashboard';
+  if (isProse(bs)) return 'prose';
+  if (meta.width === 'narrow') return 'document';
+  return bs.some((b) => DASH.has(b.type)) && !hasProseSection(bs) ? 'dashboard' : 'document';
+}
+
 // "Pro: x", "**Do:** x", "Avoid: x": a verdict prefix the writer typed on a list item.
 const YES = /^(\*\*)?(pros?|do|advantage|upside|strength)(:\*\*|\*\*:|:)\s*/i;
 const NO = /^(\*\*)?(cons?|don't|dont|avoid|drawback|downside|weakness)(:\*\*|\*\*:|:)\s*/i;
@@ -469,6 +510,11 @@ export class Ctx {
   private readonly doc: LedeDocument;
   private readonly opts: RenderOptions;
   picks: string[];
+  /**
+   * The page is a dashboard (`layoutClass`, D80): `renderMain` sets it from the blocks, the incremental renderer when the page
+   * first shows one. It sizes what is drawn for the 64rem column: the cards' and grid cells' charts, and a flow diagram's direction.
+   */
+  dash = false;
   /**
    * Set by the incremental renderer only. For a diagram `blockSync` meets, returns the markup of a slot to show in its place
    * (a figure of the right height, the drawing comes later) or null to draw it. A flow diagram cannot be drawn by `blockSync`.
@@ -604,7 +650,7 @@ export class Ctx {
   async block(b: Block, top: boolean): Promise<string> {
     if (b.type === 'diagram' && b.kind !== 'sequence') {
       if (b.nodes.length === 0) return '';
-      const svg = await renderFlow(b, this.uid('d'), this.cacheLayouts);
+      const svg = await renderFlow(b, this.uid('d'), this.cacheLayouts, this.dash);
       return top ? svg.replace('<figure class="viz dg-fig', '<figure class="viz dg-fig wide') : svg;
     }
     if (b.type === 'grid') {
@@ -723,9 +769,15 @@ export class Ctx {
     return d && missingColumns(b, d).length === 0 ? d : undefined;
   }
 
-  /** A chart in a cell of the 64rem (1024px) grid is drawn at the cell's own width: the grid's gaps are 16px, and the figure's padding and border take 34px from the cell. */
+  /**
+   * A chart in a cell of the 64rem (1024px) grid is drawn at the cell's own width: the grid's gaps are 16px, and the figure's padding and
+   * border take 34px from the cell. On a dashboard page a cell is at least 420px wide (theme.ts `DASH_RULES`), so a grid of three or four
+   * draws two to a row.
+   */
   private gridKid<T>(b: GridBlock, c: Block, other: (c: Block) => T): string | T {
-    const cellWidth = Math.floor((1024 - 16 * (b.columns - 1)) / b.columns) - 34;
+    let cols = b.columns;
+    if (this.dash) while (cols > 1 && (1024 - 16 * (cols - 1)) / cols < 420) cols--;
+    const cellWidth = Math.floor((1024 - 16 * (cols - 1)) / cols) - 34;
     const d = c.type === 'chart' && b.columns >= 2 ? this.dataFor(c) : undefined;
     return c.type === 'chart' && d ? renderChart(c, d, this.uid('c'), { cellWidth }) : other(c);
   }
@@ -743,7 +795,7 @@ export class Ctx {
     // cards of prose and bullets stay in the column (D38).
     const needsRoom = b.items.some((c) => c.blocks.some((k) => k.type === 'chart' || k.type === 'table'));
     const wide = top && cols >= 3 && needsRoom;
-    const box = wide || isWide(this.doc.meta) ? 1024 : 736;
+    const box = wide || this.dash ? 1024 : 736;
     // Card padding and border take 42px; a chart figure's own padding and border take 34px.
     const inner = Math.floor((box - 16 * (cols - 1)) / cols) - 42;
     // A phone card is 400 - 32 (page gutter) - 34 (card padding, border) wide.
