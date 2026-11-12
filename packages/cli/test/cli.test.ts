@@ -699,7 +699,7 @@ test('check --external --json carries each finding with its detail, beside the o
       ['warning', 3, 43, { kind: 'email', text: 'ada@acme.io' }],
       ['warning', 3, 56, { kind: 'ip', text: '10.0.0.7' }],
       ['warning', 6, 5, { kind: 'email', text: 'ops@db.prod.corp' }],
-      ['warning', 8, 15, { kind: 'key', text: FAKE_AWS_KEY }],
+      ['warning', 8, 15, { kind: 'key', text: `${FAKE_AWS_KEY.slice(0, 4)}... (${FAKE_AWS_KEY.length} characters)` }],
     ],
   );
   assert.ok(diags.some((d) => d.code === 'kpi-bar'));
@@ -733,7 +733,7 @@ test('check --external --fix replaces each finding with its placeholder, prints 
   const dry = run(['check', 'leak.lede', '--external', '--fix', '--dry-run'], dir);
   assert.equal(dry.status, 1);
   assert.match(dry.stderr, /leak\.lede:3: would fix \[external\] replaced url https:\/\/api\.acme\.io\/v1\/items with <url>\n/);
-  assert.match(dry.stderr, /leak\.lede:8: would fix \[external\] replaced key AKIA\S+ with <key>\n/);
+  assert.match(dry.stderr, /leak\.lede:8: would fix \[external\] replaced key AKIA\.\.\. \(20 characters\) with <key>\n/);
   assert.match(
     dry.stderr,
     /leak\.lede:3:\n- See https:\/\/api\.acme\.io\/v1\/items and mail ada@acme\.io \(10\.0\.0\.7\)\.\n\+ See <url> and mail <email> \(<ip>\)\.\n/,
@@ -812,4 +812,15 @@ test('--help lists --external and --allow, and the exit code that goes with them
   assert.match(r.stdout, /<url>, <ip>, <host>, <account>, <key> or <email>/);
   assert.match(r.stdout, /--allow=HOSTS {3}check --external: host names and IP addresses to leave alone/);
   assert.match(r.stdout, /exit 1 if any is an error \(or, with --external, a finding\)/);
+});
+
+test('check --external never prints a credential whole, in the message or in the echoed line', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  const key = ['AKIA', 'Z7Q2', 'EXAMPLE', 'KEY0', '1'].join('');
+  writeFileSync(join(dir, 'k.lede'), `# K\n\nThe deploy key is ${key} for now.\n`);
+  const r = run(['check', '--external', 'k.lede'], dir);
+  assert.equal(r.status, 1);
+  assert.ok(!r.stderr.includes(key), r.stderr);
+  const j = run(['check', '--external', '--json', 'k.lede'], dir);
+  assert.ok(!j.stdout.includes(key), j.stdout);
 });

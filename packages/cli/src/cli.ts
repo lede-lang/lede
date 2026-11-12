@@ -119,7 +119,10 @@ function report(file: string, src: string, diags: Diagnostic[]): void {
     const color = d.severity === 'error' ? '\x1b[31m' : '\x1b[33m';
     const tty = process.stderr.isTTY;
     process.stderr.write(`${file}:${d.line}:${d.col}: ${tty ? color : ''}${d.severity}${tty ? '\x1b[0m' : ''} [${d.code}] ${d.message}\n`);
-    const l = lines[d.line - 1];
+    // A credential is not echoed with its line: the line is cut where it starts, so a CI log never holds it whole.
+    const whole = lines[d.line - 1];
+    const key = d.code === 'external' && (d.detail as { kind?: string } | undefined)?.kind === 'key';
+    const l = key && whole !== undefined ? `${whole.slice(0, d.col - 1)}...` : whole;
     if (l !== undefined) process.stderr.write(`  ${l}\n  ${' '.repeat(Math.max(0, d.col - 1))}^\n`);
   }
 }

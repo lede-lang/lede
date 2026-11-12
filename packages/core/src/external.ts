@@ -453,15 +453,19 @@ const WHAT: Readonly<Record<ExternalKind, string>> = {
 /** A text for a message: a long one is cut, so a data URI or a key does not fill the terminal. */
 const shown = (text: string): string => (text.length > 60 ? `${text.slice(0, 57)}...` : text);
 
+/** What a report may print of a finding: a credential keeps its first four characters, so a log or a JSON report never holds it whole. */
+export const reportText = (kind: ExternalKind, text: string): string =>
+  kind === 'key' ? `${text.slice(0, 4)}... (${text.length} characters)` : text;
+
 /** `scanExternal` as warnings, code `external`, with `detail {kind, text}`. */
 export function externalDiagnostics(src: string, opts: ExternalOptions = {}): Diagnostic[] {
   return scanExternal(src, opts).map((f) => ({
     severity: 'warning' as const,
     code: 'external',
-    message: `${WHAT[f.kind]} (${shown(f.text)}) would leave with the page; replace it with ${EXTERNAL_PLACEHOLDERS[f.kind]}${f.kind === 'url' || f.kind === 'host' || f.kind === 'ip' ? ', or list its host with --allow' : ''}`,
+    message: `${WHAT[f.kind]} (${shown(reportText(f.kind, f.text))}) would leave with the page; replace it with ${EXTERNAL_PLACEHOLDERS[f.kind]}${f.kind === 'url' || f.kind === 'host' || f.kind === 'ip' ? ', or list its host with --allow' : ''}`,
     line: f.line,
     col: f.col,
-    detail: { kind: f.kind, text: f.text },
+    detail: { kind: f.kind, text: reportText(f.kind, f.text) },
   }));
 }
 
@@ -484,7 +488,7 @@ export function redactExternal(src: string, opts: ExternalOptions = {}): { src: 
       kind: f.kind,
       text: f.text,
       placeholder: EXTERNAL_PLACEHOLDERS[f.kind],
-      note: `replaced ${f.kind} ${shown(f.text)} with ${EXTERNAL_PLACEHOLDERS[f.kind]}`,
+      note: `replaced ${f.kind} ${shown(reportText(f.kind, f.text))} with ${EXTERNAL_PLACEHOLDERS[f.kind]}`,
     })),
   };
 }

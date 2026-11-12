@@ -639,7 +639,9 @@ last line is their count, never `ok`. `--external` adds the external check (belo
 
 `check --external` (D80) reports what a page would give away if it left the building. It is a pass over the source text, line by line, and not over the
 parsed blocks: prose, meta lines, code fences, `data` rows, table rows and diagram lines are all read the same, because a reader sees all of them. Each
-finding is W `external` with `detail {kind, text}`, at the line and column of its first character; `text` is what was written, and `kind` is one of:
+finding is W `external` with `detail {kind, text}`, at the line and column of its first character; `text` is what was written, except
+that a `key` keeps only its first four characters and its length (`AKIA... (20 characters)`), in the message, the JSON and a repair line alike, and
+the line echoed under it is cut where the key starts, so a CI log never holds a credential whole. `kind` is one of:
 
 - `url`: an `http://`, `https://`, `ftp://` or `s3://` reference, or one that starts `www.`, with its path and query. A URL ends at white space, `<`,
   `>`, a quote, `,`, `;` or `|`, and sentence or link punctuation at its end is not part of it (a closing `)` or `]` is, if the URL opened one).
