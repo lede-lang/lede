@@ -1,14 +1,16 @@
 #!/usr/bin/env node
 // lede build | watch | check | ast
 import { readFileSync, writeFileSync, watch as fsWatch, existsSync, realpathSync, statSync } from 'node:fs';
-import { dirname, resolve, basename, sep } from 'node:path';
+import { dirname, resolve, basename } from 'node:path';
 import { text as readAll } from 'node:stream/consumers';
 import { parse, fix, artifactDiagnostics, type Diagnostic, type LedeDocument } from '@lede-lang/core';
+import { confine, unreadable } from './confine.ts';
+import { DEFAULT_IMAGE_MAX, inlineImages } from './images.ts';
 
 const USAGE = `usage:
-  lede build <file.lede> [-o out.html] [--force] [--unsafe-html] [--allow-remote] [--artifact] [--shell]
-  lede watch <file.lede> [-o out.html]
-  lede check <file.lede>... [--json] [--fix [--dry-run]] [--artifact]
+  lede build <file.lede> [-o out.html] [--force] [--unsafe-html] [--allow-remote] [--artifact] [--shell] [--image-max=SIZE] [--link-images]
+  lede watch <file.lede> [-o out.html] [--image-max=SIZE] [--link-images]
+  lede check <file.lede>... [--json] [--fix [--dry-run]] [--artifact] [--image-max=SIZE] [--link-images]
   lede ast   <file.lede>
   lede help
   lede version`;
@@ -16,7 +18,8 @@ const USAGE = `usage:
 const HELP = `${USAGE}
 
 commands:
-  build   compile a page to one self-contained HTML file (stdout without -o); refuses on errors
+  build   compile a page to one self-contained HTML file (stdout without -o); refuses on errors. A local image is written into the
+          page as a data: URI, so the page is one file (see --image-max and --link-images)
   watch   rebuild next to the source on every save; it keeps going when an editor replaces the file or it is deleted for a while
   check   print file:line:col diagnostics, then a last line: ok if there were none, else the
           counts (a warning is not ok); exit 1 if any is an error, 2 on a usage error
@@ -31,6 +34,10 @@ options:
   --force         build: write the page even if it has errors
   --unsafe-html   build: keep raw \`html\` blocks unsanitized (local files only)
   --allow-remote  build: load remote images (links never need it)
+  --image-max=SIZE  build/watch/check: the largest local image to inline as a data: URI, such as 300k or 2m (default 512k); the page's
+                  images may total eight times that. An image over a limit, missing, outside the document's directory or not a PNG,
+                  JPEG, GIF, WebP, AVIF or SVG file keeps its path, with W image-inline. Remote images are never fetched
+  --link-images   build/watch/check: leave local image paths as written (no inlining, no image-inline warnings)
   --artifact      build: write only <title>, <style> and <main>, for the Claude Artifact tool, which wraps them in its own page;
                   check/build: also warn about an image path the host cannot serve (W artifact-image)
   --shell         build/watch: add the interaction shell to a page with a field (ask, choose, confirm, param, toggle, bucket or template)
@@ -50,57 +57,37 @@ An option no command knows is a usage error (exit 2); one that only another comm
 is a FILE, so a name may start with -. A failure that is not
 a usage error exits 70 with one line on stderr; set LEDE_DEBUG to add the stack.`;
 
-/** True when `path` is `root` or lies under it. Both are absolute and normalized. */
-const inside = (path: string, root: string): boolean => path === root || path.startsWith(root.endsWith(sep) ? root : root + sep);
-
 /** What a diagnostic calls `file`: `-` is the document on stdin, which has no name. */
 const nameOf = (file: string): string => (file === '-' ? '<stdin>' : file);
 
+/** The folder a document's local files (data and images) are read from, and confined to. Data files of a document on stdin load from where the command was run. */
+const baseOf = (file: string): string => (file === '-' ? process.cwd() : dirname(resolve(file)));
+
 function parseOptions(file: string) {
-  // Data files of a document on stdin load from where the command was run, with the same confinement as for a file.
-  const base = file === '-' ? process.cwd() : dirname(resolve(file));
+  const base = baseOf(file);
   return {
     loadFile: (p: string) => {
       if (/^[a-z]+:/i.test(p)) throw new Error('only local files can be loaded');
-      // Confine data files to the document's own directory tree: a document must not be
-      // able to read ~/.ssh or ../../secrets just because someone compiled it.
-      const outside = () => new Error(`${p} is outside the document's directory`);
-      // It must not matter whether a path that escapes exists: if the answer were "no such file" for one and "outside" for the
-      // other, a document could ask which files are there. So first the path as written, resolved against the directory and
-      // nothing else.
-      const wanted = resolve(base, p);
-      if (!inside(wanted, base)) throw outside();
-      // Then with symlinks resolved on both sides, or a link inside the folder escapes it. A path that does not resolve is judged
-      // by the nearest folder above it that does, so a link out of the tree answers "outside" whether or not the file is there.
-      const real = (path: string): string | NodeJS.ErrnoException => {
-        try {
-          return realpathSync(path);
-        } catch (e) {
-          return e as NodeJS.ErrnoException;
-        }
-      };
-      const full = real(wanted);
-      let nearest = full;
-      for (let at = wanted; typeof nearest !== 'string' && at !== dirname(at); nearest = real(at)) at = dirname(at);
-      if (typeof nearest !== 'string' || !inside(nearest, realpathSync(base))) throw outside();
-      // Node's message holds the absolute path; the document's author needs only the path they wrote.
-      const unreadable = (e: NodeJS.ErrnoException) =>
-        new Error(e.code === 'ENOENT' || e.code === 'ENOTDIR' ? `${p}: no such file` : `${p}: cannot be read (${e.code ?? e.name})`);
-      if (typeof full !== 'string') throw unreadable(full);
+      const full = confine(base, p);
       try {
         if (statSync(full).size > 5 * 1024 * 1024) throw new Error(`${p} is larger than 5 MB`);
         return readFileSync(full, 'utf8');
       } catch (e) {
-        throw (e as NodeJS.ErrnoException).code === undefined ? e : unreadable(e as NodeJS.ErrnoException);
+        throw (e as NodeJS.ErrnoException).code === undefined ? e : unreadable(p, e as NodeJS.ErrnoException);
       }
     },
   };
 }
 
-/** Read and parse `file` (`-` is stdin). With `artifact`, its diagnostics also hold the warnings only an Artifact host needs. */
-async function load(file: string, artifact = false): Promise<{ src: string; doc: LedeDocument }> {
+/**
+ * Read and parse `file` (`-` is stdin). With `imageMax` (bytes), each local image in the document becomes a data: URI and its
+ * diagnostics hold W `image-inline` for the ones that could not; null leaves the paths. With `artifact`, its diagnostics also hold
+ * the warnings only an Artifact host needs, for the images that are still paths.
+ */
+async function load(file: string, artifact = false, imageMax: number | null = null): Promise<{ src: string; doc: LedeDocument }> {
   const src = file === '-' ? await readAll(process.stdin) : readFileSync(file, 'utf8');
   const doc = parse(src, parseOptions(file));
+  if (imageMax !== null) doc.diagnostics.push(...inlineImages(doc, baseOf(file), imageMax));
   if (artifact) doc.diagnostics.push(...artifactDiagnostics(doc));
   return { src, doc };
 }
@@ -127,9 +114,9 @@ interface Watching {
   shellIdle: boolean;
 }
 
-async function build(file: string, out: string | null, flags: Set<string>, watching?: Watching): Promise<boolean> {
+async function build(file: string, out: string | null, flags: Set<string>, imageMax: number | null, watching?: Watching): Promise<boolean> {
   const name = nameOf(file);
-  const { src, doc } = await load(file, flags.has('--artifact'));
+  const { src, doc } = await load(file, flags.has('--artifact'), imageMax);
   report(name, src, doc.diagnostics);
   const errors = doc.diagnostics.filter((d) => d.severity === 'error').length;
   if (errors && !flags.has('--force')) {
@@ -168,16 +155,16 @@ const watchTarget = (file: string, out: string | null): string => out ?? resolve
  * by name: an editor that saves by writing a temp file and renaming it over the original leaves a watcher on the file itself holding
  * the old inode, which never fires again, and deleting the file would end it.
  */
-async function watchFile(file: string, target: string, flags: Set<string>): Promise<number> {
+async function watchFile(file: string, target: string, flags: Set<string>, imageMax: number | null): Promise<number> {
   const watched = new Set([...flags, '--force']);
   const watching: Watching = { shellIdle: false };
   // The first build is not guarded: an unreadable FILE or an unwritable OUT stops the command (exit 70), not a loop of the same line.
-  await build(file, target, watched, watching);
+  await build(file, target, watched, imageMax, watching);
   let gone = false;
   /** One rebuild, which never throws: a missing or unreadable FILE is a line on stderr, and the next change tries again. */
   const rebuild = async (): Promise<void> => {
     try {
-      await build(file, target, watched, watching);
+      await build(file, target, watched, imageMax, watching);
       gone = false;
       return;
     } catch (e) {
@@ -245,7 +232,7 @@ async function watchFile(file: string, target: string, flags: Set<string>): Prom
 }
 
 /** `lede check`: print every diagnostic (or the JSON), repair first under --fix, and exit 1 if any is an error. */
-async function check(files: string[], flags: Set<string>): Promise<number> {
+async function check(files: string[], flags: Set<string>, imageMax: number | null): Promise<number> {
   let bad = 0;
   let warned = 0;
   const all: Record<string, Diagnostic[]> = {};
@@ -268,7 +255,7 @@ async function check(files: string[], flags: Set<string>): Promise<number> {
     }
     // Files are reported one after the other, in the order given, and stdin can be read only once.
     // oxlint-disable-next-line eslint/no-await-in-loop -- sequential on purpose
-    const { src, doc } = await load(f, flags.has('--artifact'));
+    const { src, doc } = await load(f, flags.has('--artifact'), imageMax);
     all[nameOf(f)] = doc.diagnostics;
     if (!flags.has('--json')) report(nameOf(f), src, doc.diagnostics);
     bad += doc.diagnostics.filter((d) => d.severity === 'error').length;
@@ -283,15 +270,24 @@ const COMMANDS = ['build', 'watch', 'check', 'ast'] as const;
 type Command = (typeof COMMANDS)[number];
 
 /** Every flag some command takes. A flag no command knows is a usage error; one only another command knows is ignored (spec section 9). */
-const FLAGS = ['--force', '--unsafe-html', '--allow-remote', '--artifact', '--shell', '--json', '--fix', '--dry-run'];
-/** What a misspelled option is compared with: the flags, plus the options `main` handles before it parses. */
-const KNOWN_OPTIONS = [...FLAGS, '--help', '--version', '-o', '-h', '-V'];
+const FLAGS = ['--force', '--unsafe-html', '--allow-remote', '--artifact', '--shell', '--json', '--fix', '--dry-run', '--link-images'];
+/** What a misspelled option is compared with: the flags, plus the options that take a value and the ones `main` handles before it parses. */
+const KNOWN_OPTIONS = [...FLAGS, '--help', '--version', '-o', '--image-max', '-h', '-V'];
 
 interface Args {
   cmd: Command;
   files: string[];
   out: string | null;
+  /** `--image-max` in bytes, or null when it was not given. */
+  imageMax: number | null;
   flags: Set<string>;
+}
+
+/** A size such as `300k`, `2m` or `524288` (k and m are 1024 and 1024 squared; a trailing b is allowed) in bytes, or null if it is not one or is zero. */
+function parseSize(text: string): number | null {
+  const m = /^(\d{1,9})([km]?)b?$/i.exec(text);
+  const bytes = m ? Number(m[1]) * (m[2] === '' ? 1 : 1024 ** (m[2].toLowerCase() === 'k' ? 1 : 2)) : 0;
+  return bytes > 0 ? bytes : null;
 }
 
 /** The usage error is its message, or null when the usage alone says it (no command at all). */
@@ -329,6 +325,7 @@ function parseArgs(argv: string[]): Args | UsageError {
   const flags = new Set<string>();
   const files: string[] = [];
   let out: string | null = null;
+  let imageMax: number | null = null;
   let options = true; // until `--`, after which every word is a FILE
   for (let i = 0; i < rest.length; i++) {
     const a = rest[i];
@@ -340,6 +337,10 @@ function parseArgs(argv: string[]): Args | UsageError {
       if (!value || (a === '-o' && value.startsWith('-'))) return { usage: '-o needs a file name' };
       if (out !== null) return { usage: '-o given more than once' };
       out = value;
+    } else if (a === '--image-max' || a.startsWith('--image-max=')) {
+      const bytes = parseSize((a === '--image-max' ? rest[++i] : a.slice('--image-max='.length)) ?? '');
+      if (bytes === null) return { usage: '--image-max needs a size such as 300k or 2m' };
+      imageMax = bytes;
     } else if (FLAGS.includes(a)) flags.add(a);
     else if (a !== '-' && a.startsWith('-')) return { usage: unknownOption(a) };
     else files.push(a);
@@ -350,7 +351,7 @@ function parseArgs(argv: string[]): Args | UsageError {
   if (stdin && cmd === 'watch') return { usage: 'watch needs a file, not - (stdin)' };
   if (stdin && (flags.has('--fix') || flags.has('--dry-run')))
     return { usage: '--fix and --dry-run rewrite the file, and a document read from - (stdin) has none' };
-  return { cmd: cmd as Command, files, out, flags };
+  return { cmd: cmd as Command, files, out, imageMax, flags };
 }
 
 /** True when both paths are one existing file, whatever the names: a symlink or a hard link to it counts, and a path not yet written does not. */
@@ -391,7 +392,9 @@ async function main(argv: string[]): Promise<number> {
     process.stderr.write(`${parsed.usage === null ? '' : `lede: ${parsed.usage}\n`}${USAGE}\n`);
     return 2;
   }
-  const { cmd, files, out, flags } = parsed;
+  const { cmd, files, out, imageMax, flags } = parsed;
+  // What `build`, `watch` and `check` do with local images: inline them up to this many bytes each, or (null) leave the paths.
+  const images = flags.has('--link-images') ? null : (imageMax ?? DEFAULT_IMAGE_MAX);
   if ((cmd === 'build' || cmd === 'watch') && flags.has('--shell') && flags.has('--unsafe-html')) {
     process.stderr.write('lede: --shell cannot be combined with --unsafe-html: raw html could plant its own controls and data block\n');
     return 2;
@@ -417,14 +420,14 @@ async function main(argv: string[]): Promise<number> {
   }
   switch (cmd) {
     case 'build':
-      return (await build(files[0], out, flags)) ? 0 : 1;
+      return (await build(files[0], out, flags, images)) ? 0 : 1;
     case 'check':
-      return await check(files, flags);
+      return await check(files, flags, images);
     case 'ast':
       process.stdout.write(`${JSON.stringify((await load(files[0])).doc, null, 2)}\n`);
       return 0;
     case 'watch':
-      return watched === null ? 2 : await watchFile(files[0], watched, flags);
+      return watched === null ? 2 : await watchFile(files[0], watched, flags, images);
   }
   return 2;
 }

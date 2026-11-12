@@ -170,11 +170,11 @@ test('build --artifact warns about a relative image, still writes the page and e
 test('check --artifact counts the image warning and never ends ok; without the flag it ends ok', () => {
   const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
   writeFileSync(join(dir, 'p.lede'), FIG_PAGE);
-  const r = run(['check', 'p.lede', '--artifact'], dir);
+  const r = run(['check', 'p.lede', '--artifact', '--link-images'], dir); // fig.png is no file: without the flag it is also W image-inline
   assert.equal(r.status, 0, r.stderr);
   assert.equal(r.stderr.trimEnd().split('\n').at(-1), '1 warning(s)');
   assert.match(r.stderr, /\[artifact-image\]/);
-  const plain = run(['check', 'p.lede'], dir);
+  const plain = run(['check', 'p.lede', '--link-images'], dir);
   assert.equal(plain.status, 0);
   assert.equal(plain.stderr.trimEnd().split('\n').at(-1), 'ok');
   assert.doesNotMatch(plain.stderr, /artifact-image/);
@@ -185,7 +185,7 @@ test('check --artifact --json carries the warning with its detail, and reports e
   writeFileSync(join(dir, 'p.lede'), FIG_PAGE);
   writeFileSync(join(dir, 'q.lede'), '# Fine\n\nimage data:image/gif;base64,R0lGODlhAQABAAAAACw= "Pixel"\n');
   writeFileSync(join(dir, 'r.lede'), '# Grid\n\ngrid 2\nimage a.png "A"\nimage b.png "B"\n');
-  const r = run(['check', 'p.lede', 'q.lede', 'r.lede', '--artifact', '--json'], dir);
+  const r = run(['check', 'p.lede', 'q.lede', 'r.lede', '--artifact', '--json', '--link-images'], dir);
   assert.equal(r.status, 0, r.stderr);
   const out = JSON.parse(r.stdout) as Record<
     string,
@@ -202,7 +202,7 @@ test('check --artifact --json carries the warning with its detail, and reports e
     out['r.lede'].map((d) => d.detail?.src),
     ['a.png', 'b.png'],
   );
-  const text = run(['check', 'p.lede', 'q.lede', 'r.lede', '--artifact'], dir);
+  const text = run(['check', 'p.lede', 'q.lede', 'r.lede', '--artifact', '--link-images'], dir);
   assert.equal(text.stderr.trimEnd().split('\n').at(-1), '3 warning(s)');
 });
 

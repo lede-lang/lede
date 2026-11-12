@@ -253,6 +253,11 @@ as `/` in a path or an `http(s)` URL), so `/\host/a.png` is protocol-relative. I
 content, so `data:image\svg+xml,…` is not a `data:image/` URI. Renderers MUST NOT load `http(s)` images unless the
 caller opts in; by default they show the alt text in place.
 
+The parser and the renderer read no files, so a local path stays a path in the document they are given. The command line (§9) is
+what makes a page with pictures one file: `build`, `watch` and `check` replace a local source with a `data:` URI of the file (D80),
+or leave the path and warn (W `image-inline`) when they cannot. A `data:` image is drawn without `loading="lazy"`, since its bytes
+are already in the page; any other image keeps it.
+
 `grid N [count=M]` (N from 1 to 4, M defaults to N) places the next M rendered blocks in N
 columns. Data lines, diagram lines and blank lines do not count. A heading closes the grid
 early (W `grid-unfilled`), as does the end of the document. Grids do not nest: a `grid` line
@@ -584,14 +589,14 @@ with a migration note; once 1.0 ships, grammar changes follow an RFC process (to
 The command is `lede`, the bin of the npm package `@lede-lang/cli` (Node 22.12+; it runs as compiled JavaScript). The library
 packages are `@lede-lang/core` (parser) and `@lede-lang/html` (renderer). The three share one version (D48).
 
-`lede check FILE... [--json] [--fix [--dry-run]] [--artifact]` prints every diagnostic and exits 1 if any is an error, 0 otherwise (2 for
+`lede check FILE... [--json] [--fix [--dry-run]] [--artifact] [--image-max=SIZE] [--link-images]` prints every diagnostic and exits 1 if any is an error, 0 otherwise (2 for
 a usage error or a missing file). Without `--json`, its last line, on stderr, is `ok` only when no file had a diagnostic of either
 severity; otherwise it is the counts summed over every file: `1 warning(s)`, `2 error(s)` or `1 error(s), 2 warning(s)`. A warning leaves
 the exit code at 0 but never gets `ok`: read the diagnostics above that line, since the exit code does not carry them. With `--json` there
 is no such line. `--artifact` adds the artifact checks (below) to the report; they are warnings, so the exit code is unchanged and the
 last line is their count, never `ok`. `lede --help` lists every command and flag.
 
-`lede build FILE [-o OUT] [--force] [--unsafe-html] [--allow-remote] [--artifact] [--shell]` compiles the first FILE to one page. Diagnostics go to stderr as
+`lede build FILE [-o OUT] [--force] [--unsafe-html] [--allow-remote] [--artifact] [--shell] [--image-max=SIZE] [--link-images]` compiles the first FILE to one page. Diagnostics go to stderr as
 for `check`. With `-o` the page is written to OUT and a size line goes to stderr; without it the page goes to stdout. `-o=OUT` is the same as `-o OUT`; `-o` with
 no name after it, or with another option after it, is a usage error, and so is a second `-o`. OUT must not be the same file as any FILE (a symlink or hard link to it
 counts, and OUT need not exist yet): `lede` refuses with exit 2 instead of turning the source into HTML. A document with
@@ -604,14 +609,15 @@ Claude Artifact tool wraps a file in a page of its own and sets those itself. Th
 the light and dark tokens, the `data-theme` override and the zero-script output are the same; only the shell differs. `--artifact` also runs
 the artifact checks: each `image` whose source is a local path (§4.16: relative, or starting with `/`) gets W `artifact-image` with
 `detail {src, kind}` (`kind` is `local`), because the Artifact host serves the page from its own origin and has no copy of the file; the fix is a `data:` URI or an
-uploaded asset. `check --artifact` runs the same checks and nothing else new, so an agent can see them before building. A `data:` or
+uploaded asset. The check runs after the images are inlined (below), so it names only the paths that are still paths: those that could not be inlined, or all of
+them under `--link-images`. `check --artifact` runs the same checks and nothing else new, so an agent can see them before building. A `data:` or
 remote source raises nothing new. `--shell` adds the interaction shell (§7) to a page that has at least one field (`ask`, `choose`, `confirm`, `param`, `toggle`, `bucket`
 or `template`) and an `export` line (`export json`, `export markdown` or `export prompt`); any other page is built as without the flag,
 and stderr says so. With `--artifact` the data block and runtime follow `<main>` and the
 meta tags are still omitted, so the Artifact host's own policy decides whether the runtime runs. `--shell` with `--unsafe-html` is a
 usage error: raw `html` could plant its own controls and data block. Exit codes for every
 command: 0 on success; 1 for `build` on errors without `--force` and for `check` on errors; 2 for a usage error (no command, an
-unknown command, no FILE, an option no command knows, `-o` without a name, `--shell` with `--unsafe-html`, OUT the same file as a FILE, `-` misused as
+unknown command, no FILE, an option no command knows, `-o` without a name, `--image-max` without a size, `--shell` with `--unsafe-html`, OUT the same file as a FILE, `-` misused as
 below) or a FILE that is missing or is a directory; 70 for an internal error, such as OUT not being writable or its directory missing. An exit-70 failure
 prints one line to stderr, `lede: MESSAGE`; with the environment variable `LEDE_DEBUG` set it prints the stack as well.
 An option that no command knows (`--shel`, `-x`) is a usage error: stderr gets `lede: unknown option --shel; did you mean --shell?` (the
@@ -625,8 +631,24 @@ directory's tree as for a file. `-` may be given once, and not with `watch`, `--
 (exit 2). `build -` without `-o` writes the page to stdout as for a file. `lede version`, `lede --version` and `lede -V` print the version of the CLI package, one
 line, to stdout and exit 0; `lede --help` lists them.
 
+**Local images (D80).** `build`, `watch` and `check` write each `image` block whose source is a local path (§4.16) into the page as a `data:` URI of
+the file, so a page with pictures is one file. `ast` and the libraries leave the path as written. The path is read as a browser reads it (§4.16) and resolved
+against the document's directory (the current directory for `-`), with the same confinement as a `data x < file.csv` load: a path that leaves the tree, as written or through a
+symlink, is not read, and it is `outside` whether or not the file is there. The type comes from the file's first bytes, never from its name: PNG, JPEG, GIF, WebP,
+AVIF, or SVG, which is a file whose root element is `<svg`, after an optional byte order mark, white space, XML declaration or other processing instruction, comments and
+`<!DOCTYPE …>`. It is written as `image/png`, `image/jpeg`, `image/gif`, `image/webp`, `image/avif` or `image/svg+xml`, in base64, and the page policy is unchanged
+(`img-src` already allows `data:`; an SVG loaded by `<img>` runs no script and loads nothing). The limits are 512 KiB for one file and eight times that for all the images
+of a page, counted once for each place an image is used, in document order. `--image-max=SIZE` (or `--image-max SIZE`) sets the first: bytes, or a number
+followed by `k` or `m` (1024 and 1024 squared) and optionally `b`, as `300k`, `2m` or `524288`; the second follows it. Zero or anything else is a usage error. `--link-images`
+turns inlining off: every path stays as written, with no `image-inline` warning, and `--image-max` has no effect. An image that is not inlined keeps its path as written
+and gets W `image-inline` at its line, with `detail {src, reason}`: `size` (the file is over `--image-max`), `page-size` (it would take the page past eight times that;
+a later, smaller image may still fit), `type` (not one of the six types, or empty), `missing` (no such file, a folder, or a file that cannot be read) or `outside`. The warning
+is printed like any other diagnostic by `build`, `watch` and `check`, and `check --json` carries it, so `check` and `build` agree on every page. `http(s)` sources are never
+fetched, with or without `--allow-remote`, and a `data:` source passes through unchanged.
+
 `lede watch FILE [-o OUT]` builds FILE to OUT, or to `NAME.html` beside `NAME.lede`, then rebuilds on every change until stopped. It always
-renders as if `--force` were given, and honours `--unsafe-html`, `--allow-remote` and `--shell`. With `--shell`, the note that the flag had no
+renders as if `--force` were given, and honours `--unsafe-html`, `--allow-remote`, `--shell`, `--image-max` and `--link-images`; a change to an image file
+does not rebuild, only a change to FILE does. With `--shell`, the note that the flag had no
 effect is printed on the first build it holds for, and again only if a page that took the shell stops doing so; it is not repeated on every save. It watches FILE's
 directory and picks FILE's events by name, so an editor's save that writes a temporary file and renames it over FILE is seen like an in-place write. Only the first
 build is fatal (exit 70, as for `build`). After that nothing ends the process but a signal: if FILE is deleted, stderr gets `lede: FILE is gone; waiting for it to
@@ -654,7 +676,7 @@ step, rule}` (`rule` is `order`, `step`, `range`, `grid`, `grid-max` or `count`)
 `{key, fields}` and `preset-value` `{key, value, kind}`; `export-format` `{format}` now names `prompt` too. So does `accent-contrast` (§4.3) `{accent, theme, ratio, required, against}`:
 `theme` is `light` or `dark`, `ratio` is the lowest contrast found rounded down to two decimals, `required` is `4.5`, and `against` names
 the surface (`bg`, `surface` or `accent-tint`). So does `artifact-image` `{src, kind}`: `src` is the image path as written and `kind` is
-`local`. So does `heading-skip` (§4.4) `{from, to}`: the level of the heading before and of this one, as written (`--fix` leaves it). So does the error
+`local`. So does `image-inline` `{src, reason}`: `src` is the path as written and `reason` is `size`, `page-size`, `type`, `missing` or `outside`. So does `heading-skip` (§4.4) `{from, to}`: the level of the heading before and of this one, as written (`--fix` leaves it). So does the error
 form of `data-redefined` (§4.11) `{name, columns, redefined}`; the warning of the same code has none.
 New keys may be added; existing ones are not removed or retyped within 0.x.
 

@@ -689,7 +689,9 @@ export class Ctx {
           const why = kind === 'bad' ? 'Image not loaded' : 'Image not loaded (remote images are off)';
           return `<figure class="img"><div class="img-blocked" role="img" aria-label="${esc(b.alt)}">${why}: ${esc(b.alt)}</div>${cap}</figure>`;
         }
-        return `<figure class="img"><img src="${esc(browserUrl(b.src))}" alt="${esc(b.alt)}" loading="lazy" decoding="async">${cap}</figure>`;
+        // A data: image is already in the page, so there is nothing to defer (D80).
+        const lazy = kind === 'data' ? '' : ' loading="lazy"';
+        return `<figure class="img"><img src="${esc(browserUrl(b.src))}" alt="${esc(b.alt)}"${lazy} decoding="async">${cap}</figure>`;
       }
       case 'grid':
         return gridHtml(
