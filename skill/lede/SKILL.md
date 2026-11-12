@@ -133,3 +133,13 @@ The compiler draws well what it is given; these choices decide whether the page 
 ## Setup
 
 `lede` is the compiler, from the npm package `@lede-lang/cli` (needs Node 22.12 or later). If `lede` is not found, ask the user before installing anything. With their go-ahead run `npm install -g @lede-lang/cli` (`pnpm add -g @lede-lang/cli` if they use pnpm), or for one build without installing, `npx @lede-lang/cli build page.lede -o page.html`. If Node is missing or older, tell the user and stop; do not install Node.
+
+## Reference files
+
+Read a file below before using what it teaches; the reference above does not cover these.
+
+| File | Read it when the page needs | Tokens |
+|---|---|---|
+| `reference/meta.md` | share previews, its own status words, owner and review facts, a narrow or wide column | not counted |
+| `reference/pages.md` | a recommendation or tip callout, rows whose cells hold commas, a decision with owners | not counted |
+| `reference/diagrams.md` | allowed and denied paths shown in colour | not counted |
