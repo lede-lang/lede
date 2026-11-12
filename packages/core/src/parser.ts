@@ -7,6 +7,9 @@ import type {
   ChartKind,
   ChartMark,
   DataSet,
+  DecisionBlock,
+  DecisionOption,
+  DecisionStatus,
   Diagnostic,
   DiagramBlock,
   DiagramEdge,
@@ -61,6 +64,12 @@ export interface ParseHooks {
    * before bucket sets existed keeps working.
    */
   onBucketItem?(block: BucketBlock, changed: boolean): void;
+  /**
+   * A `NAME: option …`, `NAME: question …` or `NAME: role …` line was read for the decision `block` declared earlier (spec §4.20).
+   * `changed` is true when the line added an option, a question or a role, and false when it was rejected; the line is a statement of
+   * the decision either way, as a rejected line is a statement of a diagram. Optional, as `onBucketItem` is.
+   */
+  onDecisionLine?(block: DecisionBlock, changed: boolean): void;
   /** `data NAME += rows` or a `NAME: a | b` row line appended rows to the data set `name`. */
   onDataAppend(name: string): void;
 }
@@ -89,6 +98,7 @@ export const KEYWORDS = [
   'bucket',
   'template',
   'preset',
+  'decision',
 ] as const;
 /** The words an edge or message line's last ` | ` field may be (spec §4.17, D80). */
 export const EDGE_TONES: readonly EdgeTone[] = ['good', 'bad', 'warn', 'info', 'neutral'];
@@ -112,10 +122,11 @@ const NAME = NAME_RE.source.slice(1, -1);
  */
 const editorShape = (word: string, alt = ''): RegExp => new RegExp(`^${word}\\s+${NAME}(?:(?=[\\s|])[^|]*\\|${alt ? `|${alt}` : ''})`);
 /**
- * Keyword lines that are keyword lines only in their shape (spec §4.18, §4.19), because prose may start with the word: `cards` takes
+ * Keyword lines that are keyword lines only in their shape (spec §4.18, §4.19, §4.20), because prose may start with the word: `cards` takes
  * nothing after it and `export` at most one word, and an editor word needs its name and then, somewhere on the line, a `|` (for `param`
- * also `unit=`, for `toggle` also `on`, `off` or `needs=`, which fail loudly without one). `cards on the table`, `export the data` and
- * `toggle the flag on Monday` are prose. Any other keyword is a keyword line whatever follows.
+ * also `unit=`, for `toggle` also `on`, `off` or `needs=`, which fail loudly without one); `decision` needs its name and then a quoted
+ * question (or `status=` or `by=`, for the question left out). `cards on the table`, `export the data`, `toggle the flag on Monday` and
+ * `decision was made` are prose. Any other keyword is a keyword line whatever follows.
  */
 const SHAPES: Partial<Record<string, RegExp>> = {
   cards: /^cards$/,
@@ -125,25 +136,49 @@ const SHAPES: Partial<Record<string, RegExp>> = {
   bucket: editorShape('bucket'),
   template: editorShape('template'),
   preset: editorShape('preset'),
+  // The question must follow the name at once; `status=` or `by=` there is the question left out, which fails loudly (spec §4.20).
+  decision: new RegExp(`^decision\\s+${NAME}\\s+(?:"|(?:status|by)=)`),
+};
+/**
+ * The statement shapes of a decision (spec §4.20), which a `NAME:` line with no decision above it is told apart from prose by: `option
+ * ID "Label"`, `question "Text"` and `role WORD [WORD] "Who"`. A line that has one of them and no decision to bind to is E `decision-ref`.
+ */
+const DECISION_LINE = /^(?:option\s+[A-Za-z0-9][\w-]*\s+"|question\s+"|role\s+[^\s"]+(?:\s+[^\s"]+)?\s+")/;
+const DECISION_STATUS: readonly DecisionStatus[] = ['open', 'settled', 'deferred'];
+/** The verdict words of an option: the first three choose it, `rejected` strikes it. Case does not matter. */
+const VERDICTS: Record<string, DecisionOption['verdict']> = {
+  chosen: 'chosen',
+  picked: 'chosen',
+  selected: 'chosen',
+  rejected: 'rejected',
 };
 /** Marks a `bucket` name the export would write for something else (`choose` reserves `(not chosen)` the same way). */
 const BUCKET_RESERVED = [NOT_CHOSEN, EMPTY];
-type Space = 'data' | 'diagram' | 'bucket';
-const SPACES: readonly Space[] = ['data', 'diagram', 'bucket'];
+type Space = 'data' | 'diagram' | 'bucket' | 'decision';
+const SPACES: readonly Space[] = ['data', 'diagram', 'bucket', 'decision'];
 /** How a message names the kind of name that is taken. */
-const NOUN: Record<Space, string> = { data: 'data', diagram: 'diagram', bucket: 'bucket set' };
+const NOUN: Record<Space, string> = { data: 'data', diagram: 'diagram', bucket: 'bucket set', decision: 'decision' };
 const RENAME_DIAGRAM = (name: string) => `rename the diagram (e.g. \`diagram ${name}-flow\`)`;
 /**
  * A name declared as one kind when another already has it, keyed `declared>had`: what the message says to rename, and the key of the
- * diagnostic's `detail` (the name itself under that key), if it has one. `lede check --fix` reads the `diagram` key.
+ * diagnostic's `detail` (the name itself under that key), if it has one. `lede check --fix` reads the `diagram` key; a clash that
+ * involves a bucket set or a decision carries that kind's key, which it leaves.
  */
-const CLASH: Record<string, [fix: (name: string) => string, key: 'diagram' | 'bucket' | null]> = {
+const RENAME_DECISION = (name: string) => `rename the decision (e.g. \`decision ${name}-call\`)`;
+const RENAME_DATA = (name: string) => `rename the data (e.g. \`data ${name}-rows\`)`;
+const CLASH: Record<string, [fix: (name: string) => string, key: 'diagram' | 'bucket' | 'decision' | null]> = {
   'data>diagram': [RENAME_DIAGRAM, null],
-  'data>bucket': [(name) => `rename the data (e.g. \`data ${name}-rows\`)`, 'bucket'],
+  'data>bucket': [RENAME_DATA, 'bucket'],
+  'data>decision': [RENAME_DATA, 'decision'],
   'diagram>data': [RENAME_DIAGRAM, 'diagram'],
   'diagram>bucket': [RENAME_DIAGRAM, 'bucket'],
+  'diagram>decision': [RENAME_DIAGRAM, 'decision'],
   'bucket>data': [() => 'rename the bucket set', 'bucket'],
   'bucket>diagram': [() => 'rename the bucket set', 'bucket'],
+  'bucket>decision': [() => 'rename the bucket set', 'decision'],
+  'decision>data': [RENAME_DECISION, 'decision'],
+  'decision>diagram': [RENAME_DECISION, 'decision'],
+  'decision>bucket': [RENAME_DECISION, 'decision'],
 };
 /** Tolerance when a number is tested against a step grid or the 1,000-step cap. */
 const EPS = 1e-9;
@@ -249,6 +284,8 @@ export class LedeParser {
   /** Set while `peek` builds the open table's block, so that building it reports nothing. */
   private quiet = false;
   private diagrams = new Map<string, DiagramBlock>();
+  /** The decisions by name; their `NAME:` lines add options, questions and roles to the emitted block (spec §4.20). */
+  private decisions = new Map<string, DecisionBlock>();
   /** Node ids declared with their own line, per diagram (vs. created by first use in an edge). */
   private declared = new WeakMap<DiagramBlock, Set<string>>();
   /** The open alt/opt frame per sequence diagram, and how many rejected nested openers still await their `end`. */
@@ -537,12 +574,15 @@ export class LedeParser {
       return;
     }
     const dl = /^([A-Za-z][\w-]*):\s*(.*)$/.exec(s);
-    // A `NAME:` line binds to a bucket set before it can bind to a diagram (a set and a diagram never share a name).
-    const owner = dl ? (this.bucketSet(dl[1]) ?? this.diagrams.get(dl[1])) : undefined;
+    // A `NAME:` line binds to a decision or a bucket set before it can bind to a diagram (they never share a name).
+    const owner = dl ? (this.decisions.get(dl[1]) ?? this.bucketSet(dl[1]) ?? this.diagrams.get(dl[1])) : undefined;
     if (dl && owner) {
       this.flush();
       const col = afterColon(s, lead);
-      if (owner.type === 'bucket') {
+      if (owner.type === 'decision') {
+        const changed = this.decisionLine(owner, dl[2].trim(), col);
+        this.hooks?.onDecisionLine?.(owner, changed);
+      } else if (owner.type === 'bucket') {
         const changed = this.bucketItem(owner, dl[2].trim(), col);
         this.hooks?.onBucketItem?.(owner, changed);
       } else {
@@ -558,6 +598,19 @@ export class LedeParser {
       this.flush();
       this.pipeRow(dataSet(this.doc, dl[1])!, fields, afterColon(s, lead));
       this.hooks?.onDataAppend(dl[1]);
+      return;
+    }
+    // A decision line whose name is no decision (and no data set with a pipe row): a mistyped name is an error, not a paragraph.
+    if (dl && DECISION_LINE.test(dl[2])) {
+      this.flush();
+      this.diag(
+        'error',
+        'decision-ref',
+        `"${dl[1]}:" looks like a decision line, but no decision named ${dl[1]} is declared above it (write \`decision ${dl[1]} "Question"\` first, or start the line with \\ to make it prose)`,
+        L,
+        lead + 1,
+        { name: dl[1] },
+      );
       return;
     }
     if (dl && /(-->|->|<->)/.test(dl[2])) {
@@ -723,6 +776,8 @@ export class LedeParser {
         return this.templateLine(rest, col);
       case 'preset':
         return this.presetLine(rest, col);
+      case 'decision':
+        return this.decisionDecl(rest, col);
       case 'cards': {
         if (this.cards) this.closeCards();
         if (this.grid) this.closeGrid(true);
@@ -945,17 +1000,17 @@ export class LedeParser {
   }
 
   /**
-   * W `<kind>-option` for each word the options of a chart or diagram line do not take, saying what was probably meant when the
+   * W `<kind>-option` for each word the options of a chart, diagram or decision line do not take, saying what was probably meant when the
    * word spilled out of an unquoted value, and for a `"` that is never closed.
    */
-  private strayOptions(kind: 'chart' | 'diagram', o: Opts, stray: string[], col: number): void {
+  private strayOptions(kind: 'chart' | 'diagram' | 'decision', o: Opts, stray: string[], col: number): void {
     for (const w of spilled(o, stray))
       this.diag('warning', `${kind}-option`, `ignored ${kind} option "${w.text}"${w.hint}`, this.lineNo, col);
     this.openQuotes(kind, o, col);
   }
 
   /** W `<kind>-option` for a `"` in an option list that is never closed: the options after it were read as its text. */
-  private openQuotes(kind: 'chart' | 'table' | 'diagram', o: Opts, col: number): void {
+  private openQuotes(kind: 'chart' | 'table' | 'diagram' | 'decision', o: Opts, col: number): void {
     if (o.unclosed !== null)
       this.diag(
         'warning',
@@ -1397,18 +1452,19 @@ export class LedeParser {
     }
   }
 
-  // ------------------------------------------------------------ names shared by data, diagrams and bucket sets
+  // ------------------------------------------------------------ names shared by data, diagrams, bucket sets and decisions
 
-  /** Whether a data set, a diagram or a bucket set already has the name. */
+  /** Whether a data set, a diagram, a bucket set or a decision already has the name. */
   private holds(space: Space, name: string): boolean {
     // Own property only: `constructor` or `toString` is on the prototype of any object, not a data set.
-    return space === 'data' ? Object.hasOwn(this.doc.data, name) : space === 'diagram' ? this.diagrams.has(name) : !!this.bucketSet(name);
+    if (space === 'data') return Object.hasOwn(this.doc.data, name);
+    return space === 'diagram' ? this.diagrams.has(name) : space === 'decision' ? this.decisions.has(name) : !!this.bucketSet(name);
   }
 
   /**
-   * Data sets, diagrams and bucket sets share one namespace, since a `NAME:` line must mean one of them. Reports `name` as an error for
-   * each of the other two that already has it (`once`: only the first) and returns those it found. The caller decides whether the
-   * declaration goes on.
+   * Data sets, diagrams, bucket sets and decisions share one namespace, since a `NAME:` line must mean one of them. Reports `name` as an
+   * error for each of the others that already has it (`once`: only the first) and returns those it found. The caller decides whether
+   * the declaration goes on.
    */
   private clash(declaring: Space, name: string, col: number, once = false): Space[] {
     const held = SPACES.filter((s) => s !== declaring && this.holds(s, name));
@@ -2144,6 +2200,164 @@ export class LedeParser {
     this.emit({ type: 'image', src, alt, caption: t.find((x) => x.key === 'caption')?.text ?? null, line: L });
   }
 
+  // ------------------------------------------------------------ decisions (spec §4.20)
+
+  /**
+   * `decision NAME "Question" [status=open|settled|deferred] [by=DATE]` declares a decision; `NAME: option …`, `question …` and
+   * `role …` lines then fill it, as `NAME:` lines fill a diagram. A line with an error makes no block and takes no name.
+   */
+  private decisionDecl(rest: string, col: number): void {
+    const L = this.lineNo;
+    const usage = 'decision NAME "Question" [status=open|settled|deferred] [by=DATE]';
+    const bad = (why: string) => this.diag('error', 'decision-syntax', `decision ${why}: write \`${usage}\``, L, col, { word: 'decision' });
+    const cut = rest.search(/\s/);
+    const name = cut < 0 ? rest : rest.slice(0, cut);
+    const after = cut < 0 ? '' : rest.slice(cut).trim();
+    if (!NAME_RE.test(name)) return bad('needs a name: a letter, then letters, digits, _ or -');
+    if ((KEYWORDS as readonly string[]).includes(name) || name === 'html')
+      return bad(`${name} is a keyword and cannot name a decision (a line starting \`html:\` is a raw block)`);
+    if (!after.startsWith('"')) return bad(`${name} needs its question in double quotes right after the name`);
+    const q = readQuoted(after, 0);
+    if (!q.closed) return bad(`${name}: the question's " is never closed`);
+    const text = q.value.trim();
+    if (!text) return bad(`${name}: the question is empty`);
+    const o = parseOpts(after.slice(q.end));
+    const extra = Object.keys(o.kv).filter((k) => k !== 'status' && k !== 'by');
+    this.strayOptions('decision', o, [...o.words, ...o.quoted.map((w) => `"${w}"`), ...extra.map((k) => `${k}=`)], col);
+    let status: DecisionStatus = 'open';
+    if (o.kv.status !== undefined) {
+      const given = o.kv.status.trim().toLowerCase();
+      const known = DECISION_STATUS.find((x) => x === given);
+      if (known) status = known;
+      else {
+        this.diag(
+          'warning',
+          'decision-status',
+          `decision ${name}: status must be ${DECISION_STATUS.join(', ')} (got "${o.kv.status}"); it is read as open`,
+          L,
+          col,
+          { kind: 'status', value: o.kv.status },
+        );
+      }
+    }
+    const by = o.kv.by?.trim() || null;
+    const first = this.decisions.get(name);
+    if (first) {
+      this.diag('error', 'decision-ref', `decision ${name} is already declared on line ${first.line}`, L, col, { name, first: first.line });
+      return;
+    }
+    if (this.clash('decision', name, col, true).length > 0) return;
+    const block: DecisionBlock = { type: 'decision', name, text, status, by, options: [], questions: [], roles: [], line: L };
+    this.decisions.set(name, block);
+    this.emit(block);
+  }
+
+  /** Applies a `NAME:` line to the decision. True when it added an option, a question or a role; false when it was rejected. */
+  private decisionLine(d: DecisionBlock, s: string, col: number): boolean {
+    const L = this.lineNo;
+    const m = /^(option|question|role)(?=\s|$)\s*(.*)$/.exec(s);
+    const usage: Record<string, string> = {
+      option: `${d.name}: option ID "Label" | why | verdict`,
+      question: `${d.name}: question "Text" | answer`,
+      role: `${d.name}: role WORD "Who"`,
+    };
+    const bad = (word: string, why: string): false => {
+      this.diag('error', 'decision-syntax', `${why}: write \`${usage[word]}\``, L, col, { word });
+      return false;
+    };
+    if (!m) {
+      this.diag(
+        'error',
+        'decision-syntax',
+        `${d.name}: a line of a decision starts with option, question or role (got "${s.split(/\s/)[0] ?? ''}"); start the line with \\ if it is prose`,
+        L,
+        col,
+        { word: 'line' },
+      );
+      return false;
+    }
+    const [, word, rest] = m;
+    if (word === 'role') {
+      const at = rest.indexOf('"');
+      const words = (at < 0 ? rest : rest.slice(0, at)).split(/\s+/).filter(Boolean);
+      if (words.length < 1 || words.length > 2) return bad(word, `${d.name}: a role is one or two words before the quoted name`);
+      const who = readQuoted(rest, at);
+      if (!who.closed || !who.value.trim() || rest.slice(who.end).trim() !== '')
+        return bad(word, `${d.name}: the role's name needs double quotes, closed, with nothing after them`);
+      d.roles.push({ role: words.join(' '), who: who.value.trim(), line: L });
+      return true;
+    }
+    let head = rest;
+    let id = '';
+    if (word === 'option') {
+      const cut = rest.search(/\s/);
+      id = cut < 0 ? rest : rest.slice(0, cut);
+      head = cut < 0 ? '' : rest.slice(cut).trim();
+      if (!/^[A-Za-z0-9][\w-]*$/.test(id)) return bad(word, `${d.name}: an option needs an id (letters, digits, _ or -) before its label`);
+    }
+    const q = head.startsWith('"') ? readQuoted(head, 0) : null;
+    if (!q?.closed || !q.value.trim())
+      return bad(word, `${d.name}: ${word === 'option' ? 'the label' : 'the question'} needs double quotes, closed, and some text`);
+    const tail = head.slice(q.end).trim();
+    if (tail !== '' && !tail.startsWith('|')) return bad(word, `${d.name}: text after the closing " must start with a |`);
+    if (word === 'question') {
+      d.questions.push({ text: q.value.trim(), answer: answerOf(tail.slice(1)), line: L });
+      return true;
+    }
+    return this.decisionOption(d, id, q.value.trim(), tail === '' ? null : barCells(tail.slice(1)), col, bad);
+  }
+
+  /** The option `id "label" | why | verdict` for a decision: `cells` are what follows the label (null when nothing does). */
+  private decisionOption(
+    d: DecisionBlock,
+    id: string,
+    label: string,
+    cells: ReturnType<typeof barCells> | null,
+    col: number,
+    bad: (word: string, why: string) => false,
+  ): boolean {
+    const L = this.lineNo;
+    if (cells && (cells.error || cells.cells.length > 2))
+      return bad(
+        'option',
+        `${d.name}: an option has a label, then at most a why and a verdict, each after a | (quote a text that holds a |)`,
+      );
+    let [why = '', word = ''] = cells?.cells ?? [];
+    // A lone cell that is a verdict word is the verdict, not a reason.
+    if (cells?.cells.length === 1 && Object.hasOwn(VERDICTS, why.toLowerCase())) [why, word] = ['', why];
+    const first = d.options.find((x) => x.id === id);
+    if (first) {
+      this.diag(
+        'error',
+        'decision-ref',
+        `${d.name}: option ${id} is already declared on line ${first.line}; every option needs its own id`,
+        L,
+        col,
+        {
+          name: d.name,
+          id,
+          first: first.line,
+        },
+      );
+      return false;
+    }
+    const key = word.toLowerCase();
+    let verdict: DecisionOption['verdict'] = null;
+    if (key !== '' && Object.hasOwn(VERDICTS, key)) verdict = VERDICTS[key] ?? null;
+    else if (key !== '') {
+      this.diag(
+        'warning',
+        'decision-status',
+        `${d.name}: an option's verdict is chosen, picked, selected or rejected (got "${word}"); option ${id} has none`,
+        L,
+        col,
+        { kind: 'verdict', value: word },
+      );
+    }
+    d.options.push({ id, label, why, verdict, line: L });
+    return true;
+  }
+
   // ------------------------------------------------------------ diagrams
 
   private diagramDecl(rest: string, col: number): void {
@@ -2512,6 +2726,43 @@ function spilled(o: Opts, stray: string[]): { text: string; hint: string }[] {
     if (s) i += s.words.length - 1;
   }
   return out;
+}
+
+/**
+ * The cells of `a | "b | c" | d`, which are `a`, `b | c` and `d`: split at each `|` outside quotes, trimmed. A cell that starts with `"`
+ * runs to its closing quote and nothing may follow it before the next `|` (`error`: the quote never closes, or text follows it).
+ */
+function barCells(s: string): { cells: string[]; error: boolean } {
+  const cells: string[] = [];
+  let i = 0;
+  for (;;) {
+    while (i < s.length && /\s/.test(s[i])) i++;
+    if (s[i] === '"') {
+      const q = readQuoted(s, i);
+      i = q.end;
+      while (i < s.length && /\s/.test(s[i])) i++;
+      if (!q.closed || (i < s.length && s[i] !== '|')) return { cells, error: true };
+      cells.push(q.value.trim());
+    } else {
+      const bar = s.indexOf('|', i);
+      const end = bar < 0 ? s.length : bar;
+      cells.push(s.slice(i, end).trim());
+      i = end;
+    }
+    if (i >= s.length) return { cells, error: false };
+    i++;
+  }
+}
+
+/** The answer of a `question` line: what follows its `|`, with a lead-in `answered:` or `answer:` dropped and one pair of quotes taken off; null when empty. */
+function answerOf(raw: string): string | null {
+  let t = raw.trim();
+  if (t.startsWith('"')) {
+    const q = readQuoted(t, 0);
+    if (q.closed && q.end === t.length) t = q.value;
+  }
+  t = t.replace(/^answer(?:ed)?\s*:\s*/i, '').trim();
+  return t === '' ? null : t;
 }
 
 /** `d` is a whole number of `step`s, within a rounding error (0.94 - 0.85 is not exactly 9 steps of 0.01 in floating point). */

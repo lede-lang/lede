@@ -808,6 +808,11 @@
     "fragment": "cf71284cf3b40e107a4b5977bad96d6197627dd1552dbc4f895dcdd18e249cbb",
     "artifact": "da3555e8367c26b6cf05618647bc98a260118fbcfb806e232843ead73cdf8629"
   },
+  "conformance/cases/45-decision.lede": {
+    "ordinary": "52ea2b378224d187d12be9ce1a9ad5b4cb3286eb9c840ff7ec7bdce52c377d8d",
+    "fragment": "d4154a460e2dcd2637d3ce00dc2f9eb86a7d036a95979a9cf2775a1c64892f58",
+    "artifact": "489e1a0b7a195b9a81ba3a3e89f19cbfd9f0de4d5675507742036abc345d4cf4"
+  },
   "conformance/errors/e01-unknown-data.lede": {
     "ordinary": "7ed8259d1360213226200ec30f17f4d06834b0b7d5faa878cdefe3b7882194dd",
     "fragment": "8dcc3b19dc4077a5552fac6bc496da62a1216385482f7fd7b314b6953876fd8e",
@@ -1118,6 +1123,27 @@
     "fragment": "d5c4a72f110dde1ddf9823ca30c120f63d20f95d0aa86815b7a427a2a7481055",
     "artifact": "59381a972ef0a770cbb75d33e2c2a612055da1c3fe93b196012d37c9f2fb5f8f"
   },
+  "conformance/errors/e53-decision-syntax.lede": {
+    "ordinary": "f6e1e6fb1baad07403b023a63d6753b7cdf5329a87ec54cca810dd72f53845c9",
+    "fragment": "2610a93d99704177c874f0f71c5bc8da7ac398663f5a537daa6823ef10f63bec",
+    "artifact": "699fc5cbbf6079cc4fa1f907fe5212fb4f31250c3aa6dc7e62c8f84724c9b9b0"
+  },
+  "conformance/errors/e54-decision-ref.lede": {
+    "ordinary": "5a88093dfa3e1b56f8cf75cfaa8cabfe6da60320f3420fadeca8f1323fa9a63f",
+    "fragment": "bd3e24c929f5318f2dff7f96d04fc5324620c62d09e84eb6214a41421d0301ea",
+    "artifact": "a7a51d778a2d4696d01195efba780f2983b2ecf03dccc51406c180d3cec8a4ce"
+  },
+  "conformance/errors/e55-decision-status.lede": {
+    "ordinary": "ba297931a69fe7e6f160951fb815e2a3c13000b8db5ad36fd4b1615351508dc7",
+    "fragment": "d4af0a2ae5a428be1f0dd476b15fac869738ebdcf5657dbe5c37ed1550c025fe",
+    "artifact": "fa860f2f0860db1b199f477e0bbd3ed92b4ad06a5405d1260b7a310bf171e56c"
+  },
+  "conformance/errors/e56-decision-name-clash.lede": {
+    "ordinary": "9b3a350f98cb2c2f7b5418ac9df2df7beeaa9bdebb624667f324a416738d5f46",
+    "fragment": "a2beb239e11de62c06baf9e7eca97b4d54591c676ce8845ae54f27d3a9be1105",
+    "artifact": "28dd442a56e60cec59ffa3fa0e6b7b72772c5c9d9c8bd8823db974f0c3b35dff",
+    "shell": "376db4659189e086edcf7a63b1231d915ed0076288f578483160406cd2a1519f"
+  },
   "examples/article/01-options-grid.lede": {
     "ordinary": "a1a995c690f213d2da1b3c5437e8759433b803399e4c72067c902339adf557ee",
     "fragment": "780d0e27d3ec3a5bb3a62e4948344f4dcd3d8f34a3ea6fd116e9d908bfa3931f",
@@ -1262,6 +1288,11 @@
     "ordinary": "a3ca9aa13f0e79fa8266b7c691235a500472031d014e86a1254345e0e28580a4",
     "fragment": "bf4868faf107b530299725092bf17a8934876a49eacc45496c1fb2617ca1a2d4",
     "artifact": "bd971d5786b4627158ebd47e419bc6b8853ef3f5c2c59a58525280d6a262d67a"
+  },
+  "examples/parity/decisions.lede": {
+    "ordinary": "469a2f662f35c5e70682b1310f0d42d06d431b7af826e8553b8713948d637fa9",
+    "fragment": "d7d3982b4c6c0f6ce68f67272b2e9f58ef7969b3f7021b9deb2d4d2cfead535d",
+    "artifact": "0898e6d74da6f1c641a7d304e77643ab9ccf44653cfad5c14b78dc86e8cc2e02"
   },
   "examples/parity/edge-tones.lede": {
     "ordinary": "44ef44c9b0c1d0bd2df86c7a1671fa62c958af7115d68ae1709a62727aac8722",

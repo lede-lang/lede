@@ -1,0 +1,104 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Decisions",
+      "line": 1
+    },
+    {
+      "type": "decision",
+      "name": "queue",
+      "text": "Which queue carries order events?",
+      "status": "settled",
+      "by": "2026-12-01",
+      "options": [
+        {
+          "id": "sqs",
+          "label": "SQS",
+          "why": "managed, 14-day retention",
+          "verdict": "chosen",
+          "line": 4
+        },
+        {
+          "id": "kafka",
+          "label": "Kafka",
+          "why": "replay, ops cost",
+          "verdict": "rejected",
+          "line": 5
+        },
+        {
+          "id": "sns",
+          "label": "SNS",
+          "why": "fan-out only",
+          "verdict": null,
+          "line": 6
+        }
+      ],
+      "questions": [
+        {
+          "text": "Do we need replay beyond 14 days?",
+          "answer": "no",
+          "line": 7
+        },
+        {
+          "text": "Who pays for the cross-account traffic?",
+          "answer": null,
+          "line": 8
+        }
+      ],
+      "roles": [
+        {
+          "role": "decides",
+          "who": "Ana Ruiz",
+          "line": 9
+        },
+        {
+          "role": "consulted",
+          "who": "Platform team",
+          "line": 10
+        },
+        {
+          "role": "informed",
+          "who": "Support",
+          "line": 11
+        }
+      ],
+      "line": 3
+    },
+    {
+      "type": "decision",
+      "name": "region",
+      "text": "Where does the replica run?",
+      "status": "open",
+      "by": null,
+      "options": [
+        {
+          "id": "eu",
+          "label": "eu-west-1",
+          "why": "",
+          "verdict": "chosen",
+          "line": 14
+        },
+        {
+          "id": "us",
+          "label": "us-east-2",
+          "why": "has the data plane, | and the budget",
+          "verdict": "chosen",
+          "line": 15
+        }
+      ],
+      "questions": [],
+      "roles": [],
+      "line": 13
+    },
+    {
+      "type": "paragraph",
+      "text": "decision was made on Monday, and decision queue is a phrase.",
+      "line": 17
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

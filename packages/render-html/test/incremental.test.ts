@@ -614,7 +614,7 @@ function feed(src: string, opts: { settle?: boolean } = {}) {
   const take = (r: { pending?: Promise<IncrementalOp[]> }) => r.pending && pending.push(r.pending);
   const handle = (e: StreamEvent) => {
     if (e.kind === 'block') take(inc.push(e.block));
-    else if (e.kind === 'seal' || e.kind === 'bucket-seal') take(inc.seal(e.block));
+    else if (e.kind === 'seal' || e.kind === 'bucket-seal' || e.kind === 'decision-seal') take(inc.seal(e.block));
     else if ('data' in e) take(inc.update({ data: e.data }));
     else take(inc.update(e.block));
   };

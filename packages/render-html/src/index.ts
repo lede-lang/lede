@@ -28,12 +28,14 @@ import {
   num,
   parse,
   presetsOf,
+  walkBlocks,
   type ParseOptions,
 } from '@lede-lang/core';
 import sanitizeHtml from 'sanitize-html';
 import { renderChart } from './chart.ts';
 import { renderFlow } from './diagram.ts';
 import { renderSequence } from './sequence.ts';
+import { decisionHtml } from './decision.ts';
 import { blankAnswers, serializeExport, type Value } from './export.ts';
 import {
   askHtml,
@@ -85,7 +87,7 @@ export async function render(doc: LedeDocument, opts: RenderOptions = {}): Promi
   const title = mh.title;
   const main = mainElement(body, prose, dash);
   if (opts.fragment) return main;
-  const style = `<style>${styleOf(doc.meta, fields.length > 0 || exports.length > 0, usesEditors(fields, presets), dash)}</style>`;
+  const style = `<style>${styleOf(doc.meta, fields.length > 0 || exports.length > 0, usesEditors(fields, presets), dash, usesDecisions(doc.blocks))}</style>`;
   const scripts = shell ? `${shellScripts(ctx.page, fields, exports, presets)}\n` : '';
   if (opts.artifact) return `<title>${esc(title)}</title>\n${style}\n${main}\n${scripts}`;
   const desc = doc.meta.description ? `\n<meta name="description" content="${esc(doc.meta.description)}">` : '';
@@ -114,9 +116,19 @@ export const isWide = (meta: Record<string, string>): boolean => meta.width === 
  * The page stylesheet for a document's meta. `controls`: the page has a question field or an `export`, which add their own rules.
  * `editors`: it draws an editor word (`param`, `toggle`, `bucket`, `template` or `preset`), which adds more (`usesEditors`).
  * `dash`: the page is a dashboard (`layoutClass`), which takes the 64rem column and the dashboard rules (D80).
+ * `decisions`: it holds a decision block (spec §4.20), which adds the card's rules.
  */
-export const styleOf = (meta: Record<string, string>, controls = false, editors = false, dash = false): string =>
-  css({ accent: meta.accent, theme: meta.theme, dash, controls, editors });
+export const styleOf = (meta: Record<string, string>, controls = false, editors = false, dash = false, decisions = false): string =>
+  css({ accent: meta.accent, theme: meta.theme, dash, controls, editors, decisions });
+
+/** Whether `blocks`, or a grid or card among them, holds a decision. */
+export function usesDecisions(blocks: readonly Block[]): boolean {
+  let found = false;
+  walkBlocks(blocks, (b) => {
+    if (b.type === 'decision') found = true;
+  });
+  return found;
+}
 
 /** `<main>` around the page's top-level children (empty ones left out). `dash`: a dashboard page (`layoutClass`). */
 export const mainElement = (children: string[], prose: boolean, dash = false): string =>
@@ -723,6 +735,8 @@ export class Ctx {
         return templateHtml(b, String(this.written[this.fields.indexOf(b)]));
       case 'preset':
         return presetHtml(b, !!this.opts.shell, this.fields);
+      case 'decision':
+        return decisionHtml(b, this.uid('dc'));
       case 'export':
         return exportHtml(b, serializeExport(b.format, this.page, this.fields, this.written), !!this.opts.shell);
       case 'kpis':

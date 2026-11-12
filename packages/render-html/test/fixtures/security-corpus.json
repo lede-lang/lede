@@ -356,6 +356,22 @@
   {
    "name": "inline table, pipe header and rows",
    "lede": "table title=\"Mk78 {Q}\" = Mk79 {T} | Mk80\n: Mk81 {T} | {T}\n: {T}, Mk82; | {T}"
+  },
+  {
+   "name": "decision question and date",
+   "lede": "decision dd1 \"Mk83 {Q}\" by={C}"
+  },
+  {
+   "name": "decision option label and why",
+   "lede": "decision dd2 \"Mk84\"\ndd2: option oa \"Mk85 {Q}\" | {C} | chosen\ndd2: option ob \"Mk86\" | Mk87 | rejected"
+  },
+  {
+   "name": "decision question and answer",
+   "lede": "decision dd3 \"Mk88\"\ndd3: question \"Mk89 {Q}\" | answered: Mk90 {T}\ndd3: question \"{Q}\" | {C}"
+  },
+  {
+   "name": "decision role",
+   "lede": "decision dd4 \"Mk91\"\ndd4: role decides \"Mk92 {Q}\"\ndd4: role consulted {C}"
   }
  ],
  "cases": [
@@ -2383,6 +2399,78 @@
    ],
    "has": [
     "&lt;/script&gt;&lt;script&gt;"
+   ]
+  },
+  {
+   "id": "decision-01",
+   "src": "decision a \"Q?\" status=<img src=x onerror=alert(1)> by=<script>alert(1)</script>\na: option x \"L\" | w | <img src=x onerror=alert(1)>",
+   "warnings": [
+    "decision-status"
+   ],
+   "has": [
+    "Q?"
+   ],
+   "hasNot": [
+    "<img src=x",
+    "<script>alert"
+   ]
+  },
+  {
+   "id": "decision-02",
+   "src": "decision a \"Q?\"\na: role <img/src=x/onerror=alert(1)> \"Ana\"\na: role </dt><script>alert(1)</script> \"Bo\"",
+   "has": [
+    "Ana"
+   ],
+   "hasNot": [
+    "<img/src=x",
+    "<script>alert"
+   ]
+  },
+  {
+   "id": "decision-03",
+   "src": "decision a \"<img src=x onerror=alert(1)>\"\na: option x \"<img src=x onerror=alert(1)>\" | \"<img src=x onerror=alert(1)>\" | chosen\na: question \"<img src=x onerror=alert(1)>\" | answered: <img src=x onerror=alert(1)>\na: role decides \"<img src=x onerror=alert(1)>\"",
+   "hasNot": [
+    "<img src=x"
+   ]
+  },
+  {
+   "id": "decision-04",
+   "src": "decision a \"Q?\"\na: option x \"L\" | \"see [a](javascript:alert(1)) and [b](data:text/html,x)\" | chosen\na: question \"Q [c](JaVaScRiPt:alert(1))\" | answered: [d](vbscript:x)\na: role decides \"[e](javascript:x)\"",
+   "has": [
+    "see"
+   ],
+   "hasNot": [
+    "javascript:",
+    "vbscript:",
+    "data:text"
+   ]
+  },
+  {
+   "id": "decision-05",
+   "src": "decision a \"</section><script>alert(1)</script>\" by=\"</time><script>alert(2)</script>\"\na: option x \"</li></ul><script>alert(3)</script>\" | </span> | rejected",
+   "hasNot": [
+    "<script>alert"
+   ]
+  },
+  {
+   "id": "decision-06",
+   "src": "decision a \"Q?\" by=\"2026-12-01\\\" onclick=\\\"alert(1)\"\na: option x \"L\" | w | chosen",
+   "has": [
+    "Q?"
+   ],
+   "hasNot": [
+    "onclick=\"",
+    "datetime=\"2026-12-01\" "
+   ]
+  },
+  {
+   "id": "decision-07",
+   "src": "decision a \"Q?\"\na: option x \"L\" | \"<style>*{display:none}</style>\" | chosen\na: question \"<a href=//xss.example/x>q</a>\" | answered: <img src=//xss.example/a.png>\na: role decides \"<link rel=stylesheet href=//xss.example/a.css>\"",
+   "hasNot": [
+    "<style>*{display",
+    "<a href=//",
+    "<link ",
+    "<img src=//"
    ]
   }
  ]

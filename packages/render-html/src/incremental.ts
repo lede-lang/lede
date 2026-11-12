@@ -1,11 +1,11 @@
 // The incremental renderer (internal spec, lede-lang/meta): blocks go in one at a time as they become final, DOM operations come
 // out with the HTML of the unit they touch, and the markup that results is the markup `render()` writes for the whole page.
 // Seven decisions in `render()` read the whole document; each has a rule below (prose layout, dashboard layout, grouping, the
-// standfirst, the heading shift, picks, late meta). The question words and the editor words add an eighth, the `export` (see `reexport`), and a
-// block that grows besides the diagram, the bucket set (see `grew`). `end()` checks the result against the whole-page render and
+// standfirst, the heading shift, picks, late meta). The question words and the editor words add an eighth, the `export` (see `reexport`), and two
+// blocks that grow besides the diagram, the bucket set (see `grew`) and the decision (see `update`). `end()` checks the result against the whole-page render and
 // corrects what the rules missed (the settle); the tests and the bench switch the correction off, so they measure the rules and not
 // the safety net.
-import type { Block, BucketBlock, DataSet, DiagramBlock, LedeDocument, PresetBlock, QuestionBlock } from '@lede-lang/core';
+import type { Block, BucketBlock, DataSet, DecisionBlock, DiagramBlock, LedeDocument, PresetBlock, QuestionBlock } from '@lede-lang/core';
 import { FIELD_KINDS, resolve, walkBlocks } from '@lede-lang/core';
 import {
   Ctx,
@@ -23,6 +23,7 @@ import {
   standfirst,
   styleOf,
   tallyProse,
+  usesDecisions,
   type CtxMark,
   type Masthead,
   type PickScan,
@@ -109,10 +110,10 @@ export interface Incremental {
   push(block: Block): Pushed;
   /** The open blocks (`LedeStream.tail()`), after the held ones: the run of elements at the end of the page. */
   tail(blocks: Block[]): IncrementalOp[];
-  /** A diagram gained statements, a bucket set gained an item, or a `data NAME +=` appended rows. */
-  update(what: DiagramBlock | BucketBlock | { data: string }): Pushed;
-  /** No statement of this diagram is expected for now: draw it. A bucket set is drawn in full by every update, so its seal adds nothing. */
-  seal(d: DiagramBlock | BucketBlock): Pushed;
+  /** A diagram gained statements, a bucket set gained an item, a decision gained a line, or a `data NAME +=` appended rows. */
+  update(what: DiagramBlock | BucketBlock | DecisionBlock | { data: string }): Pushed;
+  /** No statement of this diagram is expected for now: draw it. A bucket set or a decision is drawn in full by every update, so its seal adds nothing. */
+  seal(d: DiagramBlock | BucketBlock | DecisionBlock): Pushed;
   /** Commit what is held, draw what is open, apply late meta, settle. Call after the stream's own `end()`. */
   end(): Promise<IncrementalEnd>;
 }
@@ -195,6 +196,8 @@ interface U {
   diagrams: DiagramBlock[];
   /** The bucket sets in the unit, which gain items from later lines. */
   buckets: BucketBlock[];
+  /** The decisions in the unit, which gain options, questions and roles from later lines. */
+  decisions: DecisionBlock[];
   /** Data names a chart, table or kpi in the unit reads. */
   reads: Set<string>;
   /** The unit holds a table, which reads the page's picks. */
@@ -208,15 +211,17 @@ interface U {
 }
 
 /** What a unit's blocks hold, grids and cards included. */
-function inspect(blocks: Block[]): Pick<U, 'diagrams' | 'buckets' | 'reads' | 'picks' | 'exports'> {
+function inspect(blocks: Block[]): Pick<U, 'diagrams' | 'buckets' | 'decisions' | 'reads' | 'picks' | 'exports'> {
   const diagrams: DiagramBlock[] = [];
   const buckets: BucketBlock[] = [];
+  const decisions: DecisionBlock[] = [];
   const reads = new Set<string>();
   let picks = false;
   let exports = false;
   walkBlocks(blocks, (b) => {
     if (b.type === 'diagram') diagrams.push(b);
     else if (b.type === 'bucket') buckets.push(b);
+    else if (b.type === 'decision') decisions.push(b);
     else if (b.type === 'export') exports = true;
     else if (b.type === 'chart') reads.add(b.data);
     else if (b.type === 'table') {
@@ -224,7 +229,7 @@ function inspect(blocks: Block[]): Pick<U, 'diagrams' | 'buckets' | 'reads' | 'p
       picks = true;
     } else if (b.type === 'kpis') for (const k of b.items) if (k.ref) reads.add(k.ref.split('.')[0]);
   });
-  return { diagrams, buckets, reads, picks, exports };
+  return { diagrams, buckets, decisions, reads, picks, exports };
 }
 
 /** The question fields, the `preset` blocks and whether an `export` is among a block and the blocks it holds, found in one walk. */
@@ -286,6 +291,7 @@ class Renderer implements Incremental {
   private readonly units: U[] = [];
   private readonly byDiagram = new Map<DiagramBlock, U>();
   private readonly byBucket = new Map<BucketBlock, U>();
+  private readonly byDecision = new Map<DecisionBlock, U>();
   /**
    * Diagrams the stream has sealed at least once, even before their unit was committed. A diagram of a committed unit that is
    * not in it is shown as a slot; one that is in it is drawn, and a seal after the first draws it again (a reseal).
@@ -313,10 +319,12 @@ class Renderer implements Incremental {
    * The question fields of every block pushed, in source order: the array `ctx.fields` is, so an `export` lists the fields read so
    * far. `controls`: a field or an `export` has arrived, so the stylesheet carries the controls' rules (as `render()`'s does).
    * `editors`: an editor word (`param`, `toggle`, `bucket`, `template` or `preset`) has, so it carries theirs too.
+   * `decided`: a decision has, so it carries the card's.
    */
   private readonly fields: QuestionBlock[] = [];
   private controls = false;
   private editors = false;
+  private decided = false;
   /** The committed units that hold an `export`. */
   private readonly exportUnits: U[] = [];
 
@@ -405,23 +413,25 @@ class Renderer implements Incremental {
   }
 
   /**
-   * A question field joins `fields`. The first field or `export` of the page adds the controls' rules to the stylesheet, and the
-   * first editor word (a `preset` too, which is no field) adds the editors'; true when this block did either, so the caller emits
-   * the style (the first block's style is `begin`'s).
+   * A question field joins `fields`. The first field or `export` of the page adds the controls' rules to the stylesheet, the
+   * first editor word (a `preset` too, which is no field) adds the editors', and the first decision adds the card's; true when this
+   * block did any of them, so the caller emits the style (the first block's style is `begin`'s).
    */
   private takeQuestions(block: Block): boolean {
     const { fields: found, presets, hasExport } = questionsIn(block);
     this.fields.push(...found);
     const controls = !this.controls && (found.length > 0 || hasExport);
     const editors = !this.editors && usesEditors(found, presets);
+    const decided = !this.decided && usesDecisions([block]);
     if (controls) this.controls = true;
     if (editors) this.editors = true;
-    return controls || editors;
+    if (decided) this.decided = true;
+    return controls || editors || decided;
   }
 
-  /** The page stylesheet for `meta`, with the controls' and the editors' rules once a field, an `export` or an editor word has arrived. */
+  /** The page stylesheet for `meta`, with the controls', the editors' and the decision card's rules once the first of each has arrived. */
   private style(meta: Record<string, string>, dash = this.dash): string {
-    return styleOf(meta, this.controls, this.editors, dash);
+    return styleOf(meta, this.controls, this.editors, dash, this.decided);
   }
 
   /**
@@ -568,6 +578,7 @@ class Renderer implements Incremental {
     const u: U = { id, plan: unit, blocks, mark: this.frontier, html: '', ...inspect(blocks), exportKey: '', version: 0 };
     for (const d of u.diagrams) this.byDiagram.set(d, u);
     for (const b of u.buckets) this.byBucket.set(b, u);
+    for (const b of u.decisions) this.byDecision.set(b, u);
     if (u.exports) {
       u.exportKey = this.exportKey();
       this.exportUnits.push(u);
@@ -664,13 +675,19 @@ class Renderer implements Incremental {
 
   // ------------------------------------------------------------------ updates, seals, drawings
 
-  update(what: DiagramBlock | BucketBlock | { data: string }): Pushed {
+  update(what: DiagramBlock | BucketBlock | DecisionBlock | { data: string }): Pushed {
     if (!('type' in what)) {
       const out = new Batch();
       for (const u of this.units) if (u.reads.has(what.data)) out.add(this.redraw(u));
       return out.result();
     }
     if (what.type === 'bucket') return this.grew(what);
+    // A decision is static markup, so each line is a whole drawing of its unit in place. One whose unit is still held, or is in a grid
+    // or cards run not pushed yet, is drawn when that unit is, from the decision as it stands then.
+    if (what.type === 'decision') {
+      const held = this.byDecision.get(what);
+      return held ? this.redraw(held) : { ops: [] };
+    }
     const u = this.byDiagram.get(what);
     // A diagram not on the page yet, or one that is drawn already (its next seal draws it again): nothing to show.
     if (!u || this.sealed.has(what)) return { ops: [] };
@@ -695,9 +712,9 @@ class Renderer implements Incremental {
     return out.result();
   }
 
-  seal(d: DiagramBlock | BucketBlock): Pushed {
-    // A bucket set has no drawing to finish: every update drew it in full.
-    if (d.type === 'bucket') return { ops: [] };
+  seal(d: DiagramBlock | BucketBlock | DecisionBlock): Pushed {
+    // A bucket set or a decision has no drawing to finish: every update drew it in full.
+    if (d.type === 'bucket' || d.type === 'decision') return { ops: [] };
     const again = this.sealed.has(d);
     this.sealed.add(d);
     const u = this.byDiagram.get(d);

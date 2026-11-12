@@ -97,6 +97,36 @@ const EDITORS = `/* editor words */
 const DASH_RULES = `.doc.dash .lgrid{grid-template-columns:repeat(auto-fit,minmax(max(min(420px,100%),calc((100% - 16px * (var(--cols) - 1)) / var(--cols))),1fr))}
 `;
 
+/**
+ * The decision card's rules (spec §4.20), added only to a page that holds a decision, so every other page keeps its bytes. No new tokens:
+ * the status chip is the existing `.pill` (`good`, `warn`, and no tone for deferred, which is the neutral grey), the date is the existing
+ * `.chip`. The list rules are prefixed `.decision` to outrank the prose layout's `.prose li+li`. Nothing here is the only carrier of a
+ * state: the status and each verdict are words in the markup, and a rejected label is struck through as well as coloured.
+ */
+const DECISIONS = `/* decision blocks */
+.decision{display:flex;flex-direction:column;gap:10px;min-width:0;padding:16px 18px;background:var(--surface);border:1px solid var(--line);border-radius:12px;font:15px/1.5 var(--sans);color:var(--fg)}
+.decision>*{margin:0}
+.dc-h{display:flex;flex-direction:column;gap:8px}
+.dc-h>*{margin:0}
+.dc-q{font:600 1.18rem/1.3 var(--serif);text-wrap:balance;overflow-wrap:anywhere}
+.dc-s{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.dc-s .chip{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.dc-l{margin-top:4px;font:700 11px/1.3 var(--sans);letter-spacing:.09em;text-transform:uppercase;color:var(--fg2)}
+.decision ul.dc-opts,.decision ul.dc-qa{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.decision .dc-opts>li,.decision .dc-qa>li{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;min-width:0;margin:0;padding:10px 12px;background:var(--bg);border:1px solid var(--line);border-radius:8px}
+.decision .dc-opts>li.chosen{border-color:var(--good);box-shadow:inset 4px 0 0 var(--good)}
+.dc-ol,.dc-qt{min-width:0;font-weight:600;overflow-wrap:anywhere}
+.dc-opts>li.rejected .dc-ol{color:var(--fg2);text-decoration:line-through;text-decoration-thickness:1.5px}
+.dc-w,.dc-a{flex:1 1 100%;min-width:0;font-size:14px;color:var(--fg2);overflow-wrap:anywhere}
+.dc-al{font:700 11px/1.3 var(--sans);letter-spacing:.09em;text-transform:uppercase;margin-right:4px}
+.decision .dc-roles{display:flex;flex-wrap:wrap;gap:6px 20px;margin:2px 0 0;padding-top:12px;border-top:1px solid var(--line)}
+.dc-roles>div{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 6px;min-width:0}
+.dc-roles dt{font:700 11px/1.3 var(--sans);letter-spacing:.09em;text-transform:uppercase;color:var(--fg2)}
+.dc-roles dd{margin:0;min-width:0;font-weight:600;overflow-wrap:anywhere}
+@media (max-width:560px){.decision{padding:14px 16px}}
+@media print{.decision{break-inside:avoid}}
+`;
+
 export function css(opts: {
   accent?: string;
   theme?: string;
@@ -106,6 +136,8 @@ export function css(opts: {
   dash?: boolean;
   controls?: boolean;
   editors?: boolean;
+  /** A page that holds a decision block: the card's rules. */
+  decisions?: boolean;
 }): string {
   // Only a hex color that passes AA text contrast reaches the stylesheet (D49, D77); the parser warns on the rest.
   const picked = usableAccent(opts.accent, opts.theme);
@@ -611,5 +643,5 @@ ol.steps.sx>li>.sn{grid-column:2;min-width:0;color:var(--fg2);overflow-wrap:anyw
 .dg .elabel.tn{fill:var(--tn);font-weight:600}
 .et.tn{color:var(--tn);background:var(--tf);border-radius:4px;padding:0 6px;font-weight:600;font-size:14px}
 .dgk-t{min-width:0;overflow-wrap:anywhere}
-${opts.controls ? CONTROLS : ''}${opts.controls && opts.editors ? EDITORS : ''}${opts.dash ? DASH_RULES : ''}`;
+${opts.controls ? CONTROLS : ''}${opts.controls && opts.editors ? EDITORS : ''}${opts.dash ? DASH_RULES : ''}${opts.decisions ? DECISIONS : ''}`;
 }

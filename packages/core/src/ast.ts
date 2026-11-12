@@ -322,6 +322,42 @@ export interface PresetBlock {
   line: number;
 }
 export type QuestionBlock = AskBlock | ChooseBlock | ConfirmBlock | ParamBlock | ToggleBlock | BucketBlock | TemplateBlock;
+export type DecisionStatus = 'open' | 'settled' | 'deferred';
+export interface DecisionOption {
+  id: string;
+  label: string;
+  why: string;
+  verdict: 'chosen' | 'rejected' | null;
+  line: number;
+}
+export interface DecisionQuestion {
+  text: string;
+  /** Null while the question is open. */
+  answer: string | null;
+  line: number;
+}
+export interface DecisionRole {
+  role: string;
+  who: string;
+  line: number;
+}
+/**
+ * A decision (spec §4.20, D80): the question, its status, the options with their verdicts, the open and answered questions and the
+ * roles that settle it, drawn as one static card. The `NAME:` lines that follow the declaration add `options`, `questions` and
+ * `roles` to the emitted block, as a diagram gains statements. A decision is not a field: it has no value in the export. `by` is the
+ * date as written (an ISO date or any text), null when absent; an option's `verdict` is null while it is still under consideration.
+ */
+export interface DecisionBlock {
+  type: 'decision';
+  name: string;
+  text: string;
+  status: DecisionStatus;
+  by: string | null;
+  options: DecisionOption[];
+  questions: DecisionQuestion[];
+  roles: DecisionRole[];
+  line: number;
+}
 export type ExportFormat = 'json' | 'markdown' | 'prompt';
 export interface ExportBlock {
   type: 'export';
@@ -355,6 +391,7 @@ export type Block =
   | BucketBlock
   | TemplateBlock
   | PresetBlock
+  | DecisionBlock
   | ExportBlock;
 
 export interface LedeDocument {

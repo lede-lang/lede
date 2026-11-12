@@ -1,0 +1,17 @@
+# Decisions
+
+decision queue "Which queue carries order events?" status=settled by=2026-12-01
+queue: option sqs "SQS" | managed, 14-day retention | chosen
+queue: option kafka "Kafka" | replay, ops cost | rejected
+queue: option sns "SNS" | fan-out only
+queue: question "Do we need replay beyond 14 days?" | answered: no
+queue: question "Who pays for the cross-account traffic?"
+queue: role decides "Ana Ruiz"
+queue: role consulted "Platform team"
+queue: role informed "Support"
+
+decision region "Where does the replica run?"
+region: option eu "eu-west-1" | | picked
+region: option us "us-east-2" | "has the data plane, | and the budget" | Selected
+
+decision was made on Monday, and decision queue is a phrase.

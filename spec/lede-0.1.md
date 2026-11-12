@@ -47,7 +47,7 @@ the line after the matched prefix.
 ```ebnf
 document     = { line , NL } ;
 line         = table-row | blank | fence-open | escaped | meta | heading | task-item | bullet | ordered
-             | note | quote | rule | html-line | keyword-line | bucket-item | diagram-line | data-row | text ;
+             | note | quote | rule | html-line | keyword-line | bucket-item | decision-line | diagram-line | data-row | text ;
 
 blank        = "" ;
 escaped      = "\" , REST ;                         (* REST is paragraph text *)
@@ -62,8 +62,9 @@ quote        = ">" , [ " " ] , REST ;
 rule         = "---" , { "-" } ;
 html-line    = "html:" , REST ;
 keyword-line = data | chart | table | kpi | diagram | image | grid | ask | choose | confirm | export
-             | param | toggle | bucket | template | preset ;
+             | param | toggle | bucket | template | preset | decision ;
 bucket-item  = NAME , ":" , WS , REST , [ WS ] , "|" , [ WS ] , TEXT ;   (* only if NAME is a declared bucket set; REST runs to the last | *)
+decision-line = decision-name , ":" , WS , decision-stmt ;   (* only if decision-name was declared; see 4.20 *)
 diagram-line = diagram-name , ":" , WS , diagram-stmt ;   (* only if diagram-name was declared *)
 data-row     = NAME , ":" , [ WS ] , pipe-fields ;       (* only if NAME is a declared data set (and no bucket set or diagram has the line first) and pipe-fields has a separator; 4.11 *)
 table-row    = ":" , [ WS , pipe-fields ] ;              (* only while an inline table with no rows of its own is open; tried before every other rule; 4.14 *)
@@ -96,8 +97,17 @@ bucket       = "bucket" , WS , NAME , [ WS ] , "|" , options , [ "|" , [ WS ] , 
 template     = "template" , WS , NAME , [ WS ] , "|" , [ WS ] , REST ;      (* then a fence; "{" NAME "}" in its text is a slot *)
 preset       = "preset" , WS , NAME , [ WS ] , "|" , [ WS ] , REST , [ WS ] , "|" , assign , { ";" , assign } ;
 assign       = [ WS ] , NAME , [ WS ] , "=" , [ WS ] , TEXT ;             (* NUM: a decimal number; the four are DEFAULT MIN MAX STEP *)
+decision     = "decision" , WS , NAME , WS , quoted-string , { WS , ( "status=" , STATUS | "by=" , ( TEXT | quoted-string ) ) } ;   (* 4.20 *)
+STATUS       = "open" | "settled" | "deferred" ;                           (* any case; another word is W decision-status *)
 options      = field , { ( "," | ";" ) , field } ;       (* data-cell fields: "," ";" "|" need double quotes *)
 NAME         = letter , { letter | digit | "_" | "-" } ;
+
+decision-stmt = option-stmt | question-stmt | role-stmt ;
+option-stmt  = "option" , WS , OPT-ID , WS , quoted-string , [ WS , "|" , cell , [ "|" , cell ] ] ;   (* why, then verdict; a cell with "|" is quoted *)
+question-stmt = "question" , WS , quoted-string , [ WS , "|" , [ WS ] , REST ] ;   (* the answer, which may start "answer:" or "answered:" *)
+role-stmt    = "role" , WS , WORD , [ WS , WORD ] , WS , quoted-string ;
+OPT-ID       = ( letter | digit ) , { letter | digit | "_" | "-" } ;
+verdict      = "chosen" | "picked" | "selected" | "rejected" ;                (* the verdict cell; any case *)
 
 diagram-stmt = group-stmt | note-stmt | edge-stmt | node-stmt ;
 group-stmt   = "group" , [ WS , NODE-ID ] , WS , quoted-string , WS , member , { ( "," | WS ) , member } ;
@@ -111,7 +121,8 @@ node-stmt    = NODE-ID , { WS , ( quoted-string | kind | "focus" | "*" | option 
 
 Keywords are case-sensitive and lowercase. `Table 3 shows…` is prose; `table of contents` is an
 error (no data named `of`) and must be written `\table of contents`. The five editor words `param`, `toggle`, `bucket`, `template`
-and `preset` are keyword lines only in the shape §4.19 gives (a name, and a `|` after it); `toggle the flag on Monday` is prose.
+and `preset` are keyword lines only in the shape §4.19 gives (a name, and a `|` after it); `toggle the flag on Monday` is prose. `decision`
+is a keyword line only in the shape §4.20 gives (a name, then a quoted question or `status=` or `by=`); `decision was made on Monday` is prose.
 
 ## 4. Blocks
 
@@ -570,6 +581,60 @@ and the runtime adds no element and moves none.
   the first export. A preset sets values and sends nothing.
 - If the data block cannot be read (§7), the runtime changes nothing and the page stays as the ordinary build draws it.
 
+### 4.20 Decisions
+Status: **preview**, D80. One block states a decision as it stands: the question, whether it is settled, the options with their
+verdicts, the questions still open or answered, and who decides. It is a static card in every build mode: no script, no control, and
+the statuses and verdicts are words as well as colours. A document without one parses to exactly the AST it had before and compiles to
+the same bytes (Appendix H).
+
+```
+decision NAME "QUESTION" [status=open|settled|deferred] [by=DATE]
+NAME: option ID "LABEL" [| WHY [| VERDICT]]
+NAME: question "TEXT" [| ANSWER]
+NAME: role WORD "WHO"
+```
+- **The shape rule.** A line that starts with `decision` and a space is a keyword line only when its second token is a NAME and what follows
+  is a `"` (the question) or `status=` or `by=` (the question left out). Any other line that starts with the word is text: `decision was
+  made on Monday` and `decision queue is a phrase` are paragraphs. A line that has the shape and is malformed fails loudly (§1.5) as E
+  `decision-syntax` `{word: "decision"}`: no name, a name that is a keyword or `html`, a question that is missing, empty or never closed.
+  An error makes no block and takes no name.
+- **Names.** NAME matches `[A-Za-z][\w-]*`. A decision shares one namespace with data, diagrams and bucket sets: a name that one of them
+  already has is E `name-clash` `{decision}` on whichever is declared second (`--fix` leaves it, as for a bucket set), and a second
+  `decision` with the same name is E `decision-ref` `{name, first}` (`first` is the line of the first). No decision is named `html`, as no
+  diagram is.
+- **Options.** `status` is `open` (the default), `settled` or `deferred`, in any case; another word is W `decision-status` `{kind:
+  "status", value}` and is read as `open`. `by` is any text, a date (`2026-12-01`) or a phrase (`by="Q1 planning"`); only a plain
+  `YYYY-MM-DD` is also written as a `datetime`. Any other word, quoted string or `key=` after the question is W `decision-option`
+  and ignored, as on `chart` and `diagram` (so is a `"` in the options that never closes).
+- **Statements.** A line `NAME: option …`, `NAME: question …` or `NAME: role …` binds to the decision `NAME` declared above it, may come
+  anywhere after the declaration and is read in order, as a diagram's lines are. A line of a decision that starts with another word is
+  E `decision-syntax` `{word: "line"}` (start it with `\` for prose). A line of that shape whose NAME is no decision (and no data set, whose `NAME: a | b` rows §4.11 reads first) is E `decision-ref`
+  `{name}`, so a mistyped name is an error and not a paragraph; other `NAME:` lines with no owner stay text, as before.
+- **`option ID "LABEL" | WHY | VERDICT`.** `ID` is `[A-Za-z0-9][\w-]*` and unique within the decision (a repeat is E `decision-ref` `{name,
+  id, first}`); the label is quoted. After the label come at most two cells, each after a `|`: the reason and the verdict. A cell that
+  holds a `|` is quoted, as a `bucket` option is (here every `|` outside quotes separates, unlike the pipe fields of §2, which need whitespace
+  beside them). A single cell that is a verdict word is the verdict (`| chosen`). The verdict is
+  `chosen`, `picked` or `selected` (the option is chosen), or `rejected`, in any case; another word is W `decision-status` `{kind:
+  "verdict", value}` and the option has none. An option without a verdict is still being weighed. More than two cells, a cell whose quote
+  never closes, or text after a closing quote that no `|` introduces is E `decision-syntax` `{word: "option"}`.
+- **`question "TEXT" | ANSWER`.** The answer is the rest of the line after the `|`, with one pair of double quotes and a leading `answer:`
+  or `answered:` taken off; with none, the question is open. A missing or unclosed quote is E `decision-syntax` `{word: "question"}`.
+- **`role WORD "WHO"`.** One or two words (`decides`, `consulted`, `informed`, `signs off`), then the quoted name or team. Anything else
+  is E `decision-syntax` `{word: "role"}`. Roles keep their order; no word is reserved.
+- **No cross-checks.** The status and the verdicts are as written: a `settled` decision with no chosen option, or two chosen options,
+  raises nothing.
+
+**What the page draws.** One `<section class="decision">` labelled by its question (`aria-labelledby`), in the order of the document:
+the question as a heading-like paragraph and, beside it, the status as a pill (`settled` is the good tone, `open` the warn tone and
+`deferred` the neutral one, each a word: `Status: Settled`, with the label hidden from sight but read by a screen reader) and the date
+as a chip, `by DATE` (a `<time>` for an ISO date). Then, each only when it has rows: `Options`, a list whose row is the label, a
+`Chosen` or `Rejected` pill and the reason, a chosen row marked by its border and the verdict word and a rejected label struck through;
+`Questions`, a list whose row is the text and either `Answer` and the answer or an `Open` pill; and the roles as a definition list, the
+word and who. The decision's question, the option labels and reasons, the questions and answers and who are inline text (§5); the role word and
+the date are plain text; everything is escaped. The card's CSS is added only to a page that has a decision, so every other page keeps its bytes, and it fits a 360px
+screen without sideways scroll: long words wrap, and the date chip wraps inside the card. Print keeps the card on one page where it
+fits.
+
 ## 5. Inline markup
 `` `code` ``, `**bold**`, `*italic*` or `_italic_`, `[text](url)`. URLs must be `http`,
 `https`, `mailto`, relative or `#fragment`; others render as plain text. `\` escapes
@@ -585,30 +650,32 @@ A conforming parser accepts input line by line and emits a block as soon as it i
 heading, note, rule, data, chart, table, image or diagram declaration on its own line; a
 paragraph, list, quote or kpi row, or an inline table with no rows on its own line (§4.14, whose `:` rows may follow), when a line of
 another kind (or a blank line) arrives; a fence when it closes; a grid when it fills. Emitted blocks never change, with two exceptions
-renderers must handle: a diagram or a bucket set (§4.19) gains statements from later lines, and a chart, table or kpi
+renderers must handle: a diagram, a bucket set (§4.19) or a decision (§4.20) gains statements from later lines, and a chart, table or kpi
 reflects rows appended with `data NAME +=` or `NAME: a | b` (§4.11). Question words (§4.18) are final when read; the page-wide warnings `export-missing` and `export-orphan` are reported when the document ends. Among the editor words (§4.19), `param`, `toggle` and `preset` are final when read. A `bucket` is emitted on its
 declaration and gains an item from each later `NAME:` line. A half-written bucket set renders as its legend, its count tiles (counting
 the items written so far, none right after the `bucket` line) and the item rows so far as static radios; each later item line adds a
 row and raises one count, and nothing already drawn moves. A `template` is emitted when its fence closes; a snapshot taken inside the
 fence shows it with the text so far, and a snapshot after the `template` line and before the fence shows no template. The warnings
-`toggle-needs`, `bucket-empty` and `template-fence` are reported when the document ends. A snapshot of a partial document (with the open
+`toggle-needs`, `bucket-empty` and `template-fence` are reported when the document ends. A `decision` is emitted on its declaration and gains an option, a question or a role from each later `NAME:` line;
+half written, it is the card so far, and the question and status are drawn from the first line. A snapshot of a partial document (with the open
 block flushed) is always a valid document. The partial last line (no `\n` yet) is not parsed.
 
-A streaming consumer learns of the two exceptions as events, in line order, beside the blocks it is given: `block` (a
+A streaming consumer learns of the exceptions as events, in line order, beside the blocks it is given: `block` (a
 block is final), `update` (a `name:` line changed a diagram already given, or a `data NAME +=` or `NAME: a | b` line appended rows to that
 data name) and `seal` (the first non-blank line that is not a statement of the diagram, or the end of the document: a blank line does
 not seal, since writers space statements). A bucket set has the same two events as kinds of their own, `bucket-update` (a
 `NAME: ITEM | B` line added an item to a bucket set already given) and `bucket-seal`, so `update` and `seal` carry a diagram, as
-they did before bucket sets. A bucket set streams as a diagram does: it is given on its declaration, each item line is a
+they did before bucket sets. A decision has two more, `decision-update` (a `NAME: option`, `question` or `role` line added to a decision
+already given) and `decision-seal`, and streams as a bucket set does. A bucket set streams as a diagram does: it is given on its declaration, each item line is a
 `bucket-update` and the first other non-blank line seals it. A `name:` line that is rejected, or that repeats what the diagram or
 set has (a bad item, an unknown bucket, an item text it already lists), is no update, but it is still a statement of it and does
 not seal it. A statement after a seal that changes the diagram or set is an update again, and the next sealing line a second
-seal. A diagram or bucket set inside a `grid` or `cards` run that has not been given yet is not on screen, so its lines are no
+seal. A diagram, bucket set or decision inside a `grid` or `cards` run that has not been given yet is not on screen, so its lines are no
 update. A conforming streaming consumer may also read the open block (paragraph, list, quote, kpi row, step run, inline table, fence, grid or
 cards run, as a block) without ending the document; a keyword line is never part of it, because it is a block or a diagnostic on
 its own line, except that the fence a `template` line opened is read as the template block with the text so far (a `template` line
 with no fence yet adds nothing), and the inline `table [options] =` line that opened a table with no rows of its own is read as the
-table block with the `: a | b` rows so far. Reading it reports nothing: the table's option diagnostics come once, when it ends. A bucket set is in it only inside an open `grid` or `cards` run, with the items read so far; one
+table block with the `: a | b` rows so far. Reading it reports nothing: the table's option diagnostics come once, when it ends. A bucket set or a decision is in it only inside an open `grid` or `cards` run, with the items, questions and roles read so far; one
 written anywhere else was given on its declaration.
 `LedeStream.events`, `.tail` and `.end` in `@lede-lang/core` are this interface.
 
@@ -617,7 +684,7 @@ written anywhere else was given on its declaration.
 - A complete page: `<!doctype html>`, `lang`, charset, viewport, one `<style>`; **no
   executable JavaScript**, so the output works under `script-src 'none'`. Question words (§4.18) draw
   plain controls (text, radio, text area) with no script, `button` or `form`, and leave the policy unchanged; the editor words (§4.19)
-  add range, number and checkbox inputs, lists and a `pre`, on the same terms. That holds for every page built without `--shell`.
+  add range, number and checkbox inputs, lists and a `pre`, on the same terms, and a decision (§4.20) is a static card with no control. That holds for every page built without `--shell`.
 - With `--shell` (§9), a page that has a question and an `export` carries exactly two scripts after `<main>`: an inert
   `application/json` block (version 2: the title, each field's name and kind, for a `param` its default, unit, bounds and step, for a `toggle` its
   state and prerequisites, for a `bucket` its bucket names and item texts, for a `template` its body and slots, then the presets and the
@@ -663,7 +730,8 @@ written anywhere else was given on its declaration.
   `preset` and `template` are drawn when read, a `bucket` set is drawn again in place for each item line (the `bucket-update` of §6; its
   `bucket-seal` adds nothing, since every update drew it in full), and a `template` fence still open is drawn, with the text so far, in the open
   block the consumer reads. The page's stylesheet gains the controls' rules when the first field or `export` arrives and the editors' when
-  the first editor word does. An `export` lists the fields, the bucket items and the title read so far and is drawn again, in place,
+  the first editor word does. A `decision` (§4.20) is drawn when read and drawn again in place for each `NAME:` line (the `decision-update`
+of §6; its `decision-seal` adds nothing), with the stylesheet gaining its rules when the first one arrives. An `export` lists the fields, the bucket items and the title read so far and is drawn again, in place,
   when a later field, item or the title changes what it lists. The `shell` option has no effect on this form, which draws the ordinary page. The layout engine for flow diagrams (elkjs) is loaded when the first flow diagram is laid
   out, and `setLayoutEngine(fn)` replaces it.
 
@@ -800,13 +868,16 @@ when the writer gave a valid `dir=` (§4.17) and no such key otherwise.
 the common codes end with what to write instead (`...; put a cell that contains , in double quotes`, `...; did you mean
 delay ms?`). `detail` is optional and machine-readable. Codes the fixer reads carry it: `unknown-column` `{column, columns}`,
 `data-row-width` `{fields, want, name}`, `csv-thousands` `{fields, want, name}` (`fields` counted before the merge),
-`name-clash` `{diagram}` (a diagram named like a data set; a clash with a bucket set carries `{bucket}` instead, and `--fix` leaves
-it), and `edge-tone` `{value, allowed}` (§4.17; `--fix` leaves it). The question-word codes (§4.18) carry `detail` too (`choose-options` has `{count, empty, reserved}`, or `{kind, option, char}` with
+`name-clash` `{diagram}` (a diagram named like a data set; a clash with a bucket set carries `{bucket}` instead, and a clash that involves a decision (§4.20), whichever is declared first, carries
+`{decision}`; `--fix` leaves both), and `edge-tone` `{value, allowed}` (§4.17; `--fix` leaves it). The question-word codes (§4.18) carry `detail` too (`choose-options` has `{count, empty, reserved}`, or `{kind, option, char}` with
 `kind` `control` when an option holds a C0 control character other than tab), and so do the editor-word codes (§4.19): `param-range` `{value, min, max,
 step, rule}` (`rule` is `order`, `step`, `range`, `grid`, `grid-max` or `count`), `toggle-needs` `{name, needs, toggles}`, `bucket-names`
 `{count, empty, dup, reserved}`, `bucket-unknown` `{bucket, buckets}`, `bucket-item` `{name}`, `bucket-dup-item` `{text, first}`,
 `bucket-empty` `{name}`, `template-fence` `{name}`, `template-slot` `{slot, fields}`, `template-empty` `{name}`, `preset-key`
-`{key, fields}` and `preset-value` `{key, value, kind}`; `export-format` `{format}` now names `prompt` too. So does `accent-contrast` (§4.3) `{accent, theme, ratio, required, against}`:
+`{key, fields}` and `preset-value` `{key, value, kind}`; so do the decision codes (§4.20): E `decision-syntax` `{word}` (`word` is `decision`, `option`,
+`question`, `role` or `line`), E `decision-ref` `{name}` for a `NAME:` line of a decision that was never declared, `{name, first}` for a second
+`decision` of the same name and `{name, id, first}` for an option id used twice, W `decision-status` `{kind, value}` (`kind` is `status` or
+`verdict`) and W `decision-option`, which has none (as `diagram-option` and `chart-option` have none); `export-format` `{format}` now names `prompt` too. So does `accent-contrast` (§4.3) `{accent, theme, ratio, required, against}`:
 `theme` is `light` or `dark`, `ratio` is the lowest contrast found rounded down to two decimals, `required` is `4.5`, and `against` names
 the surface (`bg`, `surface` or `accent-tint`). So does `external` (above) `{kind, text}`. So does `artifact-image` `{src, kind}`: `src` is the image path as written and `kind` is
 `local`. So does `image-inline` `{src, reason}`: `src` is the path as written and `reason` is `size`, `page-size`, `type`, `missing` or `outside`. So does `heading-skip` (§4.4) `{from, to}`: the level of the heading before and of this one, as written (`--fix` leaves it). So does the error
@@ -1217,3 +1288,21 @@ CR became LF), so a `--shell` page exported text that the AST did not hold. A qu
 allowed a control character (E `question-name`), and an editor word whose name has one is not an editor line. None of the 858 `.lede`
 files tracked on `main` at `0184535` holds a C0 control character other than tab and line feed, so none can reach the new error.
 Conformance error e44 is normative.
+
+## Appendix H. Decision blocks (2026-11)
+Status: **preview**, D80. `decision` and its `NAME: option`, `question` and `role` lines (§4.20) are new, valid in every build mode. The
+keywords are now `data chart table kpi diagram image grid cards step ask choose confirm export param toggle bucket template preset
+decision`, and none can name a diagram (E `diagram-name`). Conformance case 45 and errors e53 to e56 are normative.
+`spec/model-spec.md` does not describe the block: models read it from the on-demand reference (D55 cap).
+
+**What changed for existing input.** Input that parsed before parses identically except: a lowercase line that starts with `decision`, a
+name and then a `"`, `status=` or `by=` was paragraph text and is now a decision line (an error when malformed), `diagram decision` is now
+E `diagram-name`, and a `data`, `diagram` or `bucket` named like a decision is E `name-clash` (the namespace of §4.20). A `NAME:` line binds
+to a decision only when a `decision NAME` is above it, and a `NAME: option "…"`-shaped line with no such decision is E `decision-ref`
+where it was text, so a document without a decision binds nothing new, except for that line. Searched across the 866 `.lede` files
+tracked on `main` at `e55800b` (benchmark outputs, examples, conformance, fixtures), parsed with the parser at that commit and with this
+one: none has a line that starts with `decision`, and the ASTs and diagnostics are identical for all 866. Compiled with the renderer at
+that commit and with this one, every one of those pages is byte-identical in the four modes the render-hashes fixture holds (plain,
+fragment, `--artifact` and, for a page with a question and an `export`, `--shell`): the card's markup and its CSS exist only for a
+document that has a decision, and so do the `decision-update` and `decision-seal` events. Every earlier conformance case passes
+unedited.
