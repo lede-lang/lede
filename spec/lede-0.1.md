@@ -57,7 +57,9 @@ heading      = ( "#" | "##" | "###" ) , [ WS , REST ] ;   (* 4–6 #s: warning, 
 task-item    = "-" , WS , "[" , ( " " | "x" | "X" ) , "]" , WS , REST ;
 bullet       = "-" , WS , REST ;
 ordered      = digit , { digit } , ( "." | ")" ) , WS , REST ;
-note         = ( "!" | "!!" ) , WS , REST ;
+note         = ( "!" | "!!" | "!!!" ) , WS , REST ;
+note-kind    = "!" , WS , kind-word , ":" , [ WS ] , TEXT ;     (* 4.7; REST of a one-"!" note starts with a kind word, a colon and text *)
+kind-word    = "Tip" | "Recommendation" | "Recommended" | "Decision" | "Success" | "Done" | "Info" | "Question" | "Example" ;   (* any case *)
 quote        = ">" , [ " " ] , REST ;
 rule         = "---" , { "-" } ;
 html-line    = "html:" , REST ;
@@ -183,6 +185,16 @@ starts with `—`, `–` or `--`, that line is the attribution.
 ### 4.7 Notes
 `! text` is a note, `!! text` a warning, `!!! text` a critical callout. Each line is its own
 callout. `!text` with no space is prose.
+
+A `!` note whose first word, followed by `:` and then text, is a kind word takes that kind (D80): `! Recommendation: Use SQS.`
+The kind words are `Tip`, `Recommendation` (or `Recommended`), `Decision`, `Success` (or `Done`), `Info`, `Question` and `Example`,
+matched in any case. The kind word is the callout's label in place of "Note", written as the writer wrote it with a capital letter,
+and it sets the tone: recommendation, recommended, decision, success and done are green (`good`); tip, info, question and example
+are blue (`info`). A bold phrase after the colon is still the callout's title. AST: `{ type: 'note', tone: 'note', kind, text,
+line }`, `kind` being the word as written with a capital and `text` what follows the colon; a note without a kind has no `kind`.
+`!!` and `!!!` keep their meaning and are not changed by a kind word: severity is never softened by a word, so `!! Tip: x` is a
+warning whose text is `Tip: x`. `! Warning: text` is no kind: it stays a plain note, with W `note-kind` and `detail {word, use}`
+(`word` as written, `use` is `!!`) pointing at the severity form. A kind word with no text after it (`! Tip:`) is a plain note.
 
 ### 4.8 Rule
 `---` (three or more hyphens, nothing else).
@@ -889,7 +901,7 @@ step, rule}` (`rule` is `order`, `step`, `range`, `grid`, `grid-max` or `count`)
 `verdict`) and W `decision-option`, which has none (as `diagram-option` and `chart-option` have none); `export-format` `{format}` now names `prompt` too. So does `accent-contrast` (§4.3) `{accent, theme, ratio, required, against}`:
 `theme` is `light` or `dark`, `ratio` is the lowest contrast found rounded down to two decimals, `required` is `4.5`, and `against` names
 the surface (`bg`, `surface` or `accent-tint`). So does `external` (above) `{kind, text}`. So does `status-value` (§4.3) `{word, tone, allowed}`: the entry as written, with `allowed`
-the five tones. So does `artifact-image` `{src, kind}`: `src` is the image path as written and `kind` is
+the five tones. So does `note-kind` (§4.7) `{word, use}`. So does `artifact-image` `{src, kind}`: `src` is the image path as written and `kind` is
 `local`. So does `image-inline` `{src, reason}`: `src` is the path as written and `reason` is `size`, `page-size`, `type`, `missing` or `outside`. So does `heading-skip` (§4.4) `{from, to}`: the level of the heading before and of this one, as written (`--fix` leaves it). So does the error
 form of `data-redefined` (§4.11) `{name, columns, redefined}`; the warning of the same code has none.
 New keys may be added; existing ones are not removed or retyped within 0.x.

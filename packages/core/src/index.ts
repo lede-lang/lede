@@ -1,5 +1,16 @@
 export type * from './ast.ts';
-export { LedeParser, dataSet, missingColumns, parse, resolve, KEYWORDS, META_KEYS, type ParseHooks, type ParseOptions } from './parser.ts';
+export {
+  LedeParser,
+  dataSet,
+  missingColumns,
+  parse,
+  resolve,
+  KEYWORDS,
+  META_KEYS,
+  NOTE_KINDS,
+  type ParseHooks,
+  type ParseOptions,
+} from './parser.ts';
 export { LedeStream, type StreamEvent } from './stream.ts';
 export { EMPTY, FIELD_KINDS, NOT_CHOSEN, SLOT_RE, exportsOf, fieldsOf, presetsOf } from './fields.ts';
 export { bareCell, cellNum, num, parseInlineCsv } from './lex.ts';

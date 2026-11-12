@@ -376,6 +376,10 @@
   {
    "name": "status words in a table, a kpi and a step",
    "lede": "@status {T}=good, Mk75=warn\ntable = h,Mk75; {C},Mk75\nkpi Mk76 | 1 | {T} | {T}\nstep Mk77 | {T}"
+  },
+  {
+   "name": "note kinds",
+   "lede": "! Tip: Mk78 {T}\n! Recommendation: **Mk79.** {T}\n! Decision: {T} Mk80\n! {T}: Mk81 recommended"
   }
  ],
  "cases": [
@@ -2528,6 +2532,55 @@
    "src": "@status Blocked=good\n@status blocked=info\n\ntable = k,v; Blocked,1; Done,2",
    "has": [
     "<span class=\"pill info\">Blocked</span>"
+   ]
+  },
+  {
+   "id": "note-01",
+   "src": "! Tip: <img src=x onerror=alert(1)>\n! Recommended: <script>alert(1)</script>",
+   "has": [
+    "<b class=\"nl\">Tip</b>&lt;img src=x onerror=alert(1)&gt;",
+    "<b class=\"nl\">Recommended</b>&lt;script&gt;"
+   ],
+   "hasNot": [
+    "<img src=x",
+    "<script"
+   ]
+  },
+  {
+   "id": "note-02",
+   "src": "! constructor: x\n! __proto__: y\n! toString: z\n! hasOwnProperty: w",
+   "has": [
+    "<b class=\"nl\">Note</b>constructor: x",
+    "<b class=\"nl\">Note</b>__proto__: y",
+    "<b class=\"nl\">Note</b>toString: z",
+    "<b class=\"nl\">Note</b>hasOwnProperty: w"
+   ]
+  },
+  {
+   "id": "note-03",
+   "src": "! Tip: **<script>alert(1)</script>.** x\n! Example: **<img src=x onerror=alert(1)>:** y",
+   "hasNot": [
+    "<script",
+    "<img src=x"
+   ]
+  },
+  {
+   "id": "note-04",
+   "src": "! Warning: <script>alert(1)</script>",
+   "warnings": [
+    "note-kind"
+   ],
+   "hasNot": [
+    "<script"
+   ]
+  },
+  {
+   "id": "note-05",
+   "src": "! TIP\"><script>alert(1)</script>: x\n! Tip<b onclick=x>: y\n! \"><b class=\"nl\" onclick=\"x\">Done</b>: z",
+   "hasNot": [
+    "<script",
+    "<b onclick",
+    "onclick=\"x\""
    ]
   }
  ]

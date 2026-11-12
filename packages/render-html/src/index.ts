@@ -26,6 +26,7 @@ import {
   bareCell,
   cellNum,
   num,
+  NOTE_KINDS,
   parse,
   presetsOf,
   walkBlocks,
@@ -699,14 +700,17 @@ export class Ctx {
       case 'quote':
         return `<blockquote><p>${inline(b.text)}</p>${b.cite ? `<cite>— ${inline(b.cite)}</cite>` : ''}</blockquote>`;
       case 'note': {
-        const label = { note: 'Note', warn: 'Warning', danger: 'Critical' }[b.tone];
-        // A note that opens with a bold phrase uses it as its title; a plain note's "Note" label adds nothing then.
+        // The kind of a `!` note (D80) is its label and sets its tone, green or blue; `!!` and `!!!` keep theirs whatever the kind says.
+        const kind = b.tone === 'note' && b.kind ? b.kind : '';
+        const label = kind ? esc(kind) : { note: 'Note', warn: 'Warning', danger: 'Critical' }[b.tone];
+        const tone = kind ? (NOTE_KINDS.get(kind.toLowerCase()) ?? 'note') : b.tone;
+        // A note that opens with a bold phrase uses it as its title; a plain note's "Note" label adds nothing then, a kind's does.
         const m = /^\*\*([^*]+[.:!?])\*\*\s*/.exec(b.text);
         if (m && m[0].length < b.text.length) {
-          const lbl = b.tone === 'note' ? `<span class="sr">${label}: </span>` : `<b class="nl">${label}</b>`;
-          return `<aside class="note ${b.tone} titled" role="note">${lbl}<strong class="nt">${inline(m[1])}</strong> ${inline(b.text.slice(m[0].length))}</aside>`;
+          const lbl = tone === 'note' ? `<span class="sr">${label}: </span>` : `<b class="nl">${label}</b>`;
+          return `<aside class="note ${tone} titled" role="note">${lbl}<strong class="nt">${inline(m[1])}</strong> ${inline(b.text.slice(m[0].length))}</aside>`;
         }
-        return `<aside class="note ${b.tone}" role="note"><b class="nl">${label}</b>${inline(b.text)}</aside>`;
+        return `<aside class="note ${tone}" role="note"><b class="nl">${label}</b>${inline(b.text)}</aside>`;
       }
       case 'rule':
         return '<hr>';
@@ -1109,7 +1113,8 @@ export function pickStep(scan: PickScan, b: Block): void {
   if (b.type === 'heading') scan.underRec = /recommend|decision|verdict|choice|conclusion/i.test(b.text);
   if (b.type !== 'note' && !(b.type === 'paragraph' && scan.underRec)) return;
   const m = (scan.underRec ? PICK_UNDER_REC : PICK_IN_NOTE).exec(
-    plain(b.text)
+    // A note's kind word is the one that was written in front of its text (`! Recommendation: SQS`).
+    plain(b.type === 'note' && b.kind ? `${b.kind}: ${b.text}` : b.text)
       .replace(/^\s*recommendation:\s*/i, 'choose ')
       .trim(),
   );

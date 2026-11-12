@@ -1,0 +1,10 @@
+# Queue choice
+
+! Recommendation: Use SQS.
+! Tip: **Use FIFO.** Ordering is kept per group.
+! done: shipped
+! Example: a standard queue.
+! plain note
+!! Tip: stays a warning
+!!! Decision: stays critical
+! Tip:

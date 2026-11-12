@@ -221,6 +221,8 @@ blockquote cite{display:block;font:600 13px/1.4 var(--sans);font-style:normal;co
 .note.warn b.nl{color:var(--warn)}
 .note.danger{background:var(--bad-bg);border-color:var(--bad-line);border-left-color:var(--bad)}
 .note.danger b.nl{color:var(--bad)}
+.note.good{background:var(--good-bg);border-color:color-mix(in srgb,var(--good) 35%,var(--surface));border-left-color:var(--good)}
+.note.good b.nl{color:var(--good)}
 .pill{display:inline-block;font-size:12.5px;font-weight:600;line-height:1.4;padding:1px 8px 1px 18px;border-radius:999px;position:relative;white-space:nowrap;background:var(--info-bg);color:var(--fg2)}
 .pill::before{content:"";position:absolute;left:7px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:currentColor}
 .pill.good{background:var(--good-bg);color:var(--good)} .pill.warn{background:var(--warn-bg);color:var(--warn)} .pill.bad{background:var(--bad-bg);color:var(--bad)}
@@ -597,6 +599,7 @@ ol.steps.cards>li>div>ul.sub,ol.steps.cards>li>div>ol.sub{margin:8px 0 0}
 .card.lc.rec>.note{background:var(--accent-tint);border:1px solid var(--accent-line);border-left:3px solid var(--accent);border-radius:8px;padding:10px 14px}
 .card.lc.rec>.note.warn{background:var(--warn-bg);border-color:var(--warn-line);border-left-color:var(--warn)}
 .card.lc.rec>.note.danger{background:var(--bad-bg);border-color:var(--bad-line);border-left-color:var(--bad)}
+.card.lc.rec>.note.good{background:var(--good-bg);border-color:color-mix(in srgb,var(--good) 35%,var(--surface));border-left-color:var(--good)}
 .card.lc.rec>.note b.nl{display:block}
 .kbar{display:block;align-self:stretch;height:8px;border-radius:999px;background:var(--line);overflow:hidden;margin:2px 0}
 .kbar>i{display:block;height:100%;border-radius:999px;background:var(--accent)}

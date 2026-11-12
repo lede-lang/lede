@@ -58,6 +58,11 @@ export interface QuoteBlock {
 export interface NoteBlock {
   type: 'note';
   tone: 'note' | 'warn' | 'danger';
+  /**
+   * The callout kind (D80): the kind word that opened a `!` note (`! Recommendation: ...`), as written with a capital letter, and
+   * `text` is what follows its `:`. Absent on a note without one, and always on `!!` and `!!!`, whose severity no word changes.
+   */
+  kind?: string;
   text: string;
   line: number;
 }

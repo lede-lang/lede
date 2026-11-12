@@ -22,6 +22,7 @@ import type {
   KpiBlock,
   ListItem,
   LedeDocument,
+  NoteBlock,
   ParamBlock,
   PresetBlock,
   QuestionBlock,
@@ -104,6 +105,23 @@ export const KEYWORDS = [
 /** The words an edge or message line's last ` | ` field may be (spec §4.17, D80). */
 export const EDGE_TONES: readonly EdgeTone[] = ['good', 'bad', 'warn', 'info', 'neutral'];
 export const META_KEYS = ['title', 'subtitle', 'description', 'author', 'date', 'accent', 'theme', 'lang', 'width', 'fonts', 'status'];
+/**
+ * The kind words of a `!` note (spec §4.7, D80), lower case, to the tone each sets: `good` (green) or `info` (blue). The renderer
+ * reads the same map, and a Map keeps `constructor` an ordinary word.
+ */
+export const NOTE_KINDS: ReadonlyMap<string, 'good' | 'info'> = new Map([
+  ['tip', 'info'],
+  ['recommendation', 'good'],
+  ['recommended', 'good'],
+  ['decision', 'good'],
+  ['success', 'good'],
+  ['done', 'good'],
+  ['info', 'info'],
+  ['question', 'info'],
+  ['example', 'info'],
+]);
+/** A kind word, a colon, and the text that follows it. */
+const NOTE_KIND_RE = new RegExp(`^(${[...NOTE_KINDS.keys()].join('|')}):\\s*(\\S.*)$`, 'i');
 const CHART_KINDS: ChartKind[] = ['line', 'area', 'bar', 'hbar', 'range'];
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const KEYWORD_RE = new RegExp(`^(${KEYWORDS.join('|')})(?=\\s|$)`);
@@ -402,6 +420,32 @@ export class LedeParser {
     return out;
   }
 
+  // ------------------------------------------------------------ callout kinds (D80)
+
+  /**
+   * `! Recommendation: text` (spec §4.7): when the note's first word is a kind word and a `:` follows with text after it, the note
+   * takes that kind and the word leaves the text. `! Warning: text` is no kind: it stays a plain note, with W `note-kind` pointing at
+   * `!!`, which is what sets severity. `col` is where the text of the note starts.
+   */
+  private noteKind(b: NoteBlock, L: number, col: number): void {
+    const m = NOTE_KIND_RE.exec(b.text);
+    if (m) {
+      b.kind = m[1][0].toUpperCase() + m[1].slice(1).toLowerCase();
+      b.text = m[2];
+      return;
+    }
+    const word = /^(warning):\s*\S/i.exec(b.text)?.[1];
+    if (word)
+      this.diag(
+        'warning',
+        'note-kind',
+        `"${word}:" does not make a note a warning; write \`!! text\` for a warning (\`!!!\` for a critical callout)`,
+        L,
+        col,
+        { word, use: '!!' },
+      );
+  }
+
   // ------------------------------------------------------------ status words (D80)
 
   /**
@@ -581,7 +625,9 @@ export class LedeParser {
     if (note) {
       this.flush();
       const tone = (['note', 'warn', 'danger'] as const)[note[1].length - 1];
-      this.emit({ type: 'note', tone, text: note[2], line: L });
+      const block: NoteBlock = { type: 'note', tone, text: note[2], line: L };
+      if (tone === 'note') this.noteKind(block, L, lead + 1 + (s.length - note[2].length));
+      this.emit(block);
       return;
     }
     if (s.startsWith('>')) {

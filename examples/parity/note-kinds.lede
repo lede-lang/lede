@@ -1,0 +1,27 @@
+@title Queue choice
+@subtitle Which queue carries the order events
+# Queue choice
+
+! Recommendation: Use SQS for order events.
+! Tip: **Use FIFO queues.** Ordering is kept per message group.
+! Decision: SQS with a dead-letter queue, reviewed in the spring.
+! Success: The pilot ran for six weeks with no lost events.
+! Info: Messages are kept for 14 days.
+! Question: Do we need replay beyond 14 days?
+! Example: An order event is one JSON object of under 4 KB.
+! A plain note, as before.
+!! A warning, as before.
+!!! A critical callout, as before.
+
+## Recommendation
+
+! Recommendation: **Choose SQS.** It is the least work for the team.
+
+## Options
+
+cards
+### Managed queue (recommended)
+! Success: The pilot ran for six weeks with no lost events.
+! Tip: Start with one queue per event type.
+### Self-hosted cluster
+! Info: Needs an operations rota.
