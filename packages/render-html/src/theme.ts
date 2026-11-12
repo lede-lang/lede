@@ -331,7 +331,7 @@ figure.img figcaption{font:14px/1.4 var(--sans);color:var(--muted)}
 .dg{display:block;width:100%;height:auto}
 .dg text{font-family:var(--sans)}
 .dg .grp{fill:none;stroke:var(--line2);stroke-width:1;stroke-dasharray:4 3}
-.dg .glabel{font:600 10px var(--mono);letter-spacing:.06em;fill:var(--muted)}
+.dg .glabel{font:600 11px var(--sans);fill:var(--muted)}
 .dg .edge{fill:none;stroke:var(--muted);stroke-width:1.25}
 .dg .edge.dash{stroke-dasharray:5 4}
 .dg .edge.hot{stroke:var(--accent);stroke-width:1.5}

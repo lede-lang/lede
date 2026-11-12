@@ -41,6 +41,88 @@ test('edge and message labels are printed as written', async () => {
   assert.doesNotMatch(seq, /POST \/LOGIN/);
 });
 
+/** The desktop and the phone drawing of the first flow diagram in `html`. */
+const drawings = (html: string): { desk: string; phone: string } => ({
+  desk: /<div class="dg-h">(<svg[\s\S]*?<\/svg>)/.exec(html)?.[1] ?? '',
+  phone: /<div class="dg-v"[^>]*>(<svg[\s\S]*?<\/svg>)/.exec(html)?.[1] ?? '',
+});
+const svgTexts = (svg: string, cls: string): string[] =>
+  [...svg.matchAll(new RegExp(`<text class="${cls}[^"]*"[^>]*>(?:<title>[^<]*</title>)?([^<]*)</text>`, 'g'))].map((m) => m[1]);
+
+test('a group label and an edge label keep their case in the desktop and the phone drawing', async () => {
+  const src = [
+    'diagram f dir=LR',
+    'f: a "Client" svc',
+    'f: b "Router" svc',
+    'f: c "Store" db',
+    'f: group gw "Mcp-Name gateway" b, c',
+    'f: a -> b : Mcp-Name',
+    'f: b -> c : reads',
+  ].join('\n');
+  const { desk, phone } = drawings(await frag(`${src}\n`));
+  assert.ok(desk && phone, 'both drawings');
+  for (const [name, svg] of [
+    ['desktop', desk],
+    ['phone', phone],
+  ]) {
+    assert.deepEqual(svgTexts(svg, 'glabel'), ['Mcp-Name gateway'], `${name} group label`);
+    assert.ok(svgTexts(svg, 'elabel').includes('Mcp-Name'), `${name} edge label`);
+    assert.doesNotMatch(svg, /MCP-NAME/, name);
+    // The node kind stays a capitalised tag.
+    assert.deepEqual(svgTexts(svg, 'tagt').toSorted(), ['DB', 'SVC', 'SVC'], `${name} kind tags`);
+  }
+  const css = /<style>([\s\S]*?)<\/style>/.exec((await compile(`${src}\n`)).html)![1];
+  const rule = /\.dg \.glabel\{([^}]*)\}/.exec(css)![1];
+  assert.match(rule, /var\(--sans\)/);
+  assert.doesNotMatch(rule, /var\(--mono\)|uppercase/);
+});
+
+test('a group label gets the room of the sans it is drawn in, so wide capitals do not run past the group', async () => {
+  const group = async (label: string): Promise<{ w: number; mask: number }> => {
+    const html = await frag(`diagram f dir=LR\nf: a "A" svc\nf: group g "${label}" a\n`);
+    const svg = drawings(html).desk;
+    const rect = /<rect class="grp"[^>]* width="([\d.]+)"/.exec(svg)!;
+    const mask = [...svg.matchAll(/<rect class="lmask"[^>]* width="([\d.]+)"/g)][0];
+    return { w: Number(rect[1]), mask: Number(mask[1]) };
+  };
+  const caps = await group('W'.repeat(14));
+  const thin = await group('i'.repeat(14));
+  assert.ok(caps.w > thin.w, 'the group widens for the wider text');
+  assert.ok(caps.mask >= 14 * 0.86 * 11, 'fourteen Ws at 11px fit in the mask');
+  assert.ok(caps.w >= caps.mask, 'the group holds its label');
+});
+
+test('a phone tier that wraps a long group label wraps it as written', async () => {
+  const groups = [1, 2].map(
+    (i) => `f: s${i} "Svc ${i}" svc\nf: group g${i} "Mcp-Name tenants in the eu region ${i}" s${i}\nf: a -> s${i} : Mcp-Name`,
+  );
+  const { desk, phone } = drawings(await frag(`diagram f dir=TB\nf: a "Gateway" svc\n${groups.join('\n')}\n`));
+  assert.deepEqual(svgTexts(desk, 'glabel'), ['Mcp-Name tenants in the eu region 1', 'Mcp-Name tenants in the eu region 2']);
+  const lines = svgTexts(phone, 'glabel');
+  assert.ok(lines.length > 2, `the phone drawing wraps the labels: ${lines.join('|')}`);
+  const half = lines.length / 2;
+  assert.equal(lines.slice(0, half).join(' '), 'Mcp-Name tenants in the eu region 1');
+  assert.equal(lines.slice(half).join(' '), 'Mcp-Name tenants in the eu region 2');
+  assert.doesNotMatch(phone, /MCP-NAME|TENANTS/);
+});
+
+test('a frame condition is printed as written; only the keyword tags are capitalised', async () => {
+  const html = await frag(
+    'diagram s sequence\ns: a "A" user\ns: b "B" svc\ns: alt "Mcp-Name cached"\ns: a -> b : hit\ns: else "Mcp-Name missing"\ns: b -> a : miss\ns: end\ns: opt "Retry-After set"\ns: a -> b : again\ns: end\n',
+  );
+  const svgs = [...html.matchAll(/<svg class="dg[^"]*"[\s\S]*?<\/svg>/g)].map((m) => m[0]);
+  assert.ok(svgs.length >= 2, 'desktop and phone drawings');
+  for (const svg of svgs) {
+    assert.ok(svgTexts(svg, '(?:p?fr)-t').includes('Mcp-Name cached'), 'alt condition');
+    assert.ok(svgTexts(svg, '(?:p?fr)-t').includes('Mcp-Name missing'), 'else condition');
+    assert.ok(svgTexts(svg, '(?:p?fr)-t').includes('Retry-After set'), 'opt condition');
+    assert.doesNotMatch(svg, /MCP-NAME|RETRY-AFTER/);
+  }
+  const desk = svgs[0];
+  assert.deepEqual(svgTexts(desk, 'fr-k'), ['ALT', 'OPT']);
+  assert.deepEqual(svgTexts(desk, 'fr-e'), ['ELSE']);
+});
+
 test('a label of wide capitals gets the room it needs', async () => {
   const caps = await frag(`diagram f dir=LR\nf: a -> b : ${'W'.repeat(12)}\n`);
   const thin = await frag(`diagram f dir=LR\nf: a -> b : ${'i'.repeat(12)}\n`);

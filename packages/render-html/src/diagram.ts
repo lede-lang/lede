@@ -81,11 +81,19 @@ const TIERS: Metrics[] = [
 const metrics = (compact: boolean, tier = 0): Metrics => (compact ? TIERS[tier] : DESK);
 const EL_LINE = 14; // extra height per wrapped edge label line (and group label line)
 
-/** A group's label in caps, wrapped to the tier's group label width (measured at the rendered 0.66em). */
+/** A group's label as written, wrapped to the tier's group label width (measured in the sans it is drawn in, with sansLabelW's margin). */
 function groupLines(label: string, m: Metrics): string[] {
-  const t = label.toUpperCase();
-  return Number.isFinite(m.glMax) ? monoLines(t, m.GLABEL, (m.glMax * 0.62) / 0.66) : [t];
+  return monoLines(label, m.GLABEL, m.glMax / 1.06, { bold: true });
 }
+
+/**
+ * Room for one line of a group label (D80): drawn in the interface sans at weight 600, 11px on the desktop drawing
+ * and 12px on the phone one, and never less than the room its mono capitals took at the layout size.
+ */
+const glabelW = (s: string, compact: boolean): number => {
+  const size = compact ? PHONE.GLABEL : DESK.GLABEL;
+  return edgeLabelW(s, size, compact ? size : size + 1, true);
+};
 
 interface ElkLabel {
   text: string;
@@ -154,14 +162,14 @@ const LINE = 16; // decision label line height
 
 export const isDecision = (n: DiagramNode): boolean => n.kind === 'decision' || n.kind === 'choice';
 
-/** Mono text (sublabels, edge labels) wrapped to `max` units on at most three lines; Infinity keeps one line. */
-function monoLines(s: string, size: number, max: number): string[] {
-  if (!Number.isFinite(max) || textWidth(s, size, { mono: true }) <= max) return [s];
+/** Text (sublabels and edge labels in mono, group labels in bold sans) wrapped to `max` units on at most three lines; Infinity keeps one line. */
+function monoLines(s: string, size: number, max: number, opts: { mono?: boolean; bold?: boolean } = { mono: true }): string[] {
+  if (!Number.isFinite(max) || textWidth(s, size, opts) <= max) return [s];
   let w = max;
-  let lines = wrapTo(s, w, size, { mono: true });
+  let lines = wrapTo(s, w, size, opts);
   while (lines.length > 3) {
     w += 12;
-    lines = wrapTo(s, w, size, { mono: true });
+    lines = wrapTo(s, w, size, opts);
   }
   return lines;
 }
@@ -474,7 +482,7 @@ async function layoutOnce(d: DiagramBlock, compact: boolean, prior?: Placed, tie
   for (const g of d.groups) {
     const en = elkNodes.get(g.id)!;
     en.layoutOptions!['elk.nodeSize.minimum'] =
-      `(${snap4(Math.max(...groupLines(g.label, m).map((l) => textWidth(l, m.GLABEL, { mono: true }))) + (compact ? 24 : 40))}, 40)`;
+      `(${snap4(Math.max(...groupLines(g.label, m).map((l) => glabelW(l, compact))) + (compact ? 24 : 40))}, 40)`;
     en.layoutOptions!['elk.nodeSize.constraints'] = 'MINIMUM_SIZE';
     if (en.children!.length === 0) en.width = 96;
   }
@@ -659,7 +667,7 @@ function hugGroups(d: DiagramBlock, p: Placed): void {
       }
       if (e.label) take({ ...e.label, x: e.label.x + 6, w: e.label.w - 12 }); // the text, not its 6-unit mask margins
     }
-    const minW = Math.max(...(g.lines ?? [g.label.toUpperCase()]).map((l) => textWidth(l, PHONE.GLABEL, { mono: true }))) + 24;
+    const minW = Math.max(...(g.lines ?? [g.label]).map((l) => glabelW(l, true))) + 24;
     const x0 = Math.max(g.x, Math.floor(Math.min(...xs) - 8));
     const y0 = Math.max(g.y, Math.floor(Math.min(...ys) - 22 - ((g.lines?.length ?? 1) - 1) * EL_LINE));
     g.w = Math.min(g.x + g.w - x0, Math.ceil(Math.max(Math.max(...xs) + 8 - x0, minW)));
@@ -684,10 +692,6 @@ function hugGroups(d: DiagramBlock, p: Placed): void {
   p.height = Math.ceil(Math.max(...boxes.map((b) => b.y + b.h), ...pts.map((q) => q.y))) + 4;
 }
 
-// Mono text renders about 0.66em wide in the page's mono stack (textWidth assumes 0.62em); group labels are
-// measured with the wider figure so a label never runs past its box or out of the drawing.
-const glabelW = (label: string): number => label.length * 0.66 * PHONE.GLABEL;
-
 /**
  * Phones: ELK does not honor a group's minimum width under INCLUDE_CHILDREN, so a group can come out narrower
  * than its label. Widen such a group (centered, else growing right, else left) where that hits no other box,
@@ -705,7 +709,7 @@ function fitGroupLabels(d: DiagramBlock, p: Placed): void {
   const byId = new Map(p.groups.map((g) => [g.id, g]));
   let moved = false;
   for (const g of [...p.groups].toSorted((a, b) => b.depth - a.depth)) {
-    const need = Math.ceil(Math.max(...(g.lines ?? [g.label.toUpperCase()]).map(glabelW)) + 16);
+    const need = Math.ceil(Math.max(...(g.lines ?? [g.label]).map((l) => glabelW(l, true))) + 16);
     if (g.w >= need) continue;
     const extra = need - g.w;
     const others = all.filter((b) => b !== g && !under(idOf(b), g.id) && !under(g.id, idOf(b)));
@@ -1181,9 +1185,9 @@ function drawPlaced(d: DiagramBlock, p: Placed, uid: string, compact: boolean): 
   // Group labels go over edges on a mask, so a line crossing a boundary never runs through the text.
   // Phone bands are 22 tall, so the mask hugs the top of the group.
   for (const g of p.groups) {
-    const lines = g.lines ?? [g.label.toUpperCase()];
+    const lines = g.lines ?? [g.label];
     const extra = (lines.length - 1) * EL_LINE;
-    const w = Math.max(...lines.map((t) => (compact ? glabelW(t) : textWidth(t, m.GLABEL, { mono: true })))) + 8;
+    const w = Math.max(...lines.map((t) => glabelW(t, compact))) + 8;
     const band =
       Math.min(
         Infinity,
