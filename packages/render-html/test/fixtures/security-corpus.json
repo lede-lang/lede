@@ -348,6 +348,14 @@
    "name": "preset value, an option",
    "lede": "choose pa5 | {C}, Mk72\npreset pb3 | Mk73 | pa5=\"{Q}\"",
    "skip": "^\\s|\\s$|[\\u0000-\\u0008\\u000B\\u000C\\u000E-\\u001F]"
+  },
+  {
+   "name": "pipe rows of a data set",
+   "lede": "data pr = Mk75,b; x,1\npr: {T} | Mk76\npr: Mk77 | {T}\ntable pr"
+  },
+  {
+   "name": "inline table, pipe header and rows",
+   "lede": "table title=\"Mk78 {Q}\" = Mk79 {T} | Mk80\n: Mk81 {T} | {T}\n: {T}, Mk82; | {T}"
   }
  ],
  "cases": [
@@ -2344,6 +2352,37 @@
    "shell": true,
    "hasNot": [
     "<script>alert(1)"
+   ]
+  },
+  {
+   "id": "pipe-01",
+   "src": "data t = a,b\nt: <script>alert(1)</script> | <img src=x onerror=alert(1)>\ntable t",
+   "has": [
+    "&lt;script&gt;"
+   ],
+   "hasNot": [
+    "<script>alert(1)"
+   ]
+  },
+  {
+   "id": "pipe-02",
+   "src": "table = <svg onload=alert(1)> | \"><script>alert(1)</script>\n: [x](javascript:alert(1)) | **<b onclick=x>y</b>**\n: a | </td><script>alert(1)</script>",
+   "has": [
+    "&lt;svg"
+   ],
+   "hasNot": [
+    "<script>alert(1)",
+    "<svg onload"
+   ]
+  },
+  {
+   "id": "pipe-03",
+   "src": "data t = a,b\nt: x | y\ntable t\nt: \"</script><script>alert(1)</script> | ![x](//xss.example/a.png)",
+   "hasNot": [
+    "<script>alert(1)"
+   ],
+   "has": [
+    "&lt;/script&gt;&lt;script&gt;"
    ]
   }
  ]

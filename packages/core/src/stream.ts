@@ -9,7 +9,7 @@ import { walkBlocks } from './walk.ts';
  *   the parser rejects, or one that repeats what the diagram has, is no update; it is still a statement of the diagram. The next
  *   non-blank line that is not another statement of it ends the growth with a `seal`; a statement after a seal that changes the
  *   diagram is an `update` again and a second `seal` follows (a reseal).
- * - `update` with `data`: `data NAME += rows` appended rows; charts, tables and kpi rows that read NAME changed.
+ * - `update` with `data`: `data NAME += rows` or a `NAME: a | b` row line appended rows; charts, tables and kpi rows that read NAME changed.
  * - `seal`: no statement of this diagram is expected for now.
  * - `bucket-update` and `bucket-seal`: the same two events for a bucket set (spec §4.19), which grows by `NAME: ITEM | B` lines as a
  *   diagram does. They are kinds of their own so that `update` and `seal` always carry a diagram, as they did before bucket sets.
@@ -35,7 +35,9 @@ const sealOf = (d: Growing): StreamEvent => (d.type === 'bucket' ? { kind: 'buck
  * paragraph, list or fence included), which is what a live preview that
  * re-renders everything uses. A `cards` block is returned by `write` when its run
  * ends (a #/## heading, `---`, another `cards`, a `grid`, or `end`); `tail` and
- * `snapshot` already show the cards read so far.
+ * `snapshot` already show the cards read so far. An inline `table [options] =` with a header and no rows of its own is returned
+ * the same way, when the first line that is not one of its `: a | b` rows arrives (or at `end`); `tail` and `snapshot` show it
+ * with the rows read so far.
  */
 export class LedeStream {
   private parser: LedeParser;
@@ -76,7 +78,7 @@ export class LedeStream {
 
   /**
    * `write` plus what happened to blocks already returned: an `update` (`bucket-update` for a bucket set) for every diagram or
-   * bucket set a line extended and an `update` with `data` for every `data NAME +=` line, a `seal` (`bucket-seal`) for a diagram or
+   * bucket set a line extended and an `update` with `data` for every `data NAME +=` or `NAME: a | b` line, a `seal` (`bucket-seal`) for a diagram or
    * bucket set when a non-blank line that is not one of its statements arrives (a blank line does not seal: writers space
    * statements). Within one line the order is: its blocks, its data updates, its diagram or bucket updates, its seals.
    */

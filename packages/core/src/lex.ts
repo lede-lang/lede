@@ -256,6 +256,23 @@ export function pipeOutsideQuotes(s: string): number {
   return -1;
 }
 
+/**
+ * The fields of a pipe row (spec §4.11, D80): the text split at every `|` that has whitespace, or an end of the text, on each side,
+ * each field trimmed. A `|` that touches other text (`a|b`) is part of its field, and nothing else is special: `,` `;` and `"` are
+ * ordinary characters. Two pipes with only blanks between them hold an empty field. One field back means the text has no separator.
+ */
+export function splitPipes(s: string): string[] {
+  const fields: string[] = [];
+  let from = 0;
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] !== '|' || !(i === 0 || /\s/.test(s[i - 1])) || !(i === s.length - 1 || /\s/.test(s[i + 1]))) continue;
+    fields.push(s.slice(from, i).trim());
+    from = i + 1;
+  }
+  fields.push(s.slice(from).trim());
+  return fields;
+}
+
 /** Parse a number the way charts read data cells: tolerates `,` `$` `%` and units. */
 export function num(v: string | undefined): number | null {
   if (v === undefined) return null;

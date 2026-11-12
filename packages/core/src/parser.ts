@@ -27,7 +27,18 @@ import type {
   TemplateBlock,
   ToggleBlock,
 } from './ast.ts';
-import { cellNum, num, parseCsvFile, parseInlineCsv, parseOpts, pipeOutsideQuotes, readQuoted, tokens, type Opts } from './lex.ts';
+import {
+  cellNum,
+  num,
+  parseCsvFile,
+  parseInlineCsv,
+  parseOpts,
+  pipeOutsideQuotes,
+  readQuoted,
+  splitPipes,
+  tokens,
+  type Opts,
+} from './lex.ts';
 import { EMPTY, FIELD_KINDS, NOT_CHOSEN, SLOT_RE } from './fields.ts';
 import { AA_NON_TEXT, AA_TEXT, HEX_COLOR, accentContrast, accentTheme } from './contrast.ts';
 import { browserUrl, imageSrcKind } from './url.ts';
@@ -50,7 +61,7 @@ export interface ParseHooks {
    * before bucket sets existed keeps working.
    */
   onBucketItem?(block: BucketBlock, changed: boolean): void;
-  /** `data NAME += rows` appended rows to the data set `name`. */
+  /** `data NAME += rows` or a `NAME: a | b` row line appended rows to the data set `name`. */
   onDataAppend(name: string): void;
 }
 
@@ -151,6 +162,19 @@ interface CardsRun {
   deferred: Block[];
 }
 
+/**
+ * An inline `table [options] = header` with no rows on its line (D80). It stays open for `: a | b` rows until the first other line,
+ * because its options (`heat`, `bar=`) are read against the rows it ends up with; the block is emitted when the run ends.
+ */
+interface TableRun {
+  d: DataSet;
+  /** The text between `table` and the `=`. */
+  optStr: string;
+  /** The column of the text after `table`, where the table's diagnostics point. */
+  col: number;
+  line: number;
+}
+
 interface Fence {
   ticks: number;
   lang: string;
@@ -221,6 +245,9 @@ export class LedeParser {
   private fence: Fence | null = null;
   private grid: GridBlock | null = null;
   private cards: CardsRun | null = null;
+  private table: TableRun | null = null;
+  /** Set while `peek` builds the open table's block, so that building it reports nothing. */
+  private quiet = false;
   private diagrams = new Map<string, DiagramBlock>();
   /** Node ids declared with their own line, per diagram (vs. created by first use in an edge). */
   private declared = new WeakMap<DiagramBlock, Set<string>>();
@@ -271,6 +298,7 @@ export class LedeParser {
       this.diag('warning', 'unclosed-fence', 'code fence is never closed; it ends at the end of the document', this.fence.line, 1);
       this.closeFence();
     }
+    if (this.table) this.closeTable();
     this.flush();
     if (this.cards) this.closeCards();
     if (this.grid) {
@@ -296,21 +324,25 @@ export class LedeParser {
 
   /**
    * The blocks `end()` would still add, without ending the parser or changing anything: the open paragraph, list, quote, kpi
-   * row, step run or fence, the `cards` run and the `grid` as they stand. The result is what a snapshot of the lines so
-   * far shows beyond the blocks already returned by `pushLine`. Costs the size of the open block. A keyword line is never
+   * row, step run, inline table or fence, the `cards` run and the `grid` as they stand. The result is what a snapshot of the
+   * lines so far shows beyond the blocks already returned by `pushLine`. Costs the size of the open block. A keyword line is never
    * part of it (it is a block or a diagnostic on its own line), but the fence a `template` line opened is: it is the template
-   * block, with the text so far as its body. A `template` line with no fence yet adds nothing.
+   * block, with the text so far as its body. A `template` line with no fence yet adds nothing. An inline `table [options] =`
+   * line that has no rows of its own is open too (D80): it is the table block with the `: a | b` rows read so far.
    */
   peek(): Block[] {
     const f = this.fence;
     // An open `template` fence is the template block the lines so far make (not registered: only its closing fence does that).
-    let open: Block | null = f
-      ? f.template
-        ? this.templateBlock(f, f.template, this.scanTemplate(f).slots)
-        : fenceBlock(f)
-      : this.acc
-        ? accBlock(copyAcc(this.acc))
-        : null;
+    // An open inline table is its block with the rows so far (it is never open beside a fence or another accumulator).
+    let open: Block | null = this.table
+      ? this.peekTable(this.table)
+      : f
+        ? f.template
+          ? this.templateBlock(f, f.template, this.scanTemplate(f).slots)
+          : fenceBlock(f)
+        : this.acc
+          ? accBlock(copyAcc(this.acc))
+          : null;
     const out: Block[] = [];
     const c = this.cards;
     // `emit` hands the open block to the open card, else the open grid, else the page.
@@ -370,6 +402,15 @@ export class LedeParser {
 
   private classify(s: string, lead: number): void {
     const L = this.lineNo;
+    if (this.table) {
+      // The rows of an open inline table are the lines that begin with `:`; the first other line, a blank one included, ends it.
+      const row = /^:(?:\s+(.*))?$/.exec(s);
+      if (row) {
+        this.pipeRow(this.table.d, splitPipes(row[1] ?? ''), afterColon(s, lead));
+        return;
+      }
+      this.closeTable();
+    }
     if (s === '') {
       this.flush();
       return;
@@ -500,7 +541,7 @@ export class LedeParser {
     const owner = dl ? (this.bucketSet(dl[1]) ?? this.diagrams.get(dl[1])) : undefined;
     if (dl && owner) {
       this.flush();
-      const col = lead + 1 + s.indexOf(':') + 1 + (s.slice(s.indexOf(':') + 1).length - s.slice(s.indexOf(':') + 1).trimStart().length);
+      const col = afterColon(s, lead);
       if (owner.type === 'bucket') {
         const changed = this.bucketItem(owner, dl[2].trim(), col);
         this.hooks?.onBucketItem?.(owner, changed);
@@ -508,6 +549,15 @@ export class LedeParser {
         const changed = this.diagramLine(owner, dl[2].trim(), col);
         this.hooks?.onDiagramLine(owner, changed);
       }
+      return;
+    }
+    // `NAME: a | b | c` (D80) is a row of the data set NAME when one is declared above and the text holds a pipe separator. A bucket set
+    // or a diagram of that name has the line first. Any other `NAME:` line is prose, as it was.
+    const fields = dl && this.holds('data', dl[1]) ? splitPipes(dl[2]) : [];
+    if (dl && fields.length > 1) {
+      this.flush();
+      this.pipeRow(dataSet(this.doc, dl[1])!, fields, afterColon(s, lead));
+      this.hooks?.onDataAppend(dl[1]);
       return;
     }
     if (dl && /(-->|->|<->)/.test(dl[2])) {
@@ -1453,9 +1503,11 @@ export class LedeParser {
     this.emit({ type: 'data', name, line: L });
   }
 
-  private addRows(d: DataSet, rows: string[][], offsets: number[], bodyCol: number): void {
+  /** `pipe`: the rows are pipe rows (D80), whose fields are not split at `,`, so a thousands comma is no reason to merge two of them. */
+  private addRows(d: DataSet, rows: string[][], offsets: number[], bodyCol: number, pipe = false): void {
+    const join = pipe ? ' | ' : ',';
     rows.forEach((r, i) => {
-      if (r.length > d.columns.length) {
+      if (!pipe && r.length > d.columns.length) {
         // An unquoted thousands separator splits one number in two: "$1,450" -> "$1" "450".
         const fixed = mergeThousands(r, d.columns.length);
         if (fixed) {
@@ -1473,8 +1525,9 @@ export class LedeParser {
       if (r.length !== d.columns.length) {
         // A header cell split at a thousands comma (`left of $400,000`) makes every row look one short.
         const split = d.columns.findIndex((c, k) => /\d$/.test(c) && /^\d{3}$/.test(d.columns[k + 1] ?? ''));
-        const hint =
-          r.length > d.columns.length
+        const hint = pipe
+          ? `a pipe row has one field per column, separated by " | " (a space on each side); write an empty field as "a | | c"`
+          : r.length > d.columns.length
             ? 'put a cell that contains , in double quotes ("like, this")'
             : split >= 0
               ? `the header cell "${d.columns[split]}" / "${d.columns[split + 1]}" looks split at a thousands comma: quote it ("${d.columns[split]},${d.columns[split + 1]}")`
@@ -1482,7 +1535,7 @@ export class LedeParser {
         this.diag(
           'error',
           'data-row-width',
-          `row "${r.join(',')}" has ${r.length} fields; ${d.name} has ${d.columns.length} columns (${d.columns.join(',')}); ${hint}`,
+          `row "${r.join(join)}" has ${r.length} fields; ${d.name} has ${d.columns.length} columns (${d.columns.join(join)}); ${hint}`,
           this.lineNo,
           bodyCol + (offsets[i] ?? 0),
           { fields: r.length, want: d.columns.length, name: d.name },
@@ -1492,6 +1545,11 @@ export class LedeParser {
       }
       d.rows.push(r);
     });
+  }
+
+  /** One pipe row (D80) added to `d`: the fields of `NAME: a | b | c`, or of a `: a | b` line of an open inline table. */
+  private pipeRow(d: DataSet, fields: string[], col: number): void {
+    this.addRows(d, [fields], [0], col, true);
   }
 
   private requireData(name: string | undefined, col: number): DataSet | null {
@@ -1815,7 +1873,7 @@ export class LedeParser {
 
   private tableLine(rest: string, col: number): void {
     const L = this.lineNo;
-    // Anonymous inline table: `table [opts] = h,h; v,v`
+    // Anonymous inline table: `table [opts] = h,h; v,v`, or with a pipe header (D80) `table [opts] = h | h | h`
     const eq = /(^|\s)=(\s|$)/.exec(rest);
     let d: DataSet | null;
     let optStr: string;
@@ -1823,27 +1881,76 @@ export class LedeParser {
       optStr = rest.slice(0, eq.index);
       const body = rest.slice(eq.index + eq[0].length);
       const name = `_table${++this.anon}`;
-      const csv = parseInlineCsv(body);
       const bodyCol = col + eq.index + eq[0].length;
-      if (csv.unclosedAt !== null) this.diag('error', 'csv-quote', 'unclosed " in table', L, bodyCol + csv.unclosedAt);
-      this.afterQuote(csv, bodyCol + (csv.afterQuoteAt ?? 0));
-      if (csv.rows.length === 0) {
-        this.diag('error', 'data-empty', 'inline table has no header row', L, bodyCol);
+      // A header with a pipe separator outside double quotes is a pipe header: it is split at the pipes and nowhere else.
+      const pipes = pipeOutsideQuotes(body) >= 0 ? splitPipes(body) : [];
+      if (pipes.length > 1) d = { name, columns: pipes, rows: [], line: L };
+      else {
+        const csv = parseInlineCsv(body);
+        if (csv.unclosedAt !== null) this.diag('error', 'csv-quote', 'unclosed " in table', L, bodyCol + csv.unclosedAt);
+        this.afterQuote(csv, bodyCol + (csv.afterQuoteAt ?? 0));
+        if (csv.rows.length === 0) {
+          this.diag('error', 'data-empty', 'inline table has no header row', L, bodyCol);
+          return;
+        }
+        d = { name, columns: csv.rows[0], rows: [], line: L };
+        this.addRows(d, csv.rows.slice(1), csv.offsets.slice(1), bodyCol);
+      }
+      storeData(this.doc, name, d);
+      if (d.rows.length === 0) {
+        // A header and no rows: `: a | b` lines may follow, so the table stays open and is emitted when they end.
+        this.table = { d, optStr, col, line: L };
         return;
       }
-      d = { name, columns: csv.rows[0], rows: [], line: L };
-      this.addRows(d, csv.rows.slice(1), csv.offsets.slice(1), bodyCol);
-      storeData(this.doc, name, d);
     } else {
       const t = tokens(rest);
       d = this.requireData(t[0]?.key === undefined ? t[0]?.text : undefined, col);
       optStr = rest.slice(t[1]?.offset ?? rest.length);
     }
     if (!d) return;
+    const block = this.tableBlock(d, optStr, col, !!eq);
+    if (block) this.emit(block);
+  }
+
+  /** End the open inline table: its options are read against the rows it has, and its block is emitted. */
+  private closeTable(): void {
+    const t = this.table!;
+    this.table = null;
+    const block = this.tableBlock(t.d, t.optStr, t.col, true, t.line);
+    if (block) this.emit(block);
+  }
+
+  /** The open inline table as a block, with the rows so far and without a word reported (`peek` reads it; nothing is closed). */
+  private peekTable(t: TableRun): TableBlock | null {
+    this.quiet = true;
+    try {
+      return this.tableBlock(t.d, t.optStr, t.col, true, t.line);
+    } finally {
+      this.quiet = false;
+    }
+  }
+
+  /**
+   * The block of a `table` line: its options read against the data `d`. `inline`: the data is the table's own (`table [options] =`),
+   * which has no name to give it. `line` is the table's own line when this runs after later lines have been read, as it does when a run of
+   * `: a | b` rows closes.
+   */
+  private tableBlock(d: DataSet, optStr: string, col: number, inline: boolean, line = this.lineNo): TableBlock | null {
+    const now = this.lineNo;
+    this.lineNo = line;
+    try {
+      return this.tableOptions(d, optStr, col, inline);
+    } finally {
+      this.lineNo = now;
+    }
+  }
+
+  private tableOptions(d: DataSet, optStr: string, col: number, inline: boolean): TableBlock | null {
+    const L = this.lineNo;
     const o = parseOpts(optStr, ['heat'], ['cols', 'sort', 'heat', 'bar', 'target']);
     for (const { text: w, hint: spill } of spilled(o, [...o.words, ...o.quoted])) {
       // `table vendors = ...` names an inline table, which has no name: say how to get one.
-      const named = !spill && eq && w === o.words[0] && /^[A-Za-z_][\w-]*$/.test(w) && !TABLE_OPTIONS.includes(w);
+      const named = !spill && inline && w === o.words[0] && /^[A-Za-z_][\w-]*$/.test(w) && !TABLE_OPTIONS.includes(w);
       const hint = named
         ? `; an inline table has no name: write \`table = ...\`, or \`data ${w} = ...\` then \`table ${w}\``
         : spill || ' (options: cols= sort= limit= title= heat bar= target=)';
@@ -1856,14 +1963,14 @@ export class LedeParser {
         .split(',')
         .map((c) => c.trim())
         .filter(Boolean);
-      if (!cols.every((c) => this.requireCol(d, c, col))) return;
+      if (!cols.every((c) => this.requireCol(d, c, col))) return null;
       cols = cols.map((c) => findCol(d, c)!);
     }
     let sort: TableBlock['sort'] = null;
     if (o.kv.sort) {
       const desc = o.kv.sort.startsWith('-');
       const c = o.kv.sort.replace(/^[-+]/, '');
-      if (!this.requireCol(d, c, col)) return;
+      if (!this.requireCol(d, c, col)) return null;
       sort = { col: findCol(d, c)!, desc };
     }
     // heat / heat=a,b tints numeric cells by rank; bar=a,b draws a proportional bar behind a column's numbers.
@@ -1889,13 +1996,13 @@ export class LedeParser {
     let heat: TableBlock['heat'];
     if (o.kv.heat !== undefined) {
       const cs = pickCols(o.kv.heat);
-      if (cs === null) return;
+      if (cs === null) return null;
       if (cs.length) heat = cs;
     } else if (o.flags.includes('heat')) heat = true;
     let bars: TableBlock['bars'];
     if (o.kv.bar !== undefined) {
       const cs = pickCols(o.kv.bar);
-      if (cs === null) return;
+      if (cs === null) return null;
       if (cs.length) bars = cs;
     }
     // target=col (v0.4): each row's tick on its bar= bar. Misuse is a warning and the option is dropped.
@@ -1919,7 +2026,7 @@ export class LedeParser {
     if (heat !== undefined) block.heat = heat;
     if (bars !== undefined) block.bars = bars;
     if (targetCol !== undefined) block.targetCol = targetCol;
-    this.emit(block);
+    return block;
   }
 
   private kpiLine(rest: string, col: number): void {
@@ -2366,8 +2473,15 @@ export class LedeParser {
     col: number,
     detail?: Diagnostic['detail'],
   ): void {
+    if (this.quiet) return;
     this.doc.diagnostics.push({ severity, code, message, line, col: Math.max(1, col), ...(detail ? { detail } : {}) });
   }
+}
+
+/** The 1-based column where the text after the first `:` of the line `s` starts, `lead` columns of indentation having been stripped. */
+function afterColon(s: string, lead: number): number {
+  const at = s.indexOf(':') + 1;
+  return lead + 1 + at + (s.length - at - s.slice(at).trimStart().length);
 }
 
 /**

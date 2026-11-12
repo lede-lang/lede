@@ -34,6 +34,10 @@ The reference implementation is `packages/core` (parser) and `packages/render-ht
   quoted string, so column names may contain spaces (§4.13).
 - **Inline CSV** (data rows): rows separated by `;`, fields by `,`; whitespace around fields is
   trimmed. A field that starts with `"` is quoted and may contain `,` `;` and `""`.
+- **Pipe fields** (D80; the rows of §4.11 `NAME: a | b` and §4.14 `: a | b`, and a pipe table header): the text is split at every
+  `|` that has whitespace, or the start or the end of the text, on each side, and each field is trimmed. A `|` that touches other
+  text (`a|b`, `a ||b`) is part of its field, and two separators with only blanks between them hold an empty field (`a | | c`).
+  Nothing else is special: `,`, `;` and `"` are ordinary characters and `""` is not an escape, so no cell needs quoting.
 
 ## 3. Grammar (EBNF)
 
@@ -42,8 +46,8 @@ the line after the matched prefix.
 
 ```ebnf
 document     = { line , NL } ;
-line         = blank | fence-open | escaped | meta | heading | task-item | bullet | ordered
-             | note | quote | rule | html-line | keyword-line | bucket-item | diagram-line | text ;
+line         = table-row | blank | fence-open | escaped | meta | heading | task-item | bullet | ordered
+             | note | quote | rule | html-line | keyword-line | bucket-item | diagram-line | data-row | text ;
 
 blank        = "" ;
 escaped      = "\" , REST ;                         (* REST is paragraph text *)
@@ -61,6 +65,8 @@ keyword-line = data | chart | table | kpi | diagram | image | grid | ask | choos
              | param | toggle | bucket | template | preset ;
 bucket-item  = NAME , ":" , WS , REST , [ WS ] , "|" , [ WS ] , TEXT ;   (* only if NAME is a declared bucket set; REST runs to the last | *)
 diagram-line = diagram-name , ":" , WS , diagram-stmt ;   (* only if diagram-name was declared *)
+data-row     = NAME , ":" , [ WS ] , pipe-fields ;       (* only if NAME is a declared data set (and no bucket set or diagram has the line first) and pipe-fields has a separator; 4.11 *)
+table-row    = ":" , [ WS , pipe-fields ] ;              (* only while an inline table with no rows of its own is open; tried before every other rule; 4.14 *)
 text         = REST ;                                (* paragraph line *)
 
 data         = "data" , WS , ID , WS? , ( "=" csv | "+=" csv-rows | "<" path ) ;
@@ -71,7 +77,10 @@ field        = quoted-string | { any-char - ( "," | ";" ) } ;
 
 chart        = "chart" , WS , chart-kind , WS , ID , { WS , ( option | "stack" | "labels" ) } ;
 chart-kind   = "line" | "area" | "bar" | "hbar" ;
-table        = "table" , WS , ( ID , { WS , option } | { option , WS } , "=" , WS , csv ) ;
+table        = "table" , WS , ( ID , { WS , option } | { option , WS } , "=" , WS , ( csv | pipe-header ) ) ;
+pipe-header  = pipe-fields ;                              (* chosen over csv when a separator sits outside double quotes; the table then has no rows on its line *)
+pipe-fields  = pipe-field , { WS , "|" , WS , pipe-field } ;   (* a "|" with whitespace or an end of the text on each side separates; see §2 *)
+pipe-field   = { any-char } ;
 kpi          = "kpi" , WS , label , "|" , value , [ "|" , delta , [ "|" , tone-or-note ] ] ;
 value        = text-field | "=" , ID , "." , column ;
 image        = "image" , WS , src , WS , quoted-string , { WS , option } ;
@@ -177,8 +186,19 @@ Renderers MUST offer an explicit unsafe mode and MUST NOT enable it by default.
 data NAME = header,header; v,v; v,v
 data NAME += v,v; v,v
 data NAME < path/to/file.csv
+NAME: v | v | v
 ```
 Declares a named table of strings. Types are decided at use (a chart reads cells as numbers).
+
+`NAME: v | v | v` (D80) appends one row to the data set NAME, as `data NAME += v,v,v` does, but its fields are pipe fields (§2): a
+`,` or `;` in a field is text and nothing needs quotes, so `costs: Storage, S3 | 6,100 | archive tier; cold` is three fields.
+The line is a row only when NAME is a data set declared on an earlier line and the text after the colon holds at least one
+separator; any other `NAME:` line is prose, so `note: see below`, `costs: Compute` (one field, which has no separator) and
+`costs: a|b` stay text, and a data name written before its `data` line is not yet a name. A bucket set or a diagram with the same
+name has the line first (a diagram and a data set sharing a name is E `name-clash` already). The first character of NAME is a letter.
+A row with the wrong number of fields is E `data-row-width` with the same `detail`, its message naming the pipe form; the row is
+padded or truncated as above. A thousands comma is never merged in a pipe row (no W `csv-thousands`), and `--fix` repairs nothing in
+one (§9). The header stays `data NAME = h,h,h`; a pipe header for `data` is not part of D80.
 - E `data-syntax` (malformed), `data-empty` (no header), `data-dup-column`, `csv-quote`
   (unclosed quote), `unknown-data` (`+=` before `=`), `data-file` (file loading unavailable or
   failed; implementations without a file system MUST report this rather than fetch).
@@ -197,6 +217,13 @@ Declares a named table of strings. Types are decided at use (a chart reads cells
   trimmed outside their quotes; blank lines and a leading byte-order mark are dropped. A quote that never closes is
   E `csv-quote`, naming the file's line.
 - Data and diagram names share one namespace: E `name-clash`.
+- What changed for existing input (D80): a page that parsed before parses identically unless a line begins with the name of a
+  data set declared above it and holds a pipe separator (it was prose, and is now a row), a line begins with `:` directly below an
+  inline table that has no rows of its own (§4.14), or an inline table's header holds a pipe separator outside double quotes
+  (it was one comma-split header). Over the 866 `.lede` files tracked before the change (examples, conformance, fixtures, article
+  and benchmark pages) there are none of the three (`bench/src/collide.ts`), and the old and the new parser give identical ASTs,
+  data and diagnostics for all 866.
+  Conformance cases 42 and 43 and error e51 are normative for the pipe forms.
 
 Numbers in cells: an optional sign, digits, optional decimals; `,` `$` `€` `£` `%` and a
 trailing unit among `ms s gb mb tb x × pt pts` are ignored. Anything else is non-numeric.
@@ -234,11 +261,29 @@ matches exactly, or else case-insensitively with runs of spaces collapsed. The c
 
 ### 4.14 Table
 `table DATA [cols=a,b] [sort=col|-col] [limit=N] [title="…"]`, or the inline one-off form
-`table [options] = header; row; row`. Numeric columns (every non-empty cell numeric) are
+`table [options] = header; row; row`, or its block form (D80), below. Numeric columns (every non-empty cell numeric) are
 right-aligned. A cell whose whole text is a status word from the renderer's lexicon (done, on
 track, ready, at risk, in progress, blocked, failed, go, no-go, …) renders as a pill that keeps
 the word as its text. Sorting is numeric when every cell of the sort column is numeric, else lexical.
 - E `unknown-data`, `unknown-column`, `table-option` (bad `limit`). W `table-option` (ignored, or an unclosed `"`).
+
+**Block form (D80).** An inline table with a header and no rows on its own line takes its rows from the lines below it:
+```
+table [options] = Option | Cost, USD | Verdict
+: Managed queue | 1,200 | **Fits**, mostly; cheap
+: Self-hosted | 3,400 | Needs an on-call rota
+```
+- The header is a pipe header when a pipe separator (§2) sits outside double quotes: it is split at the pipes and nowhere else, so
+  `,` and `;` in a header cell are text. Otherwise it is the comma header as before (`table = a,b`), which opens the block form too
+  when it has no `;` rows. A header with a quoted ` | ` (`table = "a | b",c; 1,2`) is read as it always was.
+- A row is a line that begins with `:` followed by a space (or by nothing). It is split into pipe fields (§2) and appended to the table;
+  fields keep their inline markup (§5), so a status word is still a chip. The first line of any other kind, a blank line included,
+  ends the table, and a `:` line anywhere else (after a blank line, under a table that has rows on its own line, under no table)
+  is prose. A `table DATA` line names data and takes no rows.
+- A row with the wrong number of fields is E `data-row-width` on that row, as in §4.11. The options (`cols=`, `sort=`, `limit=`,
+  `heat`, `bar=`, `target=`, `title=`) are read against the finished table, so `heat` and `bar=` see the rows below the line; their
+  diagnostics point at the `table` line, and are reported when the table ends.
+- Streaming: see §6.
 
 ### 4.15 KPI
 `kpi LABEL | VALUE [| DELTA [| TONE-OR-NOTE]]`. Consecutive kpi lines form one row of tiles.
@@ -538,10 +583,10 @@ level of parentheses (`.../Foo_(bar)`).
 
 A conforming parser accepts input line by line and emits a block as soon as it is final: a
 heading, note, rule, data, chart, table, image or diagram declaration on its own line; a
-paragraph, list, quote or kpi row when a line of another kind (or a blank line) arrives; a
-fence when it closes; a grid when it fills. Emitted blocks never change, with two exceptions
+paragraph, list, quote or kpi row, or an inline table with no rows on its own line (§4.14, whose `:` rows may follow), when a line of
+another kind (or a blank line) arrives; a fence when it closes; a grid when it fills. Emitted blocks never change, with two exceptions
 renderers must handle: a diagram or a bucket set (§4.19) gains statements from later lines, and a chart, table or kpi
-reflects rows appended with `data NAME +=`. Question words (§4.18) are final when read; the page-wide warnings `export-missing` and `export-orphan` are reported when the document ends. Among the editor words (§4.19), `param`, `toggle` and `preset` are final when read. A `bucket` is emitted on its
+reflects rows appended with `data NAME +=` or `NAME: a | b` (§4.11). Question words (§4.18) are final when read; the page-wide warnings `export-missing` and `export-orphan` are reported when the document ends. Among the editor words (§4.19), `param`, `toggle` and `preset` are final when read. A `bucket` is emitted on its
 declaration and gains an item from each later `NAME:` line. A half-written bucket set renders as its legend, its count tiles (counting
 the items written so far, none right after the `bucket` line) and the item rows so far as static radios; each later item line adds a
 row and raises one count, and nothing already drawn moves. A `template` is emitted when its fence closes; a snapshot taken inside the
@@ -550,8 +595,8 @@ fence shows it with the text so far, and a snapshot after the `template` line an
 block flushed) is always a valid document. The partial last line (no `\n` yet) is not parsed.
 
 A streaming consumer learns of the two exceptions as events, in line order, beside the blocks it is given: `block` (a
-block is final), `update` (a `name:` line changed a diagram already given, or a `data NAME +=` line appended rows to that data
-name) and `seal` (the first non-blank line that is not a statement of the diagram, or the end of the document: a blank line does
+block is final), `update` (a `name:` line changed a diagram already given, or a `data NAME +=` or `NAME: a | b` line appended rows to that
+data name) and `seal` (the first non-blank line that is not a statement of the diagram, or the end of the document: a blank line does
 not seal, since writers space statements). A bucket set has the same two events as kinds of their own, `bucket-update` (a
 `NAME: ITEM | B` line added an item to a bucket set already given) and `bucket-seal`, so `update` and `seal` carry a diagram, as
 they did before bucket sets. A bucket set streams as a diagram does: it is given on its declaration, each item line is a
@@ -559,10 +604,11 @@ they did before bucket sets. A bucket set streams as a diagram does: it is given
 set has (a bad item, an unknown bucket, an item text it already lists), is no update, but it is still a statement of it and does
 not seal it. A statement after a seal that changes the diagram or set is an update again, and the next sealing line a second
 seal. A diagram or bucket set inside a `grid` or `cards` run that has not been given yet is not on screen, so its lines are no
-update. A conforming streaming consumer may also read the open block (paragraph, list, quote, kpi row, step run, fence, grid or
+update. A conforming streaming consumer may also read the open block (paragraph, list, quote, kpi row, step run, inline table, fence, grid or
 cards run, as a block) without ending the document; a keyword line is never part of it, because it is a block or a diagnostic on
 its own line, except that the fence a `template` line opened is read as the template block with the text so far (a `template` line
-with no fence yet adds nothing). A bucket set is in it only inside an open `grid` or `cards` run, with the items read so far; one
+with no fence yet adds nothing), and the inline `table [options] =` line that opened a table with no rows of its own is read as the
+table block with the `: a | b` rows so far. Reading it reports nothing: the table's option diagnostics come once, when it ends. A bucket set is in it only inside an open `grid` or `cards` run, with the items read so far; one
 written anywhere else was given on its declaration.
 `LedeStream.events`, `.tail` and `.end` in `@lede-lang/core` are this interface.
 
@@ -772,7 +818,8 @@ New keys may be added; existing ones are not removed or retyped within 0.x.
 - an `x=`/`y=` column name that is the unique prefix of a column; a stray word after a column name in `x=`, `y=` or
   `focus=` (`y=customers sort`: the column is quoted, and the word is then reported as an ignored option);
 - a diagram named like a data set (renamed `NAME-flow` with its body lines);
-- in a `data` row or inline `table =` row: an unquoted `,` inside a cell, an unquoted `;` inside a cell (the text either
+- in a `data` row or inline `table =` row (not a pipe row, `NAME: a | b` or `: a | b`, which has nothing to repair: nothing in it is
+  split at `,` or `;`, and a wrong field count is left for the writer): an unquoted `,` inside a cell, an unquoted `;` inside a cell (the text either
   side of it rejoins, whether the `;` left a lone fragment or two short rows), and a header cell split at a thousands comma;
 - a number the parser already read across an unquoted thousands comma (W `csv-thousands`; the number is quoted);
 - `kpi L | 74 of 120 | 61.7% | bar` (W `kpi-bar` with a plain unsigned percent in the change field): the two fields swap;
