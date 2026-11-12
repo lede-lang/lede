@@ -24,3 +24,33 @@ export function imageSrcKind(src: string): 'local' | 'data' | 'remote' | 'bad' {
   if (/^data:image\//i.test(u)) return 'data';
   return /^[a-z][a-z0-9+.-]*:/i.test(u) ? 'bad' : 'local';
 }
+
+/**
+ * The normalised `href` of `s` when it is an absolute `https:` URL, and null for anything else (a relative path, another scheme, text
+ * that does not parse). It is what a scraper or a search engine resolves, which is why a share image or a canonical link must be one
+ * (`@image`, `@canonical`, spec §4.3): `https://x.example/a/../b` is `https://x.example/b`, and a bare host gains its `/`.
+ */
+export function httpsUrl(s: string): string | null {
+  try {
+    const u = new URL(s);
+    return u.protocol === 'https:' ? u.href : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Why `s` is not an `httpsUrl`, or null when it is one: `data` (a `data:` URL), `scheme` (it parses, with another scheme, `http:` and
+ * `javascript:` included), `relative` (it does not parse and has no scheme: a path, `//host/x`, or nothing) or `invalid` (it does not
+ * parse and has a scheme, as `https://` alone does).
+ */
+export function httpsUrlProblem(s: string): 'relative' | 'data' | 'scheme' | 'invalid' | null {
+  if (httpsUrl(s)) return null;
+  const t = browserUrl(s);
+  if (/^data:/i.test(t)) return 'data';
+  try {
+    return new URL(t).protocol === '' ? 'invalid' : 'scheme';
+  } catch {
+    return /^[^/]*:/.test(t) ? 'invalid' : 'relative';
+  }
+}

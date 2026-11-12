@@ -78,7 +78,17 @@ const resolved = (v: string): URL[] =>
   });
 const offPage = (u: URL) => (u.protocol === 'file:' ? u.host !== '' : u.protocol !== 'data:' && u.origin !== 'https://lede.test');
 const STYLE_DECL = /^\s*-{0,2}[a-z][a-z-]*\s*:\s*[-#\w.%, ]+\s*$/i;
-const HEAD_TAGS = new Set(['html', 'head', 'meta', 'title', 'style', 'body']);
+/** `link` is a head tag only as `<link rel="canonical" href="https://…">` (D70): the audit judges its shape, and the body still denies it. */
+const HEAD_TAGS = new Set(['html', 'head', 'meta', 'title', 'style', 'body', 'link']);
+/**
+ * The head tags the compiler writes besides the charset, viewport, generator, policy and `description` metas (D70, D80): the Open Graph
+ * and `author` tags, `twitter:card`, and one `lede:NAME` tag per `@meta` fact. Each is judged by shape, with its value escaped.
+ */
+const PAGE_META = new RegExp(
+  '^<meta (?:property="(og:title|og:type|og:description|og:image|article:published_time)"|name="(author|twitter:card|lede:[a-z0-9-]+)") content="([^"<>]*)">$',
+);
+/** The one link a page may have, and where: the head. */
+const CANONICAL = /^<link rel="canonical" href="https:\/\/[^"<>\s]*">$/;
 /** After the head, these may not appear at all (the page's own <body>, </html> and SVG <title>s may). */
 const BODY_DENY = new Set([...DENY, 'meta', 'style', 'head']);
 
@@ -164,9 +174,18 @@ function audit(html: string, opts: { allowRemote?: boolean; fields?: FieldKind[]
       !/^<meta (charset="utf-8"|name="(viewport|generator|description)" content="[^"]*"|http-equiv="Content-Security-Policy" content="[^"]*")>$/.test(
         m[0],
       )
-    )
-      bad.push(`unexpected head meta: ${m[0]}`);
+    ) {
+      const tag = PAGE_META.exec(m[0]);
+      if (!tag) bad.push(`unexpected head meta: ${m[0]}`);
+      else if (tag[1] === 'og:image' && !tag[3].startsWith('https://')) bad.push(`og:image is not an https URL: ${m[0]}`);
+      else if (tag[2] === 'twitter:card' && tag[3] !== 'summary_large_image') bad.push(`unexpected twitter:card: ${m[0]}`);
+      else if (tag[1] === 'og:type' && tag[3] !== 'article') bad.push(`unexpected og:type: ${m[0]}`);
+      else if (tag[1] === 'article:published_time' && !/^\d{4}-\d{2}-\d{2}$/.test(tag[3])) bad.push(`unexpected published_time: ${m[0]}`);
+    }
   }
+  const links = head.match(/<link\b[^>]*>/g) ?? [];
+  if (links.length > 1) bad.push('more than one <link> in the head');
+  for (const l of links) if (!CANONICAL.test(l)) bad.push(`unexpected head link: ${l}`);
   const css = /<style>([\s\S]*?)<\/style>/.exec(head)?.[1] ?? '';
   if (/<\/|url\(|@import|expression\(|javascript:|behavio(u)?r\s*:|-moz-binding/i.test(css))
     bad.push('stylesheet carries markup, url() or script');
@@ -274,7 +293,9 @@ function audit(html: string, opts: { allowRemote?: boolean; fields?: FieldKind[]
           const data = us.find((u) => u.protocol === 'data:');
           if (data && !(name === 'img' && k === 'src' && data.pathname.toLowerCase().startsWith('image/')))
             bad.push(`${k}="${v}" on <${name}>: data URL that is not an image on <img src>`);
-          const fetches = !(name === 'a' && k === 'href') && k !== 'cite';
+          // A navigation, not a fetch: a link's href, a quote's cite, and the canonical link in the head (nothing wider: a stylesheet or a
+          // preload is a fetch and stays denied).
+          const fetches = !(name === 'a' && k === 'href') && k !== 'cite' && !(name === 'link' && attribs.rel === 'canonical');
           const urls = k === 'srcset' ? v.split(',').map((s) => s.trim().split(/\s+/)[0] ?? '') : [v];
           if (fetches && !allowRemote && urls.some((x) => resolved(x).some(offPage))) bad.push(`${k}="${v}" on <${name}>: remote fetch`);
         }
@@ -384,6 +405,48 @@ test('the audit catches what it claims to catch', () => {
   ])
     assert.notDeepEqual(audit(page(bad)), [], bad);
   assert.notDeepEqual(audit(page('').replace(csp(false), '')), []);
+  // The head tags the compiler writes pass by shape (D70, D80); a look-alike does not.
+  const withHead = (tags: string) => page('').replace('<title>t</title>', `<title>t</title>\n${tags}`);
+  assert.deepEqual(
+    audit(
+      withHead(
+        [
+          '<meta property="og:title" content="T &amp; &quot;U&quot;">',
+          '<meta property="og:type" content="article">',
+          '<meta property="og:description" content="D">',
+          '<meta name="author" content="A">',
+          '<meta property="article:published_time" content="2026-11-10">',
+          '<meta property="og:image" content="https://x.example/a.png">',
+          '<meta name="twitter:card" content="summary_large_image">',
+          '<link rel="canonical" href="https://x.example/p">',
+          '<meta name="lede:last-reviewed" content="2026-11-10">',
+        ].join('\n'),
+      ),
+    ),
+    [],
+  );
+  for (const bad of [
+    '<meta property="og:image" content="//xss.example/a.png">',
+    '<meta property="og:image" content="http://x.example/a.png">',
+    '<meta property="og:title" content="a"><b">',
+    '<meta property="og:title" content="<script>">',
+    '<meta property="og:refresh" content="0">',
+    '<meta name="twitter:card" content="player">',
+    '<meta name="lede:Owner" content="x">',
+    '<meta name="lede:a b" content="x">',
+    '<meta name="refresh" content="0;url=//xss.example">',
+    '<meta property="article:published_time" content="soon">',
+    '<link rel="canonical" href="//xss.example/p">',
+    '<link rel="canonical" href="http://x.example/p">',
+    '<link rel="canonical" href="javascript:alert(1)">',
+    '<link rel="canonical" href="https://x.example/p"><link rel="canonical" href="https://x.example/q">',
+    '<link rel="stylesheet" href="https://x.example/a.css">',
+    '<link rel="preload" href="https://x.example/a.png" as="image">',
+    '<link rel="icon" href="https://x.example/a.ico">',
+    '<link rel="canonical" href="https://x.example/p" onload="x">',
+  ])
+    assert.notDeepEqual(audit(withHead(bad)), [], bad);
+  assert.notDeepEqual(audit(page('<link rel="canonical" href="https://x.example/p">')), [], 'a link in the body');
   // Question controls pass only by shape, and only as the fields the source declared.
   const ask = '<label class="q q-ask"><span class="q-t">x</span><input type="text" name="a" autocomplete="off"></label>';
   const fieldA = [{ name: 'a', kind: 'ask' }];

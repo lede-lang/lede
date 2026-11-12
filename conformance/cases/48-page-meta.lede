@@ -1,0 +1,20 @@
+@title Order events review
+@subtitle Which queue carries order events
+@author Ana Ruiz, Platform
+@date 2026-11-10
+@description A short review of the queue options for order events.
+@image https://example.com/share/queue.png
+@canonical https://example.com/reviews/order-events
+@status Parked=neutral, Beta=info, Needs sign-off=warn
+@meta Owner | Ana Ruiz
+@meta Status | Needs sign-off
+@meta Stage | Beta
+@meta Reviewed | 2026-11-10
+@meta Reviewers | Platform team, Support, and a long list of other people whose names make this row long enough to wrap
+# Order events review
+
+First paragraph of the review, a few words long enough to be a standfirst for the page.
+
+table = Option,State; SQS,Beta; Kafka,Parked; Rabbit,Needs sign-off; Pulsar,Done
+
+kpi Options | 4 | Parked | Beta

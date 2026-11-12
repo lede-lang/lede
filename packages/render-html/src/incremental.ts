@@ -86,7 +86,7 @@ export interface IncrementalEnd {
   repicks: number;
   /** Diagrams drawn again after a statement followed their seal. */
   reseals: number;
-  /** Meta keys (accent, theme, width, title, subtitle, author, date) that changed after the first block. */
+  /** Meta keys (accent, theme, width, title, subtitle, author, date, meta) that changed after the first block. */
   lateMeta: number;
   /** Times the prose class went on mid-stream (0 or 1). */
   proseFlips: number;
@@ -134,7 +134,7 @@ export interface IncrementalOptions extends RenderOptions {
 export const normalize = (html: string): string => html.replace(/>\s+</g, '><').trim();
 
 const STYLE_KEYS = ['accent', 'theme', 'width'] as const;
-const MAST_KEYS = ['title', 'subtitle', 'author', 'date'] as const;
+const MAST_KEYS = ['title', 'subtitle', 'author', 'date', 'meta'] as const;
 
 /** Adds `to` to the targets of `from`. */
 function add(next: Map<string, string[]>, from: string, to: string): void {

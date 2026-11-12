@@ -20,6 +20,9 @@ import {
   browserUrl,
   dataSet,
   exportsOf,
+  factEntries,
+  factName,
+  httpsUrl,
   missingColumns,
   fieldsOf,
   imageSrcKind,
@@ -94,7 +97,7 @@ export async function render(doc: LedeDocument, opts: RenderOptions = {}): Promi
   const style = `<style>${styleOf(doc.meta, fields.length > 0 || exports.length > 0, usesEditors(fields, presets), dash, usesDecisions(doc.blocks))}</style>`;
   const scripts = shell ? `${shellScripts(ctx.page, fields, exports, presets)}\n` : '';
   if (opts.artifact) return `<title>${esc(title)}</title>\n${style}\n${main}\n${scripts}`;
-  const desc = doc.meta.description ? `\n<meta name="description" content="${esc(doc.meta.description)}">` : '';
+  const desc = (doc.meta.description ? `\n<meta name="description" content="${esc(doc.meta.description)}">` : '') + headTags(doc, title);
   const lang = /^[a-z]{2,3}(-[A-Za-z0-9]+)*$/.test(doc.meta.lang ?? '') ? doc.meta.lang : 'en';
   return `<!doctype html>
 <html lang="${lang}">
@@ -111,6 +114,31 @@ ${main}
 ${scripts}</body>
 </html>
 `;
+}
+
+/**
+ * The tags that describe the page to whoever is handed its URL (D70, D80), one per line after the description: `og:title`, `og:type`,
+ * and from the meta keys `og:description`, `author`, `article:published_time` (an ISO `@date`), `og:image` with `twitter:card` (an `https:`
+ * `@image`), `<link rel="canonical">` (an `https:` `@canonical`), then a `lede:NAME` tag for each `@meta` fact. Every value is escaped
+ * and a URL is its normalised `https:` form. Full pages only: `--artifact` and `fragment` output have no head. The browser fetches none
+ * of it.
+ */
+function headTags(doc: LedeDocument, title: string): string {
+  const m = doc.meta;
+  const tags = [`<meta property="og:title" content="${esc(title)}">`, '<meta property="og:type" content="article">'];
+  if (m.description) tags.push(`<meta property="og:description" content="${esc(m.description)}">`);
+  const author = m.author?.split(',')[0].trim();
+  if (author) tags.push(`<meta name="author" content="${esc(author)}">`);
+  if (ISO_DATE.test(m.date ?? '')) tags.push(`<meta property="article:published_time" content="${m.date}">`);
+  const image = httpsUrl(m.image ?? '');
+  if (image) tags.push(`<meta property="og:image" content="${esc(image)}">`, '<meta name="twitter:card" content="summary_large_image">');
+  const canonical = httpsUrl(m.canonical ?? '');
+  if (canonical) tags.push(`<link rel="canonical" href="${esc(canonical)}">`);
+  for (const [key, value] of factEntries(m)) {
+    const name = factName(key);
+    if (name) tags.push(`<meta name="lede:${name}" content="${esc(plain(value))}">`);
+  }
+  return tags.map((t) => `\n${t}`).join('');
 }
 
 /** `@width wide`. */
@@ -154,6 +182,7 @@ export interface Masthead {
   /** The `#` heading that opens the page body, when the masthead did not take it. */
   firstH1: Block | undefined;
   sub: string;
+  /** The byline and the facts row (`@meta`), which follow the title together. */
   by: string;
 }
 
@@ -167,7 +196,7 @@ export function masthead(doc: LedeDocument, ctx: Ctx): Masthead {
   // A bare `#` has no text; an empty <title> fails WCAG 2.4.2, so it falls back like a page with no heading at all.
   const title = doc.meta.title || (firstH1 && firstH1.type === 'heading' ? plain(firstH1.text).trim() : '') || 'Untitled';
   const sub = doc.meta.subtitle ? `<p class="subtitle">${inline(doc.meta.subtitle)}</p>` : '';
-  const by = byline(doc.meta.author, doc.meta.date);
+  const by = byline(doc.meta.author, doc.meta.date) + facts(doc.meta, ctx.status);
   const head: string[] = [];
   let rest = blocks;
   // @title that no `#` heading repeats becomes the page heading, and the document's own
@@ -227,6 +256,25 @@ export async function compile(src: string, opts: RenderOptions & ParseOptions = 
   return { html: await render(doc, opts), doc };
 }
 
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * The facts row under the byline (D80): a definition list with a term and a value for each `@meta Key | value` line, in order. A value
+ * that is a status word is a chip (the page's `@status` words included), an ISO date is a `<time>` as in the byline.
+ */
+function facts(meta: Record<string, string>, st: Status): string {
+  const rows = factEntries(meta).map(([key, value]) => {
+    const hit = st(value);
+    const text = hit
+      ? `<span class="pill ${hit}">${inline(value)}</span>`
+      : ISO_DATE.test(value)
+        ? `<time datetime="${value}">${esc(value)}</time>`
+        : inline(value);
+    return `<div><dt>${esc(plain(key))}</dt><dd>${text}</dd></div>`;
+  });
+  return rows.length ? `<dl class="facts">${rows.join('')}</dl>` : '';
+}
+
 function byline(author?: string, date?: string): string {
   if (!author && !date) return '';
   // "Name, Role": the role follows the name, muted. The comma stays in the markup, so the byline
@@ -237,7 +285,7 @@ function byline(author?: string, date?: string): string {
       ? `<span class="by-n">${esc(author.slice(0, comma).trim())}</span><span class="by-r">, ${esc(author.slice(comma + 1).trim())}</span>`
       : `<span class="by-n">${esc(author)}</span>`
     : '';
-  const d = date ? `<time${/^\d{4}-\d{2}-\d{2}$/.test(date) ? ` datetime="${date}"` : ''}>${esc(date)}</time>` : '';
+  const d = date ? `<time${ISO_DATE.test(date) ? ` datetime="${date}"` : ''}>${esc(date)}</time>` : '';
   return `<p class="byline">${[a, d].filter(Boolean).join('<span class="by-s" aria-hidden="true"> · </span>')}</p>`;
 }
 

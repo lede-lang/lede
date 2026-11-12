@@ -184,6 +184,10 @@ h4{font-size:1rem;margin-top:4px}
 .byline{font-size:14px;line-height:1.5;color:var(--fg2);margin:2px 0 0}
 .by-n{color:var(--fg);font-weight:500}
 .by-s{color:var(--muted)} .byline time{white-space:nowrap}
+.facts{display:flex;flex-wrap:wrap;gap:6px 24px;margin:2px 0 0;font:14px/1.5 var(--sans);color:var(--fg)}
+.facts>div{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 8px;min-width:0}
+.facts dt{font:600 11.5px/1.5 var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.facts dd{margin:0;min-width:0;overflow-wrap:anywhere} .facts time{white-space:nowrap}
 .lead{font-size:1.15rem;line-height:1.6;color:var(--fg2)}
 p{text-wrap:pretty;orphans:2;widows:2}
 ul,ol{padding-left:1.4em} li+li{margin-top:5px} li::marker{color:var(--muted)}

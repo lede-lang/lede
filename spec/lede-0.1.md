@@ -143,7 +143,8 @@ paragraph; a blank line or any other block ends it. Inline markup (§5) applies.
 `@key value`. Known keys: `title` (document title; if no `#` heading repeats it, it is rendered
 as the page heading and `#` headings shift down one level), `subtitle`, `description`, `author`,
 `date`, `accent` (a `#hex` color), `theme` (`light` | `dark` forces one), `lang`, `width`
-(`wide` | `narrow`, below), `fonts`, `status` (below). W `unknown-meta` for other keys (still stored).
+(`wide` | `narrow`, below), `fonts`, `status`, `meta`, `image` and `canonical` (each below). W `unknown-meta` for other keys
+(still stored).
 
 `width` overrides the layout class a page is given from its blocks (§7, D80): `wide` sets the page as a dashboard, with the 64rem
 column, on any page; `narrow` keeps the 46rem column on a page that would be a dashboard. Any other value, `Wide` and the empty value
@@ -157,6 +158,21 @@ a timeline's events, a `kpi` change or note and a `step` due. The tone is the ch
 never depends on colour. An entry with no word, or whose tone is none of the five (or missing), is W `status-value` with
 `detail {word, tone, allowed}` (`tone` as written, `''` when there is no `=`) and is left out. The value is kept in `meta.status` as
 the valid entries, `Word=tone, Word=tone`, in order.
+
+`meta` records facts about the page (D80): `@meta Owner | Ana Ruiz`, `@meta Status | Needs review`, `@meta Reviewed | 2026-11-10`. The
+key is the text before the first `|` and the value the text after it (a value may hold more `|`). The line is repeatable, and the facts
+keep their order. Each draws a row of a definition list under the masthead's title and byline: the key as the term, the value as inline
+text, a chip when the value is a status word (§4.14, the page's `@status` words included) and a `<time>` when it is an ISO date
+(`2026-11-10`), as the byline's date is. Each is also written as `<meta name="lede:NAME" content="value">` in a full page's head (§7),
+with NAME the key lower-cased and each run of characters outside `a-z` and `0-9` made one `-` (`Last reviewed` is `last-reviewed`); a key
+that leaves no NAME gets no tag. `@author` and `@date` keep their own places. A `@meta` line with no `|`, no key before it or no value
+after it is E `meta-field` and draws nothing. The valid facts are kept in `meta.meta`, one `Key | value` per line, in order.
+
+`image` and `canonical` must be absolute `https:` URLs: a scraper that reads a share card, or a search engine, has no base to resolve a
+relative one against. `image` is the share card's picture and `canonical` the page's own URL. Anything else, a relative path or
+`//host/x` (`relative`), a `data:` URL (`data`), another scheme such as `http:` or `javascript:` (`scheme`), or text that does not parse as
+a URL (`invalid`), is W `meta-url` with `detail {key, value, kind}` (`value` as written) and the tag is not written. A URL that parses is
+written in its normalised form, so `https://x.example/a/../b.png` is `https://x.example/b.png`. Neither makes the browser fetch anything.
 
 `accent` must be a CSS hex color (`#rgb`, `#rgba`, `#rrggbb` or `#rrggbbaa`); any other value is W
 `accent-value` and the house accent is used. The accent colors link and label text, so it needs WCAG AA
@@ -730,6 +746,12 @@ written anywhere else was given on its declaration.
   its widest rank; the figure then carries `data-dir="LR"`, which no figure on another page does, and the phone drawing keeps the
   diagram's own direction (§4.17). Even then the renderer keeps the direction that fits the column better, as for any diagram. Every
   other page's `<main>` and `<style>` are the same bytes they were before D80.
+- A complete page's head carries, after the description, tags that describe the page to whoever is handed its URL (D80): `og:title` (the
+  page title) and `og:type` (`article`) always; from the meta keys (§4.3) `og:description`, `author` (the name before any `, role`),
+  `article:published_time` (an ISO `@date` only), `og:image` with `twitter:card` (`summary_large_image`) from an `https:` `@image`, and
+  `<link rel="canonical">` from an `https:` `@canonical`; then one `<meta name="lede:NAME">` per `@meta` fact. Every value is escaped, and
+  the one `<link>` is a navigation, not a fetch: the CSP is unchanged and the page fetches nothing for these tags. `--artifact` writes none
+  of them (§9).
 - No remote fetches by default (system font stacks, no remote images).
 - Light and dark themes from CSS custom properties; `prefers-color-scheme` plus
   `data-theme="light|dark"` on `<html>` to override. Print uses the light tokens whatever the device or `@theme` says (paper is
@@ -901,7 +923,8 @@ step, rule}` (`rule` is `order`, `step`, `range`, `grid`, `grid-max` or `count`)
 `verdict`) and W `decision-option`, which has none (as `diagram-option` and `chart-option` have none); `export-format` `{format}` now names `prompt` too. So does `accent-contrast` (§4.3) `{accent, theme, ratio, required, against}`:
 `theme` is `light` or `dark`, `ratio` is the lowest contrast found rounded down to two decimals, `required` is `4.5`, and `against` names
 the surface (`bg`, `surface` or `accent-tint`). So does `external` (above) `{kind, text}`. So does `status-value` (§4.3) `{word, tone, allowed}`: the entry as written, with `allowed`
-the five tones. So does `note-kind` (§4.7) `{word, use}`. So does `artifact-image` `{src, kind}`: `src` is the image path as written and `kind` is
+the five tones. So does `note-kind` (§4.7) `{word, use}`. So does `meta-url` (§4.3) `{key, value, kind}`: `key` is `image` or `canonical`,
+`value` the text as written and `kind` one of `relative`, `data`, `scheme` or `invalid`. So does `artifact-image` `{src, kind}`: `src` is the image path as written and `kind` is
 `local`. So does `image-inline` `{src, reason}`: `src` is the path as written and `reason` is `size`, `page-size`, `type`, `missing` or `outside`. So does `heading-skip` (§4.4) `{from, to}`: the level of the heading before and of this one, as written (`--fix` leaves it). So does the error
 form of `data-redefined` (§4.11) `{name, columns, redefined}`; the warning of the same code has none.
 New keys may be added; existing ones are not removed or retyped within 0.x.

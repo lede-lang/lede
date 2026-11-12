@@ -16,7 +16,7 @@ export { EMPTY, FIELD_KINDS, NOT_CHOSEN, SLOT_RE, exportsOf, fieldsOf, presetsOf
 export { bareCell, cellNum, num, parseInlineCsv } from './lex.ts';
 export { fix, type AppliedFix, type FixResult } from './fix.ts';
 export { HEX_COLOR, THEME_SURFACES, usableAccent } from './contrast.ts';
-export { browserUrl, imageSrcKind } from './url.ts';
+export { browserUrl, httpsUrl, httpsUrlProblem, imageSrcKind } from './url.ts';
 export { artifactDiagnostics } from './artifact.ts';
 export { walkBlocks } from './walk.ts';
 export {
@@ -29,4 +29,4 @@ export {
   type ExternalOptions,
   type ExternalRepair,
 } from './external.ts';
-export { STATUS_TONES, readStatus, statusKey, type StatusRead, type StatusTone } from './meta.ts';
+export { STATUS_TONES, factEntries, factName, readFact, readStatus, statusKey, type StatusRead, type StatusTone } from './meta.ts';

@@ -45,8 +45,8 @@ import {
 } from './lex.ts';
 import { EMPTY, FIELD_KINDS, NOT_CHOSEN, SLOT_RE } from './fields.ts';
 import { AA_NON_TEXT, AA_TEXT, HEX_COLOR, accentContrast, accentTheme } from './contrast.ts';
-import { browserUrl, imageSrcKind } from './url.ts';
-import { STATUS_TONES, readStatus } from './meta.ts';
+import { browserUrl, httpsUrlProblem, imageSrcKind } from './url.ts';
+import { STATUS_TONES, readFact, readStatus } from './meta.ts';
 import { walkBlocks } from './walk.ts';
 
 /**
@@ -104,7 +104,22 @@ export const KEYWORDS = [
 ] as const;
 /** The words an edge or message line's last ` | ` field may be (spec §4.17, D80). */
 export const EDGE_TONES: readonly EdgeTone[] = ['good', 'bad', 'warn', 'info', 'neutral'];
-export const META_KEYS = ['title', 'subtitle', 'description', 'author', 'date', 'accent', 'theme', 'lang', 'width', 'fonts', 'status'];
+export const META_KEYS = [
+  'title',
+  'subtitle',
+  'description',
+  'author',
+  'date',
+  'accent',
+  'theme',
+  'lang',
+  'width',
+  'fonts',
+  'status',
+  'meta',
+  'image',
+  'canonical',
+];
 /**
  * The kind words of a `!` note (spec §4.7, D80), lower case, to the tone each sets: `good` (green) or `info` (blue). The renderer
  * reads the same map, and a Map keeps `constructor` an ordinary word.
@@ -482,6 +497,36 @@ export class LedeParser {
     this.doc.meta.status = this.doc.meta.status ? `${this.doc.meta.status}, ${added}` : added;
   }
 
+  // ------------------------------------------------------------ page metadata (D70, D80)
+
+  /**
+   * `@meta Key | value` (spec §4.3): one fact for the masthead's facts row and a `lede:key` head tag. Repeatable, in order: each valid
+   * line is added to `meta.meta` as `Key | value`, one per line (`factEntries` reads them back). E `meta-field` when the `|` or either
+   * side of it is missing; the fact is not kept.
+   */
+  private factMeta(value: string, L: number, col: number): void {
+    const fact = readFact(value);
+    if (!fact) {
+      const why = !value.includes('|')
+        ? 'it needs a `|` between the key and the value'
+        : value.slice(0, value.indexOf('|')).trim() === ''
+          ? 'it has no key before the `|`'
+          : 'it has no value after the `|`';
+      this.diag('error', 'meta-field', `@meta takes Key | value, as in @meta Owner | Ana Ruiz; ${why}`, L, col);
+      return;
+    }
+    const line = `${fact[0]} | ${fact[1]}`;
+    this.doc.meta.meta = this.doc.meta.meta ? `${this.doc.meta.meta}\n${line}` : line;
+  }
+
+  /** `@image` and `@canonical` (spec §4.3) must be absolute `https:` URLs: a share card is fetched by a scraper that has no base to resolve against. */
+  private urlMeta(key: 'image' | 'canonical', value: string, L: number, col: number): void {
+    const kind = httpsUrlProblem(value);
+    if (!kind) return;
+    const dropped = key === 'image' ? 'the share image is not written' : 'no canonical link is written';
+    this.diag('warning', 'meta-url', `@${key} takes an absolute https:// URL (got "${value}"); ${dropped}`, L, col, { key, value, kind });
+  }
+
   // ------------------------------------------------------------ accent (D49)
 
   private accentMeta(v: string, L: number, col: number): void {
@@ -562,8 +607,10 @@ export class LedeParser {
       }
       const value = (meta[2] ?? '').trim();
       if (key === 'status') this.statusMeta(value, L, lead + 1);
+      else if (key === 'meta') this.factMeta(value, L, lead + 1);
       else this.doc.meta[key] = value;
       if (key === 'accent') this.accentMeta(value, L, lead + 1);
+      if (key === 'image' || key === 'canonical') this.urlMeta(key, value, L, lead + 1);
       return;
     }
     const h = /^(#{1,6})(\s+(.*))?$/.exec(s);

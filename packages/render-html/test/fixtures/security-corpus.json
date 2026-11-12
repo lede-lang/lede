@@ -380,6 +380,14 @@
   {
    "name": "note kinds",
    "lede": "! Tip: Mk78 {T}\n! Recommendation: **Mk79.** {T}\n! Decision: {T} Mk80\n! {T}: Mk81 recommended"
+  },
+  {
+   "name": "meta image and canonical",
+   "lede": "@image {T}\n@canonical {T}"
+  },
+  {
+   "name": "meta facts",
+   "lede": "@status {T}=good, Mk82=info\n@meta Mk82 {T} | Mk83 {T}\n@meta Status | {T}\n@meta Stage | Mk82\n@meta {T} | Mk84"
   }
  ],
  "cases": [
@@ -2581,6 +2589,132 @@
     "<script",
     "<b onclick",
     "onclick=\"x\""
+   ]
+  },
+  {
+   "id": "meta-url-01",
+   "src": "@image https://x.example/a.png?q=\"><script>alert(1)</script>\n@canonical https://x.example/p?q=\"><script>alert(2)</script>",
+   "has": [
+    "<meta property=\"og:image\" content=\"https://x.example/a.png?q=%22%3E%3Cscript%3Ealert(1)%3C/script%3E\">",
+    "<link rel=\"canonical\" href=\"https://x.example/p?q=%22%3E%3Cscript%3Ealert(2)%3C/script%3E\">"
+   ],
+   "hasNot": [
+    "<script"
+   ]
+  },
+  {
+   "id": "meta-url-02",
+   "src": "@image https://x.example/a/../b.png\n@canonical HTTPS://X.example",
+   "has": [
+    "content=\"https://x.example/b.png\"",
+    "href=\"https://x.example/\""
+   ]
+  },
+  {
+   "id": "meta-url-03",
+   "src": "@canonical //xss.example/p\n@image //xss.example/a.png",
+   "warnings": [
+    "meta-url"
+   ],
+   "hasNot": [
+    "xss.example",
+    "og:image",
+    "canonical",
+    "twitter:card"
+   ]
+  },
+  {
+   "id": "meta-url-04",
+   "src": "@image javascript:alert(1)\n@canonical data:text/html,<script>alert(1)</script>",
+   "warnings": [
+    "meta-url"
+   ],
+   "hasNot": [
+    "javascript:",
+    "data:text",
+    "<script",
+    "og:image",
+    "canonical"
+   ]
+  },
+  {
+   "id": "meta-url-05",
+   "src": "@image http://xss.example/a.png\n@canonical http://xss.example/p",
+   "warnings": [
+    "meta-url"
+   ],
+   "hasNot": [
+    "xss.example",
+    "og:image",
+    "twitter:card"
+   ]
+  },
+  {
+   "id": "meta-url-06",
+   "src": "@image \u0001https://xss.example/a.png\n@canonical https:\\\\xss.example\\p",
+   "has": [
+    "https://xss.example/a.png",
+    "href=\"https://xss.example/p\""
+   ]
+  },
+  {
+   "id": "meta-head-01",
+   "src": "@title </title><script>alert(1)</script>\n@description \"><script>alert(1)</script>\n@author \"><script>alert(1)</script>, x\n@date \"><script>alert(1)</script>\n\nText.",
+   "hasNot": [
+    "<script"
+   ]
+  },
+  {
+   "id": "meta-head-02",
+   "src": "@date 2026-11-10\"><script>alert(1)</script>\n@author a\" onload=\"x\n\nText.",
+   "hasNot": [
+    "<script",
+    "published_time"
+   ]
+  },
+  {
+   "id": "meta-fact-01",
+   "src": "@meta \"><script>alert(1)</script> | </dd><script>alert(2)</script>\n@meta <img src=x onerror=alert(1)> | <img src=x onerror=alert(2)>\n@meta Status | [x](javascript:alert(1))",
+   "hasNot": [
+    "<script",
+    "<img src=x",
+    "href=\"javascript:"
+   ]
+  },
+  {
+   "id": "meta-fact-02",
+   "src": "@meta constructor | __proto__\n@meta toString | hasOwnProperty\n\nText.",
+   "has": [
+    "<dt>constructor</dt><dd>__proto__</dd>",
+    "<meta name=\"lede:tostring\" content=\"hasOwnProperty\">"
+   ]
+  },
+  {
+   "id": "meta-fact-03",
+   "src": "@meta Owner\n@meta | x\n@meta y |\n@meta ok | fine",
+   "errors": [
+    "meta-field"
+   ],
+   "has": [
+    "<dt>ok</dt>"
+   ]
+  },
+  {
+   "id": "meta-fact-04",
+   "src": "@meta x\"><meta http-equiv=\"refresh\" content=\"0;url=//xss.example\"> | y\n\nText.",
+   "hasNot": [
+    "http-equiv=\"refresh\"",
+    "<meta http-equiv=\"refresh"
+   ]
+  },
+  {
+   "id": "meta-fact-05",
+   "src": "@meta Done | Done\n@status Done=bad\n@meta a | <b>x</b>\n\nText.",
+   "has": [
+    "<span class=\"pill bad\">Done</span>"
+   ],
+   "hasNot": [
+    "<b>x</b>"
    ]
   }
  ]
