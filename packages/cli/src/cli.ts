@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // lede build | watch | check | ast
-import { readFileSync, writeFileSync, watch as fsWatch, existsSync, realpathSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, watch as fsWatch, existsSync, realpathSync, statSync, openSync, readSync, closeSync } from 'node:fs';
 import { dirname, resolve, basename } from 'node:path';
 import { text as readAll } from 'node:stream/consumers';
 import {
@@ -9,17 +9,23 @@ import {
   artifactDiagnostics,
   externalDiagnostics,
   redactExternal,
+  parseTheme,
+  ThemeFileError,
+  THEME_MAX_BYTES,
   type Diagnostic,
   type ExternalOptions,
   type LedeDocument,
+  type ThemeTokens,
 } from '@lede-lang/core';
 import { confine, unreadable } from './confine.ts';
 import { DEFAULT_IMAGE_MAX, inlineImages } from './images.ts';
 
 const USAGE = `usage:
   lede build <file.lede> [-o out.html] [--force] [--unsafe-html] [--allow-remote] [--artifact] [--shell] [--image-max=SIZE] [--link-images]
-  lede watch <file.lede> [-o out.html] [--image-max=SIZE] [--link-images]
+                         [--theme tokens.json [--theme-strict]]
+  lede watch <file.lede> [-o out.html] [--image-max=SIZE] [--link-images] [--theme tokens.json [--theme-strict]]
   lede check <file.lede>... [--json] [--fix [--dry-run]] [--artifact] [--image-max=SIZE] [--link-images] [--external [--allow=HOST,...]]
+                         [--theme tokens.json [--theme-strict]]
   lede ast   <file.lede>
   lede help
   lede version`;
@@ -47,6 +53,13 @@ options:
                   images may total eight times that. An image over a limit, missing, outside the document's directory or not a PNG,
                   JPEG, GIF, WebP, AVIF or SVG file keeps its path, with W image-inline. Remote images are never fetched
   --link-images   build/watch/check: leave local image paths as written (no inlining, no image-inline warnings)
+  --theme FILE    build/watch/check: brand tokens, a JSON file (at most 64 KiB) of hex colours: {"accent", "light": {...}, "dark": {...},
+                  "series"}. Its palette and chart colours replace the house ones in both themes, and the page's own @accent is ignored
+                  (W theme-override). Every colour that is text must read on its surfaces, 7:1 for fg and 4.5:1 for the other text tokens,
+                  3:1 for series on the page and card: one that does not is moved in lightness only, hue and chroma kept, to the nearest
+                  value that does (W theme-adjusted; E theme-surface if no lightness can). A value that is not a hex colour is
+                  E theme-value. The file is named by you and is not confined to the document's directory. Spec section 9
+  --theme-strict  build/watch/check: with --theme, a colour that would be moved is an error (E theme-adjusted) instead of a warning
   --artifact      build: write only <title>, <style> and <main>, for the Claude Artifact tool, which wraps them in its own page;
                   check/build: also warn about an image path the host cannot serve (W artifact-image)
   --shell         build/watch: add the interaction shell to a page with a field (ask, choose, confirm, param, toggle, bucket or template)
@@ -94,19 +107,70 @@ function parseOptions(file: string) {
   };
 }
 
+/** The `--theme` option: the tokens file the operator named, and whether a colour that would be moved is an error. */
+interface ThemeFlag {
+  path: string;
+  strict: boolean;
+}
+
+/** A tokens file read and validated: the theme the renderer takes, the file's text (for the report) and what the validator said of it. */
+interface LoadedTheme {
+  tokens: ThemeTokens;
+  src: string;
+  diagnostics: Diagnostic[];
+}
+
+/**
+ * Read `--theme`'s file. The operator names it, so it is not confined to the document's tree; it is read as JSON and nothing else, from a
+ * regular file, at most 64 KiB. Throws `ThemeFileError`, named for the option, for a file that cannot be used at all; every problem with
+ * a value in it is a diagnostic (spec section 9).
+ */
+function loadTheme(flag: ThemeFlag): LoadedTheme {
+  const fail = (why: string): never => {
+    throw new ThemeFileError(`--theme ${flag.path}: ${why}`);
+  };
+  const stat = statSync(flag.path, { throwIfNoEntry: false });
+  if (!stat) return fail('no such file');
+  if (!stat.isFile()) return fail('not a regular file');
+  let src: string;
+  try {
+    const fd = openSync(flag.path, 'r');
+    try {
+      const buf = Buffer.alloc(THEME_MAX_BYTES + 1);
+      const n = readSync(fd, buf, 0, buf.length, 0);
+      if (n > THEME_MAX_BYTES) return fail(`larger than ${THEME_MAX_BYTES / 1024} KiB`);
+      src = buf.toString('utf8', 0, n);
+    } finally {
+      closeSync(fd);
+    }
+  } catch (e) {
+    if (e instanceof ThemeFileError) throw e;
+    return fail(`cannot be read (${(e as NodeJS.ErrnoException).code ?? 'error'})`);
+  }
+  try {
+    const { theme, diagnostics } = parseTheme(src, { strict: flag.strict });
+    return { tokens: theme, src, diagnostics };
+  } catch (e) {
+    if (e instanceof ThemeFileError) return fail(e.message);
+    throw e;
+  }
+}
+
 /**
  * Read and parse `file` (`-` is stdin). With `imageMax` (bytes), each local image in the document becomes a data: URI and its
  * diagnostics hold W `image-inline` for the ones that could not; null leaves the paths. With `artifact`, its diagnostics also hold
- * the warnings only an Artifact host needs, for the images that are still paths. With `external`, what the page gives away.
+ * the warnings only an Artifact host needs, for the images that are still paths. With `external`, what the page gives away. With
+ * `themed`, a `--theme` file is in force: the document's `@accent` is ignored, with W `theme-override`.
  */
 async function load(
   file: string,
   artifact = false,
   imageMax: number | null = null,
   external: ExternalOptions | null = null,
+  themed = false,
 ): Promise<{ src: string; doc: LedeDocument }> {
   const src = file === '-' ? await readAll(process.stdin) : readFileSync(file, 'utf8');
-  const doc = parse(src, parseOptions(file));
+  const doc = parse(src, { ...parseOptions(file), themed });
   if (imageMax !== null) doc.diagnostics.push(...inlineImages(doc, baseOf(file), imageMax));
   if (artifact) doc.diagnostics.push(...artifactDiagnostics(doc));
   if (external) doc.diagnostics.push(...externalDiagnostics(src, external));
@@ -138,11 +202,21 @@ interface Watching {
   shellIdle: boolean;
 }
 
-async function build(file: string, out: string | null, flags: Set<string>, imageMax: number | null, watching?: Watching): Promise<boolean> {
+async function build(
+  file: string,
+  out: string | null,
+  flags: Set<string>,
+  imageMax: number | null,
+  theme: ThemeFlag | null,
+  watching?: Watching,
+): Promise<boolean> {
   const name = nameOf(file);
-  const { src, doc } = await load(file, flags.has('--artifact'), imageMax);
+  // The tokens file is read for each build, so a watch picks up a new one with the next save of the document.
+  const brand = theme ? loadTheme(theme) : null;
+  const { src, doc } = await load(file, flags.has('--artifact'), imageMax, null, brand !== null);
+  if (brand && theme) report(theme.path, brand.src, brand.diagnostics);
   report(name, src, doc.diagnostics);
-  const errors = doc.diagnostics.filter((d) => d.severity === 'error').length;
+  const errors = [...doc.diagnostics, ...(brand?.diagnostics ?? [])].filter((d) => d.severity === 'error').length;
   if (errors && !flags.has('--force')) {
     process.stderr.write(`${name}: ${errors} error(s); not written (use --force to render anyway)\n`);
     return false;
@@ -155,6 +229,7 @@ async function build(file: string, out: string | null, flags: Set<string>, image
     allowRemote: flags.has('--allow-remote'),
     artifact: flags.has('--artifact'),
     shell,
+    ...(brand ? { theme: brand.tokens } : {}),
   });
   const idle = shell && !wantsShell(doc);
   if (idle && !watching?.shellIdle)
@@ -179,16 +254,22 @@ const watchTarget = (file: string, out: string | null): string => out ?? resolve
  * by name: an editor that saves by writing a temp file and renaming it over the original leaves a watcher on the file itself holding
  * the old inode, which never fires again, and deleting the file would end it.
  */
-async function watchFile(file: string, target: string, flags: Set<string>, imageMax: number | null): Promise<number> {
+async function watchFile(
+  file: string,
+  target: string,
+  flags: Set<string>,
+  imageMax: number | null,
+  theme: ThemeFlag | null,
+): Promise<number> {
   const watched = new Set([...flags, '--force']);
   const watching: Watching = { shellIdle: false };
   // The first build is not guarded: an unreadable FILE or an unwritable OUT stops the command (exit 70), not a loop of the same line.
-  await build(file, target, watched, imageMax, watching);
+  await build(file, target, watched, imageMax, theme, watching);
   let gone = false;
   /** One rebuild, which never throws: a missing or unreadable FILE is a line on stderr, and the next change tries again. */
   const rebuild = async (): Promise<void> => {
     try {
-      await build(file, target, watched, imageMax, watching);
+      await build(file, target, watched, imageMax, theme, watching);
       gone = false;
       return;
     } catch (e) {
@@ -259,12 +340,26 @@ async function watchFile(file: string, target: string, flags: Set<string>, image
  * `lede check`: print every diagnostic (or the JSON), repair first under --fix, and exit 1 if any is an error. With `--external`, what
  * the page gives away is reported too, as warnings, and any of it is also exit 1; under --fix it is replaced after the other repairs.
  */
-async function check(files: string[], flags: Set<string>, imageMax: number | null, allow: string[]): Promise<number> {
+async function check(
+  files: string[],
+  flags: Set<string>,
+  imageMax: number | null,
+  allow: string[],
+  theme: ThemeFlag | null,
+): Promise<number> {
   const external: ExternalOptions | null = flags.has('--external') ? { allow } : null;
   let bad = 0;
   let warned = 0;
   let leaks = 0;
   const all: Record<string, Diagnostic[]> = {};
+  // The tokens file is checked once, ahead of the documents, and reported under its own name.
+  const brand = theme ? loadTheme(theme) : null;
+  if (brand && theme) {
+    all[theme.path] = brand.diagnostics;
+    if (!flags.has('--json')) report(theme.path, brand.src, brand.diagnostics);
+    bad += brand.diagnostics.filter((d) => d.severity === 'error').length;
+    warned += brand.diagnostics.filter((d) => d.severity === 'warning').length;
+  }
   for (const f of files) {
     const dry = flags.has('--dry-run');
     // Under --fix a file is rewritten in place; stdin was refused before we got here, so `f` is a real path.
@@ -290,7 +385,7 @@ async function check(files: string[], flags: Set<string>, imageMax: number | nul
     }
     // Files are reported one after the other, in the order given, and stdin can be read only once.
     // oxlint-disable-next-line eslint/no-await-in-loop -- sequential on purpose
-    const { src, doc } = await load(f, flags.has('--artifact'), imageMax, external);
+    const { src, doc } = await load(f, flags.has('--artifact'), imageMax, external, brand !== null);
     all[nameOf(f)] = doc.diagnostics;
     if (!flags.has('--json')) report(nameOf(f), src, doc.diagnostics);
     bad += doc.diagnostics.filter((d) => d.severity === 'error').length;
@@ -317,9 +412,10 @@ const FLAGS = [
   '--dry-run',
   '--link-images',
   '--external',
+  '--theme-strict',
 ];
 /** What a misspelled option is compared with: the flags, plus the options that take a value and the ones `main` handles before it parses. */
-const KNOWN_OPTIONS = [...FLAGS, '--allow', '--help', '--version', '-o', '--image-max', '-h', '-V'];
+const KNOWN_OPTIONS = [...FLAGS, '--allow', '--help', '--version', '-o', '--image-max', '--theme', '-h', '-V'];
 
 interface Args {
   cmd: Command;
@@ -327,6 +423,8 @@ interface Args {
   out: string | null;
   /** `--image-max` in bytes, or null when it was not given. */
   imageMax: number | null;
+  /** `--theme`'s file, or null when it was not given. */
+  theme: string | null;
   flags: Set<string>;
   /** The names of `--allow=`, all of them. */
   allow: string[];
@@ -376,6 +474,7 @@ function parseArgs(argv: string[]): Args | UsageError {
   const allow: string[] = [];
   let out: string | null = null;
   let imageMax: number | null = null;
+  let theme: string | null = null;
   let options = true; // until `--`, after which every word is a FILE
   for (let i = 0; i < rest.length; i++) {
     const a = rest[i];
@@ -399,11 +498,18 @@ function parseArgs(argv: string[]): Args | UsageError {
         .filter(Boolean);
       if (a === '--allow' || !names.length) return { usage: '--allow needs host names: --allow=host1,host2' };
       allow.push(...names);
+    } else if (a === '--theme' || a.startsWith('--theme=')) {
+      // As for -o: a value that is itself an option is a forgotten value; --theme=-x says it on purpose.
+      const value = a === '--theme' ? rest[++i] : a.slice('--theme='.length);
+      if (!value || (a === '--theme' && value.startsWith('-'))) return { usage: '--theme needs a tokens file' };
+      if (theme !== null) return { usage: '--theme given more than once' };
+      theme = value;
     } else if (FLAGS.includes(a)) flags.add(a);
     else if (a !== '-' && a.startsWith('-')) return { usage: unknownOption(a) };
     else files.push(a);
   }
   if (!files.length) return { usage: 'no file given' };
+  if (flags.has('--theme-strict') && theme === null && cmd !== 'ast') return { usage: '--theme-strict needs --theme FILE' };
   const stdin = files.filter((f) => f === '-').length;
   if (stdin > 1) return { usage: '- (stdin) can be given only once' };
   if (stdin && cmd === 'watch') return { usage: 'watch needs a file, not - (stdin)' };
@@ -411,7 +517,7 @@ function parseArgs(argv: string[]): Args | UsageError {
     return { usage: '--fix and --dry-run rewrite the file, and a document read from - (stdin) has none' };
   // Silence would read as a clean page: a list of names that nothing checks is a mistake, not an ignored flag.
   if (cmd === 'check' && allow.length && !flags.has('--external')) return { usage: '--allow only means something with --external' };
-  return { cmd: cmd as Command, files, out, imageMax, flags, allow };
+  return { cmd: cmd as Command, files, out, imageMax, theme, flags, allow };
 }
 
 /** True when both paths are one existing file, whatever the names: a symlink or a hard link to it counts, and a path not yet written does not. */
@@ -452,7 +558,7 @@ async function main(argv: string[]): Promise<number> {
     process.stderr.write(`${parsed.usage === null ? '' : `lede: ${parsed.usage}\n`}${USAGE}\n`);
     return 2;
   }
-  const { cmd, files, out, imageMax, flags, allow } = parsed;
+  const { cmd, files, out, imageMax, theme, flags, allow } = parsed;
   // What `build`, `watch` and `check` do with local images: inline them up to this many bytes each, or (null) leave the paths.
   const images = flags.has('--link-images') ? null : (imageMax ?? DEFAULT_IMAGE_MAX);
   if ((cmd === 'build' || cmd === 'watch') && flags.has('--shell') && flags.has('--unsafe-html')) {
@@ -470,6 +576,18 @@ async function main(argv: string[]): Promise<number> {
       return 2;
     }
   }
+  // `ast` prints the parse and takes no theme. For the others the file is read here, so that one that cannot be used is a usage error
+  // before anything is built; `build`, `watch` and `check` read it again for themselves (a watch for every rebuild).
+  const brand: ThemeFlag | null = cmd !== 'ast' && theme !== null ? { path: theme, strict: flags.has('--theme-strict') } : null;
+  if (brand) {
+    try {
+      loadTheme(brand);
+    } catch (e) {
+      if (!(e instanceof ThemeFileError)) throw e;
+      process.stderr.write(`lede: ${e.message}\n`);
+      return 2;
+    }
+  }
   // The page goes to OUT, so OUT must not be the document: `build ok.lede -o ok.lede` would turn the source into HTML.
   const watched = cmd === 'watch' ? watchTarget(files[0], out) : null;
   const target = watched ?? (cmd === 'build' ? out : null);
@@ -480,14 +598,14 @@ async function main(argv: string[]): Promise<number> {
   }
   switch (cmd) {
     case 'build':
-      return (await build(files[0], out, flags, images)) ? 0 : 1;
+      return (await build(files[0], out, flags, images, brand)) ? 0 : 1;
     case 'check':
-      return await check(files, flags, images, allow);
+      return await check(files, flags, images, allow, brand);
     case 'ast':
       process.stdout.write(`${JSON.stringify((await load(files[0])).doc, null, 2)}\n`);
       return 0;
     case 'watch':
-      return watched === null ? 2 : await watchFile(files[0], watched, flags, images);
+      return watched === null ? 2 : await watchFile(files[0], watched, flags, images, brand);
   }
   return 2;
 }

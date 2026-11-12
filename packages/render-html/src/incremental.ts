@@ -431,7 +431,7 @@ class Renderer implements Incremental {
 
   /** The page stylesheet for `meta`, with the controls', the editors' and the decision card's rules once the first of each has arrived. */
   private style(meta: Record<string, string>, dash = this.dash): string {
-    return styleOf(meta, this.controls, this.editors, dash, this.decided);
+    return styleOf(meta, this.controls, this.editors, dash, this.decided, this.renderOpts.theme);
   }
 
   /**

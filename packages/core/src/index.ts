@@ -16,6 +16,10 @@ export { EMPTY, FIELD_KINDS, NOT_CHOSEN, SLOT_RE, exportsOf, fieldsOf, presetsOf
 export { bareCell, cellNum, num, parseInlineCsv } from './lex.ts';
 export { fix, type AppliedFix, type FixResult } from './fix.ts';
 export { HEX_COLOR, THEME_SURFACES, usableAccent } from './contrast.ts';
+export { FIXED_TOKENS, PALETTES, PALETTE_NAMES, PALETTE_TOKENS, paletteSurfaces } from './palette.ts';
+export type { PaletteName, PaletteToken, PaletteTokens, ThemeName } from './palette.ts';
+export { AA_BODY, THEME_MAX_BYTES, THEME_SERIES_MAX, ThemeFileError, parseTheme, themeHex } from './theme.ts';
+export type { ThemeResult, ThemeTokens } from './theme.ts';
 export { browserUrl, httpsUrl, httpsUrlProblem, imageSrcKind } from './url.ts';
 export { artifactDiagnostics } from './artifact.ts';
 export { walkBlocks } from './walk.ts';

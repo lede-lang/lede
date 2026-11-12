@@ -1,14 +1,19 @@
 // WCAG 2.x contrast for `@accent` (D49). The HTML theme sets the accent as the link color and as
 // the ink of note labels, picked table headers and timeline dates, so it is text and needs 4.5:1
-// against every surface it sits on. These surfaces mirror the tokens in render-html's theme.ts;
-// a test there holds the two in step.
+// against every surface it sits on. The surfaces are read from the palette table (`palette.ts`), which
+// the renderer writes its stylesheet from, so the two cannot drift.
+import { paletteSurfaces, type ThemeName } from './palette.ts';
 
+/**
+ * The surfaces of the house palette, `paper`. Kept for compatibility: it is exported from `@lede-lang/core`, and is now derived from
+ * the palette table. `paletteSurfaces` is the entry point.
+ */
 export const THEME_SURFACES = {
-  light: { bg: '#fbfbfa', surface: '#ffffff', 'accent-tint': '#e9effb' },
-  dark: { bg: '#131416', surface: '#1b1c1f', 'accent-tint': '#1b2944' },
+  light: paletteSurfaces('paper', 'light'),
+  dark: paletteSurfaces('paper', 'dark'),
 } as const;
 
-export type ThemeName = keyof typeof THEME_SURFACES;
+export type { ThemeName };
 
 /** WCAG AA: 4.5:1 for normal-size text, 3:1 for non-text marks (borders, bars, rules). */
 export const AA_TEXT = 4.5;

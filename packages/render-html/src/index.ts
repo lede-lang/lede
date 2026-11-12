@@ -37,6 +37,7 @@ import {
   statusKey,
   type ParseOptions,
   type StatusTone,
+  type ThemeTokens,
 } from '@lede-lang/core';
 import sanitizeHtml from 'sanitize-html';
 import { renderChart } from './chart.ts';
@@ -77,6 +78,12 @@ export interface RenderOptions {
    * only on a page with a question and an `export`, and not on a `fragment`. Refused together with `unsafeHtml`.
    */
   shell?: boolean;
+  /**
+   * An operator's brand theme, as `parseTheme` in `@lede-lang/core` returns it (`--theme`, D80): its palette and chart colours replace the
+   * house ones in the stylesheet, light and dark, and the page's `@accent` is ignored (the parser's `themed` option says so in a warning).
+   * The `<style>` is the same in the full page and under `artifact`. Without it the page is the house page, byte for byte.
+   */
+  theme?: ThemeTokens;
 }
 
 const WIDE = new Set(['grid', 'diagram']);
@@ -94,7 +101,7 @@ export async function render(doc: LedeDocument, opts: RenderOptions = {}): Promi
   const title = mh.title;
   const main = mainElement(body, prose, dash);
   if (opts.fragment) return main;
-  const style = `<style>${styleOf(doc.meta, fields.length > 0 || exports.length > 0, usesEditors(fields, presets), dash, usesDecisions(doc.blocks))}</style>`;
+  const style = `<style>${styleOf(doc.meta, fields.length > 0 || exports.length > 0, usesEditors(fields, presets), dash, usesDecisions(doc.blocks), opts.theme)}</style>`;
   const scripts = shell ? `${shellScripts(ctx.page, fields, exports, presets)}\n` : '';
   if (opts.artifact) return `<title>${esc(title)}</title>\n${style}\n${main}\n${scripts}`;
   const desc = (doc.meta.description ? `\n<meta name="description" content="${esc(doc.meta.description)}">` : '') + headTags(doc, title);
@@ -150,8 +157,14 @@ export const isWide = (meta: Record<string, string>): boolean => meta.width === 
  * `dash`: the page is a dashboard (`layoutClass`), which takes the 64rem column and the dashboard rules (D80).
  * `decisions`: it holds a decision block (spec §4.20), which adds the card's rules.
  */
-export const styleOf = (meta: Record<string, string>, controls = false, editors = false, dash = false, decisions = false): string =>
-  css({ accent: meta.accent, theme: meta.theme, dash, controls, editors, decisions });
+export const styleOf = (
+  meta: Record<string, string>,
+  controls = false,
+  editors = false,
+  dash = false,
+  decisions = false,
+  theme?: ThemeTokens,
+): string => css({ ...(theme ? { tokens: theme } : { accent: meta.accent }), theme: meta.theme, dash, controls, editors, decisions });
 
 /** Whether `blocks`, or a grid or card among them, holds a decision. */
 export function usesDecisions(blocks: readonly Block[]): boolean {
@@ -252,7 +265,7 @@ export async function renderMain(
 
 /** Parse and render in one call. */
 export async function compile(src: string, opts: RenderOptions & ParseOptions = {}): Promise<{ html: string; doc: LedeDocument }> {
-  const doc = parse(src, opts);
+  const doc = parse(src, { ...opts, themed: opts.themed ?? opts.theme !== undefined });
   return { html: await render(doc, opts), doc };
 }
 

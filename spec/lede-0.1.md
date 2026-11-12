@@ -182,7 +182,8 @@ as for `accent-value`: a page's text contrast does not depend on the writer's co
 the one the accent lands on: with no `theme` the accent applies to the light theme and dark mode keeps the
 house accent, so only light is checked; with `theme dark` the dark theme is. The check runs once the whole
 document is read, so `@theme` may come after `@accent`. The compiler never darkens or lightens a color: it uses yours whole
-or not at all.
+or not at all. An operator's brand tokens (`lede build --theme`, §9) replace the palette, and then the page's `@accent` is ignored: W
+`theme-override` `{key}` with `key` `accent`, on each `@accent` line, and none of the checks above run on it.
 
 ### 4.4 Headings
 `#`, `##`, `###`. Deeper levels: W `heading-depth`, rendered as `###`. Empty text: E
@@ -753,6 +754,15 @@ written anywhere else was given on its declaration.
   the one `<link>` is a navigation, not a fetch: the CSP is unchanged and the page fetches nothing for these tags. `--artifact` writes none
   of them (§9).
 - No remote fetches by default (system font stacks, no remote images).
+- Brand tokens (D80). The stylesheet is written from one palette table in `@lede-lang/core` (`PALETTES`, the house palette is `paper`; the shared status,
+  chart and heat colours are `FIXED_TOKENS`), so there is one copy of every colour. `render(doc, { theme })`, `compile(src, { theme })` and the incremental
+  form take an optional validated `ThemeTokens`, which `parseTheme(text, { strict })` in `@lede-lang/core` returns with its diagnostics (§9). Its twelve
+  palette tokens (`--bg`, `--surface`, `--fg`, `--fg2`, `--muted`, `--line`, `--line2`, `--accent`, `--accent-tint`, `--accent-line`, `--accent-ink`,
+  `--info-bg`) replace the house ones in the light block, the dark block and print, and its chart colours replace `--c1`, `--c2`, ... from the first slot;
+  the status, heat and remaining chart colours stay the house ones, and the page's `@accent` is not used. Only `#rrggbb` reaches the stylesheet: a
+  theme that holds anything else is refused by the renderer (it throws), and one built by `parseTheme` cannot. The `<style>` under `artifact` is the full
+  page's, as ever, and a page rendered without a theme is the house page byte for byte. `ParseOptions.themed` makes the parser warn about `@accent` as
+  above.
 - Light and dark themes from CSS custom properties; `prefers-color-scheme` plus
   `data-theme="light|dark"` on `<html>` to override. Print uses the light tokens whatever the device or `@theme` says (paper is
   white), keeps a figure, card, note, quote or table row on one page where it fits, and wraps code lines.
@@ -787,7 +797,7 @@ with a migration note; once 1.0 ships, grammar changes follow an RFC process (to
 The command is `lede`, the bin of the npm package `@lede-lang/cli` (Node 22.12+; it runs as compiled JavaScript). The library
 packages are `@lede-lang/core` (parser) and `@lede-lang/html` (renderer). The three share one version (D48).
 
-`lede check FILE... [--json] [--fix [--dry-run]] [--artifact] [--image-max=SIZE] [--link-images] [--external [--allow=HOST,...]]` prints every diagnostic and exits 1 if any is an error, 0 otherwise (2 for
+`lede check FILE... [--json] [--fix [--dry-run]] [--artifact] [--image-max=SIZE] [--link-images] [--external [--allow=HOST,...]] [--theme TOKENS [--theme-strict]]` prints every diagnostic and exits 1 if any is an error, 0 otherwise (2 for
 a usage error or a missing file). Without `--json`, its last line, on stderr, is `ok` only when no file had a diagnostic of either
 severity; otherwise it is the counts summed over every file: `1 warning(s)`, `2 error(s)` or `1 error(s), 2 warning(s)`. A warning leaves
 the exit code at 0 but never gets `ok`: read the diagnostics above that line, since the exit code does not carry them. With `--json` there
@@ -839,7 +849,7 @@ is cut); every span in the file is replaced, a PEM block with its line breaks ke
 other repairs, and its exit code is that of the file as written. Replacements are not marked a guess. Reading the result finds nothing more. `lede build`
 does not read `--external` and never changes the text: redaction is an edit to the source, made once and reviewed, not a transform at build time.
 
-`lede build FILE [-o OUT] [--force] [--unsafe-html] [--allow-remote] [--artifact] [--shell] [--image-max=SIZE] [--link-images]` compiles the first FILE to one page. Diagnostics go to stderr as
+`lede build FILE [-o OUT] [--force] [--unsafe-html] [--allow-remote] [--artifact] [--shell] [--image-max=SIZE] [--link-images] [--theme TOKENS [--theme-strict]]` compiles the first FILE to one page. Diagnostics go to stderr as
 for `check`. With `-o` the page is written to OUT and a size line goes to stderr; without it the page goes to stdout. `-o=OUT` is the same as `-o OUT`; `-o` with
 no name after it, or with another option after it, is a usage error, and so is a second `-o`. OUT must not be the same file as any FILE (a symlink or hard link to it
 counts, and OUT need not exist yet): `lede` refuses with exit 2 instead of turning the source into HTML. A document with
@@ -860,7 +870,8 @@ and stderr says so. With `--artifact` the data block and runtime follow `<main>`
 meta tags are still omitted, so the Artifact host's own policy decides whether the runtime runs. `--shell` with `--unsafe-html` is a
 usage error: raw `html` could plant its own controls and data block. Exit codes for every
 command: 0 on success; 1 for `build` on errors without `--force` and for `check` on errors or, with `--external`, on any finding; 2 for a usage error (no command, an
-unknown command, no FILE, an option no command knows, `-o` without a name, `--image-max` without a size, `--allow` without a list or without `--external`, `--shell` with `--unsafe-html`, OUT the same file as a FILE, `-` misused as
+unknown command, no FILE, an option no command knows, `-o` without a name, `--image-max` without a size, `--allow` without a list or without `--external`, `--theme` without a file or given twice, `--theme-strict` without
+`--theme`, a tokens file that cannot be used (below), `--shell` with `--unsafe-html`, OUT the same file as a FILE, `-` misused as
 below) or a FILE that is missing or is a directory; 70 for an internal error, such as OUT not being writable or its directory missing. An exit-70 failure
 prints one line to stderr, `lede: MESSAGE`; with the environment variable `LEDE_DEBUG` set it prints the stack as well.
 An option that no command knows (`--shel`, `-x`) is a usage error: stderr gets `lede: unknown option --shel; did you mean --shell?` (the
@@ -873,6 +884,42 @@ is a usage error that says so), and after `--` every word is a FILE, so `lede ch
 directory's tree as for a file. `-` may be given once, and not with `watch`, `--fix` or `--dry-run`, which need a file to watch or to rewrite: each is a usage error
 (exit 2). `build -` without `-o` writes the page to stdout as for a file. `lede version`, `lede --version` and `lede -V` print the version of the CLI package, one
 line, to stdout and exit 0; `lede --help` lists them.
+
+**Brand tokens (D80).** `--theme TOKENS` (`build`, `watch` and `check`; `ast` ignores it) gives the page an operator's palette. TOKENS is a path named by the
+operator, so it is not confined to the document's directory; it must be a regular file of at most 64 KiB and is read as JSON and nothing else. A
+file that is missing, not a regular file, over the limit, not JSON, or not a JSON object is a usage error (exit 2, `lede: --theme TOKENS: REASON`, with the path as given). The
+object may hold `accent`, `light`, `dark`, `series` and no other key; each is optional, and a token the file leaves out keeps the house palette's value.
+- `accent`: the brand accent for both themes. It colours links and labels, so it is also the `accent-ink` of each theme unless that theme names one.
+- `light` and `dark`: tokens named as the CSS custom properties of §7 are (`bg`, `surface`, `fg`, `fg2`, `muted`, `line`, `line2`, `accent`, `accent-tint`,
+  `accent-line`, `accent-ink`, `info-bg`). A theme's `accent` wins over the file's. The design's `tint` and `fg3` are `accent-tint` and `muted`; naming them
+  is W `theme-key` with the real name suggested.
+- `series`: one to eight chart colours, `--c1`, `--c2`, ... in that order; the slots after them keep the house colours.
+- `fonts` is W `theme-key` (`reason` `unsupported`) and ignored: there are no font pairings to name. Any other key is W `theme-key`, ignored.
+
+A value must be `#rgb` or `#rrggbb`, in either case (written to the page as lower-case `#rrggbb`). Anything else, alpha forms included, is E `theme-value`
+`{key, value}` at the key, and the value is ignored; `key` is the path (`light.bg`, `series.0`) and `value` is the text as JSON, cut at 40 characters. Nothing from the file reaches the
+stylesheet but a validated hex colour, so a value cannot carry markup, a URL or a declaration. Surfaces (`bg`, `surface`, `accent-tint`, `info-bg`) and
+rules are taken as written. The text colours are held to WCAG 2.x AA on the surfaces they sit on, in each theme, with ratios rounded down to two decimals:
+`fg` at 7:1 on `bg`, `surface`, `accent-tint` and `info-bg`, and at 4.5:1 on the five heat steps (heat cells carry `fg`); `fg2` at 4.5:1 on the four surfaces;
+`muted` at 4.5:1 on `bg` and `surface`; `accent` and `accent-ink` at 4.5:1 on `bg`, `surface` and `accent-tint`; and each `series` colour at 3:1 on `bg` and
+`surface`. The pages' later parts need no rule of their own, because they read these same tokens: the `info` pill and edge tone are `accent-ink` on
+`accent-tint`, the `neutral` ones `fg2` on `info-bg`, and the decision card, the callout kinds and the facts row use `fg`, `fg2` and `muted` on `bg` and
+`surface`; the `good`, `warn` and `bad` colours are the house's and are not themed. A colour that fails is moved, not refused, which is the opposite of the rule for a page's `@accent` (§4.3) and on purpose: a writer's accent is one
+colour in a page they wrote and is used whole or not at all; a house palette is a brand to be matched as closely as AA allows. It is moved in OKLCH lightness only:
+hue and chroma are kept (chroma is reduced only where sRGB has no colour of that lightness with it), the lightness is searched by halving on each side of the
+colour, and the nearer passing value is used, tested as the 8-bit colour that is written. The colour moved is reported as W `theme-adjusted`
+`{token, theme, from, to, ratio, required, against}` at its key (at `accent`, or at the theme, when the colour came from the file's `accent` or was not in the file):
+`token` is the custom property's name without `--` (`c3` for the third series colour), `theme` is `light` or `dark`, `ratio` is the lowest ratio the new colour has
+among the checks it was held to, relative to what each needs, `required` the ratio that check needs and `against` the surface or heat step (`h1` to `h5`) it
+was on; an `accent` that came from the file's own `accent` is reported once per theme, with its ink moving with it. If no lightness can make a colour read on the surfaces
+the file chose (a mid-grey `bg`), the colour stays as written and E `theme-surface` `{token, theme, required, against}` says to change the surfaces. `--theme-strict`
+makes each W `theme-adjusted` an error (the page is still built with the moved colours under `--force`). `--theme-strict` without `--theme` is a usage error.
+
+Under `--theme`, a page's `@accent` is ignored, with W `theme-override` `{key}` (`key` is `accent`) on each `@accent` line, and no `accent-value` or `accent-contrast` is raised for it.
+The tokens file's diagnostics have the file's name, with line and column in it, and are printed before the document's; `check --json` carries them under the
+file's path as a key of its own. Errors in them count like errors in a document: `build` does not write the page (unless `--force`), `check` exits 1. `watch`
+reads the file again for every build, so a save of the page picks up a new one; a change to the tokens file alone does not rebuild, and one that cannot be used is one line on stderr
+while watching goes on. `--artifact` writes the same `<style>` as the full page. Without `--theme` the output is what it was.
 
 **Local images (D80).** `build`, `watch` and `check` write each `image` block whose source is a local path (§4.16) into the page as a `data:` URI of
 the file, so a page with pictures is one file. `ast` and the libraries leave the path as written. The path is read as a browser reads it (§4.16) and resolved
@@ -889,8 +936,8 @@ a later, smaller image may still fit), `type` (not one of the six types, or empt
 is printed like any other diagnostic by `build`, `watch` and `check`, and `check --json` carries it, so `check` and `build` agree on every page. `http(s)` sources are never
 fetched, with or without `--allow-remote`, and a `data:` source passes through unchanged.
 
-`lede watch FILE [-o OUT]` builds FILE to OUT, or to `NAME.html` beside `NAME.lede`, then rebuilds on every change until stopped. It always
-renders as if `--force` were given, and honours `--unsafe-html`, `--allow-remote`, `--shell`, `--image-max` and `--link-images`; a change to an image file
+`lede watch FILE [-o OUT] [--theme TOKENS [--theme-strict]]` builds FILE to OUT, or to `NAME.html` beside `NAME.lede`, then rebuilds on every change until stopped. It always
+renders as if `--force` were given, and honours `--unsafe-html`, `--allow-remote`, `--shell`, `--image-max`, `--link-images`, `--theme` and `--theme-strict`; a change to an image file
 does not rebuild, only a change to FILE does. With `--shell`, the note that the flag had no
 effect is printed on the first build it holds for, and again only if a page that took the shell stops doing so; it is not repeated on every save. It watches FILE's
 directory and picks FILE's events by name, so an editor's save that writes a temporary file and renames it over FILE is seen like an in-place write. Only the first
@@ -925,7 +972,9 @@ step, rule}` (`rule` is `order`, `step`, `range`, `grid`, `grid-max` or `count`)
 the surface (`bg`, `surface` or `accent-tint`). So does `external` (above) `{kind, text}`. So does `status-value` (§4.3) `{word, tone, allowed}`: the entry as written, with `allowed`
 the five tones. So does `note-kind` (§4.7) `{word, use}`. So does `meta-url` (§4.3) `{key, value, kind}`: `key` is `image` or `canonical`,
 `value` the text as written and `kind` one of `relative`, `data`, `scheme` or `invalid`. So does `artifact-image` `{src, kind}`: `src` is the image path as written and `kind` is
-`local`. So does `image-inline` `{src, reason}`: `src` is the path as written and `reason` is `size`, `page-size`, `type`, `missing` or `outside`. So does `heading-skip` (§4.4) `{from, to}`: the level of the heading before and of this one, as written (`--fix` leaves it). So does the error
+`local`. So does `image-inline` `{src, reason}`: `src` is the path as written and `reason` is `size`, `page-size`, `type`, `missing` or `outside`. The brand-token codes carry it too:
+`theme-value` `{key, value}`, `theme-key` `{key}` (`fonts` also has `reason`), `theme-adjusted` `{token, theme, from, to, ratio, required, against}`, `theme-surface`
+`{token, theme, required, against}` and `theme-override` `{key}`. So does `heading-skip` (§4.4) `{from, to}`: the level of the heading before and of this one, as written (`--fix` leaves it). So does the error
 form of `data-redefined` (§4.11) `{name, columns, redefined}`; the warning of the same code has none.
 New keys may be added; existing ones are not removed or retyped within 0.x.
 

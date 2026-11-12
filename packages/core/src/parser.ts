@@ -79,6 +79,11 @@ export interface ParseHooks {
 export interface ParseOptions {
   /** Resolves `data name < path`. Without it, file data is an error (browsers, sandboxes). */
   loadFile?: (path: string) => string;
+  /**
+   * An operator's brand theme (`--theme`, D80) is in force: the page's `@accent` is ignored, with W `theme-override` `{key}` on its
+   * line, and is not checked for contrast. The renderer takes the theme itself in its own options.
+   */
+  themed?: boolean;
 }
 
 export const KEYWORDS = [
@@ -530,6 +535,10 @@ export class LedeParser {
   // ------------------------------------------------------------ accent (D49)
 
   private accentMeta(v: string, L: number, col: number): void {
+    if (this.opts.themed) {
+      this.diag('warning', 'theme-override', '@accent is ignored: the --theme file sets the accent', L, col, { key: 'accent' });
+      return;
+    }
     if (HEX_COLOR.test(v)) {
       this.accentAt = { line: L, col };
       return;

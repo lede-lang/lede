@@ -1,20 +1,47 @@
 // The compiler owns the design: every color is a token, redefined for dark mode.
 // Categorical series colors are the validated eight-slot order from the dataviz
 // reference palette (adjacent-pair CVD ΔE ≥ 8 in both modes).
-import { usableAccent } from '@lede-lang/core';
+import { FIXED_TOKENS, PALETTES, usableAccent, type PaletteTokens, type ThemeName, type ThemeTokens } from '@lede-lang/core';
 
-const LIGHT = `
-  --bg:#fbfbfa; --surface:#ffffff; --fg:#16181d; --fg2:#4d515c; --muted:#6b707c; --line:#dcdde1; --line2:#c4c6cc;
-  --accent:#2357c6; --accent-tint:#e9effb; --accent-line:#bccbec; --accent-ink:#1d4aa8; --good:#1c7a4a; --good-bg:#e6f4ec; --bad:#b4372f; --bad-bg:#fbeceb; --bad-line:#e9a9a3; --warn:#8a5a00; --warn-bg:#fff6e0; --warn-line:#e8c26b; --info-bg:#f1f2f4;
-  --c1:#2a78d6; --c2:#eb6834; --c3:#1baf7a; --c4:#eda100; --c5:#e87ba4; --c6:#008300; --c7:#6250d6; --c8:#e34948; --cm:#b4b7bf;
-  --h1:#cde2fb; --h2:#9ec5f4; --h3:#6da7ec; --h4:#5598e7; --h5:#3987e5;
-  color-scheme:light;`;
-const DARK = `
-  --bg:#131416; --surface:#1b1c1f; --fg:#eceef1; --fg2:#b9bcc4; --muted:#9a9ea8; --line:#2e3035; --line2:#41444b;
-  --accent:#7aa7ff; --accent-tint:#1b2944; --accent-line:#2f4670; --accent-ink:#9dbdff; --good:#5cc48d; --good-bg:#15291e; --bad:#f07a70; --bad-bg:#2e1715; --bad-line:#6e2f2a; --warn:#f0c062; --warn-bg:#2a2210; --warn-line:#6b5420; --info-bg:#24262b;
-  --c1:#3987e5; --c2:#d95926; --c3:#199e70; --c4:#c98500; --c5:#d55181; --c6:#008300; --c7:#9085e9; --c8:#e66767; --cm:#4b4e56;
-  --h1:#0d366b; --h2:#104281; --h3:#184f95; --h4:#1c5cab; --h5:#256abf;
-  color-scheme:dark;`;
+/**
+ * Every token's declaration, in the order the stylesheet writes them. The palette tokens come from core's palette table and the
+ * shared status, series and heat colours from its fixed table, so no hex value is written here (internal spec, lede-lang/meta).
+ */
+const GROUPS = [
+  ['bg', 'surface', 'fg', 'fg2', 'muted', 'line', 'line2'],
+  [
+    'accent',
+    'accent-tint',
+    'accent-line',
+    'accent-ink',
+    'good',
+    'good-bg',
+    'bad',
+    'bad-bg',
+    'bad-line',
+    'warn',
+    'warn-bg',
+    'warn-line',
+    'info-bg',
+  ],
+  ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'cm'],
+  ['h1', 'h2', 'h3', 'h4', 'h5'],
+];
+/** The only form a colour takes in the stylesheet. A `--theme` file is validated to it, and this refuses anything else a caller hands over. */
+const HEX = /^#[0-9a-f]{6}$/;
+
+/** The declarations of one theme: a palette, with the page's own chart colours (`series`, from the first slot) over the house ones. */
+function tokens(theme: ThemeName, palette: PaletteTokens, series: readonly string[] = []): string {
+  const v: Record<string, string> = { ...palette, ...FIXED_TOKENS[theme] };
+  series.slice(0, 8).forEach((c, i) => (v[`c${i + 1}`] = c));
+  const decl = (k: string): string => {
+    if (!HEX.test(v[k])) throw new TypeError(`theme token ${k} is not a #rrggbb colour`);
+    return `--${k}:${v[k]};`;
+  };
+  return `\n  ${GROUPS.map((g) => g.map(decl).join(' ')).join('\n  ')}\n  color-scheme:${theme};`;
+}
+const HOUSE_LIGHT = tokens('light', PALETTES.paper.light);
+const HOUSE_DARK = tokens('dark', PALETTES.paper.dark);
 
 /** The question words' controls (spec §4.18). Added only to a page that has a field or an `export`, so other pages are unchanged. */
 const CONTROLS = `/* question words */
@@ -127,6 +154,10 @@ const DECISIONS = `/* decision blocks */
 @media print{.decision{break-inside:avoid}}
 `;
 
+/**
+ * The page stylesheet. `tokens` is an operator's validated brand theme (`--theme`, D80): its palette and chart colours replace the
+ * house ones in both themes, and the page's own `accent` is not used (the caller leaves it out).
+ */
 export function css(opts: {
   accent?: string;
   theme?: string;
@@ -138,10 +169,14 @@ export function css(opts: {
   editors?: boolean;
   /** A page that holds a decision block: the card's rules. */
   decisions?: boolean;
+  tokens?: ThemeTokens;
 }): string {
   // Only a hex color that passes AA text contrast reaches the stylesheet (D49, D77); the parser warns on the rest.
   const picked = usableAccent(opts.accent, opts.theme);
   const accent = picked ? `--accent:${picked};--accent-ink:${picked};` : '';
+  const T = opts.tokens;
+  const LIGHT = T ? tokens('light', T.light, T.series?.light) : HOUSE_LIGHT;
+  const DARK = T ? tokens('dark', T.dark, T.series?.dark) : HOUSE_DARK;
   const forced =
     opts.theme === 'dark'
       ? `:root{${DARK}}`

@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { Parser } from 'htmlparser2';
-import { HEX_COLOR, fieldsOf, parse, type ExportFormat, type QuestionBlock } from '@lede-lang/core';
+import { HEX_COLOR, fieldsOf, parse, parseTheme, themeHex, type ExportFormat, type QuestionBlock } from '@lede-lang/core';
 import { compile, render } from '../src/index.ts';
 import { serializeExport } from '../src/export.ts';
 import { browserTest, type Browser } from './chrome.ts';
@@ -190,8 +190,12 @@ function audit(html: string, opts: { allowRemote?: boolean; fields?: FieldKind[]
   if (/<\/|url\(|@import|expression\(|javascript:|behavio(u)?r\s*:|-moz-binding/i.test(css))
     bad.push('stylesheet carries markup, url() or script');
   if ((css.match(/\{/g) ?? []).length !== (css.match(/\}/g) ?? []).length) bad.push('stylesheet braces do not balance');
-  for (const m of css.matchAll(/--accent(?:-ink)?:([^;}]*)/g))
-    if (!HEX_COLOR.test(m[1].trim())) bad.push(`accent value is not a hex color: ${m[1]}`);
+  // Every colour token the stylesheet declares is a hex colour: the page's `@accent`, and the operator's brand tokens (D80), which the
+  // renderer writes into every block of the palette.
+  for (const m of css.matchAll(
+    /--(accent(?:-ink)?|bg|surface|fg2?|muted|line2?|accent-(?:tint|line)|info-bg|(?:good|bad|warn)(?:-bg|-line)?|c[1-8m]|h[1-5]):([^;}]*)/g,
+  ))
+    if (!HEX_COLOR.test(m[2].trim())) bad.push(`--${m[1]} value is not a hex color: ${m[2]}`);
 
   // Raw, parser-independent: escaped text never yields `<` followed by a letter, so every such `<` is a real tag. A shell page's two
   // script elements are judged separately below and left out here: the runtime's own source is full of `<` and `=>`.
@@ -476,6 +480,15 @@ test('the audit catches what it claims to catch', () => {
   ])
     assert.notDeepEqual(audit(page(bad), { fields: fieldA }), [], bad);
   assert.notDeepEqual(audit(page('').replace('a{}', ':root{--accent:red}')), []);
+  for (const decl of [
+    '--bg:red',
+    '--surface:url(//xss.example/a.png)',
+    '--c3:#fff;}body{background:url(//x)',
+    '--h5:var(--bg)',
+    '--info-bg:#12345',
+    '--accent-line:expression(1)',
+  ])
+    assert.notDeepEqual(audit(page('').replace('a{}', `:root{${decl}}`)), [], decl);
   assert.notDeepEqual(audit(page('').replace('a{}', ':root{--accent:#fff;}body{background:url(//x)}')), []);
 });
 
@@ -642,6 +655,45 @@ test(`${corpus.cases.length} single-document cases`, async () => {
     for (const s of c.hasNot ?? []) if (html.includes(s)) fails.push(`${where}: output has ${JSON.stringify(s)}`);
   }
   assert.deepEqual(fails, []);
+});
+
+// ------------------------------------------------------------------ brand tokens (D80)
+
+test(`brand tokens: ${corpus.strings.length} strings in every value position of a tokens file reach no page`, async () => {
+  const fails: string[] = [];
+  const src = '# Brand\n\nBody text.\n\nkpi A | 1 | +1 | good\n';
+  const mark = '#a0a0a0';
+  for (const [i, p] of corpus.strings.entries()) {
+    if (themeHex(p) !== null) continue;
+    const where = `tokens ${i} ${JSON.stringify(p).slice(0, 60)}`;
+    const file = JSON.stringify({
+      accent: p,
+      light: { bg: p, fg2: p, 'accent-line': p },
+      dark: { 'info-bg': p, muted: mark },
+      series: [p, '#2a78d6'],
+      [p]: p,
+    });
+    const r = parseTheme(file);
+    const errors = r.diagnostics.filter((d) => d.severity === 'error');
+    if (errors.length !== 6 || errors.some((d) => d.code !== 'theme-value'))
+      fails.push(`${where}: errors ${JSON.stringify(errors.map((d) => d.code))}, expected six theme-value`);
+    for (const d of r.diagnostics.filter((x) => x.severity === 'warning'))
+      if (!['theme-key', 'theme-adjusted'].includes(d.code)) fails.push(`${where}: unexpected warning ${d.code}`);
+    // What is left is valid hex only: the one good value is kept, and nothing of the payload is in the theme.
+    if (JSON.stringify(r.theme).includes(p) && p.length > 8) fails.push(`${where}: the payload is in the theme`);
+    const { html } = await compile(src, { theme: r.theme });
+    outputs.push({ label: where, html, allowRemote: false, fields: [] });
+    if (html.includes(p)) fails.push(`${where}: the payload is in the page`);
+    if (!html.includes(`--muted:${r.theme.dark.muted};`) || r.theme.dark.muted === '#9a9ea8')
+      fails.push(`${where}: the valid value was not kept`);
+  }
+  assert.deepEqual(fails, []);
+  // A theme of extreme but valid colours is a page like any other.
+  const { theme } = parseTheme(
+    '{"accent":"#fff","light":{"bg":"#000","surface":"#000"},"dark":{"bg":"#fff","surface":"#fff"},"series":["#000","#fff"]}',
+  );
+  const { html } = await compile(src, { theme });
+  outputs.push({ label: 'tokens extreme', html, allowRemote: false, fields: [] });
 });
 
 test('every output passes the audit', () => {
