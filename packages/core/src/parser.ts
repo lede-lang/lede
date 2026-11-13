@@ -2086,8 +2086,9 @@ export class LedeParser {
       const body = rest.slice(eq.index + eq[0].length);
       const name = `_table${++this.anon}`;
       const bodyCol = col + eq.index + eq[0].length;
-      // A header with a pipe separator outside double quotes is a pipe header: it is split at the pipes and nowhere else.
-      const pipes = pipeOutsideQuotes(body) >= 0 ? splitPipes(body) : [];
+      // A header with a pipe separator outside double quotes is a pipe header: it is split at the pipes and nowhere else. A `;`
+      // outside quotes ends a CSV header row, so `= Key,Meaning; a | b,either` stays the CSV table it always was.
+      const pipes = pipeOutsideQuotes(body) >= 0 && pipeOutsideQuotes(body, ';') < 0 ? splitPipes(body) : [];
       if (pipes.length > 1) d = { name, columns: pipes, rows: [], line: L };
       else {
         const csv = parseInlineCsv(body);

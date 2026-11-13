@@ -58,6 +58,24 @@
       "type": "paragraph",
       "text": ": a table that has a row on its line takes none, so this is prose too",
       "line": 19
+    },
+    {
+      "type": "table",
+      "data": "_table5",
+      "cols": null,
+      "sort": null,
+      "limit": null,
+      "title": null,
+      "line": 21
+    },
+    {
+      "type": "table",
+      "data": "_table6",
+      "cols": null,
+      "sort": null,
+      "limit": null,
+      "title": null,
+      "line": 23
     }
   ],
   "data": {
@@ -136,6 +154,34 @@
         ]
       ],
       "line": 18
+    },
+    "_table5": {
+      "name": "_table5",
+      "columns": [
+        "Key",
+        "Meaning"
+      ],
+      "rows": [
+        [
+          "a | b",
+          "either"
+        ]
+      ],
+      "line": 21
+    },
+    "_table6": {
+      "name": "_table6",
+      "columns": [
+        "Key",
+        "Meaning"
+      ],
+      "rows": [
+        [
+          "a",
+          "either"
+        ]
+      ],
+      "line": 23
     }
   },
   "diagnostics": []

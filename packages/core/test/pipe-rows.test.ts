@@ -161,8 +161,13 @@ test('a pipe header is read only when a separator sits outside double quotes: a 
   assert.deepEqual(old.data._table1.columns, ['a | b', 'c']);
   assert.deepEqual(old.data._table1.rows, [['1', '2']]);
   assert.deepEqual(parse('table = a,"b | c"; 1,2\n').data._table1.columns, ['a', 'b | c']);
-  // An unquoted separator in the header is the pipe form, which has no rows of its own: `;` and `,` are text.
-  assert.deepEqual(parse('table = a, b | c; d\n').data._table1.columns, ['a, b', 'c; d']);
+  // An unquoted separator in the header is the pipe form, which has no rows of its own: `,` is text.
+  assert.deepEqual(parse('table = a, b | c, d\n').data._table1.columns, ['a, b', 'c, d']);
+  // A `;` outside quotes is a CSV row break, so the line is the CSV table it was on the base, with ` | ` text in a cell.
+  const csv = parse('table = Key,Meaning; a | b,either\n');
+  assert.deepEqual(csv.data._table1.columns, ['Key', 'Meaning']);
+  assert.deepEqual(csv.data._table1.rows, [['a | b', 'either']]);
+  assert.deepEqual(csv.diagnostics, []);
 });
 
 test('a wrong count in a table row is E data-row-width on that row, and a bad option is reported on the table line', () => {

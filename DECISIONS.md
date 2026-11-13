@@ -1039,7 +1039,8 @@ SKILL.md now lists, uncounted until a session has an API key.
 - **Edge tones.** A last ` | tone` field on an edge or sequence message colours its line, arrowhead and label chip; the line
   style still carries the meaning. W `edge-tone`.
 - **Pipe rows.** `NAME: a | b | c` appends a row to a declared data set, and `table [opts] = H1 | H2` takes `: a | b` rows; `,`
-  and `;` are plain text in a pipe field. This is RFC #34 (gap-closure N3) built without its probe; over 866 tracked pages no
+  and `;` are plain text in a pipe field. A header with a `;` outside quotes is CSV as before, so a base table whose cell holds
+  ` | ` keeps its rows. This is RFC #34 (gap-closure N3) built without its probe; over 866 tracked pages no
   line changes meaning.
 - **Decision blocks.** `decision NAME "Question" [status=] [by=]` with `NAME: option`, `question` and `role` lines renders one
   static card; the keyword needs a name and a quote after it, so prose stays prose. A decision name shares the namespace of

@@ -322,9 +322,10 @@ table [options] = Option | Cost, USD | Verdict
 : Managed queue | 1,200 | **Fits**, mostly; cheap
 : Self-hosted | 3,400 | Needs an on-call rota
 ```
-- The header is a pipe header when a pipe separator (§2) sits outside double quotes: it is split at the pipes and nowhere else, so
-  `,` and `;` in a header cell are text. Otherwise it is the comma header as before (`table = a,b`), which opens the block form too
-  when it has no `;` rows. A header with a quoted ` | ` (`table = "a | b",c; 1,2`) is read as it always was.
+- The header is a pipe header when a pipe separator (§2) sits outside double quotes and no `;` does: it is split at the pipes and
+  nowhere else, so `,` in a header cell is text. Otherwise it is the comma header as before (`table = a,b`), which opens the block
+  form too when it has no `;` rows. A header with a quoted ` | ` (`table = "a | b",c; 1,2`), or rows after a `;` with a pipe in a
+  cell (`table = Key,Meaning; a | b,either`), is read as it always was: CSV, with ` | ` text in its cell.
 - A row is a line that begins with `:` followed by a space (or by nothing). It is split into pipe fields (§2) and appended to the table;
   fields keep their inline markup (§5), so a status word is still a chip. The first line of any other kind, a blank line included,
   ends the table, and a `:` line anywhere else (after a blank line, under a table that has rows on its own line, under no table)

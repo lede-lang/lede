@@ -234,10 +234,10 @@ export function parseCsvFile(text: string): { rows: string[][]; unclosedLine: nu
 }
 
 /**
- * Index of the first `|` that is not inside a double-quoted field, or -1. A quote opens only at the start of a field, as in
- * `parseInlineCsv`, so `12" pipe | Which?` still finds its `|`.
+ * Index of the first `|` (or `char`) that is not inside a double-quoted field, or -1. A quote opens only at the start of a field, as
+ * in `parseInlineCsv`, so `12" pipe | Which?` still finds its `|`.
  */
-export function pipeOutsideQuotes(s: string): number {
+export function pipeOutsideQuotes(s: string, char: '|' | ';' = '|'): number {
   let i = 0;
   let start = true;
   while (i < s.length) {
@@ -249,7 +249,7 @@ export function pipeOutsideQuotes(s: string): number {
         continue;
       }
     }
-    if (s[i] === '|') return i;
+    if (s[i] === char) return i;
     if (s[i] === ',' || s[i] === ';') start = true;
     i++;
   }

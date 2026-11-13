@@ -17,3 +17,8 @@ table = Name,Role
 : a colon line after a blank line is prose
 table = a,b; 1,2
 : a table that has a row on its line takes none, so this is prose too
+
+table = Key,Meaning; a | b,either
+
+table = Key | Meaning
+: a | either
