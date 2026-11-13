@@ -86,7 +86,7 @@ export interface IncrementalEnd {
   repicks: number;
   /** Diagrams drawn again after a statement followed their seal. */
   reseals: number;
-  /** Meta keys (accent, theme, width, title, subtitle, author, date, meta) that changed after the first block. */
+  /** Meta keys (accent, theme, width, title, subtitle, author, date, meta, status) that changed after the first block. */
   lateMeta: number;
   /** Times the prose class went on mid-stream (0 or 1). */
   proseFlips: number;
@@ -134,7 +134,8 @@ export interface IncrementalOptions extends RenderOptions {
 export const normalize = (html: string): string => html.replace(/>\s+</g, '><').trim();
 
 const STYLE_KEYS = ['accent', 'theme', 'width'] as const;
-const MAST_KEYS = ['title', 'subtitle', 'author', 'date', 'meta'] as const;
+/** What the masthead reads: `status` too, since a fact under the title may be a status word. */
+const MAST_KEYS = ['title', 'subtitle', 'author', 'date', 'meta', 'status'] as const;
 
 /** Adds `to` to the targets of `from`. */
 function add(next: Map<string, string[]>, from: string, to: string): void {
@@ -204,6 +205,8 @@ interface U {
   picks: boolean;
   /** The unit holds an `export`, which lists the page's question fields and its title. */
   exports: boolean;
+  /** The unit holds a table, a step run or a kpi row, which read the page's status words (`@status`). */
+  statuses: boolean;
   /** The fields and title (`exportKey()`) the unit's last drawing listed. */
   exportKey: string;
   /** A later drawing supersedes an earlier one that resolves after it. */
@@ -211,14 +214,16 @@ interface U {
 }
 
 /** What a unit's blocks hold, grids and cards included. */
-function inspect(blocks: Block[]): Pick<U, 'diagrams' | 'buckets' | 'decisions' | 'reads' | 'picks' | 'exports'> {
+function inspect(blocks: Block[]): Pick<U, 'diagrams' | 'buckets' | 'decisions' | 'reads' | 'picks' | 'exports' | 'statuses'> {
   const diagrams: DiagramBlock[] = [];
   const buckets: BucketBlock[] = [];
   const decisions: DecisionBlock[] = [];
   const reads = new Set<string>();
   let picks = false;
   let exports = false;
+  let statuses = false;
   walkBlocks(blocks, (b) => {
+    if (b.type === 'table' || b.type === 'steps' || b.type === 'kpis') statuses = true;
     if (b.type === 'diagram') diagrams.push(b);
     else if (b.type === 'bucket') buckets.push(b);
     else if (b.type === 'decision') decisions.push(b);
@@ -229,7 +234,7 @@ function inspect(blocks: Block[]): Pick<U, 'diagrams' | 'buckets' | 'decisions' 
       picks = true;
     } else if (b.type === 'kpis') for (const k of b.items) if (k.ref) reads.add(k.ref.split('.')[0]);
   });
-  return { diagrams, buckets, decisions, reads, picks, exports };
+  return { diagrams, buckets, decisions, reads, picks, exports, statuses };
 }
 
 /** The ops, and the drawings still pending, of several units drawn in one step. */
@@ -767,6 +772,10 @@ class Renderer implements Incremental {
     this.reexport(batch);
     // Diagrams still being written are finished: the stream ended.
     for (const d of this.byDiagram.keys()) if (!this.sealed.has(d)) batch.add(this.seal(d));
+    // A late `@status` changes the words a table, a step run or a kpi row drew before it: those units are drawn again (the
+    // masthead's facts follow with the rest of the late meta).
+    if (this.begun && (this.meta().status ?? '') !== (this.startMeta.status ?? ''))
+      for (const u of this.units) if (u.statuses) batch.add(this.redraw(u));
     await Promise.all(this.drawings);
     for (const more of await Promise.all(batch.pend)) ops.push(...more);
 

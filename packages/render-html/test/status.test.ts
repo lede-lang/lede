@@ -105,11 +105,15 @@ test('streaming: @status at the top reaches every unit before the settle, at chu
   }
 });
 
-test('streaming: @status written after a table is read is one settle case, and the settled page equals the whole render', async () => {
-  const src = `# Releases\n\ntable = Item,Status; a,Shipped; b,Parked\n\n@status Shipped=info, Parked=bad\n`;
+test('streaming: @status written after a table is late meta: the table and the facts are drawn again, with no settle', async () => {
+  const src = `@title Releases\n@meta Phase | Shipped\n\ntable = Item,Status; a,Shipped; b,Parked\n\nstep Ship it | Parked | the note\n\n@status Shipped=info, Parked=bad\n`;
   const expected = normalize(await render(parse(src, { loadFile }), { fragment: true }));
-  assert.deepEqual(pills(expected), ['info:Shipped', 'bad:Parked']);
-  const d = await drive(src, { chunk: 5, parse: { loadFile }, settle: true });
-  assert.equal(normalize(d.model.main()), expected);
-  assert.ok(d.end.settled > 0, 'the table was drawn with the built-in words first');
+  assert.deepEqual(pills(expected), ['info:Shipped', 'info:Shipped', 'bad:Parked', 'bad:Parked']);
+  for (const chunk of [1, 5, 64]) {
+    const d = await drive(src, { chunk, parse: { loadFile }, settle: false });
+    assert.equal(normalize(d.model.main()), expected, `chunks of ${chunk}`);
+    assert.equal(d.end.equal, true, `chunks of ${chunk}`);
+    assert.deepEqual(d.end.causes, [], `chunks of ${chunk}: no settle cause, "other" least of all`);
+    assert.equal(d.end.lateMeta, 1);
+  }
 });
