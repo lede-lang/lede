@@ -840,6 +840,32 @@ test('check --external never prints a credential whole, in the message or in the
   assert.ok(!j.stdout.includes(key), j.stdout);
 });
 
+test('check --external masks a credential in every diagnostic: a meta URL, a data row, a URL finding, and a repair line', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  const key = ['AKIA', 'Z7Q2', 'EXAMPLE', 'KEY0', '1'].join('');
+  const page = [
+    `@canonical http://acme.io/p?key=${key}`,
+    `@image https://cdn.acme.io/x.png?token=${key}`,
+    '',
+    `data t = a,b; ${key},2,3`,
+    '',
+  ];
+  writeFileSync(join(dir, 'k.lede'), page.join('\n'));
+  const r = run(['check', '--external', 'k.lede'], dir);
+  assert.equal(r.status, 1);
+  assert.ok(!r.stderr.includes(key), r.stderr);
+  assert.match(r.stderr, /\[meta-url\][^\n]*\?key=AKIA\.\.\. \(20 characters\)/);
+  assert.match(r.stderr, /\[data-row-width\] row "AKIA\.\.\. \(20 characters\),2,3"/);
+  // The echoed line is cut where the key starts, inside the URL.
+  assert.match(r.stderr, /\n {2}@canonical http:\/\/acme\.io\/p\?key=\.\.\.\n/);
+  const j = run(['check', '--external', '--json', 'k.lede'], dir);
+  assert.ok(!j.stdout.includes(key), j.stdout);
+  const fixed = run(['check', '--external', '--fix', '--dry-run', 'k.lede'], dir);
+  assert.ok(!fixed.stderr.includes(key), fixed.stderr);
+  // Without --external nothing is scanned and the messages are as they were.
+  assert.ok(run(['check', 'k.lede'], dir).stderr.includes(key));
+});
+
 test('check --external cuts every echoed line that holds a credential: under another diagnostic, and in a --dry-run diff', () => {
   const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
   const key = ['AKIA', 'Z7Q2', 'EXAMPLE', 'KEY0', '1'].join('');

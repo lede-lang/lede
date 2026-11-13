@@ -3,7 +3,15 @@
 // one: the values are made up and belong to nothing.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { EXTERNAL_PLACEHOLDERS, externalDiagnostics, parse, redactExternal, scanExternal, type ExternalKind } from '../src/index.ts';
+import {
+  EXTERNAL_PLACEHOLDERS,
+  externalDiagnostics,
+  maskSecrets,
+  parse,
+  redactExternal,
+  scanExternal,
+  type ExternalKind,
+} from '../src/index.ts';
 
 const found = (src: string, allow: string[] = []) => scanExternal(src, { allow }).map((f) => [f.kind, f.text]);
 
@@ -405,6 +413,22 @@ test('redaction never leaves the page with more errors: an id takes a numbered p
   );
   assert.deepEqual(errors(kept.src, opts), []);
   assert.equal(scanExternal(kept.src).length, 1);
+});
+
+test("a key a URL swallows is the URL finding's secret, masked in its message, its detail and its repair line", () => {
+  const src = `See https://cdn.acme.io/x.png?key=${AWS_KEY} now.\n`;
+  const [f] = scanExternal(src);
+  assert.equal(f.kind, 'url');
+  assert.deepEqual(f.secrets, [AWS_KEY]);
+  const [d] = externalDiagnostics(src);
+  assert.ok(!d.message.includes(AWS_KEY) && !JSON.stringify(d.detail).includes(AWS_KEY), d.message);
+  assert.deepEqual(d.detail, { kind: 'url', text: 'https://cdn.acme.io/x.png?key=AKIA... (20 characters)' });
+  assert.ok(!redactExternal(src).applied[0].note.includes(AWS_KEY));
+  assert.deepEqual(scanExternal('mail ada@acme.io\n')[0].secrets, []);
+  // maskSecrets: whole, and cut short by a message that quotes only the start of it; a short coincidence is left.
+  assert.equal(maskSecrets(`row "${AWS_KEY},2"`, [AWS_KEY]), 'row "AKIA... (20 characters),2"');
+  assert.equal(maskSecrets(`row "${AWS_KEY.slice(0, 12)}..."`, [AWS_KEY]), 'row "AKIA... (20 characters)..."');
+  assert.equal(maskSecrets('AKIA is a prefix', [AWS_KEY]), 'AKIA is a prefix');
 });
 
 test('a private key is replaced from its header to its END line, and the line breaks stay', () => {

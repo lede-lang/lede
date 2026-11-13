@@ -9,6 +9,8 @@ import {
   artifactDiagnostics,
   externalDiagnostics,
   redactExternal,
+  findingSecrets,
+  maskSecrets,
   scanExternal,
   parseTheme,
   ThemeFileError,
@@ -187,8 +189,26 @@ async function load(
   if (opts.images != null) doc.diagnostics.push(...inlineImages(doc, baseOf(file), opts.images, opts.encode ?? true));
   if (opts.artifact) doc.diagnostics.push(...artifactDiagnostics(doc));
   const findings = opts.external ? scanExternal(src, opts.external) : [];
-  if (opts.external) doc.diagnostics.push(...externalDiagnostics(src, opts.external, findings));
+  if (opts.external) {
+    doc.diagnostics.push(...externalDiagnostics(src, opts.external, findings));
+    // Any diagnostic may quote the text a credential sits in (a meta URL, a data row): under --external none prints one whole.
+    const secrets = findingSecrets(findings);
+    if (secrets.length) doc.diagnostics = doc.diagnostics.map((d) => maskDiagnostic(d, secrets));
+  }
   return { src, doc, findings };
+}
+
+/** `d` with `secrets` masked in its message and in every string of its detail, however deep. */
+function maskDiagnostic(d: Diagnostic, secrets: readonly string[]): Diagnostic {
+  const mask = (v: unknown): unknown => {
+    if (typeof v === 'string') return maskSecrets(v, secrets);
+    if (Array.isArray(v)) return v.map(mask);
+    if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, mask(x)]));
+    return v;
+  };
+  const out: Diagnostic = { ...d, message: maskSecrets(d.message, secrets) };
+  if (d.detail !== undefined) out.detail = mask(d.detail) as Diagnostic['detail'];
+  return out;
 }
 
 /**
@@ -199,8 +219,12 @@ async function load(
 function keyCuts(src: string, findings: readonly ExternalFinding[]): Map<number, number> {
   const cuts = new Map<number, number>();
   for (const f of findings) {
+    if (!f.secrets.length) continue;
+    // A key a longer finding holds (a URL with `?key=`) cuts the line where the key starts, not where the URL does.
+    const inside = f.kind === 'key' ? 0 : Math.min(...f.secrets.map((k) => f.text.indexOf(k)).filter((i) => i >= 0), f.text.length);
+    const col = f.col + inside;
+    cuts.set(f.line, Math.min(cuts.get(f.line) ?? col, col));
     if (f.kind !== 'key') continue;
-    cuts.set(f.line, Math.min(cuts.get(f.line) ?? f.col, f.col));
     const extra = src.slice(f.start, f.end).split('\n').length - 1;
     for (let i = 1; i <= extra; i++) cuts.set(f.line + i, 1);
   }
@@ -400,8 +424,12 @@ async function check(files: string[], flags: Set<string>, inputs: Inputs, allow:
       const before = readFileSync(f, 'utf8');
       const r = fix(before, parseOptions(f));
       const verb = dry ? 'would fix' : 'fixed';
+      const found = external ? scanExternal(before, external) : [];
+      const secrets = findingSecrets(found);
       for (const a of r.applied)
-        process.stderr.write(`${f}:${a.line}: ${verb} [${a.code}] ${a.note}${a.guess ? ' (a guess: check it)' : ''}\n`);
+        process.stderr.write(
+          `${f}:${a.line}: ${verb} [${a.code}] ${maskSecrets(a.note, secrets)}${a.guess ? ' (a guess: check it)' : ''}\n`,
+        );
       let after = r.src;
       if (external) {
         const e = redactExternal(r.src, external, parseOptions(f));
@@ -416,7 +444,7 @@ async function check(files: string[], flags: Set<string>, inputs: Inputs, allow:
       if (dry) {
         // Neither kind of repair changes the line count, so a line-by-line comparison is the whole diff.
         const was = before.split('\n');
-        const cuts = keyCuts(before, external ? scanExternal(before, external) : []);
+        const cuts = keyCuts(before, found);
         after.split('\n').forEach((line, i) => {
           if (line !== was[i]) process.stderr.write(`${f}:${i + 1}:\n- ${echo(was, i + 1, cuts)}\n+ ${line}\n`);
         });

@@ -26,6 +26,8 @@ export { walkBlocks } from './walk.ts';
 export {
   EXTERNAL_PLACEHOLDERS,
   externalDiagnostics,
+  findingSecrets,
+  maskSecrets,
   redactExternal,
   scanExternal,
   type ExternalFinding,

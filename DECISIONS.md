@@ -1057,7 +1057,8 @@ SKILL.md now lists, uncounted until a session has an API key.
 - **`check --external`.** A scan of the source for URLs, IP literals, host names, account ids, keys and emails (documentation
   names and ranges exempt, `--allow` for the rest); any finding exits 1, and `--fix` replaces each with a placeholder
   (`<host>`, or `host-1` where an id or option needs one; a span no placeholder can take without a new error stays a finding).
-  Redaction is an edit to the source, never a build transform. A key is never printed whole.
+  Redaction is an edit to the source, never a build transform. A key is never printed whole, in any diagnostic under
+  `--external`, a key inside a URL or a quoted data row included.
 - **`--theme tokens.json`.** An operator's house palette as hex tokens over D74's palette table (built here without the
   `@fonts`/`@palette` words). A colour that would miss WCAG AA is moved in OKLCH lightness only, to the nearest passing value, and
   W `theme-adjusted` says so (`--theme-strict` makes it an error). This is the opposite of D49's rule for `@accent`, on purpose:

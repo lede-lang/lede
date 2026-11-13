@@ -32,6 +32,11 @@ export interface ExternalFinding {
   /** The span `src.slice(start, end)` that `redactExternal` replaces. */
   start: number;
   end: number;
+  /**
+   * The credentials in the span, as written: the finding's own text for a `key`, and any key a longer finding swallowed (a URL with
+   * `?key=AKIA...`). A report masks each of them with `maskSecrets`.
+   */
+  secrets: string[];
 }
 
 export interface ExternalOptions {
@@ -402,6 +407,9 @@ class Scan {
         if (hl > tl || (hl === tl && PRIORITY[h.kind] < PRIORITY[top.kind])) kept[kept.length - 1] = h;
       }
     }
+    // Each key hit belongs to the kept finding whose span holds it, whether or not it is that finding.
+    const keys = hits.filter((h) => h.kind === 'key');
+    let k = 0;
     // Line and column come from the start of the span, found by walking the line breaks once.
     const findings: ExternalFinding[] = [];
     let line = 1;
@@ -415,6 +423,17 @@ class Scan {
         next = this.src.indexOf('\n', lineStart);
         if (next < 0) next = Infinity;
       }
+      while (k < keys.length && keys[k].start < h.start) k++;
+      const secrets: string[] = [];
+      for (let j = k; j < keys.length && keys[j].start < h.end; j++)
+        if (keys[j].end <= h.end) {
+          const key = keys[j];
+          secrets.push(this.src.slice(key.start, key.textEnd ?? key.end));
+          // A private key's body lines are secrets too: a message that quotes one is masked like the header.
+          if (key.textEnd !== undefined)
+            for (const l of this.src.slice(key.textEnd, key.end).split('\n'))
+              if (l.trim().length >= 8 && !l.startsWith('-----END ')) secrets.push(l.trim());
+        }
       findings.push({
         kind: h.kind,
         text: this.src.slice(h.start, h.textEnd ?? h.end),
@@ -422,6 +441,7 @@ class Scan {
         col: h.start - lineStart + 1,
         start: h.start,
         end: h.end,
+        secrets,
       });
     }
     return findings;
@@ -459,9 +479,36 @@ const WHAT: Readonly<Record<ExternalKind, string>> = {
 /** A text for a message: a long one is cut, so a data URI or a key does not fill the terminal. */
 const shown = (text: string): string => (text.length > 60 ? `${text.slice(0, 57)}...` : text);
 
-/** What a report may print of a finding: a credential keeps its first four characters, so a log or a JSON report never holds it whole. */
-const reportText = (kind: ExternalKind, text: string): string =>
-  kind === 'key' ? `${text.slice(0, 4)}... (${text.length} characters)` : text;
+/** What a report may print of a credential: its first four characters and its length. */
+const maskedKey = (key: string): string => `${key.slice(0, 4)}... (${key.length} characters)`;
+
+/**
+ * `text` with each of `secrets` masked as `AKIA... (20 characters)`, so a log or a JSON report never holds one whole. A message that
+ * quotes a credential cut short (`row "AKIAABCD..."`) is masked too: wherever a secret's first eight characters start a run that
+ * matches the secret, the run is masked.
+ */
+export function maskSecrets(text: string, secrets: readonly string[]): string {
+  let out = text;
+  for (const secret of secrets) {
+    if (secret.length < 8) continue;
+    const head = secret.slice(0, 8);
+    let at = out.indexOf(head);
+    while (at >= 0) {
+      let n = 8;
+      while (n < secret.length && out[at + n] === secret[n]) n++;
+      const mask = maskedKey(secret);
+      out = out.slice(0, at) + mask + out.slice(at + n);
+      at = out.indexOf(head, at + mask.length);
+    }
+  }
+  return out;
+}
+
+/** Every credential the findings hold, for `maskSecrets`: what a report under `--external` must never print whole. */
+export const findingSecrets = (findings: readonly ExternalFinding[]): string[] => [...new Set(findings.flatMap((f) => f.secrets))];
+
+/** What a report may print of a finding: each credential in it keeps its first four characters. */
+const reportText = (f: ExternalFinding): string => maskSecrets(f.text, f.secrets);
 
 /** `scanExternal` as warnings, code `external`, with `detail {kind, text}`. A caller that has scanned `src` already passes its `findings`. */
 export function externalDiagnostics(
@@ -472,10 +519,10 @@ export function externalDiagnostics(
   return findings.map((f) => ({
     severity: 'warning' as const,
     code: 'external',
-    message: `${WHAT[f.kind]} (${shown(reportText(f.kind, f.text))}) would leave with the page; replace it with ${EXTERNAL_PLACEHOLDERS[f.kind]}${f.kind === 'url' || f.kind === 'host' || f.kind === 'ip' ? ', or list its host with --allow' : ''}`,
+    message: `${WHAT[f.kind]} (${shown(reportText(f))}) would leave with the page; replace it with ${EXTERNAL_PLACEHOLDERS[f.kind]}${f.kind === 'url' || f.kind === 'host' || f.kind === 'ip' ? ', or list its host with --allow' : ''}`,
     line: f.line,
     col: f.col,
-    detail: { kind: f.kind, text: reportText(f.kind, f.text) },
+    detail: { kind: f.kind, text: reportText(f) },
   }));
 }
 
@@ -579,7 +626,7 @@ export function redactExternal(
         kind: f.kind,
         text: f.text,
         placeholder,
-        note: `replaced ${f.kind} ${shown(reportText(f.kind, f.text))} with ${placeholder}`,
+        note: `replaced ${f.kind} ${shown(reportText(f))} with ${placeholder}`,
       });
   });
   return { src: w.out, applied, skipped };
