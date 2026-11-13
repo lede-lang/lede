@@ -709,7 +709,8 @@ block is final), `update` (a `name:` line changed a diagram already given, or a 
 data name) and `seal` (the first non-blank line that is not a statement of the diagram, or the end of the document: a blank line does
 not seal, since writers space statements). A run of `NAME: a | b` lines for one data name is one `update`, given when the run ends (at
 the first non-blank line that is not a row of that name, ahead of that line's own events, or at the end of the document), so a table
-streamed row by row is drawn again once and not once per row; the rows are in the data, and in a snapshot, as each line is read. A bucket set has the same two events as kinds of their own, `bucket-update` (a
+streamed row by row is drawn again once and not once per row; the rows are in the data, and in a snapshot, as each line is read. One line
+gives at most one `update` per data name: a `data NAME +=` line that ends a run of the same name gives one. A bucket set has the same two events as kinds of their own, `bucket-update` (a
 `NAME: ITEM | B` line added an item to a bucket set already given) and `bucket-seal`, so `update` and `seal` carry a diagram, as
 they did before bucket sets. A decision has two more, `decision-update` (a `NAME: option`, `question` or `role` line added to a decision
 already given) and `decision-seal`, and streams as a bucket set does. A bucket set streams as a diagram does: it is given on its declaration, each item line is a

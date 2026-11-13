@@ -222,10 +222,16 @@ test('a run of data row lines is one update event, given when the run ends; the 
   // Prose ends the run: its update comes before the line's own events.
   assert.deepEqual(kinds(s.events('note: x | y\n')), ['update:data d']);
   assert.deepEqual(kinds(s.events('more prose\n')), []);
-  // A row of another set ends the run too, and `+=` is an update of its own at once.
+  // A row of another set ends the run too, and `+=` is an update of its own at once; a `+=` that ends a run of the same set is one
+  // update of it, not two.
   const t = new LedeStream();
   const ev = kinds(t.events('data a = x,y\ndata b = x,y\na: 1 | 2\na: 3 | 4\nb: 5 | 6\ndata b += 7,8\n'));
-  assert.deepEqual(ev, ['block:data', 'block:data', 'update:data a', 'update:data b', 'update:data b']);
+  assert.deepEqual(ev, ['block:data', 'block:data', 'update:data a', 'update:data b']);
+  const per: string[][] = [];
+  const v = new LedeStream();
+  for (const line of ['data s = x,y', 's: 3 | 4', 'data s += 5,6', 'data a = x,y', 's: 1 | 2', 'data a += 1,2'])
+    per.push(kinds(v.events(`${line}\n`)));
+  assert.deepEqual(per, [['block:data'], [], ['update:data s'], ['block:data'], [], ['update:data s', 'update:data a']]);
   // The document's end gives the update of a run still open.
   const u = new LedeStream();
   u.events('data a = x,y\n');

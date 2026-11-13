@@ -171,11 +171,18 @@ export class LedeStream {
     this.appended.length = 0;
     this.row = null;
     const blocks = this.parser.pushLine(line);
+    const from = out.length;
     // A run of rows ends at a line that is not blank and not a row of the same set: its update comes before this line's events.
     if (this.row !== this.rowRun && (this.row !== null || line.trim() !== '')) this.endRun(out);
     if (this.row !== null) this.rowRun = this.row;
     for (const block of blocks) out.push({ kind: 'block', block });
-    for (const data of this.appended) out.push({ kind: 'update', data });
+    // One update per data set per line: a run of `s: 3 | 4` rows ended by `data s += 5,6` is one update of s, not two.
+    const sent = new Set(out.slice(from).flatMap((e) => (e.kind === 'update' && 'data' in e ? [e.data] : [])));
+    for (const data of this.appended) {
+      if (sent.has(data)) continue;
+      sent.add(data);
+      out.push({ kind: 'update', data });
+    }
     for (const d of this.touched) {
       // A growing block inside a grid or card run that has not been returned yet is not on screen: nothing to update. A line
       // that changed nothing is not an update and does not reopen a sealed block; if the block is open, being touched keeps it so (below).
