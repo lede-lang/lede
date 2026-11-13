@@ -1,4 +1,8 @@
-// A seeded generator of hostile answer text, shared by the serializer and runtime checks. Not a `*.test.ts`.
+// A seeded generator of hostile answer text, shared by the serializer and runtime checks, and what the fuzz and robustness tests
+// share. Not a `*.test.ts`.
+
+/** What a page must never hold unless its source did: a value that reached the output without being formatted. */
+export const UNFORMATTED = /NaN|undefined|Infinity|\[object Object\]/;
 
 /** A small LCG: the same seed gives the same states, so a failing seed can be rerun. */
 export function rng(seed: number): () => number {

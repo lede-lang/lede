@@ -42,6 +42,22 @@ const better = (after: { diagnostics: Diagnostic[] }, before: { diagnostics: Dia
   (count(after, 'error') === count(before, 'error') && count(after, 'warning') < count(before, 'warning'));
 
 export function fix(src: string, opts: ParseOptions = {}): FixResult {
+  // The repairs read lines to their end, so a line's final \r is taken off first, as the parser takes it off (line and col are
+  // the same either way), and goes back on the line it was on: a repair never changes the line count.
+  if (!src.includes('\r')) return fixLines(src, opts);
+  const lines = src.split('\n');
+  const cr = lines.map((l) => l.endsWith('\r'));
+  const r = fixLines(lines.map((l, i) => (cr[i] ? l.slice(0, -1) : l)).join('\n'), opts);
+  return {
+    ...r,
+    src: r.src
+      .split('\n')
+      .map((l, i) => (cr[i] ? `${l}\r` : l))
+      .join('\n'),
+  };
+}
+
+function fixLines(src: string, opts: ParseOptions): FixResult {
   const applied: AppliedFix[] = [];
   let doc = parse(src, opts);
   for (let pass = 0; pass < MAX_PASSES; pass++) {
@@ -177,7 +193,8 @@ function rowAt(d: Diagnostic, text: string) {
   const lead = (k: number) => /^\s*/.exec(body.slice(spans[k][0]))![0];
   const splice = (from: number, to: number, r: string[], note: string, guess: boolean): Edit =>
     one(d.line, prefix + body.slice(0, spans[from][0]) + lead(from) + serialize(r) + body.slice(spans[to][1]), note, guess);
-  return { op, csv, i, splice };
+  const rowText = (k: number) => body.slice(spans[k][0], spans[k][1]);
+  return { op, csv, i, splice, rowText };
 }
 
 /**
@@ -220,7 +237,7 @@ function rowWidth(d: Diagnostic, lines: string[]): Edit | null {
   const row = csv.rows[i];
   if (row.length > want) {
     const numeric = numericColumns(d, lines, want, (l, k) => l === d.line && k === i);
-    const pick = joinCommas(row, want, numeric);
+    const pick = joinCommas(row, want, numeric, at.rowText(i));
     return pick ? splice(i, i, pick.cells, `joined ${pick.joined} fields into one quoted cell`, true) : null;
   }
   // A `;` inside a cell ends the row early: the cell's text sits at the end of one row and the start of the next.
@@ -245,7 +262,11 @@ function rowWidth(d: Diagnostic, lines: string[]): Edit | null {
  * one starting in lower case or with a digit), else the only one, else the only one that leaves the first cell (the row's
  * label) alone. Anything still ambiguous is left for the writer.
  */
-function joinCommas(row: string[], want: number, numeric: boolean[]): { cells: string[]; joined: number } | null {
+function joinCommas(row: string[], want: number, numeric: boolean[], text: string): { cells: string[]; joined: number } | null {
+  // `text` is the row as written. With no quote and no bold span in it, its fields are exactly its pieces between commas,
+  // which still have the spaces the fields lost.
+  const pieces = /["*]/.test(text) ? null : text.split(',');
+  const raw = pieces?.length === row.length ? pieces : null;
   const extra = row.length - want;
   const safe: { p: number; cells: string[] }[] = [];
   for (let p = 0; p + extra < row.length; p++) {
@@ -257,7 +278,9 @@ function joinCommas(row: string[], want: number, numeric: boolean[]): { cells: s
       const group = digits && /^\d{3}(?!\d)/.test(piece); // `$1` + `450`: a thousands comma
       // `Jan 3` + `2024` continues text; `8` + `5` would make the number 85; `fixed` + `3` takes 3 from its column.
       if (!group && (digits ? num(joined) !== null : num(piece) !== null || (k === 1 && num(row[p]) !== null))) glued = true;
-      joined += (digits ? ',' : ', ') + piece;
+      // Text joins with ", ". Digit to digit joins as the writer spaced it where the row shows that (`Jan 3, 2024` keeps its
+      // space, `Q1,2024` and `$1,450` stay without one), else without.
+      joined += (digits && !/^\s/.test(raw?.[p + k] ?? '') ? ',' : ', ') + piece;
     }
     const cells = [...row.slice(0, p), joined, ...row.slice(p + extra + 1)];
     if (!glued && fits(cells, numeric)) safe.push({ p, cells });

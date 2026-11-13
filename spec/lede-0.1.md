@@ -181,7 +181,16 @@ Declares a named table of strings. Types are decided at use (a chart reads cells
   rendering can continue).
 - W `csv-thousands`: a row with too many fields is repaired when merging an unquoted thousands
   separator (`$1,450` read as `$1` and `450`) gives exactly the right width.
-- W `data-redefined`: `=` on an existing name replaces it.
+- W `csv-quote`: text follows the closing quote of a cell (`"Smith, J" (PM)`). It stays in the cell, after the quoted text;
+  the same holds in an inline `table` and in the name lists of `choose` and `bucket`.
+- W `data-redefined`: `=` on an existing name replaces it, for the blocks above it too. E `data-redefined`, on a `chart`,
+  `table` or `=data.column` kpi above the new definition that reads a column the new one does not have (reported when the
+  document ends; `detail {name, columns, redefined}`: the data name, the missing columns, the line of the new definition).
+  Such a block draws nothing (a range chart draws its data table, as it does whenever it has nothing to plot).
+- A file is read as CSV (RFC 4180), not as an inline body: a record ends at a line break and a field at `,`; a field in
+  double quotes may hold `,`, `;` and line breaks, with `""` for a quote; `;` and `\` are ordinary characters. Fields are
+  trimmed outside their quotes; blank lines and a leading byte-order mark are dropped. A quote that never closes is
+  E `csv-quote`, naming the file's line.
 - Data and diagram names share one namespace: E `name-clash`.
 
 Numbers in cells: an optional sign, digits, optional decimals; `,` `$` `€` `£` `%` and a
@@ -196,7 +205,7 @@ trailing unit among `ms s gb mb tb x × pt pts` are ignored. Anything else is no
 | `y=col,col` | every other column with a numeric cell | series |
 | `title="…"` | none | caption |
 | `unit=…` | none | `$` `€` `£` prefix the value; `%` suffixes; anything else suffixes after a space |
-| `min=` `max=` | from data | axis range |
+| `min=` `max=` | from data | axis range; `min` must be below `max` |
 | `focus=col` | none | that series takes the first color, the rest grey |
 | `target="N label"` | none | dashed reference line at N (the axis range includes it), labeled |
 | `stack` | off | stack series (`bar`, `hbar`, `area`) |
@@ -206,7 +215,12 @@ Bars and areas always include zero. A line chart starts at zero only when its mi
 half its maximum; otherwise the axis is padded around the data.
 - E `chart-kind`, `missing-data`, `unknown-data`, `unknown-column`, `chart-no-series`,
   `chart-option` (non-numeric `min`/`max`).
-- W `non-numeric` (cells left out), `chart-option` (unknown option or `stack` on a line chart).
+- W `non-numeric` (cells left out), `chart-option` (unknown option, `stack` on a line chart, or `min=` not below `max=`: both
+  are then ignored). Words that spill out of an unquoted value (`title=Deploys per week`) are one warning that names the option
+  as it was probably meant (`title="Deploys per week"`), and a `"` that is never closed is a warning too, since the rest of the
+  line became its value; `table-option` and `diagram-option` report both the same way. One of `min=` and `max=` given alone is
+  ignored by the renderer, with no diagnostic, when it would leave no range against the end the data sets (`max=-5` over
+  positive values, `min=100` over smaller ones): the output never holds `NaN`.
 
 ### 4.13 Column references
 Wherever an option names a column (`x y focus cols sort`, and kpi `=data.col`), the name
@@ -219,7 +233,7 @@ matches exactly, or else case-insensitively with runs of spaces collapsed. The c
 right-aligned. A cell whose whole text is a status word from the renderer's lexicon (done, on
 track, ready, at risk, in progress, blocked, failed, go, no-go, …) renders as a pill that keeps
 the word as its text. Sorting is numeric when every cell of the sort column is numeric, else lexical.
-- E `unknown-data`, `unknown-column`, `table-option` (bad `limit`). W `table-option` (ignored).
+- E `unknown-data`, `unknown-column`, `table-option` (bad `limit`). W `table-option` (ignored, or an unclosed `"`).
 
 ### 4.15 KPI
 `kpi LABEL | VALUE [| DELTA [| TONE-OR-NOTE]]`. Consecutive kpi lines form one row of tiles.
@@ -487,6 +501,10 @@ and the runtime adds no element and moves none.
 `` `code` ``, `**bold**`, `*italic*` or `_italic_`, `[text](url)`. URLs must be `http`,
 `https`, `mailto`, relative or `#fragment`; others render as plain text. `\` escapes
 `` ` * _ [ ] \ ``. All other text is escaped; inline HTML is not interpreted.
+A code span opened by a run of N backticks closes at the next run of exactly N, so ``` ``a`b`` ``` is the code `` a`b ``; with two
+or more, one space inside each end is dropped (``` `` `a` `` ```). A run that no later run closes is text, the whole run. A bold
+span may hold italic (`**a *b* c**`) but not start with `*`. Link text holds no `[` or `]`; a URL holds no space and at most one
+level of parentheses (`.../Foo_(bar)`).
 
 ## 6. Streaming
 
@@ -537,7 +555,8 @@ written anywhere else was given on its declaration.
   fields do not fit their kind, and then does nothing. The model never writes script, in either mode.
 - No remote fetches by default (system font stacks, no remote images).
 - Light and dark themes from CSS custom properties; `prefers-color-scheme` plus
-  `data-theme="light|dark"` on `<html>` to override.
+  `data-theme="light|dark"` on `<html>` to override. Print uses the light tokens whatever the device or `@theme` says (paper is
+  white), keeps a figure, card, note, quote or table row on one page where it fits, and wraps code lines.
 - Usable at 360px wide without page-level horizontal scroll. Charts ship a narrow variant;
   wide tables and diagrams scroll inside their own box.
 - Every SVG has `role="img"` with `<title>` and `<desc>` (charts describe range and extremes;
@@ -573,7 +592,9 @@ is no such line. `--artifact` adds the artifact checks (below) to the report; th
 last line is their count, never `ok`. `lede --help` lists every command and flag.
 
 `lede build FILE [-o OUT] [--force] [--unsafe-html] [--allow-remote] [--artifact] [--shell]` compiles the first FILE to one page. Diagnostics go to stderr as
-for `check`. With `-o` the page is written to OUT and a size line goes to stderr; without it the page goes to stdout. A document with
+for `check`. With `-o` the page is written to OUT and a size line goes to stderr; without it the page goes to stdout. `-o=OUT` is the same as `-o OUT`; `-o` with
+no name after it, or with another option after it, is a usage error, and so is a second `-o`. OUT must not be the same file as any FILE (a symlink or hard link to it
+counts, and OUT need not exist yet): `lede` refuses with exit 2 instead of turning the source into HTML. A document with
 an error is not written and exits 1, unless `--force`, which renders it anyway and exits 0. `--unsafe-html` keeps `html` blocks
 unsanitized (§4.10); `--help` marks it for local files only, but nothing checks that. `--allow-remote` lets images load from remote
 URLs (§4.16), in `image` blocks and as `<img>` in `html` blocks. Links render the same with or without it. It adds `https:`, and only
@@ -590,12 +611,27 @@ and stderr says so. With `--artifact` the data block and runtime follow `<main>`
 meta tags are still omitted, so the Artifact host's own policy decides whether the runtime runs. `--shell` with `--unsafe-html` is a
 usage error: raw `html` could plant its own controls and data block. Exit codes for every
 command: 0 on success; 1 for `build` on errors without `--force` and for `check` on errors; 2 for a usage error (no command, an
-unknown command, no FILE, `--shell` with `--unsafe-html`) or a missing file; 70 for an internal error, such as OUT not being writable, printed to stderr. Flags a
-command does not know are ignored. `--help`, `-h` or `help` prints the help to stdout and exits 0.
+unknown command, no FILE, an option no command knows, `-o` without a name, `--shell` with `--unsafe-html`, OUT the same file as a FILE, `-` misused as
+below) or a FILE that is missing or is a directory; 70 for an internal error, such as OUT not being writable or its directory missing. An exit-70 failure
+prints one line to stderr, `lede: MESSAGE`; with the environment variable `LEDE_DEBUG` set it prints the stack as well.
+An option that no command knows (`--shel`, `-x`) is a usage error: stderr gets `lede: unknown option --shel; did you mean --shell?` (the
+suggestion is there when a known flag is within two edits of it) and then the usage, so a typo never builds a different page without saying so. A flag that
+some other command knows is still ignored: `lede watch x.lede --json` is `lede watch x.lede`. Options go after the command (`lede --force build x.lede`
+is a usage error that says so), and after `--` every word is a FILE, so `lede check -- -draft.lede` reads a file whose name starts with `-`. `--help`, `-h` or `help` prints the help to stdout and exits 0.
+
+`FILE` may be `-` in `build`, `check` and `ast`: the document is read from stdin, so a page can be piped in without a temporary file. Diagnostics call it
+`<stdin>`, which is also its key under `check --json`, and a `data x < file.csv` load resolves against the current directory, with the same confinement to that
+directory's tree as for a file. `-` may be given once, and not with `watch`, `--fix` or `--dry-run`, which need a file to watch or to rewrite: each is a usage error
+(exit 2). `build -` without `-o` writes the page to stdout as for a file. `lede version`, `lede --version` and `lede -V` print the version of the CLI package, one
+line, to stdout and exit 0; `lede --help` lists them.
 
 `lede watch FILE [-o OUT]` builds FILE to OUT, or to `NAME.html` beside `NAME.lede`, then rebuilds on every change until stopped. It always
 renders as if `--force` were given, and honours `--unsafe-html`, `--allow-remote` and `--shell`. With `--shell`, the note that the flag had no
-effect is printed on the first build it holds for, and again only if a page that took the shell stops doing so; it is not repeated on every save. `lede ast FILE` prints the parsed document,
+effect is printed on the first build it holds for, and again only if a page that took the shell stops doing so; it is not repeated on every save. It watches FILE's
+directory and picks FILE's events by name, so an editor's save that writes a temporary file and renames it over FILE is seen like an in-place write. Only the first
+build is fatal (exit 70, as for `build`). After that nothing ends the process but a signal: if FILE is deleted, stderr gets `lede: FILE is gone; waiting for it to
+come back` once and the page is rebuilt when FILE reappears, and any other failed rebuild (FILE unreadable, OUT no longer writable) prints one line, `lede: MESSAGE`,
+and watching goes on. A change that lands during a build causes one more build after it. `lede ast FILE` prints the parsed document,
 diagnostics included, as JSON on stdout and exits 0 even when the document has errors.
 
 `--json` prints one object keyed by file path; each value is an array of diagnostics:
@@ -618,7 +654,8 @@ step, rule}` (`rule` is `order`, `step`, `range`, `grid`, `grid-max` or `count`)
 `{key, fields}` and `preset-value` `{key, value, kind}`; `export-format` `{format}` now names `prompt` too. So does `accent-contrast` (§4.3) `{accent, theme, ratio, required, against}`:
 `theme` is `light` or `dark`, `ratio` is the lowest contrast found rounded down to two decimals, `required` is `4.5`, and `against` names
 the surface (`bg`, `surface` or `accent-tint`). So does `artifact-image` `{src, kind}`: `src` is the image path as written and `kind` is
-`local`. So does `heading-skip` (§4.4) `{from, to}`: the level of the heading before and of this one, as written (`--fix` leaves it).
+`local`. So does `heading-skip` (§4.4) `{from, to}`: the level of the heading before and of this one, as written (`--fix` leaves it). So does the error
+form of `data-redefined` (§4.11) `{name, columns, redefined}`; the warning of the same code has none.
 New keys may be added; existing ones are not removed or retyped within 0.x.
 
 `--fix` rewrites each file to repair mechanical slips and prints one line per repair. It repairs:

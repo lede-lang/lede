@@ -26,7 +26,7 @@ import type {
   TemplateBlock,
   ToggleBlock,
 } from './ast.ts';
-import { num, parseInlineCsv, parseOpts, pipeOutsideQuotes, readQuoted, tokens } from './lex.ts';
+import { num, parseCsvFile, parseInlineCsv, parseOpts, pipeOutsideQuotes, readQuoted, tokens, type Opts } from './lex.ts';
 import { EMPTY, FIELD_KINDS, NOT_CHOSEN, SLOT_RE } from './fields.ts';
 import { AA_NON_TEXT, AA_TEXT, HEX_COLOR, accentContrast, accentTheme } from './contrast.ts';
 import { browserUrl, imageSrcKind } from './url.ts';
@@ -193,7 +193,9 @@ function copyAcc(a: Acc): Acc {
 
 /** The lines a fence holds, with the common indentation stripped so an indented fence reads like an unindented one. */
 function fenceBody(f: Fence): string {
-  const ind = Math.min(...f.lines.filter((l) => l.trim()).map((l) => l.length - l.trimStart().length), Infinity);
+  // A loop, not `Math.min(...)`: a fence may hold more lines than a call takes arguments.
+  let ind = Infinity;
+  for (const l of f.lines) if (l.trim()) ind = Math.min(ind, l.length - l.trimStart().length);
   return f.lines.map((l) => (Number.isFinite(ind) ? l.slice(ind) : l)).join('\n');
 }
 
@@ -889,6 +891,39 @@ export class LedeParser {
     return { name, opts: cut < 0 ? '' : left.slice(cut).trim(), right: rest.slice(bar + 1) };
   }
 
+  /**
+   * W `<kind>-option` for each word the options of a chart or diagram line do not take, saying what was probably meant when the
+   * word spilled out of an unquoted value, and for a `"` that is never closed.
+   */
+  private strayOptions(kind: 'chart' | 'diagram', o: Opts, stray: string[], col: number): void {
+    for (const w of spilled(o, stray))
+      this.diag('warning', `${kind}-option`, `ignored ${kind} option "${w.text}"${w.hint}`, this.lineNo, col);
+    this.openQuotes(kind, o, col);
+  }
+
+  /** W `<kind>-option` for a `"` in an option list that is never closed: the options after it were read as its text. */
+  private openQuotes(kind: 'chart' | 'table' | 'diagram', o: Opts, col: number): void {
+    if (o.unclosed !== null)
+      this.diag(
+        'warning',
+        `${kind}-option`,
+        `a " is never closed, so the rest of the line, ${JSON.stringify(o.unclosed)}, is read as one value; close it before the next option`,
+        this.lineNo,
+        col,
+      );
+  }
+
+  /**
+   * W `csv-quote` when text follows the closing quote of a cell (`"Smith, J" (PM)`, `"Planned" bar=done`). The text stays in the
+   * cell, which is right for the first and not for the second, so the writer is told either way.
+   */
+  private afterQuote(csv: { afterQuoteAt: number | null }, col: number): void {
+    if (csv.afterQuoteAt === null) return;
+    const message =
+      'text after a closing " stays in the cell; move it inside the quotes, or take it off the line if it was meant as an option';
+    this.diag('warning', 'csv-quote', message, this.lineNo, col);
+  }
+
   /** W `question-option` for every option before the `|` that the word does not take. */
   private ignoreOptions(word: string, name: string, o: ReturnType<typeof parseOpts>, keep: string[], col: number): void {
     const L = this.lineNo;
@@ -909,6 +944,7 @@ export class LedeParser {
     const csv = parseInlineCsv(cut < 0 ? right : right.slice(0, cut));
     const unclosed = csv.unclosedAt !== null;
     if (unclosed) this.diag('error', 'csv-quote', `unclosed " in ${what}`, this.lineNo, col);
+    this.afterQuote(csv, col);
     const items: string[] = [];
     const dups: string[] = [];
     let empty = false;
@@ -1364,10 +1400,8 @@ export class LedeParser {
         this.diag('error', 'data-file', `cannot read ${body}: ${e instanceof Error ? e.message : String(e)}`, L, bodyCol);
         return;
       }
-      const rows = text
-        .split(/\r?\n/)
-        .filter((r) => r.trim())
-        .map((r) => parseInlineCsv(r).rows[0] ?? []);
+      const { rows, unclosedLine } = parseCsvFile(text);
+      if (unclosedLine !== null) this.diag('error', 'csv-quote', `unclosed " on line ${unclosedLine} of ${body.trim()}`, L, bodyCol);
       this.defineData(
         name,
         rows,
@@ -1378,11 +1412,12 @@ export class LedeParser {
     }
     const csv = parseInlineCsv(body);
     if (csv.unclosedAt !== null) this.diag('error', 'csv-quote', 'unclosed " in data', L, bodyCol + csv.unclosedAt);
+    this.afterQuote(csv, bodyCol + (csv.afterQuoteAt ?? 0));
     if (op === '=') {
       this.defineData(name, csv.rows, csv.offsets, bodyCol);
       return;
     }
-    const d = this.doc.data[name];
+    const d = dataSet(this.doc, name);
     if (!d) {
       this.diag(
         'error',
@@ -1403,7 +1438,7 @@ export class LedeParser {
       this.diag('error', 'data-empty', `data ${name} has no header row`, L, bodyCol);
       return;
     }
-    if (this.doc.data[name])
+    if (dataSet(this.doc, name))
       this.diag('warning', 'data-redefined', `data ${name} is redefined; the new definition replaces it`, L, bodyCol);
     this.clash('data', name, bodyCol);
     const columns = rows[0].map((c) => c.trim());
@@ -1411,7 +1446,7 @@ export class LedeParser {
     if (dup) this.diag('error', 'data-dup-column', `data ${name} has two columns named ${dup}`, L, bodyCol);
     const d: DataSet = { name, columns, rows: [], line: L };
     this.addRows(d, rows.slice(1), offsets.slice(1), bodyCol);
-    this.doc.data[name] = d;
+    storeData(this.doc, name, d);
     this.emit({ type: 'data', name, line: L });
   }
 
@@ -1461,7 +1496,7 @@ export class LedeParser {
       this.diag('error', 'missing-data', 'expected a data name', this.lineNo, col);
       return null;
     }
-    const d = this.doc.data[name];
+    const d = dataSet(this.doc, name);
     if (!d) {
       const known = Object.keys(this.doc.data);
       this.diag(
@@ -1504,7 +1539,7 @@ export class LedeParser {
       return;
     }
     const o = parseOpts(optStr, ['stack', 'labels'], ['x', 'y', 'focus']);
-    for (const w of [...o.words, ...o.quoted]) this.diag('warning', 'chart-option', `ignored chart option "${w}"`, L, col);
+    this.strayOptions('chart', o, [...o.words, ...o.quoted], col);
     const xRaw = o.kv.x ?? d.columns[0];
     if (!this.requireCol(d, xRaw, col)) return;
     const x = findCol(d, xRaw)!;
@@ -1602,8 +1637,7 @@ export class LedeParser {
       stack: o.flags.includes('stack'),
       labels,
       unit: o.kv.unit ?? null,
-      min: n('min'),
-      max: n('max'),
+      ...this.axisRange(n('min'), n('max'), col),
       focus: o.kv.focus ?? null,
       target,
       line: L,
@@ -1613,6 +1647,19 @@ export class LedeParser {
     if (hatch.length) block.hatch = hatch;
     if (block.stack && kind === 'line') this.diag('warning', 'chart-option', 'stack applies to bar, hbar and area charts', L, col);
     this.emit(block);
+  }
+
+  /** `min=` and `max=` of a chart. A pair that leaves no range (`min=10 max=10`, `min=10 max=2`) is reported and neither is kept. */
+  private axisRange(min: number | null, max: number | null, col: number): { min: number | null; max: number | null } {
+    if (min === null || max === null || min < max) return { min, max };
+    this.diag(
+      'warning',
+      'chart-option',
+      `min=${min} is not below max=${max}, so the axis has no range; both are ignored (give min a smaller number than max)`,
+      this.lineNo,
+      col,
+    );
+    return { min: null, max: null };
   }
 
   /** `hatch="x value"` (repeatable): values of the x column drawn striped. Anything else: W chart-option. */
@@ -1638,7 +1685,7 @@ export class LedeParser {
   private rangeChart(d: DataSet, optStr: string, col: number): void {
     const L = this.lineNo;
     const o = parseOpts(optStr, ['stack', 'labels'], ['x', 'from', 'to', 'at', 'focus']);
-    for (const w of [...o.words, ...o.quoted]) this.diag('warning', 'chart-option', `ignored chart option "${w}"`, L, col);
+    this.strayOptions('chart', o, [...o.words, ...o.quoted], col);
     const xRaw = o.kv.x ?? d.columns[0];
     if (!this.requireCol(d, xRaw, col)) return;
     const x = findCol(d, xRaw)!;
@@ -1750,8 +1797,7 @@ export class LedeParser {
       stack: false,
       labels: false,
       unit: o.kv.unit ?? null,
-      min: n('min'),
-      max: n('max'),
+      ...this.axisRange(n('min'), n('max'), col),
       focus,
       target,
       from,
@@ -1777,13 +1823,14 @@ export class LedeParser {
       const csv = parseInlineCsv(body);
       const bodyCol = col + eq.index + eq[0].length;
       if (csv.unclosedAt !== null) this.diag('error', 'csv-quote', 'unclosed " in table', L, bodyCol + csv.unclosedAt);
+      this.afterQuote(csv, bodyCol + (csv.afterQuoteAt ?? 0));
       if (csv.rows.length === 0) {
         this.diag('error', 'data-empty', 'inline table has no header row', L, bodyCol);
         return;
       }
       d = { name, columns: csv.rows[0], rows: [], line: L };
       this.addRows(d, csv.rows.slice(1), csv.offsets.slice(1), bodyCol);
-      this.doc.data[name] = d;
+      storeData(this.doc, name, d);
     } else {
       const t = tokens(rest);
       d = this.requireData(t[0]?.key === undefined ? t[0]?.text : undefined, col);
@@ -1791,14 +1838,15 @@ export class LedeParser {
     }
     if (!d) return;
     const o = parseOpts(optStr, ['heat'], ['cols', 'sort', 'heat', 'bar', 'target']);
-    for (const w of [...o.words, ...o.quoted]) {
+    for (const { text: w, hint: spill } of spilled(o, [...o.words, ...o.quoted])) {
       // `table vendors = ...` names an inline table, which has no name: say how to get one.
-      const hint =
-        eq && w === o.words[0] && /^[A-Za-z_][\w-]*$/.test(w) && !TABLE_OPTIONS.includes(w)
-          ? `; an inline table has no name: write \`table = ...\`, or \`data ${w} = ...\` then \`table ${w}\``
-          : ' (options: cols= sort= limit= title= heat bar= target=)';
+      const named = !spill && eq && w === o.words[0] && /^[A-Za-z_][\w-]*$/.test(w) && !TABLE_OPTIONS.includes(w);
+      const hint = named
+        ? `; an inline table has no name: write \`table = ...\`, or \`data ${w} = ...\` then \`table ${w}\``
+        : spill || ' (options: cols= sort= limit= title= heat bar= target=)';
       this.diag('warning', 'table-option', `ignored table option "${w}"${hint}`, L, col);
     }
+    this.openQuotes('table', o, col);
     let cols: string[] | null = null;
     if (o.kv.cols) {
       cols = o.kv.cols
@@ -1897,7 +1945,7 @@ export class LedeParser {
     const ref = value.startsWith('=') ? value.slice(1).trim() : null;
     if (ref) {
       const m = /^([A-Za-z_][\w-]*)\.(.+)$/.exec(ref);
-      const d = m ? this.doc.data[m[1]] : undefined;
+      const d = m ? dataSet(this.doc, m[1]) : undefined;
       if (!m) this.diag('error', 'kpi-ref', `kpi reference must be =data.column, got =${ref}`, L, col);
       else if (!d) this.requireData(m[1], col);
       else this.requireCol(d, m[2], col);
@@ -1907,7 +1955,7 @@ export class LedeParser {
       let v = value;
       if (ref) {
         const m = /^([A-Za-z_][\w-]*)\.(.+)$/.exec(ref);
-        const d = m ? this.doc.data[m[1]] : undefined;
+        const d = m ? dataSet(this.doc, m[1]) : undefined;
         const c = d && m ? findCol(d, m[2]) : null;
         v = d && c ? (d.rows.map((r) => r[d.columns.indexOf(c)]).findLast((x) => x !== '') ?? '') : '';
       }
@@ -2006,7 +2054,7 @@ export class LedeParser {
     }
     this.clash('diagram', name, col);
     const o = parseOpts(rest.slice(t[1]?.offset ?? rest.length), ['flow', 'sequence']);
-    for (const w of o.words) this.diag('warning', 'diagram-option', `ignored diagram option "${w}"`, L, col);
+    this.strayOptions('diagram', o, o.words, col);
     const kind = o.flags.includes('sequence') ? 'sequence' : 'flow';
     const dirRaw = (o.kv.dir ?? (kind === 'sequence' ? 'LR' : 'TB')).toUpperCase();
     const dir = (['LR', 'TB', 'RL', 'BT'].includes(dirRaw) ? dirRaw : 'TB') as DiagramBlock['dir'];
@@ -2212,8 +2260,8 @@ export class LedeParser {
       return true;
     }
 
-    // edges: a -> b, c --> d : label
-    if (/(-->|->|<->|\s-x-\s)/.test(s)) {
+    // edges: a -> b, c --> d : label. An arrow inside a quoted label (`api "Payments -> API" service`) is text, not an edge.
+    if (/(-->|->|<->|\s-x-\s)/.test(s.includes('"') ? s.replace(/"[^"]*"/g, '""') : s)) {
       const ci = s.indexOf(':');
       const chain = ci >= 0 ? s.slice(0, ci) : s;
       const label = ci >= 0 ? s.slice(ci + 1).trim() : '';
@@ -2303,6 +2351,20 @@ export class LedeParser {
   ): void {
     this.doc.diagnostics.push({ severity, code, message, line, col: Math.max(1, col), ...(detail ? { detail } : {}) });
   }
+}
+
+/**
+ * The stray words of an option list (`o.words`, then anything else the caller reports), for reporting. Words that spilled out of one unquoted value (`title=Deploys per week`) come
+ * back as one entry, `per week`, with a hint naming the option as it was probably meant; every other word is its own entry.
+ */
+function spilled(o: Opts, stray: string[]): { text: string; hint: string }[] {
+  const out: { text: string; hint: string }[] = [];
+  for (let i = 0; i < stray.length; i++) {
+    const s = o.spills.find((x) => x.at === i);
+    out.push(s ? { text: s.words.join(' '), hint: `; a value with a space needs quotes: ${s.meant}` } : { text: stray[i], hint: '' });
+    if (s) i += s.words.length - 1;
+  }
+  return out;
 }
 
 /** `d` is a whole number of `step`s, within a rounding error (0.94 - 0.85 is not exactly 9 steps of 0.01 in floating point). */
@@ -2426,6 +2488,32 @@ export function suggestColumn(columns: string[], name: string): string | null {
   return shorter[0] ?? null;
 }
 
+/**
+ * The data set called `name`, or undefined. Read `doc.data` through this, not by index: a set may be named `constructor` or
+ * `toString`, and an index finds the inherited member of that name when no such set is declared.
+ */
+export function dataSet(doc: LedeDocument, name: string): DataSet | undefined {
+  return Object.hasOwn(doc.data, name) ? doc.data[name] : undefined;
+}
+
+/** Store `d` under `name` as an own property, so that a set named `__proto__` is a key like any other and not the map's prototype. */
+function storeData(doc: LedeDocument, name: string, d: DataSet): void {
+  Object.defineProperty(doc.data, name, { value: d, enumerable: true, writable: true, configurable: true });
+}
+
+/**
+ * The columns `b` reads that `d` does not have. A chart or table names its columns from the data as it stood on its own line, so
+ * this is empty unless the data was redefined below it (`data d = x,y` ... `chart line d` ... `data d = a,b`). The match is
+ * exact, as the drawers index columns: a redefinition that only changes a name's case (`Month` to `month`) counts as taking it away.
+ */
+export function missingColumns(b: ChartBlock | TableBlock, d: DataSet): string[] {
+  const reads =
+    b.type === 'chart'
+      ? [b.x, ...(b.kind === 'range' ? [b.from, b.to, b.at] : b.y)]
+      : [...(b.cols ?? []), b.sort?.col, ...(Array.isArray(b.heat) ? b.heat : []), ...(b.bars ?? []), b.targetCol];
+  return [...new Set(reads)].filter((c): c is string => c !== undefined && !d.columns.includes(c));
+}
+
 /** Resolve a column reference: exact match first, then ignoring case and repeated spaces. */
 export function findCol(d: DataSet, name: string): string | null {
   if (d.columns.includes(name)) return name;
@@ -2435,7 +2523,29 @@ export function findCol(d: DataSet, name: string): string | null {
 /** Post-parse resolution: kpi references and diagram sanity checks. Idempotent. */
 export function resolve(doc: LedeDocument): void {
   walkBlocks(doc.blocks, (b) => {
-    if (b.type === 'kpis') for (const k of b.items) resolveKpi(doc, k);
+    // A block names its columns from the data as it stood on its own line; a later `data NAME =` may have taken one away.
+    // (A column that was never there is an error on the block's own line already, and the data is then above the block.)
+    const redefined = (d: DataSet, gone: string[]) => {
+      if (gone.length === 0 || d.line <= b.line) return;
+      doc.diagnostics.push({
+        severity: 'error',
+        code: 'data-redefined',
+        message: `this ${b.type === 'kpis' ? 'kpi' : b.type} reads ${gone.join(', ')} of ${d.name}, but ${d.name} is redefined on line ${d.line} without ${gone.length === 1 ? 'it' : 'them'}; give the data on line ${d.line} a name of its own`,
+        line: b.line,
+        col: 1,
+        detail: { name: d.name, columns: gone, redefined: d.line },
+      });
+    };
+    if (b.type === 'kpis') {
+      for (const k of b.items) {
+        const lost = resolveKpi(doc, k);
+        if (lost) redefined(lost.d, [lost.column]);
+      }
+    }
+    if (b.type === 'chart' || b.type === 'table') {
+      const d = dataSet(doc, b.data);
+      if (d) redefined(d, missingColumns(b, d));
+    }
     if (b.type === 'diagram') {
       if (b.nodes.length === 0) {
         doc.diagnostics.push({
@@ -2457,38 +2567,45 @@ export function resolve(doc: LedeDocument): void {
           });
         }
       }
-      const gids = new Set(b.groups.map((g) => g.id));
-      // Group cycles: a group may not contain itself through nesting.
-      for (const g of b.groups) {
-        const seen = new Set<string>();
-        const walk = (id: string): boolean => {
-          if (seen.has(id)) return true;
-          seen.add(id);
-          const gg = b.groups.find((x) => x.id === id);
-          return !!gg && gg.members.some((m) => gids.has(m) && walk(m));
-        };
-        if (walk(g.id) && g.members.some((m) => gids.has(m))) {
-          const cyc = g.members.find((m) => gids.has(m) && b.groups.find((x) => x.id === m)!.members.includes(g.id));
-          if (cyc)
-            doc.diagnostics.push({
-              severity: 'error',
-              code: 'diagram-group-cycle',
-              message: `groups ${g.id} and ${cyc} contain each other`,
-              line: b.line,
-              col: 1,
-            });
+      // Group cycles: a group may not contain itself, directly or through any depth of nesting. One diagnostic per cycle.
+      const groups = new Map(b.groups.map((g) => [g.id, g]));
+      const done = new Set<string>();
+      const path: string[] = [];
+      const walk = (id: string): void => {
+        const at = path.indexOf(id);
+        if (at >= 0) {
+          const cyc = path.slice(at);
+          doc.diagnostics.push({
+            severity: 'error',
+            code: 'diagram-group-cycle',
+            message:
+              cyc.length === 1
+                ? `group ${id} contains itself`
+                : `groups ${cyc.slice(0, -1).join(', ')} and ${cyc[cyc.length - 1]} contain each other`,
+            line: b.line,
+            col: 1,
+          });
+          return;
         }
-      }
+        if (done.has(id)) return;
+        path.push(id);
+        for (const m of groups.get(id)!.members) if (groups.has(m)) walk(m);
+        path.pop();
+        done.add(id);
+      };
+      for (const g of b.groups) walk(g.id);
     }
   });
 }
 
-function resolveKpi(doc: LedeDocument, k: Kpi): void {
-  if (!k.ref) return;
+/** Fill a `=data.column` kpi from the data. Returns the data set and the column when the set no longer has that column. */
+function resolveKpi(doc: LedeDocument, k: Kpi): { d: DataSet; column: string } | null {
+  if (!k.ref) return null;
   const m = /^([A-Za-z_][\w-]*)\.(.+)$/.exec(k.ref);
-  const d = m && doc.data[m[1]];
-  const cname = m && d ? findCol(d, m[2]) : null;
-  if (!m || !d || !cname) return;
+  const d = m && dataSet(doc, m[1]);
+  if (!m || !d) return null;
+  const cname = findCol(d, m[2]);
+  if (!cname) return { d, column: m[2] };
   const ci = d.columns.indexOf(cname);
   const vals = d.rows.map((r) => r[ci]).filter((v) => v !== '');
   const last = vals[vals.length - 1] ?? '';
@@ -2502,6 +2619,7 @@ function resolveKpi(doc: LedeDocument, k: Kpi): void {
       k.delta = diff === 0 ? '0' : `${diff > 0 ? '+' : '−'}${Math.abs(diff).toFixed(dec)}`;
     }
   }
+  return null;
 }
 
 function decimals(v: string): number {
@@ -2511,7 +2629,11 @@ function decimals(v: string): number {
 
 export function parse(src: string, opts: ParseOptions = {}): LedeDocument {
   const p = new LedeParser(opts);
-  for (const line of src.split('\n')) p.pushLine(line);
+  const lines = src.split('\n');
+  // A final newline ends the last line; it does not start an empty one. `LedeStream` reads it so, and an unclosed fence at the end
+  // of the text would otherwise gain an empty last line here and not there.
+  if (src.endsWith('\n')) lines.pop();
+  for (const line of lines) p.pushLine(line);
   return p.end();
 }
 

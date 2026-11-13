@@ -1,12 +1,12 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, writeFileSync, symlinkSync, readFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, symlinkSync, readFileSync, linkSync, renameSync, rmSync, unlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 
 const CLI = new URL('../src/cli.ts', import.meta.url).pathname;
-const run = (args: string[], cwd: string) => spawnSync(process.execPath, [CLI, ...args], { cwd, encoding: 'utf8' });
+const run = (args: string[], cwd: string, input?: string) => spawnSync(process.execPath, [CLI, ...args], { cwd, encoding: 'utf8', input });
 
 test('data files are confined to the document directory, symlinks included', () => {
   const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
@@ -239,30 +239,43 @@ test('build --shell adds the pinned runtime to a page with questions, and says s
   assert.equal(none.stdout, run(['build', 'plain.lede'], dir).stdout);
 });
 
+/** Start `lede watch` in `dir`. The caller kills `child` in a `finally`; `until` polls with a deadline long enough for a slow machine. */
+function startWatch(dir: string, args: string[]) {
+  const child = spawn(process.execPath, [CLI, 'watch', ...args], { cwd: dir });
+  let err = '';
+  child.stderr.setEncoding('utf8');
+  child.stderr.on('data', (d: string) => (err += d));
+  const until = async (what: string, done: () => boolean) => {
+    for (let i = 0; i < 200 && !done(); i++) await new Promise((r) => setTimeout(r, 50));
+    assert.ok(done(), `timed out waiting for ${what}; stderr so far:\n${err}`);
+  };
+  const html = () => {
+    try {
+      return readFileSync(join(dir, 'page.html'), 'utf8');
+    } catch {
+      return '';
+    }
+  };
+  return { child, until, stderr: () => err, html };
+}
+
 test('watch --shell says once that the flag had no effect, and again only after the page stops taking the shell', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
   const page = join(dir, 'page.lede');
   writeFileSync(page, '# Plain\n\nText\n');
-  const child = spawn(process.execPath, [CLI, 'watch', 'page.lede', '--shell'], { cwd: dir });
-  let err = '';
-  child.stderr.setEncoding('utf8');
-  child.stderr.on('data', (d: string) => (err += d));
-  const count = (re: RegExp) => err.match(re)?.length ?? 0;
+  const w = startWatch(dir, ['page.lede', '--shell']);
+  const count = (re: RegExp) => w.stderr().match(re)?.length ?? 0;
   const builds = () => count(/page\.lede → /g);
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-  const until = async (done: () => boolean) => {
-    for (let i = 0; i < 100 && !done(); i++) await sleep(50);
-    assert.ok(done(), `timed out; stderr so far:\n${err}`);
-  };
   /** Save `text` and wait for the rebuild it causes. */
   const save = async (text: string) => {
     const before = builds();
     writeFileSync(page, text);
-    await until(() => builds() > before);
+    await w.until('a rebuild', () => builds() > before);
     await sleep(150); // a second event for the same save would be a second build, which must not matter
   };
   try {
-    await until(() => builds() >= 1 && err.includes('watching'));
+    await w.until('the first build', () => builds() >= 1 && w.stderr().includes('watching'));
     const none = () => count(/--shell had no effect/g);
     assert.equal(none(), 1, 'the first build says it');
     await save('# Plain\n\nMore text\n');
@@ -276,7 +289,7 @@ test('watch --shell says once that the flag had no effect, and again only after 
     await save('# Plain\n\nText once more\n');
     assert.equal(none(), 2);
   } finally {
-    child.kill();
+    w.child.kill();
   }
 });
 
@@ -301,4 +314,320 @@ test('build exits 1 on a question error and 0 with --force, which draws only the
   const forced = run(['build', 'q.lede', '-o', 'out.html', '--force'], dir);
   assert.equal(forced.status, 0);
   assert.equal((readFileSync(join(dir, 'out.html'), 'utf8').match(/<input /g) ?? []).length, 1);
+});
+
+test('-o never overwrites an input file: the same path, a symlink to it, a hard link to it and a not-yet-written name that is not it', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  const src = '# Keep me\n';
+  writeFileSync(join(dir, 'ok.lede'), src);
+  symlinkSync(join(dir, 'ok.lede'), join(dir, 'link.html'));
+  linkSync(join(dir, 'ok.lede'), join(dir, 'hard.html'));
+  mkdirSync(join(dir, 'sub'));
+  for (const target of ['ok.lede', './ok.lede', 'sub/../ok.lede', 'link.html', 'hard.html']) {
+    for (const args of [
+      ['build', 'ok.lede', '-o', target],
+      ['build', 'ok.lede', `-o=${target}`],
+    ]) {
+      const r = run(args, dir);
+      assert.equal(r.status, 2, `${args.join(' ')}: ${r.stderr}`);
+      assert.equal(r.stderr.trimEnd().split('\n').length, 1, 'one line');
+      assert.match(r.stderr, /^lede: .*same file/);
+      assert.equal(readFileSync(join(dir, 'ok.lede'), 'utf8'), src, 'the source is untouched');
+    }
+  }
+  // any input FILE counts, not only the first one that build compiles
+  writeFileSync(join(dir, 'other.lede'), '# Other\n');
+  assert.equal(run(['build', 'ok.lede', 'other.lede', '-o', 'other.lede'], dir).status, 2);
+  assert.equal(readFileSync(join(dir, 'other.lede'), 'utf8'), '# Other\n');
+  // OUT does not exist yet, and is not the source: written as always
+  assert.equal(run(['build', 'ok.lede', '-o', 'fresh.html'], dir).status, 0);
+  assert.match(readFileSync(join(dir, 'fresh.html'), 'utf8'), /^<!doctype html>/i);
+  // watch refuses before it starts
+  const w = run(['watch', 'ok.lede', '-o', 'ok.lede'], dir);
+  assert.equal(w.status, 2);
+  assert.match(w.stderr, /same file/);
+  assert.equal(readFileSync(join(dir, 'ok.lede'), 'utf8'), src);
+});
+
+test('-o needs a file name: last, before another flag or empty is a usage error; -o=FILE is -o FILE', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  writeFileSync(join(dir, 'p.lede'), '# Hi\n');
+  for (const args of [
+    ['build', 'p.lede', '-o'],
+    ['build', 'p.lede', '-o', '--force'],
+    ['build', '-o', '-', 'p.lede'],
+    ['build', 'p.lede', '-o='],
+    ['watch', 'p.lede', '-o'],
+  ]) {
+    const r = run(args, dir);
+    assert.equal(r.status, 2, args.join(' '));
+    assert.equal(r.stdout, '', 'no page on stdout');
+    assert.match(r.stderr, /^lede: -o needs a file name\n/);
+    assert.match(r.stderr, /usage:\n {2}lede build/);
+  }
+  const twice = run(['build', 'p.lede', '-o', 'a.html', '-o', 'b.html'], dir);
+  assert.equal(twice.status, 2);
+  assert.match(twice.stderr, /^lede: -o given more than once/);
+  const eq = run(['build', 'p.lede', '-o=out.html'], dir);
+  assert.equal(eq.status, 0, eq.stderr);
+  assert.equal(eq.stdout, '');
+  assert.equal(readFileSync(join(dir, 'out.html'), 'utf8'), run(['build', 'p.lede'], dir).stdout);
+  assert.match(run(['--help'], dir).stdout, /-o=FILE/);
+});
+
+test('a directory as FILE is a usage-class error like a missing file; an unwritable OUT is one line, with the stack only under LEDE_DEBUG', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  mkdirSync(join(dir, 'folder.lede'));
+  writeFileSync(join(dir, 'p.lede'), '# Hi\n');
+  for (const cmd of ['build', 'check', 'ast']) {
+    const r = run([cmd, 'folder.lede'], dir);
+    assert.equal(r.status, 2, cmd);
+    assert.equal(r.stderr, 'lede: folder.lede is a directory\n');
+  }
+  assert.equal(run(['check', 'p.lede', 'folder.lede'], dir).status, 2);
+  const missing = run(['build', 'p.lede', '-o', 'nodir/out.html'], dir);
+  assert.equal(missing.status, 70);
+  assert.match(missing.stderr, /^lede: .*ENOENT.*nodir\/out\.html/);
+  assert.equal(missing.stderr.trimEnd().split('\n').length, 1, `one line, no stack: ${missing.stderr}`);
+  const debug = spawnSync(process.execPath, [CLI, 'build', 'p.lede', '-o', 'nodir/out.html'], {
+    cwd: dir,
+    encoding: 'utf8',
+    env: { ...process.env, LEDE_DEBUG: '1' },
+  });
+  assert.equal(debug.status, 70);
+  assert.match(debug.stderr, /^lede: .*ENOENT[\s\S]*\n\s+at /, 'the stack is there when asked for');
+  assert.match(run(['--help'], dir).stdout, /LEDE_DEBUG/);
+});
+
+test('an option no command knows is a usage error that suggests the nearest flag; one that another command knows is ignored', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  writeFileSync(join(dir, 'p.lede'), '# Hi\n');
+  for (const [args, want] of [
+    [['build', 'p.lede', '--shel'], 'unknown option --shel; did you mean --shell?'],
+    [['build', 'p.lede', '--artifcat'], 'unknown option --artifcat; did you mean --artifact?'],
+    [['check', 'p.lede', '--jsno'], 'unknown option --jsno; did you mean --json?'],
+    [['check', 'p.lede', '-json'], 'unknown option -json; did you mean --json?'],
+    [['build', 'p.lede', '--shell=1'], 'unknown option --shell=1; did you mean --shell?'],
+    [['build', 'p.lede', '--frobnicate-everything'], 'unknown option --frobnicate-everything'],
+    [['build', 'p.lede', '-x'], 'unknown option -x'],
+    [['ast', '-q', 'p.lede'], 'unknown option -q'],
+  ] as const) {
+    const r = run([...args], dir);
+    assert.equal(r.status, 2, args.join(' '));
+    assert.equal(r.stdout, '');
+    assert.equal(r.stderr.split('\n')[0], `lede: ${want}`, args.join(' '));
+    assert.match(r.stderr, /usage:\n {2}lede build/);
+  }
+  // A flag that some other command knows is still ignored there (spec section 9), so these behave as before.
+  for (const args of [
+    ['ast', 'p.lede', '--json'],
+    ['build', 'p.lede', '--fix'],
+    ['check', 'p.lede', '--force'],
+    ['check', 'p.lede', '--shell'],
+  ]) {
+    const r = run(args, dir);
+    assert.notEqual(r.status, 2, `${args.join(' ')}: ${r.stderr}`);
+  }
+  // the command word gets the same treatment, and a bare `lede` still prints just the usage
+  assert.equal(run(['frob', 'p.lede'], dir).stderr.split('\n')[0], 'lede: unknown command frob');
+  assert.equal(run(['--shel'], dir).stderr.split('\n')[0], 'lede: unknown option --shel; did you mean --shell?');
+  assert.equal(run(['build'], dir).stderr.split('\n')[0], 'lede: no file given');
+  assert.match(run([], dir).stderr, /^usage:\n/);
+  assert.equal(run([], dir).status, 2);
+  // nothing is built when an option is wrong, even with --force
+  assert.equal(run(['build', 'p.lede', '--forse', '-o', 'x.html'], dir).status, 2);
+  assert.throws(() => readFileSync(join(dir, 'x.html')));
+  // a known option before the command is told where it goes, not offered itself as a correction
+  assert.equal(
+    run(['--force', 'build', 'p.lede'], dir).stderr.split('\n')[0],
+    'lede: --force goes after the command: lede <command> FILE --force',
+  );
+  assert.equal(
+    run(['-o', 'x.html', 'build', 'p.lede'], dir).stderr.split('\n')[0],
+    'lede: -o goes after the command: lede <command> FILE -o',
+  );
+});
+
+test('after -- every word is a file, so a name may start with a hyphen', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  writeFileSync(join(dir, 'p.lede'), '# Hi\n');
+  writeFileSync(join(dir, '-draft.lede'), '# Draft\n');
+  const plain = run(['check', '--', 'p.lede'], dir);
+  assert.equal(plain.status, 0, plain.stderr);
+  assert.equal(plain.stderr, 'ok\n');
+  const hyphen = run(['check', '--json', '--', '-draft.lede', 'p.lede'], dir);
+  assert.equal(hyphen.status, 0, hyphen.stderr);
+  assert.deepEqual(Object.keys(JSON.parse(hyphen.stdout) as object), ['-draft.lede', 'p.lede']);
+  // an option after the marker is a file name, and that file is not there
+  assert.equal(run(['build', 'p.lede', '--', '--force'], dir).status, 2);
+});
+
+test('--version, -V and version print the package version on one line and exit 0, with no file', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  const { version } = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')) as { version: string };
+  assert.match(version, /^\d+\.\d+\.\d+/);
+  for (const args of [['--version'], ['-V'], ['version']]) {
+    const r = run(args, dir);
+    assert.equal(r.status, 0, args.join(' '));
+    assert.equal(r.stdout, `${version}\n`);
+    assert.equal(r.stderr, '');
+  }
+  assert.equal(run(['--verison'], dir).stderr.split('\n')[0], 'lede: unknown option --verison; did you mean --version?');
+  const help = run(['--help'], dir).stdout;
+  assert.match(help, /lede version/);
+  assert.match(help, /-V, --version/);
+});
+
+test('FILE - reads the document from stdin for build, check and ast, and names it <stdin>', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  const src = '# Piped\n\nkpi p99 | 182 ms | -38% | good\n';
+  writeFileSync(join(dir, 'p.lede'), src);
+  // build: the same page as from a file, on stdout or at -o
+  const page = run(['build', 'p.lede'], dir).stdout;
+  assert.equal(run(['build', '-'], dir, src).stdout, page);
+  const o = run(['build', '-', '-o', 'out.html'], dir, src);
+  assert.equal(o.status, 0, o.stderr);
+  assert.match(o.stderr, /^<stdin> → out\.html \(/);
+  assert.equal(readFileSync(join(dir, 'out.html'), 'utf8'), page);
+  // check: diagnostics are labelled <stdin>, in text and as the --json key
+  const bad = '# Bad\nchart line nope\n';
+  const text = run(['check', '-'], dir, bad);
+  assert.equal(text.status, 1);
+  assert.match(text.stderr, /^<stdin>:2:\d+: \S*error\S* \[/);
+  assert.equal(text.stderr.trimEnd().split('\n').at(-1), '1 error(s)');
+  const json = run(['check', '-', '--json'], dir, bad);
+  assert.deepEqual(Object.keys(JSON.parse(json.stdout)), ['<stdin>']);
+  assert.equal(run(['check', '-'], dir, src).stderr.trimEnd(), 'ok');
+  // check takes stdin beside files; build says so on an error, with the same label
+  const both = JSON.parse(run(['check', 'p.lede', '-', '--json'], dir, bad).stdout) as Record<string, unknown[]>;
+  assert.deepEqual(Object.keys(both), ['p.lede', '<stdin>']);
+  const refused = run(['build', '-'], dir, bad);
+  assert.equal(refused.status, 1);
+  assert.match(refused.stderr, /<stdin>: 1 error\(s\); not written/);
+  assert.equal(refused.stdout, '');
+  // ast prints the document and exits 0 on errors, as for a file
+  const ast = run(['ast', '-'], dir, bad);
+  assert.equal(ast.status, 0);
+  assert.equal((JSON.parse(ast.stdout) as { diagnostics: unknown[] }).diagnostics.length, 1);
+  assert.deepEqual(JSON.parse(run(['ast', '-'], dir, src).stdout), JSON.parse(run(['ast', 'p.lede'], dir).stdout));
+});
+
+test('data loads from stdin resolve against the current directory and stay inside it', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  mkdirSync(join(dir, 'work'));
+  writeFileSync(join(dir, 'work', 'q.csv'), 'a,b\n1,2\n');
+  writeFileSync(join(dir, 'outside.csv'), 'a,b\n3,4\n');
+  const diags = (src: string) => {
+    const r = run(['check', '-', '--json'], join(dir, 'work'), src);
+    return JSON.parse(r.stdout)['<stdin>'] as { code: string; message: string }[];
+  };
+  assert.deepEqual(diags('data q < q.csv\ntable q\n'), []);
+  const out = diags('data o < ../outside.csv\ntable o\n').filter((d) => d.code === 'data-file');
+  assert.equal(out.length, 1);
+  assert.match(out[0].message, /\.\.\/outside\.csv is outside the document's directory/);
+  const asked = run(['build', '-'], join(dir, 'work'), 'data q < q.csv\nchart bar q\n');
+  assert.equal(asked.status, 0, asked.stderr);
+  assert.match(asked.stdout, /<svg/);
+});
+
+test('- is a usage error twice, with watch, and with --fix or --dry-run', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  const cases: [string[], RegExp][] = [
+    [['check', '-', '-'], /^lede: - \(stdin\) can be given only once/],
+    [['check', '-', '--fix'], /^lede: .*--fix.*stdin/],
+    [['check', '--dry-run', '-'], /^lede: .*--dry-run.*stdin/],
+    [['watch', '-'], /^lede: watch needs a file, not - \(stdin\)/],
+  ];
+  for (const [args, message] of cases) {
+    const r = run(args, dir, '# Hi\n');
+    assert.equal(r.status, 2, args.join(' '));
+    assert.match(r.stderr, message);
+    assert.match(r.stderr, /usage:\n/);
+    assert.equal(r.stdout, '');
+  }
+});
+
+test('watch keeps rebuilding after an editor saves by writing a temp file and renaming it over the original', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  const page = join(dir, 'page.lede');
+  writeFileSync(page, '# Heading\n\nalphaword\n');
+  const w = startWatch(dir, ['page.lede']);
+  try {
+    await w.until('the first build', () => w.stderr().includes('watching') && w.html().includes('alphaword'));
+    for (const word of ['bravoword', 'charlieword']) {
+      writeFileSync(`${page}.tmp`, `# Heading\n\n${word}\n`);
+      renameSync(`${page}.tmp`, page); // a new inode under the old name: a watcher on the file itself would now see nothing
+      await w.until(`a rebuild with ${word}`, () => w.html().includes(word));
+    }
+    assert.equal(w.child.exitCode, null, 'still running');
+    assert.doesNotMatch(w.stderr(), /\n\s+at /, 'no stack trace');
+  } finally {
+    w.child.kill();
+  }
+});
+
+test('watch survives the file being deleted, says so once, and rebuilds when it comes back; a read error is one line', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  const page = join(dir, 'page.lede');
+  writeFileSync(page, '# Heading\n\nalphaword\n');
+  const w = startWatch(dir, ['page.lede']);
+  const gone = () => w.stderr().match(/lede: page\.lede is gone; waiting for it to come back/g)?.length ?? 0;
+  try {
+    await w.until('the first build', () => w.stderr().includes('watching') && w.html().includes('alphaword'));
+    unlinkSync(page);
+    await w.until('the note that the file is gone', () => gone() === 1);
+    assert.equal(w.child.exitCode, null, 'still running');
+    writeFileSync(page, '# Heading\n\ndeltaword\n');
+    await w.until('a rebuild after it came back', () => w.html().includes('deltaword'));
+    assert.equal(gone(), 1, 'said once');
+    // A source that cannot be read (here: a directory in its place) is one line on stderr, not the end of the watcher.
+    unlinkSync(page);
+    mkdirSync(page);
+    await w.until('the read error', () => /lede: .*EISDIR.*\n/.test(w.stderr()));
+    assert.equal(w.child.exitCode, null, 'still running');
+    rmSync(page, { recursive: true });
+    writeFileSync(page, '# Heading\n\nechoword\n');
+    await w.until('a rebuild after the error', () => w.html().includes('echoword'));
+    assert.equal(gone(), 1, 'a read error is not "gone"');
+    unlinkSync(page);
+    await w.until('a second note for a second disappearance', () => gone() === 2);
+    assert.doesNotMatch(w.stderr(), /\n\s+at /, 'no stack trace');
+    assert.equal(w.child.exitCode, null);
+  } finally {
+    w.child.kill();
+  }
+});
+
+test('an outside data path gets one message whether or not it exists, and a missing file inside the tree shows no absolute path', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  const outside = mkdtempSync(join(tmpdir(), 'lede-secret-'));
+  writeFileSync(join(outside, 'secret.csv'), 'k,v\nTOKEN,hunter2\n');
+  mkdirSync(join(dir, 'sub'));
+  const up = `../${outside.split('/').pop()}`;
+  // A link inside the tree that points out of it: what lies behind it is outside, there or not.
+  symlinkSync(outside, join(dir, 'sub', 'away'));
+  const outsidePaths = [
+    `${up}/secret.csv`,
+    `${up}/nope.csv`,
+    `${up}/nodir/nope.csv`,
+    join(outside, 'secret.csv'),
+    join(outside, 'nope.csv'),
+    '/etc/lede-no-such-file',
+    'sub/away/secret.csv',
+    'sub/away/nope.csv',
+    'sub/away/nodir/nope.csv',
+  ];
+  const insidePaths = ['sub/missing.csv', 'nodir/missing.csv', 'sub/../missing.csv'];
+  const page = [...outsidePaths, ...insidePaths].map((p, i) => `data d${i} < ${p}\n`).join('');
+  writeFileSync(join(dir, 'page.lede'), page);
+  const r = run(['check', 'page.lede', '--json'], dir);
+  const msgs = (JSON.parse(r.stdout)['page.lede'] as { code: string; message: string }[])
+    .filter((d) => d.code === 'data-file')
+    .map((d) => d.message);
+  assert.equal(msgs.length, outsidePaths.length + insidePaths.length);
+  outsidePaths.forEach((p, i) => assert.equal(msgs[i], `cannot read ${p}: ${p} is outside the document's directory`));
+  insidePaths.forEach((p, k) => assert.equal(msgs[outsidePaths.length + k], `cannot read ${p}: ${p}: no such file`));
+  assert.doesNotMatch(r.stdout + r.stderr, /ENOENT|hunter2/);
+  // the absolute path of the document's own directory is not in a message either
+  assert.equal(r.stdout.includes(dir), false);
 });

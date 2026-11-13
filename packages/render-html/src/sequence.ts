@@ -1,5 +1,5 @@
 import type { DiagramBlock, DiagramFrame } from '@lede-lang/core';
-import { esc, plain, snap4, textWidth } from './util.ts';
+import { esc, maxOf, plain, snap4, textWidth } from './util.ts';
 import { figure, kindClass, markers, nodeSvg, svgOpen } from './diagram.ts';
 
 const ELABEL = 12; // message labels, desktop (up from 10)
@@ -404,7 +404,7 @@ function drawSeq(d: DiagramBlock, uid: string, phone: boolean): { svg: string; W
     const cx0 = (x1 + x2) / 2;
     const span = Math.abs(x2 - x1);
     const lineMax = 2 * Math.min(cx0 - 4, W - 4 - cx0);
-    const longest = Math.max(0, ...text.split(/\s+/).map(lm));
+    const longest = maxOf(text.split(/\s+/).map(lm), 0);
     const wrapAt = Math.min(Math.max(span - 8, Math.min(longest + 8, lineMax)), lineMax);
     const lines = text ? wrap(text, wrapAt - 8, lm, 4, true) : [];
     const lw = Math.max(0, ...lines.map(lm)) + 8;

@@ -1,0 +1,6 @@
+data z = a,b; x,5; y,7
+chart line z min=10 max=10
+chart bar z min=10 max=2
+chart hbar z min=0 max=0
+chart range z from=b to=b min=3 max=1
+chart line z min=2 max=9

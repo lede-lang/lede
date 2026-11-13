@@ -2,27 +2,32 @@
 // lede build | watch | check | ast
 import { readFileSync, writeFileSync, watch as fsWatch, existsSync, realpathSync, statSync } from 'node:fs';
 import { dirname, resolve, basename, sep } from 'node:path';
+import { text as readAll } from 'node:stream/consumers';
 import { parse, fix, artifactDiagnostics, type Diagnostic, type LedeDocument } from '@lede-lang/core';
-import { render, wantsShell } from '@lede-lang/html';
 
 const USAGE = `usage:
   lede build <file.lede> [-o out.html] [--force] [--unsafe-html] [--allow-remote] [--artifact] [--shell]
   lede watch <file.lede> [-o out.html]
   lede check <file.lede>... [--json] [--fix [--dry-run]] [--artifact]
   lede ast   <file.lede>
-  lede help`;
+  lede help
+  lede version`;
 
 const HELP = `${USAGE}
 
 commands:
   build   compile a page to one self-contained HTML file (stdout without -o); refuses on errors
-  watch   rebuild next to the source on every save
+  watch   rebuild next to the source on every save; it keeps going when an editor replaces the file or it is deleted for a while
   check   print file:line:col diagnostics, then a last line: ok if there were none, else the
           counts (a warning is not ok); exit 1 if any is an error, 2 on a usage error
   ast     print the parsed document as JSON
+  version print the version of this package (also --version, -V)
+
+A file may be - to read the document from stdin (build, check and ast; not with watch, --fix or --dry-run). Diagnostics call
+it <stdin>, and \`data x < file.csv\` loads resolve against the current directory, confined to it like a file's.
 
 options:
-  -o FILE         build/watch: write the HTML here
+  -o FILE         build/watch: write the HTML here (-o=FILE does too), never over an input file
   --force         build: write the page even if it has errors
   --unsafe-html   build: keep raw \`html\` blocks unsanitized (local files only)
   --allow-remote  build: load remote images (links never need it)
@@ -38,28 +43,63 @@ options:
                   #### headings, column names, kpi bars, grid before ### sections; spec §9) and
                   print each repair; repairs that pick between readings are marked "a guess"
   --dry-run       check --fix: print the lines that would change and write nothing
-  -h, --help      show this help`;
+  -h, --help      show this help
+  -V, --version   print the version
+
+An option no command knows is a usage error (exit 2); one that only another command takes is ignored. After -- every word
+is a FILE, so a name may start with -. A failure that is not
+a usage error exits 70 with one line on stderr; set LEDE_DEBUG to add the stack.`;
+
+/** True when `path` is `root` or lies under it. Both are absolute and normalized. */
+const inside = (path: string, root: string): boolean => path === root || path.startsWith(root.endsWith(sep) ? root : root + sep);
+
+/** What a diagnostic calls `file`: `-` is the document on stdin, which has no name. */
+const nameOf = (file: string): string => (file === '-' ? '<stdin>' : file);
 
 function parseOptions(file: string) {
-  const base = dirname(resolve(file));
+  // Data files of a document on stdin load from where the command was run, with the same confinement as for a file.
+  const base = file === '-' ? process.cwd() : dirname(resolve(file));
   return {
     loadFile: (p: string) => {
       if (/^[a-z]+:/i.test(p)) throw new Error('only local files can be loaded');
       // Confine data files to the document's own directory tree: a document must not be
       // able to read ~/.ssh or ../../secrets just because someone compiled it.
-      // Resolve symlinks on both sides before comparing, or a link inside the folder escapes it.
-      const root = realpathSync(base);
-      const full = realpathSync(resolve(base, p));
-      if (full !== root && !full.startsWith(root + sep)) throw new Error(`${p} is outside the document's directory`);
-      if (statSync(full).size > 5 * 1024 * 1024) throw new Error(`${p} is larger than 5 MB`);
-      return readFileSync(full, 'utf8');
+      const outside = () => new Error(`${p} is outside the document's directory`);
+      // It must not matter whether a path that escapes exists: if the answer were "no such file" for one and "outside" for the
+      // other, a document could ask which files are there. So first the path as written, resolved against the directory and
+      // nothing else.
+      const wanted = resolve(base, p);
+      if (!inside(wanted, base)) throw outside();
+      // Then with symlinks resolved on both sides, or a link inside the folder escapes it. A path that does not resolve is judged
+      // by the nearest folder above it that does, so a link out of the tree answers "outside" whether or not the file is there.
+      const real = (path: string): string | NodeJS.ErrnoException => {
+        try {
+          return realpathSync(path);
+        } catch (e) {
+          return e as NodeJS.ErrnoException;
+        }
+      };
+      const full = real(wanted);
+      let nearest = full;
+      for (let at = wanted; typeof nearest !== 'string' && at !== dirname(at); nearest = real(at)) at = dirname(at);
+      if (typeof nearest !== 'string' || !inside(nearest, realpathSync(base))) throw outside();
+      // Node's message holds the absolute path; the document's author needs only the path they wrote.
+      const unreadable = (e: NodeJS.ErrnoException) =>
+        new Error(e.code === 'ENOENT' || e.code === 'ENOTDIR' ? `${p}: no such file` : `${p}: cannot be read (${e.code ?? e.name})`);
+      if (typeof full !== 'string') throw unreadable(full);
+      try {
+        if (statSync(full).size > 5 * 1024 * 1024) throw new Error(`${p} is larger than 5 MB`);
+        return readFileSync(full, 'utf8');
+      } catch (e) {
+        throw (e as NodeJS.ErrnoException).code === undefined ? e : unreadable(e as NodeJS.ErrnoException);
+      }
     },
   };
 }
 
-/** Read and parse `file`. With `artifact`, its diagnostics also hold the warnings only an Artifact host needs. */
-function load(file: string, artifact = false): { src: string; doc: LedeDocument } {
-  const src = readFileSync(file, 'utf8');
+/** Read and parse `file` (`-` is stdin). With `artifact`, its diagnostics also hold the warnings only an Artifact host needs. */
+async function load(file: string, artifact = false): Promise<{ src: string; doc: LedeDocument }> {
+  const src = file === '-' ? await readAll(process.stdin) : readFileSync(file, 'utf8');
   const doc = parse(src, parseOptions(file));
   if (artifact) doc.diagnostics.push(...artifactDiagnostics(doc));
   return { src, doc };
@@ -88,13 +128,16 @@ interface Watching {
 }
 
 async function build(file: string, out: string | null, flags: Set<string>, watching?: Watching): Promise<boolean> {
-  const { src, doc } = load(file, flags.has('--artifact'));
-  report(file, src, doc.diagnostics);
+  const name = nameOf(file);
+  const { src, doc } = await load(file, flags.has('--artifact'));
+  report(name, src, doc.diagnostics);
   const errors = doc.diagnostics.filter((d) => d.severity === 'error').length;
   if (errors && !flags.has('--force')) {
-    process.stderr.write(`${file}: ${errors} error(s); not written (use --force to render anyway)\n`);
+    process.stderr.write(`${name}: ${errors} error(s); not written (use --force to render anyway)\n`);
     return false;
   }
+  // The renderer pulls in elkjs and sanitize-html, about 170 ms that `check`, `ast` and `--help` never need, so it loads only here.
+  const { render, wantsShell } = await import('@lede-lang/html');
   const shell = flags.has('--shell');
   const html = await render(doc, {
     unsafeHtml: flags.has('--unsafe-html'),
@@ -105,16 +148,233 @@ async function build(file: string, out: string | null, flags: Set<string>, watch
   const idle = shell && !wantsShell(doc);
   if (idle && !watching?.shellIdle)
     process.stderr.write(
-      `${file}: --shell had no effect: the page needs a field (ask, choose, confirm, param, toggle, bucket or template) and an export line\n`,
+      `${name}: --shell had no effect: the page needs a field (ask, choose, confirm, param, toggle, bucket or template) and an export line\n`,
     );
   if (watching) watching.shellIdle = idle;
   if (out) writeFileSync(out, html);
   else process.stdout.write(html);
   if (out)
     process.stderr.write(
-      `${file} → ${out} (${(Buffer.byteLength(src) / 1024).toFixed(1)} KB → ${(Buffer.byteLength(html) / 1024).toFixed(1)} KB)\n`,
+      `${name} → ${out} (${(Buffer.byteLength(src) / 1024).toFixed(1)} KB → ${(Buffer.byteLength(html) / 1024).toFixed(1)} KB)\n`,
     );
   return true;
+}
+
+/** Where `watch` writes: OUT, or `NAME.html` beside `NAME.lede`. */
+const watchTarget = (file: string, out: string | null): string => out ?? resolve(dirname(file), `${basename(file, '.lede')}.html`);
+
+/**
+ * `lede watch`: build once, then rebuild after every change to FILE until stopped. It watches the directory and picks FILE's events
+ * by name: an editor that saves by writing a temp file and renaming it over the original leaves a watcher on the file itself holding
+ * the old inode, which never fires again, and deleting the file would end it.
+ */
+async function watchFile(file: string, target: string, flags: Set<string>): Promise<number> {
+  const watched = new Set([...flags, '--force']);
+  const watching: Watching = { shellIdle: false };
+  // The first build is not guarded: an unreadable FILE or an unwritable OUT stops the command (exit 70), not a loop of the same line.
+  await build(file, target, watched, watching);
+  let gone = false;
+  /** One rebuild, which never throws: a missing or unreadable FILE is a line on stderr, and the next change tries again. */
+  const rebuild = async (): Promise<void> => {
+    try {
+      await build(file, target, watched, watching);
+      gone = false;
+      return;
+    } catch (e) {
+      // A file that is there and cannot be built is an error; one that is not there (deleted, or mid-rename in a save) is gone.
+      if (existsSync(file)) {
+        gone = false;
+        process.stderr.write(failure(e));
+        return;
+      }
+    }
+    if (!gone) process.stderr.write(`lede: ${file} is gone; waiting for it to come back\n`);
+    gone = true;
+  };
+  // One rebuild at a time: a change that lands during a build asks for one more after it, so the last save always wins.
+  let busy = false;
+  let again = false;
+  const cycle = async (): Promise<void> => {
+    if (busy) {
+      again = true;
+      return;
+    }
+    busy = true;
+    try {
+      await rebuild();
+    } finally {
+      busy = false;
+    }
+    if (again) {
+      again = false;
+      await cycle();
+    }
+  };
+  // Follow a symlinked FILE to the file that is edited; the page is still read through FILE.
+  const real = realpathSync(file);
+  // Names are compared as a file system that ignores case and normalization would: FILE typed `readme.lede` may be `README.lede`
+  // on disk, and the event carries the name on disk. A neighbour that differs only so costs one rebuild.
+  const key = (n: string) => n.normalize('NFC').toLowerCase();
+  const name = key(basename(real));
+  // Some platforms give no name. Any change in the folder may then be FILE's, and so may the page this command just wrote there,
+  // so such an event counts only when FILE itself has changed since the last one that did.
+  const stamp = (): string => {
+    const s = statSync(file, { throwIfNoEntry: false });
+    return s ? `${s.mtimeMs}:${s.size}` : '';
+  };
+  let seen = stamp();
+  let timer: NodeJS.Timeout | null = null;
+  const watcher = fsWatch(dirname(real), (_event, changed) => {
+    if (changed !== null) {
+      if (key(changed) !== name) return;
+    } else {
+      const now = stamp();
+      if (now === seen) return;
+      seen = now;
+    }
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => void cycle(), 60);
+  });
+  process.stderr.write(`watching ${file} → ${target}\n`);
+  return await new Promise<number>((done) => {
+    watcher.on('error', (e) => {
+      process.stderr.write(failure(e));
+      done(70);
+    });
+  });
+}
+
+/** `lede check`: print every diagnostic (or the JSON), repair first under --fix, and exit 1 if any is an error. */
+async function check(files: string[], flags: Set<string>): Promise<number> {
+  let bad = 0;
+  let warned = 0;
+  const all: Record<string, Diagnostic[]> = {};
+  for (const f of files) {
+    const dry = flags.has('--dry-run');
+    // Under --fix a file is rewritten in place; stdin was refused before we got here, so `f` is a real path.
+    if (flags.has('--fix') || dry) {
+      const before = readFileSync(f, 'utf8');
+      const r = fix(before, parseOptions(f));
+      const verb = dry ? 'would fix' : 'fixed';
+      for (const a of r.applied)
+        process.stderr.write(`${f}:${a.line}: ${verb} [${a.code}] ${a.note}${a.guess ? ' (a guess: check it)' : ''}\n`);
+      if (dry) {
+        // Fixes never change the line count, so a line-by-line comparison is the whole diff.
+        const was = before.split('\n');
+        r.src.split('\n').forEach((line, i) => {
+          if (line !== was[i]) process.stderr.write(`${f}:${i + 1}:\n- ${was[i]}\n+ ${line}\n`);
+        });
+      } else if (r.src !== before) writeFileSync(f, r.src);
+    }
+    // Files are reported one after the other, in the order given, and stdin can be read only once.
+    // oxlint-disable-next-line eslint/no-await-in-loop -- sequential on purpose
+    const { src, doc } = await load(f, flags.has('--artifact'));
+    all[nameOf(f)] = doc.diagnostics;
+    if (!flags.has('--json')) report(nameOf(f), src, doc.diagnostics);
+    bad += doc.diagnostics.filter((d) => d.severity === 'error').length;
+    warned += doc.diagnostics.filter((d) => d.severity === 'warning').length;
+  }
+  if (flags.has('--json')) process.stdout.write(`${JSON.stringify(all, null, 2)}\n`);
+  else process.stderr.write(`${summary(bad, warned)}\n`);
+  return bad ? 1 : 0;
+}
+
+const COMMANDS = ['build', 'watch', 'check', 'ast'] as const;
+type Command = (typeof COMMANDS)[number];
+
+/** Every flag some command takes. A flag no command knows is a usage error; one only another command knows is ignored (spec section 9). */
+const FLAGS = ['--force', '--unsafe-html', '--allow-remote', '--artifact', '--shell', '--json', '--fix', '--dry-run'];
+/** What a misspelled option is compared with: the flags, plus the options `main` handles before it parses. */
+const KNOWN_OPTIONS = [...FLAGS, '--help', '--version', '-o', '-h', '-V'];
+
+interface Args {
+  cmd: Command;
+  files: string[];
+  out: string | null;
+  flags: Set<string>;
+}
+
+/** The usage error is its message, or null when the usage alone says it (no command at all). */
+interface UsageError {
+  usage: string | null;
+}
+
+/** Edit distance (insert, delete, replace), for the "did you mean" in an unknown option. */
+function distance(a: string, b: string): number {
+  let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    const row = [i];
+    for (let j = 1; j <= b.length; j++) row[j] = Math.min(prev[j] + 1, row[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    prev = row;
+  }
+  return prev[b.length];
+}
+
+function unknownOption(arg: string): string {
+  // A one-letter option such as -x is within two edits of -o and -h, which would be a guess about nothing.
+  const near = arg.length > 2 ? KNOWN_OPTIONS.map((f) => ({ f, d: distance(arg, f) })).filter((c) => c.d <= 2) : [];
+  near.sort((a, b) => a.d - b.d);
+  return `unknown option ${arg}${near.length ? `; did you mean ${near[0].f}?` : ''}`;
+}
+
+/** Split the command line into the command, its files, `-o` and its flags, or say what is wrong with it. */
+function parseArgs(argv: string[]): Args | UsageError {
+  const [cmd, ...rest] = argv;
+  if (!cmd) return { usage: null };
+  if (cmd.startsWith('-'))
+    return {
+      usage: KNOWN_OPTIONS.includes(cmd.split('=')[0]) ? `${cmd} goes after the command: lede <command> FILE ${cmd}` : unknownOption(cmd),
+    };
+  if (!(COMMANDS as readonly string[]).includes(cmd)) return { usage: `unknown command ${cmd}` };
+  const flags = new Set<string>();
+  const files: string[] = [];
+  let out: string | null = null;
+  let options = true; // until `--`, after which every word is a FILE
+  for (let i = 0; i < rest.length; i++) {
+    const a = rest[i];
+    if (!options) files.push(a);
+    else if (a === '--') options = false;
+    else if (a === '-o' || a.startsWith('-o=')) {
+      // A value that is itself an option is a forgotten value, not a file called --force; -o=--force says it on purpose.
+      const value = a === '-o' ? rest[++i] : a.slice(3);
+      if (!value || (a === '-o' && value.startsWith('-'))) return { usage: '-o needs a file name' };
+      if (out !== null) return { usage: '-o given more than once' };
+      out = value;
+    } else if (FLAGS.includes(a)) flags.add(a);
+    else if (a !== '-' && a.startsWith('-')) return { usage: unknownOption(a) };
+    else files.push(a);
+  }
+  if (!files.length) return { usage: 'no file given' };
+  const stdin = files.filter((f) => f === '-').length;
+  if (stdin > 1) return { usage: '- (stdin) can be given only once' };
+  if (stdin && cmd === 'watch') return { usage: 'watch needs a file, not - (stdin)' };
+  if (stdin && (flags.has('--fix') || flags.has('--dry-run')))
+    return { usage: '--fix and --dry-run rewrite the file, and a document read from - (stdin) has none' };
+  return { cmd: cmd as Command, files, out, flags };
+}
+
+/** True when both paths are one existing file, whatever the names: a symlink or a hard link to it counts, and a path not yet written does not. */
+function sameFile(a: string, b: string): boolean {
+  try {
+    const x = statSync(a, { bigint: true });
+    const y = statSync(b, { bigint: true });
+    // Some file systems report inode 0 for everything; that says nothing.
+    return x.ino !== 0n && x.ino === y.ino && x.dev === y.dev;
+  } catch {
+    return false;
+  }
+}
+
+/** The line a failure prints: its message, and the stack only for someone who set LEDE_DEBUG. */
+function failure(e: unknown): string {
+  const text = e instanceof Error ? ((process.env.LEDE_DEBUG ? e.stack : undefined) ?? e.message) : String(e);
+  return `lede: ${text}\n`;
+}
+
+/** The CLI package's own version, read when asked: the release workflow rewrites it, and `../package.json` is that file from src/ and from dist/. */
+function version(): string {
+  const manifest = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')) as { version: string };
+  return manifest.version;
 }
 
 async function main(argv: string[]): Promise<number> {
@@ -122,72 +382,49 @@ async function main(argv: string[]): Promise<number> {
     process.stdout.write(`${HELP}\n`);
     return 0;
   }
-  const [cmd, ...rest] = argv;
-  const flags = new Set(rest.filter((a) => a.startsWith('--')));
-  const oi = rest.indexOf('-o');
-  const out = oi >= 0 ? rest[oi + 1] : null;
-  const files = rest.filter((a, i) => !a.startsWith('-') && !(oi >= 0 && i === oi + 1));
-  if (!cmd || !files.length || !['build', 'watch', 'check', 'ast'].includes(cmd)) {
-    process.stderr.write(`${USAGE}\n`);
+  if (argv.includes('--version') || argv.includes('-V') || argv[0] === 'version') {
+    process.stdout.write(`${version()}\n`);
+    return 0;
+  }
+  const parsed = parseArgs(argv);
+  if ('usage' in parsed) {
+    process.stderr.write(`${parsed.usage === null ? '' : `lede: ${parsed.usage}\n`}${USAGE}\n`);
     return 2;
   }
+  const { cmd, files, out, flags } = parsed;
   if ((cmd === 'build' || cmd === 'watch') && flags.has('--shell') && flags.has('--unsafe-html')) {
     process.stderr.write('lede: --shell cannot be combined with --unsafe-html: raw html could plant its own controls and data block\n');
     return 2;
   }
-  for (const f of files)
+  for (const f of files) {
+    if (f === '-') continue;
     if (!existsSync(f)) {
       process.stderr.write(`lede: no such file ${f}\n`);
       return 2;
     }
+    if (statSync(f).isDirectory()) {
+      process.stderr.write(`lede: ${f} is a directory\n`);
+      return 2;
+    }
+  }
+  // The page goes to OUT, so OUT must not be the document: `build ok.lede -o ok.lede` would turn the source into HTML.
+  const watched = cmd === 'watch' ? watchTarget(files[0], out) : null;
+  const target = watched ?? (cmd === 'build' ? out : null);
+  const clash = target === null ? undefined : files.find((f) => f !== '-' && sameFile(f, target));
+  if (clash !== undefined) {
+    process.stderr.write(`lede: ${target} is the same file as ${clash}; not overwriting the source\n`);
+    return 2;
+  }
   switch (cmd) {
     case 'build':
       return (await build(files[0], out, flags)) ? 0 : 1;
-    case 'check': {
-      let bad = 0;
-      let warned = 0;
-      const all: Record<string, Diagnostic[]> = {};
-      for (const f of files) {
-        const dry = flags.has('--dry-run');
-        if (flags.has('--fix') || dry) {
-          const before = readFileSync(f, 'utf8');
-          const r = fix(before, parseOptions(f));
-          const verb = dry ? 'would fix' : 'fixed';
-          for (const a of r.applied)
-            process.stderr.write(`${f}:${a.line}: ${verb} [${a.code}] ${a.note}${a.guess ? ' (a guess: check it)' : ''}\n`);
-          if (dry) {
-            // Fixes never change the line count, so a line-by-line comparison is the whole diff.
-            const was = before.split('\n');
-            r.src.split('\n').forEach((line, i) => {
-              if (line !== was[i]) process.stderr.write(`${f}:${i + 1}:\n- ${was[i]}\n+ ${line}\n`);
-            });
-          } else if (r.src !== before) writeFileSync(f, r.src);
-        }
-        const { src, doc } = load(f, flags.has('--artifact'));
-        all[f] = doc.diagnostics;
-        if (!flags.has('--json')) report(f, src, doc.diagnostics);
-        bad += doc.diagnostics.filter((d) => d.severity === 'error').length;
-        warned += doc.diagnostics.filter((d) => d.severity === 'warning').length;
-      }
-      if (flags.has('--json')) process.stdout.write(`${JSON.stringify(all, null, 2)}\n`);
-      else process.stderr.write(`${summary(bad, warned)}\n`);
-      return bad ? 1 : 0;
-    }
+    case 'check':
+      return await check(files, flags);
     case 'ast':
-      process.stdout.write(`${JSON.stringify(load(files[0]).doc, null, 2)}\n`);
+      process.stdout.write(`${JSON.stringify((await load(files[0])).doc, null, 2)}\n`);
       return 0;
-    case 'watch': {
-      const target = out ?? resolve(dirname(files[0]), `${basename(files[0], '.lede')}.html`);
-      const watching: Watching = { shellIdle: false };
-      await build(files[0], target, new Set([...flags, '--force']), watching);
-      let timer: NodeJS.Timeout | null = null;
-      fsWatch(files[0], () => {
-        if (timer) clearTimeout(timer);
-        timer = setTimeout(() => void build(files[0], target, new Set([...flags, '--force']), watching), 60);
-      });
-      process.stderr.write(`watching ${files[0]} → ${target}\n`);
-      return await new Promise<number>(() => {});
-    }
+    case 'watch':
+      return watched === null ? 2 : await watchFile(files[0], watched, flags);
   }
   return 2;
 }
@@ -196,6 +433,6 @@ async function main(argv: string[]): Promise<number> {
 try {
   process.exitCode = await main(process.argv.slice(2));
 } catch (e) {
-  process.stderr.write(`lede: ${e instanceof Error ? (e.stack ?? e.message) : String(e)}\n`);
+  process.stderr.write(failure(e));
   process.exitCode = 70;
 }

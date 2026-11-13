@@ -1,5 +1,6 @@
 import type {
   Block,
+  ChartBlock,
   LedeDocument,
   TableBlock,
   DataSet,
@@ -15,7 +16,18 @@ import type {
   Kpi,
   QuestionBlock,
 } from '@lede-lang/core';
-import { browserUrl, exportsOf, fieldsOf, imageSrcKind, num, parse, presetsOf, type ParseOptions } from '@lede-lang/core';
+import {
+  browserUrl,
+  dataSet,
+  exportsOf,
+  missingColumns,
+  fieldsOf,
+  imageSrcKind,
+  num,
+  parse,
+  presetsOf,
+  type ParseOptions,
+} from '@lede-lang/core';
 import sanitizeHtml from 'sanitize-html';
 import { renderChart } from './chart.ts';
 import { renderFlow } from './diagram.ts';
@@ -35,7 +47,7 @@ import {
 } from './question.ts';
 import { SCRIPT_SRC, shellScripts } from './shell.ts';
 import { css } from './theme.ts';
-import { esc, fmtCell, inline, plain, slug, textWidth } from './util.ts';
+import { esc, fmtCell, inline, maxOf, plain, slug, textWidth } from './util.ts';
 
 export interface RenderOptions {
   /** Pass `html:` blocks through untouched. Default false: they are sanitized to a safe allowlist. */
@@ -635,12 +647,12 @@ export class Ctx {
       case 'data':
         return '';
       case 'chart': {
-        const d = this.doc.data[b.data];
+        const d = this.dataFor(b);
         if (!d) return '';
         return renderChart(b, d, this.uid('c'));
       }
       case 'table': {
-        const d = this.doc.data[b.data];
+        const d = this.dataFor(b);
         return d ? table(b, d, this.picks) : '';
       }
       case 'cards':
@@ -696,10 +708,21 @@ export class Ctx {
     }
   }
 
+  /**
+   * The data a chart or table draws, or undefined when there is nothing it can draw from: no such set, or one that lacks a column
+   * the block reads (the set was redefined below the block, which the parser reports as an error). Such a block draws nothing.
+   * A range chart is handed its set either way: its drawer falls back to the data table when a column is not there.
+   */
+  private dataFor(b: ChartBlock | TableBlock): DataSet | undefined {
+    const d = dataSet(this.doc, b.data);
+    if (b.type === 'chart' && b.kind === 'range') return d;
+    return d && missingColumns(b, d).length === 0 ? d : undefined;
+  }
+
   /** A chart in a cell of the 64rem (1024px) grid is drawn at the cell's own width: the grid's gaps are 16px, and the figure's padding and border take 34px from the cell. */
   private gridKid<T>(b: GridBlock, c: Block, other: (c: Block) => T): string | T {
     const cellWidth = Math.floor((1024 - 16 * (b.columns - 1)) / b.columns) - 34;
-    const d = c.type === 'chart' && b.columns >= 2 ? this.doc.data[c.data] : undefined;
+    const d = c.type === 'chart' && b.columns >= 2 ? this.dataFor(c) : undefined;
     return c.type === 'chart' && d ? renderChart(c, d, this.uid('c'), { cellWidth }) : other(c);
   }
 
@@ -726,11 +749,11 @@ export class Ctx {
 
   private cardKid<T>(k: Block, f: { inner: number; fit: number }, other: (k: Block) => T): string | T {
     if (k.type === 'chart') {
-      const d = this.doc.data[k.data];
+      const d = this.dataFor(k);
       return d ? renderChart(k, d, this.uid('c'), { cellWidth: f.inner - 34 }) : '';
     }
     if (k.type === 'table') {
-      const d = this.doc.data[k.data];
+      const d = this.dataFor(k);
       return d ? table(k, d, this.picks, f.fit) : '';
     }
     return other(k);
@@ -1065,8 +1088,16 @@ function barPercents(raws: string[], targets: (number | null)[] = []): (string |
   const filled = raws.filter((r) => r !== '');
   const pct = filled.length > 0 && filled.every((r) => /%\s*$/.test(r));
   const vals = raws.map((r) => (r === '' ? null : num(r)));
-  const tmax = Math.max(0, ...targets.filter((v): v is number => v !== null));
-  const max = pct ? Math.max(100, tmax) : Math.max(0, tmax, ...vals.filter((v): v is number => v !== null));
+  const tmax = maxOf(
+    targets.filter((v): v is number => v !== null),
+    0,
+  );
+  const max = pct
+    ? Math.max(100, tmax)
+    : maxOf(
+        vals.filter((v): v is number => v !== null),
+        tmax,
+      );
   const at = (v: number | null) => {
     if (v === null) return null;
     const p = max > 0 ? (v / max) * 100 : 0;
@@ -1111,7 +1142,7 @@ function table(b: TableBlock, d: DataSet, picks: string[] = [], fit = 364): stri
   // words). Wider than the 368px column, it stacks into one labelled card per row.
   const words = (s: string) => plain(s).split(/\s+/);
   const est = idx.reduce((sum, i, j) => {
-    const head = Math.max(...words(cols[j]).map((w) => textWidth(w.toUpperCase(), 11, { bold: true }) * 1.1));
+    const head = maxOf(words(cols[j]).map((w) => textWidth(w.toUpperCase(), 11, { bold: true }) * 1.1));
     const cellW = (raw: string) => {
       const chipped = !!statusOf(raw) || (!(j === 0 && rowHead) && dateLike(raw));
       // A date chip is bold with a border and 8px side padding, wider than a status pill: 38 keeps a date column from overflowing at 400px.
@@ -1120,10 +1151,24 @@ function table(b: TableBlock, d: DataSet, picks: string[] = [], fit = 364): stri
         b.bars?.includes(cols[j]) ? 80 : 0,
       );
       if (numeric[j] || nowrap[j] || chipped) return full;
-      return Math.min(full, Math.max(100, ...words(raw).map((w) => textWidth(w, 13))));
+      return Math.min(
+        full,
+        maxOf(
+          words(raw).map((w) => textWidth(w, 13)),
+          100,
+        ),
+      );
     };
     // 6% margin: the width table is approximate, and a near miss scrolls sideways.
-    return sum + Math.max(head, ...rows.map((r) => cellW(r[i] ?? ''))) * 1.06 + 14;
+    return (
+      sum +
+      maxOf(
+        rows.map((r) => cellW(r[i] ?? '')),
+        head,
+      ) *
+        1.06 +
+      14
+    );
   }, 0);
   // A number-heavy table that nearly fits stays a table in a tighter style (12px, 5px padding):
   // twelve stacked cards of four numbers read worse than one dense grid.

@@ -260,3 +260,28 @@ test('rows one short because of a split header point at the header, not at a `;`
   const d = parse('data s = id,left of $400,000,note; 1,$337,x\ntable s\n').diagnostics.find((x) => x.code === 'data-row-width');
   assert.match(d?.message ?? '', /header cell .* split at a thousands comma: quote it \("left of \$400,000"\)/);
 });
+
+test('--fix rejoins a date cell with the space the writer typed', () => {
+  assert.equal(
+    fix('data d = when,n; Jan 3, 2024,5; Feb 1,2025,6\ntable d\n').src,
+    'data d = when,n; "Jan 3, 2024",5; "Feb 1,2025",6\ntable d\n',
+  );
+});
+
+test('--fix repairs a CRLF file as it does an LF one and keeps every line ending', () => {
+  const lf = 'data d = a,b; x,1,450\nkpi Done | 74 of 120 | 61.7% | bar\n#### Deep\ngrid 2\n### One\ntext\n### Two\ntext\n';
+  const crlf = lf.replace(/\n/g, '\r\n');
+  const a = fix(lf);
+  const b = fix(crlf);
+  assert.equal(a.applied.length, 4);
+  assert.deepEqual(b.applied, a.applied);
+  assert.equal(b.src, a.src.replace(/\n/g, '\r\n'));
+  assert.deepEqual(b.remaining, a.remaining);
+  // A file with both endings keeps each line's own.
+  const mixed = 'data d = a,b; x,1,450\r\n#### Deep\n#### Deeper\r\n';
+  assert.equal(fix(mixed).src, 'data d = a,b; x,"1,450"\r\n### Deep\n### Deeper\r\n');
+  assert.equal(fix(fix(crlf).src).applied.length, 0);
+  // A last line that ends in \r with no \n after it is repaired too, and keeps the one \r.
+  assert.equal(fix('# a\r\n#### b\r').src, '# a\r\n### b\r');
+  assert.equal(fix('#### b\r').src, '### b\r');
+});

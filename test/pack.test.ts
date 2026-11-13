@@ -91,6 +91,11 @@ test('the installed lede bin builds and checks a page', () => {
   writeFileSync(join(app, 'small.lede'), '# Small\n\ndata q < q.csv\nchart bar q title="Revenue"\n');
   writeFileSync(join(app, 'bad.lede'), '# Bad\n\nchart lien q\n');
   const bin = join(app, 'node_modules/.bin/lede');
+  assert.equal(
+    run(bin, ['--version']).stdout.trim(),
+    packed.find((q) => q.name === '@lede-lang/cli')?.version,
+    'read from the packed package.json',
+  );
 
   for (const page of ['page', 'small']) {
     const b = run(bin, ['build', `${page}.lede`, '-o', `${page}.html`]);

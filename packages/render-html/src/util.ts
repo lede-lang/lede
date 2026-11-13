@@ -1,5 +1,17 @@
 // Escaping, inline markup and text measurement shared by every renderer.
 
+/** `Math.min(...a, init)` and `Math.max(...a, init)` without the spread, which overflows the stack past about 120,000 values. */
+export function minOf(a: readonly number[], init = Infinity): number {
+  let m = init;
+  for (const v of a) if (v < m) m = v;
+  return m;
+}
+export function maxOf(a: readonly number[], init = -Infinity): number {
+  let m = init;
+  for (const v of a) if (v > m) m = v;
+  return m;
+}
+
 export function esc(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
@@ -10,6 +22,34 @@ export function safeUrl(u: string): string | null {
   const t = u.trim();
   if (/^(javascript|vbscript|data):/i.test(t)) return null;
   return SAFE_URL.test(t) ? t : null;
+}
+
+/**
+ * `[text](url)` at `lastIndex`. The text holds no bracket, so a run of `[` is read once and not once per bracket; the URL may hold
+ * one level of parentheses (`.../Foo_(bar)`) and is bounded, so a line of unclosed links costs its length and not its square.
+ */
+const LINK = /\[([^\][]+)\]\(((?:[^()\s]|\([^()\s]*\)){1,4096})\)/y;
+
+/**
+ * The run of backticks at `i`, read as CommonMark reads it: a run of N opens a code span that closes at the next run of exactly N,
+ * so a span written with two may hold one (``` `` a`b `` ```). With two or more, one space inside each end is dropped, which is how
+ * a span starts or ends with a backtick. `code` is the span's text, or null when no run closes it: the whole run is then text (no
+ * shorter span opens inside it, so a line of backticks is read once and not once per backtick). `end` is where reading goes on.
+ */
+function codeSpan(src: string, i: number): { code: string | null; end: number } {
+  let n = 1;
+  while (src[i + n] === '`') n++;
+  for (let j = src.indexOf('`', i + n); j >= 0; j = src.indexOf('`', j)) {
+    let m = 1;
+    while (src[j + m] === '`') m++;
+    if (m === n) {
+      const body = src.slice(i + n, j);
+      const padded = n > 1 && body.length > 2 && body.startsWith(' ') && body.endsWith(' ');
+      return { code: padded ? body.slice(1, -1) : body, end: j + n };
+    }
+    j += m;
+  }
+  return { code: null, end: i + n };
 }
 
 /** Inline markup: `code`, **bold**, *em* or _em_, [text](url). Everything else is escaped text. */
@@ -41,16 +81,18 @@ export function inline(src: string): string {
       continue;
     }
     if (c === '`') {
-      const j = src.indexOf('`', i + 1);
-      if (j > i) {
+      const span = codeSpan(src, i);
+      if (span.code === null) text += src.slice(i, span.end);
+      else {
         pushText();
-        out.push(codeTok(src.slice(i + 1, j)));
-        i = j + 1;
-        continue;
+        out.push(codeTok(span.code));
       }
+      i = span.end;
+      continue;
     }
     if (c === '[') {
-      const m = /^\[([^\]]+)\]\(([^)\s]+)\)/.exec(src.slice(i));
+      LINK.lastIndex = i;
+      const m = LINK.exec(src);
       if (m) {
         const url = safeUrl(m[2]);
         pushText();
@@ -84,20 +126,35 @@ function codeTok(raw: string): string {
   return `<code class="brk">${body.replace(/(<wbr>)+$/, '')}</code>`;
 }
 
+/**
+ * `**bold**`. Its text may hold single asterisks (`**a *b* c**`) and may end in an italic span (`**a *b***`: the first of the
+ * three asterisks closes the italic), but does not start with an asterisk. The markers hug the text, as in CommonMark:
+ * `x ** 2 * y ** 2` is arithmetic, not bold. The text is read as other characters, whole `*italic*` spans, then lone asterisks.
+ */
+const BOLD = /\*\*(?![*\s])((?:[^*]|\*[^*\s][^*]*?\*(?=\*\*|[^*]|$)|\*(?!\*))+?)(?<!\s)\*\*/g;
+
+/** `*italic*`: the opening asterisk hugs the text and neither asterisk touches a word character or another asterisk outside. */
+const EM_STAR = /(^|[^\w*])\*([^*\s][^*]*?)\*(?![\w*])/g;
+
 function emphasis(s: string): string {
-  return s
-    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-    .replace(/(^|[^\w*])\*([^*\s][^*]*?)\*(?![\w*])/g, '$1<em>$2</em>')
-    .replace(/(^|[^\w])_([^_\s][^_]*?)_(?!\w)/g, '$1<em>$2</em>');
+  const em = (t: string) => t.replace(EM_STAR, '$1<em>$2</em>').replace(/(^|[^\w])_([^_\s][^_]*?)_(?!\w)/g, '$1<em>$2</em>');
+  // The text of a bold span is finished here. A `*` or `_` left over in it becomes the literal one (the placeholders `inline`
+  // restores), so the pass over the whole string cannot pair it with one outside the span and cross the tags.
+  return em(s.replace(BOLD, (_, t: string) => `<strong>${em(t).replaceAll('*', '\u0001').replaceAll('_', '\u0002')}</strong>`));
 }
 
-/** Strip inline markup for plain-text contexts (SVG text, aria labels). */
-export function plain(s: string): string {
-  return s
-    .replace(/`([^`]*)`/g, '$1')
-    .replace(/\*\*([^*]+)\*\*/g, '$1')
-    .replace(/\*([^*]+)\*/g, '$1')
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+/** Strip inline markup for plain-text contexts (SVG text, aria labels): the spans and links `inline` reads, as their text. */
+export function plain(src: string): string {
+  let s = '';
+  for (let i = 0; i < src.length;) {
+    const span = src[i] === '`' ? codeSpan(src, i) : null;
+    LINK.lastIndex = i;
+    const link = src[i] === '[' ? LINK.exec(src) : null;
+    const end = span?.end ?? (link ? i + link[0].length : i + 1);
+    s += span?.code ?? link?.[1] ?? src.slice(i, end);
+    i = end;
+  }
+  return s.replace(BOLD, '$1').replace(EM_STAR, '$1$2');
 }
 
 // Approximate advance widths (em) for a system sans at regular weight.

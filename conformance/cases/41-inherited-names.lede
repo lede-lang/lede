@@ -1,0 +1,10 @@
+# Names that an object inherits
+
+data constructor = team,open; Core,4; Edge,9
+data __proto__ = k,v; a,1; b,2
+data toString = k,v; a,3
+data toString += b,5
+
+chart bar constructor
+table __proto__
+kpi Last | =toString.v

@@ -1,12 +1,15 @@
 import type { ChartBlock, DataSet } from '@lede-lang/core';
 import { num } from '@lede-lang/core';
-import { esc, fmtNum, inline, plain, textWidth } from './util.ts';
+import { esc, fmtNum, inline, maxOf, minOf, plain, textWidth } from './util.ts';
 
 const FONT = 12;
 const TARGET_FONT = 12;
 
 export function niceTicks(lo: number, hi: number, n = 5): number[] {
-  if (hi === lo) {
+  // A range that is not a range (an end that is not finite, or `hi` below `lo`) still gets an axis: a renderer never writes NaN.
+  if (!Number.isFinite(lo) || !Number.isFinite(hi) || hi < lo) return [0, 1];
+  // Ticks are rounded to ten decimals, so a span below that would print as one repeated tick.
+  if (hi - lo < 1e-9) {
     hi = lo + 1;
     lo = lo === 0 ? 0 : lo - 1;
   }
@@ -18,6 +21,19 @@ export function niceTicks(lo: number, hi: number, n = 5): number[] {
   for (let v = start; v <= hi + step * 1e-6; v += step) ticks.push(+v.toFixed(10));
   if (ticks[ticks.length - 1] < hi - 1e-9) ticks.push(+(ticks[ticks.length - 1] + step).toFixed(10));
   return ticks;
+}
+
+/**
+ * The axis range after `min=` and `max=`: `lo` to `hi` is the range the data asks for, and an option replaces its end only while the
+ * range stays a range. `max=-5` over positive values, `min=100` over smaller ones, or a pair the parser did not refuse (a document
+ * built by hand) would leave nothing to draw and divide by zero, so that option is dropped and `min`/`max` say which one held.
+ */
+function pinnedRange(c: ChartBlock, lo: number, hi: number): { lo: number; hi: number; min: boolean; max: boolean } {
+  const min = c.min !== null && Number.isFinite(c.min) && c.min < hi;
+  if (min) lo = c.min!;
+  const max = c.max !== null && Number.isFinite(c.max) && c.max > lo;
+  if (max) hi = c.max!;
+  return { lo, hi, min, max };
 }
 
 /** Number format shared by every label in one chart, picked from the largest magnitude on the axis. */
@@ -134,7 +150,7 @@ function barList(c: ChartBlock, xs: string[], series: Series[]): string | null {
   if (hatchSet(c, xs).size || c.labelMode === 'end') return null;
   const vals = series[0].values;
   if (vals.some((v) => v === null || v < 0)) return null;
-  const max = Math.max(...(vals as number[]));
+  const max = maxOf(vals as number[]);
   const on = focusIndex(c, xs);
   currentFormat = fmtNum;
   const rows = xs.map((x, i) => {
@@ -222,13 +238,13 @@ function svg(
   const barCls = (s: Series, _j: number, i: number): string => (focusX < 0 ? s.cls : i === focusX ? s.base : 'cm');
   const vals = series.flatMap((s) => s.values).filter((v): v is number => v !== null);
   const stacked = c.stack && c.kind !== 'line';
-  let dataLo = vals.length ? Math.min(...vals) : 0;
-  let dataHi = vals.length ? Math.max(...vals) : 1;
+  let dataLo = vals.length ? minOf(vals) : 0;
+  let dataHi = vals.length ? maxOf(vals) : 1;
   if (stacked) {
     const pos = xs.map((_, i) => series.reduce((a, s) => a + Math.max(0, s.values[i] ?? 0), 0));
     const neg = xs.map((_, i) => series.reduce((a, s) => a + Math.min(0, s.values[i] ?? 0), 0));
-    dataHi = Math.max(...pos, 0);
-    dataLo = Math.min(...neg, 0);
+    dataHi = maxOf(pos, 0);
+    dataLo = minOf(neg, 0);
   }
   let lo: number;
   let hi: number;
@@ -251,17 +267,17 @@ function svg(
     lo = Math.min(lo, c.target.value);
     hi = Math.max(hi, c.target.value);
   }
-  if (c.min !== null) lo = c.min;
-  if (c.max !== null) hi = c.max;
+  const pin = pinnedRange(c, lo, hi);
+  ({ lo, hi } = pin);
   const ticks = niceTicks(lo, hi, narrow ? 3 : 5);
   currentFormat = scaleFormat(Math.max(Math.abs(ticks[0]), Math.abs(ticks[ticks.length - 1])));
-  if (c.min === null) lo = ticks[0];
+  if (!pin.min) lo = ticks[0];
   else
     ticks.splice(
       0,
       ticks.findIndex((t) => t >= lo),
     );
-  if (c.max === null) hi = ticks[ticks.length - 1];
+  if (!pin.max) hi = ticks[ticks.length - 1];
   let tickLabels = ticks.map((t) => withUnit(t, c.unit));
   // A compact format ("1M") can print several ticks of a narrow range identically: spell them out.
   if (new Set(tickLabels).size < tickLabels.length) {
@@ -282,7 +298,7 @@ function svg(
   const mode = c.labelMode;
 
   if (c.kind === 'hbar') {
-    const labelW = Math.min(W * 0.38, Math.max(...xs.map((x) => textWidth(x, FONT))) + 8);
+    const labelW = Math.min(W * 0.38, maxOf(xs.map((x) => textWidth(x, FONT))) + 8);
     const k = stacked ? 1 : series.length;
     const barH = Math.min(24, Math.max(8, k === 1 ? 24 : 16));
     const rowH = k * barH + (k - 1) * 2 + 12;
@@ -380,8 +396,8 @@ function svg(
   const endLabelW = !endLabels
     ? 0
     : mode === 'end'
-      ? Math.max(...series.map((s) => textWidth(`${s.name} ${lastOf(s) === null ? '' : withUnit(lastOf(s)!, c.unit)}`, FONT) * FS)) + 22
-      : Math.max(...series.map((s) => textWidth(s.name, FONT))) + 22;
+      ? maxOf(series.map((s) => textWidth(`${s.name} ${lastOf(s) === null ? '' : withUnit(lastOf(s)!, c.unit)}`, FONT) * FS)) + 22
+      : maxOf(series.map((s) => textWidth(s.name, FONT))) + 22;
   // labels=end reserves the last-value column even on a stack (each series' own last value); labels=all labels in place.
   const lastVal = c.kind !== 'bar' && (mode === 'end' || (c.labels && !stacked && mode !== 'all')) ? valueW + 10 : 0;
   const R = Math.max(12, endLabelW, lastVal);
@@ -392,9 +408,9 @@ function svg(
   const kBars = stacked ? 1 : series.length;
   const bw = Math.max(2, (band * (narrow ? 0.76 : 0.68) - 2 * (kBars - 1)) / kBars); // Req 3.8: >= 60% / 70% of the band
   const groupW = bw * kBars + 2 * (kBars - 1);
-  const valLabelW = Math.max(
+  const valLabelW = maxOf(
+    series.flatMap((s) => s.values.map((v) => (v === null ? 0 : textWidth(withUnit(v, c.unit), FONT) * FS))),
     0,
-    ...series.flatMap((s) => s.values.map((v) => (v === null ? 0 : textWidth(withUnit(v, c.unit), FONT) * FS))),
   );
   // Value-space bar segments, so the labels can be planned before the plot's height is known.
   interface Seg {
@@ -515,7 +531,7 @@ function svg(
     out.push(`<text class="tick" x="${L - 8}" y="${(y + 4).toFixed(1)}" text-anchor="end">${esc(tickLabels[t])}</text>`);
   }
   // Req 3.3: a line or area axis that does not start at zero says so with a break glyph at its base.
-  if ((c.kind === 'line' || c.kind === 'area') && c.min === null && ticks[0] > 0) {
+  if ((c.kind === 'line' || c.kind === 'area') && !pin.min && ticks[0] > 0) {
     const by = sy(ticks[0]);
     out.push(
       `<path class="ybreak" fill="none" d="M${(L - 4).toFixed(1)},${(by - 2).toFixed(1)}l9,-6M${(L - 4).toFixed(1)},${(by + 4).toFixed(1)}l9,-6"/>`,
@@ -1012,6 +1028,9 @@ interface RangeAxis {
   dates: boolean;
   lo: number;
   hi: number;
+  /** Whether `lo` and `hi` are the page's `min=` and `max=` (never on a date axis); an end that is not keeps its tick. */
+  pinMin: boolean;
+  pinMax: boolean;
   long: (v: number) => string;
 }
 type RangeTarget = { v: number; label: string } | null;
@@ -1069,17 +1088,16 @@ function renderRange(c: ChartBlock, d: DataSet, uid: string, opts: ChartOpts): s
     .filter((v): v is number => v !== null)
     .slice(0, 4);
   const all = [...rows.flatMap((r) => (r.at === null ? [r.a, r.b] : [r.a, r.b, r.at])), ...bands, ...(target ? [target.v] : [])];
-  let lo = Math.min(...all);
-  let hi = Math.max(...all);
+  let lo = minOf(all);
+  let hi = maxOf(all);
   currentFormat = fmtNum;
   let axis: RangeAxis;
   if (dates) {
     const pad = Math.max(1, (hi - lo) * 0.03);
-    axis = { dates, lo: lo - pad, hi: hi + pad, long: (v) => fmtDay(v, true) };
+    axis = { dates, lo: lo - pad, hi: hi + pad, pinMin: false, pinMax: false, long: (v) => fmtDay(v, true) };
   } else {
-    if (c.min !== null) lo = c.min;
-    if (c.max !== null) hi = c.max;
-    axis = { dates, lo, hi, long: (v) => withUnit(v, c.unit) };
+    const pin = pinnedRange(c, lo, hi);
+    axis = { dates, lo: pin.lo, hi: pin.hi, pinMin: pin.min, pinMax: pin.max, long: (v) => withUnit(v, c.unit) };
   }
   const label = plain(c.title ?? `Range chart of ${c.from} to ${c.to}`);
   const desc = describeRange(c, rows, axis, target, bands);
@@ -1148,7 +1166,7 @@ function rangeSvg(
   desc: string,
 ): string {
   const narrow = W < 500;
-  const labelW = narrow ? 0 : Math.min(W * 0.38, Math.max(...rows.map((r) => textWidth(r.label, FONT))) + 8);
+  const labelW = narrow ? 0 : Math.min(W * 0.38, maxOf(rows.map((r) => textWidth(r.label, FONT))) + 8);
   const L = narrow ? 8 : labelW + 8;
   const R = 12;
   const pw = W - L - R;
@@ -1171,9 +1189,9 @@ function rangeSvg(
   } else {
     ticks = niceTicks(lo, hi, narrow ? 3 : 5);
     currentFormat = scaleFormat(Math.max(Math.abs(ticks[0]), Math.abs(ticks[ticks.length - 1])));
-    if (c.min === null) lo = ticks[0];
+    if (!axis.pinMin) lo = ticks[0];
     else ticks = ticks.filter((t) => t >= lo - 1e-9);
-    if (c.max === null) hi = ticks[ticks.length - 1];
+    if (!axis.pinMax) hi = ticks[ticks.length - 1];
     else ticks = ticks.filter((t) => t <= hi + 1e-9);
     tickLabels = ticks.map((t) => withUnit(t, c.unit));
     if (new Set(tickLabels).size < tickLabels.length) {

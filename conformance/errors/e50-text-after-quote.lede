@@ -1,0 +1,5 @@
+table = owner,n; "Smith, J" (PM),1; x,"Planned" bar=done
+data d = a,b; "x" y,1
+choose pick | "A, B" (rec), C | Which one?
+export json
+table = a,b; "q" , "r"

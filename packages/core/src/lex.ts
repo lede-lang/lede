@@ -5,15 +5,21 @@ export interface Opts {
   flags: string[];
   words: string[]; // bare words that are not flags the caller knows about
   quoted: string[]; // standalone "quoted strings", in order
-  errors: { message: string; offset: number }[];
+  /** The text of a `"` that is never closed, which runs to the end of the line, options and all; null when every quote closes. */
+  unclosed: string | null;
+  /**
+   * Bare words that follow an unquoted `key=value` (`title=Deploys per week`): the words (`per week`, which are in `words` too,
+   * from index `at`) and the option as it was probably meant (`title="Deploys per week"`).
+   */
+  spills: { at: number; words: string[]; meant: string }[];
 }
 
 /**
  * Tokenize `key=value key="quoted value" flag "standalone quote" word`.
  * Every token's start offset (within `s`) is kept for diagnostics.
  */
-export function tokens(s: string): { text: string; offset: number; quoted: boolean; key?: string | undefined }[] {
-  const out: { text: string; offset: number; quoted: boolean; key?: string | undefined }[] = [];
+export function tokens(s: string): { text: string; offset: number; quoted: boolean; key?: string | undefined; unclosed?: boolean }[] {
+  const out: ReturnType<typeof tokens> = [];
   let i = 0;
   while (i < s.length) {
     while (i < s.length && /\s/.test(s[i])) i++;
@@ -26,8 +32,8 @@ export function tokens(s: string): { text: string; offset: number; quoted: boole
       i += km[0].length;
     }
     if (s[i] === '"') {
-      const { value, end } = readQuoted(s, i);
-      out.push({ text: value, offset: start, quoted: true, key });
+      const { value, end, closed } = readQuoted(s, i);
+      out.push({ text: value, offset: start, quoted: true, key, unclosed: !closed });
       i = end;
     } else {
       let j = i;
@@ -70,17 +76,24 @@ export function readQuoted(s: string, i: number): { value: string; end: number; 
  * Column names with spaces are common in real data and models rarely quote them.
  */
 export function parseOpts(s: string, flagNames: string[] = [], spanKeys: string[] = []): Opts {
-  const o: Opts = { kv: {}, flags: [], words: [], quoted: [], errors: [] };
+  const o: Opts = { kv: {}, flags: [], words: [], quoted: [], unclosed: null, spills: [] };
   const ts = tokens(s);
+  const bare = (k: number) => k < ts.length && ts[k].key === undefined && !ts[k].quoted && !flagNames.includes(ts[k].text);
   for (let i = 0; i < ts.length; i++) {
     const t = ts[i];
+    if (t.unclosed) o.unclosed = t.text;
     if (t.key !== undefined && spanKeys.includes(t.key) && !t.quoted) {
       let v = t.text;
-      while (i + 1 < ts.length && ts[i + 1].key === undefined && !ts[i + 1].quoted && !flagNames.includes(ts[i + 1].text)) {
-        v += ` ${ts[++i].text}`;
-      }
+      while (bare(i + 1)) v += ` ${ts[++i].text}`;
       o.kv[t.key] = v;
       continue;
+    }
+    if (t.key !== undefined && !t.quoted && bare(i + 1)) {
+      // `title=Deploys per week`: the value ended at the first space and the rest are stray words. Say what was probably meant.
+      let end = i + 1;
+      while (bare(end + 1)) end++;
+      const words = ts.slice(i + 1, end + 1).map((w) => w.text);
+      o.spills.push({ at: o.words.length, words, meant: `${t.key}="${[t.text, ...words].join(' ')}"` });
     }
     if (t.key !== undefined) o.kv[t.key] = t.text;
     else if (t.quoted) o.quoted.push(t.text);
@@ -93,9 +106,9 @@ export function parseOpts(s: string, flagNames: string[] = [], spanKeys: string[
 /**
  * Inline CSV: rows separated by `;`, fields by `,`. A field wrapped in double
  * quotes may contain `,` and `;`; `""` inside it is a literal quote.
- * Returns each row's fields and the offset where each row starts.
+ * Returns each row's fields, the offset where each row starts, and where a quote is left open or has text after it.
  */
-export function parseInlineCsv(s: string): { rows: string[][]; offsets: number[]; unclosedAt: number | null } {
+export function parseInlineCsv(s: string): { rows: string[][]; offsets: number[]; unclosedAt: number | null; afterQuoteAt: number | null } {
   const rows: string[][] = [];
   const offsets: number[] = [];
   let row: string[] = [];
@@ -103,6 +116,7 @@ export function parseInlineCsv(s: string): { rows: string[][]; offsets: number[]
   let rowStart = 0;
   let i = 0;
   let unclosedAt: number | null = null;
+  let afterQuoteAt: number | null = null;
   const pushRow = () => {
     row.push(field.trim());
     if (row.length > 1 || row[0] !== '') {
@@ -117,12 +131,15 @@ export function parseInlineCsv(s: string): { rows: string[][]; offsets: number[]
     if (c === '"' && field.trim() === '') {
       const q = readQuoted(s, i);
       if (!q.closed) unclosedAt = i;
-      field = q.value;
       i = q.end;
       // skip to the next separator
       while (i < s.length && s[i] !== ',' && s[i] !== ';') i++;
-      // keep the quoted value verbatim (no trim of inner spaces)
-      row.push(field);
+      // keep the quoted value verbatim (no trim of inner spaces); text between the closing quote and the separator
+      // (`"Smith, J" (PM)`) is part of the cell, as CSV readers take it, not dropped. `afterQuoteAt` is where the first such text
+      // starts, so the caller can say so: it may be an option the writer meant for the line (`"Planned" bar=done`).
+      const tail = s.slice(q.end, i).trimEnd();
+      if (tail.trim() !== '') afterQuoteAt ??= q.end + (tail.length - tail.trimStart().length);
+      row.push(q.value + tail);
       field = '';
       if (s[i] === ',') {
         i++;
@@ -166,7 +183,54 @@ export function parseInlineCsv(s: string): { rows: string[][]; offsets: number[]
     i++;
   }
   if (field.trim() !== '' || row.length > 0) pushRow();
-  return { rows, offsets, unclosedAt };
+  return { rows, offsets, unclosedAt, afterQuoteAt };
+}
+
+/**
+ * A CSV file, read as RFC 4180 has it: a record ends at a line break and a field at `,`. A field wrapped in double quotes may
+ * hold `,`, `;` and line breaks, and `""` inside it is a literal quote; `;` and `\` are ordinary characters. Fields are trimmed
+ * outside their quotes (which takes the `\r` of a CRLF file with it); blank lines and a leading byte-order mark are dropped. `unclosedLine` is the line of a quote that never closes.
+ */
+export function parseCsvFile(text: string): { rows: string[][]; unclosedLine: number | null } {
+  const s = text.charCodeAt(0) === 0xfeff ? text.slice(1) : text;
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let unclosedLine: number | null = null;
+  let line = 1;
+  let i = 0;
+  while (i < s.length) {
+    while (s[i] === ' ' || s[i] === '\t') i++;
+    let value = '';
+    const quoted = s[i] === '"';
+    if (quoted) {
+      const opened = line;
+      let closed = false;
+      for (i++; i < s.length && !closed; i++) {
+        if (s[i] !== '"') {
+          if (s[i] === '\n') line++;
+          value += s[i];
+        } else if (s[i + 1] === '"') value += s[i++];
+        else closed = true;
+      }
+      if (!closed) unclosedLine ??= opened;
+    }
+    // The rest of the field: all of an unquoted one, or what follows a closing quote, which stays in the cell.
+    let end = i;
+    while (end < s.length && s[end] !== ',' && s[end] !== '\n') end++;
+    const tail = s.slice(i, end);
+    row.push(quoted ? value + tail.trimEnd() : tail.trim());
+    i = end + 1;
+    if (s[end] === ',') {
+      if (i >= s.length) row.push('');
+      continue;
+    }
+    // A blank line is one empty unquoted field.
+    if (quoted || row.length > 1 || row[0] !== '') rows.push(row);
+    row = [];
+    line++;
+  }
+  if (row.length > 0) rows.push(row);
+  return { rows, unclosedLine };
 }
 
 /**
