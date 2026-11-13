@@ -208,7 +208,7 @@ function maskDiagnostic(d: Diagnostic, secrets: readonly string[]): Diagnostic {
     return v;
   };
   const out: Diagnostic = { ...d, message: maskSecrets(d.message, secrets) };
-  if (d.detail !== undefined) out.detail = mask(d.detail) as Diagnostic['detail'];
+  if (d.detail !== undefined) out.detail = mask(d.detail) as Record<string, unknown>;
   return out;
 }
 

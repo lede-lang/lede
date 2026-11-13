@@ -2090,8 +2090,9 @@ export class LedeParser {
       const name = `_table${++this.anon}`;
       const bodyCol = col + eq.index + eq[0].length;
       // A header with a pipe separator outside double quotes is a pipe header: it is split at the pipes and nowhere else. A `;`
-      // outside quotes ends a CSV header row, so `= Key,Meaning; a | b,either` stays the CSV table it always was.
-      const pipes = pipeOutsideQuotes(body) >= 0 && pipeOutsideQuotes(body, ';') < 0 ? splitPipes(body) : [];
+      // outside quotes ends a CSV header row, so where the line reads as a CSV table without an error (`= Key,Meaning; a | b,either`)
+      // it stays the CSV table it always was; one that would not (`= Plan | Cost; USD | Note`) was an error before pipe headers.
+      const pipes = pipeOutsideQuotes(body) >= 0 && !(pipeOutsideQuotes(body, ';') >= 0 && cleanCsv(body)) ? splitPipes(body) : [];
       if (pipes.length > 1) d = { name, columns: pipes, rows: [], line: L };
       else {
         const csv = parseInlineCsv(body);
@@ -2838,6 +2839,17 @@ export class LedeParser {
     if (this.quiet) return;
     this.doc.diagnostics.push({ severity, code, message, line, col: Math.max(1, col), ...(detail ? { detail } : {}) });
   }
+}
+
+/**
+ * The inline table `body` reads as CSV with no error: its quotes close, and every row after the header has as many cells as the
+ * header, or more only by a thousands comma that `addRows` merges back.
+ */
+function cleanCsv(body: string): boolean {
+  const csv = parseInlineCsv(body);
+  if (csv.unclosedAt !== null || csv.rows.length < 2) return false;
+  const want = csv.rows[0].length;
+  return csv.rows.slice(1).every((r) => r.length === want || (r.length > want && mergeThousands(r, want)?.row.length === want));
 }
 
 /** The 1-based column where the text after the first `:` of the line `s` starts, `lead` columns of indentation having been stripped. */

@@ -597,7 +597,7 @@ export function redactExternal(
   // every finding left and the source unchanged.
   while (now.total > base.total) {
     const worse = new Set([...now.byLine].filter(([l, n]) => n > (base.byLine.get(l) ?? 0)).map(([l]) => l));
-    const onWorse = found.map((f, i) => i).filter((i) => choice[i] < 2 && [...worse].some((l) => l >= found[i].line && l <= lastLine[i]));
+    const onWorse = found.map((_, i) => i).filter((i) => choice[i] < 2 && [...worse].some((l) => l >= found[i].line && l <= lastLine[i]));
     if (onWorse.length) {
       // The findings on a line that got worse are tried one at a time, from the line as written: the first placeholder that adds
       // no error stays.

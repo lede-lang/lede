@@ -1988,7 +1988,7 @@
   },
   {
    "id": "diagram-20",
-   "src": "diagram f\nf: a -> b : x | onmouseover\nf: a -> b : y | <script>alert(1)</script>\nf: a -> b : \"z | </text><script>alert(1)</script>\" | good\nf: legend",
+   "src": "diagram f\nf: a -> b | onmouseover\nf: a -> b : x | onmouseover\nf: a -> b : y | <script>alert(1)</script>\nf: a -> b : \"z | </text><script>alert(1)</script>\" | good\nf: legend",
    "warnings": [
     "edge-tone"
    ]
