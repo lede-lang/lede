@@ -56,7 +56,10 @@ export interface ExternalRepair {
 // ---------------------------------------------------------------------------------------------------------------------------
 // What counts as a host name
 
-/** A dotted name ending in one of these (lower case) is a host: a short list, because a long one makes `main.py` and `logo.ai` hosts. */
+/**
+ * A dotted name ending in one of these is a host: a short list, because a long one makes `main.py` and `logo.ai` hosts. Lower case,
+ * except in a name of three labels or more (`API.ACME.COM`).
+ */
 const PUBLIC_SUFFIXES = new Set([
   'com',
   'net',
@@ -76,7 +79,7 @@ const PUBLIC_SUFFIXES = new Set([
   'eu',
   'de',
 ]);
-/** Suffixes that only ever name somebody's own network. */
+/** Suffixes that only ever name somebody's own network, in any case. */
 const INTERNAL_SUFFIXES = new Set(['internal', 'local', 'corp', 'lan', 'intra']);
 /** The names RFC 2606 reserves for documentation, and every name under them: a page may show them. Lower case. */
 const DOC_NAMES = ['example.com', 'example.org', 'example.net', 'example', 'test', 'invalid'];
@@ -357,8 +360,11 @@ class Scan {
   }
 
   private name(line: string, parts: string[], from: number, to: number, start: number, end: number): void {
+    // The suffix is compared in lower case when the name has three labels or more, or names an internal network (`DB.CORP.INTERNAL`,
+    // `Prod.Corp.Local`); a two-label name with a public suffix needs it in lower case, so `ASP.NET` and `System.Net` are not hosts.
     const tld = parts[to - 1];
-    if (!PUBLIC_SUFFIXES.has(tld) && !INTERNAL_SUFFIXES.has(tld)) return;
+    const lower = tld.toLowerCase();
+    if (!INTERNAL_SUFFIXES.has(lower) && !PUBLIC_SUFFIXES.has(tld) && !(to - from >= 3 && PUBLIC_SUFFIXES.has(lower))) return;
     // `1.2.3.dev` is a version; a name needs a letter in the label before its suffix. A call, `log.info(`, is not a name either.
     if (!/\p{L}/u.test(parts[to - 2]) || line[end] === '(') return;
     for (let k = from; k < to; k++) if (parts[k].startsWith('-') || parts[k].endsWith('-')) return;

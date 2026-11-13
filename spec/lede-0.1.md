@@ -826,9 +826,10 @@ whole. `kind` is one of:
 - `ip`: an IPv4 address (four canonical decimal octets) or an IPv6 literal, with a prefix length if one follows (`10.0.0.0/8`, `fd00::/8`). The
   documentation ranges 192.0.2.0/24, 198.51.100.0/24, 203.0.113.0/24 and 2001:db8::/32 are not findings. An IPv6 literal needs eight groups or a `::`,
   and a digit, so a time (`12:30:45`) and `Foo::bar` are not addresses; four-part version numbers such as `1.2.3.4` cannot be told from an address and are.
-- `host`: a dotted name whose last label, in lower case, is `com`, `net`, `org`, `edu`, `gov`, `mil`, `io`, `dev`, `app`, `ai`, `co`, `cloud`, `biz`, `us`,
-  `uk`, `eu`, `de`, `internal`, `local`, `corp`, `lan` or `intra`, and whose label before it has a letter (so `1.2.3.dev` is a version). Lower case is the
-  rule, so `ASP.NET` and `System.Net` are not hosts; a name that opens a run with a single dot (`.env.local`) is a dot file, and one followed at once by `(`
+- `host`: a dotted name whose last label is `com`, `net`, `org`, `edu`, `gov`, `mil`, `io`, `dev`, `app`, `ai`, `co`, `cloud`, `biz`, `us`,
+  `uk`, `eu`, `de`, `internal`, `local`, `corp`, `lan` or `intra`, and whose label before it has a letter (so `1.2.3.dev` is a version). The last label is
+  compared in any case when it is one of the internal five or the name has three labels or more (`DB.CORP.INTERNAL`, `API.ACME.COM`, `Prod.Corp.Local`);
+  a two-label name with a public suffix needs that suffix in lower case, so `ASP.NET` and `System.Net` are not hosts; a name that opens a run with a single dot (`.env.local`) is a dot file, and one followed at once by `(`
   (`log.info(`) is a call. File names (`chart.png`, `main.py`, `node.js`), `e.g.`, `i.e.` and numbers (`10.5 ms`, `v0.2.1`) are not hosts.
 - `account`: a 12-digit AWS account id on its own (not part of a longer number, not a time stamp `YYYYMMDDhhmm`, not ending in five zeros), an ARN
   (`arn:aws...`), an Azure subscription GUID that follows the word `subscription` within 40 characters, and a 10 to 13 digit GCP project number that follows

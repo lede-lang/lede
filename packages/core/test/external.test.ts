@@ -57,6 +57,7 @@ const FALSE_POSITIVES: string[] = [
   '@author Ada Lovelace, Analyst',
   // code that looks like names
   'ASP.NET, VB.NET, System.Net.Http, System.Net, .NET 8',
+  'Contoso.AI, Acme.Io, Logo.Com and Tech.Dev are two-label names in title case, and System.Net.Http.Json is a namespace.',
   'logger.info("x"); self.dev(1); np.int; v.xyz; process.env.NODE_ENV; import os.path',
   'std::vector<int> v; Foo::bar(); Dec::Face; a::b; x == y',
   'lede@0.2.3, npm i pkg@1.2.3, @scope/pkg, @media print',
@@ -156,6 +157,16 @@ const TRUE_POSITIVES: [string, [ExternalKind, string][]][] = [
       ['host', 'bastion.acme.dev'],
       ['host', 'GitHub.com'],
       ['host', 'mail.acme.co.uk'],
+    ],
+  ],
+  [
+    'DB.CORP.INTERNAL, API.ACME.COM, Prod.Corp.Local, NAS.LAN and Mail.Acme.Co.UK',
+    [
+      ['host', 'DB.CORP.INTERNAL'],
+      ['host', 'API.ACME.COM'],
+      ['host', 'Prod.Corp.Local'],
+      ['host', 'NAS.LAN'],
+      ['host', 'Mail.Acme.Co.UK'],
     ],
   ],
   ['10.0.0.1.nip.io', [['host', '10.0.0.1.nip.io']]],
