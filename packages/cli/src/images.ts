@@ -59,6 +59,16 @@ const REASONS: Record<Reason, (src: string, max: number) => string> = {
   outside: (src) => `image ${src} is outside the document's directory, so it is not inlined and stays a path; copy it next to the page`,
 };
 
+/** The file a browser would load for a relative URL: no query or fragment, and percent escapes decoded (`my%20pic.png`). */
+function filePath(url: string): string {
+  const bare = url.replace(/[?#].*$/s, '');
+  try {
+    return decodeURIComponent(bare);
+  } catch {
+    return bare; // a stray `%` is a literal character in a file name
+  }
+}
+
 /**
  * Replaces the `src` of every `image` block whose source is a local path with a data: URI of the file, and returns W `image-inline`
  * for each one it leaves as a path. The path is read as the browser reads it, confined to `base`'s tree like `data x < file.csv`
@@ -70,9 +80,8 @@ export function inlineImages(doc: LedeDocument, base: string, max: number): Diag
   let total = 0;
   /** The data: URI for `b`'s file, or the reason it cannot be one. */
   const inline = (b: ImageBlock): { uri: string; bytes: number } | Reason => {
-    const path = browserUrl(b.src);
     try {
-      const full = confine(base, path);
+      const full = confine(base, filePath(browserUrl(b.src)));
       const stat = statSync(full);
       if (!stat.isFile()) return 'missing';
       if (stat.size > max) return 'size';

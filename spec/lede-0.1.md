@@ -925,7 +925,8 @@ while watching goes on. `--artifact` writes the same `<style>` as the full page.
 **Local images (D80).** `build`, `watch` and `check` write each `image` block whose source is a local path (§4.16) into the page as a `data:` URI of
 the file, so a page with pictures is one file. `ast` and the libraries leave the path as written. The path is read as a browser reads it (§4.16) and resolved
 against the document's directory (the current directory for `-`), with the same confinement as a `data x < file.csv` load: a path that leaves the tree, as written or through a
-symlink, is not read, and it is `outside` whether or not the file is there. The type comes from the file's first bytes, never from its name: PNG, JPEG, GIF, WebP,
+symlink, is not read, and it is `outside` whether or not the file is there. The path is the file a browser would load: a `?query` or `#fragment` is dropped and percent escapes are decoded
+(`my%20pic.png` is `my pic.png`). The type comes from the file's first bytes, never from its name: PNG, JPEG, GIF, WebP,
 AVIF, or SVG, which is a file whose root element is `<svg`, after an optional byte order mark, white space, XML declaration or other processing instruction, comments and
 `<!DOCTYPE …>`. It is written as `image/png`, `image/jpeg`, `image/gif`, `image/webp`, `image/avif` or `image/svg+xml`, in base64, and the page policy is unchanged
 (`img-src` already allows `data:`; an SVG loaded by `<img>` runs no script and loads nothing). The limits are 512 KiB for one file and eight times that for all the images

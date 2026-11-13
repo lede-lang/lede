@@ -358,3 +358,13 @@ test('--help documents the flags and the code', () => {
   assert.match(help, /W image-inline/);
   assert.match(help, /--link-images\s+build\/watch\/check: leave local image paths as written/);
 });
+
+test('a path is read as a browser reads it: the query and fragment dropped, percent escapes decoded', () => {
+  const dir = folder('tile.png');
+  copyFileSync(join(FIXTURES, 'tile.png'), join(dir, 'my tile.png'));
+  page(dir, `# T\n\nimage tile.png?v=2 "A"\nimage my%20tile.png#top "B"\n`);
+  const r = run(['build', 'p.lede'], dir);
+  assert.equal(r.status, 0, r.stderr);
+  assert.equal(r.stderr, '');
+  assert.deepEqual(imgs(r.stdout), [dataUri('image/png', 'tile.png'), dataUri('image/png', 'tile.png')]);
+});
