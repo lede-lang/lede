@@ -685,8 +685,8 @@ class Renderer implements Incremental {
     // A decision is static markup, so each line is a whole drawing of its unit in place. One whose unit is still held, or is in a grid
     // or cards run not pushed yet, is drawn when that unit is, from the decision as it stands then.
     if (what.type === 'decision') {
-      const held = this.byDecision.get(what);
-      return held ? this.redraw(held) : { ops: [] };
+      const u = this.byDecision.get(what);
+      return u ? this.redraw(u) : { ops: [] };
     }
     const u = this.byDiagram.get(what);
     // A diagram not on the page yet, or one that is drawn already (its next seal draws it again): nothing to show.

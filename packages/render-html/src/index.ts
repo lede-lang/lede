@@ -59,7 +59,7 @@ import {
 } from './question.ts';
 import { SCRIPT_SRC, shellScripts } from './shell.ts';
 import { css } from './theme.ts';
-import { esc, fmtCell, inline, maxOf, plain, slug, textWidth } from './util.ts';
+import { ISO_DATE, esc, fmtCell, inline, maxOf, plain, slug, textWidth } from './util.ts';
 
 export interface RenderOptions {
   /** Pass `html:` blocks through untouched. Default false: they are sanitized to a safe allowlist. */
@@ -268,8 +268,6 @@ export async function compile(src: string, opts: RenderOptions & ParseOptions = 
   const doc = parse(src, { ...opts, themed: opts.themed ?? opts.theme !== undefined });
   return { html: await render(doc, opts), doc };
 }
-
-const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 /**
  * The facts row under the byline (D80): a definition list with a term and a value for each `@meta Key | value` line, in order. A value
@@ -762,9 +760,9 @@ export class Ctx {
         return `<blockquote><p>${inline(b.text)}</p>${b.cite ? `<cite>— ${inline(b.cite)}</cite>` : ''}</blockquote>`;
       case 'note': {
         // The kind of a `!` note (D80) is its label and sets its tone, green or blue; `!!` and `!!!` keep theirs whatever the kind says.
-        const kind = b.tone === 'note' && b.kind ? b.kind : '';
-        const label = kind ? esc(kind) : { note: 'Note', warn: 'Warning', danger: 'Critical' }[b.tone];
-        const tone = kind ? (NOTE_KINDS.get(kind.toLowerCase()) ?? 'note') : b.tone;
+        // The parser gives only a `!` note a kind.
+        const label = b.kind ? esc(b.kind) : { note: 'Note', warn: 'Warning', danger: 'Critical' }[b.tone];
+        const tone = b.kind ? (NOTE_KINDS.get(b.kind.toLowerCase()) ?? 'note') : b.tone;
         // A note that opens with a bold phrase uses it as its title; a plain note's "Note" label adds nothing then, a kind's does.
         const m = /^\*\*([^*]+[.:!?])\*\*\s*/.exec(b.text);
         if (m && m[0].length < b.text.length) {

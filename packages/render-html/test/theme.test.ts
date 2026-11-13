@@ -32,7 +32,6 @@ const SETTINGS: Array<[string, Parameters<typeof css>[0]]> = [
   ['css({})', {}],
   ["css({theme:'dark'})", { theme: 'dark' }],
   ["css({theme:'light'})", { theme: 'light' }],
-  ['css({wide:true})', { wide: true }],
   ['css({dash:true})', { dash: true }],
 ];
 

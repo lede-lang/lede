@@ -161,9 +161,7 @@ const DECISIONS = `/* decision blocks */
 export function css(opts: {
   accent?: string;
   theme?: string;
-  /** The 64rem column alone. */
-  wide?: boolean;
-  /** A dashboard page (`layoutClass`): the 64rem column and the dashboard rules. */
+  /** A dashboard page (`layoutClass`, `@width wide` included): the 64rem column and the dashboard rules. */
   dash?: boolean;
   controls?: boolean;
   editors?: boolean;
@@ -192,7 +190,7 @@ export function css(opts: {
 body{background:#fff} .chart-narrow{display:none!important} .chart-wide{display:block!important} details.data{display:none}
 figure.viz,.kpi,.card,.note,blockquote,tr{break-inside:avoid} h1,h2,h3,h4{break-after:avoid}
 pre.code code{white-space:pre-wrap;overflow-wrap:anywhere}`;
-  const col = opts.wide || opts.dash ? '64rem' : '46rem';
+  const col = opts.dash ? '64rem' : '46rem';
   return `${forced}
 :root{${accent}
   --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,ui-serif,serif;

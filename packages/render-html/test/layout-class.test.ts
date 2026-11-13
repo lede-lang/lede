@@ -109,9 +109,10 @@ test('--artifact output carries the same <main> and <style> as the full page', a
   for (const part of [/<style>[\s\S]*<\/style>/, /<main[\s\S]*<\/main>/]) assert.equal(part.exec(art)?.[0], part.exec(full)?.[0]);
 });
 
-test('css({dash}) is css({wide}) plus the dashboard rules, and nothing else changes', () => {
-  const [plain, wide, dash] = [css({}), css({ wide: true }), css({ dash: true })];
-  assert.equal(wide, plain.replace('--col:46rem', '--col:64rem'));
+test('css({dash}) is the 64rem column plus the dashboard rules, and nothing else changes', () => {
+  const [plain, dash] = [css({}), css({ dash: true })];
+  const wide = plain.replace('--col:46rem', '--col:64rem');
+  assert.notEqual(wide, plain);
   assert.ok(dash.startsWith(wide));
   assert.ok(dash.slice(wide.length).startsWith('.doc.dash .lgrid{'));
 });

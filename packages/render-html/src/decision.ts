@@ -2,7 +2,7 @@
 // options with their verdicts, the questions with their answers, and the roles. Every state is said in words as well as drawn in
 // colour: the status and each verdict are text, and a rejected option's label is also struck through.
 import type { DecisionBlock, DecisionStatus } from '@lede-lang/core';
-import { esc, inline } from './util.ts';
+import { ISO_DATE, esc, inline } from './util.ts';
 
 /** The status chip: the existing status pills, `settled` good, `open` warn and `deferred` the neutral grey (the `neutral` tone, D80). */
 const STATUS: Record<DecisionStatus, { text: string; tone: string }> = {
@@ -10,8 +10,6 @@ const STATUS: Record<DecisionStatus, { text: string; tone: string }> = {
   open: { text: 'Open', tone: 'warn' },
   deferred: { text: 'Deferred', tone: 'neutral' },
 };
-
-const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 /** `id` names the question, which labels the card for a screen reader; the renderer takes it from its counter, as a chart does. */
 export function decisionHtml(b: DecisionBlock, id: string): string {
