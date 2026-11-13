@@ -142,8 +142,11 @@ export const NOTE_KINDS: ReadonlyMap<string, 'good' | 'info'> = new Map([
 /** A kind word, a colon, and the text that follows it. */
 const NOTE_KIND_RE = new RegExp(`^(${[...NOTE_KINDS.keys()].join('|')}):\\s*(\\S.*)$`, 'i');
 const CHART_KINDS: ChartKind[] = ['line', 'area', 'bar', 'hbar', 'range'];
-/** A keyword, or `html` (a line starting `html:` is a raw block): no decision or diagram may take it as a name. */
-const reservedName = (name: string): boolean => (KEYWORDS as readonly string[]).includes(name) || name === 'html';
+/**
+ * A keyword, or `html` (a line starting `html:` is a raw block): no decision or diagram may take it as a name. `decision` is not one:
+ * it is a keyword line only in its declaration shape, and `diagram decision` was a valid page before decisions existed.
+ */
+const reservedName = (name: string): boolean => (name !== 'decision' && (KEYWORDS as readonly string[]).includes(name)) || name === 'html';
 const KEYWORD_RE = new RegExp(`^(${KEYWORDS.join('|')})(?=\\s|$)`);
 /** A question or diagram name. */
 const NAME_RE = /^[A-Za-z][\w-]*$/;

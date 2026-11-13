@@ -79,8 +79,8 @@ test('the shape rule: the word is a keyword line only with a name and a quoted q
   // The question left out fails loudly: the line has the shape of a declaration when `status=` or `by=` follows the name.
   assert.deepEqual(diags('decision queue status=open'), ['error:decision-syntax@1']);
   assert.deepEqual(diags('decision queue by=2026-12-01 "Which?"'), ['error:decision-syntax@1']);
-  // `decision` is a keyword now, so it cannot name a diagram.
-  assert.deepEqual(diags('diagram decision'), ['error:diagram-name@1']);
+  // `decision` is a keyword line only in its shape, and no reserved name: `diagram decision` is what it was before.
+  assert.deepEqual(diags('diagram decision'), ['warning:diagram-empty@1']);
 });
 
 test('status: open, settled or deferred in any case; another word is W decision-status and reads as open', () => {
@@ -377,4 +377,26 @@ test('whatever the chunking, the events are the same and the stream ends at the 
     );
     assert.deepEqual(snap.diagnostics, [], `line ${n}`);
   }
+});
+
+test('decision is no reserved name: `diagram decision` (valid before decisions) draws, and its lines are diagram lines', () => {
+  const doc = parse('diagram decision\ndecision: a -> b\ndecision: option x "Y"\n');
+  assert.deepEqual(doc.diagnostics, []);
+  const [d] = doc.blocks;
+  assert.equal(d.type, 'diagram');
+  if (d.type !== 'diagram') return;
+  assert.equal(d.name, 'decision');
+  assert.deepEqual(
+    d.edges.map((e) => [e.from, e.to]),
+    [['a', 'b']],
+  );
+  // With no diagram of that name, a decision-shaped line is still the decision-ref guess.
+  assert.deepEqual(
+    parse('decision: option x "Y"\n').diagnostics.map((x) => x.code),
+    ['decision-ref'],
+  );
+  // A decision may take the name too; its lines bind to it.
+  const named = parse('decision decision "Which?"\ndecision: option a "A"\n');
+  assert.deepEqual(named.diagnostics, []);
+  assert.equal(named.blocks[0].type === 'decision' && named.blocks[0].options.length, 1);
 });

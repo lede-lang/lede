@@ -643,7 +643,9 @@ NAME: role WORD "WHO"
 - **Names.** NAME matches `[A-Za-z][\w-]*`. A decision shares one namespace with data, diagrams and bucket sets: a name that one of them
   already has is E `name-clash` `{decision}` on whichever is declared second (`--fix` leaves it, as for a bucket set), and a second
   `decision` with the same name is E `decision-ref` `{name, first}` (`first` is the line of the first). No decision is named `html`, as no
-  diagram is.
+  diagram is. The word `decision` itself is not reserved as a name, since it is a keyword line only in its shape: `diagram decision` and
+  its `decision: a -> b` lines are read as they were before decisions (a diagram's line binds to the diagram, so a decision-shaped
+  line there is no E `decision-ref`).
 - **Options.** `status` is `open` (the default), `settled` or `deferred`, in any case; another word is W `decision-status` `{kind:
   "status", value}` and is read as `open`. `by` is any text, a date (`2026-12-01`) or a phrase (`by="Q1 planning"`); only a plain
   `YYYY-MM-DD` is also written as a `datetime`. Any other word, quoted string or `key=` after the question is W `decision-option`
