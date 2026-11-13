@@ -258,13 +258,22 @@ export function pipeOutsideQuotes(s: string): number {
 
 /**
  * The fields of a pipe row (spec §4.11, D80): the text split at every `|` that has whitespace, or an end of the text, on each side,
- * each field trimmed. A `|` that touches other text (`a|b`) is part of its field, and nothing else is special: `,` `;` and `"` are
- * ordinary characters. Two pipes with only blanks between them hold an empty field. One field back means the text has no separator.
+ * each field trimmed. A `|` that touches other text (`a|b`) is part of its field, and so is a `|` inside a
+ * `code span`; nothing else is special: `,` `;` and `"` are ordinary characters. Two pipes with only blanks between them hold an empty field. One field back means the text has no separator.
  */
 export function splitPipes(s: string): string[] {
   const fields: string[] = [];
   let from = 0;
   for (let i = 0; i < s.length; i++) {
+    if (s[i] === '`') {
+      // A `code span` is one piece of a field: a pipe inside it is text (`a | b`), as in Markdown tables.
+      let run = 1;
+      while (s[i + run] === '`') run++;
+      const close = s.indexOf('`'.repeat(run), i + run);
+      if (close >= 0) i = close + run - 1;
+      else i += run - 1;
+      continue;
+    }
     if (s[i] !== '|' || !(i === 0 || /\s/.test(s[i - 1])) || !(i === s.length - 1 || /\s/.test(s[i + 1]))) continue;
     fields.push(s.slice(from, i).trim());
     from = i + 1;

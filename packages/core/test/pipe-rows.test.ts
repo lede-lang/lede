@@ -360,3 +360,9 @@ test('--fix on `table vendors = A | B` drops the name as before and keeps the ro
   assert.equal(r.src, 'table = A | B\n: 1 | 2\n');
   assert.deepEqual(r.remaining, []);
 });
+
+test('splitPipes: a pipe inside a code span is text, and an unclosed backtick is ordinary', () => {
+  assert.deepEqual(splitPipes('Edge tones | `a -> b : allow | good` | Ready'), ['Edge tones', '`a -> b : allow | good`', 'Ready']);
+  assert.deepEqual(splitPipes('a | ``x | `y` | z`` | b'), ['a', '``x | `y` | z``', 'b']);
+  assert.deepEqual(splitPipes('it`s | b'), ['it`s', 'b']);
+});

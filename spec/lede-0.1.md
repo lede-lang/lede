@@ -37,7 +37,7 @@ The reference implementation is `packages/core` (parser) and `packages/render-ht
 - **Pipe fields** (D80; the rows of §4.11 `NAME: a | b` and §4.14 `: a | b`, and a pipe table header): the text is split at every
   `|` that has whitespace, or the start or the end of the text, on each side, and each field is trimmed. A `|` that touches other
   text (`a|b`, `a ||b`) is part of its field, and two separators with only blanks between them hold an empty field (`a | | c`).
-  Nothing else is special: `,`, `;` and `"` are ordinary characters and `""` is not an escape, so no cell needs quoting.
+  A `|` inside a `` `code span` `` is text too. Nothing else is special: `,`, `;` and `"` are ordinary characters and `""` is not an escape, so no cell needs quoting.
 
 ## 3. Grammar (EBNF)
 
