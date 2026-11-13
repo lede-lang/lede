@@ -78,7 +78,8 @@ options:
                   account ids, keys and email addresses, wherever they sit (prose, meta, fences, data, diagrams); exit 1 if there is any,
                   so it can gate a publish. The documentation names (example.com, 192.0.2.0/24, 2001:db8::/32) are never reported.
                   With --fix each is replaced by <url>, <ip>, <host>, <account>, <key> or <email> and printed as a repair (--dry-run
-                  previews); build never redacts
+                  previews); where that would break the page, by host-1, ip-1 and so on, and where nothing can stand in, it is left and
+                  stays a finding. build never redacts
   --allow=HOSTS   check --external: host names and IP addresses to leave alone, comma-separated (the flag may repeat), with the URLs on them
   -h, --help      show this help
   -V, --version   print the version
@@ -403,8 +404,13 @@ async function check(files: string[], flags: Set<string>, inputs: Inputs, allow:
         process.stderr.write(`${f}:${a.line}: ${verb} [${a.code}] ${a.note}${a.guess ? ' (a guess: check it)' : ''}\n`);
       let after = r.src;
       if (external) {
-        const e = redactExternal(r.src, external);
+        const e = redactExternal(r.src, external, parseOptions(f));
         for (const a of e.applied) process.stderr.write(`${f}:${a.line}: ${verb} [external] ${a.note}\n`);
+        // A finding no placeholder can stand in for without breaking the page stays, and is reported again below.
+        for (const s of e.skipped)
+          process.stderr.write(
+            `${f}:${s.line}: not fixed [external] ${s.kind} left as written: a placeholder there would break the page\n`,
+          );
         after = e.src;
       }
       if (dry) {

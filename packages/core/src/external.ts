@@ -7,6 +7,7 @@
 // look-behind that lets a match start only at the start of a run, so a 200,000-character line costs one pass and not one per start.
 // Anything a regex cannot settle in one pass (a bracket count, a digit in a token) is judged in code on the text it matched.
 import type { Diagnostic } from './ast.ts';
+import { parse, type ParseOptions } from './parser.ts';
 import { browserUrl } from './url.ts';
 
 export type ExternalKind = 'url' | 'ip' | 'host' | 'account' | 'key' | 'email';
@@ -479,25 +480,107 @@ export function externalDiagnostics(
 }
 
 /**
- * `src` with each finding's span replaced by its placeholder, and one repair per finding. The line count does not change: a span
- * that runs over several lines (a private key) leaves its line breaks behind. Reading the result finds nothing more to replace.
+ * `src` with each finding's span replaced by a placeholder, one repair per replacement, and the findings left as written. The line
+ * count does not change: a span that runs over several lines (a private key) leaves its line breaks behind. Reading the result finds
+ * nothing more to replace, except the findings it left.
+ *
+ * The result never parses with more errors than `src` (with `parse`'s options): where `<host>` would break a line (a diagram node id,
+ * a data cell read as a number, an option value) the finding takes an identifier-safe placeholder instead, `host-1`, numbered per
+ * distinct text so two references to one host stay one node; a finding that cannot be replaced without a new error is left, in
+ * `skipped`, and is still a finding.
  */
-export function redactExternal(src: string, opts: ExternalOptions = {}): { src: string; applied: ExternalRepair[] } {
+export function redactExternal(
+  src: string,
+  opts: ExternalOptions = {},
+  parseOpts: ParseOptions = {},
+): { src: string; applied: ExternalRepair[]; skipped: ExternalFinding[] } {
   const found = scanExternal(src, opts);
-  let out = '';
-  let at = 0;
-  for (const f of found) {
-    out += src.slice(at, f.start) + EXTERNAL_PLACEHOLDERS[f.kind] + src.slice(f.start, f.end).replace(/[^\r\n]/g, '');
-    at = f.end;
-  }
-  return {
-    src: out + src.slice(at),
-    applied: found.map((f) => ({
-      line: f.line,
-      kind: f.kind,
-      text: f.text,
-      placeholder: EXTERNAL_PLACEHOLDERS[f.kind],
-      note: `replaced ${f.kind} ${shown(reportText(f.kind, f.text))} with ${EXTERNAL_PLACEHOLDERS[f.kind]}`,
-    })),
+  if (!found.length) return { src, applied: [], skipped: [] };
+  /** Per finding: 0 writes `<kind>`, 1 the identifier-safe placeholder, 2 leaves the text. */
+  const choice: number[] = found.map(() => 0);
+  const lastLine = found.map((f) => f.line + (src.slice(f.start, f.end).match(/\n/g)?.length ?? 0));
+  const taken = new Set(src.match(/\b(?:url|ip|host|account|key|email)-\d+\b/g) ?? []);
+  const write = (): { out: string; placeholders: (string | null)[] } => {
+    const names = new Map<string, string>();
+    const next: Partial<Record<ExternalKind, number>> = {};
+    let out = '';
+    let at = 0;
+    const placeholders = found.map((f, i) => {
+      if (choice[i] === 2) return null;
+      let p = EXTERNAL_PLACEHOLDERS[f.kind];
+      if (choice[i] === 1) {
+        const k = `${f.kind}\n${f.text}`;
+        let name = names.get(k);
+        if (name === undefined) {
+          let n = next[f.kind] ?? 1;
+          while (taken.has(`${f.kind}-${n}`)) n++;
+          name = `${f.kind}-${n}`;
+          next[f.kind] = n + 1;
+          names.set(k, name);
+        }
+        p = name;
+      }
+      out += src.slice(at, f.start) + p + src.slice(f.start, f.end).replace(/[^\r\n]/g, '');
+      at = f.end;
+      return p;
+    });
+    return { out: out + src.slice(at), placeholders };
   };
+  /** The errors of a text, in all and by line. */
+  const errors = (text: string): { total: number; byLine: Map<number, number> } => {
+    const byLine: Map<number, number> = new Map();
+    let total = 0;
+    for (const d of parse(text, parseOpts).diagnostics)
+      if (d.severity === 'error') {
+        total++;
+        byLine.set(d.line, (byLine.get(d.line) ?? 0) + 1);
+      }
+    return { total, byLine };
+  };
+  const base = errors(src);
+  let w = write();
+  let now = errors(w.out);
+  // Each round moves at least one finding up a step (to the identifier, then to the text as written), so this ends: at worst with
+  // every finding left and the source unchanged.
+  while (now.total > base.total) {
+    const worse = new Set([...now.byLine].filter(([l, n]) => n > (base.byLine.get(l) ?? 0)).map(([l]) => l));
+    const onWorse = found.map((f, i) => i).filter((i) => choice[i] < 2 && [...worse].some((l) => l >= found[i].line && l <= lastLine[i]));
+    if (onWorse.length) {
+      // The findings on a line that got worse are tried one at a time, from the line as written: the first placeholder that adds
+      // no error stays.
+      for (const i of onWorse) choice[i] = 2;
+      let at = errors(write().out).total;
+      for (const i of onWorse)
+        for (const c of [0, 1]) {
+          choice[i] = c;
+          const e = errors(write().out).total;
+          if (e <= at) {
+            at = e;
+            break;
+          }
+          choice[i] = 2;
+        }
+    } else {
+      // A new error away from every finding's line (a name that now clashes): step every finding up.
+      for (let i = 0; i < found.length; i++) if (choice[i] < 2) choice[i]++;
+    }
+    w = write();
+    now = errors(w.out);
+    if (onWorse.length && now.total > base.total) for (const i of onWorse) choice[i] = 2;
+  }
+  const applied: ExternalRepair[] = [];
+  const skipped: ExternalFinding[] = [];
+  found.forEach((f, i) => {
+    const placeholder = w.placeholders[i];
+    if (placeholder === null) skipped.push(f);
+    else
+      applied.push({
+        line: f.line,
+        kind: f.kind,
+        text: f.text,
+        placeholder,
+        note: `replaced ${f.kind} ${shown(reportText(f.kind, f.text))} with ${placeholder}`,
+      });
+  });
+  return { src: w.out, applied, skipped };
 }

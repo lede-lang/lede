@@ -848,8 +848,13 @@ Any finding makes the exit code 1, as an error would, so the check can gate a pu
 warnings (`3 warning(s)`), and is `ok` only when there are none. With `--json` the findings are records in the same array as the other diagnostics.
 `check --external --fix` makes the repairs below first and then replaces each finding's span with its placeholder, `<url>`, `<ip>`, `<host>`, `<account>`,
 `<key>` or `<email>`, in the same write, and prints one line per replacement, `FILE:LINE: fixed [external] replaced url https://... with <url>` (a long text
-is cut); every span in the file is replaced, a PEM block with its line breaks kept, so the line count never changes. `--dry-run` previews as for the
-other repairs, and its exit code is that of the file as written. Replacements are not marked a guess. Reading the result finds nothing more. `lede build`
+is cut); a PEM block is replaced with its line breaks kept, so the line count never changes. The result never has more errors than the text it
+redacts: where a placeholder would break a line (a diagram node id, a `choose` option that would repeat another) the finding takes an
+identifier-safe one instead, `host-1`, `ip-2` and so on, numbered per distinct text so two references to one host stay one node (a number the page
+already uses is skipped). A finding no placeholder can replace without a new error (the file named by `data x < FILE`) is left as written, with a line
+`FILE:LINE: not fixed [external] host left as written: ...`, and stays a finding, so the exit code is 1. `--dry-run` previews as for the
+other repairs, and its exit code is that of the file as written. Replacements are not marked a guess. Reading the result finds nothing more than the
+findings it left. `lede build`
 does not read `--external` and never changes the text: redaction is an edit to the source, made once and reviewed, not a transform at build time.
 
 `lede build FILE [-o OUT] [--force] [--unsafe-html] [--allow-remote] [--artifact] [--shell] [--image-max=SIZE] [--link-images] [--theme TOKENS [--theme-strict]]` compiles the first FILE to one page. Diagnostics go to stderr as

@@ -1054,7 +1054,8 @@ SKILL.md now lists, uncounted until a session has an API key.
   KiB an image, eight times that a page; `--image-max`, `--link-images`), confined to the document's tree like `data <` loads.
   Remote images are still never fetched (D20). W `image-inline`.
 - **`check --external`.** A scan of the source for URLs, IP literals, host names, account ids, keys and emails (documentation
-  names and ranges exempt, `--allow` for the rest); any finding exits 1, and `--fix` replaces each with a placeholder.
+  names and ranges exempt, `--allow` for the rest); any finding exits 1, and `--fix` replaces each with a placeholder
+  (`<host>`, or `host-1` where an id or option needs one; a span no placeholder can take without a new error stays a finding).
   Redaction is an edit to the source, never a build transform. A key is never printed whole.
 - **`--theme tokens.json`.** An operator's house palette as hex tokens over D74's palette table (built here without the
   `@fonts`/`@palette` words). A colour that would miss WCAG AA is moved in OKLCH lightness only, to the nearest passing value, and

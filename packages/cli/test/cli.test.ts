@@ -779,6 +779,21 @@ test('check --external --fix makes the other repairs first, in the same write', 
   assert.equal(readFileSync(join(dir, 'q.lede'), 'utf8'), 'see www.acme.io\n');
 });
 
+test('check --external --fix never writes a page that parses worse: ids take host-1, and a data file name is left', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  writeFileSync(join(dir, 'net.lede'), 'diagram net\nnet: api.acme.io -> db.corp.internal : 10.1.2.3\nnet: api.acme.io -> cache\n');
+  const r = run(['check', 'net.lede', '--external', '--fix'], dir);
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(r.stderr, /net\.lede:2: fixed \[external\] replaced host api\.acme\.io with host-1\n/);
+  assert.equal(readFileSync(join(dir, 'net.lede'), 'utf8'), 'diagram net\nnet: host-1 -> host-2 : <ip>\nnet: host-1 -> cache\n');
+  writeFileSync(join(dir, 'feed.acme.io'), 'a,b\n1,2\n');
+  writeFileSync(join(dir, 'feed.lede'), 'data d < feed.acme.io\ntable d\n');
+  const kept = run(['check', 'feed.lede', '--external', '--fix'], dir);
+  assert.equal(kept.status, 1);
+  assert.match(kept.stderr, /feed\.lede:1: not fixed \[external\] host left as written/);
+  assert.equal(readFileSync(join(dir, 'feed.lede'), 'utf8'), 'data d < feed.acme.io\ntable d\n');
+});
+
 test('--external and --allow: usage errors, and build ignores both and never redacts', () => {
   const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
   writeFileSync(join(dir, 'leak.lede'), LEAKY);

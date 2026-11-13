@@ -3,7 +3,7 @@
 // one: the values are made up and belong to nothing.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { EXTERNAL_PLACEHOLDERS, externalDiagnostics, redactExternal, scanExternal, type ExternalKind } from '../src/index.ts';
+import { EXTERNAL_PLACEHOLDERS, externalDiagnostics, parse, redactExternal, scanExternal, type ExternalKind } from '../src/index.ts';
 
 const found = (src: string, allow: string[] = []) => scanExternal(src, { allow }).map((f) => [f.kind, f.text]);
 
@@ -358,6 +358,53 @@ test('redaction replaces each span with its placeholder, changes no line count a
   assert.deepEqual(Object.values(EXTERNAL_PLACEHOLDERS), ['<url>', '<ip>', '<host>', '<account>', '<key>', '<email>']);
   // Allowed names stay, and CRLF stays.
   assert.equal(redactExternal('a docs.acme.io b\r\nc 10.0.0.9 d\r\n', { allow: ['docs.acme.io'] }).src, 'a docs.acme.io b\r\nc <ip> d\r\n');
+});
+
+test('redaction never leaves the page with more errors: an id takes a numbered placeholder, and a span that cannot move stays', () => {
+  const errors = (src: string, opts = {}) => parse(src, opts).diagnostics.filter((d) => d.severity === 'error');
+  const src = [
+    'diagram net',
+    'net: api.acme.io -> db.corp.internal : 10.1.2.3',
+    'net: api.acme.io -> cache',
+    'choose c | a.acme.io, b.acme.io',
+    'Talk to api.acme.io first.',
+  ].join('\n');
+  assert.deepEqual(errors(src), []);
+  const r = redactExternal(src);
+  assert.equal(
+    r.src,
+    ['diagram net', 'net: host-1 -> host-2 : <ip>', 'net: host-1 -> cache', 'choose c | <host>, host-3', 'Talk to <host> first.'].join(
+      '\n',
+    ),
+  );
+  assert.deepEqual(errors(r.src), []);
+  assert.deepEqual(r.skipped, []);
+  assert.equal(r.src.split('\n').length, src.split('\n').length);
+  assert.deepEqual(scanExternal(r.src), []);
+  assert.deepEqual(
+    r.applied.map((a) => [a.line, a.placeholder]),
+    [
+      [2, 'host-1'],
+      [2, 'host-2'],
+      [2, '<ip>'],
+      [3, 'host-1'],
+      [4, '<host>'],
+      [4, 'host-3'],
+      [5, '<host>'],
+    ],
+  );
+  // A number already used in the page is skipped, so no node merges with one the writer drew.
+  assert.equal(redactExternal('diagram n\nn: host-1 -> a.acme.io\n').src, 'diagram n\nn: host-1 -> host-2\n');
+  // A file name that must stay what it is (a data load) is left, reported as skipped, and is still a finding.
+  const opts = { loadFile: (p: string) => (p === 'feed.acme.io' ? 'a,b\n1,2\n' : assert.fail(`no file ${p}`)) };
+  const kept = redactExternal('data d < feed.acme.io\nSee feed.acme.io.\n', {}, opts);
+  assert.equal(kept.src, 'data d < feed.acme.io\nSee <host>.\n');
+  assert.deepEqual(
+    kept.skipped.map((f) => [f.line, f.kind, f.text]),
+    [[1, 'host', 'feed.acme.io']],
+  );
+  assert.deepEqual(errors(kept.src, opts), []);
+  assert.equal(scanExternal(kept.src).length, 1);
 });
 
 test('a private key is replaced from its header to its END line, and the line breaks stay', () => {
