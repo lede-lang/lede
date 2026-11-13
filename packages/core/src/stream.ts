@@ -29,18 +29,12 @@ export type StreamEvent =
 /** A block that is returned once and then gains lines: a diagram (statements), a bucket set (items) or a decision (options, questions, roles). */
 type Growing = DiagramBlock | BucketBlock | DecisionBlock;
 
-const sealOf = (d: Growing): StreamEvent =>
-  d.type === 'bucket'
-    ? { kind: 'bucket-seal', block: d }
-    : d.type === 'decision'
-      ? { kind: 'decision-seal', block: d }
-      : { kind: 'seal', block: d };
-const updateOf = (d: Growing): StreamEvent =>
-  d.type === 'bucket'
-    ? { kind: 'bucket-update', block: d }
-    : d.type === 'decision'
-      ? { kind: 'decision-update', block: d }
-      : { kind: 'update', block: d };
+/** The `update` or `seal` event of a growing block, in the kind its type takes: `bucket-` and `decision-` prefixed, a diagram's bare. */
+function eventOf(d: Growing, verb: 'update' | 'seal'): StreamEvent {
+  if (d.type === 'bucket') return verb === 'update' ? { kind: 'bucket-update', block: d } : { kind: 'bucket-seal', block: d };
+  if (d.type === 'decision') return verb === 'update' ? { kind: 'decision-update', block: d } : { kind: 'decision-seal', block: d };
+  return verb === 'update' ? { kind: 'update', block: d } : { kind: 'seal', block: d };
+}
 
 /**
  * Feed model output as it arrives. `write` returns blocks that became final;
@@ -156,7 +150,7 @@ export class LedeStream {
       out.push({ kind: 'block', block });
       this.shown(block);
     }
-    for (const d of this.open) out.push(sealOf(d));
+    for (const d of this.open) out.push(eventOf(d, 'seal'));
     this.open.clear();
     if (onEvent) for (const e of out) onEvent(e);
     return doc;
@@ -173,13 +167,13 @@ export class LedeStream {
       // A growing block inside a grid or card run that has not been returned yet is not on screen: nothing to update. A line
       // that changed nothing is not an update and does not reopen a sealed block; if the block is open, being touched keeps it so (below).
       if (!this.returned.has(d) || !this.changed.has(d)) continue;
-      out.push(updateOf(d));
+      out.push(eventOf(d, 'update'));
       this.open.add(d);
     }
     if (line.trim() !== '') {
       for (const d of this.open) {
         if (this.touched.has(d)) continue;
-        out.push(sealOf(d));
+        out.push(eventOf(d, 'seal'));
         this.open.delete(d);
       }
     }

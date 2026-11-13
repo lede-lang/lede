@@ -185,12 +185,19 @@ const SHAPES: Partial<Record<string, RegExp>> = {
 const DECISION_LINE = /^(?:option\s+[A-Za-z0-9][\w-]*\s+"|question\s+"|role\s+[^\s"]+(?:\s+[^\s"]+)?\s+")/;
 const DECISION_STATUS: readonly DecisionStatus[] = ['open', 'settled', 'deferred'];
 /** The verdict words of an option: the first three choose it, `rejected` strikes it. Case does not matter. */
-const VERDICTS: Record<string, DecisionOption['verdict']> = {
-  chosen: 'chosen',
-  picked: 'chosen',
-  selected: 'chosen',
-  rejected: 'rejected',
-};
+const VERDICTS: ReadonlyMap<string, NonNullable<DecisionOption['verdict']>> = new Map([
+  ['chosen', 'chosen'],
+  ['picked', 'chosen'],
+  ['selected', 'chosen'],
+  ['rejected', 'rejected'],
+]);
+/** What each line of a decision looks like, after `NAME: `, for the message that rejects one. */
+const DECISION_LINE_USAGE = {
+  option: 'option ID "Label" | why | verdict',
+  question: 'question "Text" | answer',
+  role: 'role WORD "Who"',
+} as const;
+type DecisionLineWord = keyof typeof DECISION_LINE_USAGE;
 /** Marks a `bucket` name the export would write for something else (`choose` reserves `(not chosen)` the same way). */
 const BUCKET_RESERVED = [NOT_CHOSEN, EMPTY];
 type Space = 'data' | 'diagram' | 'bucket' | 'decision';
@@ -2396,15 +2403,7 @@ export class LedeParser {
   private decisionLine(d: DecisionBlock, s: string, col: number): boolean {
     const L = this.lineNo;
     const m = /^(option|question|role)(?=\s|$)\s*(.*)$/.exec(s);
-    const usage: Record<string, string> = {
-      option: `${d.name}: option ID "Label" | why | verdict`,
-      question: `${d.name}: question "Text" | answer`,
-      role: `${d.name}: role WORD "Who"`,
-    };
-    const bad = (word: string, why: string): false => {
-      this.diag('error', 'decision-syntax', `${why}: write \`${usage[word]}\``, L, col, { word });
-      return false;
-    };
+    const bad = (word: DecisionLineWord, why: string): false => this.decisionBad(d, word, why, col);
     if (!m) {
       this.diag(
         'error',
@@ -2416,7 +2415,8 @@ export class LedeParser {
       );
       return false;
     }
-    const [, word, rest] = m;
+    const [, matched, rest] = m;
+    const word = matched as DecisionLineWord;
     if (word === 'role') {
       const at = rest.indexOf('"');
       const words = (at < 0 ? rest : rest.slice(0, at)).split(/\s+/).filter(Boolean);
@@ -2444,27 +2444,28 @@ export class LedeParser {
       d.questions.push({ text: q.value.trim(), answer: answerOf(tail.slice(1)), line: L });
       return true;
     }
-    return this.decisionOption(d, id, q.value.trim(), tail === '' ? null : barCells(tail.slice(1)), col, bad);
+    return this.decisionOption(d, id, q.value.trim(), tail === '' ? null : barCells(tail.slice(1)), col);
+  }
+
+  /** Rejects a line of decision `d`: the reason, then the form the line takes. Always false, so a caller can return it. */
+  private decisionBad(d: DecisionBlock, word: DecisionLineWord, why: string, col: number): false {
+    this.diag('error', 'decision-syntax', `${why}: write \`${d.name}: ${DECISION_LINE_USAGE[word]}\``, this.lineNo, col, { word });
+    return false;
   }
 
   /** The option `id "label" | why | verdict` for a decision: `cells` are what follows the label (null when nothing does). */
-  private decisionOption(
-    d: DecisionBlock,
-    id: string,
-    label: string,
-    cells: ReturnType<typeof barCells> | null,
-    col: number,
-    bad: (word: string, why: string) => false,
-  ): boolean {
+  private decisionOption(d: DecisionBlock, id: string, label: string, cells: ReturnType<typeof barCells> | null, col: number): boolean {
     const L = this.lineNo;
     if (cells && (cells.error || cells.cells.length > 2))
-      return bad(
+      return this.decisionBad(
+        d,
         'option',
         `${d.name}: an option has a label, then at most a why and a verdict, each after a | (quote a text that holds a |)`,
+        col,
       );
     let [why = '', word = ''] = cells?.cells ?? [];
     // A lone cell that is a verdict word is the verdict, not a reason.
-    if (cells?.cells.length === 1 && Object.hasOwn(VERDICTS, why.toLowerCase())) [why, word] = ['', why];
+    if (cells?.cells.length === 1 && VERDICTS.has(why.toLowerCase())) [why, word] = ['', why];
     const first = d.options.find((x) => x.id === id);
     if (first) {
       this.diag(
@@ -2482,9 +2483,8 @@ export class LedeParser {
       return false;
     }
     const key = word.toLowerCase();
-    let verdict: DecisionOption['verdict'] = null;
-    if (key !== '' && Object.hasOwn(VERDICTS, key)) verdict = VERDICTS[key] ?? null;
-    else if (key !== '') {
+    const verdict = VERDICTS.get(key) ?? null;
+    if (key !== '' && !verdict) {
       this.diag(
         'warning',
         'decision-status',
