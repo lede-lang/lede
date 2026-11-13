@@ -1,8 +1,8 @@
 // Markup for a decision block (spec §4.20, D80): one static card, no script, no control. The question, a status chip and the date, the
 // options with their verdicts, the questions with their answers, and the roles. Every state is said in words as well as drawn in
 // colour: the status and each verdict are text, and a rejected option's label is also struck through.
-import type { DecisionBlock, DecisionStatus } from '@lede-lang/core';
-import { ISO_DATE, esc, inline } from './util.ts';
+import { ISO_DATE, type DecisionBlock, type DecisionStatus } from '@lede-lang/core';
+import { esc, inline } from './util.ts';
 
 /** The status chip: the existing status pills, `settled` good, `open` warn and `deferred` the neutral grey (the `neutral` tone, D80). */
 const STATUS: Record<DecisionStatus, { text: string; tone: string }> = {

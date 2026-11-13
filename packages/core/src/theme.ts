@@ -35,9 +35,13 @@ export interface ThemeResult {
 
 /** The colours `--theme` accepts: `#rgb` or `#rrggbb`, in either case, as `#rrggbb` in lower case; null for anything else, alpha included. */
 export function themeHex(v: unknown): string | null {
-  const m = typeof v === 'string' ? /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(v) : null;
-  if (!m) return null;
-  return `#${(m[1].length === 3 ? m[1].replace(/./g, '$&$&') : m[1]).toLowerCase()}`;
+  // `parseHex` reads every CSS hex form; the two lengths without an alpha are the ones a theme takes.
+  const rgba = typeof v === 'string' && (v.length === 4 || v.length === 7) ? parseHex(v) : null;
+  if (!rgba) return null;
+  return `#${rgba
+    .slice(0, 3)
+    .map((c) => c.toString(16).padStart(2, '0'))
+    .join('')}`;
 }
 
 // ------------------------------------------------------------------ OKLCH

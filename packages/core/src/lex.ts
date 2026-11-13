@@ -273,6 +273,9 @@ export function splitPipes(s: string): string[] {
   return fields;
 }
 
+/** A date written `YYYY-MM-DD`: a `date` option's value, and what a `<time>` may carry as its `datetime`. */
+export const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
 /** Parse a number the way charts read data cells: tolerates `,` `$` `%` and units. */
 export function num(v: string | undefined): number | null {
   if (v === undefined) return null;

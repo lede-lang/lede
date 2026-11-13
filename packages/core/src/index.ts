@@ -13,7 +13,7 @@ export {
 } from './parser.ts';
 export { LedeStream, type StreamEvent } from './stream.ts';
 export { EMPTY, FIELD_KINDS, NOT_CHOSEN, SLOT_RE, exportsOf, fieldsOf, presetsOf } from './fields.ts';
-export { bareCell, cellNum, num, parseInlineCsv } from './lex.ts';
+export { ISO_DATE, bareCell, cellNum, num, parseInlineCsv } from './lex.ts';
 export { fix, type AppliedFix, type FixResult } from './fix.ts';
 export { HEX_COLOR, THEME_SURFACES, usableAccent } from './contrast.ts';
 export { FIXED_TOKENS, PALETTES, PALETTE_NAMES, PALETTE_TOKENS, paletteSurfaces } from './palette.ts';

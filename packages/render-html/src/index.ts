@@ -25,6 +25,7 @@ import {
   factEntries,
   factName,
   httpsUrl,
+  ISO_DATE,
   missingColumns,
   fieldsOf,
   imageSrcKind,
@@ -60,7 +61,7 @@ import {
 } from './question.ts';
 import { SCRIPT_SRC, shellScripts } from './shell.ts';
 import { css } from './theme.ts';
-import { ISO_DATE, esc, fmtCell, inline, maxOf, plain, slug, textWidth } from './util.ts';
+import { esc, fmtCell, inline, maxOf, plain, slug, textWidth } from './util.ts';
 
 export interface RenderOptions {
   /** Pass `html:` blocks through untouched. Default false: they are sanitized to a safe allowlist. */

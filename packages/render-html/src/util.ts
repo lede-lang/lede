@@ -12,9 +12,6 @@ export function maxOf(a: readonly number[], init = -Infinity): number {
   return m;
 }
 
-/** A date written `YYYY-MM-DD`, which a `<time>` may carry as its `datetime`. */
-export const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
-
 export function esc(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }

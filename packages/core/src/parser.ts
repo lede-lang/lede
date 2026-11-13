@@ -41,6 +41,7 @@ import {
   readQuoted,
   splitPipes,
   tokens,
+  ISO_DATE,
   type Opts,
 } from './lex.ts';
 import { EMPTY, FIELD_KINDS, NOT_CHOSEN, SLOT_RE } from './fields.ts';
@@ -141,7 +142,8 @@ export const NOTE_KINDS: ReadonlyMap<string, 'good' | 'info'> = new Map([
 /** A kind word, a colon, and the text that follows it. */
 const NOTE_KIND_RE = new RegExp(`^(${[...NOTE_KINDS.keys()].join('|')}):\\s*(\\S.*)$`, 'i');
 const CHART_KINDS: ChartKind[] = ['line', 'area', 'bar', 'hbar', 'range'];
-const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+/** A keyword, or `html` (a line starting `html:` is a raw block): no decision or diagram may take it as a name. */
+const reservedName = (name: string): boolean => (KEYWORDS as readonly string[]).includes(name) || name === 'html';
 const KEYWORD_RE = new RegExp(`^(${KEYWORDS.join('|')})(?=\\s|$)`);
 /** A question or diagram name. */
 const NAME_RE = /^[A-Za-z][\w-]*$/;
@@ -2353,8 +2355,7 @@ export class LedeParser {
     const name = cut < 0 ? rest : rest.slice(0, cut);
     const after = cut < 0 ? '' : rest.slice(cut).trim();
     if (!NAME_RE.test(name)) return bad('needs a name: a letter, then letters, digits, _ or -');
-    if ((KEYWORDS as readonly string[]).includes(name) || name === 'html')
-      return bad(`${name} is a keyword and cannot name a decision (a line starting \`html:\` is a raw block)`);
+    if (reservedName(name)) return bad(`${name} is a keyword and cannot name a decision (a line starting \`html:\` is a raw block)`);
     if (!after.startsWith('"')) return bad(`${name} needs its question in double quotes right after the name`);
     const q = readQuoted(after, 0);
     if (!q.closed) return bad(`${name}: the question's " is never closed`);
@@ -2507,7 +2508,7 @@ export class LedeParser {
       this.diag('error', 'diagram-name', 'diagram needs a name: `diagram flow` then lines like `flow: a -> b`', L, col);
       return;
     }
-    if ((KEYWORDS as readonly string[]).includes(name) || name === 'html') {
+    if (reservedName(name)) {
       this.diag('error', 'diagram-name', `${name} is a keyword and cannot name a diagram`, L, col);
       return;
     }
