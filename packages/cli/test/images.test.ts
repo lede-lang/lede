@@ -180,7 +180,7 @@ test('--link-images leaves every path as written, with no warning for any of the
   assert.equal(run(['check', 'p.lede', '--link-images'], dir).stderr.trimEnd(), 'ok');
 });
 
-test('a document cannot reach a file outside its directory: ../, a root path, a symlink out, and whether it exists makes no difference', () => {
+test('a document cannot reach a file outside its directory: ../, a symlink out, and whether it exists makes no difference', () => {
   const outer = mkdtempSync(join(tmpdir(), 'lede-img-outer-'));
   copyFileSync(join(FIXTURES, 'tile.gif'), join(outer, 'secret.png')); // a different image from the one inside, so the page can show which it holds
   const dir = join(outer, 'doc');
@@ -189,16 +189,7 @@ test('a document cannot reach a file outside its directory: ../, a root path, a 
   symlinkSync(join(outer, 'secret.png'), join(dir, 'link.png'));
   symlinkSync(outer, join(dir, 'outdir'));
   symlinkSync(join(dir, 'sub', 'ok.png'), join(dir, 'inside.png')); // a link that stays inside is fine
-  const srcs = [
-    '../secret.png',
-    '../nothing.png',
-    join(outer, 'secret.png'),
-    '/etc/passwd',
-    'link.png',
-    'outdir/secret.png',
-    'outdir/nothing.png',
-    'sub/../../secret.png',
-  ];
+  const srcs = ['../secret.png', '../nothing.png', 'link.png', 'outdir/secret.png', 'outdir/nothing.png', 'sub/../../secret.png'];
   page(dir, `${[...srcs, 'sub/ok.png', 'inside.png'].map((s) => `image ${s} "x"`).join('\n')}\n`);
   const r = run(['build', 'p.lede'], dir);
   assert.equal(r.status, 0, r.stderr);
@@ -213,6 +204,20 @@ test('a document cannot reach a file outside its directory: ../, a root path, a 
     srcs.map(() => 'outside'),
     'every one of them, found or not, is "outside"',
   );
+});
+
+test('a path from the web root is a URL on the site, left as written with no warning, even when the file exists there', () => {
+  const outer = mkdtempSync(join(tmpdir(), 'lede-img-outer-'));
+  copyFileSync(join(FIXTURES, 'tile.gif'), join(outer, 'secret.png'));
+  const dir = folder('tile.png');
+  const srcs = ['/assets/logo.png', join(outer, 'secret.png'), '/etc/passwd'];
+  page(dir, `${srcs.map((s) => `image ${s} "x"`).join('\n')}\n`);
+  const r = run(['build', 'p.lede'], dir);
+  assert.equal(r.status, 0, r.stderr);
+  assert.ok(!r.stdout.includes(readFileSync(join(outer, 'secret.png')).toString('base64')), 'nothing is read from the disk root');
+  assert.deepEqual(inlineWarnings(dir), []);
+  assert.doesNotMatch(r.stderr, /image-inline/);
+  assert.deepEqual(imgs(r.stdout), srcs);
 });
 
 test('a path that is not there, is a folder, or cannot be read is "missing"; a folder with an image name is not read', () => {

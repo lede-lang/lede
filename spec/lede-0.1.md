@@ -355,7 +355,8 @@ caller opts in; by default they show the alt text in place.
 
 The parser and the renderer read no files, so a local path stays a path in the document they are given. The command line (§9) is
 what makes a page with pictures one file: `build`, `watch` and `check` replace a local source with a `data:` URI of the file (D80),
-or leave the path and warn (W `image-inline`) when they cannot. A `data:` image is drawn without `loading="lazy"`, since its bytes
+or leave the path and warn (W `image-inline`) when they cannot. A path from the web root (`/assets/logo.png`) names a file on the site
+the page is served from, not one beside the document: it is left as written, with no warning, like an `http(s)` source. A `data:` image is drawn without `loading="lazy"`, since its bytes
 are already in the page; any other image keeps it.
 
 `grid N [count=M]` (N from 1 to 4, M defaults to N) places the next M rendered blocks in N
@@ -949,7 +950,8 @@ turns inlining off: every path stays as written, with no `image-inline` warning,
 and gets W `image-inline` at its line, with `detail {src, reason}`: `size` (the file is over `--image-max`), `page-size` (it would take the page past eight times that;
 a later, smaller image may still fit), `type` (not one of the six types, or empty), `missing` (no such file, a folder, or a file that cannot be read) or `outside`. The warning
 is printed like any other diagnostic by `build`, `watch` and `check`, and `check --json` carries it, so `check` and `build` agree on every page. `http(s)` sources are never
-fetched, with or without `--allow-remote`, and a `data:` source passes through unchanged.
+fetched, with or without `--allow-remote`, and a `data:` source passes through unchanged, as does a path that starts with `/` (a web-root URL,
+§4.16), with no `image-inline` warning.
 
 `lede watch FILE [-o OUT] [--theme TOKENS [--theme-strict]]` builds FILE to OUT, or to `NAME.html` beside `NAME.lede`, then rebuilds on every change until stopped. It always
 renders as if `--force` were given, and honours `--unsafe-html`, `--allow-remote`, `--shell`, `--image-max`, `--link-images`, `--theme` and `--theme-strict`; a change to an image file

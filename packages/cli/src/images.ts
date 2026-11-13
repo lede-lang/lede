@@ -100,7 +100,7 @@ type Inlined = { uri: string; bytes: number } | Reason;
  * for each one it leaves as a path. The path is read as the browser reads it, confined to `base`'s tree like `data x < file.csv`
  * (symlinks resolved), and typed by its first bytes. `max` is the per-image size in bytes; the whole page may inline `PAGE_FACTOR`
  * times that, counting an image once for each place it is used. Remote and data: sources are left as they are. A file used in more
- * than one place is read once. Without `encode` (`lede check`, which draws no page) the warnings are the same and no image is read
+ * than one place is read once. A path from the web root (`/x.png`) is left as written. Without `encode` (`lede check`, which draws no page) the warnings are the same and no image is read
  * whole or encoded: the src becomes `data:TYPE;base64,` with no payload, so what reads the document after sees an inlined image.
  */
 export function inlineImages(doc: LedeDocument, base: string, max: number, encode = true): Diagnostic[] {
@@ -135,7 +135,9 @@ export function inlineImages(doc: LedeDocument, base: string, max: number, encod
     }
   };
   walkBlocks(doc.blocks, (b) => {
-    if (b.type !== 'image' || imageSrcKind(b.src) !== 'local') return;
+    // A path from the web root (`/assets/logo.png`) is a URL on the site the page is served from, not a file beside the document:
+    // it is left as written, like an http(s) source.
+    if (b.type !== 'image' || imageSrcKind(b.src) !== 'local' || browserUrl(b.src).startsWith('/')) return;
     const got = inline(b);
     if (typeof got === 'string')
       out.push({

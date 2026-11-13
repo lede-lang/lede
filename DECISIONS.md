@@ -1053,7 +1053,7 @@ SKILL.md now lists, uncounted until a session has an API key.
   outnumber its breadth. `@width narrow` keeps the reading column. Section cards and the spec's probe are not built; 209 of the
   283 render fixtures moved, all dashboards.
 - **Images inline.** `build`, `watch` and `check` write a local image into the page as a `data:` URI (type by magic bytes; 512
-  KiB an image, eight times that a page; `--image-max`, `--link-images`), confined to the document's tree like `data <` loads.
+  KiB an image, eight times that a page; `--image-max`, `--link-images`), confined to the document's tree like `data <` loads; a web-root path (`/assets/x.png`) is a URL and is left as written.
   Remote images are still never fetched (D20). W `image-inline`.
 - **`check --external`.** A scan of the source for URLs, IP literals, host names, account ids, keys and emails (documentation
   names and ranges exempt, `--allow` for the rest); any finding exits 1, and `--fix` replaces each with a placeholder
