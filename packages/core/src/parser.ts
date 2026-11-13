@@ -2753,10 +2753,13 @@ export class LedeParser {
       }
       if (tn.word !== undefined) {
         const allowed = [...STATUS_TONES];
+        const meant = tn.suggest ? `tone words are lower case: write "${tn.suggest}"` : allowed.join(', ');
         this.diag(
           'warning',
           'edge-tone',
-          `"${tn.word}" is not an edge tone (${allowed.join(', ')}); the edge is drawn without one and the field is dropped`,
+          tn.dropped
+            ? `"${tn.word}" is not an edge tone (${meant}); the edge is drawn without one and the field is dropped`
+            : `"${tn.word}" is not an edge tone (${meant}); it stays in the label and the edge is drawn without one`,
           L,
           col + tn.at,
           { value: tn.word, allowed },
@@ -2842,18 +2845,24 @@ function afterColon(s: string, lead: number): number {
 
 /**
  * An edge or message line without its tone. The tone is the line's last ` | ` field (`a -> b : allow | good`, `a -> b | warn`): a
- * pipe with a space on each side, outside any pair of double quotes. The field is `tone` when it is one of STATUS_TONES. A lone other
- * word is a mistyped tone: `word`, and it is dropped with its pipe (`at` is its offset in `s`). Any other text after the pipe (several
- * words, a number, punctuation) is label text and stays, as it did before tones.
+ * pipe with a space on each side, outside any pair of double quotes, and a field that is exactly one of STATUS_TONES. Inside a label
+ * (after the `:`) any other last field is label text, as it was before tones (`client -> server : GET | POST`); a case variant of a
+ * tone word (`Good`) stays label text too, and comes back as `word`, with `suggest` the tone it was likely meant as, for a warning.
+ * Before any `:` (no label) the line did not parse before tones, so a lone other word there is a mistyped tone: `word`, dropped with
+ * its pipe. `at` is the word's offset in `s`.
  */
-function splitTone(s: string): { head: string; tone?: EdgeTone; word?: string; at: number } {
+function splitTone(s: string): { head: string; tone?: EdgeTone; word?: string; suggest?: EdgeTone; dropped?: boolean; at: number } {
   let at = -1;
   for (const m of s.replace(/"[^"]*"/g, (q) => '_'.repeat(q.length)).matchAll(/\s\|(?=\s)/g)) at = m.index;
   const field = at < 0 ? '' : s.slice(at + 2).trim();
   if (!/^[A-Za-z][\w-]*$/.test(field)) return { head: s, at: 0 };
   const head = s.slice(0, at).trimEnd();
   const tone = STATUS_TONES.find((t) => t === field);
-  return tone ? { head, tone, at: 0 } : { head, word: field, at: s.lastIndexOf(field) };
+  if (tone) return { head, tone, at: 0 };
+  const suggest = STATUS_TONES.find((t) => t === field.toLowerCase());
+  const word = { word: field, at: s.lastIndexOf(field), ...(suggest ? { suggest } : {}) };
+  if (head.includes(':')) return suggest ? { head: s, ...word } : { head: s, at: 0 };
+  return { head, dropped: true, ...word };
 }
 
 /**

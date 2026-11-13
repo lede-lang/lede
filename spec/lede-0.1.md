@@ -380,12 +380,14 @@ other blocks. A diagram renders where it is declared.
   `a -> b : allow | good`, `a -x- b : deny | bad`, `a -> b | warn` (no label). The tone belongs to **every** edge the
   line makes, across a chain and a fan-out (the label still goes to the last hop only). The separator is a `|` with a
   space on each side, outside any pair of double quotes (`a -> b : "read | write" | good`); only the last such pipe counts.
-  AST: `DiagramEdge.tone`, omitted when the line has none. The field is a *word*: a last field that is one other
-  word (letters, digits, `_`, `-`, starting with a letter; tone words are lowercase) is a mistyped tone, W `edge-tone`
-  `{value, allowed}` with `allowed` the five words; the edge is drawn untoned and the field is dropped, pipe included.
-  Any other text after a pipe (several words, a number, punctuation: `: yes | no, retry later`, `: 1 | 2`) is label text and
-  stays as it was written. For input that parsed before, the only change is a label whose last ` | ` field is one lone
-  word: it is now a tone, or W `edge-tone` and dropped. The renderer draws a toned edge's line, arrowhead and label chip with
+  AST: `DiagramEdge.tone`, omitted when the line has none. The field is a tone only when it is exactly one of the five
+  words, in lower case. Inside a label (after the `:`) any other last field is label text and stays as it was written,
+  with no warning (`client -> server : GET | POST`, `: yes | no, retry later`, `: 1 | 2`), except a case variant of a
+  tone word (`: allow | Good`, `| BAD`): it stays in the label too, and is W `edge-tone` `{value, allowed}` (`allowed` the
+  five words) with a message naming the lower-case word. A line with no label whose last field is one other word (letters,
+  digits, `_`, `-`, starting with a letter: `a -> b | red`), which did not parse before tones, is W `edge-tone` too; that
+  edge is drawn untoned and the field is dropped, pipe included. For input that parsed before, the only change is a label
+  whose last ` | ` field is exactly a tone word: it is now a tone. The renderer draws a toned edge's line, arrowhead and label chip with
   the status tokens (`good`, `bad`, `warn`; `info` the accent; `neutral` the grey), in the light and dark themes and in the
   desktop and phone drawings. The line style keeps its meaning without the color (`-->` dashed, `-x-` blocked with its
   cross, drawn in the tone), the tone is in the edge's `<title>` and the diagram's `<desc>`, and a phone list shows the label as a chip

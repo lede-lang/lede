@@ -90,25 +90,46 @@ test('labels with a pipe that is not followed by one word are kept as before, wi
   assert.deepEqual(parse(src).diagnostics, []);
 });
 
-test('a lone word that is no tone is W edge-tone, drawn untoned and dropped from the label', () => {
-  const doc = parse(flow('a -> b : x | goood', 'a -> b | red', 'b -> c : read | write'));
-  assert.deepEqual(edges(flow('a -> b : x | goood', 'a -> b | red', 'b -> c : read | write')), [
-    ['a', 'b', 'x', null],
-    ['a', 'b', '', null],
-    ['b', 'c', 'read', null],
+test('inside a label any last field that is no tone word stays label text, as on the base, with no warning', () => {
+  const lines = ['a -> b : x | goood', 'b -> c : read | write', 'client -> server : GET | POST'];
+  assert.deepEqual(edges(flow(...lines)), [
+    ['a', 'b', 'x | goood', null],
+    ['b', 'c', 'read | write', null],
+    ['client', 'server', 'GET | POST', null],
+  ]);
+  assert.deepEqual(codes(flow(...lines)), []);
+});
+
+test('a case variant of a tone word stays in the label with W edge-tone naming the lower-case word', () => {
+  const doc = parse(flow('a -> b : x | Good', 'b -> c : y | BAD'));
+  assert.deepEqual(edges(flow('a -> b : x | Good', 'b -> c : y | BAD')), [
+    ['a', 'b', 'x | Good', null],
+    ['b', 'c', 'y | BAD', null],
   ]);
   assert.deepEqual(
-    doc.diagnostics.map((d) => [d.severity, d.code, d.line, d.col, d.detail]),
-    ['goood', 'red', 'write'].map((value, i) => [
-      'warning',
-      'edge-tone',
-      [2, 3, 4][i],
-      [17, 13, 20][i],
-      { value, allowed: ['good', 'warn', 'bad', 'info', 'neutral'] },
-    ]),
+    doc.diagnostics.map((d) => [d.code, d.line, d.col, d.detail]),
+    [
+      ['edge-tone', 2, 17, { value: 'Good', allowed: ['good', 'warn', 'bad', 'info', 'neutral'] }],
+      ['edge-tone', 3, 17, { value: 'BAD', allowed: ['good', 'warn', 'bad', 'info', 'neutral'] }],
+    ],
   );
-  // Tone words are lowercase, like every keyword.
-  assert.deepEqual(codes(flow('a -> b : x | Good')), ['warning:edge-tone@2']);
+  assert.match(doc.diagnostics[0].message, /write "good"/);
+});
+
+test('with no label, a lone last word that is no tone (a line the base could not read) is W edge-tone and dropped', () => {
+  const doc = parse(flow('a -> b | red', 'b -> c | Warn'));
+  assert.deepEqual(edges(flow('a -> b | red', 'b -> c | Warn')), [
+    ['a', 'b', '', null],
+    ['b', 'c', '', null],
+  ]);
+  assert.deepEqual(
+    doc.diagnostics.map((d) => [d.code, d.line, d.col]),
+    [
+      ['edge-tone', 2, 13],
+      ['edge-tone', 3, 13],
+    ],
+  );
+  assert.match(doc.diagnostics[1].message, /write "warn"/);
 });
 
 test('a line that fails keeps its own error and adds no tone warning', () => {

@@ -1037,7 +1037,8 @@ SKILL.md now lists, uncounted until a session has an API key.
   `Example:` takes that label and a green or blue tone. `!!` and `!!!` keep their severity whatever the word; `! Warning:` is W
   `note-kind` pointing at `!!`.
 - **Edge tones.** A last ` | tone` field on an edge or sequence message colours its line, arrowhead and label chip; the line
-  style still carries the meaning. W `edge-tone`.
+  style still carries the meaning. Only the five lower-case words are tones; any other last field stays label text as before
+  (`GET | POST`), and a case variant (`Good`) stays label text with W `edge-tone`.
 - **Pipe rows.** `NAME: a | b | c` appends a row to a declared data set, and `table [opts] = H1 | H2` takes `: a | b` rows; `,`
   and `;` are plain text in a pipe field. A header with a `;` outside quotes is CSV as before, so a base table whose cell holds
   ` | ` keeps its rows. This is RFC #34 (gap-closure N3) built without its probe; over 866 tracked pages no

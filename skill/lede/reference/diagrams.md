@@ -9,6 +9,6 @@ net: api -> db : allow | good
 net: admin -x- db : deny | bad
 net: legend
 ```
-Tones: `good`, `bad`, `warn`, `info`, `neutral`. The arrow style still carries the meaning (`-x-` blocked, `-->` dashed),
+Tones, in lower case: `good`, `bad`, `warn`, `info`, `neutral`; any other last field is label text. The arrow style still carries the meaning (`-x-` blocked, `-->` dashed),
 so tone what matters and leave the rest plain. Labels are printed as written: keep them short and in lower case.
 <!-- teaches: edge tones -->

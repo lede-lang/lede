@@ -4,3 +4,6 @@ arch: api -> db : deny | red
 arch: api -> web | Good
 arch: web -> db : read | write
 arch: web -> db : read | write it
+arch: client -> api : GET | POST
+arch: api -> cache : hit | Good
+arch: db -> cache | red
