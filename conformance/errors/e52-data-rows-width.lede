@@ -1,0 +1,9 @@
+data costs = service,usd,note
+costs: Compute | 18,400
+costs: Storage | 6,100 | archive | extra
+
+table = Option | Cost | Verdict
+: Managed queue | 1,200
+: Self-hosted | 3,400 | ok | extra
+table cols=Nope = A | B
+: x | y

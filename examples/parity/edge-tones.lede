@@ -1,0 +1,30 @@
+@title Edge tones
+# Edge tones
+
+A request path with each tone on an edge. The line style still says what kind of edge it is.
+
+diagram arch dir=LR title="Request path"
+arch: web "Web tier" svc
+arch: api "API" svc focus
+arch: db "Orders" db
+arch: pay "Payments" ext
+arch: web -> api : allow | good
+arch: api --> pay : retry | warn
+arch: api -x- db : direct writes | bad
+arch: api -> db | info
+arch: pay -> db : settle | neutral
+arch: web -> pay : audit
+arch: legend
+
+The same words on messages.
+
+diagram calls sequence title="Gateway calls"
+calls: a "Client" user
+calls: b "Gateway" svc
+calls: c "Auth" svc
+calls: a -> b : GET /orders | good
+calls: b -> c : verify token | info
+calls: c --> b : expired | warn
+calls: b --> a : 401 | bad
+calls: b -> b : retry | neutral
+calls: a -> b : plain

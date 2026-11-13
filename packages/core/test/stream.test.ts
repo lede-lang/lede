@@ -42,10 +42,10 @@ for (const { path, src } of fixtures) {
       s.write(lines.slice(0, n).join('\n') + '\n');
       const snap = s.snapshot();
       // All but the last block of a snapshot (which may still be growing) match the final document,
-      // except diagrams and bucket sets, which later lines extend, and grids, which fill up.
+      // except diagrams, bucket sets and decisions, which later lines extend, and grids, which fill up.
       const stable = snap.blocks.slice(0, -1);
       stable.forEach((b, i) => {
-        if (b.type === 'diagram' || b.type === 'bucket' || b.type === 'grid' || b.type === 'kpis') return;
+        if (b.type === 'diagram' || b.type === 'bucket' || b.type === 'decision' || b.type === 'grid' || b.type === 'kpis') return;
         assert.deepEqual(b, final[i], `line ${n}, block ${i}`);
       });
     }

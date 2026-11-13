@@ -1,0 +1,186 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "diagram",
+      "name": "arch",
+      "kind": "flow",
+      "dir": "LR",
+      "dirExplicit": true,
+      "title": null,
+      "nodes": [
+        {
+          "id": "web",
+          "label": "Web tier",
+          "kind": "svc",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "api",
+          "label": "api",
+          "kind": null,
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "db",
+          "label": "db",
+          "kind": null,
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "cache",
+          "label": "cache",
+          "kind": null,
+          "sub": null,
+          "focus": false
+        }
+      ],
+      "edges": [
+        {
+          "from": "web",
+          "to": "api",
+          "label": "allow",
+          "style": "solid",
+          "both": false,
+          "tone": "good",
+          "line": 3
+        },
+        {
+          "from": "api",
+          "to": "db",
+          "label": "deny",
+          "style": "blocked",
+          "both": false,
+          "tone": "bad",
+          "line": 4
+        },
+        {
+          "from": "api",
+          "to": "db",
+          "label": "",
+          "style": "solid",
+          "both": false,
+          "tone": "warn",
+          "line": 5
+        },
+        {
+          "from": "web",
+          "to": "api",
+          "label": "",
+          "style": "solid",
+          "both": false,
+          "tone": "info",
+          "line": 6
+        },
+        {
+          "from": "api",
+          "to": "db",
+          "label": "chained",
+          "style": "solid",
+          "both": false,
+          "tone": "info",
+          "line": 6
+        },
+        {
+          "from": "web",
+          "to": "api",
+          "label": "",
+          "style": "solid",
+          "both": false,
+          "tone": "neutral",
+          "line": 7
+        },
+        {
+          "from": "web",
+          "to": "cache",
+          "label": "",
+          "style": "solid",
+          "both": false,
+          "tone": "neutral",
+          "line": 7
+        },
+        {
+          "from": "api",
+          "to": "web",
+          "label": "read | write it",
+          "style": "dashed",
+          "both": false,
+          "line": 8
+        },
+        {
+          "from": "api",
+          "to": "web",
+          "label": "\"a | b\"",
+          "style": "solid",
+          "both": false,
+          "tone": "good",
+          "line": 9
+        }
+      ],
+      "groups": [],
+      "notes": [],
+      "line": 1,
+      "legend": true
+    },
+    {
+      "type": "diagram",
+      "name": "calls",
+      "kind": "sequence",
+      "dir": "LR",
+      "title": null,
+      "nodes": [
+        {
+          "id": "a",
+          "label": "a",
+          "kind": null,
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "b",
+          "label": "b",
+          "kind": null,
+          "sub": null,
+          "focus": false
+        }
+      ],
+      "edges": [
+        {
+          "from": "a",
+          "to": "b",
+          "label": "GET /orders",
+          "style": "solid",
+          "both": false,
+          "tone": "good",
+          "line": 13
+        },
+        {
+          "from": "b",
+          "to": "a",
+          "label": "401",
+          "style": "dashed",
+          "both": false,
+          "tone": "bad",
+          "line": 14
+        },
+        {
+          "from": "a",
+          "to": "a",
+          "label": "retry",
+          "style": "solid",
+          "both": false,
+          "tone": "warn",
+          "line": 15
+        }
+      ],
+      "groups": [],
+      "notes": [],
+      "line": 12
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

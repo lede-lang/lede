@@ -1,0 +1,8 @@
+decision a "First?"
+a: option x "X"
+a: option x "X again"
+decision a "Declared twice?"
+ghost: option x "X"
+ghost: question "Where is it?"
+ghost: role decides "Nobody"
+Note: option of the week is the red one.

@@ -1,0 +1,21 @@
+decision a status=open
+decision html "A question?"
+decision data "A question?"
+decision b "Never closed
+decision c ""
+decision d "Fine?"
+d: choice x "X"
+d:
+d: option "X" | why
+d: option 1 X | why
+d: option x "" | why
+d: option y "Y" why
+d: option z "Z" | why | chosen | extra
+d: option w "W" | "unclosed | chosen
+d: question Who?
+d: question "Q" answer
+d: role "Ana"
+d: role decides
+d: role very senior decider "Ana"
+d: role decides "Ana" and "Bo"
+d: role decides ""

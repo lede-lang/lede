@@ -1,0 +1,7 @@
+decision a "Open?" status=done by=2026-12-01
+decision b "Typed in capitals?" status=SETTLED
+decision c "Stray options?" owner=ana urgent "loud" by=Friday
+c: option x "X" | why | winner
+c: option y "Y" | considered
+c: option z "Z" | Rejected
+c: option w "W" | CHOSEN

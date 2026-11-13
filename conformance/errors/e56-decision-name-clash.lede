@@ -1,0 +1,13 @@
+data tickets = id,owner; 1,ana
+decision tickets "Same name as data?"
+diagram flow
+flow: a -> b
+decision flow "Same name as a diagram?"
+bucket plan | Now, Next
+plan: Ship it | Now
+decision plan "Same name as a bucket set?"
+export json
+decision call "Declared first?"
+data call = id,owner; 1,ana
+diagram call
+bucket call | Now, Next

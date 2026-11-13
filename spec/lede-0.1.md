@@ -34,6 +34,10 @@ The reference implementation is `packages/core` (parser) and `packages/render-ht
   quoted string, so column names may contain spaces (§4.13).
 - **Inline CSV** (data rows): rows separated by `;`, fields by `,`; whitespace around fields is
   trimmed. A field that starts with `"` is quoted and may contain `,` `;` and `""`.
+- **Pipe fields** (D80; the rows of §4.11 `NAME: a | b` and §4.14 `: a | b`, and a pipe table header): the text is split at every
+  `|` that has whitespace, or the start or the end of the text, on each side, and each field is trimmed. A `|` that touches other
+  text (`a|b`, `a ||b`) is part of its field, and two separators with only blanks between them hold an empty field (`a | | c`).
+  A `|` inside a `` `code span` `` is text too. Nothing else is special: `,`, `;` and `"` are ordinary characters and `""` is not an escape, so no cell needs quoting.
 
 ## 3. Grammar (EBNF)
 
@@ -42,8 +46,8 @@ the line after the matched prefix.
 
 ```ebnf
 document     = { line , NL } ;
-line         = blank | fence-open | escaped | meta | heading | task-item | bullet | ordered
-             | note | quote | rule | html-line | keyword-line | bucket-item | diagram-line | text ;
+line         = table-row | blank | fence-open | escaped | meta | heading | task-item | bullet | ordered
+             | note | quote | rule | html-line | keyword-line | bucket-item | decision-line | diagram-line | data-row | text ;
 
 blank        = "" ;
 escaped      = "\" , REST ;                         (* REST is paragraph text *)
@@ -53,14 +57,19 @@ heading      = ( "#" | "##" | "###" ) , [ WS , REST ] ;   (* 4–6 #s: warning, 
 task-item    = "-" , WS , "[" , ( " " | "x" | "X" ) , "]" , WS , REST ;
 bullet       = "-" , WS , REST ;
 ordered      = digit , { digit } , ( "." | ")" ) , WS , REST ;
-note         = ( "!" | "!!" ) , WS , REST ;
+note         = ( "!" | "!!" | "!!!" ) , WS , REST ;
+note-kind    = "!" , WS , kind-word , ":" , [ WS ] , TEXT ;     (* 4.7; REST of a one-"!" note starts with a kind word, a colon and text *)
+kind-word    = "Tip" | "Recommendation" | "Recommended" | "Decision" | "Success" | "Done" | "Info" | "Question" | "Example" ;   (* any case *)
 quote        = ">" , [ " " ] , REST ;
 rule         = "---" , { "-" } ;
 html-line    = "html:" , REST ;
 keyword-line = data | chart | table | kpi | diagram | image | grid | ask | choose | confirm | export
-             | param | toggle | bucket | template | preset ;
+             | param | toggle | bucket | template | preset | decision ;
 bucket-item  = NAME , ":" , WS , REST , [ WS ] , "|" , [ WS ] , TEXT ;   (* only if NAME is a declared bucket set; REST runs to the last | *)
+decision-line = decision-name , ":" , WS , decision-stmt ;   (* only if decision-name was declared; see 4.20 *)
 diagram-line = diagram-name , ":" , WS , diagram-stmt ;   (* only if diagram-name was declared *)
+data-row     = NAME , ":" , [ WS ] , pipe-fields ;       (* only if NAME is a declared data set (and no bucket set or diagram has the line first) and pipe-fields has a separator; 4.11 *)
+table-row    = ":" , [ WS , pipe-fields ] ;              (* only while an inline table with no rows of its own is open; tried before every other rule; 4.14 *)
 text         = REST ;                                (* paragraph line *)
 
 data         = "data" , WS , ID , WS? , ( "=" csv | "+=" csv-rows | "<" path ) ;
@@ -71,7 +80,10 @@ field        = quoted-string | { any-char - ( "," | ";" ) } ;
 
 chart        = "chart" , WS , chart-kind , WS , ID , { WS , ( option | "stack" | "labels" ) } ;
 chart-kind   = "line" | "area" | "bar" | "hbar" ;
-table        = "table" , WS , ( ID , { WS , option } | { option , WS } , "=" , WS , csv ) ;
+table        = "table" , WS , ( ID , { WS , option } | { option , WS } , "=" , WS , ( csv | pipe-header ) ) ;
+pipe-header  = pipe-fields ;                              (* chosen over csv when a separator sits outside double quotes; the table then has no rows on its line *)
+pipe-fields  = pipe-field , { WS , "|" , WS , pipe-field } ;   (* a "|" with whitespace or an end of the text on each side separates; see §2 *)
+pipe-field   = { any-char } ;
 kpi          = "kpi" , WS , label , "|" , value , [ "|" , delta , [ "|" , tone-or-note ] ] ;
 value        = text-field | "=" , ID , "." , column ;
 image        = "image" , WS , src , WS , quoted-string , { WS , option } ;
@@ -87,13 +99,23 @@ bucket       = "bucket" , WS , NAME , [ WS ] , "|" , options , [ "|" , [ WS ] , 
 template     = "template" , WS , NAME , [ WS ] , "|" , [ WS ] , REST ;      (* then a fence; "{" NAME "}" in its text is a slot *)
 preset       = "preset" , WS , NAME , [ WS ] , "|" , [ WS ] , REST , [ WS ] , "|" , assign , { ";" , assign } ;
 assign       = [ WS ] , NAME , [ WS ] , "=" , [ WS ] , TEXT ;             (* NUM: a decimal number; the four are DEFAULT MIN MAX STEP *)
+decision     = "decision" , WS , NAME , WS , quoted-string , { WS , ( "status=" , STATUS | "by=" , ( TEXT | quoted-string ) ) } ;   (* 4.20 *)
+STATUS       = "open" | "settled" | "deferred" ;                           (* any case; another word is W decision-status *)
 options      = field , { ( "," | ";" ) , field } ;       (* data-cell fields: "," ";" "|" need double quotes *)
 NAME         = letter , { letter | digit | "_" | "-" } ;
+
+decision-stmt = option-stmt | question-stmt | role-stmt ;
+option-stmt  = "option" , WS , OPT-ID , WS , quoted-string , [ WS , "|" , cell , [ "|" , cell ] ] ;   (* why, then verdict; a cell with "|" is quoted *)
+question-stmt = "question" , WS , quoted-string , [ WS , "|" , [ WS ] , REST ] ;   (* the answer, which may start "answer:" or "answered:" *)
+role-stmt    = "role" , WS , WORD , [ WS , WORD ] , WS , quoted-string ;
+OPT-ID       = ( letter | digit ) , { letter | digit | "_" | "-" } ;
+verdict      = "chosen" | "picked" | "selected" | "rejected" ;                (* the verdict cell; any case *)
 
 diagram-stmt = group-stmt | note-stmt | edge-stmt | node-stmt ;
 group-stmt   = "group" , [ WS , NODE-ID ] , WS , quoted-string , WS , member , { ( "," | WS ) , member } ;
 note-stmt    = "note" , WS , NODE-ID , { "," , NODE-ID } , ":" , REST ;
-edge-stmt    = targets , { arrow , targets } , [ ":" , REST ] ;   (* recognised by containing an arrow *)
+edge-stmt    = targets , { arrow , targets } , [ ":" , REST ] , [ WS , "|" , WS , tone ] ;   (* recognised by containing an arrow; 4.17 *)
+tone         = "good" | "bad" | "warn" | "info" | "neutral" ;
 targets      = NODE-ID , { "," , NODE-ID } ;
 arrow        = "->" | "-->" | "<->" ;
 node-stmt    = NODE-ID , { WS , ( quoted-string | kind | "focus" | "*" | option ) } ;
@@ -101,7 +123,8 @@ node-stmt    = NODE-ID , { WS , ( quoted-string | kind | "focus" | "*" | option 
 
 Keywords are case-sensitive and lowercase. `Table 3 shows…` is prose; `table of contents` is an
 error (no data named `of`) and must be written `\table of contents`. The five editor words `param`, `toggle`, `bucket`, `template`
-and `preset` are keyword lines only in the shape §4.19 gives (a name, and a `|` after it); `toggle the flag on Monday` is prose.
+and `preset` are keyword lines only in the shape §4.19 gives (a name, and a `|` after it); `toggle the flag on Monday` is prose. `decision`
+is a keyword line only in the shape §4.20 gives (a name, then a quoted question or `status=` or `by=`); `decision was made on Monday` is prose.
 
 ## 4. Blocks
 
@@ -120,7 +143,36 @@ paragraph; a blank line or any other block ends it. Inline markup (§5) applies.
 `@key value`. Known keys: `title` (document title; if no `#` heading repeats it, it is rendered
 as the page heading and `#` headings shift down one level), `subtitle`, `description`, `author`,
 `date`, `accent` (a `#hex` color), `theme` (`light` | `dark` forces one), `lang`, `width`
-(`wide` widens the reading column), `fonts`. W `unknown-meta` for other keys (still stored).
+(`wide` | `narrow`, below), `fonts`, `status`, `meta`, `image` and `canonical` (each below). W `unknown-meta` for other keys
+(still stored).
+
+`width` overrides the layout class a page is given from its blocks (§7, D80): `wide` sets the page as a dashboard, with the 64rem
+column, on any page; `narrow` keeps the 46rem column on a page that would be a dashboard. Any other value, `Wide` and the empty value
+included, is ignored without a diagnostic, as an unknown `theme` is, and the layout comes from the blocks.
+
+`status` gives the page its own status words (D80): `@status Shipped=good, Parked=neutral, Needs review=warn`, each entry a word, an
+`=` and one of five tones, `good`, `warn`, `bad`, `info` or `neutral` (`neutral` is a grey chip). The line is repeatable; later lines add.
+A page's words are matched like the built-in lexicon (§4.14: case-insensitive, runs of spaces collapsed, a closing `.` or `!` ignored)
+and take precedence over it, so `@status Blocked=info` re-tones a built-in word. They apply wherever a status word does: table cells,
+a timeline's events, a `kpi` change or note and a `step` due. The tone is the chip's colour; the word stays the text, so meaning
+never depends on colour. An entry with no word, or whose tone is none of the five (or missing), is W `status-value` with
+`detail {word, tone, allowed}` (`tone` as written, `''` when there is no `=`) and is left out. The value is kept in `meta.status` as
+the valid entries, `Word=tone, Word=tone`, in order.
+
+`meta` records facts about the page (D80): `@meta Owner | Ana Ruiz`, `@meta Status | Needs review`, `@meta Reviewed | 2026-11-10`. The
+key is the text before the first `|` and the value the text after it (a value may hold more `|`). The line is repeatable, and the facts
+keep their order. Each draws a row of a definition list under the masthead's title and byline: the key as the term, the value as inline
+text, a chip when the value is a status word (§4.14, the page's `@status` words included) and a `<time>` when it is an ISO date
+(`2026-11-10`), as the byline's date is. Each is also written as `<meta name="lede:NAME" content="value">` in a full page's head (§7),
+with NAME the key lower-cased and each run of characters outside `a-z` and `0-9` made one `-` (`Last reviewed` is `last-reviewed`); a key
+that leaves no NAME gets no tag. `@author` and `@date` keep their own places. A `@meta` line with no `|`, no key before it or no value
+after it is E `meta-field` and draws nothing. The valid facts are kept in `meta.meta`, one `Key | value` per line, in order.
+
+`image` and `canonical` must be absolute `https:` URLs: a scraper that reads a share card, or a search engine, has no base to resolve a
+relative one against. `image` is the share card's picture and `canonical` the page's own URL. Anything else, a relative path or
+`//host/x` (`relative`), a `data:` URL (`data`), another scheme such as `http:` or `javascript:` (`scheme`), or text that does not parse as
+a URL (`invalid`), is W `meta-url` with `detail {key, value, kind}` (`value` as written) and the tag is not written. A URL that parses is
+written in its normalised form, so `https://x.example/a/../b.png` is `https://x.example/b.png`. Neither makes the browser fetch anything.
 
 `accent` must be a CSS hex color (`#rgb`, `#rgba`, `#rrggbb` or `#rrggbbaa`); any other value is W
 `accent-value` and the house accent is used. The accent colors link and label text, so it needs WCAG AA
@@ -130,7 +182,8 @@ as for `accent-value`: a page's text contrast does not depend on the writer's co
 the one the accent lands on: with no `theme` the accent applies to the light theme and dark mode keeps the
 house accent, so only light is checked; with `theme dark` the dark theme is. The check runs once the whole
 document is read, so `@theme` may come after `@accent`. The compiler never darkens or lightens a color: it uses yours whole
-or not at all.
+or not at all. An operator's brand tokens (`lede build --theme`, §9) replace the palette, and then the page's `@accent` is ignored: W
+`theme-override` `{key}` with `key` `accent`, on each `@accent` line, and none of the checks above run on it.
 
 ### 4.4 Headings
 `#`, `##`, `###`. Deeper levels: W `heading-depth`, rendered as `###`. Empty text: E
@@ -149,6 +202,16 @@ starts with `—`, `–` or `--`, that line is the attribution.
 ### 4.7 Notes
 `! text` is a note, `!! text` a warning, `!!! text` a critical callout. Each line is its own
 callout. `!text` with no space is prose.
+
+A `!` note whose first word, followed by `:` and then text, is a kind word takes that kind (D80): `! Recommendation: Use SQS.`
+The kind words are `Tip`, `Recommendation` (or `Recommended`), `Decision`, `Success` (or `Done`), `Info`, `Question` and `Example`,
+matched in any case. The kind word is the callout's label in place of "Note", written as the writer wrote it with a capital letter,
+and it sets the tone: recommendation, recommended, decision, success and done are green (`good`); tip, info, question and example
+are blue (`info`). A bold phrase after the colon is still the callout's title. AST: `{ type: 'note', tone: 'note', kind, text,
+line }`, `kind` being the word as written with a capital and `text` what follows the colon; a note without a kind has no `kind`.
+`!!` and `!!!` keep their meaning and are not changed by a kind word: severity is never softened by a word, so `!! Tip: x` is a
+warning whose text is `Tip: x`. `! Warning: text` is no kind: it stays a plain note, with W `note-kind` and `detail {word, use}`
+(`word` as written, `use` is `!!`) pointing at the severity form. A kind word with no text after it (`! Tip:`) is a plain note.
 
 ### 4.8 Rule
 `---` (three or more hyphens, nothing else).
@@ -172,8 +235,19 @@ Renderers MUST offer an explicit unsafe mode and MUST NOT enable it by default.
 data NAME = header,header; v,v; v,v
 data NAME += v,v; v,v
 data NAME < path/to/file.csv
+NAME: v | v | v
 ```
 Declares a named table of strings. Types are decided at use (a chart reads cells as numbers).
+
+`NAME: v | v | v` (D80) appends one row to the data set NAME, as `data NAME += v,v,v` does, but its fields are pipe fields (§2): a
+`,` or `;` in a field is text and nothing needs quotes, so `costs: Storage, S3 | 6,100 | archive tier; cold` is three fields.
+The line is a row only when NAME is a data set declared on an earlier line and the text after the colon holds at least one
+separator; any other `NAME:` line is prose, so `note: see below`, `costs: Compute` (one field, which has no separator) and
+`costs: a|b` stay text, and a data name written before its `data` line is not yet a name. A bucket set or a diagram with the same
+name has the line first (a diagram and a data set sharing a name is E `name-clash` already). The first character of NAME is a letter.
+A row with the wrong number of fields is E `data-row-width` with the same `detail`, its message naming the pipe form; the row is
+padded or truncated as above. A thousands comma is never merged in a pipe row (no W `csv-thousands`), and `--fix` repairs nothing in
+one (§9). The header stays `data NAME = h,h,h`; a pipe header for `data` is not part of D80.
 - E `data-syntax` (malformed), `data-empty` (no header), `data-dup-column`, `csv-quote`
   (unclosed quote), `unknown-data` (`+=` before `=`), `data-file` (file loading unavailable or
   failed; implementations without a file system MUST report this rather than fetch).
@@ -192,6 +266,13 @@ Declares a named table of strings. Types are decided at use (a chart reads cells
   trimmed outside their quotes; blank lines and a leading byte-order mark are dropped. A quote that never closes is
   E `csv-quote`, naming the file's line.
 - Data and diagram names share one namespace: E `name-clash`.
+- What changed for existing input (D80): a page that parsed before parses identically unless a line begins with the name of a
+  data set declared above it and holds a pipe separator (it was prose, and is now a row), a line begins with `:` directly below an
+  inline table that has no rows of its own (§4.14), or an inline table's header holds a pipe separator outside double quotes
+  (it was one comma-split header). Over the 866 `.lede` files tracked before the change (examples, conformance, fixtures, article
+  and benchmark pages) there are none of the three (`bench/src/collide.ts`), and the old and the new parser give identical ASTs,
+  data and diagnostics for all 866.
+  Conformance cases 42 and 43 and error e51 are normative for the pipe forms.
 
 Numbers in cells: an optional sign, digits, optional decimals; `,` `$` `€` `£` `%` and a
 trailing unit among `ms s gb mb tb x × pt pts` are ignored. Anything else is non-numeric.
@@ -229,11 +310,32 @@ matches exactly, or else case-insensitively with runs of spaces collapsed. The c
 
 ### 4.14 Table
 `table DATA [cols=a,b] [sort=col|-col] [limit=N] [title="…"]`, or the inline one-off form
-`table [options] = header; row; row`. Numeric columns (every non-empty cell numeric) are
+`table [options] = header; row; row`, or its block form (D80), below. Numeric columns (every non-empty cell numeric) are
 right-aligned. A cell whose whole text is a status word from the renderer's lexicon (done, on
-track, ready, at risk, in progress, blocked, failed, go, no-go, …) renders as a pill that keeps
-the word as its text. Sorting is numeric when every cell of the sort column is numeric, else lexical.
+track, ready, at risk, in progress, blocked, failed, go, no-go, …), or one the page defines with `@status` (§4.3), renders as a pill that keeps
+the word as its text. The built-in words that mean "not yet" (not started, todo, tbd, skipped, paused, on hold) are the `neutral` tone. Sorting is numeric when every cell of the sort column is numeric, else lexical.
 - E `unknown-data`, `unknown-column`, `table-option` (bad `limit`). W `table-option` (ignored, or an unclosed `"`).
+
+**Block form (D80).** An inline table with a header and no rows on its own line takes its rows from the lines below it:
+```
+table [options] = Option | Cost, USD | Verdict
+: Managed queue | 1,200 | **Fits**, mostly; cheap
+: Self-hosted | 3,400 | Needs an on-call rota
+```
+- The header is a pipe header when a pipe separator (§2) sits outside double quotes: it is split at the pipes and nowhere else, so
+  `,` and `;` in a header cell are text. Otherwise it is the comma header as before (`table = a,b`), which opens the block form too
+  when it has no `;` rows. A header with a quoted ` | ` (`table = "a | b",c; 1,2`) is read as it always was, and so is a line with
+  a `;` outside quotes that reads as an inline CSV table without an error (`table = Key,Meaning; a | b,either`: its quotes close
+  and every row has the header's number of cells, a thousands comma merged as §4.11 merges it): CSV, with ` | ` text in a cell.
+  Only a line that would have been an error as CSV (`table = Plan, tier | Cost; USD | Note`) is a pipe header with a `;` in it.
+- A row is a line that begins with `:` followed by a space (or by nothing). It is split into pipe fields (§2) and appended to the table;
+  fields keep their inline markup (§5), so a status word is still a chip. The first line of any other kind, a blank line included,
+  ends the table, and a `:` line anywhere else (after a blank line, under a table that has rows on its own line, under no table)
+  is prose. A `table DATA` line names data and takes no rows.
+- A row with the wrong number of fields is E `data-row-width` on that row, as in §4.11. The options (`cols=`, `sort=`, `limit=`,
+  `heat`, `bar=`, `target=`, `title=`) are read against the finished table, so `heat` and `bar=` see the rows below the line; their
+  diagnostics point at the `table` line, and are reported when the table ends.
+- Streaming: see §6.
 
 ### 4.15 KPI
 `kpi LABEL | VALUE [| DELTA [| TONE-OR-NOTE]]`. Consecutive kpi lines form one row of tiles.
@@ -253,6 +355,12 @@ as `/` in a path or an `http(s)` URL), so `/\host/a.png` is protocol-relative. I
 content, so `data:image\svg+xml,…` is not a `data:image/` URI. Renderers MUST NOT load `http(s)` images unless the
 caller opts in; by default they show the alt text in place.
 
+The parser and the renderer read no files, so a local path stays a path in the document they are given. The command line (§9) is
+what makes a page with pictures one file: `build`, `watch` and `check` replace a local source with a `data:` URI of the file (D80),
+or leave the path and warn (W `image-inline`) when they cannot. A path from the web root (`/assets/logo.png`) names a file on the site
+the page is served from, not one beside the document: it is left as written, with no warning, like an `http(s)` source. A `data:` image is drawn without `loading="lazy"`, since its bytes
+are already in the page; any other image keeps it.
+
 `grid N [count=M]` (N from 1 to 4, M defaults to N) places the next M rendered blocks in N
 columns. Data lines, diagram lines and blank lines do not count. A heading closes the grid
 early (W `grid-unfilled`), as does the end of the document. Grids do not nest: a `grid` line
@@ -271,21 +379,41 @@ other blocks. A diagram renders where it is declared.
 - Edge: `a -> b`, `a --> b` (dashed: async, reply, optional), `a <-> b`; chains `a -> b -> c`;
   fan-out `a -> b, c` (every pair across adjacent hops). `: label` after the arrows labels the
   **last hop only**.
+- Edge tone (D80): the last ` | ` field of an edge line is a tone, one of `good`, `bad`, `warn`, `info`, `neutral`:
+  `a -> b : allow | good`, `a -x- b : deny | bad`, `a -> b | warn` (no label). The tone belongs to **every** edge the
+  line makes, across a chain and a fan-out (the label still goes to the last hop only). The separator is a `|` with a
+  space on each side, outside any pair of double quotes (`a -> b : "read | write" | good`); only the last such pipe counts.
+  AST: `DiagramEdge.tone`, omitted when the line has none. The field is a tone only when it is exactly one of the five
+  words, in lower case. Inside a label (after the `:`) any other last field is label text and stays as it was written,
+  with no warning (`client -> server : GET | POST`, `: yes | no, retry later`, `: 1 | 2`), except a case variant of a
+  tone word (`: allow | Good`, `| BAD`): it stays in the label too, and is W `edge-tone` `{value, allowed}` (`allowed` the
+  five words) with a message naming the lower-case word. A line with no label whose last field is one other word (letters,
+  digits, `_`, `-`, starting with a letter: `a -> b | red`), which did not parse before tones, is W `edge-tone` too; that
+  edge is drawn untoned and the field is dropped, pipe included. For input that parsed before, the only change is a label
+  whose last ` | ` field is exactly a tone word: it is now a tone. The renderer draws a toned edge's line, arrowhead and label chip with
+  the status tokens (`good`, `bad`, `warn`; `info` the accent; `neutral` the grey), in the light and dark themes and in the
+  desktop and phone drawings. The line style keeps its meaning without the color (`-->` dashed, `-x-` blocked with its
+  cross, drawn in the tone), the tone is in the edge's `<title>` and the diagram's `<desc>`, and a phone list shows the label as a chip
+  (or the tone word when the edge has no label).
 - Group: `group [id] "Label" member, member …`. Members are node or group ids; a group listed as
   a member nests inside. A node belongs to the first group that lists it (W `diagram-group`).
   An id that was only *used* in an edge may later be declared as a group; that edge then
   attaches to the group's boundary. Group cycles: E `diagram-group-cycle`.
 - E `undeclared-diagram` (a `name: … -> …` line before `diagram name`), `diagram-name`,
-  `diagram-redeclared`, `diagram-syntax`. W `diagram-empty`, `diagram-option`.
+  `diagram-redeclared`, `diagram-syntax`. W `diagram-empty`, `diagram-option`, `edge-tone` `{value, allowed}`.
 
 **Sequence** statements: participants are node statements (in order of first appearance);
 `a -> b : msg` is a message, `a --> b : msg` a reply, `a -> a : msg` a self-call;
-`note a[, b] : text` places a note after the messages written above it. Fan-out is an error.
+`note a[, b] : text` places a note after the messages written above it. Fan-out is an error. A message takes the same
+` | tone` field as an edge (`a -> b : GET /orders | good`) and is drawn in the same way.
 
 Layout (normative for renderers that claim conformance): flow diagrams use a layered layout
 with orthogonal edge routing; edge labels never overlap other edges or nodes; edges never pass
 through non-endpoint nodes; node sizes sit on a 4px grid. A left-to-right diagram wider than a
-phone also gets a top-to-bottom layout that the page uses at phone widths.
+phone also gets a top-to-bottom layout that the page uses at phone widths. A flow with no `dir=`
+may be drawn left to right on a dashboard page (§7); the parsed document tells the two apart: its
+`dirExplicit` is `true` when the writer gave a valid `dir=`, and the key is omitted otherwise (a
+`dir` that is not LR, TB, RL or BT is W `diagram-option` and counts as not given).
 
 ### 4.18 Questions and the export
 Four lines let a page ask and collect. They are blocks in every build mode: `lede build` draws each as a plain control with no
@@ -497,6 +625,62 @@ and the runtime adds no element and moves none.
   the first export. A preset sets values and sends nothing.
 - If the data block cannot be read (§7), the runtime changes nothing and the page stays as the ordinary build draws it.
 
+### 4.20 Decisions
+Status: **preview**, D80. One block states a decision as it stands: the question, whether it is settled, the options with their
+verdicts, the questions still open or answered, and who decides. It is a static card in every build mode: no script, no control, and
+the statuses and verdicts are words as well as colours. A document without one parses to exactly the AST it had before and compiles to
+the same bytes (Appendix H).
+
+```
+decision NAME "QUESTION" [status=open|settled|deferred] [by=DATE]
+NAME: option ID "LABEL" [| WHY [| VERDICT]]
+NAME: question "TEXT" [| ANSWER]
+NAME: role WORD "WHO"
+```
+- **The shape rule.** A line that starts with `decision` and a space is a keyword line only when its second token is a NAME and what follows
+  is a `"` (the question) or `status=` or `by=` (the question left out). Any other line that starts with the word is text: `decision was
+  made on Monday` and `decision queue is a phrase` are paragraphs. A line that has the shape and is malformed fails loudly (§1.5) as E
+  `decision-syntax` `{word: "decision"}`: no name, a name that is a keyword or `html`, a question that is missing, empty or never closed.
+  An error makes no block and takes no name.
+- **Names.** NAME matches `[A-Za-z][\w-]*`. A decision shares one namespace with data, diagrams and bucket sets: a name that one of them
+  already has is E `name-clash` `{decision}` on whichever is declared second (`--fix` leaves it, as for a bucket set), and a second
+  `decision` with the same name is E `decision-ref` `{name, first}` (`first` is the line of the first). No decision is named `html`, as no
+  diagram is. The word `decision` itself is not reserved as a name, since it is a keyword line only in its shape: `diagram decision` and
+  its `decision: a -> b` lines are read as they were before decisions (a diagram's line binds to the diagram, so a decision-shaped
+  line there is no E `decision-ref`).
+- **Options.** `status` is `open` (the default), `settled` or `deferred`, in any case; another word is W `decision-status` `{kind:
+  "status", value}` and is read as `open`. `by` is any text, a date (`2026-12-01`) or a phrase (`by="Q1 planning"`); only a plain
+  `YYYY-MM-DD` is also written as a `datetime`. Any other word, quoted string or `key=` after the question is W `decision-option`
+  and ignored, as on `chart` and `diagram` (so is a `"` in the options that never closes).
+- **Statements.** A line `NAME: option …`, `NAME: question …` or `NAME: role …` binds to the decision `NAME` declared above it, may come
+  anywhere after the declaration and is read in order, as a diagram's lines are. A line of a decision that starts with another word is
+  E `decision-syntax` `{word: "line"}` (start it with `\` for prose). A line of that shape whose NAME is no decision (and no data set, whose `NAME: a | b` rows §4.11 reads first) is E `decision-ref`
+  `{name}`, so a mistyped name is an error and not a paragraph; other `NAME:` lines with no owner stay text, as before.
+- **`option ID "LABEL" | WHY | VERDICT`.** `ID` is `[A-Za-z0-9][\w-]*` and unique within the decision (a repeat is E `decision-ref` `{name,
+  id, first}`); the label is quoted. After the label come at most two cells, each after a `|`: the reason and the verdict. A cell that
+  holds a `|` is quoted, as a `bucket` option is (here every `|` outside quotes separates, unlike the pipe fields of §2, which need whitespace
+  beside them). A single cell that is a verdict word is the verdict (`| chosen`). The verdict is
+  `chosen`, `picked` or `selected` (the option is chosen), or `rejected`, in any case; another word is W `decision-status` `{kind:
+  "verdict", value}` and the option has none. An option without a verdict is still being weighed. More than two cells, a cell whose quote
+  never closes, or text after a closing quote that no `|` introduces is E `decision-syntax` `{word: "option"}`.
+- **`question "TEXT" | ANSWER`.** The answer is the rest of the line after the `|`, with one pair of double quotes and a leading `answer:`
+  or `answered:` taken off; with none, the question is open. A missing or unclosed quote is E `decision-syntax` `{word: "question"}`.
+- **`role WORD "WHO"`.** One or two words (`decides`, `consulted`, `informed`, `signs off`), then the quoted name or team. Anything else
+  is E `decision-syntax` `{word: "role"}`. Roles keep their order; no word is reserved.
+- **No cross-checks.** The status and the verdicts are as written: a `settled` decision with no chosen option, or two chosen options,
+  raises nothing.
+
+**What the page draws.** One `<section class="decision">` labelled by its question (`aria-labelledby`), in the order of the document:
+the question as a heading-like paragraph and, beside it, the status as a pill (`settled` is the good tone, `open` the warn tone and
+`deferred` the neutral one, each a word: `Status: Settled`, with the label hidden from sight but read by a screen reader) and the date
+as a chip, `by DATE` (a `<time>` for an ISO date). Then, each only when it has rows: `Options`, a list whose row is the label, a
+`Chosen` or `Rejected` pill and the reason, a chosen row marked by its border and the verdict word and a rejected label struck through;
+`Questions`, a list whose row is the text and either `Answer` and the answer or an `Open` pill; and the roles as a definition list, the
+word and who. The decision's question, the option labels and reasons, the questions and answers and who are inline text (§5); the role word and
+the date are plain text; everything is escaped. The card's CSS is added only to a page that has a decision, so every other page keeps its bytes, and it fits a 360px
+screen without sideways scroll: long words wrap, and the date chip wraps inside the card. Print keeps the card on one page where it
+fits.
+
 ## 5. Inline markup
 `` `code` ``, `**bold**`, `*italic*` or `_italic_`, `[text](url)`. URLs must be `http`,
 `https`, `mailto`, relative or `#fragment`; others render as plain text. `\` escapes
@@ -510,31 +694,37 @@ level of parentheses (`.../Foo_(bar)`).
 
 A conforming parser accepts input line by line and emits a block as soon as it is final: a
 heading, note, rule, data, chart, table, image or diagram declaration on its own line; a
-paragraph, list, quote or kpi row when a line of another kind (or a blank line) arrives; a
-fence when it closes; a grid when it fills. Emitted blocks never change, with two exceptions
-renderers must handle: a diagram or a bucket set (§4.19) gains statements from later lines, and a chart, table or kpi
-reflects rows appended with `data NAME +=`. Question words (§4.18) are final when read; the page-wide warnings `export-missing` and `export-orphan` are reported when the document ends. Among the editor words (§4.19), `param`, `toggle` and `preset` are final when read. A `bucket` is emitted on its
+paragraph, list, quote or kpi row, or an inline table with no rows on its own line (§4.14, whose `:` rows may follow), when a line of
+another kind (or a blank line) arrives; a fence when it closes; a grid when it fills. Emitted blocks never change, with two exceptions
+renderers must handle: a diagram, a bucket set (§4.19) or a decision (§4.20) gains statements from later lines, and a chart, table or kpi
+reflects rows appended with `data NAME +=` or `NAME: a | b` (§4.11). Question words (§4.18) are final when read; the page-wide warnings `export-missing` and `export-orphan` are reported when the document ends. Among the editor words (§4.19), `param`, `toggle` and `preset` are final when read. A `bucket` is emitted on its
 declaration and gains an item from each later `NAME:` line. A half-written bucket set renders as its legend, its count tiles (counting
 the items written so far, none right after the `bucket` line) and the item rows so far as static radios; each later item line adds a
 row and raises one count, and nothing already drawn moves. A `template` is emitted when its fence closes; a snapshot taken inside the
 fence shows it with the text so far, and a snapshot after the `template` line and before the fence shows no template. The warnings
-`toggle-needs`, `bucket-empty` and `template-fence` are reported when the document ends. A snapshot of a partial document (with the open
+`toggle-needs`, `bucket-empty` and `template-fence` are reported when the document ends. A `decision` is emitted on its declaration and gains an option, a question or a role from each later `NAME:` line;
+half written, it is the card so far, and the question and status are drawn from the first line. A snapshot of a partial document (with the open
 block flushed) is always a valid document. The partial last line (no `\n` yet) is not parsed.
 
-A streaming consumer learns of the two exceptions as events, in line order, beside the blocks it is given: `block` (a
-block is final), `update` (a `name:` line changed a diagram already given, or a `data NAME +=` line appended rows to that data
-name) and `seal` (the first non-blank line that is not a statement of the diagram, or the end of the document: a blank line does
-not seal, since writers space statements). A bucket set has the same two events as kinds of their own, `bucket-update` (a
+A streaming consumer learns of the exceptions as events, in line order, beside the blocks it is given: `block` (a
+block is final), `update` (a `name:` line changed a diagram already given, or a `data NAME +=` or `NAME: a | b` line appended rows to that
+data name) and `seal` (the first non-blank line that is not a statement of the diagram, or the end of the document: a blank line does
+not seal, since writers space statements). A run of `NAME: a | b` lines for one data name is one `update`, given when the run ends (at
+the first non-blank line that is not a row of that name, ahead of that line's own events, or at the end of the document), so a table
+streamed row by row is drawn again once and not once per row; the rows are in the data, and in a snapshot, as each line is read. One line
+gives at most one `update` per data name: a `data NAME +=` line that ends a run of the same name gives one. A bucket set has the same two events as kinds of their own, `bucket-update` (a
 `NAME: ITEM | B` line added an item to a bucket set already given) and `bucket-seal`, so `update` and `seal` carry a diagram, as
-they did before bucket sets. A bucket set streams as a diagram does: it is given on its declaration, each item line is a
+they did before bucket sets. A decision has two more, `decision-update` (a `NAME: option`, `question` or `role` line added to a decision
+already given) and `decision-seal`, and streams as a bucket set does. A bucket set streams as a diagram does: it is given on its declaration, each item line is a
 `bucket-update` and the first other non-blank line seals it. A `name:` line that is rejected, or that repeats what the diagram or
 set has (a bad item, an unknown bucket, an item text it already lists), is no update, but it is still a statement of it and does
 not seal it. A statement after a seal that changes the diagram or set is an update again, and the next sealing line a second
-seal. A diagram or bucket set inside a `grid` or `cards` run that has not been given yet is not on screen, so its lines are no
-update. A conforming streaming consumer may also read the open block (paragraph, list, quote, kpi row, step run, fence, grid or
+seal. A diagram, bucket set or decision inside a `grid` or `cards` run that has not been given yet is not on screen, so its lines are no
+update. A conforming streaming consumer may also read the open block (paragraph, list, quote, kpi row, step run, inline table, fence, grid or
 cards run, as a block) without ending the document; a keyword line is never part of it, because it is a block or a diagnostic on
 its own line, except that the fence a `template` line opened is read as the template block with the text so far (a `template` line
-with no fence yet adds nothing). A bucket set is in it only inside an open `grid` or `cards` run, with the items read so far; one
+with no fence yet adds nothing), and the inline `table [options] =` line that opened a table with no rows of its own is read as the
+table block with the `: a | b` rows so far. Reading it reports nothing: the table's option diagnostics come once, when it ends. A bucket set or a decision is in it only inside an open `grid` or `cards` run, with the items, questions and roles read so far; one
 written anywhere else was given on its declaration.
 `LedeStream.events`, `.tail` and `.end` in `@lede-lang/core` are this interface.
 
@@ -543,7 +733,7 @@ written anywhere else was given on its declaration.
 - A complete page: `<!doctype html>`, `lang`, charset, viewport, one `<style>`; **no
   executable JavaScript**, so the output works under `script-src 'none'`. Question words (§4.18) draw
   plain controls (text, radio, text area) with no script, `button` or `form`, and leave the policy unchanged; the editor words (§4.19)
-  add range, number and checkbox inputs, lists and a `pre`, on the same terms. That holds for every page built without `--shell`.
+  add range, number and checkbox inputs, lists and a `pre`, on the same terms, and a decision (§4.20) is a static card with no control. That holds for every page built without `--shell`.
 - With `--shell` (§9), a page that has a question and an `export` carries exactly two scripts after `<main>`: an inert
   `application/json` block (version 2: the title, each field's name and kind, for a `param` its default, unit, bounds and step, for a `toggle` its
   state and prerequisites, for a `bucket` its bucket names and item texts, for a `template` its body and slots, then the presets and the
@@ -553,7 +743,37 @@ written anywhere else was given on its declaration.
   number or range control and the `checked` state of a radio or checkbox (both only to follow a twin control or apply a preset), the
   `hidden` attribute, `aria-invalid` on a toggle's checkbox, and the selection. It rejects a block whose version is not 2 or whose
   fields do not fit their kind, and then does nothing. The model never writes script, in either mode.
+- Each page has one of three layout classes (D80), decided from its blocks and `@width` alone, so `--artifact` output and the incremental
+  form see the same choice. `prose`: mostly long paragraphs and no data block, which is set as an essay (`<main class="doc prose">`).
+  `dashboard`: not prose, at least one top-level `kpi`, `chart`, `table`, `diagram`, `cards`, `step` or `grid`, and no section of
+  prose, a section being the blocks from a `#` or `##` heading to the next (the lead before the first heading is one) and a section of
+  prose four or more paragraphs of 140 characters on average, 1,200 in all, that make up at least 60% of its text. `document`:
+  everything else, in today's 46rem column. `@width wide` makes any page a dashboard; `@width narrow` makes a page that would be a
+  dashboard a document (§4.3). A dashboard is `<main class="doc dash">` with a 64rem column (`min(64rem, 100%)`, so a narrow host frame
+  never overflows), and its stylesheet differs from any other page's in the column and one added rule: a `grid` keeps as many columns as it names while each
+  cell would be at least 420px wide, and has as many as fit below that, down to one, where a `grid` on any other page stacks at a 720px
+  viewport whatever its count; so on the 64rem column `grid 2` is two across from a 888px viewport and `grid 3` or `grid 4` is two across
+  and stacks to one below that. A flow diagram with no `dir=` on a dashboard page is drawn left to right when its layering, taken from
+  the edge list with the longest path to each node as its rank and a cycle broken at the edge that closes it, has more ranks than nodes in
+  its widest rank; the figure then carries `data-dir="LR"`, which no figure on another page does, and the phone drawing keeps the
+  diagram's own direction (§4.17). Even then the renderer keeps the direction that fits the column better, as for any diagram. Every
+  other page's `<main>` and `<style>` are the same bytes they were before D80.
+- A complete page's head carries, after the description, tags that describe the page to whoever is handed its URL (D80): `og:title` (the
+  page title) and `og:type` (`article`) always; from the meta keys (§4.3) `og:description`, `author` (the name before any `, role`),
+  `article:published_time` (an ISO `@date` only), `og:image` with `twitter:card` (`summary_large_image`) from an `https:` `@image`, and
+  `<link rel="canonical">` from an `https:` `@canonical`; then one `<meta name="lede:NAME">` per `@meta` fact. Every value is escaped, and
+  the one `<link>` is a navigation, not a fetch: the CSP is unchanged and the page fetches nothing for these tags. `--artifact` writes none
+  of them (§9).
 - No remote fetches by default (system font stacks, no remote images).
+- Brand tokens (D80). The stylesheet is written from one palette table in `@lede-lang/core` (`PALETTES`, the house palette is `paper`; the shared status,
+  chart and heat colours are `FIXED_TOKENS`), so there is one copy of every colour. `render(doc, { theme })`, `compile(src, { theme })` and the incremental
+  form take an optional validated `ThemeTokens`, which `parseTheme(text, { strict })` in `@lede-lang/core` returns with its diagnostics (§9). Its twelve
+  palette tokens (`--bg`, `--surface`, `--fg`, `--fg2`, `--muted`, `--line`, `--line2`, `--accent`, `--accent-tint`, `--accent-line`, `--accent-ink`,
+  `--info-bg`) replace the house ones in the light block, the dark block and print, and its chart colours replace `--c1`, `--c2`, ... from the first slot;
+  the status, heat and remaining chart colours stay the house ones, and the page's `@accent` is not used. Only `#rrggbb` reaches the stylesheet: a
+  theme that holds anything else is refused by the renderer (it throws), and one built by `parseTheme` cannot. The `<style>` under `artifact` is the full
+  page's, as ever, and a page rendered without a theme is the house page byte for byte. `ParseOptions.themed` makes the parser warn about `@accent` as
+  above.
 - Light and dark themes from CSS custom properties; `prefers-color-scheme` plus
   `data-theme="light|dark"` on `<html>` to override. Print uses the light tokens whatever the device or `@theme` says (paper is
   white), keeps a figure, card, note, quote or table row on one page where it fits, and wraps code lines.
@@ -567,11 +787,15 @@ written anywhere else was given on its declaration.
 - The package also exposes an incremental form, `createIncremental(meta, data, opts)`, that takes the blocks of a
   `LedeStream` (§6) as they become final and returns DOM operations carrying the HTML of the unit each one touches; after
   the stream ends, the markup it has built equals the `<main>` that `render()` writes for the whole document, and it carries
-  no script. Question words (§4.18) stream as the controls `render()` draws, and so do the editor words (§4.19): `param`, `toggle`,
+  no script. The layout class is decided as the blocks arrive: `@width wide` is a dashboard from the first block, and otherwise
+  the page becomes one at the first block a dashboard has, unless a section of prose, the prose layout or `@width narrow` came first;
+  a `dash` operation sets the class of `<main>` (as `prose` does) and a `style` operation adds the dashboard rule. A section of prose
+  that arrives later takes the class off when the stream ends, and so does the settle. Question words (§4.18) stream as the controls `render()` draws, and so do the editor words (§4.19): `param`, `toggle`,
   `preset` and `template` are drawn when read, a `bucket` set is drawn again in place for each item line (the `bucket-update` of §6; its
   `bucket-seal` adds nothing, since every update drew it in full), and a `template` fence still open is drawn, with the text so far, in the open
   block the consumer reads. The page's stylesheet gains the controls' rules when the first field or `export` arrives and the editors' when
-  the first editor word does. An `export` lists the fields, the bucket items and the title read so far and is drawn again, in place,
+  the first editor word does. A `decision` (§4.20) is drawn when read and drawn again in place for each `NAME:` line (the `decision-update`
+of §6; its `decision-seal` adds nothing), with the stylesheet gaining its rules when the first one arrives. An `export` lists the fields, the bucket items and the title read so far and is drawn again, in place,
   when a later field, item or the title changes what it lists. The `shell` option has no effect on this form, which draws the ordinary page. The layout engine for flow diagrams (elkjs) is loaded when the first flow diagram is laid
   out, and `setLayoutEngine(fn)` replaces it.
 
@@ -584,14 +808,69 @@ with a migration note; once 1.0 ships, grammar changes follow an RFC process (to
 The command is `lede`, the bin of the npm package `@lede-lang/cli` (Node 22.12+; it runs as compiled JavaScript). The library
 packages are `@lede-lang/core` (parser) and `@lede-lang/html` (renderer). The three share one version (D48).
 
-`lede check FILE... [--json] [--fix [--dry-run]] [--artifact]` prints every diagnostic and exits 1 if any is an error, 0 otherwise (2 for
+`lede check FILE... [--json] [--fix [--dry-run]] [--artifact] [--image-max=SIZE] [--link-images] [--external [--allow=HOST,...]] [--theme TOKENS [--theme-strict]]` prints every diagnostic and exits 1 if any is an error, 0 otherwise (2 for
 a usage error or a missing file). Without `--json`, its last line, on stderr, is `ok` only when no file had a diagnostic of either
 severity; otherwise it is the counts summed over every file: `1 warning(s)`, `2 error(s)` or `1 error(s), 2 warning(s)`. A warning leaves
 the exit code at 0 but never gets `ok`: read the diagnostics above that line, since the exit code does not carry them. With `--json` there
 is no such line. `--artifact` adds the artifact checks (below) to the report; they are warnings, so the exit code is unchanged and the
-last line is their count, never `ok`. `lede --help` lists every command and flag.
+last line is their count, never `ok`. `--external` adds the external check (below), whose findings are warnings that exit 1 all the same. `lede --help` lists every command and flag.
 
-`lede build FILE [-o OUT] [--force] [--unsafe-html] [--allow-remote] [--artifact] [--shell]` compiles the first FILE to one page. Diagnostics go to stderr as
+`check --external` (D80) reports what a page would give away if it left the building. It is a pass over the source text, line by line, and not over the
+parsed blocks: prose, meta lines, code fences, `data` rows, table rows and diagram lines are all read the same, because a reader sees all of them. Each
+finding is W `external` with `detail {kind, text}`, at the line and column of its first character; `text` is what was written, except
+that a credential keeps only its first four characters and its length (`AKIA... (20 characters)`), in the message, the JSON and a repair line alike,
+whether it is a `key` finding or sits inside a longer one (a URL with `?key=AKIA...`). Under `--external` the same masking applies to every other
+diagnostic's message and to every string in its `detail` (W `meta-url` quoting such a URL, E `data-row-width` quoting a row), and to the
+notes of the other `--fix` repairs, a credential quoted cut short included. Every echoed source line that holds one (under any diagnostic, or as the
+old side of a `--dry-run` diff) is cut where the key starts, a line inside a private key block at its start, so a CI log never holds a credential
+whole. `kind` is one of:
+
+- `url`: an `http://`, `https://`, `ftp://` or `s3://` reference, or one that starts `www.`, with its path and query. A URL ends at white space, `<`,
+  `>`, a quote, `,`, `;` or `|`, and sentence or link punctuation at its end is not part of it (a closing `)` or `]` is, if the URL opened one).
+  `https://<host>/x`, `http://$HOST/x` and `https://{tenant}.<domain>/` name nothing and are not findings.
+- `ip`: an IPv4 address (four canonical decimal octets) or an IPv6 literal, with a prefix length if one follows (`10.0.0.0/8`, `fd00::/8`). The
+  documentation ranges 192.0.2.0/24, 198.51.100.0/24, 203.0.113.0/24 and 2001:db8::/32 are not findings. An IPv6 literal needs eight groups or a `::`,
+  and a digit, so a time (`12:30:45`) and `Foo::bar` are not addresses; four-part version numbers such as `1.2.3.4` cannot be told from an address and are.
+- `host`: a dotted name whose last label is `com`, `net`, `org`, `edu`, `gov`, `mil`, `io`, `dev`, `app`, `ai`, `co`, `cloud`, `biz`, `us`,
+  `uk`, `eu`, `de`, `internal`, `local`, `corp`, `lan` or `intra`, and whose label before it has a letter (so `1.2.3.dev` is a version). The last label is
+  compared in any case when it is one of the internal five or the name has three labels or more (`DB.CORP.INTERNAL`, `API.ACME.COM`, `Prod.Corp.Local`);
+  a two-label name with a public suffix needs that suffix in lower case, so `ASP.NET` and `System.Net` are not hosts; a name that opens a run with a single dot (`.env.local`) is a dot file, and one followed at once by `(`
+  (`log.info(`) is a call. File names (`chart.png`, `main.py`, `node.js`), `e.g.`, `i.e.` and numbers (`10.5 ms`, `v0.2.1`) are not hosts.
+- `account`: a 12-digit AWS account id on its own (not part of a longer number, not a time stamp `YYYYMMDDhhmm`, not ending in five zeros), an ARN
+  (`arn:aws...`), an Azure subscription GUID that follows the word `subscription` within 40 characters, and a 10 to 13 digit GCP project number that follows
+  the word `project` (`project number: 1234567890`, `projects/1234567890`).
+- `key`: an AWS access key id (`AKIA` or `ASIA` and 16 more), a GitHub token (`ghp_`, `gho_`, `ghu_`, `ghs_`, `ghr_`, `github_pat_`), a Slack token
+  (`xox?-`), a Stripe live key (`sk_live_`, `rk_live_`), an Anthropic key (`sk-ant-`), an OpenAI key (`sk-` and 20 or more characters that mix digits and both
+  cases), a JWT, a PEM private key header (`-----BEGIN ... PRIVATE KEY-----`), and a run of 32 or more hex or base64 characters that follows `key`, `secret`,
+  `token` or `password` (and the rest of that word: `aws_secret_access_key = ...`) after a separator, if it is hex or mixes digits and both cases.
+  For a PEM header the finding's `text` is the header line, and its span runs on to the matching `-----END ... PRIVATE KEY-----` line, if there is one.
+- `email`: `local@domain` with a dotted domain whose last label is letters.
+
+Names that RFC 2606 reserves for documentation are never findings, in any kind: `example.com`, `example.org`, `example.net` and every name under them, and
+names ending `.example`, `.test` or `.invalid`; an address in a documentation range likewise. Where two findings overlap (a host inside a URL, a host inside
+an email address, a key inside a URL) the longer span is the one finding, and for equal spans `key`, then `url`, `email`, `account`, `ip` and `host`. The
+scan is a set of heuristics with a short list of host suffixes, and is no substitute for a secret scanner: it errs towards reporting a name a writer can
+list with `--allow`.
+
+`--allow=HOST[,HOST...]` leaves host names and IP literals alone, along with the URLs on them. A name is compared whole and in lower case (`docs.acme.io`
+does not allow `a.docs.acme.io`); the flag may repeat. A URL that carries credentials (`user:pw@host`) is reported whatever its host, a key or an email
+address inside an allowed URL is still reported, and an email address is not a host name, so `--allow` does not exempt one. `--allow` with no list, or
+without `--external`, is a usage error.
+
+Any finding makes the exit code 1, as an error would, so the check can gate a publish step; the last line without `--json` counts the findings with the other
+warnings (`3 warning(s)`), and is `ok` only when there are none. With `--json` the findings are records in the same array as the other diagnostics.
+`check --external --fix` makes the repairs below first and then replaces each finding's span with its placeholder, `<url>`, `<ip>`, `<host>`, `<account>`,
+`<key>` or `<email>`, in the same write, and prints one line per replacement, `FILE:LINE: fixed [external] replaced url https://... with <url>` (a long text
+is cut); a PEM block is replaced with its line breaks kept, so the line count never changes. The result never has more errors than the text it
+redacts: where a placeholder would break a line (a diagram node id, a `choose` option that would repeat another) the finding takes an
+identifier-safe one instead, `host-1`, `ip-2` and so on, numbered per distinct text so two references to one host stay one node (a number the page
+already uses is skipped). A finding no placeholder can replace without a new error (the file named by `data x < FILE`) is left as written, with a line
+`FILE:LINE: not fixed [external] host left as written: ...`, and stays a finding, so the exit code is 1. `--dry-run` previews as for the
+other repairs, and its exit code is that of the file as written. Replacements are not marked a guess. Reading the result finds nothing more than the
+findings it left. `lede build`
+does not read `--external` and never changes the text: redaction is an edit to the source, made once and reviewed, not a transform at build time.
+
+`lede build FILE [-o OUT] [--force] [--unsafe-html] [--allow-remote] [--artifact] [--shell] [--image-max=SIZE] [--link-images] [--theme TOKENS [--theme-strict]]` compiles the first FILE to one page. Diagnostics go to stderr as
 for `check`. With `-o` the page is written to OUT and a size line goes to stderr; without it the page goes to stdout. `-o=OUT` is the same as `-o OUT`; `-o` with
 no name after it, or with another option after it, is a usage error, and so is a second `-o`. OUT must not be the same file as any FILE (a symlink or hard link to it
 counts, and OUT need not exist yet): `lede` refuses with exit 2 instead of turning the source into HTML. A document with
@@ -604,14 +883,16 @@ Claude Artifact tool wraps a file in a page of its own and sets those itself. Th
 the light and dark tokens, the `data-theme` override and the zero-script output are the same; only the shell differs. `--artifact` also runs
 the artifact checks: each `image` whose source is a local path (§4.16: relative, or starting with `/`) gets W `artifact-image` with
 `detail {src, kind}` (`kind` is `local`), because the Artifact host serves the page from its own origin and has no copy of the file; the fix is a `data:` URI or an
-uploaded asset. `check --artifact` runs the same checks and nothing else new, so an agent can see them before building. A `data:` or
+uploaded asset. The check runs after the images are inlined (below), so it names only the paths that are still paths: those that could not be inlined, or all of
+them under `--link-images`. `check --artifact` runs the same checks and nothing else new, so an agent can see them before building. A `data:` or
 remote source raises nothing new. `--shell` adds the interaction shell (§7) to a page that has at least one field (`ask`, `choose`, `confirm`, `param`, `toggle`, `bucket`
 or `template`) and an `export` line (`export json`, `export markdown` or `export prompt`); any other page is built as without the flag,
 and stderr says so. With `--artifact` the data block and runtime follow `<main>` and the
 meta tags are still omitted, so the Artifact host's own policy decides whether the runtime runs. `--shell` with `--unsafe-html` is a
 usage error: raw `html` could plant its own controls and data block. Exit codes for every
-command: 0 on success; 1 for `build` on errors without `--force` and for `check` on errors; 2 for a usage error (no command, an
-unknown command, no FILE, an option no command knows, `-o` without a name, `--shell` with `--unsafe-html`, OUT the same file as a FILE, `-` misused as
+command: 0 on success; 1 for `build` on errors without `--force` and for `check` on errors or, with `--external`, on any finding; 2 for a usage error (no command, an
+unknown command, no FILE, an option no command knows, `-o` without a name, `--image-max` without a size, `--allow` without a list or without `--external`, `--theme` without a file or given twice, `--theme-strict` without
+`--theme`, a tokens file that cannot be used (below), `--shell` with `--unsafe-html`, OUT the same file as a FILE, `-` misused as
 below) or a FILE that is missing or is a directory; 70 for an internal error, such as OUT not being writable or its directory missing. An exit-70 failure
 prints one line to stderr, `lede: MESSAGE`; with the environment variable `LEDE_DEBUG` set it prints the stack as well.
 An option that no command knows (`--shel`, `-x`) is a usage error: stderr gets `lede: unknown option --shel; did you mean --shell?` (the
@@ -625,14 +906,71 @@ directory's tree as for a file. `-` may be given once, and not with `watch`, `--
 (exit 2). `build -` without `-o` writes the page to stdout as for a file. `lede version`, `lede --version` and `lede -V` print the version of the CLI package, one
 line, to stdout and exit 0; `lede --help` lists them.
 
-`lede watch FILE [-o OUT]` builds FILE to OUT, or to `NAME.html` beside `NAME.lede`, then rebuilds on every change until stopped. It always
-renders as if `--force` were given, and honours `--unsafe-html`, `--allow-remote` and `--shell`. With `--shell`, the note that the flag had no
+**Brand tokens (D80).** `--theme TOKENS` (`build`, `watch` and `check`; `ast` ignores it) gives the page an operator's palette. TOKENS is a path named by the
+operator, so it is not confined to the document's directory; it must be a regular file of at most 64 KiB and is read as JSON and nothing else. A
+file that is missing, not a regular file, over the limit, not JSON, or not a JSON object is a usage error (exit 2, `lede: --theme TOKENS: REASON`, with the path as given). The
+object may hold `accent`, `light`, `dark`, `series` and no other key; each is optional, and a token the file leaves out keeps the house palette's value.
+- `accent`: the brand accent for both themes. It colours links and labels, so it is also the `accent-ink` of each theme unless that theme names one.
+- `light` and `dark`: tokens named as the CSS custom properties of §7 are (`bg`, `surface`, `fg`, `fg2`, `muted`, `line`, `line2`, `accent`, `accent-tint`,
+  `accent-line`, `accent-ink`, `info-bg`). A theme's `accent` wins over the file's. The design's `tint` and `fg3` are `accent-tint` and `muted`; naming them
+  is W `theme-key` with the real name suggested.
+- `series`: one to eight chart colours, `--c1`, `--c2`, ... in that order; the slots after them keep the house colours.
+- `fonts` is W `theme-key` (`reason` `unsupported`) and ignored: there are no font pairings to name. Any other key is W `theme-key`, ignored.
+
+A value must be `#rgb` or `#rrggbb`, in either case (written to the page as lower-case `#rrggbb`). Anything else, alpha forms included, is E `theme-value`
+`{key, value}` at the key, and the value is ignored; `key` is the path (`light.bg`, `series.0`) and `value` is the text as JSON, cut at 40 characters. Nothing from the file reaches the
+stylesheet but a validated hex colour, so a value cannot carry markup, a URL or a declaration. Surfaces (`bg`, `surface`, `accent-tint`, `info-bg`) and
+rules are taken as written. The text colours are held to WCAG 2.x AA on the surfaces they sit on, in each theme, with ratios rounded down to two decimals:
+`fg` at 7:1 on `bg`, `surface`, `accent-tint` and `info-bg`, and at 4.5:1 on the five heat steps (heat cells carry `fg`); `fg2` at 4.5:1 on the four surfaces;
+`muted` at 4.5:1 on `bg` and `surface`; `accent` and `accent-ink` at 4.5:1 on `bg`, `surface` and `accent-tint`; and each `series` colour at 3:1 on `bg` and
+`surface`. The pages' later parts need no rule of their own, because they read these same tokens: the `info` pill and edge tone are `accent-ink` on
+`accent-tint`, the `neutral` ones `fg2` on `info-bg`, and the decision card, the callout kinds and the facts row use `fg`, `fg2` and `muted` on `bg` and
+`surface`. The `good`, `warn` and `bad` colours are the house's and the file cannot name them, but they are text too (a pill, a callout label, a kpi
+delta): each is held to 4.5:1 on `bg`, `surface` and its own tint (`good-bg`, `warn-bg`, `bad-bg`, on which it is drawn as a chip), and moved like the
+others when the file's surfaces leave it short, reported at the theme (`token` `good`, `warn` or `bad`). Only a moved one is written over the house value. A colour that fails is moved, not refused, which is the opposite of the rule for a page's `@accent` (§4.3) and on purpose: a writer's accent is one
+colour in a page they wrote and is used whole or not at all; a house palette is a brand to be matched as closely as AA allows. It is moved in OKLCH lightness only:
+hue and chroma are kept (chroma is reduced only where sRGB has no colour of that lightness with it), the lightness is searched by halving on each side of the
+colour, and the nearer passing value is used, tested as the 8-bit colour that is written. The colour moved is reported as W `theme-adjusted`
+`{token, theme, from, to, ratio, required, against}` at its key (at `accent`, or at the theme, when the colour came from the file's `accent` or was not in the file):
+`token` is the custom property's name without `--` (`c3` for the third series colour), `theme` is `light` or `dark`, `ratio` is the lowest ratio the new colour has
+among the checks it was held to, relative to what each needs, `required` the ratio that check needs and `against` the surface or heat step (`h1` to `h5`) it
+was on; an `accent` that came from the file's own `accent` is reported once per theme, with its ink moving with it. If no lightness can make a colour read on the surfaces
+the file chose (a mid-grey `bg`), the colour stays as written and E `theme-surface` `{token, theme, required, against}` says to change the surfaces. `--theme-strict`
+makes each W `theme-adjusted` an error (the page is still built with the moved colours under `--force`). `--theme-strict` without `--theme` is a usage error.
+
+Under `--theme`, a page's `@accent` is ignored, with W `theme-override` `{key}` (`key` is `accent`) on each `@accent` line, and no `accent-value` or `accent-contrast` is raised for it.
+The tokens file's diagnostics have the file's name, with line and column in it, and are printed before the document's; `check --json` carries them under the
+file's path as a key of its own. Errors in them count like errors in a document: `build` does not write the page (unless `--force`), `check` exits 1. `watch`
+reads the file again for every build, so a save of the page picks up a new one; a change to the tokens file alone does not rebuild, and one that cannot be used is one line on stderr
+while watching goes on. `--artifact` writes the same `<style>` as the full page. Without `--theme` the output is what it was.
+
+**Local images (D80).** `build`, `watch` and `check` write each `image` block whose source is a local path (§4.16) into the page as a `data:` URI of
+the file, so a page with pictures is one file. `ast` and the libraries leave the path as written. The path is read as a browser reads it (§4.16) and resolved
+against the document's directory (the current directory for `-`), with the same confinement as a `data x < file.csv` load: a path that leaves the tree, as written or through a
+symlink, is not read, and it is `outside` whether or not the file is there. The path is the file a browser would load: a `?query` or `#fragment` is dropped and percent escapes are decoded
+(`my%20pic.png` is `my pic.png`). The type comes from the file's first bytes, never from its name: PNG, JPEG, GIF, WebP,
+AVIF, or SVG, which is a file whose root element is `<svg`, after an optional byte order mark, white space, XML declaration or other processing instruction, comments and
+`<!DOCTYPE …>`. It is written as `image/png`, `image/jpeg`, `image/gif`, `image/webp`, `image/avif` or `image/svg+xml`, in base64, and the page policy is unchanged
+(`img-src` already allows `data:`; an SVG loaded by `<img>` runs no script and loads nothing). The limits are 512 KiB for one file and eight times that for all the images
+of a page, counted once for each place an image is used, in document order. `--image-max=SIZE` (or `--image-max SIZE`) sets the first: bytes, or a number
+followed by `k` or `m` (1024 and 1024 squared) and optionally `b`, as `300k`, `2m` or `524288`; the second follows it. Zero or anything else is a usage error. `--link-images`
+turns inlining off: every path stays as written, with no `image-inline` warning, and `--image-max` has no effect. An image that is not inlined keeps its path as written
+and gets W `image-inline` at its line, with `detail {src, reason}`: `size` (the file is over `--image-max`), `page-size` (it would take the page past eight times that;
+a later, smaller image may still fit), `type` (not one of the six types, or empty), `missing` (no such file, a folder, or a file that cannot be read) or `outside`. The warning
+is printed like any other diagnostic by `build`, `watch` and `check`, and `check --json` carries it, so `check` and `build` agree on every page. `http(s)` sources are never
+fetched, with or without `--allow-remote`, and a `data:` source passes through unchanged, as does a path that starts with `/` (a web-root URL,
+§4.16), with no `image-inline` warning.
+
+`lede watch FILE [-o OUT] [--theme TOKENS [--theme-strict]]` builds FILE to OUT, or to `NAME.html` beside `NAME.lede`, then rebuilds on every change until stopped. It always
+renders as if `--force` were given, and honours `--unsafe-html`, `--allow-remote`, `--shell`, `--image-max`, `--link-images`, `--theme` and `--theme-strict`; a change to an image file
+does not rebuild, only a change to FILE does. With `--shell`, the note that the flag had no
 effect is printed on the first build it holds for, and again only if a page that took the shell stops doing so; it is not repeated on every save. It watches FILE's
 directory and picks FILE's events by name, so an editor's save that writes a temporary file and renames it over FILE is seen like an in-place write. Only the first
 build is fatal (exit 70, as for `build`). After that nothing ends the process but a signal: if FILE is deleted, stderr gets `lede: FILE is gone; waiting for it to
 come back` once and the page is rebuilt when FILE reappears, and any other failed rebuild (FILE unreadable, OUT no longer writable) prints one line, `lede: MESSAGE`,
 and watching goes on. A change that lands during a build causes one more build after it. `lede ast FILE` prints the parsed document,
-diagnostics included, as JSON on stdout and exits 0 even when the document has errors.
+diagnostics included, as JSON on stdout and exits 0 even when the document has errors. A `diagram` block in it has `"dirExplicit": true`
+when the writer gave a valid `dir=` (§4.17) and no such key otherwise.
 
 `--json` prints one object keyed by file path; each value is an array of diagnostics:
 
@@ -645,16 +983,23 @@ diagnostics included, as JSON on stdout and exits 0 even when the document has e
 the common codes end with what to write instead (`...; put a cell that contains , in double quotes`, `...; did you mean
 delay ms?`). `detail` is optional and machine-readable. Codes the fixer reads carry it: `unknown-column` `{column, columns}`,
 `data-row-width` `{fields, want, name}`, `csv-thousands` `{fields, want, name}` (`fields` counted before the merge),
-`name-clash` `{diagram}` (a diagram named like a data set; a clash with a bucket set carries `{bucket}` instead, and `--fix` leaves
-it). The question-word codes (§4.18) carry `detail` too (`choose-options` has `{count, empty, reserved}`, or `{kind, option, char}` with
+`name-clash` `{diagram}` (a diagram named like a data set; a clash with a bucket set carries `{bucket}` instead, and a clash that involves a decision (§4.20), whichever is declared first, carries
+`{decision}`; `--fix` leaves both), and `edge-tone` `{value, allowed}` (§4.17; `--fix` leaves it). The question-word codes (§4.18) carry `detail` too (`choose-options` has `{count, empty, reserved}`, or `{kind, option, char}` with
 `kind` `control` when an option holds a C0 control character other than tab), and so do the editor-word codes (§4.19): `param-range` `{value, min, max,
 step, rule}` (`rule` is `order`, `step`, `range`, `grid`, `grid-max` or `count`), `toggle-needs` `{name, needs, toggles}`, `bucket-names`
 `{count, empty, dup, reserved}`, `bucket-unknown` `{bucket, buckets}`, `bucket-item` `{name}`, `bucket-dup-item` `{text, first}`,
 `bucket-empty` `{name}`, `template-fence` `{name}`, `template-slot` `{slot, fields}`, `template-empty` `{name}`, `preset-key`
-`{key, fields}` and `preset-value` `{key, value, kind}`; `export-format` `{format}` now names `prompt` too. So does `accent-contrast` (§4.3) `{accent, theme, ratio, required, against}`:
+`{key, fields}` and `preset-value` `{key, value, kind}`; so do the decision codes (§4.20): E `decision-syntax` `{word}` (`word` is `decision`, `option`,
+`question`, `role` or `line`), E `decision-ref` `{name}` for a `NAME:` line of a decision that was never declared, `{name, first}` for a second
+`decision` of the same name and `{name, id, first}` for an option id used twice, W `decision-status` `{kind, value}` (`kind` is `status` or
+`verdict`) and W `decision-option`, which has none (as `diagram-option` and `chart-option` have none); `export-format` `{format}` now names `prompt` too. So does `accent-contrast` (§4.3) `{accent, theme, ratio, required, against}`:
 `theme` is `light` or `dark`, `ratio` is the lowest contrast found rounded down to two decimals, `required` is `4.5`, and `against` names
-the surface (`bg`, `surface` or `accent-tint`). So does `artifact-image` `{src, kind}`: `src` is the image path as written and `kind` is
-`local`. So does `heading-skip` (§4.4) `{from, to}`: the level of the heading before and of this one, as written (`--fix` leaves it). So does the error
+the surface (`bg`, `surface` or `accent-tint`). So does `external` (above) `{kind, text}`. So does `status-value` (§4.3) `{word, tone, allowed}`: the entry as written, with `allowed`
+the five tones. So does `note-kind` (§4.7) `{word, use}`. So does `meta-url` (§4.3) `{key, value, kind}`: `key` is `image` or `canonical`,
+`value` the text as written and `kind` one of `relative`, `data`, `scheme` or `invalid`. So does `artifact-image` `{src, kind}`: `src` is the image path as written and `kind` is
+`local`. So does `image-inline` `{src, reason}`: `src` is the path as written and `reason` is `size`, `page-size`, `type`, `missing` or `outside`. The brand-token codes carry it too:
+`theme-value` `{key, value}`, `theme-key` `{key}` (`fonts` also has `reason`), `theme-adjusted` `{token, theme, from, to, ratio, required, against}`, `theme-surface`
+`{token, theme, required, against}` and `theme-override` `{key}`. So does `heading-skip` (§4.4) `{from, to}`: the level of the heading before and of this one, as written (`--fix` leaves it). So does the error
 form of `data-redefined` (§4.11) `{name, columns, redefined}`; the warning of the same code has none.
 New keys may be added; existing ones are not removed or retyped within 0.x.
 
@@ -663,7 +1008,8 @@ New keys may be added; existing ones are not removed or retyped within 0.x.
 - an `x=`/`y=` column name that is the unique prefix of a column; a stray word after a column name in `x=`, `y=` or
   `focus=` (`y=customers sort`: the column is quoted, and the word is then reported as an ignored option);
 - a diagram named like a data set (renamed `NAME-flow` with its body lines);
-- in a `data` row or inline `table =` row: an unquoted `,` inside a cell, an unquoted `;` inside a cell (the text either
+- in a `data` row or inline `table =` row (not a pipe row, `NAME: a | b` or `: a | b`, which has nothing to repair: nothing in it is
+  split at `,` or `;`, and a wrong field count is left for the writer): an unquoted `,` inside a cell, an unquoted `;` inside a cell (the text either
   side of it rejoins, whether the `;` left a lone fragment or two short rows), and a header cell split at a thousands comma;
 - a number the parser already read across an unquoted thousands comma (W `csv-thousands`; the number is quoted);
 - `kpi L | 74 of 120 | 61.7% | bar` (W `kpi-bar` with a plain unsigned percent in the change field): the two fields swap;
@@ -974,7 +1320,7 @@ words that merely start with "step" are prose; `\step …` is prose. Numbered li
 AST: `{ type: 'steps', items: [{ title, due, note, line }], line }`.
 
 ### F.5 Chips
-Renderer only: a status word or a date/time phrase in a kpi delta or note, a step `due`, or a table
+Renderer only: a status word (built-in, or one the page defines with `@status`, §4.3) or a date/time phrase in a kpi delta or note, a step `due`, or a table
 cell that is only a date/time renders as a chip. No grammar or AST change.
 
 ### F.6 Chart annotations
@@ -987,7 +1333,8 @@ cell that is only a date/time renders as a chip. No grammar or AST change.
 
 ### F.7 Diagram `legend`
 `NAME: legend` (the word alone) in a flow diagram sets `legend: true`. In a sequence diagram:
-W `legend-kind`, ignored. `NAME: legend "Key"` and edges such as `NAME: x -> legend` still declare or
+W `legend-kind`, ignored. When edges carry tones (§4.17), the key also lists each tone used, in the order first seen: a swatch
+in the tone's color and the label of the first edge of that tone that has one (the tone word when none has). `NAME: legend "Key"` and edges such as `NAME: x -> legend` still declare or
 use a node named `legend`.
 
 ### F.8 Numerals
@@ -1060,3 +1407,21 @@ CR became LF), so a `--shell` page exported text that the AST did not hold. A qu
 allowed a control character (E `question-name`), and an editor word whose name has one is not an editor line. None of the 858 `.lede`
 files tracked on `main` at `0184535` holds a C0 control character other than tab and line feed, so none can reach the new error.
 Conformance error e44 is normative.
+
+## Appendix H. Decision blocks (2026-11)
+Status: **preview**, D80. `decision` and its `NAME: option`, `question` and `role` lines (§4.20) are new, valid in every build mode. The
+keywords are now `data chart table kpi diagram image grid cards step ask choose confirm export param toggle bucket template preset
+decision`, and none can name a diagram (E `diagram-name`). Conformance case 45 and errors e53 to e56 are normative.
+`spec/model-spec.md` does not describe the block: models read it from the on-demand reference (D55 cap).
+
+**What changed for existing input.** Input that parsed before parses identically except: a lowercase line that starts with `decision`, a
+name and then a `"`, `status=` or `by=` was paragraph text and is now a decision line (an error when malformed), `diagram decision` is now
+E `diagram-name`, and a `data`, `diagram` or `bucket` named like a decision is E `name-clash` (the namespace of §4.20). A `NAME:` line binds
+to a decision only when a `decision NAME` is above it, and a `NAME: option "…"`-shaped line with no such decision is E `decision-ref`
+where it was text, so a document without a decision binds nothing new, except for that line. Searched across the 866 `.lede` files
+tracked on `main` at `e55800b` (benchmark outputs, examples, conformance, fixtures), parsed with the parser at that commit and with this
+one: none has a line that starts with `decision`, and the ASTs and diagnostics are identical for all 866. Compiled with the renderer at
+that commit and with this one, every one of those pages is byte-identical in the four modes the render-hashes fixture holds (plain,
+fragment, `--artifact` and, for a page with a question and an `export`, `--shell`): the card's markup and its CSS exist only for a
+document that has a decision, and so do the `decision-update` and `decision-seal` events. Every earlier conformance case passes
+unedited.

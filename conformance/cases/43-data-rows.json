@@ -1,0 +1,88 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Pipe rows",
+      "line": 1
+    },
+    {
+      "type": "data",
+      "name": "costs",
+      "line": 3
+    },
+    {
+      "type": "paragraph",
+      "text": "note: see below | this is not a data name, so it is prose",
+      "line": 12
+    },
+    {
+      "type": "chart",
+      "kind": "hbar",
+      "data": "costs",
+      "x": "service",
+      "y": [
+        "usd"
+      ],
+      "title": null,
+      "stack": false,
+      "labels": false,
+      "unit": null,
+      "min": null,
+      "max": null,
+      "focus": null,
+      "target": null,
+      "line": 13
+    }
+  ],
+  "data": {
+    "costs": {
+      "name": "costs",
+      "columns": [
+        "service",
+        "usd",
+        "note"
+      ],
+      "rows": [
+        [
+          "Compute",
+          "18,400",
+          "\"burst\" pricing, Q3"
+        ],
+        [
+          "Storage, S3",
+          "6,100",
+          "archive tier; cold"
+        ],
+        [
+          "A|B",
+          "2,000",
+          "a pipe with no space around it is text"
+        ],
+        [
+          "Network",
+          "1,500",
+          ""
+        ],
+        [
+          "",
+          "900",
+          "the first field may be empty"
+        ],
+        [
+          "**Bold, with comma**",
+          "300",
+          "inline markup stays"
+        ],
+        [
+          "Support",
+          "250",
+          "the old row form still works"
+        ]
+      ],
+      "line": 3
+    }
+  },
+  "diagnostics": []
+}

@@ -1,0 +1,188 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Table rows",
+      "line": 1
+    },
+    {
+      "type": "table",
+      "data": "_table1",
+      "cols": null,
+      "sort": null,
+      "limit": null,
+      "title": null,
+      "line": 3
+    },
+    {
+      "type": "paragraph",
+      "text": "Text straight after the rows ends the table.",
+      "line": 7
+    },
+    {
+      "type": "table",
+      "data": "_table2",
+      "cols": null,
+      "sort": null,
+      "limit": null,
+      "title": "Sizes",
+      "line": 9,
+      "heat": true
+    },
+    {
+      "type": "table",
+      "data": "_table3",
+      "cols": null,
+      "sort": null,
+      "limit": null,
+      "title": null,
+      "line": 13
+    },
+    {
+      "type": "paragraph",
+      "text": ": a colon line after a blank line is prose",
+      "line": 17
+    },
+    {
+      "type": "table",
+      "data": "_table4",
+      "cols": null,
+      "sort": null,
+      "limit": null,
+      "title": null,
+      "line": 18
+    },
+    {
+      "type": "paragraph",
+      "text": ": a table that has a row on its line takes none, so this is prose too",
+      "line": 19
+    },
+    {
+      "type": "table",
+      "data": "_table5",
+      "cols": null,
+      "sort": null,
+      "limit": null,
+      "title": null,
+      "line": 21
+    },
+    {
+      "type": "table",
+      "data": "_table6",
+      "cols": null,
+      "sort": null,
+      "limit": null,
+      "title": null,
+      "line": 23
+    }
+  ],
+  "data": {
+    "_table1": {
+      "name": "_table1",
+      "columns": [
+        "Option",
+        "Cost, USD",
+        "Verdict"
+      ],
+      "rows": [
+        [
+          "Managed queue",
+          "1,200",
+          "**Fits**, mostly; cheap"
+        ],
+        [
+          "Self-hosted",
+          "3,400",
+          "Needs an on-call rota"
+        ],
+        [
+          "Hybrid",
+          "2,100",
+          "`maybe`"
+        ]
+      ],
+      "line": 3
+    },
+    "_table2": {
+      "name": "_table2",
+      "columns": [
+        "Size",
+        "Cost"
+      ],
+      "rows": [
+        [
+          "Small",
+          "10"
+        ],
+        [
+          "Large",
+          "40"
+        ]
+      ],
+      "line": 9
+    },
+    "_table3": {
+      "name": "_table3",
+      "columns": [
+        "Name",
+        "Role"
+      ],
+      "rows": [
+        [
+          "Ana",
+          "Lead"
+        ],
+        [
+          "Bo",
+          "Dev"
+        ]
+      ],
+      "line": 13
+    },
+    "_table4": {
+      "name": "_table4",
+      "columns": [
+        "a",
+        "b"
+      ],
+      "rows": [
+        [
+          "1",
+          "2"
+        ]
+      ],
+      "line": 18
+    },
+    "_table5": {
+      "name": "_table5",
+      "columns": [
+        "Key",
+        "Meaning"
+      ],
+      "rows": [
+        [
+          "a | b",
+          "either"
+        ]
+      ],
+      "line": 21
+    },
+    "_table6": {
+      "name": "_table6",
+      "columns": [
+        "Key",
+        "Meaning"
+      ],
+      "rows": [
+        [
+          "a",
+          "either"
+        ]
+      ],
+      "line": 23
+    }
+  },
+  "diagnostics": []
+}

@@ -1,20 +1,69 @@
 // The compiler owns the design: every color is a token, redefined for dark mode.
 // Categorical series colors are the validated eight-slot order from the dataviz
 // reference palette (adjacent-pair CVD ΔE ≥ 8 in both modes).
-import { usableAccent } from '@lede-lang/core';
+import {
+  FIXED_TOKENS,
+  PALETTES,
+  THEME_SERIES_MAX,
+  usableAccent,
+  type PaletteTokens,
+  type ThemeName,
+  type ThemeTokens,
+} from '@lede-lang/core';
 
-const LIGHT = `
-  --bg:#fbfbfa; --surface:#ffffff; --fg:#16181d; --fg2:#4d515c; --muted:#6b707c; --line:#dcdde1; --line2:#c4c6cc;
-  --accent:#2357c6; --accent-tint:#e9effb; --accent-line:#bccbec; --accent-ink:#1d4aa8; --good:#1c7a4a; --good-bg:#e6f4ec; --bad:#b4372f; --bad-bg:#fbeceb; --bad-line:#e9a9a3; --warn:#8a5a00; --warn-bg:#fff6e0; --warn-line:#e8c26b; --info-bg:#f1f2f4;
-  --c1:#2a78d6; --c2:#eb6834; --c3:#1baf7a; --c4:#eda100; --c5:#e87ba4; --c6:#008300; --c7:#6250d6; --c8:#e34948; --cm:#b4b7bf;
-  --h1:#cde2fb; --h2:#9ec5f4; --h3:#6da7ec; --h4:#5598e7; --h5:#3987e5;
-  color-scheme:light;`;
-const DARK = `
-  --bg:#131416; --surface:#1b1c1f; --fg:#eceef1; --fg2:#b9bcc4; --muted:#9a9ea8; --line:#2e3035; --line2:#41444b;
-  --accent:#7aa7ff; --accent-tint:#1b2944; --accent-line:#2f4670; --accent-ink:#9dbdff; --good:#5cc48d; --good-bg:#15291e; --bad:#f07a70; --bad-bg:#2e1715; --bad-line:#6e2f2a; --warn:#f0c062; --warn-bg:#2a2210; --warn-line:#6b5420; --info-bg:#24262b;
-  --c1:#3987e5; --c2:#d95926; --c3:#199e70; --c4:#c98500; --c5:#d55181; --c6:#008300; --c7:#9085e9; --c8:#e66767; --cm:#4b4e56;
-  --h1:#0d366b; --h2:#104281; --h3:#184f95; --h4:#1c5cab; --h5:#256abf;
-  color-scheme:dark;`;
+/**
+ * Every token's declaration, in the order the stylesheet writes them. The palette tokens come from core's palette table and the
+ * shared status, series and heat colours from its fixed table, so no hex value is written here (internal spec, lede-lang/meta).
+ */
+const GROUPS = [
+  ['bg', 'surface', 'fg', 'fg2', 'muted', 'line', 'line2'],
+  [
+    'accent',
+    'accent-tint',
+    'accent-line',
+    'accent-ink',
+    'good',
+    'good-bg',
+    'bad',
+    'bad-bg',
+    'bad-line',
+    'warn',
+    'warn-bg',
+    'warn-line',
+    'info-bg',
+  ],
+  ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'cm'],
+  ['h1', 'h2', 'h3', 'h4', 'h5'],
+];
+/** The only form a colour takes in the stylesheet. A `--theme` file is validated to it, and this refuses anything else a caller hands over. */
+const HEX = /^#[0-9a-f]{6}$/;
+
+/** The declarations of one theme: a palette, with the page's own chart colours (`series`, from the first slot) over the house ones. */
+function tokens(theme: ThemeName, palette: PaletteTokens, series: readonly string[] = [], status: Record<string, string> = {}): string {
+  const v: Record<string, string> = { ...palette, ...FIXED_TOKENS[theme], ...status };
+  series.slice(0, THEME_SERIES_MAX).forEach((c, i) => (v[`c${i + 1}`] = c));
+  const decl = (k: string): string => {
+    if (!HEX.test(v[k])) throw new TypeError(`theme token ${k} is not a #rrggbb colour`);
+    return `--${k}:${v[k]};`;
+  };
+  return `\n  ${GROUPS.map((g) => g.map(decl).join(' ')).join('\n  ')}\n  color-scheme:${theme};`;
+}
+const HOUSE_LIGHT = tokens('light', PALETTES.paper.light);
+const HOUSE_DARK = tokens('dark', PALETTES.paper.dark);
+
+/** A brand theme's two declaration blocks, worked out once per theme object: `watch` and a server draw many pages with one. */
+const BRANDS = new WeakMap<ThemeTokens, { light: string; dark: string }>();
+function brandTokens(t: ThemeTokens): { light: string; dark: string } {
+  let out = BRANDS.get(t);
+  if (!out) {
+    out = {
+      light: tokens('light', t.light, t.series?.light, t.status?.light),
+      dark: tokens('dark', t.dark, t.series?.dark, t.status?.dark),
+    };
+    BRANDS.set(t, out);
+  }
+  return out;
+}
 
 /** The question words' controls (spec §4.18). Added only to a page that has a field or an `export`, so other pages are unchanged. */
 const CONTROLS = `/* question words */
@@ -87,10 +136,65 @@ const EDITORS = `/* editor words */
 @media (prefers-reduced-motion:reduce){.q-seg label{transition:none}}
 `;
 
-export function css(opts: { accent?: string; theme?: string; wide?: boolean; controls?: boolean; editors?: boolean }): string {
+/**
+ * The rules of a dashboard page (`<main class="doc dash">`, D80), added to the stylesheet of such a page only, so every other page's
+ * sheet is unchanged. A `grid` keeps as many columns as it names while each cell is at least 420px wide (the gap is 16px); below
+ * that it has as many as fit, down to one, so a cell is never narrower than a chart needs. The cap is the cell width of the
+ * written count: `max(420px, (100% - gaps) / --cols)` is a track floor that is the share itself when the share is 420px or more,
+ * so no more than `--cols` tracks fit. `min(420px, 100%)` lets a container narrower than 420px hold one track.
+ */
+const DASH_RULES = `.doc.dash .lgrid{grid-template-columns:repeat(auto-fit,minmax(max(min(420px,100%),calc((100% - 16px * (var(--cols) - 1)) / var(--cols))),1fr))}
+`;
+
+/**
+ * The decision card's rules (spec §4.20), added only to a page that holds a decision, so every other page keeps its bytes. No new tokens:
+ * the status chip is the existing `.pill` (`good`, `warn`, and `neutral` for deferred, the grey: the base `.pill`, `--fg2` on `--info-bg`, as the `.t-neutral` edge tone reads it), the date is the existing
+ * `.chip`. The list rules are prefixed `.decision` to outrank the prose layout's `.prose li+li`. Nothing here is the only carrier of a
+ * state: the status and each verdict are words in the markup, and a rejected label is struck through as well as coloured.
+ */
+const DECISIONS = `/* decision blocks */
+.decision{display:flex;flex-direction:column;gap:10px;min-width:0;padding:16px 18px;background:var(--surface);border:1px solid var(--line);border-radius:12px;font:15px/1.5 var(--sans);color:var(--fg)}
+.decision>*{margin:0}
+.dc-h{display:flex;flex-direction:column;gap:8px}
+.dc-h>*{margin:0}
+.dc-q{font:600 1.18rem/1.3 var(--serif);text-wrap:balance;overflow-wrap:anywhere}
+.dc-s{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.dc-s .chip{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.dc-l{margin-top:4px;font:700 11px/1.3 var(--sans);letter-spacing:.09em;text-transform:uppercase;color:var(--fg2)}
+.decision ul.dc-opts,.decision ul.dc-qa{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.decision .dc-opts>li,.decision .dc-qa>li{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;min-width:0;margin:0;padding:10px 12px;background:var(--bg);border:1px solid var(--line);border-radius:8px}
+.decision .dc-opts>li.chosen{border-color:var(--good);box-shadow:inset 4px 0 0 var(--good)}
+.dc-ol,.dc-qt{min-width:0;font-weight:600;overflow-wrap:anywhere}
+.dc-opts>li.rejected .dc-ol{color:var(--fg2);text-decoration:line-through;text-decoration-thickness:1.5px}
+.dc-w,.dc-a{flex:1 1 100%;min-width:0;font-size:14px;color:var(--fg2);overflow-wrap:anywhere}
+.dc-al{font:700 11px/1.3 var(--sans);letter-spacing:.09em;text-transform:uppercase;margin-right:4px}
+.decision .dc-roles{display:flex;flex-wrap:wrap;gap:6px 20px;margin:2px 0 0;padding-top:12px;border-top:1px solid var(--line)}
+.dc-roles>div{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 6px;min-width:0}
+.dc-roles dt{font:700 11px/1.3 var(--sans);letter-spacing:.09em;text-transform:uppercase;color:var(--fg2)}
+.dc-roles dd{margin:0;min-width:0;font-weight:600;overflow-wrap:anywhere}
+@media (max-width:560px){.decision{padding:14px 16px}}
+@media print{.decision{break-inside:avoid}}
+`;
+
+/**
+ * The page stylesheet. `tokens` is an operator's validated brand theme (`--theme`, D80): its palette and chart colours replace the
+ * house ones in both themes, and the page's own `accent` is not used (the caller leaves it out).
+ */
+export function css(opts: {
+  accent?: string;
+  theme?: string;
+  /** A dashboard page (`layoutClass`, `@width wide` included): the 64rem column and the dashboard rules. */
+  dash?: boolean;
+  controls?: boolean;
+  editors?: boolean;
+  /** A page that holds a decision block: the card's rules. */
+  decisions?: boolean;
+  tokens?: ThemeTokens;
+}): string {
   // Only a hex color that passes AA text contrast reaches the stylesheet (D49, D77); the parser warns on the rest.
   const picked = usableAccent(opts.accent, opts.theme);
   const accent = picked ? `--accent:${picked};--accent-ink:${picked};` : '';
+  const { light: LIGHT, dark: DARK } = opts.tokens ? brandTokens(opts.tokens) : { light: HOUSE_LIGHT, dark: HOUSE_DARK };
   const forced =
     opts.theme === 'dark'
       ? `:root{${DARK}}`
@@ -106,7 +210,7 @@ export function css(opts: { accent?: string; theme?: string; wide?: boolean; con
 body{background:#fff} .chart-narrow{display:none!important} .chart-wide{display:block!important} details.data{display:none}
 figure.viz,.kpi,.card,.note,blockquote,tr{break-inside:avoid} h1,h2,h3,h4{break-after:avoid}
 pre.code code{white-space:pre-wrap;overflow-wrap:anywhere}`;
-  const col = opts.wide ? '64rem' : '46rem';
+  const col = opts.dash ? '64rem' : '46rem';
   return `${forced}
 :root{${accent}
   --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,ui-serif,serif;
@@ -133,6 +237,10 @@ h4{font-size:1rem;margin-top:4px}
 .byline{font-size:14px;line-height:1.5;color:var(--fg2);margin:2px 0 0}
 .by-n{color:var(--fg);font-weight:500}
 .by-s{color:var(--muted)} .byline time{white-space:nowrap}
+.facts{display:flex;flex-wrap:wrap;gap:6px 24px;margin:2px 0 0;font:14px/1.5 var(--sans);color:var(--fg)}
+.facts>div{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 8px;min-width:0}
+.facts dt{font:600 11.5px/1.5 var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.facts dd{margin:0;min-width:0;overflow-wrap:anywhere} .facts time{white-space:nowrap}
 .lead{font-size:1.15rem;line-height:1.6;color:var(--fg2)}
 p{text-wrap:pretty;orphans:2;widows:2}
 ul,ol{padding-left:1.4em} li+li{margin-top:5px} li::marker{color:var(--muted)}
@@ -170,9 +278,12 @@ blockquote cite{display:block;font:600 13px/1.4 var(--sans);font-style:normal;co
 .note.warn b.nl{color:var(--warn)}
 .note.danger{background:var(--bad-bg);border-color:var(--bad-line);border-left-color:var(--bad)}
 .note.danger b.nl{color:var(--bad)}
+.note.good{background:var(--good-bg);border-color:color-mix(in srgb,var(--good) 35%,var(--surface));border-left-color:var(--good)}
+.note.good b.nl{color:var(--good)}
 .pill{display:inline-block;font-size:12.5px;font-weight:600;line-height:1.4;padding:1px 8px 1px 18px;border-radius:999px;position:relative;white-space:nowrap;background:var(--info-bg);color:var(--fg2)}
 .pill::before{content:"";position:absolute;left:7px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:currentColor}
 .pill.good{background:var(--good-bg);color:var(--good)} .pill.warn{background:var(--warn-bg);color:var(--warn)} .pill.bad{background:var(--bad-bg);color:var(--bad)}
+.pill.info{background:var(--accent-tint);color:var(--accent-ink)}
 .pill strong{font-weight:inherit}
 ol{list-style:none;padding-left:0;counter-reset:step}
 ol>li{counter-increment:step;position:relative;padding-left:38px;min-height:24px}
@@ -331,7 +442,7 @@ figure.img figcaption{font:14px/1.4 var(--sans);color:var(--muted)}
 .dg{display:block;width:100%;height:auto}
 .dg text{font-family:var(--sans)}
 .dg .grp{fill:none;stroke:var(--line2);stroke-width:1;stroke-dasharray:4 3}
-.dg .glabel{font:600 10px var(--mono);letter-spacing:.06em;fill:var(--muted)}
+.dg .glabel{font:600 11px var(--sans);fill:var(--muted)}
 .dg .edge{fill:none;stroke:var(--muted);stroke-width:1.25}
 .dg .edge.dash{stroke-dasharray:5 4}
 .dg .edge.hot{stroke:var(--accent);stroke-width:1.5}
@@ -545,6 +656,7 @@ ol.steps.cards>li>div>ul.sub,ol.steps.cards>li>div>ol.sub{margin:8px 0 0}
 .card.lc.rec>.note{background:var(--accent-tint);border:1px solid var(--accent-line);border-left:3px solid var(--accent);border-radius:8px;padding:10px 14px}
 .card.lc.rec>.note.warn{background:var(--warn-bg);border-color:var(--warn-line);border-left-color:var(--warn)}
 .card.lc.rec>.note.danger{background:var(--bad-bg);border-color:var(--bad-line);border-left-color:var(--bad)}
+.card.lc.rec>.note.good{background:var(--good-bg);border-color:color-mix(in srgb,var(--good) 35%,var(--surface));border-left-color:var(--good)}
 .card.lc.rec>.note b.nl{display:block}
 .kbar{display:block;align-self:stretch;height:8px;border-radius:999px;background:var(--line);overflow:hidden;margin:2px 0}
 .kbar>i{display:block;height:100%;border-radius:999px;background:var(--accent)}
@@ -579,5 +691,18 @@ ol.steps.sx>li>.sn{grid-column:2;min-width:0;color:var(--fg2);overflow-wrap:anyw
   table.stack td::before{content:attr(data-label);display:block;font:600 10.5px/1.3 var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--fg2);margin-bottom:2px}
 }
 /* end stream v04-2 */
-${opts.controls ? CONTROLS : ''}${opts.controls && opts.editors ? EDITORS : ''}`;
+/* edge tones (D80): a tone sets two custom properties, and the line, arrowhead, label chip and cross of a toned edge read them */
+.t-good{--tn:var(--good);--tf:var(--good-bg)}
+.t-bad{--tn:var(--bad);--tf:var(--bad-bg)}
+.t-warn{--tn:var(--warn);--tf:var(--warn-bg)}
+.t-info{--tn:var(--accent-ink);--tf:var(--accent-tint)}
+.t-neutral{--tn:var(--fg2);--tf:var(--info-bg)}
+:is(.dg,.dgk-sw) .edge.tn{stroke:var(--tn)}
+:is(.dg,.dgk-sw) .ah.tn{fill:var(--tn)}
+.dg .blk.tn :is(circle,path){stroke:var(--tn)}
+.dg .lmask.tn{fill:var(--tf);stroke:color-mix(in srgb,var(--tn) 40%,var(--tf));stroke-width:1;rx:4px}
+.dg .elabel.tn{fill:var(--tn);font-weight:500}
+.et.tn{color:var(--tn);background:var(--tf);border-radius:4px;padding:0 6px;font-weight:600;font-size:14px}
+.dgk-t{min-width:0;overflow-wrap:anywhere}
+${opts.controls ? CONTROLS : ''}${opts.controls && opts.editors ? EDITORS : ''}${opts.dash ? DASH_RULES : ''}${opts.decisions ? DECISIONS : ''}`;
 }

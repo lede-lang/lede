@@ -1,15 +1,17 @@
 // The incremental renderer (internal spec, lede-lang/meta): blocks go in one at a time as they become final, DOM operations come
 // out with the HTML of the unit they touch, and the markup that results is the markup `render()` writes for the whole page.
-// Six decisions in `render()` read the whole document; each has a rule below (prose layout, grouping, the standfirst, the
-// heading shift, picks, late meta). The question words and the editor words add a seventh, the `export` (see `reexport`), and a
-// block that grows besides the diagram, the bucket set (see `grew`). `end()` checks the result against the whole-page render and
+// Seven decisions in `render()` read the whole document; each has a rule below (prose layout, dashboard layout, grouping, the
+// standfirst, the heading shift, picks, late meta). The question words and the editor words add an eighth, the `export` (see `reexport`), and two
+// blocks that grow besides the diagram, the bucket set (see `grew`) and the decision (see `update`). `end()` checks the result against the whole-page render and
 // corrects what the rules missed (the settle); the tests and the bench switch the correction off, so they measure the rules and not
 // the safety net.
-import type { Block, BucketBlock, DataSet, DiagramBlock, LedeDocument, PresetBlock, QuestionBlock } from '@lede-lang/core';
-import { FIELD_KINDS, resolve, walkBlocks } from '@lede-lang/core';
+import type { Block, BucketBlock, DataSet, DecisionBlock, DiagramBlock, LedeDocument, QuestionBlock } from '@lede-lang/core';
+import { resolve, walkBlocks } from '@lede-lang/core';
 import {
   Ctx,
+  DASH,
   NOT_ESSAY,
+  hasProseSection,
   holdsFlow,
   isWide,
   masthead,
@@ -21,6 +23,7 @@ import {
   standfirst,
   styleOf,
   tallyProse,
+  pageParts,
   type CtxMark,
   type Masthead,
   type PickScan,
@@ -38,6 +41,8 @@ export type IncrementalOp =
   | { op: 'masthead'; html: string }
   /** Set or clear the `prose` class of `<main>`. */
   | { op: 'prose'; on: boolean }
+  /** Set or clear the `dash` class of `<main>`: the page is a dashboard (spec §7, D80). The `style` op that comes with it adds or drops the dashboard rules. */
+  | { op: 'dash'; on: boolean }
   /** A sealed unit, after the last one and before the tail. */
   | { op: 'append'; id: number; html: string }
   /** The unit `id` is drawn again (an update, a repick, a drawing, a settle). An empty `html` means it has no element. */
@@ -61,7 +66,7 @@ export interface Pushed {
  * Why a child of `<main>` was settled. `masthead`: the header, or the heading that carries the subtitle and byline, which the
  * first block alone could not decide (the first `#` heading came later and rules out or moves the header).
  */
-export type SettleCause = 'prose' | 'shift' | 'lead' | 'picks' | 'masthead' | 'other';
+export type SettleCause = 'prose' | 'layout' | 'shift' | 'lead' | 'picks' | 'masthead' | 'other';
 
 export interface IncrementalEnd {
   ops: IncrementalOp[];
@@ -71,7 +76,7 @@ export interface IncrementalEnd {
   countMismatch: boolean;
   /** The first child that differed (0 is the header when there is one), or null. */
   firstDiff: number | null;
-  /** One cause per child that differed, and 'prose' when only the class of `<main>` differed. */
+  /** One cause per child that differed, and 'prose' or 'layout' when only the class of `<main>` differed. */
   causes: SettleCause[];
   /** True when `<main>` needed no settle at all: no child, no count and no class differed. */
   equal: boolean;
@@ -81,10 +86,12 @@ export interface IncrementalEnd {
   repicks: number;
   /** Diagrams drawn again after a statement followed their seal. */
   reseals: number;
-  /** Meta keys (accent, theme, width, title, subtitle, author, date) that changed after the first block. */
+  /** Meta keys (accent, theme, width, title, subtitle, author, date, meta, status) that changed after the first block. */
   lateMeta: number;
   /** Times the prose class went on mid-stream (0 or 1). */
   proseFlips: number;
+  /** Times the dashboard class went on mid-stream (0 or 1; 0 when `@width wide` set it from the first block). */
+  dashFlips: number;
   /** The shift was assumed, not read: an `@title` page whose first heading is below h1, taken to have no `#` of its own. */
   shiftAssumed: boolean;
   /** How long each block that was held back waited before it was committed, in `now()` units. */
@@ -103,10 +110,10 @@ export interface Incremental {
   push(block: Block): Pushed;
   /** The open blocks (`LedeStream.tail()`), after the held ones: the run of elements at the end of the page. */
   tail(blocks: Block[]): IncrementalOp[];
-  /** A diagram gained statements, a bucket set gained an item, or a `data NAME +=` appended rows. */
-  update(what: DiagramBlock | BucketBlock | { data: string }): Pushed;
-  /** No statement of this diagram is expected for now: draw it. A bucket set is drawn in full by every update, so its seal adds nothing. */
-  seal(d: DiagramBlock | BucketBlock): Pushed;
+  /** A diagram gained statements, a bucket set gained an item, a decision gained a line, or a `data NAME +=` appended rows. */
+  update(what: DiagramBlock | BucketBlock | DecisionBlock | { data: string }): Pushed;
+  /** No statement of this diagram is expected for now: draw it. A bucket set or a decision is drawn in full by every update, so its seal adds nothing. */
+  seal(d: DiagramBlock | BucketBlock | DecisionBlock): Pushed;
   /** Commit what is held, draw what is open, apply late meta, settle. Call after the stream's own `end()`. */
   end(): Promise<IncrementalEnd>;
 }
@@ -127,7 +134,8 @@ export interface IncrementalOptions extends RenderOptions {
 export const normalize = (html: string): string => html.replace(/>\s+</g, '><').trim();
 
 const STYLE_KEYS = ['accent', 'theme', 'width'] as const;
-const MAST_KEYS = ['title', 'subtitle', 'author', 'date'] as const;
+/** What the masthead reads: `status` too, since a fact under the title may be a status word. */
+const MAST_KEYS = ['title', 'subtitle', 'author', 'date', 'meta', 'status'] as const;
 
 /** Adds `to` to the targets of `from`. */
 function add(next: Map<string, string[]>, from: string, to: string): void {
@@ -189,12 +197,16 @@ interface U {
   diagrams: DiagramBlock[];
   /** The bucket sets in the unit, which gain items from later lines. */
   buckets: BucketBlock[];
+  /** The decisions in the unit, which gain options, questions and roles from later lines. */
+  decisions: DecisionBlock[];
   /** Data names a chart, table or kpi in the unit reads. */
   reads: Set<string>;
   /** The unit holds a table, which reads the page's picks. */
   picks: boolean;
   /** The unit holds an `export`, which lists the page's question fields and its title. */
   exports: boolean;
+  /** The unit holds a table, a step run or a kpi row, which read the page's status words (`@status`). */
+  statuses: boolean;
   /** The fields and title (`exportKey()`) the unit's last drawing listed. */
   exportKey: string;
   /** A later drawing supersedes an earlier one that resolves after it. */
@@ -202,15 +214,19 @@ interface U {
 }
 
 /** What a unit's blocks hold, grids and cards included. */
-function inspect(blocks: Block[]): Pick<U, 'diagrams' | 'buckets' | 'reads' | 'picks' | 'exports'> {
+function inspect(blocks: Block[]): Pick<U, 'diagrams' | 'buckets' | 'decisions' | 'reads' | 'picks' | 'exports' | 'statuses'> {
   const diagrams: DiagramBlock[] = [];
   const buckets: BucketBlock[] = [];
+  const decisions: DecisionBlock[] = [];
   const reads = new Set<string>();
   let picks = false;
   let exports = false;
+  let statuses = false;
   walkBlocks(blocks, (b) => {
+    if (b.type === 'table' || b.type === 'steps' || b.type === 'kpis') statuses = true;
     if (b.type === 'diagram') diagrams.push(b);
     else if (b.type === 'bucket') buckets.push(b);
+    else if (b.type === 'decision') decisions.push(b);
     else if (b.type === 'export') exports = true;
     else if (b.type === 'chart') reads.add(b.data);
     else if (b.type === 'table') {
@@ -218,20 +234,7 @@ function inspect(blocks: Block[]): Pick<U, 'diagrams' | 'buckets' | 'reads' | 'p
       picks = true;
     } else if (b.type === 'kpis') for (const k of b.items) if (k.ref) reads.add(k.ref.split('.')[0]);
   });
-  return { diagrams, buckets, reads, picks, exports };
-}
-
-/** The question fields, the `preset` blocks and whether an `export` is among a block and the blocks it holds, found in one walk. */
-function questionsIn(block: Block): { fields: QuestionBlock[]; presets: PresetBlock[]; hasExport: boolean } {
-  const fields: QuestionBlock[] = [];
-  const presets: PresetBlock[] = [];
-  let hasExport = false;
-  walkBlocks([block], (b) => {
-    if (Object.hasOwn(FIELD_KINDS, b.type)) fields.push(b as QuestionBlock);
-    else if (b.type === 'preset') presets.push(b);
-    else if (b.type === 'export') hasExport = true;
-  });
-  return { fields, presets, hasExport };
+  return { diagrams, buckets, decisions, reads, picks, exports, statuses };
 }
 
 /** The ops, and the drawings still pending, of several units drawn in one step. */
@@ -280,6 +283,7 @@ class Renderer implements Incremental {
   private readonly units: U[] = [];
   private readonly byDiagram = new Map<DiagramBlock, U>();
   private readonly byBucket = new Map<BucketBlock, U>();
+  private readonly byDecision = new Map<DecisionBlock, U>();
   /**
    * Diagrams the stream has sealed at least once, even before their unit was committed. A diagram of a committed unit that is
    * not in it is shown as a slot; one that is in it is drawn, and a seal after the first draws it again (a reseal).
@@ -307,15 +311,19 @@ class Renderer implements Incremental {
    * The question fields of every block pushed, in source order: the array `ctx.fields` is, so an `export` lists the fields read so
    * far. `controls`: a field or an `export` has arrived, so the stylesheet carries the controls' rules (as `render()`'s does).
    * `editors`: an editor word (`param`, `toggle`, `bucket`, `template` or `preset`) has, so it carries theirs too.
+   * `decided`: a decision has, so it carries the card's.
    */
   private readonly fields: QuestionBlock[] = [];
   private controls = false;
   private editors = false;
+  private decided = false;
   /** The committed units that hold an `export`. */
   private readonly exportUnits: U[] = [];
 
   private prose = false;
   private proseFrozen = false;
+  private dashFrozen = false;
+  private dashFlips = 0;
   /** The essay test's counts over the blocks read so far, while the layout is still undecided. */
   private readonly tally: ProseTally = { paras: 0, pchars: 0, all: 0 };
   private proseFlips = 0;
@@ -385,6 +393,7 @@ class Renderer implements Incremental {
     }
     this.rest.push(block);
     this.latchProse(block, out.ops);
+    this.latchDash(block, out.ops);
     this.held.push(block);
     this.heldAt.push(this.now());
     this.heldSeq.push(this.seq);
@@ -394,23 +403,25 @@ class Renderer implements Incremental {
   }
 
   /**
-   * A question field joins `fields`. The first field or `export` of the page adds the controls' rules to the stylesheet, and the
-   * first editor word (a `preset` too, which is no field) adds the editors'; true when this block did either, so the caller emits
-   * the style (the first block's style is `begin`'s).
+   * A question field joins `fields`. The first field or `export` of the page adds the controls' rules to the stylesheet, the
+   * first editor word (a `preset` too, which is no field) adds the editors', and the first decision adds the card's; true when this
+   * block did any of them, so the caller emits the style (the first block's style is `begin`'s).
    */
   private takeQuestions(block: Block): boolean {
-    const { fields: found, presets, hasExport } = questionsIn(block);
+    const { fields: found, presets, exports, decisions } = pageParts([block]);
     this.fields.push(...found);
-    const controls = !this.controls && (found.length > 0 || hasExport);
+    const controls = !this.controls && (found.length > 0 || exports.length > 0);
     const editors = !this.editors && usesEditors(found, presets);
+    const decided = !this.decided && decisions;
     if (controls) this.controls = true;
     if (editors) this.editors = true;
-    return controls || editors;
+    if (decided) this.decided = true;
+    return controls || editors || decided;
   }
 
-  /** The page stylesheet for `meta`, with the controls' and the editors' rules once a field, an `export` or an editor word has arrived. */
-  private style(meta: Record<string, string>): string {
-    return styleOf(meta, this.controls, this.editors);
+  /** The page stylesheet for `meta`, with the controls', the editors' and the decision card's rules once the first of each has arrived. */
+  private style(meta: Record<string, string>, dash = this.ctx.dash): string {
+    return styleOf(meta, { controls: this.controls, editors: this.editors, dash, decisions: this.decided, theme: this.renderOpts.theme });
   }
 
   /**
@@ -450,7 +461,10 @@ class Renderer implements Incremental {
     this.begun = true;
     const m = this.meta();
     this.startMeta = { ...m };
+    // `@width wide` is a dashboard from the first block.
+    if (isWide(m)) this.ctx.layout = 'dashboard';
     const ops: IncrementalOp[] = [{ op: 'style', css: this.style(m) }];
+    if (this.ctx.dash) ops.push({ op: 'dash', on: true });
     const mh = masthead({ meta: m, blocks: [first], data: {}, diagnostics: [] }, this.ctx);
     const consumed = mh.rest.length === 0;
     this.titleBranch = Boolean(m.title) && !consumed;
@@ -487,6 +501,21 @@ class Renderer implements Incremental {
       this.proseFlips++;
       ops.push({ op: 'prose', on: true });
     }
+  }
+
+  /**
+   * The dashboard layout is decided at the first block a dashboard has (kpis, a chart, table, diagram, cards, steps or a grid) unless
+   * a section of prose was read before it, the page is set as prose, or `@width narrow` says no; then it is fixed. Nothing drawn
+   * before that block reads the class (only cards, a grid and a flow diagram do), so the page widens and no unit is drawn again.
+   * A section of prose that comes later is a settle case: the class goes off at `end()` (cause `layout`).
+   */
+  private latchDash(block: Block, ops: IncrementalOp[]): void {
+    if (this.dashFrozen || this.ctx.dash || this.prose || !DASH.has(block.type)) return;
+    this.dashFrozen = true;
+    if (this.meta().width === 'narrow' || hasProseSection(this.rest)) return;
+    this.ctx.layout = 'dashboard';
+    this.dashFlips++;
+    ops.push({ op: 'style', css: this.style(this.startMeta) }, { op: 'dash', on: true });
   }
 
   /** A note or paragraph under a heading can name the choice a table is about: draw the tables again when the picks change. */
@@ -539,6 +568,7 @@ class Renderer implements Incremental {
     const u: U = { id, plan: unit, blocks, mark: this.frontier, html: '', ...inspect(blocks), exportKey: '', version: 0 };
     for (const d of u.diagrams) this.byDiagram.set(d, u);
     for (const b of u.buckets) this.byBucket.set(b, u);
+    for (const b of u.decisions) this.byDecision.set(b, u);
     if (u.exports) {
       u.exportKey = this.exportKey();
       this.exportUnits.push(u);
@@ -635,13 +665,19 @@ class Renderer implements Incremental {
 
   // ------------------------------------------------------------------ updates, seals, drawings
 
-  update(what: DiagramBlock | BucketBlock | { data: string }): Pushed {
+  update(what: DiagramBlock | BucketBlock | DecisionBlock | { data: string }): Pushed {
     if (!('type' in what)) {
       const out = new Batch();
       for (const u of this.units) if (u.reads.has(what.data)) out.add(this.redraw(u));
       return out.result();
     }
     if (what.type === 'bucket') return this.grew(what);
+    // A decision is static markup, so each line is a whole drawing of its unit in place. One whose unit is still held, or is in a grid
+    // or cards run not pushed yet, is drawn when that unit is, from the decision as it stands then.
+    if (what.type === 'decision') {
+      const u = this.byDecision.get(what);
+      return u ? this.redraw(u) : { ops: [] };
+    }
     const u = this.byDiagram.get(what);
     // A diagram not on the page yet, or one that is drawn already (its next seal draws it again): nothing to show.
     if (!u || this.sealed.has(what)) return { ops: [] };
@@ -666,9 +702,9 @@ class Renderer implements Incremental {
     return out.result();
   }
 
-  seal(d: DiagramBlock | BucketBlock): Pushed {
-    // A bucket set has no drawing to finish: every update drew it in full.
-    if (d.type === 'bucket') return { ops: [] };
+  seal(d: DiagramBlock | BucketBlock | DecisionBlock): Pushed {
+    // A bucket set or a decision has no drawing to finish: every update drew it in full.
+    if (d.type === 'bucket' || d.type === 'decision') return { ops: [] };
     const again = this.sealed.has(d);
     this.sealed.add(d);
     const u = this.byDiagram.get(d);
@@ -736,6 +772,10 @@ class Renderer implements Incremental {
     this.reexport(batch);
     // Diagrams still being written are finished: the stream ended.
     for (const d of this.byDiagram.keys()) if (!this.sealed.has(d)) batch.add(this.seal(d));
+    // A late `@status` changes the words a table, a step run or a kpi row drew before it: those units are drawn again (the
+    // masthead's facts follow with the rest of the late meta).
+    if (this.begun && (this.meta().status ?? '') !== (this.startMeta.status ?? ''))
+      for (const u of this.units) if (u.statuses) batch.add(this.redraw(u));
     await Promise.all(this.drawings);
     for (const more of await Promise.all(batch.pend)) ops.push(...more);
 
@@ -748,7 +788,9 @@ class Renderer implements Incremental {
     const whole = new Ctx(doc, this.renderOpts);
     whole.cacheLayouts = true;
     const mh = masthead(doc, whole);
-    const { body, prose, h1At } = await renderMain(doc, whole, mh);
+    const { body, layout, h1At } = await renderMain(doc, whole, mh);
+    const prose = layout === 'prose';
+    const dash = layout === 'dashboard';
     // The subtitle and byline that follow the first `#` heading are children of `<main>` of their own in `render()`, and part of
     // that heading's unit here: the heading is the one unit a late masthead decision changes.
     if (h1At >= 0) body.splice(h1At, 3, body[h1At] + body[h1At + 1] + body[h1At + 2]);
@@ -791,7 +833,12 @@ class Renderer implements Incremental {
       causes.push('prose');
       edits.push({ op: 'prose', on: prose });
     }
-    const equal = settled === 0 && !proseChanged;
+    const dashChanged = dash !== this.ctx.dash;
+    if (dashChanged) {
+      causes.push('layout');
+      edits.push({ op: 'dash', on: dash }, { op: 'style', css: this.style(m, dash) });
+    }
+    const equal = settled === 0 && !proseChanged && !dashChanged;
     if (this.settleOn) ops.push(...edits);
     return {
       ops,
@@ -805,6 +852,7 @@ class Renderer implements Incremental {
       reseals: this.reseals,
       lateMeta,
       proseFlips: this.proseFlips,
+      dashFlips: this.dashFlips,
       shiftAssumed: this.shiftAssumed,
       holdMs: this.holdMs,
       heldGrouped: this.heldGrouped,
@@ -860,6 +908,7 @@ class Renderer implements Incremental {
     const picked = whole.picks.length !== this.ctx.picks.length || whole.picks.some((p, i) => p !== this.ctx.picks[i]);
     if ((u ? u.picks : /<table\b/.test(other)) && picked) return 'picks';
     if (prose !== this.prose) return 'prose';
+    if (whole.dash !== this.ctx.dash) return 'layout';
     return 'other';
   }
 }

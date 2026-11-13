@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { Parser } from 'htmlparser2';
-import { HEX_COLOR, fieldsOf, parse, type ExportFormat, type QuestionBlock } from '@lede-lang/core';
+import { HEX_COLOR, fieldsOf, parse, parseTheme, themeHex, type ExportFormat, type QuestionBlock } from '@lede-lang/core';
 import { compile, render } from '../src/index.ts';
 import { serializeExport } from '../src/export.ts';
 import { browserTest, type Browser } from './chrome.ts';
@@ -78,7 +78,17 @@ const resolved = (v: string): URL[] =>
   });
 const offPage = (u: URL) => (u.protocol === 'file:' ? u.host !== '' : u.protocol !== 'data:' && u.origin !== 'https://lede.test');
 const STYLE_DECL = /^\s*-{0,2}[a-z][a-z-]*\s*:\s*[-#\w.%, ]+\s*$/i;
-const HEAD_TAGS = new Set(['html', 'head', 'meta', 'title', 'style', 'body']);
+/** `link` is a head tag only as `<link rel="canonical" href="https://…">` (D70): the audit judges its shape, and the body still denies it. */
+const HEAD_TAGS = new Set(['html', 'head', 'meta', 'title', 'style', 'body', 'link']);
+/**
+ * The head tags the compiler writes besides the charset, viewport, generator, policy and `description` metas (D70, D80): the Open Graph
+ * and `author` tags, `twitter:card`, and one `lede:NAME` tag per `@meta` fact. Each is judged by shape, with its value escaped.
+ */
+const PAGE_META = new RegExp(
+  '^<meta (?:property="(og:title|og:type|og:description|og:image|article:published_time)"|name="(author|twitter:card|lede:[a-z0-9-]+)") content="([^"<>]*)">$',
+);
+/** The one link a page may have, and where: the head. */
+const CANONICAL = /^<link rel="canonical" href="https:\/\/[^"<>\s]*">$/;
 /** After the head, these may not appear at all (the page's own <body>, </html> and SVG <title>s may). */
 const BODY_DENY = new Set([...DENY, 'meta', 'style', 'head']);
 
@@ -164,15 +174,28 @@ function audit(html: string, opts: { allowRemote?: boolean; fields?: FieldKind[]
       !/^<meta (charset="utf-8"|name="(viewport|generator|description)" content="[^"]*"|http-equiv="Content-Security-Policy" content="[^"]*")>$/.test(
         m[0],
       )
-    )
-      bad.push(`unexpected head meta: ${m[0]}`);
+    ) {
+      const tag = PAGE_META.exec(m[0]);
+      if (!tag) bad.push(`unexpected head meta: ${m[0]}`);
+      else if (tag[1] === 'og:image' && !tag[3].startsWith('https://')) bad.push(`og:image is not an https URL: ${m[0]}`);
+      else if (tag[2] === 'twitter:card' && tag[3] !== 'summary_large_image') bad.push(`unexpected twitter:card: ${m[0]}`);
+      else if (tag[1] === 'og:type' && tag[3] !== 'article') bad.push(`unexpected og:type: ${m[0]}`);
+      else if (tag[1] === 'article:published_time' && !/^\d{4}-\d{2}-\d{2}$/.test(tag[3])) bad.push(`unexpected published_time: ${m[0]}`);
+    }
   }
+  const links = head.match(/<link\b[^>]*>/g) ?? [];
+  if (links.length > 1) bad.push('more than one <link> in the head');
+  for (const l of links) if (!CANONICAL.test(l)) bad.push(`unexpected head link: ${l}`);
   const css = /<style>([\s\S]*?)<\/style>/.exec(head)?.[1] ?? '';
   if (/<\/|url\(|@import|expression\(|javascript:|behavio(u)?r\s*:|-moz-binding/i.test(css))
     bad.push('stylesheet carries markup, url() or script');
   if ((css.match(/\{/g) ?? []).length !== (css.match(/\}/g) ?? []).length) bad.push('stylesheet braces do not balance');
-  for (const m of css.matchAll(/--accent(?:-ink)?:([^;}]*)/g))
-    if (!HEX_COLOR.test(m[1].trim())) bad.push(`accent value is not a hex color: ${m[1]}`);
+  // Every colour token the stylesheet declares is a hex colour: the page's `@accent`, and the operator's brand tokens (D80), which the
+  // renderer writes into every block of the palette.
+  for (const m of css.matchAll(
+    /--(accent(?:-ink)?|bg|surface|fg2?|muted|line2?|accent-(?:tint|line)|info-bg|(?:good|bad|warn)(?:-bg|-line)?|c[1-8m]|h[1-5]):([^;}]*)/g,
+  ))
+    if (!HEX_COLOR.test(m[2].trim())) bad.push(`--${m[1]} value is not a hex color: ${m[2]}`);
 
   // Raw, parser-independent: escaped text never yields `<` followed by a letter, so every such `<` is a real tag. A shell page's two
   // script elements are judged separately below and left out here: the runtime's own source is full of `<` and `=>`.
@@ -274,7 +297,9 @@ function audit(html: string, opts: { allowRemote?: boolean; fields?: FieldKind[]
           const data = us.find((u) => u.protocol === 'data:');
           if (data && !(name === 'img' && k === 'src' && data.pathname.toLowerCase().startsWith('image/')))
             bad.push(`${k}="${v}" on <${name}>: data URL that is not an image on <img src>`);
-          const fetches = !(name === 'a' && k === 'href') && k !== 'cite';
+          // A navigation, not a fetch: a link's href, a quote's cite, and the canonical link in the head (nothing wider: a stylesheet or a
+          // preload is a fetch and stays denied).
+          const fetches = !(name === 'a' && k === 'href') && k !== 'cite' && !(name === 'link' && attribs.rel === 'canonical');
           const urls = k === 'srcset' ? v.split(',').map((s) => s.trim().split(/\s+/)[0] ?? '') : [v];
           if (fetches && !allowRemote && urls.some((x) => resolved(x).some(offPage))) bad.push(`${k}="${v}" on <${name}>: remote fetch`);
         }
@@ -384,6 +409,48 @@ test('the audit catches what it claims to catch', () => {
   ])
     assert.notDeepEqual(audit(page(bad)), [], bad);
   assert.notDeepEqual(audit(page('').replace(csp(false), '')), []);
+  // The head tags the compiler writes pass by shape (D70, D80); a look-alike does not.
+  const withHead = (tags: string) => page('').replace('<title>t</title>', `<title>t</title>\n${tags}`);
+  assert.deepEqual(
+    audit(
+      withHead(
+        [
+          '<meta property="og:title" content="T &amp; &quot;U&quot;">',
+          '<meta property="og:type" content="article">',
+          '<meta property="og:description" content="D">',
+          '<meta name="author" content="A">',
+          '<meta property="article:published_time" content="2026-11-10">',
+          '<meta property="og:image" content="https://x.example/a.png">',
+          '<meta name="twitter:card" content="summary_large_image">',
+          '<link rel="canonical" href="https://x.example/p">',
+          '<meta name="lede:last-reviewed" content="2026-11-10">',
+        ].join('\n'),
+      ),
+    ),
+    [],
+  );
+  for (const bad of [
+    '<meta property="og:image" content="//xss.example/a.png">',
+    '<meta property="og:image" content="http://x.example/a.png">',
+    '<meta property="og:title" content="a"><b">',
+    '<meta property="og:title" content="<script>">',
+    '<meta property="og:refresh" content="0">',
+    '<meta name="twitter:card" content="player">',
+    '<meta name="lede:Owner" content="x">',
+    '<meta name="lede:a b" content="x">',
+    '<meta name="refresh" content="0;url=//xss.example">',
+    '<meta property="article:published_time" content="soon">',
+    '<link rel="canonical" href="//xss.example/p">',
+    '<link rel="canonical" href="http://x.example/p">',
+    '<link rel="canonical" href="javascript:alert(1)">',
+    '<link rel="canonical" href="https://x.example/p"><link rel="canonical" href="https://x.example/q">',
+    '<link rel="stylesheet" href="https://x.example/a.css">',
+    '<link rel="preload" href="https://x.example/a.png" as="image">',
+    '<link rel="icon" href="https://x.example/a.ico">',
+    '<link rel="canonical" href="https://x.example/p" onload="x">',
+  ])
+    assert.notDeepEqual(audit(withHead(bad)), [], bad);
+  assert.notDeepEqual(audit(page('<link rel="canonical" href="https://x.example/p">')), [], 'a link in the body');
   // Question controls pass only by shape, and only as the fields the source declared.
   const ask = '<label class="q q-ask"><span class="q-t">x</span><input type="text" name="a" autocomplete="off"></label>';
   const fieldA = [{ name: 'a', kind: 'ask' }];
@@ -413,6 +480,15 @@ test('the audit catches what it claims to catch', () => {
   ])
     assert.notDeepEqual(audit(page(bad), { fields: fieldA }), [], bad);
   assert.notDeepEqual(audit(page('').replace('a{}', ':root{--accent:red}')), []);
+  for (const decl of [
+    '--bg:red',
+    '--surface:url(//xss.example/a.png)',
+    '--c3:#fff;}body{background:url(//x)',
+    '--h5:var(--bg)',
+    '--info-bg:#12345',
+    '--accent-line:expression(1)',
+  ])
+    assert.notDeepEqual(audit(page('').replace('a{}', `:root{${decl}}`)), [], decl);
   assert.notDeepEqual(audit(page('').replace('a{}', ':root{--accent:#fff;}body{background:url(//x)}')), []);
 });
 
@@ -579,6 +655,45 @@ test(`${corpus.cases.length} single-document cases`, async () => {
     for (const s of c.hasNot ?? []) if (html.includes(s)) fails.push(`${where}: output has ${JSON.stringify(s)}`);
   }
   assert.deepEqual(fails, []);
+});
+
+// ------------------------------------------------------------------ brand tokens (D80)
+
+test(`brand tokens: ${corpus.strings.length} strings in every value position of a tokens file reach no page`, async () => {
+  const fails: string[] = [];
+  const src = '# Brand\n\nBody text.\n\nkpi A | 1 | +1 | good\n';
+  const mark = '#a0a0a0';
+  for (const [i, p] of corpus.strings.entries()) {
+    if (themeHex(p) !== null) continue;
+    const where = `tokens ${i} ${JSON.stringify(p).slice(0, 60)}`;
+    const file = JSON.stringify({
+      accent: p,
+      light: { bg: p, fg2: p, 'accent-line': p },
+      dark: { 'info-bg': p, muted: mark },
+      series: [p, '#2a78d6'],
+      [p]: p,
+    });
+    const r = parseTheme(file);
+    const errors = r.diagnostics.filter((d) => d.severity === 'error');
+    if (errors.length !== 6 || errors.some((d) => d.code !== 'theme-value'))
+      fails.push(`${where}: errors ${JSON.stringify(errors.map((d) => d.code))}, expected six theme-value`);
+    for (const d of r.diagnostics.filter((x) => x.severity === 'warning'))
+      if (!['theme-key', 'theme-adjusted'].includes(d.code)) fails.push(`${where}: unexpected warning ${d.code}`);
+    // What is left is valid hex only: the one good value is kept, and nothing of the payload is in the theme.
+    if (JSON.stringify(r.theme).includes(p) && p.length > 8) fails.push(`${where}: the payload is in the theme`);
+    const { html } = await compile(src, { theme: r.theme });
+    outputs.push({ label: where, html, allowRemote: false, fields: [] });
+    if (html.includes(p)) fails.push(`${where}: the payload is in the page`);
+    if (!html.includes(`--muted:${r.theme.dark.muted};`) || r.theme.dark.muted === '#9a9ea8')
+      fails.push(`${where}: the valid value was not kept`);
+  }
+  assert.deepEqual(fails, []);
+  // A theme of extreme but valid colours is a page like any other.
+  const { theme } = parseTheme(
+    '{"accent":"#fff","light":{"bg":"#000","surface":"#000"},"dark":{"bg":"#fff","surface":"#fff"},"series":["#000","#fff"]}',
+  );
+  const { html } = await compile(src, { theme });
+  outputs.push({ label: 'tokens extreme', html, allowRemote: false, fields: [] });
 });
 
 test('every output passes the audit', () => {

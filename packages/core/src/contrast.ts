@@ -1,14 +1,19 @@
 // WCAG 2.x contrast for `@accent` (D49). The HTML theme sets the accent as the link color and as
 // the ink of note labels, picked table headers and timeline dates, so it is text and needs 4.5:1
-// against every surface it sits on. These surfaces mirror the tokens in render-html's theme.ts;
-// a test there holds the two in step.
+// against every surface it sits on. The surfaces are read from the palette table (`palette.ts`), which
+// the renderer writes its stylesheet from, so the two cannot drift.
+import { paletteSurfaces, type ThemeName } from './palette.ts';
 
+/**
+ * The surfaces of the house palette, `paper`. Kept for compatibility: it is exported from `@lede-lang/core`, and is now derived from
+ * the palette table. `paletteSurfaces` is the entry point.
+ */
 export const THEME_SURFACES = {
-  light: { bg: '#fbfbfa', surface: '#ffffff', 'accent-tint': '#e9effb' },
-  dark: { bg: '#131416', surface: '#1b1c1f', 'accent-tint': '#1b2944' },
+  light: paletteSurfaces('paper', 'light'),
+  dark: paletteSurfaces('paper', 'dark'),
 } as const;
 
-export type ThemeName = keyof typeof THEME_SURFACES;
+export type { ThemeName };
 
 /** WCAG AA: 4.5:1 for normal-size text, 3:1 for non-text marks (borders, bars, rules). */
 export const AA_TEXT = 4.5;
@@ -26,12 +31,14 @@ export function parseHex(s: string): [number, number, number, number] | null {
   return [n(0), n(2), n(4), h.length === 8 ? n(6) / 255 : 1];
 }
 
+/** An sRGB channel, 0..255, as linear light, 0..1. */
+export function toLinear(c: number): number {
+  const v = c / 255;
+  return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+}
+
 function luminance([r, g, b]: readonly number[]): number {
-  const lin = (c: number) => {
-    const v = c / 255;
-    return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
-  };
-  return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+  return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
 }
 
 /** WCAG contrast ratio of two opaque colors, 1 to 21. */
@@ -40,9 +47,13 @@ export function contrastRatio(a: readonly number[], b: readonly number[]): numbe
   return (hi + 0.05) / (lo + 0.05);
 }
 
+/** `contrastRatio` rounded down to two decimals, so a value at a boundary never reads as passing. */
+export function flooredRatio(a: readonly number[], b: readonly number[]): number {
+  return Math.floor(contrastRatio(a, b) * 100) / 100;
+}
+
 /**
- * The lowest contrast of `accent` against the theme's surfaces, rounded down to two decimals so a
- * value at the boundary never reads as passing. A translucent accent is composited over each
+ * The lowest contrast of `accent` against the theme's surfaces (`flooredRatio`). A translucent accent is composited over each
  * surface first, which is what the browser paints. Null when `accent` is not a hex color.
  */
 export function accentContrast(accent: string, theme: ThemeName): { ratio: number; against: string } | null {
@@ -53,7 +64,7 @@ export function accentContrast(accent: string, theme: ThemeName): { ratio: numbe
     const bg = parseHex(hex)!;
     const a = fg[3];
     const painted = [0, 1, 2].map((i) => fg[i] * a + bg[i] * (1 - a));
-    const ratio = Math.floor(contrastRatio(painted, bg) * 100) / 100;
+    const ratio = flooredRatio(painted, bg);
     if (!worst || ratio < worst.ratio) worst = { ratio, against: name };
   }
   return worst;

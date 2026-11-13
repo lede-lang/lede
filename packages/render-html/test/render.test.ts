@@ -84,6 +84,18 @@ test('remote images are not loaded unless allowed', async () => {
   assert.match(await render(doc, { fragment: true, allowRemote: true }), /<img src="https:\/\/example.com\/a.png"/);
 });
 
+test('a data: image is not lazy, any other image is (D80)', async () => {
+  const img = async (src: string) =>
+    (await render(parse(`image ${src} "A"`), { fragment: true, allowRemote: true })).match(/<img [^>]*>/)?.[0];
+  assert.equal(await img('data:image/png;base64,iVBORw0KGgo='), '<img src="data:image/png;base64,iVBORw0KGgo=" alt="A" decoding="async">');
+  assert.equal(
+    await img('DATA:image/gif;base64,R0lGODlhAQABAAAAACw='),
+    '<img src="DATA:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="A" decoding="async">',
+  );
+  assert.equal(await img('fig.png'), '<img src="fig.png" alt="A" loading="lazy" decoding="async">');
+  assert.equal(await img('https://example.com/a.png'), '<img src="https://example.com/a.png" alt="A" loading="lazy" decoding="async">');
+});
+
 test('inline markup escapes html and drops unsafe links', async () => {
   const out = await render(parse('a <b> **bold** `x<y>` [ok](https://a.b) [bad](javascript:alert(1))'), { fragment: true });
   assert.match(out, /a &lt;b&gt; <strong>bold<\/strong> <code>x&lt;y&gt;<\/code> <a href="https:\/\/a.b">ok<\/a> bad/);

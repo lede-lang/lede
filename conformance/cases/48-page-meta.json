@@ -1,0 +1,78 @@
+{
+  "meta": {
+    "title": "Order events review",
+    "subtitle": "Which queue carries order events",
+    "author": "Ana Ruiz, Platform",
+    "date": "2026-11-10",
+    "description": "A short review of the queue options for order events.",
+    "image": "https://example.com/share/queue.png",
+    "canonical": "https://example.com/reviews/order-events",
+    "status": "Parked=neutral, Beta=info, Needs sign-off=warn",
+    "meta": "Owner | Ana Ruiz\nStatus | Needs sign-off\nStage | Beta\nReviewed | 2026-11-10\nReviewers | Platform team, Support, and a long list of other people whose names make this row long enough to wrap"
+  },
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Order events review",
+      "line": 14
+    },
+    {
+      "type": "paragraph",
+      "text": "First paragraph of the review, a few words long enough to be a standfirst for the page.",
+      "line": 16
+    },
+    {
+      "type": "table",
+      "data": "_table1",
+      "cols": null,
+      "sort": null,
+      "limit": null,
+      "title": null,
+      "line": 18
+    },
+    {
+      "type": "kpis",
+      "items": [
+        {
+          "label": "Options",
+          "value": "4",
+          "delta": "Parked",
+          "tone": null,
+          "note": "Beta",
+          "ref": null
+        }
+      ],
+      "line": 20
+    }
+  ],
+  "data": {
+    "_table1": {
+      "name": "_table1",
+      "columns": [
+        "Option",
+        "State"
+      ],
+      "rows": [
+        [
+          "SQS",
+          "Beta"
+        ],
+        [
+          "Kafka",
+          "Parked"
+        ],
+        [
+          "Rabbit",
+          "Needs sign-off"
+        ],
+        [
+          "Pulsar",
+          "Done"
+        ]
+      ],
+      "line": 18
+    }
+  },
+  "diagnostics": []
+}

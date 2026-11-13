@@ -1,0 +1,13 @@
+# Pipe rows
+
+data costs = service,usd,note
+costs: Compute | 18,400 | "burst" pricing, Q3
+costs: Storage, S3 | 6,100 | archive tier; cold
+costs: A|B | 2,000 | a pipe with no space around it is text
+costs: Network | 1,500 |
+costs: | 900 | the first field may be empty
+costs: **Bold, with comma** | 300 | inline markup stays
+data costs += Support,250,"the old row form still works"
+
+note: see below | this is not a data name, so it is prose
+chart hbar costs x=service y=usd

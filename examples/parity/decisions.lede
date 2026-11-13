@@ -1,0 +1,36 @@
+@title Order events: three calls
+@subtitle One settled, one open, one deferred
+@author Platform team
+@date 2026-11-12
+
+Three decisions on the order-events platform, as they stand today.
+
+## Queue
+
+decision queue "Which queue carries order events?" status=settled by=2026-12-01
+queue: option sqs "SQS" | managed, 14-day retention | chosen
+queue: option kafka "Kafka" | replay, ops cost | rejected
+queue: option sns "SNS with a fan-out topic per consumer group" | no replay, so it cannot serve the audit job | rejected
+queue: question "Do we need replay beyond 14 days?" | answered: no
+queue: question "Who pays for the cross-account traffic?"
+queue: role decides "Ana Ruiz"
+queue: role consulted "Platform team"
+queue: role informed "Support"
+
+## Region
+
+The replica must sit near the customers who read it most.
+
+decision region "Where does the replica run?" by=2026-11-30
+region: option eu "eu-west-1" | lowest latency for EU readers
+region: option us "us-east-2" | already holds the data plane and the budget
+region: question "Does the contract allow EU data in us-east-2?"
+region: role decides "Priya Natarajan-Wetherspoon-Hargreaves"
+
+## Pager vendor
+
+decision vendor "Which vendor do we pick for paging?" status=deferred by=Q1
+vendor: option a "Vendor A" | cheaper per seat
+vendor: option b "Vendor B" | better on-call experience
+vendor: question "Does legal need to review the data terms?" | yes, by January
+vendor: role decides "Head of Operations"

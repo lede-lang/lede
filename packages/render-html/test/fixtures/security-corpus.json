@@ -257,6 +257,16 @@
    "lede": "diagram s sequence title=\"Mk44 {Q}\"\ns: a \"Mk45 {Q}\" user\ns: b \"x\" kind=\"{Q}\"\ns: a -> b : Mk46 {T}\ns: note b : Mk47 {T}\ns: alt \"Mk48 {Q}\"\ns: b --> a : ok\ns: else \"{Q}\"\ns: b --> a : no\ns: end"
   },
   {
+   "name": "flow edge tones and key",
+   "skip": "<?-x?-{1,2}>|-x-",
+   "lede": "diagram ft title=\"Mk75 {Q}\"\nft: n1 \"x\"\nft: n2 \"y\"\nft: n1 -> n2 : Mk76 {T} | good\nft: n2 -x-> n1 : {T} | bad\nft: n1 -> n2 | info\nft: n1 --> n2 : Mk77 | warn\nft: legend"
+  },
+  {
+   "name": "sequence message tones, drawing and list",
+   "skip": "<?-x?-{1,2}>|-x-",
+   "lede": "diagram st sequence title=\"Mk78 {Q}\"\nst: a \"x\"\nst: b \"y\"\nst: a -> b : Mk79 {T} | good\nst: b -> b : {T} | neutral\nst: b --> a | bad\n\ndiagram sl sequence title=\"Mk80\"\nsl: a \"1\"\nsl: b \"2\"\nsl: c \"3\"\nsl: d \"4\"\nsl: e \"5\"\nsl: a -> e : Mk81 {T} | warn\nsl: e --> a | info"
+  },
+  {
    "name": "ask question",
    "lede": "ask q1 | Mk49 {T}"
   },
@@ -338,6 +348,46 @@
    "name": "preset value, an option",
    "lede": "choose pa5 | {C}, Mk72\npreset pb3 | Mk73 | pa5=\"{Q}\"",
    "skip": "^\\s|\\s$|[\\u0000-\\u0008\\u000B\\u000C\\u000E-\\u001F]"
+  },
+  {
+   "name": "pipe rows of a data set",
+   "lede": "data pr = Mk75,b; x,1\npr: {T} | Mk76\npr: Mk77 | {T}\ntable pr"
+  },
+  {
+   "name": "inline table, pipe header and rows",
+   "lede": "table title=\"Mk78 {Q}\" = Mk79 {T} | Mk80\n: Mk81 {T} | {T}\n: {T}, Mk82; | {T}"
+  },
+  {
+   "name": "decision question and date",
+   "lede": "decision dd1 \"Mk83 {Q}\" by={C}"
+  },
+  {
+   "name": "decision option label and why",
+   "lede": "decision dd2 \"Mk84\"\ndd2: option oa \"Mk85 {Q}\" | {C} | chosen\ndd2: option ob \"Mk86\" | Mk87 | rejected"
+  },
+  {
+   "name": "decision question and answer",
+   "lede": "decision dd3 \"Mk88\"\ndd3: question \"Mk89 {Q}\" | answered: Mk90 {T}\ndd3: question \"{Q}\" | {C}"
+  },
+  {
+   "name": "decision role",
+   "lede": "decision dd4 \"Mk91\"\ndd4: role decides \"Mk92 {Q}\"\ndd4: role consulted {C}"
+  },
+  {
+   "name": "status words in a table, a kpi and a step",
+   "lede": "@status {T}=good, Mk75=warn\ntable = h,Mk75; {C},Mk75\nkpi Mk76 | 1 | {T} | {T}\nstep Mk77 | {T}"
+  },
+  {
+   "name": "note kinds",
+   "lede": "! Tip: Mk78 {T}\n! Recommendation: **Mk79.** {T}\n! Decision: {T} Mk80\n! {T}: Mk81 recommended"
+  },
+  {
+   "name": "meta image and canonical",
+   "lede": "@image {T}\n@canonical {T}"
+  },
+  {
+   "name": "meta facts",
+   "lede": "@status {T}=good, Mk82=info\n@meta Mk82 {T} | Mk83 {T}\n@meta Status | {T}\n@meta Stage | Mk82\n@meta {T} | Mk84"
   }
  ],
  "cases": [
@@ -1033,6 +1083,30 @@
    ],
    "hasNot": [
     "<img"
+   ]
+  },
+  {
+   "id": "image-38",
+   "src": "image data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBvbmxvYWQ9ImFsZXJ0KCdvbmxvYWQnKSI+PHNjcmlwdD5hbGVydCgnc2NyaXB0Jyk8L3NjcmlwdD48aW1hZ2UgeGxpbms6aHJlZj0iaHR0cHM6Ly94c3MuZXhhbXBsZS9sZWFrLnBuZyIgd2lkdGg9IjgiIGhlaWdodD0iOCIvPjxyZWN0IHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiNjMDAiLz48L3N2Zz4K \"alt\"",
+   "has": [
+    "<img src=\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBvbmxvYWQ9ImFsZXJ0KCdvbmxvYWQnKSI+PHNjcmlwdD5hbGVydCgnc2NyaXB0Jyk8L3NjcmlwdD48aW1hZ2UgeGxpbms6aHJlZj0iaHR0cHM6Ly94c3MuZXhhbXBsZS9sZWFrLnBuZyIgd2lkdGg9IjgiIGhlaWdodD0iOCIvPjxyZWN0IHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiNjMDAiLz48L3N2Zz4K\" alt=\"alt\" decoding=\"async\">"
+   ],
+   "hasNot": [
+    "<script",
+    "onload",
+    "loading=\"lazy\""
+   ]
+  },
+  {
+   "id": "image-39",
+   "src": "image data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIG9ubG9hZD0iYWxlcnQoMikiPjxmb3JlaWduT2JqZWN0IHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxpZnJhbWUgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGh0bWwiIHNyYz0iaHR0cHM6Ly94c3MuZXhhbXBsZS9mcmFtZSIvPjwvZm9yZWlnbk9iamVjdD48YSBocmVmPSJqYXZhc2NyaXB0OmFsZXJ0KDMpIj48cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4Ii8+PC9hPjwvc3ZnPg== \"alt\"",
+   "has": [
+    "<img src=\"data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIG9ubG9hZD0iYWxlcnQoMikiPjxmb3JlaWduT2JqZWN0IHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxpZnJhbWUgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGh0bWwiIHNyYz0iaHR0cHM6Ly94c3MuZXhhbXBsZS9mcmFtZSIvPjwvZm9yZWlnbk9iamVjdD48YSBocmVmPSJqYXZhc2NyaXB0OmFsZXJ0KDMpIj48cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4Ii8+PC9hPjwvc3ZnPg==\" alt=\"alt\" decoding=\"async\">"
+   ],
+   "hasNot": [
+    "<script",
+    "onload",
+    "loading=\"lazy\""
    ]
   },
   {
@@ -1905,6 +1979,25 @@
    ]
   },
   {
+   "id": "diagram-19",
+   "src": "diagram f\nf: a -> b : <script>alert(1)</script> | good\nf: b -x-> a : \"><img src=x onerror=alert(1)> | bad\nf: a -> b | warn\nf: legend",
+   "has": [
+    "class=\"edge tn t-good\"",
+    "marker id=\"d1-a-bad\""
+   ]
+  },
+  {
+   "id": "diagram-20",
+   "src": "diagram f\nf: a -> b | onmouseover\nf: a -> b : x | onmouseover\nf: a -> b : y | <script>alert(1)</script>\nf: a -> b : \"z | </text><script>alert(1)</script>\" | good\nf: legend",
+   "warnings": [
+    "edge-tone"
+   ]
+  },
+  {
+   "id": "diagram-21",
+   "src": "diagram s sequence\ns: a \"A\"\ns: b \"B\"\ns: c \"C\"\ns: d \"D\"\ns: e \"E\"\ns: a -> e : <img src=x onerror=alert(1)> | bad\ns: e --> a : </text><script>alert(1)</script> | info\ns: a -> a | warn"
+  },
+  {
    "id": "blocks-01",
    "src": "kpi <script>alert(1)</script> | <img src=x onerror=alert(1)> | +1 <svg onload=alert(1)> | good\nkpi B | 2 | -1 | bad"
   },
@@ -2291,6 +2384,337 @@
    "shell": true,
    "hasNot": [
     "<script>alert(1)"
+   ]
+  },
+  {
+   "id": "pipe-01",
+   "src": "data t = a,b\nt: <script>alert(1)</script> | <img src=x onerror=alert(1)>\ntable t",
+   "has": [
+    "&lt;script&gt;"
+   ],
+   "hasNot": [
+    "<script>alert(1)"
+   ]
+  },
+  {
+   "id": "pipe-02",
+   "src": "table = <svg onload=alert(1)> | \"><script>alert(1)</script>\n: [x](javascript:alert(1)) | **<b onclick=x>y</b>**\n: a | </td><script>alert(1)</script>",
+   "has": [
+    "&lt;svg"
+   ],
+   "hasNot": [
+    "<script>alert(1)",
+    "<svg onload"
+   ]
+  },
+  {
+   "id": "pipe-03",
+   "src": "data t = a,b\nt: x | y\ntable t\nt: \"</script><script>alert(1)</script> | ![x](//xss.example/a.png)",
+   "hasNot": [
+    "<script>alert(1)"
+   ],
+   "has": [
+    "&lt;/script&gt;&lt;script&gt;"
+   ]
+  },
+  {
+   "id": "decision-01",
+   "src": "decision a \"Q?\" status=<img src=x onerror=alert(1)> by=<script>alert(1)</script>\na: option x \"L\" | w | <img src=x onerror=alert(1)>",
+   "warnings": [
+    "decision-status"
+   ],
+   "has": [
+    "Q?"
+   ],
+   "hasNot": [
+    "<img src=x",
+    "<script>alert"
+   ]
+  },
+  {
+   "id": "decision-02",
+   "src": "decision a \"Q?\"\na: role <img/src=x/onerror=alert(1)> \"Ana\"\na: role </dt><script>alert(1)</script> \"Bo\"",
+   "has": [
+    "Ana"
+   ],
+   "hasNot": [
+    "<img/src=x",
+    "<script>alert"
+   ]
+  },
+  {
+   "id": "decision-03",
+   "src": "decision a \"<img src=x onerror=alert(1)>\"\na: option x \"<img src=x onerror=alert(1)>\" | \"<img src=x onerror=alert(1)>\" | chosen\na: question \"<img src=x onerror=alert(1)>\" | answered: <img src=x onerror=alert(1)>\na: role decides \"<img src=x onerror=alert(1)>\"",
+   "hasNot": [
+    "<img src=x"
+   ]
+  },
+  {
+   "id": "decision-04",
+   "src": "decision a \"Q?\"\na: option x \"L\" | \"see [a](javascript:alert(1)) and [b](data:text/html,x)\" | chosen\na: question \"Q [c](JaVaScRiPt:alert(1))\" | answered: [d](vbscript:x)\na: role decides \"[e](javascript:x)\"",
+   "has": [
+    "see"
+   ],
+   "hasNot": [
+    "javascript:",
+    "vbscript:",
+    "data:text"
+   ]
+  },
+  {
+   "id": "decision-05",
+   "src": "decision a \"</section><script>alert(1)</script>\" by=\"</time><script>alert(2)</script>\"\na: option x \"</li></ul><script>alert(3)</script>\" | </span> | rejected",
+   "hasNot": [
+    "<script>alert"
+   ]
+  },
+  {
+   "id": "decision-06",
+   "src": "decision a \"Q?\" by=\"2026-12-01\\\" onclick=\\\"alert(1)\"\na: option x \"L\" | w | chosen",
+   "has": [
+    "Q?"
+   ],
+   "hasNot": [
+    "onclick=\"",
+    "datetime=\"2026-12-01\" "
+   ]
+  },
+  {
+   "id": "decision-07",
+   "src": "decision a \"Q?\"\na: option x \"L\" | \"<style>*{display:none}</style>\" | chosen\na: question \"<a href=//xss.example/x>q</a>\" | answered: <img src=//xss.example/a.png>\na: role decides \"<link rel=stylesheet href=//xss.example/a.css>\"",
+   "hasNot": [
+    "<style>*{display",
+    "<a href=//",
+    "<link ",
+    "<img src=//"
+   ]
+  },
+  {
+   "id": "status-01",
+   "src": "@status <img src=x onerror=alert(1)>=good\n\ntable = a,b; \"<img src=x onerror=alert(1)>\",1; ok,2",
+   "has": [
+    "<span class=\"pill good\">&lt;img src=x onerror=alert(1)&gt;</span>"
+   ],
+   "hasNot": [
+    "<img src=x"
+   ]
+  },
+  {
+   "id": "status-02",
+   "src": "@status Done=good<script>alert(1)</script>, \"><script>alert(2)</script>=bad\n\nText.",
+   "warnings": [
+    "status-value"
+   ],
+   "has": [
+    "Text."
+   ],
+   "hasNot": [
+    "<script",
+    "alert("
+   ]
+  },
+  {
+   "id": "status-03",
+   "src": "@status constructor=good, __proto__=bad, toString=info, hasOwnProperty=warn\n\ntable = k,v; constructor,1; __proto__,2; toString,3; hasOwnProperty,4",
+   "has": [
+    "<span class=\"pill good\">constructor</span>",
+    "<span class=\"pill bad\">__proto__</span>",
+    "<span class=\"pill info\">toString</span>",
+    "<span class=\"pill warn\">hasOwnProperty</span>"
+   ]
+  },
+  {
+   "id": "status-04",
+   "src": "@status a=good\" onclick=\"x, b=good bad, c=good;background:url(//xss.example/a.png), d=\n\ntable = k,v; a,1; b,2; c,3; d,4",
+   "warnings": [
+    "status-value"
+   ],
+   "hasNot": [
+    "onclick",
+    "xss.example",
+    "class=\"pill"
+   ]
+  },
+  {
+   "id": "status-05",
+   "src": "@status Blocked=good\n@status blocked=info\n\ntable = k,v; Blocked,1; Done,2",
+   "has": [
+    "<span class=\"pill info\">Blocked</span>"
+   ]
+  },
+  {
+   "id": "note-01",
+   "src": "! Tip: <img src=x onerror=alert(1)>\n! Recommended: <script>alert(1)</script>",
+   "has": [
+    "<b class=\"nl\">Tip</b>&lt;img src=x onerror=alert(1)&gt;",
+    "<b class=\"nl\">Recommended</b>&lt;script&gt;"
+   ],
+   "hasNot": [
+    "<img src=x",
+    "<script"
+   ]
+  },
+  {
+   "id": "note-02",
+   "src": "! constructor: x\n! __proto__: y\n! toString: z\n! hasOwnProperty: w",
+   "has": [
+    "<b class=\"nl\">Note</b>constructor: x",
+    "<b class=\"nl\">Note</b>__proto__: y",
+    "<b class=\"nl\">Note</b>toString: z",
+    "<b class=\"nl\">Note</b>hasOwnProperty: w"
+   ]
+  },
+  {
+   "id": "note-03",
+   "src": "! Tip: **<script>alert(1)</script>.** x\n! Example: **<img src=x onerror=alert(1)>:** y",
+   "hasNot": [
+    "<script",
+    "<img src=x"
+   ]
+  },
+  {
+   "id": "note-04",
+   "src": "! Warning: <script>alert(1)</script>",
+   "warnings": [
+    "note-kind"
+   ],
+   "hasNot": [
+    "<script"
+   ]
+  },
+  {
+   "id": "note-05",
+   "src": "! TIP\"><script>alert(1)</script>: x\n! Tip<b onclick=x>: y\n! \"><b class=\"nl\" onclick=\"x\">Done</b>: z",
+   "hasNot": [
+    "<script",
+    "<b onclick",
+    "onclick=\"x\""
+   ]
+  },
+  {
+   "id": "meta-url-01",
+   "src": "@image https://x.example/a.png?q=\"><script>alert(1)</script>\n@canonical https://x.example/p?q=\"><script>alert(2)</script>",
+   "has": [
+    "<meta property=\"og:image\" content=\"https://x.example/a.png?q=%22%3E%3Cscript%3Ealert(1)%3C/script%3E\">",
+    "<link rel=\"canonical\" href=\"https://x.example/p?q=%22%3E%3Cscript%3Ealert(2)%3C/script%3E\">"
+   ],
+   "hasNot": [
+    "<script"
+   ]
+  },
+  {
+   "id": "meta-url-02",
+   "src": "@image https://x.example/a/../b.png\n@canonical HTTPS://X.example",
+   "has": [
+    "content=\"https://x.example/b.png\"",
+    "href=\"https://x.example/\""
+   ]
+  },
+  {
+   "id": "meta-url-03",
+   "src": "@canonical //xss.example/p\n@image //xss.example/a.png",
+   "warnings": [
+    "meta-url"
+   ],
+   "hasNot": [
+    "xss.example",
+    "og:image",
+    "canonical",
+    "twitter:card"
+   ]
+  },
+  {
+   "id": "meta-url-04",
+   "src": "@image javascript:alert(1)\n@canonical data:text/html,<script>alert(1)</script>",
+   "warnings": [
+    "meta-url"
+   ],
+   "hasNot": [
+    "javascript:",
+    "data:text",
+    "<script",
+    "og:image",
+    "canonical"
+   ]
+  },
+  {
+   "id": "meta-url-05",
+   "src": "@image http://xss.example/a.png\n@canonical http://xss.example/p",
+   "warnings": [
+    "meta-url"
+   ],
+   "hasNot": [
+    "xss.example",
+    "og:image",
+    "twitter:card"
+   ]
+  },
+  {
+   "id": "meta-url-06",
+   "src": "@image \u0001https://xss.example/a.png\n@canonical https:\\\\xss.example\\p",
+   "has": [
+    "https://xss.example/a.png",
+    "href=\"https://xss.example/p\""
+   ]
+  },
+  {
+   "id": "meta-head-01",
+   "src": "@title </title><script>alert(1)</script>\n@description \"><script>alert(1)</script>\n@author \"><script>alert(1)</script>, x\n@date \"><script>alert(1)</script>\n\nText.",
+   "hasNot": [
+    "<script"
+   ]
+  },
+  {
+   "id": "meta-head-02",
+   "src": "@date 2026-11-10\"><script>alert(1)</script>\n@author a\" onload=\"x\n\nText.",
+   "hasNot": [
+    "<script",
+    "published_time"
+   ]
+  },
+  {
+   "id": "meta-fact-01",
+   "src": "@meta \"><script>alert(1)</script> | </dd><script>alert(2)</script>\n@meta <img src=x onerror=alert(1)> | <img src=x onerror=alert(2)>\n@meta Status | [x](javascript:alert(1))",
+   "hasNot": [
+    "<script",
+    "<img src=x",
+    "href=\"javascript:"
+   ]
+  },
+  {
+   "id": "meta-fact-02",
+   "src": "@meta constructor | __proto__\n@meta toString | hasOwnProperty\n\nText.",
+   "has": [
+    "<dt>constructor</dt><dd>__proto__</dd>",
+    "<meta name=\"lede:tostring\" content=\"hasOwnProperty\">"
+   ]
+  },
+  {
+   "id": "meta-fact-03",
+   "src": "@meta Owner\n@meta | x\n@meta y |\n@meta ok | fine",
+   "errors": [
+    "meta-field"
+   ],
+   "has": [
+    "<dt>ok</dt>"
+   ]
+  },
+  {
+   "id": "meta-fact-04",
+   "src": "@meta x\"><meta http-equiv=\"refresh\" content=\"0;url=//xss.example\"> | y\n\nText.",
+   "hasNot": [
+    "http-equiv=\"refresh\"",
+    "<meta http-equiv=\"refresh"
+   ]
+  },
+  {
+   "id": "meta-fact-05",
+   "src": "@meta Done | Done\n@status Done=bad\n@meta a | <b>x</b>\n\nText.",
+   "has": [
+    "<span class=\"pill bad\">Done</span>"
+   ],
+   "hasNot": [
+    "<b>x</b>"
    ]
   }
  ]

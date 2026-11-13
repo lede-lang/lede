@@ -134,8 +134,8 @@ Releases are tagged and described in [CHANGELOG.md](CHANGELOG.md), which is writ
 ## Acknowledgements
 
 Lede's diagram styling was inspired by [diagram-design](https://github.com/cathrynlavery/diagram-design) by Cathryn Lavery (MIT):
-hairline borders, one accent on the focal nodes, small mono tags and no shadows (edge labels are set in the page's sans, as
-written, D79). Lede shares no code with it; its diagrams are laid
+hairline borders, one accent on the focal nodes, small mono tags and no shadows (edge and group labels are set in the page's sans, as
+written, D79, D80). Lede shares no code with it; its diagrams are laid
 out by elkjs and drawn by Lede's own renderer (D8).
 
 ## Licence

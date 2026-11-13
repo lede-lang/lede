@@ -234,10 +234,10 @@ export function parseCsvFile(text: string): { rows: string[][]; unclosedLine: nu
 }
 
 /**
- * Index of the first `|` that is not inside a double-quoted field, or -1. A quote opens only at the start of a field, as in
- * `parseInlineCsv`, so `12" pipe | Which?` still finds its `|`.
+ * Index of the first `|` (or `char`) that is not inside a double-quoted field, or -1. A quote opens only at the start of a field, as
+ * in `parseInlineCsv`, so `12" pipe | Which?` still finds its `|`.
  */
-export function pipeOutsideQuotes(s: string): number {
+export function pipeOutsideQuotes(s: string, char: '|' | ';' = '|'): number {
   let i = 0;
   let start = true;
   while (i < s.length) {
@@ -249,12 +249,41 @@ export function pipeOutsideQuotes(s: string): number {
         continue;
       }
     }
-    if (s[i] === '|') return i;
+    if (s[i] === char) return i;
     if (s[i] === ',' || s[i] === ';') start = true;
     i++;
   }
   return -1;
 }
+
+/**
+ * The fields of a pipe row (spec §4.11, D80): the text split at every `|` that has whitespace, or an end of the text, on each side,
+ * each field trimmed. A `|` that touches other text (`a|b`) is part of its field, and so is a `|` inside a
+ * `code span`; nothing else is special: `,` `;` and `"` are ordinary characters. Two pipes with only blanks between them hold an empty field. One field back means the text has no separator.
+ */
+export function splitPipes(s: string): string[] {
+  const fields: string[] = [];
+  let from = 0;
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] === '`') {
+      // A `code span` is one piece of a field: a pipe inside it is text (`a | b`), as in Markdown tables.
+      let run = 1;
+      while (s[i + run] === '`') run++;
+      const close = s.indexOf('`'.repeat(run), i + run);
+      if (close >= 0) i = close + run - 1;
+      else i += run - 1;
+      continue;
+    }
+    if (s[i] !== '|' || !(i === 0 || /\s/.test(s[i - 1])) || !(i === s.length - 1 || /\s/.test(s[i + 1]))) continue;
+    fields.push(s.slice(from, i).trim());
+    from = i + 1;
+  }
+  fields.push(s.slice(from).trim());
+  return fields;
+}
+
+/** A date written `YYYY-MM-DD`: a `date` option's value, and what a `<time>` may carry as its `datetime`. */
+export const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 /** Parse a number the way charts read data cells: tolerates `,` `$` `%` and units. */
 export function num(v: string | undefined): number | null {

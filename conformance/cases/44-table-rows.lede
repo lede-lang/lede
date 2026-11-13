@@ -1,0 +1,24 @@
+# Table rows
+
+table = Option | Cost, USD | Verdict
+: Managed queue | 1,200 | **Fits**, mostly; cheap
+: Self-hosted | 3,400 | Needs an on-call rota
+: Hybrid | 2,100 | `maybe`
+Text straight after the rows ends the table.
+
+table title="Sizes" heat = Size | Cost
+: Small | 10
+: Large | 40
+
+table = Name,Role
+: Ana | Lead
+: Bo | Dev
+
+: a colon line after a blank line is prose
+table = a,b; 1,2
+: a table that has a row on its line takes none, so this is prose too
+
+table = Key,Meaning; a | b,either
+
+table = Key | Meaning
+: a | either

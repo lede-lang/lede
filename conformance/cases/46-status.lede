@@ -1,0 +1,6 @@
+@title Release board
+@status Shipped=good, Parked=neutral, Needs review=warn
+@status Escalated=bad, Beta=info, Blocked=info
+
+table = Item,State; Login,Shipped; Export,Needs review; Search,Blocked
+kpi Releases | 12 | Shipped | Parked

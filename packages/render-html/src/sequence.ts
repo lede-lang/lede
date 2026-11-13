@@ -1,6 +1,6 @@
 import type { DiagramBlock, DiagramFrame } from '@lede-lang/core';
 import { esc, maxOf, plain, sansLabelW, snap4, textWidth } from './util.ts';
-import { figure, kindClass, markers, nodeSvg, svgOpen } from './diagram.ts';
+import { arrowRef, edgeWords, figure, kindClass, listLabel, markers, nodeSvg, svgOpen, toneClass } from './diagram.ts';
 
 const ELABEL = 12; // message labels, desktop (up from 10)
 const PHONE_W = 360;
@@ -162,7 +162,7 @@ function seqList(d: DiagramBlock): string {
     else {
       const { e } = it.m;
       const cls = [inFrame ? 'in' : '', e.style === 'dashed' ? 'reply' : ''].filter(Boolean).join(' ');
-      out.push(`<li${cls ? ` class="${cls}"` : ''}>${b(e.from)} → ${b(e.to)}${e.label ? `: ${esc(e.label)}` : ''}</li>`);
+      out.push(`<li${cls ? ` class="${cls}"` : ''}>${b(e.from)} → ${b(e.to)}${listLabel(e)}</li>`);
     }
   }
   out.push('</ol>');
@@ -373,17 +373,19 @@ function drawSeq(d: DiagramBlock, uid: string, phone: boolean): { svg: string; W
     const { m } = it;
     const x1 = xs[m.a];
     const x2 = xs[m.b];
-    const cls = ['edge', m.e.style === 'dashed' ? 'dash' : ''].filter(Boolean).join(' ');
+    const tone = toneClass(m.e.tone);
+    const cls = ['edge', m.e.style === 'dashed' ? 'dash' : ''].filter(Boolean).join(' ') + tone;
+    const head = arrowRef(uid, m.e.tone);
     const n = String(++msgNo);
     const text = m.e.label;
     if (m.a === m.b) {
       const loopTop = y + 8;
       if (!phone) {
-        body.push(`<path class="${cls}" d="M${x1},${loopTop} H${x1 + 32} V${loopTop + 20} H${x1 + 2}" marker-end="url(#${uid}-a)"/>`);
+        body.push(`<path class="${cls}" d="M${x1},${loopTop} H${x1 + 32} V${loopTop + 20} H${x1 + 2}" marker-end="${head}"/>`);
         if (text) {
           const lw = lm(text) + 12;
           body.push(
-            `<rect class="lmask" x="${x1 + 40}" y="${loopTop + 2}" width="${lw.toFixed(1)}" height="16" rx="2"/><text class="elabel" x="${x1 + 46}" y="${loopTop + 13.5}">${esc(text)}</text>`,
+            `<rect class="lmask${tone}" x="${x1 + 40}" y="${loopTop + 2}" width="${lw.toFixed(1)}" height="16" rx="2"/><text class="elabel${tone}" x="${x1 + 46}" y="${loopTop + 13.5}">${esc(text)}</text>`,
           );
         }
         body.push(`<text class="seqn" x="${x1 - 8}" y="${loopTop + 4}" text-anchor="end">${n}</text>`);
@@ -396,17 +398,15 @@ function drawSeq(d: DiagramBlock, uid: string, phone: boolean): { svg: string; W
       const room = Math.max(40, right ? W - 4 - (x1 + 40) : x1 - 4 - 40);
       const lines = text ? wrap(text, room - 8, lm, 4, true) : [];
       const h = Math.max(28, lines.length * LH + 4);
-      body.push(
-        `<path class="${cls}" d="M${x1},${loopTop} H${x1 + sg * 30} V${loopTop + 20} H${x1 + sg * 2}" marker-end="url(#${uid}-a)"/>`,
-      );
+      body.push(`<path class="${cls}" d="M${x1},${loopTop} H${x1 + sg * 30} V${loopTop + 20} H${x1 + sg * 2}" marker-end="${head}"/>`);
       lines.forEach((l, i) => {
         const lw = lm(l) + 8;
         const lx = x1 + sg * 36;
         const ly = loopTop + 11 + i * LH;
         body.push(
-          `<rect class="lmask" x="${(right ? lx - 2 : lx - lw + 2).toFixed(1)}" y="${ly - 11.5}" width="${lw.toFixed(1)}" height="14" rx="2"/>`,
+          `<rect class="lmask${tone}" x="${(right ? lx - 2 : lx - lw + 2).toFixed(1)}" y="${ly - 11.5}" width="${lw.toFixed(1)}" height="14" rx="2"/>`,
         );
-        body.push(`<text class="elabel" x="${lx}" y="${ly}" text-anchor="${right ? 'start' : 'end'}">${esc(l)}</text>`);
+        body.push(`<text class="elabel${tone}" x="${lx}" y="${ly}" text-anchor="${right ? 'start' : 'end'}">${esc(l)}</text>`);
       });
       body.push(`<text class="seqn" x="${x1 - sg * 8}" y="${loopTop + 4}" text-anchor="${right ? 'end' : 'start'}">${n}</text>`);
       y += h + 24;
@@ -415,13 +415,15 @@ function drawSeq(d: DiagramBlock, uid: string, phone: boolean): { svg: string; W
     const dir = x2 > x1 ? 1 : -1;
     if (!phone) {
       const lineY = y + 22;
-      body.push(`<path class="${cls}" d="M${x1},${lineY} H${x2 - dir * 1}" marker-end="url(#${uid}-a)"/>`);
+      body.push(`<path class="${cls}" d="M${x1},${lineY} H${x2 - dir * 1}" marker-end="${head}"/>`);
       if (text) {
         const lw = lm(text) + 12;
         const cx = (x1 + x2) / 2;
         // Label above the line with a 6px gap; the mask never touches the stroke.
-        body.push(`<rect class="lmask" x="${(cx - lw / 2).toFixed(1)}" y="${lineY - 22}" width="${lw.toFixed(1)}" height="16" rx="2"/>`);
-        body.push(`<text class="elabel" x="${cx.toFixed(1)}" y="${lineY - 10.5}" text-anchor="middle">${esc(text)}</text>`);
+        body.push(
+          `<rect class="lmask${tone}" x="${(cx - lw / 2).toFixed(1)}" y="${lineY - 22}" width="${lw.toFixed(1)}" height="16" rx="2"/>`,
+        );
+        body.push(`<text class="elabel${tone}" x="${cx.toFixed(1)}" y="${lineY - 10.5}" text-anchor="middle">${esc(text)}</text>`);
       }
       body.push(
         `<text class="seqn" x="${(x1 - dir * 8).toFixed(1)}" y="${lineY + 4}" text-anchor="${dir > 0 ? 'end' : 'start'}">${n}</text>`,
@@ -439,12 +441,12 @@ function drawSeq(d: DiagramBlock, uid: string, phone: boolean): { svg: string; W
     const lw = Math.max(0, ...lines.map(lm)) + 8;
     const cx = Math.min(Math.max(cx0, 4 + lw / 2), W - 4 - lw / 2);
     const lineY = y + lines.length * LH + 14;
-    body.push(`<path class="${cls}" d="M${x1},${lineY} H${x2 - dir * 1}" marker-end="url(#${uid}-a)"/>`);
+    body.push(`<path class="${cls}" d="M${x1},${lineY} H${x2 - dir * 1}" marker-end="${head}"/>`);
     lines.forEach((l, i) => {
       const w = lm(l) + 8;
       const ly = y + 12 + i * LH;
-      body.push(`<rect class="lmask" x="${(cx - w / 2).toFixed(1)}" y="${ly - 11.5}" width="${w.toFixed(1)}" height="14" rx="2"/>`);
-      body.push(`<text class="elabel" x="${cx.toFixed(1)}" y="${ly}" text-anchor="middle">${esc(l)}</text>`);
+      body.push(`<rect class="lmask${tone}" x="${(cx - w / 2).toFixed(1)}" y="${ly - 11.5}" width="${w.toFixed(1)}" height="14" rx="2"/>`);
+      body.push(`<text class="elabel${tone}" x="${cx.toFixed(1)}" y="${ly}" text-anchor="middle">${esc(l)}</text>`);
     });
     body.push(
       `<text class="seqn" x="${(x1 - dir * 8).toFixed(1)}" y="${lineY + 4}" text-anchor="${dir > 0 ? 'end' : 'start'}">${n}</text>`,
@@ -454,7 +456,7 @@ function drawSeq(d: DiagramBlock, uid: string, phone: boolean): { svg: string; W
   const H = y + 8;
   const out: string[] = [
     svgOpen(uid, Math.ceil(W), Math.ceil(H), plain(d.title ?? `${d.name} sequence`), describeSeq(d), 'seq'),
-    markers(uid),
+    markers(uid, d.edges),
   ];
   parts.forEach((_p, i) => {
     out.push(`<line class="life" x1="${xs[i]}" x2="${xs[i]}" y1="${pad + boxH}" y2="${H - 8}"/>`);
@@ -506,7 +508,10 @@ function describeSeq(d: DiagramBlock): string {
   return (
     `Sequence between ${d.nodes.map((n) => n.label).join(', ')}. ` +
     d.edges
-      .map((e, i) => `${i + 1}. ${name(e.from)} to ${name(e.to)}${e.label ? `: ${e.label}` : ''}${e.style === 'dashed' ? ' (reply)' : ''}`)
+      .map((e, i) => {
+        const words = edgeWords(e);
+        return `${i + 1}. ${name(e.from)} to ${name(e.to)}${words ? `: ${words}` : ''}${e.style === 'dashed' ? ' (reply)' : ''}`;
+      })
       .join('; ')
   );
 }

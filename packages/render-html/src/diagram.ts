@@ -1,4 +1,4 @@
-import type { DiagramBlock, DiagramEdge, DiagramNode } from '@lede-lang/core';
+import type { DiagramBlock, DiagramEdge, DiagramNode, EdgeTone } from '@lede-lang/core';
 import { layout } from './elk.ts';
 import { edgeLabelW, esc, inline, maxOf, plain, snap4, textWidth, wrapTo } from './util.ts';
 
@@ -81,11 +81,19 @@ const TIERS: Metrics[] = [
 const metrics = (compact: boolean, tier = 0): Metrics => (compact ? TIERS[tier] : DESK);
 const EL_LINE = 14; // extra height per wrapped edge label line (and group label line)
 
-/** A group's label in caps, wrapped to the tier's group label width (measured at the rendered 0.66em). */
+/** A group's label as written, wrapped to the tier's group label width (measured in the sans it is drawn in, with sansLabelW's margin). */
 function groupLines(label: string, m: Metrics): string[] {
-  const t = label.toUpperCase();
-  return Number.isFinite(m.glMax) ? monoLines(t, m.GLABEL, (m.glMax * 0.62) / 0.66) : [t];
+  return monoLines(label, m.GLABEL, m.glMax / 1.06, { bold: true });
 }
+
+/**
+ * Room for one line of a group label (D80): drawn in the interface sans at weight 600, 11px on the desktop drawing
+ * and 12px on the phone one, and never less than the room its mono capitals took at the layout size.
+ */
+const glabelW = (s: string, compact: boolean): number => {
+  const size = compact ? PHONE.GLABEL : DESK.GLABEL;
+  return edgeLabelW(s, size, compact ? size : size + 1, true);
+};
 
 interface ElkLabel {
   text: string;
@@ -154,14 +162,14 @@ const LINE = 16; // decision label line height
 
 export const isDecision = (n: DiagramNode): boolean => n.kind === 'decision' || n.kind === 'choice';
 
-/** Mono text (sublabels, edge labels) wrapped to `max` units on at most three lines; Infinity keeps one line. */
-function monoLines(s: string, size: number, max: number): string[] {
-  if (!Number.isFinite(max) || textWidth(s, size, { mono: true }) <= max) return [s];
+/** Text (sublabels and edge labels in mono, group labels in bold sans) wrapped to `max` units on at most three lines; Infinity keeps one line. */
+function monoLines(s: string, size: number, max: number, opts: { mono?: boolean; bold?: boolean } = { mono: true }): string[] {
+  if (!Number.isFinite(max) || textWidth(s, size, opts) <= max) return [s];
   let w = max;
-  let lines = wrapTo(s, w, size, { mono: true });
+  let lines = wrapTo(s, w, size, opts);
   while (lines.length > 3) {
     w += 12;
-    lines = wrapTo(s, w, size, { mono: true });
+    lines = wrapTo(s, w, size, opts);
   }
   return lines;
 }
@@ -474,7 +482,7 @@ async function layoutOnce(d: DiagramBlock, compact: boolean, prior?: Placed, tie
   for (const g of d.groups) {
     const en = elkNodes.get(g.id)!;
     en.layoutOptions!['elk.nodeSize.minimum'] =
-      `(${snap4(Math.max(...groupLines(g.label, m).map((l) => textWidth(l, m.GLABEL, { mono: true }))) + (compact ? 24 : 40))}, 40)`;
+      `(${snap4(Math.max(...groupLines(g.label, m).map((l) => glabelW(l, compact))) + (compact ? 24 : 40))}, 40)`;
     en.layoutOptions!['elk.nodeSize.constraints'] = 'MINIMUM_SIZE';
     if (en.children!.length === 0) en.width = 96;
   }
@@ -659,7 +667,7 @@ function hugGroups(d: DiagramBlock, p: Placed): void {
       }
       if (e.label) take({ ...e.label, x: e.label.x + 6, w: e.label.w - 12 }); // the text, not its 6-unit mask margins
     }
-    const minW = Math.max(...(g.lines ?? [g.label.toUpperCase()]).map((l) => textWidth(l, PHONE.GLABEL, { mono: true }))) + 24;
+    const minW = Math.max(...(g.lines ?? [g.label]).map((l) => glabelW(l, true))) + 24;
     const x0 = Math.max(g.x, Math.floor(Math.min(...xs) - 8));
     const y0 = Math.max(g.y, Math.floor(Math.min(...ys) - 22 - ((g.lines?.length ?? 1) - 1) * EL_LINE));
     g.w = Math.min(g.x + g.w - x0, Math.ceil(Math.max(Math.max(...xs) + 8 - x0, minW)));
@@ -684,10 +692,6 @@ function hugGroups(d: DiagramBlock, p: Placed): void {
   p.height = Math.ceil(Math.max(...boxes.map((b) => b.y + b.h), ...pts.map((q) => q.y))) + 4;
 }
 
-// Mono text renders about 0.66em wide in the page's mono stack (textWidth assumes 0.62em); group labels are
-// measured with the wider figure so a label never runs past its box or out of the drawing.
-const glabelW = (label: string): number => label.length * 0.66 * PHONE.GLABEL;
-
 /**
  * Phones: ELK does not honor a group's minimum width under INCLUDE_CHILDREN, so a group can come out narrower
  * than its label. Widen such a group (centered, else growing right, else left) where that hits no other box,
@@ -705,7 +709,7 @@ function fitGroupLabels(d: DiagramBlock, p: Placed): void {
   const byId = new Map(p.groups.map((g) => [g.id, g]));
   let moved = false;
   for (const g of [...p.groups].toSorted((a, b) => b.depth - a.depth)) {
-    const need = Math.ceil(Math.max(...(g.lines ?? [g.label.toUpperCase()]).map(glabelW)) + 16);
+    const need = Math.ceil(Math.max(...(g.lines ?? [g.label]).map((l) => glabelW(l, true))) + 16);
     if (g.w >= need) continue;
     const extra = need - g.w;
     const others = all.filter((b) => b !== g && !under(idOf(b), g.id) && !under(g.id, idOf(b)));
@@ -837,9 +841,30 @@ function roundedPath(pts: P[], r = 6): string {
   return `${d} L${f(last.x)},${f(last.y)}`;
 }
 
-export function markers(uid: string): string {
-  return `<defs><marker id="${uid}-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 Z" class="ah"/></marker></defs>`;
+/**
+ * The arrowhead every edge ends in, and one more per tone among `edges` (D80): a marker is drawn in its own document, so it takes the
+ * tone's colour from a class on its own path and not from the edge that points to it.
+ */
+export function markers(uid: string, edges: readonly DiagramEdge[]): string {
+  const head = (id: string, cls: string) =>
+    `<marker id="${uid}-${id}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 Z" class="${cls}"/></marker>`;
+  const used = new Set<EdgeTone>();
+  for (const e of edges) if (e.tone) used.add(e.tone);
+  return `<defs>${head('a', 'ah')}${[...used].map((t) => head(`a-${t}`, `ah${toneClass(t)}`)).join('')}</defs>`;
 }
+
+/** The classes a toned edge, message, label chip, cross or key swatch adds: `tn` and `t-good`, or nothing without a tone. */
+export const toneClass = (tone: EdgeTone | undefined): string => (tone ? ` tn t-${tone}` : '');
+
+/** The marker a line ends in: the grey arrowhead, or the one drawn in the line's tone. */
+export const arrowRef = (uid: string, tone: EdgeTone | undefined): string => `url(#${uid}-a${tone ? `-${tone}` : ''})`;
+
+/** The edge's label as the lists write it: a toned edge's is a chip, and an unlabeled one shows its tone word. */
+export const listLabel = (e: DiagramEdge): string =>
+  e.tone ? `: <span class="et${toneClass(e.tone)}">${esc(e.label || e.tone)}</span>` : e.label ? `: ${esc(e.label)}` : '';
+
+/** An edge in words, for a `<title>` or a `<desc>`: `label, good` (colour is never the only way to tell the tone). */
+export const edgeWords = (e: DiagramEdge): string => [e.label, e.tone].filter(Boolean).join(', ');
 
 /** A node kind as one class token. The tag shows the kind as written; the class must not add other classes (`kind="x sr"`). */
 export const kindClass = (kind: string): string => `k-${kind.replace(/[^\w-]+/g, '-')}`;
@@ -1007,33 +1032,112 @@ async function phoneFit(d: DiagramBlock): Promise<Fit | null> {
   return best.p.width <= PHONE_MAX ? best : null;
 }
 
-/** The two layouts `renderFlow` draws from. */
+/**
+ * The shape of a flow diagram's layering, from the edge list alone (no layout engine): each node's rank is the longest path to it,
+ * a cycle is broken at the edge that closes it, an edge to a group goes to the first node the group holds, and a `<->` edge counts as
+ * one edge, from the first node to the second. `layers` is the number of ranks and `breadth` the most nodes in one; a node no edge
+ * touches is in the first rank, as the layered layout puts it.
+ */
+export function rankShape(d: DiagramBlock): { layers: number; breadth: number } {
+  const groups = new Map(d.groups.map((g) => [g.id, g.members]));
+  const leaf = (id: string, seen = new Set<string>()): string | null => {
+    const members = groups.get(id);
+    if (!members) return id;
+    if (seen.has(id)) return null;
+    seen.add(id);
+    for (const m of members) {
+      const l = leaf(m, seen);
+      if (l !== null) return l;
+    }
+    return null;
+  };
+  const preds = new Map<string, string[]>();
+  for (const e of d.edges) {
+    const [from, to] = [leaf(e.from), leaf(e.to)];
+    if (from === null || to === null || from === to) continue;
+    const list = preds.get(to);
+    if (list) list.push(from);
+    else preds.set(to, [from]);
+  }
+  const rank = new Map<string, number>();
+  const open = new Set<string>();
+  const up = (n: string): number => {
+    const known = rank.get(n);
+    if (known !== undefined) return known;
+    open.add(n);
+    let r = 0;
+    for (const p of preds.get(n) ?? []) if (!open.has(p)) r = Math.max(r, up(p) + 1);
+    open.delete(n);
+    rank.set(n, r);
+    return r;
+  };
+  const sizes = new Map<number, number>();
+  for (const n of d.nodes) {
+    if (groups.has(n.id)) continue;
+    const r = up(n.id);
+    sizes.set(r, (sizes.get(r) ?? 0) + 1);
+  }
+  return { layers: sizes.size, breadth: maxOf([...sizes.values()], 0) };
+}
+
+/**
+ * A flow diagram with no `dir=` on a dashboard page runs left to right when it has more layers than nodes in its widest one: top to
+ * bottom it would be a tall, narrow column in a wide page (D80). A written `dir=` is never changed.
+ */
+function wantsLeftToRight(d: DiagramBlock): boolean {
+  if (d.dirExplicit) return false;
+  const { layers, breadth } = rankShape(d);
+  return layers > breadth;
+}
+
+/** The two layouts `renderFlow` draws from. `lr`: the desktop drawing prefers left to right (the phone drawing keeps the diagram's own direction). */
 interface Layouts {
   desk: Fit;
   phone: Fit | null;
+  lr: boolean;
 }
 
-const layoutsFor = async (d: DiagramBlock): Promise<Layouts> => ({ desk: await bestFit(d, false, FIT_DESKTOP), phone: await phoneFit(d) });
+/** Whether a dashboard's desktop drawing turns `d` left to right (`wantsLeftToRight`); elsewhere the written direction is kept. */
+const leftToRight = (d: DiagramBlock, dash: boolean): boolean => dash && d.dir !== 'LR' && wantsLeftToRight(d);
+
+const deskFit = (d: DiagramBlock, lr: boolean): Promise<Fit> => bestFit(lr ? { ...d, dir: 'LR' } : d, false, FIT_DESKTOP);
+
+const layoutsFor = async (d: DiagramBlock, dash: boolean): Promise<Layouts> => {
+  const lr = leftToRight(d, dash);
+  return { desk: await deskFit(d, lr), phone: await phoneFit(d), lr };
+};
 
 /**
  * The layouts of each flow diagram, kept while the block reads the same, so drawing it again (the incremental renderer draws a
  * unit more than once, and checks the finished page against the whole-page render) costs a drawing and no layout. A drawing
- * only reads a layout, and everything it reads of the block is in the key. Only a caller that draws a block more than once asks
- * for this (`renderFlow`'s `cached`): the key is the block serialized, which a page drawn once would pay for and never use.
+ * only reads a layout, and everything it reads of the block is in the key. The desktop layout is kept per direction (`lr`), and
+ * the phone layout, which no page layout changes, once. Only a caller that draws a block more than once asks for this
+ * (`renderFlow`'s `cached`): the key is the block serialized, which a page drawn once would pay for and never use.
  */
-const laidOut = new WeakMap<DiagramBlock, { key: string; layouts: Promise<Layouts> }>();
+const laidOut = new WeakMap<DiagramBlock, { key: string; desk: Map<boolean, Promise<Fit>>; phone?: Promise<Fit | null> }>();
 
-function cachedLayoutsOf(d: DiagramBlock): Promise<Layouts> {
+function cachedLayoutsOf(d: DiagramBlock, dash: boolean): Promise<Layouts> {
   const key = JSON.stringify(d);
-  const hit = laidOut.get(d);
-  if (hit?.key === key) return hit.layouts;
-  const layouts = layoutsFor(d);
-  laidOut.set(d, { key, layouts });
-  // A layout that failed is not kept.
-  layouts.catch(() => {
-    if (laidOut.get(d)?.layouts === layouts) laidOut.delete(d);
-  });
-  return layouts;
+  let entry = laidOut.get(d);
+  if (entry?.key !== key) laidOut.set(d, (entry = { key, desk: new Map() }));
+  const kept = entry;
+  // A layout that failed is not kept: the block's entry goes, and the next drawing lays it out again.
+  const forget = () => {
+    if (laidOut.get(d) === kept) laidOut.delete(d);
+  };
+  const lr = leftToRight(d, dash);
+  let desk = kept.desk.get(lr);
+  if (!desk) {
+    desk = deskFit(d, lr);
+    desk.catch(forget);
+    kept.desk.set(lr, desk);
+  }
+  if (!kept.phone) {
+    kept.phone = phoneFit(d);
+    kept.phone.catch(forget);
+  }
+  const phone = kept.phone;
+  return desk.then(async (fit) => ({ desk: fit, phone: await phone, lr }));
 }
 
 /**
@@ -1044,15 +1148,21 @@ function cachedLayoutsOf(d: DiagramBlock): Promise<Layouts> {
  * A phone drawing too wide for 11px text is laid out again (`phoneFit`). If nothing fits, the phone gets the
  * diagram as a numbered list (`ol.seqlist.flowlist`) instead of an unreadable or sideways-scrolling drawing.
  */
-export async function renderFlow(d: DiagramBlock, uid: string, cached = false): Promise<string> {
-  const { desk, phone } = await (cached ? cachedLayoutsOf(d) : layoutsFor(d));
+export async function renderFlow(d: DiagramBlock, uid: string, cached = false, dash = false): Promise<string> {
+  const { desk, phone, lr } = await (cached ? cachedLayoutsOf(d, dash) : layoutsFor(d, dash));
   const h = drawPlaced(desk.d, desk.p, uid, false);
-  if (!phone) {
-    const fig = figure(d, `<div class="dg-h">${h.svg}</div><div class="dg-v" data-flow style="--wv:560px">${flowList(d)}</div>`, h.W, 240);
-    return withLegend(d, fig);
-  }
-  const v = drawPlaced(phone.d, phone.p, `${uid}v`, true);
-  const fig = figure(d, `<div class="dg-h">${h.svg}</div><div class="dg-v" data-flow style="--wv:${v.W}px">${v.svg}</div>`, h.W, v.W);
+  // `data-dir` names the direction only when the renderer chose it: a diagram left to right that was not written so.
+  const chose = lr && desk.d.dir === 'LR' ? ' data-dir="LR"' : '';
+  // The phone drawing, or the list when nothing fits (`--wv:560px`, and a narrow width of 240).
+  const v = phone ? drawPlaced(phone.d, phone.p, `${uid}v`, true) : null;
+  const [inner, wv, narrowW] = v ? [v.svg, v.W, v.W] : [flowList(d), 560, 240];
+  const fig = figure(
+    d,
+    `<div class="dg-h">${h.svg}</div><div class="dg-v" data-flow style="--wv:${wv}px">${inner}</div>`,
+    h.W,
+    narrowW,
+    chose,
+  );
   return withLegend(d, fig);
 }
 
@@ -1070,7 +1180,7 @@ function flowList(d: DiagramBlock): string {
   if (loose.length) out.push(`<li class="frame">${esc(loose.map((n) => n.label).join(', '))}</li>`);
   for (const e of d.edges) {
     out.push(
-      `<li${e.style === 'blocked' ? ' class="blocked"' : ''}><b>${esc(name(e.from))}</b> ${e.both ? '↔' : '→'} <b>${esc(name(e.to))}</b>${e.label ? `: ${esc(e.label)}` : ''}</li>`,
+      `<li${e.style === 'blocked' ? ' class="blocked"' : ''}><b>${esc(name(e.from))}</b> ${e.both ? '↔' : '→'} <b>${esc(name(e.to))}</b>${listLabel(e)}</li>`,
     );
   }
   out.push('</ol>');
@@ -1116,6 +1226,10 @@ function arrowSwatch(k: KeyArrow): string {
   return swatch(34, 14, line + heads);
 }
 
+/** A tone's swatch: a short arrow in the tone's colour, drawn with plain paths like the arrow styles'. */
+const toneSwatch = (t: EdgeTone): string =>
+  swatch(34, 14, `<path class="edge${toneClass(t)}" d="M1,7 H27"/><path class="ah${toneClass(t)}" d="M33,7 L26,3.5 L26,10.5 Z"/>`);
+
 /**
  * The key for `legend`: each node kind used (its tag, beside the shape its nodes are drawn in), a focus swatch if
  * any node is focus, the group boundary if there are groups, then each arrow style used. Items wrap in one row.
@@ -1139,6 +1253,10 @@ function legendKey(d: DiagramBlock): string {
     if (!(e.both && e.style === 'solid')) used.add(e.style);
   }
   for (const k of ['solid', 'dashed', 'both', 'blocked'] as const) if (used.has(k)) item(arrowSwatch(k), KEY_ARROW[k]);
+  // Each tone used: its colour, named by the label of the first edge that has one (the tone word when none does).
+  const tones = new Map<EdgeTone, string>();
+  for (const e of d.edges) if (e.tone && !tones.get(e.tone)) tones.set(e.tone, e.label.trim());
+  for (const [t, text] of tones) item(toneSwatch(t), esc(text || t));
   return items.length ? `<div class="dg-key" role="group" aria-label="Key">${items.join('')}</div>` : '';
 }
 
@@ -1149,7 +1267,7 @@ function drawPlaced(d: DiagramBlock, p: Placed, uid: string, compact: boolean): 
   const out: string[] = [];
   const label = plain(d.title ?? `${d.name} diagram`);
   out.push(svgOpen(uid, W, H, label, describeFlow(d)));
-  out.push(markers(uid));
+  out.push(markers(uid, d.edges));
   for (const g of [...p.groups].toSorted((a, b) => a.depth - b.depth)) {
     out.push(`<rect class="grp" x="${g.x.toFixed(1)}" y="${g.y.toFixed(1)}" width="${g.w.toFixed(1)}" height="${g.h.toFixed(1)}" rx="8"/>`);
   }
@@ -1163,9 +1281,11 @@ function drawPlaced(d: DiagramBlock, p: Placed, uid: string, compact: boolean): 
     ]
       .filter(Boolean)
       .join(' ');
-    const start = e.edge.both ? ` marker-start="url(#${uid}-a)"` : '';
+    const head = arrowRef(uid, e.edge.tone);
+    const start = e.edge.both ? ` marker-start="${head}"` : '';
+    const words = edgeWords(e.edge);
     out.push(
-      `<path class="${cls}" d="${roundedPath(e.points)}" marker-end="url(#${uid}-a)"${start}><title>${esc(`${e.edge.from} → ${e.edge.to}${e.edge.label ? `: ${e.edge.label}` : ''}`)}</title></path>`,
+      `<path class="${cls}${toneClass(e.edge.tone)}" d="${roundedPath(e.points)}" marker-end="${head}"${start}><title>${esc(`${e.edge.from} → ${e.edge.to}${words ? `: ${words}` : ''}`)}</title></path>`,
     );
   }
   // A blocked edge is crossed out in the middle of its longest straight stretch: a circle over the line with an X in it.
@@ -1174,16 +1294,16 @@ function drawPlaced(d: DiagramBlock, p: Placed, uid: string, compact: boolean): 
     const c = crossPoint(e.points);
     const k = 3;
     out.push(
-      `<g class="blk"><circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="${BLK_R}"/><path d="M${(c.x - k).toFixed(1)},${(c.y - k).toFixed(1)} L${(c.x + k).toFixed(1)},${(c.y + k).toFixed(1)} M${(c.x + k).toFixed(1)},${(c.y - k).toFixed(1)} L${(c.x - k).toFixed(1)},${(c.y + k).toFixed(1)}"/></g>`,
+      `<g class="blk${toneClass(e.edge.tone)}"><circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="${BLK_R}"/><path d="M${(c.x - k).toFixed(1)},${(c.y - k).toFixed(1)} L${(c.x + k).toFixed(1)},${(c.y + k).toFixed(1)} M${(c.x + k).toFixed(1)},${(c.y - k).toFixed(1)} L${(c.x - k).toFixed(1)},${(c.y + k).toFixed(1)}"/></g>`,
     );
   }
   for (const n of p.nodes) out.push(nodeSvgAt(n, compact));
   // Group labels go over edges on a mask, so a line crossing a boundary never runs through the text.
   // Phone bands are 22 tall, so the mask hugs the top of the group.
   for (const g of p.groups) {
-    const lines = g.lines ?? [g.label.toUpperCase()];
+    const lines = g.lines ?? [g.label];
     const extra = (lines.length - 1) * EL_LINE;
-    const w = Math.max(...lines.map((t) => (compact ? glabelW(t) : textWidth(t, m.GLABEL, { mono: true })))) + 8;
+    const w = Math.max(...lines.map((t) => glabelW(t, compact))) + 8;
     const band =
       Math.min(
         Infinity,
@@ -1203,12 +1323,12 @@ function drawPlaced(d: DiagramBlock, p: Placed, uid: string, compact: boolean): 
     if (!e.label) continue;
     const l = e.label;
     out.push(
-      `<rect class="lmask" x="${l.x.toFixed(1)}" y="${l.y.toFixed(1)}" width="${l.w.toFixed(1)}" height="${l.h.toFixed(1)}" rx="2"/>`,
+      `<rect class="lmask${toneClass(e.edge.tone)}" x="${l.x.toFixed(1)}" y="${l.y.toFixed(1)}" width="${l.w.toFixed(1)}" height="${l.h.toFixed(1)}" rx="2"/>`,
     );
     const lines = l.lines ?? [l.text];
     lines.forEach((t, i) =>
       out.push(
-        `<text class="elabel${yn(d, e.edge)}${e.edge.style === 'blocked' ? ' blocked' : ''}" x="${(l.x + l.w / 2).toFixed(1)}" y="${(l.y + l.h / 2 + m.ELABEL * 0.35 + (i - (lines.length - 1) / 2) * EL_LINE).toFixed(1)}" text-anchor="middle">${esc(t)}</text>`,
+        `<text class="elabel${yn(d, e.edge)}${e.edge.style === 'blocked' ? ' blocked' : ''}${toneClass(e.edge.tone)}" x="${(l.x + l.w / 2).toFixed(1)}" y="${(l.y + l.h / 2 + m.ELABEL * 0.35 + (i - (lines.length - 1) / 2) * EL_LINE).toFixed(1)}" text-anchor="middle">${esc(t)}</text>`,
       ),
     );
   }
@@ -1233,13 +1353,13 @@ export function svgOpen(uid: string, W: number, H: number, label: string, desc: 
   return `<svg class="dg${cls ? ` ${cls}` : ''}" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-labelledby="${uid}-t ${uid}-d"><title id="${uid}-t">${esc(label)}</title><desc id="${uid}-d">${esc(desc)}</desc>`;
 }
 
-export function figure(d: DiagramBlock, svg: string, W: number, narrowW?: number): string {
+export function figure(d: DiagramBlock, svg: string, W: number, narrowW?: number, attrs = ''): string {
   const title = d.title ? `<figcaption>${inline(d.title)}</figcaption>` : '';
   // Shrink to fit down to 70% scale; beyond that the figure scrolls sideways instead of shrinking text.
   // The figure is as wide as the drawing (capped by the page), so the caption sits on the drawing's left edge.
   // --w and --wv are the figure's outer widths: the drawing plus the card's 34px of padding and border, so a drawing
   // renders at 1:1. On phones the card is sized from the phone drawing (--wv), not the desktop one.
-  return `<figure class="viz dg-fig" style="--w:${W + 34}px${narrowW ? `;--wv:${narrowW + 34}px` : ''}">${title}<div class="scroll" tabindex="0" role="group" aria-label="${esc(plain(d.title ?? d.name))}"><div class="dg-wrap" style="--minw:${Math.round(W * 0.7)}px${narrowW ? `;--minwv:${Math.round(narrowW * 0.7)}px` : ''}">${svg}</div></div></figure>`;
+  return `<figure class="viz dg-fig"${attrs} style="--w:${W + 34}px${narrowW ? `;--wv:${narrowW + 34}px` : ''}">${title}<div class="scroll" tabindex="0" role="group" aria-label="${esc(plain(d.title ?? d.name))}"><div class="dg-wrap" style="--minw:${Math.round(W * 0.7)}px${narrowW ? `;--minwv:${Math.round(narrowW * 0.7)}px` : ''}">${svg}</div></div></figure>`;
 }
 
 function describeFlow(d: DiagramBlock): string {
@@ -1247,6 +1367,9 @@ function describeFlow(d: DiagramBlock): string {
   const groups = d.groups.map(
     (g) => `${g.label} contains ${g.members.map((m) => d.groups.find((x) => x.id === m)?.label ?? name(m)).join(', ')}`,
   );
-  const edges = d.edges.map((e) => `${name(e.from)} ${e.both ? '↔' : '→'} ${name(e.to)}${e.label ? ` (${e.label})` : ''}`);
+  const edges = d.edges.map((e) => {
+    const words = edgeWords(e);
+    return `${name(e.from)} ${e.both ? '↔' : '→'} ${name(e.to)}${words ? ` (${words})` : ''}`;
+  });
   return [`${d.nodes.length} nodes.`, groups.join('. '), edges.join('; ')].filter(Boolean).join(' ');
 }

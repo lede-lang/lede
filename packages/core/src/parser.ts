@@ -7,17 +7,22 @@ import type {
   ChartKind,
   ChartMark,
   DataSet,
+  DecisionBlock,
+  DecisionOption,
+  DecisionStatus,
   Diagnostic,
   DiagramBlock,
   DiagramEdge,
   DiagramFrame,
   DiagramNode,
+  EdgeTone,
   ExportBlock,
   GridBlock,
   Kpi,
   KpiBlock,
   ListItem,
   LedeDocument,
+  NoteBlock,
   ParamBlock,
   PresetBlock,
   QuestionBlock,
@@ -26,10 +31,23 @@ import type {
   TemplateBlock,
   ToggleBlock,
 } from './ast.ts';
-import { cellNum, num, parseCsvFile, parseInlineCsv, parseOpts, pipeOutsideQuotes, readQuoted, tokens, type Opts } from './lex.ts';
+import {
+  cellNum,
+  num,
+  parseCsvFile,
+  parseInlineCsv,
+  parseOpts,
+  pipeOutsideQuotes,
+  readQuoted,
+  splitPipes,
+  tokens,
+  ISO_DATE,
+  type Opts,
+} from './lex.ts';
 import { EMPTY, FIELD_KINDS, NOT_CHOSEN, SLOT_RE } from './fields.ts';
 import { AA_NON_TEXT, AA_TEXT, HEX_COLOR, accentContrast, accentTheme } from './contrast.ts';
-import { browserUrl, imageSrcKind } from './url.ts';
+import { browserUrl, httpsUrlProblem, imageSrcKind } from './url.ts';
+import { STATUS_TONES, readFact, readStatus } from './meta.ts';
 import { walkBlocks } from './walk.ts';
 
 /**
@@ -49,13 +67,24 @@ export interface ParseHooks {
    * before bucket sets existed keeps working.
    */
   onBucketItem?(block: BucketBlock, changed: boolean): void;
-  /** `data NAME += rows` appended rows to the data set `name`. */
-  onDataAppend(name: string): void;
+  /**
+   * A `NAME: option …`, `NAME: question …` or `NAME: role …` line was read for the decision `block` declared earlier (spec §4.20).
+   * `changed` is true when the line added an option, a question or a role, and false when it was rejected; the line is a statement of
+   * the decision either way, as a rejected line is a statement of a diagram. Optional, as `onBucketItem` is.
+   */
+  onDecisionLine?(block: DecisionBlock, changed: boolean): void;
+  /** `data NAME += rows` or a `NAME: a | b` row line (`row`) appended rows to the data set `name`. */
+  onDataAppend(name: string, row?: boolean): void;
 }
 
 export interface ParseOptions {
   /** Resolves `data name < path`. Without it, file data is an error (browsers, sandboxes). */
   loadFile?: (path: string) => string;
+  /**
+   * An operator's brand theme (`--theme`, D80) is in force: the page's `@accent` is ignored, with W `theme-override` `{key}` on its
+   * line, and is not checked for contrast. The renderer takes the theme itself in its own options.
+   */
+  themed?: boolean;
 }
 
 export const KEYWORDS = [
@@ -77,10 +106,47 @@ export const KEYWORDS = [
   'bucket',
   'template',
   'preset',
+  'decision',
 ] as const;
-export const META_KEYS = ['title', 'subtitle', 'description', 'author', 'date', 'accent', 'theme', 'lang', 'width', 'fonts'];
+export const META_KEYS = [
+  'title',
+  'subtitle',
+  'description',
+  'author',
+  'date',
+  'accent',
+  'theme',
+  'lang',
+  'width',
+  'fonts',
+  'status',
+  'meta',
+  'image',
+  'canonical',
+];
+/**
+ * The kind words of a `!` note (spec §4.7, D80), lower case, to the tone each sets: `good` (green) or `info` (blue). The renderer
+ * reads the same map, and a Map keeps `constructor` an ordinary word.
+ */
+export const NOTE_KINDS: ReadonlyMap<string, 'good' | 'info'> = new Map([
+  ['tip', 'info'],
+  ['recommendation', 'good'],
+  ['recommended', 'good'],
+  ['decision', 'good'],
+  ['success', 'good'],
+  ['done', 'good'],
+  ['info', 'info'],
+  ['question', 'info'],
+  ['example', 'info'],
+]);
+/** A kind word, a colon, and the text that follows it. */
+const NOTE_KIND_RE = new RegExp(`^(${[...NOTE_KINDS.keys()].join('|')}):\\s*(\\S.*)$`, 'i');
 const CHART_KINDS: ChartKind[] = ['line', 'area', 'bar', 'hbar', 'range'];
-const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+/**
+ * A keyword, or `html` (a line starting `html:` is a raw block): no decision or diagram may take it as a name. `decision` is not one:
+ * it is a keyword line only in its declaration shape, and `diagram decision` was a valid page before decisions existed.
+ */
+const reservedName = (name: string): boolean => (name !== 'decision' && (KEYWORDS as readonly string[]).includes(name)) || name === 'html';
 const KEYWORD_RE = new RegExp(`^(${KEYWORDS.join('|')})(?=\\s|$)`);
 /** A question or diagram name. */
 const NAME_RE = /^[A-Za-z][\w-]*$/;
@@ -98,10 +164,11 @@ const NAME = NAME_RE.source.slice(1, -1);
  */
 const editorShape = (word: string, alt = ''): RegExp => new RegExp(`^${word}\\s+${NAME}(?:(?=[\\s|])[^|]*\\|${alt ? `|${alt}` : ''})`);
 /**
- * Keyword lines that are keyword lines only in their shape (spec §4.18, §4.19), because prose may start with the word: `cards` takes
+ * Keyword lines that are keyword lines only in their shape (spec §4.18, §4.19, §4.20), because prose may start with the word: `cards` takes
  * nothing after it and `export` at most one word, and an editor word needs its name and then, somewhere on the line, a `|` (for `param`
- * also `unit=`, for `toggle` also `on`, `off` or `needs=`, which fail loudly without one). `cards on the table`, `export the data` and
- * `toggle the flag on Monday` are prose. Any other keyword is a keyword line whatever follows.
+ * also `unit=`, for `toggle` also `on`, `off` or `needs=`, which fail loudly without one); `decision` needs its name and then a quoted
+ * question (or `status=` or `by=`, for the question left out). `cards on the table`, `export the data`, `toggle the flag on Monday` and
+ * `decision was made` are prose. Any other keyword is a keyword line whatever follows.
  */
 const SHAPES: Partial<Record<string, RegExp>> = {
   cards: /^cards$/,
@@ -111,25 +178,56 @@ const SHAPES: Partial<Record<string, RegExp>> = {
   bucket: editorShape('bucket'),
   template: editorShape('template'),
   preset: editorShape('preset'),
+  // The question must follow the name at once; `status=` or `by=` there is the question left out, which fails loudly (spec §4.20).
+  decision: new RegExp(`^decision\\s+${NAME}\\s+(?:"|(?:status|by)=)`),
 };
+/**
+ * The statement shapes of a decision (spec §4.20), which a `NAME:` line with no decision above it is told apart from prose by: `option
+ * ID "Label"`, `question "Text"` and `role WORD [WORD] "Who"`. A line that has one of them and no decision to bind to is E `decision-ref`.
+ */
+const DECISION_LINE = /^(?:option\s+[A-Za-z0-9][\w-]*\s+"|question\s+"|role\s+[^\s"]+(?:\s+[^\s"]+)?\s+")/;
+const DECISION_STATUS: readonly DecisionStatus[] = ['open', 'settled', 'deferred'];
+/** The verdict words of an option: the first three choose it, `rejected` strikes it. Case does not matter. */
+const VERDICTS: ReadonlyMap<string, NonNullable<DecisionOption['verdict']>> = new Map([
+  ['chosen', 'chosen'],
+  ['picked', 'chosen'],
+  ['selected', 'chosen'],
+  ['rejected', 'rejected'],
+]);
+/** What each line of a decision looks like, after `NAME: `, for the message that rejects one. */
+const DECISION_LINE_USAGE = {
+  option: 'option ID "Label" | why | verdict',
+  question: 'question "Text" | answer',
+  role: 'role WORD "Who"',
+} as const;
+type DecisionLineWord = keyof typeof DECISION_LINE_USAGE;
 /** Marks a `bucket` name the export would write for something else (`choose` reserves `(not chosen)` the same way). */
 const BUCKET_RESERVED = [NOT_CHOSEN, EMPTY];
-type Space = 'data' | 'diagram' | 'bucket';
-const SPACES: readonly Space[] = ['data', 'diagram', 'bucket'];
+type Space = 'data' | 'diagram' | 'bucket' | 'decision';
+const SPACES: readonly Space[] = ['data', 'diagram', 'bucket', 'decision'];
 /** How a message names the kind of name that is taken. */
-const NOUN: Record<Space, string> = { data: 'data', diagram: 'diagram', bucket: 'bucket set' };
+const NOUN: Record<Space, string> = { data: 'data', diagram: 'diagram', bucket: 'bucket set', decision: 'decision' };
 const RENAME_DIAGRAM = (name: string) => `rename the diagram (e.g. \`diagram ${name}-flow\`)`;
 /**
  * A name declared as one kind when another already has it, keyed `declared>had`: what the message says to rename, and the key of the
- * diagnostic's `detail` (the name itself under that key), if it has one. `lede check --fix` reads the `diagram` key.
+ * diagnostic's `detail` (the name itself under that key), if it has one. `lede check --fix` reads the `diagram` key; a clash that
+ * involves a bucket set or a decision carries that kind's key, which it leaves.
  */
-const CLASH: Record<string, [fix: (name: string) => string, key: 'diagram' | 'bucket' | null]> = {
+const RENAME_DECISION = (name: string) => `rename the decision (e.g. \`decision ${name}-call\`)`;
+const RENAME_DATA = (name: string) => `rename the data (e.g. \`data ${name}-rows\`)`;
+const CLASH: Record<string, [fix: (name: string) => string, key: 'diagram' | 'bucket' | 'decision' | null]> = {
   'data>diagram': [RENAME_DIAGRAM, null],
-  'data>bucket': [(name) => `rename the data (e.g. \`data ${name}-rows\`)`, 'bucket'],
+  'data>bucket': [RENAME_DATA, 'bucket'],
+  'data>decision': [RENAME_DATA, 'decision'],
   'diagram>data': [RENAME_DIAGRAM, 'diagram'],
   'diagram>bucket': [RENAME_DIAGRAM, 'bucket'],
+  'diagram>decision': [RENAME_DIAGRAM, 'decision'],
   'bucket>data': [() => 'rename the bucket set', 'bucket'],
   'bucket>diagram': [() => 'rename the bucket set', 'bucket'],
+  'bucket>decision': [() => 'rename the bucket set', 'decision'],
+  'decision>data': [RENAME_DECISION, 'decision'],
+  'decision>diagram': [RENAME_DECISION, 'decision'],
+  'decision>bucket': [RENAME_DECISION, 'decision'],
 };
 /** Tolerance when a number is tested against a step grid or the 1,000-step cap. */
 const EPS = 1e-9;
@@ -146,6 +244,19 @@ interface CardsRun {
   block: CardsBlock;
   card: CardItem | null;
   deferred: Block[];
+}
+
+/**
+ * An inline `table [options] = header` with no rows on its line (D80). It stays open for `: a | b` rows until the first other line,
+ * because its options (`heat`, `bar=`) are read against the rows it ends up with; the block is emitted when the run ends.
+ */
+interface TableRun {
+  d: DataSet;
+  /** The text between `table` and the `=`. */
+  optStr: string;
+  /** The column of the text after `table`, where the table's diagnostics point. */
+  col: number;
+  line: number;
 }
 
 interface Fence {
@@ -218,7 +329,12 @@ export class LedeParser {
   private fence: Fence | null = null;
   private grid: GridBlock | null = null;
   private cards: CardsRun | null = null;
+  private table: TableRun | null = null;
+  /** Set while `peek` builds the open table's block, so that building it reports nothing. */
+  private quiet = false;
   private diagrams = new Map<string, DiagramBlock>();
+  /** The decisions by name; their `NAME:` lines add options, questions and roles to the emitted block (spec §4.20). */
+  private decisions = new Map<string, DecisionBlock>();
   /** Node ids declared with their own line, per diagram (vs. created by first use in an edge). */
   private declared = new WeakMap<DiagramBlock, Set<string>>();
   /** The open alt/opt frame per sequence diagram, and how many rejected nested openers still await their `end`. */
@@ -268,6 +384,7 @@ export class LedeParser {
       this.diag('warning', 'unclosed-fence', 'code fence is never closed; it ends at the end of the document', this.fence.line, 1);
       this.closeFence();
     }
+    if (this.table) this.closeTable();
     this.flush();
     if (this.cards) this.closeCards();
     if (this.grid) {
@@ -293,21 +410,25 @@ export class LedeParser {
 
   /**
    * The blocks `end()` would still add, without ending the parser or changing anything: the open paragraph, list, quote, kpi
-   * row, step run or fence, the `cards` run and the `grid` as they stand. The result is what a snapshot of the lines so
-   * far shows beyond the blocks already returned by `pushLine`. Costs the size of the open block. A keyword line is never
+   * row, step run, inline table or fence, the `cards` run and the `grid` as they stand. The result is what a snapshot of the
+   * lines so far shows beyond the blocks already returned by `pushLine`. Costs the size of the open block. A keyword line is never
    * part of it (it is a block or a diagnostic on its own line), but the fence a `template` line opened is: it is the template
-   * block, with the text so far as its body. A `template` line with no fence yet adds nothing.
+   * block, with the text so far as its body. A `template` line with no fence yet adds nothing. An inline `table [options] =`
+   * line that has no rows of its own is open too (D80): it is the table block with the `: a | b` rows read so far.
    */
   peek(): Block[] {
     const f = this.fence;
     // An open `template` fence is the template block the lines so far make (not registered: only its closing fence does that).
-    let open: Block | null = f
-      ? f.template
-        ? this.templateBlock(f, f.template, this.scanTemplate(f).slots)
-        : fenceBlock(f)
-      : this.acc
-        ? accBlock(copyAcc(this.acc))
-        : null;
+    // An open inline table is its block with the rows so far (it is never open beside a fence or another accumulator).
+    let open: Block | null = this.table
+      ? this.peekTable(this.table)
+      : f
+        ? f.template
+          ? this.templateBlock(f, f.template, this.scanTemplate(f).slots)
+          : fenceBlock(f)
+        : this.acc
+          ? accBlock(copyAcc(this.acc))
+          : null;
     const out: Block[] = [];
     const c = this.cards;
     // `emit` hands the open block to the open card, else the open grid, else the page.
@@ -329,9 +450,105 @@ export class LedeParser {
     return out;
   }
 
+  // ------------------------------------------------------------ callout kinds (D80)
+
+  /**
+   * `! Recommendation: text` (spec §4.7): when the note's first word is a kind word and a `:` follows with text after it, the note
+   * takes that kind and the word leaves the text. `! Warning: text` is no kind: it stays a plain note, with W `note-kind` pointing at
+   * `!!`, which is what sets severity. `col` is where the text of the note starts.
+   */
+  private noteKind(b: NoteBlock, L: number, col: number): void {
+    const m = NOTE_KIND_RE.exec(b.text);
+    if (m) {
+      b.kind = m[1][0].toUpperCase() + m[1].slice(1).toLowerCase();
+      b.text = m[2];
+      return;
+    }
+    const word = /^(warning):\s*\S/i.exec(b.text)?.[1];
+    if (word)
+      this.diag(
+        'warning',
+        'note-kind',
+        `"${word}:" does not make a note a warning; write \`!! text\` for a warning (\`!!!\` for a critical callout)`,
+        L,
+        col,
+        { word, use: '!!' },
+      );
+  }
+
+  // ------------------------------------------------------------ status words (D80)
+
+  /**
+   * `@status Word=tone, Other word=tone` (spec §4.3). Repeatable: each line adds its valid entries to `meta.status`, as the
+   * normalized text `Word=tone, Other word=tone` (`readStatus` reads it back). An entry with no word or a tone that is none of
+   * `STATUS_TONES` is W `status-value` and is left out.
+   */
+  private statusMeta(value: string, L: number, col: number): void {
+    const { entries, bad } = readStatus(value);
+    if (value === '') bad.push({ word: '', tone: '' });
+    const allowed = [...STATUS_TONES];
+    for (const b of bad) {
+      const why =
+        b.word === ''
+          ? 'an entry needs a word before the `=`'
+          : b.tone === ''
+            ? `"${b.word}" has no \`=tone\``
+            : `"${b.tone}" is not a tone for "${b.word}"`;
+      this.diag(
+        'warning',
+        'status-value',
+        `@status: ${why} (write Word=tone, tones: ${allowed.join(', ')}); the entry is ignored`,
+        L,
+        col,
+        {
+          word: b.word,
+          tone: b.tone,
+          allowed,
+        },
+      );
+    }
+    if (entries.length === 0) return;
+    const added = entries.map(([word, tone]) => `${word}=${tone}`).join(', ');
+    this.doc.meta.status = this.doc.meta.status ? `${this.doc.meta.status}, ${added}` : added;
+  }
+
+  // ------------------------------------------------------------ page metadata (D70, D80)
+
+  /**
+   * `@meta Key | value` (spec §4.3): one fact for the masthead's facts row and a `lede:key` head tag. Repeatable, in order: each valid
+   * line is added to `meta.meta` as `Key | value`, one per line (`factEntries` reads them back). E `meta-field` when the `|` or either
+   * side of it is missing; the fact is not kept.
+   */
+  private factMeta(value: string, L: number, col: number): void {
+    const fact = readFact(value);
+    if (!fact) {
+      const why = !value.includes('|')
+        ? 'it needs a `|` between the key and the value'
+        : value.slice(0, value.indexOf('|')).trim() === ''
+          ? 'it has no key before the `|`'
+          : 'it has no value after the `|`';
+      this.diag('error', 'meta-field', `@meta takes Key | value, as in @meta Owner | Ana Ruiz; ${why}`, L, col);
+      return;
+    }
+    const line = `${fact[0]} | ${fact[1]}`;
+    this.doc.meta.meta = this.doc.meta.meta ? `${this.doc.meta.meta}\n${line}` : line;
+  }
+
+  /** `@image` and `@canonical` (spec §4.3) must be absolute `https:` URLs: a share card is fetched by a scraper that has no base to resolve against. */
+  private urlMeta(key: 'image' | 'canonical', value: string, L: number, col: number): void {
+    const kind = httpsUrlProblem(value);
+    if (!kind) return;
+    const dropped = key === 'image' ? 'the share image is not written' : 'no canonical link is written';
+    this.diag('warning', 'meta-url', `@${key} takes an absolute https:// URL (got "${value}"); ${dropped}`, L, col, { key, value, kind });
+  }
+
   // ------------------------------------------------------------ accent (D49)
 
   private accentMeta(v: string, L: number, col: number): void {
+    if (this.opts.themed) {
+      this.diag('warning', 'theme-override', '@accent is ignored: the --theme file sets the accent', L, col, { key: 'accent' });
+      return;
+    }
     if (HEX_COLOR.test(v)) {
       this.accentAt = { line: L, col };
       return;
@@ -367,6 +584,15 @@ export class LedeParser {
 
   private classify(s: string, lead: number): void {
     const L = this.lineNo;
+    if (this.table) {
+      // The rows of an open inline table are the lines that begin with `:`; the first other line, a blank one included, ends it.
+      const row = /^:(?:\s+(.*))?$/.exec(s);
+      if (row) {
+        this.pipeRow(this.table.d, splitPipes(row[1] ?? ''), afterColon(s, lead));
+        return;
+      }
+      this.closeTable();
+    }
     if (s === '') {
       this.flush();
       return;
@@ -398,8 +624,12 @@ export class LedeParser {
       if (!META_KEYS.includes(key)) {
         this.diag('warning', 'unknown-meta', `unknown meta key @${key} (known: ${META_KEYS.join(', ')})`, L, lead + 1);
       }
-      this.doc.meta[key] = (meta[2] ?? '').trim();
-      if (key === 'accent') this.accentMeta(this.doc.meta[key], L, lead + 1);
+      const value = (meta[2] ?? '').trim();
+      if (key === 'status') this.statusMeta(value, L, lead + 1);
+      else if (key === 'meta') this.factMeta(value, L, lead + 1);
+      else this.doc.meta[key] = value;
+      if (key === 'accent') this.accentMeta(value, L, lead + 1);
+      if (key === 'image' || key === 'canonical') this.urlMeta(key, value, L, lead + 1);
       return;
     }
     const h = /^(#{1,6})(\s+(.*))?$/.exec(s);
@@ -461,7 +691,9 @@ export class LedeParser {
     if (note) {
       this.flush();
       const tone = (['note', 'warn', 'danger'] as const)[note[1].length - 1];
-      this.emit({ type: 'note', tone, text: note[2], line: L });
+      const block: NoteBlock = { type: 'note', tone, text: note[2], line: L };
+      if (tone === 'note') this.noteKind(block, L, lead + 1 + (s.length - note[2].length));
+      this.emit(block);
       return;
     }
     if (s.startsWith('>')) {
@@ -493,18 +725,43 @@ export class LedeParser {
       return;
     }
     const dl = /^([A-Za-z][\w-]*):\s*(.*)$/.exec(s);
-    // A `NAME:` line binds to a bucket set before it can bind to a diagram (a set and a diagram never share a name).
-    const owner = dl ? (this.bucketSet(dl[1]) ?? this.diagrams.get(dl[1])) : undefined;
+    // A `NAME:` line binds to a decision or a bucket set before it can bind to a diagram (they never share a name).
+    const owner = dl ? (this.decisions.get(dl[1]) ?? this.bucketSet(dl[1]) ?? this.diagrams.get(dl[1])) : undefined;
     if (dl && owner) {
       this.flush();
-      const col = lead + 1 + s.indexOf(':') + 1 + (s.slice(s.indexOf(':') + 1).length - s.slice(s.indexOf(':') + 1).trimStart().length);
-      if (owner.type === 'bucket') {
+      const col = afterColon(s, lead);
+      if (owner.type === 'decision') {
+        const changed = this.decisionLine(owner, dl[2].trim(), col);
+        this.hooks?.onDecisionLine?.(owner, changed);
+      } else if (owner.type === 'bucket') {
         const changed = this.bucketItem(owner, dl[2].trim(), col);
         this.hooks?.onBucketItem?.(owner, changed);
       } else {
         const changed = this.diagramLine(owner, dl[2].trim(), col);
         this.hooks?.onDiagramLine(owner, changed);
       }
+      return;
+    }
+    // `NAME: a | b | c` (D80) is a row of the data set NAME when one is declared above and the text holds a pipe separator. A bucket set
+    // or a diagram of that name has the line first. Any other `NAME:` line is prose, as it was.
+    const fields = dl && this.holds('data', dl[1]) ? splitPipes(dl[2]) : [];
+    if (dl && fields.length > 1) {
+      this.flush();
+      this.pipeRow(dataSet(this.doc, dl[1])!, fields, afterColon(s, lead));
+      this.hooks?.onDataAppend(dl[1], true);
+      return;
+    }
+    // A decision line whose name is no decision (and no data set with a pipe row): a mistyped name is an error, not a paragraph.
+    if (dl && DECISION_LINE.test(dl[2])) {
+      this.flush();
+      this.diag(
+        'error',
+        'decision-ref',
+        `"${dl[1]}:" looks like a decision line, but no decision named ${dl[1]} is declared above it (write \`decision ${dl[1]} "Question"\` first, or start the line with \\ to make it prose)`,
+        L,
+        lead + 1,
+        { name: dl[1] },
+      );
       return;
     }
     if (dl && /(-->|->|<->)/.test(dl[2])) {
@@ -670,6 +927,8 @@ export class LedeParser {
         return this.templateLine(rest, col);
       case 'preset':
         return this.presetLine(rest, col);
+      case 'decision':
+        return this.decisionDecl(rest, col);
       case 'cards': {
         if (this.cards) this.closeCards();
         if (this.grid) this.closeGrid(true);
@@ -892,17 +1151,17 @@ export class LedeParser {
   }
 
   /**
-   * W `<kind>-option` for each word the options of a chart or diagram line do not take, saying what was probably meant when the
+   * W `<kind>-option` for each word the options of a chart, diagram or decision line do not take, saying what was probably meant when the
    * word spilled out of an unquoted value, and for a `"` that is never closed.
    */
-  private strayOptions(kind: 'chart' | 'diagram', o: Opts, stray: string[], col: number): void {
+  private strayOptions(kind: 'chart' | 'diagram' | 'decision', o: Opts, stray: string[], col: number): void {
     for (const w of spilled(o, stray))
       this.diag('warning', `${kind}-option`, `ignored ${kind} option "${w.text}"${w.hint}`, this.lineNo, col);
     this.openQuotes(kind, o, col);
   }
 
   /** W `<kind>-option` for a `"` in an option list that is never closed: the options after it were read as its text. */
-  private openQuotes(kind: 'chart' | 'table' | 'diagram', o: Opts, col: number): void {
+  private openQuotes(kind: 'chart' | 'table' | 'diagram' | 'decision', o: Opts, col: number): void {
     if (o.unclosed !== null)
       this.diag(
         'warning',
@@ -1344,18 +1603,19 @@ export class LedeParser {
     }
   }
 
-  // ------------------------------------------------------------ names shared by data, diagrams and bucket sets
+  // ------------------------------------------------------------ names shared by data, diagrams, bucket sets and decisions
 
-  /** Whether a data set, a diagram or a bucket set already has the name. */
+  /** Whether a data set, a diagram, a bucket set or a decision already has the name. */
   private holds(space: Space, name: string): boolean {
     // Own property only: `constructor` or `toString` is on the prototype of any object, not a data set.
-    return space === 'data' ? Object.hasOwn(this.doc.data, name) : space === 'diagram' ? this.diagrams.has(name) : !!this.bucketSet(name);
+    if (space === 'data') return Object.hasOwn(this.doc.data, name);
+    return space === 'diagram' ? this.diagrams.has(name) : space === 'decision' ? this.decisions.has(name) : !!this.bucketSet(name);
   }
 
   /**
-   * Data sets, diagrams and bucket sets share one namespace, since a `NAME:` line must mean one of them. Reports `name` as an error for
-   * each of the other two that already has it (`once`: only the first) and returns those it found. The caller decides whether the
-   * declaration goes on.
+   * Data sets, diagrams, bucket sets and decisions share one namespace, since a `NAME:` line must mean one of them. Reports `name` as an
+   * error for each of the others that already has it (`once`: only the first) and returns those it found. The caller decides whether
+   * the declaration goes on.
    */
   private clash(declaring: Space, name: string, col: number, once = false): Space[] {
     const held = SPACES.filter((s) => s !== declaring && this.holds(s, name));
@@ -1450,9 +1710,11 @@ export class LedeParser {
     this.emit({ type: 'data', name, line: L });
   }
 
-  private addRows(d: DataSet, rows: string[][], offsets: number[], bodyCol: number): void {
+  /** `pipe`: the rows are pipe rows (D80), whose fields are not split at `,`, so a thousands comma is no reason to merge two of them. */
+  private addRows(d: DataSet, rows: string[][], offsets: number[], bodyCol: number, pipe = false): void {
+    const join = pipe ? ' | ' : ',';
     rows.forEach((r, i) => {
-      if (r.length > d.columns.length) {
+      if (!pipe && r.length > d.columns.length) {
         // An unquoted thousands separator splits one number in two: "$1,450" -> "$1" "450".
         const fixed = mergeThousands(r, d.columns.length);
         if (fixed) {
@@ -1470,8 +1732,9 @@ export class LedeParser {
       if (r.length !== d.columns.length) {
         // A header cell split at a thousands comma (`left of $400,000`) makes every row look one short.
         const split = d.columns.findIndex((c, k) => /\d$/.test(c) && /^\d{3}$/.test(d.columns[k + 1] ?? ''));
-        const hint =
-          r.length > d.columns.length
+        const hint = pipe
+          ? `a pipe row has one field per column, separated by " | " (a space on each side); write an empty field as "a | | c"`
+          : r.length > d.columns.length
             ? 'put a cell that contains , in double quotes ("like, this")'
             : split >= 0
               ? `the header cell "${d.columns[split]}" / "${d.columns[split + 1]}" looks split at a thousands comma: quote it ("${d.columns[split]},${d.columns[split + 1]}")`
@@ -1479,7 +1742,7 @@ export class LedeParser {
         this.diag(
           'error',
           'data-row-width',
-          `row "${r.join(',')}" has ${r.length} fields; ${d.name} has ${d.columns.length} columns (${d.columns.join(',')}); ${hint}`,
+          `row "${r.join(join)}" has ${r.length} fields; ${d.name} has ${d.columns.length} columns (${d.columns.join(join)}); ${hint}`,
           this.lineNo,
           bodyCol + (offsets[i] ?? 0),
           { fields: r.length, want: d.columns.length, name: d.name },
@@ -1489,6 +1752,11 @@ export class LedeParser {
       }
       d.rows.push(r);
     });
+  }
+
+  /** One pipe row (D80) added to `d`: the fields of `NAME: a | b | c`, or of a `: a | b` line of an open inline table. */
+  private pipeRow(d: DataSet, fields: string[], col: number): void {
+    this.addRows(d, [fields], [0], col, true);
   }
 
   private requireData(name: string | undefined, col: number): DataSet | null {
@@ -1812,7 +2080,7 @@ export class LedeParser {
 
   private tableLine(rest: string, col: number): void {
     const L = this.lineNo;
-    // Anonymous inline table: `table [opts] = h,h; v,v`
+    // Anonymous inline table: `table [opts] = h,h; v,v`, or with a pipe header (D80) `table [opts] = h | h | h`
     const eq = /(^|\s)=(\s|$)/.exec(rest);
     let d: DataSet | null;
     let optStr: string;
@@ -1820,27 +2088,78 @@ export class LedeParser {
       optStr = rest.slice(0, eq.index);
       const body = rest.slice(eq.index + eq[0].length);
       const name = `_table${++this.anon}`;
-      const csv = parseInlineCsv(body);
       const bodyCol = col + eq.index + eq[0].length;
-      if (csv.unclosedAt !== null) this.diag('error', 'csv-quote', 'unclosed " in table', L, bodyCol + csv.unclosedAt);
-      this.afterQuote(csv, bodyCol + (csv.afterQuoteAt ?? 0));
-      if (csv.rows.length === 0) {
-        this.diag('error', 'data-empty', 'inline table has no header row', L, bodyCol);
+      // A header with a pipe separator outside double quotes is a pipe header: it is split at the pipes and nowhere else. A `;`
+      // outside quotes ends a CSV header row, so where the line reads as a CSV table without an error (`= Key,Meaning; a | b,either`)
+      // it stays the CSV table it always was; one that would not (`= Plan | Cost; USD | Note`) was an error before pipe headers.
+      const pipes = pipeOutsideQuotes(body) >= 0 && !(pipeOutsideQuotes(body, ';') >= 0 && cleanCsv(body)) ? splitPipes(body) : [];
+      if (pipes.length > 1) d = { name, columns: pipes, rows: [], line: L };
+      else {
+        const csv = parseInlineCsv(body);
+        if (csv.unclosedAt !== null) this.diag('error', 'csv-quote', 'unclosed " in table', L, bodyCol + csv.unclosedAt);
+        this.afterQuote(csv, bodyCol + (csv.afterQuoteAt ?? 0));
+        if (csv.rows.length === 0) {
+          this.diag('error', 'data-empty', 'inline table has no header row', L, bodyCol);
+          return;
+        }
+        d = { name, columns: csv.rows[0], rows: [], line: L };
+        this.addRows(d, csv.rows.slice(1), csv.offsets.slice(1), bodyCol);
+      }
+      storeData(this.doc, name, d);
+      if (d.rows.length === 0) {
+        // A header and no rows: `: a | b` lines may follow, so the table stays open and is emitted when they end.
+        this.table = { d, optStr, col, line: L };
         return;
       }
-      d = { name, columns: csv.rows[0], rows: [], line: L };
-      this.addRows(d, csv.rows.slice(1), csv.offsets.slice(1), bodyCol);
-      storeData(this.doc, name, d);
     } else {
       const t = tokens(rest);
       d = this.requireData(t[0]?.key === undefined ? t[0]?.text : undefined, col);
       optStr = rest.slice(t[1]?.offset ?? rest.length);
     }
     if (!d) return;
+    const block = this.tableBlock(d, optStr, col, !!eq);
+    if (block) this.emit(block);
+  }
+
+  /** End the open inline table: its options are read against the rows it has, and its block is emitted. */
+  private closeTable(): void {
+    const t = this.table!;
+    this.table = null;
+    const block = this.tableBlock(t.d, t.optStr, t.col, true, t.line);
+    if (block) this.emit(block);
+  }
+
+  /** The open inline table as a block, with the rows so far and without a word reported (`peek` reads it; nothing is closed). */
+  private peekTable(t: TableRun): TableBlock | null {
+    this.quiet = true;
+    try {
+      return this.tableBlock(t.d, t.optStr, t.col, true, t.line);
+    } finally {
+      this.quiet = false;
+    }
+  }
+
+  /**
+   * The block of a `table` line: its options read against the data `d`. `inline`: the data is the table's own (`table [options] =`),
+   * which has no name to give it. `line` is the table's own line when this runs after later lines have been read, as it does when a run of
+   * `: a | b` rows closes.
+   */
+  private tableBlock(d: DataSet, optStr: string, col: number, inline: boolean, line = this.lineNo): TableBlock | null {
+    const now = this.lineNo;
+    this.lineNo = line;
+    try {
+      return this.tableOptions(d, optStr, col, inline);
+    } finally {
+      this.lineNo = now;
+    }
+  }
+
+  private tableOptions(d: DataSet, optStr: string, col: number, inline: boolean): TableBlock | null {
+    const L = this.lineNo;
     const o = parseOpts(optStr, ['heat'], ['cols', 'sort', 'heat', 'bar', 'target']);
     for (const { text: w, hint: spill } of spilled(o, [...o.words, ...o.quoted])) {
       // `table vendors = ...` names an inline table, which has no name: say how to get one.
-      const named = !spill && eq && w === o.words[0] && /^[A-Za-z_][\w-]*$/.test(w) && !TABLE_OPTIONS.includes(w);
+      const named = !spill && inline && w === o.words[0] && /^[A-Za-z_][\w-]*$/.test(w) && !TABLE_OPTIONS.includes(w);
       const hint = named
         ? `; an inline table has no name: write \`table = ...\`, or \`data ${w} = ...\` then \`table ${w}\``
         : spill || ' (options: cols= sort= limit= title= heat bar= target=)';
@@ -1853,14 +2172,14 @@ export class LedeParser {
         .split(',')
         .map((c) => c.trim())
         .filter(Boolean);
-      if (!cols.every((c) => this.requireCol(d, c, col))) return;
+      if (!cols.every((c) => this.requireCol(d, c, col))) return null;
       cols = cols.map((c) => findCol(d, c)!);
     }
     let sort: TableBlock['sort'] = null;
     if (o.kv.sort) {
       const desc = o.kv.sort.startsWith('-');
       const c = o.kv.sort.replace(/^[-+]/, '');
-      if (!this.requireCol(d, c, col)) return;
+      if (!this.requireCol(d, c, col)) return null;
       sort = { col: findCol(d, c)!, desc };
     }
     // heat / heat=a,b tints numeric cells by rank; bar=a,b draws a proportional bar behind a column's numbers.
@@ -1886,13 +2205,13 @@ export class LedeParser {
     let heat: TableBlock['heat'];
     if (o.kv.heat !== undefined) {
       const cs = pickCols(o.kv.heat);
-      if (cs === null) return;
+      if (cs === null) return null;
       if (cs.length) heat = cs;
     } else if (o.flags.includes('heat')) heat = true;
     let bars: TableBlock['bars'];
     if (o.kv.bar !== undefined) {
       const cs = pickCols(o.kv.bar);
-      if (cs === null) return;
+      if (cs === null) return null;
       if (cs.length) bars = cs;
     }
     // target=col (v0.4): each row's tick on its bar= bar. Misuse is a warning and the option is dropped.
@@ -1916,7 +2235,7 @@ export class LedeParser {
     if (heat !== undefined) block.heat = heat;
     if (bars !== undefined) block.bars = bars;
     if (targetCol !== undefined) block.targetCol = targetCol;
-    this.emit(block);
+    return block;
   }
 
   private kpiLine(rest: string, col: number): void {
@@ -2034,6 +2353,156 @@ export class LedeParser {
     this.emit({ type: 'image', src, alt, caption: t.find((x) => x.key === 'caption')?.text ?? null, line: L });
   }
 
+  // ------------------------------------------------------------ decisions (spec §4.20)
+
+  /**
+   * `decision NAME "Question" [status=open|settled|deferred] [by=DATE]` declares a decision; `NAME: option …`, `question …` and
+   * `role …` lines then fill it, as `NAME:` lines fill a diagram. A line with an error makes no block and takes no name.
+   */
+  private decisionDecl(rest: string, col: number): void {
+    const L = this.lineNo;
+    const usage = 'decision NAME "Question" [status=open|settled|deferred] [by=DATE]';
+    const bad = (why: string) => this.diag('error', 'decision-syntax', `decision ${why}: write \`${usage}\``, L, col, { word: 'decision' });
+    const cut = rest.search(/\s/);
+    const name = cut < 0 ? rest : rest.slice(0, cut);
+    const after = cut < 0 ? '' : rest.slice(cut).trim();
+    if (!NAME_RE.test(name)) return bad('needs a name: a letter, then letters, digits, _ or -');
+    if (reservedName(name)) return bad(`${name} is a keyword and cannot name a decision (a line starting \`html:\` is a raw block)`);
+    if (!after.startsWith('"')) return bad(`${name} needs its question in double quotes right after the name`);
+    const q = readQuoted(after, 0);
+    if (!q.closed) return bad(`${name}: the question's " is never closed`);
+    const text = q.value.trim();
+    if (!text) return bad(`${name}: the question is empty`);
+    const o = parseOpts(after.slice(q.end));
+    const extra = Object.keys(o.kv).filter((k) => k !== 'status' && k !== 'by');
+    this.strayOptions('decision', o, [...o.words, ...o.quoted.map((w) => `"${w}"`), ...extra.map((k) => `${k}=`)], col);
+    let status: DecisionStatus = 'open';
+    if (o.kv.status !== undefined) {
+      const given = o.kv.status.trim().toLowerCase();
+      const known = DECISION_STATUS.find((x) => x === given);
+      if (known) status = known;
+      else {
+        this.diag(
+          'warning',
+          'decision-status',
+          `decision ${name}: status must be ${DECISION_STATUS.join(', ')} (got "${o.kv.status}"); it is read as open`,
+          L,
+          col,
+          { kind: 'status', value: o.kv.status },
+        );
+      }
+    }
+    const by = o.kv.by?.trim() || null;
+    const first = this.decisions.get(name);
+    if (first) {
+      this.diag('error', 'decision-ref', `decision ${name} is already declared on line ${first.line}`, L, col, { name, first: first.line });
+      return;
+    }
+    if (this.clash('decision', name, col, true).length > 0) return;
+    const block: DecisionBlock = { type: 'decision', name, text, status, by, options: [], questions: [], roles: [], line: L };
+    this.decisions.set(name, block);
+    this.emit(block);
+  }
+
+  /** Applies a `NAME:` line to the decision. True when it added an option, a question or a role; false when it was rejected. */
+  private decisionLine(d: DecisionBlock, s: string, col: number): boolean {
+    const L = this.lineNo;
+    const m = /^(option|question|role)(?=\s|$)\s*(.*)$/.exec(s);
+    const bad = (word: DecisionLineWord, why: string): false => this.decisionBad(d, word, why, col);
+    if (!m) {
+      this.diag(
+        'error',
+        'decision-syntax',
+        `${d.name}: a line of a decision starts with option, question or role (got "${s.split(/\s/)[0] ?? ''}"); start the line with \\ if it is prose`,
+        L,
+        col,
+        { word: 'line' },
+      );
+      return false;
+    }
+    const [, matched, rest] = m;
+    const word = matched as DecisionLineWord;
+    if (word === 'role') {
+      const at = rest.indexOf('"');
+      const words = (at < 0 ? rest : rest.slice(0, at)).split(/\s+/).filter(Boolean);
+      if (words.length < 1 || words.length > 2) return bad(word, `${d.name}: a role is one or two words before the quoted name`);
+      const who = readQuoted(rest, at);
+      if (!who.closed || !who.value.trim() || rest.slice(who.end).trim() !== '')
+        return bad(word, `${d.name}: the role's name needs double quotes, closed, with nothing after them`);
+      d.roles.push({ role: words.join(' '), who: who.value.trim(), line: L });
+      return true;
+    }
+    let head = rest;
+    let id = '';
+    if (word === 'option') {
+      const cut = rest.search(/\s/);
+      id = cut < 0 ? rest : rest.slice(0, cut);
+      head = cut < 0 ? '' : rest.slice(cut).trim();
+      if (!/^[A-Za-z0-9][\w-]*$/.test(id)) return bad(word, `${d.name}: an option needs an id (letters, digits, _ or -) before its label`);
+    }
+    const q = head.startsWith('"') ? readQuoted(head, 0) : null;
+    if (!q?.closed || !q.value.trim())
+      return bad(word, `${d.name}: ${word === 'option' ? 'the label' : 'the question'} needs double quotes, closed, and some text`);
+    const tail = head.slice(q.end).trim();
+    if (tail !== '' && !tail.startsWith('|')) return bad(word, `${d.name}: text after the closing " must start with a |`);
+    if (word === 'question') {
+      d.questions.push({ text: q.value.trim(), answer: answerOf(tail.slice(1)), line: L });
+      return true;
+    }
+    return this.decisionOption(d, id, q.value.trim(), tail === '' ? null : barCells(tail.slice(1)), col);
+  }
+
+  /** Rejects a line of decision `d`: the reason, then the form the line takes. Always false, so a caller can return it. */
+  private decisionBad(d: DecisionBlock, word: DecisionLineWord, why: string, col: number): false {
+    this.diag('error', 'decision-syntax', `${why}: write \`${d.name}: ${DECISION_LINE_USAGE[word]}\``, this.lineNo, col, { word });
+    return false;
+  }
+
+  /** The option `id "label" | why | verdict` for a decision: `cells` are what follows the label (null when nothing does). */
+  private decisionOption(d: DecisionBlock, id: string, label: string, cells: ReturnType<typeof barCells> | null, col: number): boolean {
+    const L = this.lineNo;
+    if (cells && (cells.error || cells.cells.length > 2))
+      return this.decisionBad(
+        d,
+        'option',
+        `${d.name}: an option has a label, then at most a why and a verdict, each after a | (quote a text that holds a |)`,
+        col,
+      );
+    let [why = '', word = ''] = cells?.cells ?? [];
+    // A lone cell that is a verdict word is the verdict, not a reason.
+    if (cells?.cells.length === 1 && VERDICTS.has(why.toLowerCase())) [why, word] = ['', why];
+    const first = d.options.find((x) => x.id === id);
+    if (first) {
+      this.diag(
+        'error',
+        'decision-ref',
+        `${d.name}: option ${id} is already declared on line ${first.line}; every option needs its own id`,
+        L,
+        col,
+        {
+          name: d.name,
+          id,
+          first: first.line,
+        },
+      );
+      return false;
+    }
+    const key = word.toLowerCase();
+    const verdict = VERDICTS.get(key) ?? null;
+    if (key !== '' && !verdict) {
+      this.diag(
+        'warning',
+        'decision-status',
+        `${d.name}: an option's verdict is chosen, picked, selected or rejected (got "${word}"); option ${id} has none`,
+        L,
+        col,
+        { kind: 'verdict', value: word },
+      );
+    }
+    d.options.push({ id, label, why, verdict, line: L });
+    return true;
+  }
+
   // ------------------------------------------------------------ diagrams
 
   private diagramDecl(rest: string, col: number): void {
@@ -2044,7 +2513,7 @@ export class LedeParser {
       this.diag('error', 'diagram-name', 'diagram needs a name: `diagram flow` then lines like `flow: a -> b`', L, col);
       return;
     }
-    if ((KEYWORDS as readonly string[]).includes(name) || name === 'html') {
+    if (reservedName(name)) {
       this.diag('error', 'diagram-name', `${name} is a keyword and cannot name a diagram`, L, col);
       return;
     }
@@ -2064,6 +2533,7 @@ export class LedeParser {
       name,
       kind,
       dir,
+      ...(o.kv.dir !== undefined && dirRaw === dir ? { dirExplicit: true as const } : {}),
       title: o.kv.title ?? null,
       nodes: [],
       edges: [],
@@ -2260,13 +2730,15 @@ export class LedeParser {
       return true;
     }
 
-    // edges: a -> b, c --> d : label. An arrow inside a quoted label (`api "Payments -> API" service`) is text, not an edge.
+    // edges: a -> b, c --> d : label [| tone]. An arrow inside a quoted label (`api "Payments -> API" service`) is text, not an edge.
     if (/(-->|->|<->|\s-x-\s)/.test(s.includes('"') ? s.replace(/"[^"]*"/g, '""') : s)) {
-      const ci = s.indexOf(':');
-      const chain = ci >= 0 ? s.slice(0, ci) : s;
-      const label = ci >= 0 ? s.slice(ci + 1).trim() : '';
+      const tn = splitTone(s);
+      const ci = tn.head.indexOf(':');
+      const chain = ci >= 0 ? tn.head.slice(0, ci) : tn.head;
+      const label = ci >= 0 ? tn.head.slice(ci + 1).trim() : '';
       // `-x-` needs spaces around it so ids such as `a-x-b` stay ids; `-x->` is unambiguous.
-      const parts = chain.split(/(\s+-x-\s+|\s*(?:<->|-->|-x->|->)\s*)/).map((p, i) => (i % 2 ? p.trim() : p));
+      // A separator starts only where a run of spaces does (`(?<!\s)`), so a long run costs one pass and not one per space in it.
+      const parts = chain.split(/(?<!\s)(\s+-x-\s+|\s*(?:<->|-->|-x->|->)\s*)/).map((p, i) => (i % 2 ? p.trim() : p));
       const steps: string[][] = [];
       const ops: string[] = [];
       parts.forEach((p, i) => (i % 2 ? ops.push(p) : steps.push(p.split(',').map((x) => x.trim()))));
@@ -2283,18 +2755,33 @@ export class LedeParser {
         this.diag('error', 'diagram-syntax', 'sequence messages go between exactly two participants', L, col);
         return false;
       }
+      if (tn.word !== undefined) {
+        const allowed = [...STATUS_TONES];
+        const meant = tn.suggest ? `tone words are lower case: write "${tn.suggest}"` : allowed.join(', ');
+        this.diag(
+          'warning',
+          'edge-tone',
+          tn.dropped
+            ? `"${tn.word}" is not an edge tone (${meant}); the edge is drawn without one and the field is dropped`
+            : `"${tn.word}" is not an edge tone (${meant}); it stays in the label and the edge is drawn without one`,
+          L,
+          col + tn.at,
+          { value: tn.word, allowed },
+        );
+      }
       for (let i = 0; i < ops.length; i++) {
         for (const a of steps[i])
           for (const b of steps[i + 1]) {
             if (!d.groups.some((g) => g.id === a)) this.node(d, a);
             if (!d.groups.some((g) => g.id === b)) this.node(d, b);
-            // In a chain the label belongs to the last hop: `commit -> build -> deploy : on green`.
+            // In a chain the label belongs to the last hop: `commit -> build -> deploy : on green`. The tone belongs to every hop.
             const e: DiagramEdge = {
               from: a,
               to: b,
               label: i === ops.length - 1 ? label : '',
               style: ops[i] === '-->' ? 'dashed' : ops[i] === '-x-' || ops[i] === '-x->' ? 'blocked' : 'solid',
               both: ops[i] === '<->',
+              ...(tn.tone ? { tone: tn.tone } : {}),
               line: L,
             };
             d.edges.push(e);
@@ -2349,8 +2836,48 @@ export class LedeParser {
     col: number,
     detail?: Diagnostic['detail'],
   ): void {
+    if (this.quiet) return;
     this.doc.diagnostics.push({ severity, code, message, line, col: Math.max(1, col), ...(detail ? { detail } : {}) });
   }
+}
+
+/**
+ * The inline table `body` reads as CSV with no error: its quotes close, and every row after the header has as many cells as the
+ * header, or more only by a thousands comma that `addRows` merges back.
+ */
+function cleanCsv(body: string): boolean {
+  const csv = parseInlineCsv(body);
+  if (csv.unclosedAt !== null || csv.rows.length < 2) return false;
+  const want = csv.rows[0].length;
+  return csv.rows.slice(1).every((r) => r.length === want || (r.length > want && mergeThousands(r, want)?.row.length === want));
+}
+
+/** The 1-based column where the text after the first `:` of the line `s` starts, `lead` columns of indentation having been stripped. */
+function afterColon(s: string, lead: number): number {
+  const at = s.indexOf(':') + 1;
+  return lead + 1 + at + (s.length - at - s.slice(at).trimStart().length);
+}
+
+/**
+ * An edge or message line without its tone. The tone is the line's last ` | ` field (`a -> b : allow | good`, `a -> b | warn`): a
+ * pipe with a space on each side, outside any pair of double quotes, and a field that is exactly one of STATUS_TONES. Inside a label
+ * (after the `:`) any other last field is label text, as it was before tones (`client -> server : GET | POST`); a case variant of a
+ * tone word (`Good`) stays label text too, and comes back as `word`, with `suggest` the tone it was likely meant as, for a warning.
+ * Before any `:` (no label) the line did not parse before tones, so a lone other word there is a mistyped tone: `word`, dropped with
+ * its pipe. `at` is the word's offset in `s`.
+ */
+function splitTone(s: string): { head: string; tone?: EdgeTone; word?: string; suggest?: EdgeTone; dropped?: boolean; at: number } {
+  let at = -1;
+  for (const m of s.replace(/"[^"]*"/g, (q) => '_'.repeat(q.length)).matchAll(/\s\|(?=\s)/g)) at = m.index;
+  const field = at < 0 ? '' : s.slice(at + 2).trim();
+  if (!/^[A-Za-z][\w-]*$/.test(field)) return { head: s, at: 0 };
+  const head = s.slice(0, at).trimEnd();
+  const tone = STATUS_TONES.find((t) => t === field);
+  if (tone) return { head, tone, at: 0 };
+  const suggest = STATUS_TONES.find((t) => t === field.toLowerCase());
+  const word = { word: field, at: s.lastIndexOf(field), ...(suggest ? { suggest } : {}) };
+  if (head.includes(':')) return suggest ? { head: s, ...word } : { head: s, at: 0 };
+  return { head, dropped: true, ...word };
 }
 
 /**
@@ -2365,6 +2892,43 @@ function spilled(o: Opts, stray: string[]): { text: string; hint: string }[] {
     if (s) i += s.words.length - 1;
   }
   return out;
+}
+
+/**
+ * The cells of `a | "b | c" | d`, which are `a`, `b | c` and `d`: split at each `|` outside quotes, trimmed. A cell that starts with `"`
+ * runs to its closing quote and nothing may follow it before the next `|` (`error`: the quote never closes, or text follows it).
+ */
+function barCells(s: string): { cells: string[]; error: boolean } {
+  const cells: string[] = [];
+  let i = 0;
+  for (;;) {
+    while (i < s.length && /\s/.test(s[i])) i++;
+    if (s[i] === '"') {
+      const q = readQuoted(s, i);
+      i = q.end;
+      while (i < s.length && /\s/.test(s[i])) i++;
+      if (!q.closed || (i < s.length && s[i] !== '|')) return { cells, error: true };
+      cells.push(q.value.trim());
+    } else {
+      const bar = s.indexOf('|', i);
+      const end = bar < 0 ? s.length : bar;
+      cells.push(s.slice(i, end).trim());
+      i = end;
+    }
+    if (i >= s.length) return { cells, error: false };
+    i++;
+  }
+}
+
+/** The answer of a `question` line: what follows its `|`, with a lead-in `answered:` or `answer:` dropped and one pair of quotes taken off; null when empty. */
+function answerOf(raw: string): string | null {
+  let t = raw.trim();
+  if (t.startsWith('"')) {
+    const q = readQuoted(t, 0);
+    if (q.closed && q.end === t.length) t = q.value;
+  }
+  t = t.replace(/^answer(?:ed)?\s*:\s*/i, '').trim();
+  return t === '' ? null : t;
 }
 
 /** `d` is a whole number of `step`s, within a rounding error (0.94 - 0.85 is not exactly 9 steps of 0.01 in floating point). */

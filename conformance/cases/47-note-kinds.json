@@ -1,0 +1,65 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 1,
+      "text": "Queue choice",
+      "line": 1
+    },
+    {
+      "type": "note",
+      "tone": "note",
+      "text": "Use SQS.",
+      "line": 3,
+      "kind": "Recommendation"
+    },
+    {
+      "type": "note",
+      "tone": "note",
+      "text": "**Use FIFO.** Ordering is kept per group.",
+      "line": 4,
+      "kind": "Tip"
+    },
+    {
+      "type": "note",
+      "tone": "note",
+      "text": "shipped",
+      "line": 5,
+      "kind": "Done"
+    },
+    {
+      "type": "note",
+      "tone": "note",
+      "text": "a standard queue.",
+      "line": 6,
+      "kind": "Example"
+    },
+    {
+      "type": "note",
+      "tone": "note",
+      "text": "plain note",
+      "line": 7
+    },
+    {
+      "type": "note",
+      "tone": "warn",
+      "text": "Tip: stays a warning",
+      "line": 8
+    },
+    {
+      "type": "note",
+      "tone": "danger",
+      "text": "Decision: stays critical",
+      "line": 9
+    },
+    {
+      "type": "note",
+      "tone": "note",
+      "text": "Tip:",
+      "line": 10
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

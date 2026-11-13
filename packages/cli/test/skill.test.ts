@@ -66,14 +66,16 @@ function scan(text: string): Scan {
 const TEACHES = /^<!-- teaches: (.+) -->$/;
 
 /**
- * The editor words are keyword lines only with a name and a `|` after it, so `toggle the flag on Monday` stays prose; `fold` and `swatch`
- * are page words the parser does not list in KEYWORDS.
+ * The editor words are keyword lines only with a name and a `|` after it, so `toggle the flag on Monday` stays prose, and `decision` only with
+ * a name and a quoted question after it; `fold` and `swatch` are page words the parser does not list in KEYWORDS.
  */
 const EDITOR_WORDS = ['param', 'toggle', 'bucket', 'template', 'preset'];
-const PLAIN_WORDS = [...KEYWORDS.filter((k) => !EDITOR_WORDS.includes(k)), 'fold', 'swatch'];
+const PLAIN_WORDS = [...KEYWORDS.filter((k) => !EDITOR_WORDS.includes(k) && k !== 'decision'), 'fold', 'swatch'];
 
 /** A line a Lede page would read as a block, which a `text` fence (an export, a non-Lede sample) must not hold. */
-const KEYWORD_LINE = new RegExp(`^(?:(?:${PLAIN_WORDS.join('|')})(?=\\s|$)|at \\d|(?:${EDITOR_WORDS.join('|')})\\s+\\S+\\s*\\|)`);
+const KEYWORD_LINE = new RegExp(
+  `^(?:(?:${PLAIN_WORDS.join('|')})(?=\\s|$)|at \\d|(?:${EDITOR_WORDS.join('|')})\\s+\\S+\\s*\\||decision\\s+[A-Za-z][\\w-]*\\s+")`,
+);
 
 /** What is wrong with a file's fences: unclosed ones, Lede fences that do not parse, `text` fences that hold a keyword line. */
 function fenceProblems(text: string): string[] {

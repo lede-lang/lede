@@ -1,0 +1,15 @@
+diagram arch dir=LR
+arch: web "Web tier" svc
+arch: web -> api : allow | good
+arch: api -x- db : deny | bad
+arch: api -> db | warn
+arch: web -> api -> db : chained | info
+arch: web -> api, cache | neutral
+arch: api --> web : read | write it
+arch: api -> web : "a | b" | good
+arch: legend
+
+diagram calls sequence
+calls: a -> b : GET /orders | good
+calls: b --> a : 401 | bad
+calls: a -> a : retry | warn

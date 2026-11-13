@@ -1,4 +1,5 @@
 // Lede 0.1 AST. Every block records the 1-based source line it started on.
+import type { StatusTone } from './meta.ts';
 
 export type Severity = 'error' | 'warning';
 
@@ -58,6 +59,11 @@ export interface QuoteBlock {
 export interface NoteBlock {
   type: 'note';
   tone: 'note' | 'warn' | 'danger';
+  /**
+   * The callout kind (D80): the kind word that opened a `!` note (`! Recommendation: ...`), as written with a capital letter, and
+   * `text` is what follows its `:`. Absent on a note without one, and always on `!!` and `!!!`, whose severity no word changes.
+   */
+  kind?: string;
   text: string;
   line: number;
 }
@@ -188,12 +194,16 @@ export interface DiagramNode {
   focus: boolean;
 }
 export type EdgeStyle = 'solid' | 'dashed' | 'blocked';
+/** The status tones an edge or a sequence message may take (D80): `a -> b : allow | good`. */
+export type EdgeTone = StatusTone;
 export interface DiagramEdge {
   from: string;
   to: string;
   label: string;
   style: EdgeStyle;
   both: boolean;
+  /** The line's last ` | ` field when it is a tone word; every edge a chain or a fan-out makes has it. Omitted when the line has none. */
+  tone?: EdgeTone;
   line: number;
 }
 export interface DiagramGroup {
@@ -232,6 +242,8 @@ export interface DiagramBlock {
   name: string;
   kind: 'flow' | 'sequence';
   dir: 'LR' | 'TB' | 'RL' | 'BT';
+  /** The writer gave a valid `dir=`. Omitted when `dir` is the default, which a renderer may replace (D80). */
+  dirExplicit?: true;
   title: string | null;
   nodes: DiagramNode[];
   edges: DiagramEdge[];
@@ -316,6 +328,42 @@ export interface PresetBlock {
   line: number;
 }
 export type QuestionBlock = AskBlock | ChooseBlock | ConfirmBlock | ParamBlock | ToggleBlock | BucketBlock | TemplateBlock;
+export type DecisionStatus = 'open' | 'settled' | 'deferred';
+export interface DecisionOption {
+  id: string;
+  label: string;
+  why: string;
+  verdict: 'chosen' | 'rejected' | null;
+  line: number;
+}
+export interface DecisionQuestion {
+  text: string;
+  /** Null while the question is open. */
+  answer: string | null;
+  line: number;
+}
+export interface DecisionRole {
+  role: string;
+  who: string;
+  line: number;
+}
+/**
+ * A decision (spec §4.20, D80): the question, its status, the options with their verdicts, the open and answered questions and the
+ * roles that settle it, drawn as one static card. The `NAME:` lines that follow the declaration add `options`, `questions` and
+ * `roles` to the emitted block, as a diagram gains statements. A decision is not a field: it has no value in the export. `by` is the
+ * date as written (an ISO date or any text), null when absent; an option's `verdict` is null while it is still under consideration.
+ */
+export interface DecisionBlock {
+  type: 'decision';
+  name: string;
+  text: string;
+  status: DecisionStatus;
+  by: string | null;
+  options: DecisionOption[];
+  questions: DecisionQuestion[];
+  roles: DecisionRole[];
+  line: number;
+}
 export type ExportFormat = 'json' | 'markdown' | 'prompt';
 export interface ExportBlock {
   type: 'export';
@@ -349,6 +397,7 @@ export type Block =
   | BucketBlock
   | TemplateBlock
   | PresetBlock
+  | DecisionBlock
   | ExportBlock;
 
 export interface LedeDocument {
