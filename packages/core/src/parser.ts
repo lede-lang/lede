@@ -107,8 +107,6 @@ export const KEYWORDS = [
   'preset',
   'decision',
 ] as const;
-/** The words an edge or message line's last ` | ` field may be (spec §4.17, D80). */
-export const EDGE_TONES: readonly EdgeTone[] = ['good', 'bad', 'warn', 'info', 'neutral'];
 export const META_KEYS = [
   'title',
   'subtitle',
@@ -2733,7 +2731,8 @@ export class LedeParser {
       const chain = ci >= 0 ? tn.head.slice(0, ci) : tn.head;
       const label = ci >= 0 ? tn.head.slice(ci + 1).trim() : '';
       // `-x-` needs spaces around it so ids such as `a-x-b` stay ids; `-x->` is unambiguous.
-      const parts = chain.split(/(\s+-x-\s+|\s*(?:<->|-->|-x->|->)\s*)/).map((p, i) => (i % 2 ? p.trim() : p));
+      // A separator starts only where a run of spaces does (`(?<!\s)`), so a long run costs one pass and not one per space in it.
+      const parts = chain.split(/(?<!\s)(\s+-x-\s+|\s*(?:<->|-->|-x->|->)\s*)/).map((p, i) => (i % 2 ? p.trim() : p));
       const steps: string[][] = [];
       const ops: string[] = [];
       parts.forEach((p, i) => (i % 2 ? ops.push(p) : steps.push(p.split(',').map((x) => x.trim()))));
@@ -2751,7 +2750,7 @@ export class LedeParser {
         return false;
       }
       if (tn.word !== undefined) {
-        const allowed = [...EDGE_TONES];
+        const allowed = [...STATUS_TONES];
         this.diag(
           'warning',
           'edge-tone',
@@ -2841,7 +2840,7 @@ function afterColon(s: string, lead: number): number {
 
 /**
  * An edge or message line without its tone. The tone is the line's last ` | ` field (`a -> b : allow | good`, `a -> b | warn`): a
- * pipe with a space on each side, outside any pair of double quotes. The field is `tone` when it is one of EDGE_TONES. A lone other
+ * pipe with a space on each side, outside any pair of double quotes. The field is `tone` when it is one of STATUS_TONES. A lone other
  * word is a mistyped tone: `word`, and it is dropped with its pipe (`at` is its offset in `s`). Any other text after the pipe (several
  * words, a number, punctuation) is label text and stays, as it did before tones.
  */
@@ -2851,7 +2850,7 @@ function splitTone(s: string): { head: string; tone?: EdgeTone; word?: string; a
   const field = at < 0 ? '' : s.slice(at + 2).trim();
   if (!/^[A-Za-z][\w-]*$/.test(field)) return { head: s, at: 0 };
   const head = s.slice(0, at).trimEnd();
-  const tone = EDGE_TONES.find((t) => t === field);
+  const tone = STATUS_TONES.find((t) => t === field);
   return tone ? { head, tone, at: 0 } : { head, word: field, at: s.lastIndexOf(field) };
 }
 

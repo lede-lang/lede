@@ -1,4 +1,5 @@
 // Lede 0.1 AST. Every block records the 1-based source line it started on.
+import type { StatusTone } from './meta.ts';
 
 export type Severity = 'error' | 'warning';
 
@@ -194,7 +195,7 @@ export interface DiagramNode {
 }
 export type EdgeStyle = 'solid' | 'dashed' | 'blocked';
 /** The status tones an edge or a sequence message may take (D80): `a -> b : allow | good`. */
-export type EdgeTone = 'good' | 'bad' | 'warn' | 'info' | 'neutral';
+export type EdgeTone = StatusTone;
 export interface DiagramEdge {
   from: string;
   to: string;

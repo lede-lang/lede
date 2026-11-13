@@ -104,7 +104,7 @@ test('a lone word that is no tone is W edge-tone, drawn untoned and dropped from
       'edge-tone',
       [2, 3, 4][i],
       [17, 13, 20][i],
-      { value, allowed: ['good', 'bad', 'warn', 'info', 'neutral'] },
+      { value, allowed: ['good', 'warn', 'bad', 'info', 'neutral'] },
     ]),
   );
   // Tone words are lowercase, like every keyword.
@@ -148,4 +148,11 @@ test('streaming: each line carries its tone, a partial line is not read, and the
     (snap.snapshot().blocks[0] as DiagramBlock).edges.map((e) => e.tone),
     ['good', 'good'],
   );
+});
+
+test('an edge line with a long run of spaces is read in one pass', () => {
+  const t = performance.now();
+  const got = edges(flow(`a -> b${' '.repeat(100_000)}| good`));
+  assert.ok(performance.now() - t < 1000, `${Math.round(performance.now() - t)} ms`);
+  assert.deepEqual(got, [['a', 'b', '', 'good']]);
 });

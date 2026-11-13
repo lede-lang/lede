@@ -6,7 +6,7 @@
 // This is the opposite of D49's rule for a page's `@accent`, on purpose: a writer's accent is one colour in a page they wrote and is
 // used whole or not at all; a house palette is a brand the operator wants matched as closely as AA allows.
 import type { Diagnostic } from './ast.ts';
-import { AA_NON_TEXT, AA_TEXT, contrastRatio, parseHex } from './contrast.ts';
+import { AA_NON_TEXT, AA_TEXT, flooredRatio, parseHex, toLinear } from './contrast.ts';
 import { FIXED_TOKENS, PALETTES, PALETTE_TOKENS, type PaletteToken, type PaletteTokens, type ThemeName } from './palette.ts';
 
 /** The most a tokens file may hold, in bytes. */
@@ -44,10 +44,6 @@ export function themeHex(v: unknown): string | null {
 
 type Vec = [number, number, number];
 
-const toLinear = (c: number): number => {
-  const v = c / 255;
-  return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
-};
 const fromLinear = (v: number): number => (v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055);
 
 /** [L, C, h] of an sRGB colour (r, g, b in 0..255): OKLab's lightness, its chroma and its hue in radians. */
@@ -109,7 +105,7 @@ interface Check {
   required: number;
 }
 
-const ratioOn = (hex: string, ground: string): number => Math.floor(contrastRatio(parseHex(hex)!, parseHex(ground)!) * 100) / 100;
+const ratioOn = (hex: string, ground: string): number => flooredRatio(parseHex(hex)!, parseHex(ground)!);
 const passes = (hex: string, checks: Check[]): boolean => checks.every((c) => ratioOn(hex, c.hex) >= c.required);
 
 /** The check `hex` is closest to failing, or failing worst: the lowest ratio relative to what it needs. */

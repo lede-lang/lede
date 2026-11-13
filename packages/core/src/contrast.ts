@@ -31,12 +31,14 @@ export function parseHex(s: string): [number, number, number, number] | null {
   return [n(0), n(2), n(4), h.length === 8 ? n(6) / 255 : 1];
 }
 
+/** An sRGB channel, 0..255, as linear light, 0..1. */
+export function toLinear(c: number): number {
+  const v = c / 255;
+  return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+}
+
 function luminance([r, g, b]: readonly number[]): number {
-  const lin = (c: number) => {
-    const v = c / 255;
-    return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
-  };
-  return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+  return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
 }
 
 /** WCAG contrast ratio of two opaque colors, 1 to 21. */
@@ -45,9 +47,13 @@ export function contrastRatio(a: readonly number[], b: readonly number[]): numbe
   return (hi + 0.05) / (lo + 0.05);
 }
 
+/** `contrastRatio` rounded down to two decimals, so a value at a boundary never reads as passing. */
+export function flooredRatio(a: readonly number[], b: readonly number[]): number {
+  return Math.floor(contrastRatio(a, b) * 100) / 100;
+}
+
 /**
- * The lowest contrast of `accent` against the theme's surfaces, rounded down to two decimals so a
- * value at the boundary never reads as passing. A translucent accent is composited over each
+ * The lowest contrast of `accent` against the theme's surfaces (`flooredRatio`). A translucent accent is composited over each
  * surface first, which is what the browser paints. Null when `accent` is not a hex color.
  */
 export function accentContrast(accent: string, theme: ThemeName): { ratio: number; against: string } | null {
@@ -58,7 +64,7 @@ export function accentContrast(accent: string, theme: ThemeName): { ratio: numbe
     const bg = parseHex(hex)!;
     const a = fg[3];
     const painted = [0, 1, 2].map((i) => fg[i] * a + bg[i] * (1 - a));
-    const ratio = Math.floor(contrastRatio(painted, bg) * 100) / 100;
+    const ratio = flooredRatio(painted, bg);
     if (!worst || ratio < worst.ratio) worst = { ratio, against: name };
   }
   return worst;

@@ -48,9 +48,6 @@ export function httpsUrlProblem(s: string): 'relative' | 'data' | 'scheme' | 'in
   if (httpsUrl(s)) return null;
   const t = browserUrl(s);
   if (/^data:/i.test(t)) return 'data';
-  try {
-    return new URL(t).protocol === '' ? 'invalid' : 'scheme';
-  } catch {
-    return /^[^/]*:/.test(t) ? 'invalid' : 'relative';
-  }
+  if (URL.canParse(t)) return 'scheme';
+  return /^[^/]*:/.test(t) ? 'invalid' : 'relative';
 }

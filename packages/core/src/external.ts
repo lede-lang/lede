@@ -205,7 +205,6 @@ function looksRandom(v: string, hexOk: boolean): boolean {
 
 class Scan {
   readonly hits: Hit[] = [];
-  readonly findings: ExternalFinding[] = [];
   private readonly allow: Set<string>;
   private pem: { from: number; at: number; end: number } | null = null;
 
@@ -398,6 +397,7 @@ class Scan {
       }
     }
     // Line and column come from the start of the span, found by walking the line breaks once.
+    const findings: ExternalFinding[] = [];
     let line = 1;
     let lineStart = 0;
     let next = this.src.indexOf('\n');
@@ -409,7 +409,7 @@ class Scan {
         next = this.src.indexOf('\n', lineStart);
         if (next < 0) next = Infinity;
       }
-      this.findings.push({
+      findings.push({
         kind: h.kind,
         text: this.src.slice(h.start, h.textEnd ?? h.end),
         line,
@@ -418,7 +418,7 @@ class Scan {
         end: h.end,
       });
     }
-    return this.findings;
+    return findings;
   }
 }
 
@@ -454,7 +454,7 @@ const WHAT: Readonly<Record<ExternalKind, string>> = {
 const shown = (text: string): string => (text.length > 60 ? `${text.slice(0, 57)}...` : text);
 
 /** What a report may print of a finding: a credential keeps its first four characters, so a log or a JSON report never holds it whole. */
-export const reportText = (kind: ExternalKind, text: string): string =>
+const reportText = (kind: ExternalKind, text: string): string =>
   kind === 'key' ? `${text.slice(0, 4)}... (${text.length} characters)` : text;
 
 /** `scanExternal` as warnings, code `external`, with `detail {kind, text}`. */
