@@ -1019,3 +1019,47 @@ now a bisection, and so is the cut of a word longer than a line, because measuri
 130,000-word message, or one 4,000-character word, made the old character-by-character cuts quadratic or worse. Rejected: raising all chart text to 14px (the phone drawing has no room, and D9's two
 drawings already keep 12px text at true size); changing the default font or palette (D74 owns that); totals inside the legend.
 The renderer-defaults spec (wider dashboard column, section surfaces) is untouched and still waits on D67.
+
+## D80. The owner's field requests of 2026-11-12: page words, three operator flags, wider dashboards
+The owner listed what got in the way while writing real pages with Lede: a status word the lexicon does not know, a local image
+that does not travel with the page, a label `Mcp-Name` drawn as `MCP-NAME`, cells quoted because they hold commas, no way to
+check a page before it leaves the building, allow and deny edges that cannot be green and red, `!!!` used for a recommendation
+because nothing else stood out, no page metadata, no house palette, no decision record, and a column too narrow for a
+dashboard. Each is a gap the compiler or a small word closes; the syntax below was put to the owner and approved as
+recommended. The model reference does not move (D55): the words are taught by `skill/lede/reference/` files (D72), which
+SKILL.md now lists, uncounted until a session has an API key.
+
+- **Labels as written.** Group labels join edge and message labels (D79) in the sans, as written; kind tags stay small
+  capitals.
+- **`@status Word=tone, ...`.** Page-level status words, ahead of the built-in lexicon, wherever a status word renders. Tones
+  `good`, `warn`, `bad`, `info`, `neutral` (grey, now also the built-in "not yet" words). W `status-value`.
+- **Callout kinds.** A `!` note opening with `Recommendation:`, `Decision:`, `Success:`, `Tip:`, `Info:`, `Question:` or
+  `Example:` takes that label and a green or blue tone. `!!` and `!!!` keep their severity whatever the word; `! Warning:` is W
+  `note-kind` pointing at `!!`.
+- **Edge tones.** A last ` | tone` field on an edge or sequence message colours its line, arrowhead and label chip; the line
+  style still carries the meaning. W `edge-tone`.
+- **Pipe rows.** `NAME: a | b | c` appends a row to a declared data set, and `table [opts] = H1 | H2` takes `: a | b` rows; `,`
+  and `;` are plain text in a pipe field. This is RFC #34 (gap-closure N3) built without its probe; over 866 tracked pages no
+  line changes meaning.
+- **Decision blocks.** `decision NAME "Question" [status=] [by=]` with `NAME: option`, `question` and `role` lines renders one
+  static card; the keyword needs a name and a quote after it, so prose stays prose. A decision name shares the namespace of
+  data, diagrams and bucket sets.
+- **Page metadata.** D70's head tags (`og:*`, `author`, `article:published_time`, `https:`-only `@image` and `@canonical`, W
+  `meta-url`) on full pages, and `@meta Key | value` facts under the title. D70's contents bar and id changes are not built.
+- **Wider dashboards.** The renderer-defaults spec's layout class: a page with no prose section and a figure at top level is a
+  dashboard, with the 64rem column, grids that stack below 420px a cell, and an undirected flow laid out LR when its layers
+  outnumber its breadth. `@width narrow` keeps the reading column. Section cards and the spec's probe are not built; 209 of the
+  283 render fixtures moved, all dashboards.
+- **Images inline.** `build`, `watch` and `check` write a local image into the page as a `data:` URI (type by magic bytes; 512
+  KiB an image, eight times that a page; `--image-max`, `--link-images`), confined to the document's tree like `data <` loads.
+  Remote images are still never fetched (D20). W `image-inline`.
+- **`check --external`.** A scan of the source for URLs, IP literals, host names, account ids, keys and emails (documentation
+  names and ranges exempt, `--allow` for the rest); any finding exits 1, and `--fix` replaces each with a placeholder.
+  Redaction is an edit to the source, never a build transform. A key is never printed whole.
+- **`--theme tokens.json`.** An operator's house palette as hex tokens over D74's palette table (built here without the
+  `@fonts`/`@palette` words). A colour that would miss WCAG AA is moved in OKLCH lightness only, to the nearest passing value, and
+  W `theme-adjusted` says so (`--theme-strict` makes it an error). This is the opposite of D49's rule for `@accent`, on purpose:
+  a writer's accent is one colour in a page they wrote, a house palette is a brand the operator wants matched as closely as AA
+  allows. Under `--theme` a page's `@accent` is ignored with W `theme-override`.
+
+Gate: D67 step 1 has not reported, so, as with D78 and D79, the PR is a draft and its merge timing is the owner's call.

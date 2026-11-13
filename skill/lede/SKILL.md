@@ -134,6 +134,11 @@ The compiler draws well what it is given; these choices decide whether the page 
 
 `lede` is the compiler, from the npm package `@lede-lang/cli` (needs Node 22.12 or later). If `lede` is not found, ask the user before installing anything. With their go-ahead run `npm install -g @lede-lang/cli` (`pnpm add -g @lede-lang/cli` if they use pnpm), or for one build without installing, `npx @lede-lang/cli build page.lede -o page.html`. If Node is missing or older, tell the user and stop; do not install Node.
 
+Local images are written into the page, so the built file stands alone (`--link-images` keeps the paths). Before a page
+leaves the user's organisation, run `lede check page.lede --external` and resolve every finding: it lists URLs, host names,
+IP addresses, account ids, keys and emails. If the user has a house palette as a tokens file, build with
+`--theme tokens.json`; the compiler adjusts any colour that would not read and says so.
+
 ## Reference files
 
 Read a file below before using what it teaches; the reference above does not cover these.
