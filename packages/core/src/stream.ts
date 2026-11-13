@@ -9,7 +9,9 @@ import { walkBlocks } from './walk.ts';
  *   the parser rejects, or one that repeats what the diagram has, is no update; it is still a statement of the diagram. The next
  *   non-blank line that is not another statement of it ends the growth with a `seal`; a statement after a seal that changes the
  *   diagram is an `update` again and a second `seal` follows (a reseal).
- * - `update` with `data`: `data NAME += rows` or a `NAME: a | b` row line appended rows; charts, tables and kpi rows that read NAME changed.
+ * - `update` with `data`: `data NAME += rows` appended rows, or a run of `NAME: a | b` row lines did; charts, tables and kpi rows that
+ *   read NAME changed. A run of row lines of one set is one update, given when the run ends: at the first non-blank line that is not a
+ *   row of that set (before that line's own events), or at `end`. The rows are in `doc` and in `snapshot()` as each line is read.
  * - `seal`: no statement of this diagram is expected for now.
  * - `bucket-update` and `bucket-seal`: the same two events for a bucket set (spec §4.19), which grows by `NAME: ITEM | B` lines as a
  *   diagram does. They are kinds of their own so that `update` and `seal` always carry a diagram, as they did before bucket sets.
@@ -61,6 +63,9 @@ export class LedeStream {
   private touched = new Set<Growing>();
   private changed = new Set<Growing>();
   private appended: string[] = [];
+  /** The data set a run of `NAME: a | b` row lines is appending to, whose update is given when the run ends; and this line's row, if any. */
+  private rowRun: string | null = null;
+  private row: string | null = null;
   /** Diagrams, bucket sets and decisions already returned in a `block` event, and the ones among them that may still receive statements. */
   private returned = new WeakSet<Growing>();
   private open = new Set<Growing>();
@@ -71,7 +76,10 @@ export class LedeStream {
       onDiagramLine: (b, changed) => this.statement(b, changed),
       onBucketItem: (b, changed) => this.statement(b, changed),
       onDecisionLine: (b, changed) => this.statement(b, changed),
-      onDataAppend: (name) => this.appended.push(name),
+      onDataAppend: (name, row) => {
+        if (row) this.row = name;
+        else this.appended.push(name);
+      },
     });
   }
 
@@ -88,8 +96,8 @@ export class LedeStream {
 
   /**
    * `write` plus what happened to blocks already returned: an `update` (`bucket-update` for a bucket set, `decision-update` for a
-   * decision) for every diagram, bucket set or decision a line extended and an `update` with `data` for every `data NAME +=` or
-   * `NAME: a | b` line, a `seal` (`bucket-seal`, `decision-seal`) for one of them when a non-blank line that is not one of its
+   * decision) for every diagram, bucket set or decision a line extended and an `update` with `data` for every `data NAME +=` line and
+   * every run of `NAME: a | b` lines (given at the line that ends the run, ahead of its own events), a `seal` (`bucket-seal`, `decision-seal`) for one of them when a non-blank line that is not one of its
    * statements arrives (a blank line does not seal: writers space statements). Within one line the order is: its blocks, its data
    * updates, its updates, its seals.
    */
@@ -144,6 +152,7 @@ export class LedeStream {
       this.buf = '';
       this.lineEvents(line, out);
     }
+    this.endRun(out);
     const before = this.parser.doc.blocks.length;
     const doc = this.parser.end();
     for (const block of doc.blocks.slice(before)) {
@@ -160,7 +169,11 @@ export class LedeStream {
     this.touched.clear();
     this.changed.clear();
     this.appended.length = 0;
+    this.row = null;
     const blocks = this.parser.pushLine(line);
+    // A run of rows ends at a line that is not blank and not a row of the same set: its update comes before this line's events.
+    if (this.row !== this.rowRun && (this.row !== null || line.trim() !== '')) this.endRun(out);
+    if (this.row !== null) this.rowRun = this.row;
     for (const block of blocks) out.push({ kind: 'block', block });
     for (const data of this.appended) out.push({ kind: 'update', data });
     for (const d of this.touched) {
@@ -179,6 +192,12 @@ export class LedeStream {
     }
     // A growing block returned by this line's blocks opens now, so its own declaration line never seals it.
     for (const block of blocks) this.shown(block);
+  }
+
+  /** The update of the run of row lines that is open, if one is. */
+  private endRun(out: StreamEvent[]): void {
+    if (this.rowRun !== null) out.push({ kind: 'update', data: this.rowRun });
+    this.rowRun = null;
   }
 
   /** `block` was returned: the diagrams, bucket sets and decisions it holds (itself, or in a grid or a card) may now receive statements. */

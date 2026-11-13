@@ -206,14 +206,36 @@ test('the old inline form is read as it was: the same block, the same data, and 
 
 // ---------------------------------------------------------------- streaming
 
-test('a data row line is an update event, as += is; the row is in the data when the event arrives', () => {
+test('a run of data row lines is one update event, given when the run ends; the rows are in the data as each line is read', () => {
   const s = new LedeStream();
-  assert.deepEqual(kinds(s.events('data d = a,b\nd: 1 | 2\nd: 3 | 4\n')), ['block:data', 'update:data d', 'update:data d']);
+  assert.deepEqual(kinds(s.events('data d = a,b\nd: 1 | 2\nd: 3 | 4\n')), ['block:data']);
   assert.equal(s.doc.data.d.rows.length, 2);
-  // A row that is rejected still reaches the data (padded), as `+=` does, so it is still an update.
-  assert.deepEqual(kinds(s.events('d: 5 | 6 | 7\n')), ['update:data d']);
-  // Prose is not an update.
-  assert.deepEqual(kinds(s.events('note: x | y\n')), []);
+  assert.equal(s.snapshot().data.d.rows.length, 2, 'snapshot() shows the rows so far');
+  // A row that is rejected still reaches the data (padded), as `+=` does, so it is part of the run; a blank line does not end it.
+  assert.deepEqual(kinds(s.events('d: 5 | 6 | 7\n\n')), []);
+  assert.equal(s.doc.data.d.rows.length, 3);
+  // Prose ends the run: its update comes before the line's own events.
+  assert.deepEqual(kinds(s.events('note: x | y\n')), ['update:data d']);
+  assert.deepEqual(kinds(s.events('more prose\n')), []);
+  // A row of another set ends the run too, and `+=` is an update of its own at once.
+  const t = new LedeStream();
+  const ev = kinds(t.events('data a = x,y\ndata b = x,y\na: 1 | 2\na: 3 | 4\nb: 5 | 6\ndata b += 7,8\n'));
+  assert.deepEqual(ev, ['block:data', 'block:data', 'update:data a', 'update:data b', 'update:data b']);
+  // The document's end gives the update of a run still open.
+  const u = new LedeStream();
+  u.events('data a = x,y\n');
+  u.events('a: 1 | 2\na: 3 | 4\n');
+  const seen: string[] = [];
+  u.end((e) => seen.push(...kinds([e])));
+  assert.deepEqual(seen, ['update:data a']);
+});
+
+test('a streamed table of N rows is one data update, not N', () => {
+  const lines = Array.from({ length: 40 }, (_, i) => `d: r${i} | ${i}`).join('\n');
+  const s = new LedeStream();
+  const ev = kinds([...s.events(`data d = k,v\nchart line d x=k y=v\n${lines}\n`), ...s.events('\nAfter.\n')]);
+  assert.equal(ev.filter((k) => k === 'update:data d').length, 1);
+  assert.equal(s.doc.data.d.rows.length, 40);
 });
 
 test('an open block-form table is returned when it closes; tail() shows it with the rows so far; snapshot() draws it too', () => {

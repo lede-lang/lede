@@ -73,8 +73,8 @@ export interface ParseHooks {
    * the decision either way, as a rejected line is a statement of a diagram. Optional, as `onBucketItem` is.
    */
   onDecisionLine?(block: DecisionBlock, changed: boolean): void;
-  /** `data NAME += rows` or a `NAME: a | b` row line appended rows to the data set `name`. */
-  onDataAppend(name: string): void;
+  /** `data NAME += rows` or a `NAME: a | b` row line (`row`) appended rows to the data set `name`. */
+  onDataAppend(name: string, row?: boolean): void;
 }
 
 export interface ParseOptions {
@@ -745,7 +745,7 @@ export class LedeParser {
     if (dl && fields.length > 1) {
       this.flush();
       this.pipeRow(dataSet(this.doc, dl[1])!, fields, afterColon(s, lead));
-      this.hooks?.onDataAppend(dl[1]);
+      this.hooks?.onDataAppend(dl[1], true);
       return;
     }
     // A decision line whose name is no decision (and no data set with a pipe row): a mistyped name is an error, not a paragraph.
