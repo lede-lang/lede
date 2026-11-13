@@ -74,7 +74,7 @@ export class StringModel {
 
   /** `<main>` as `render(..., { fragment: true })` writes it, plus the tail. */
   main(): string {
-    return mainElement([...this.children(), this.tail], this.prose, this.dash);
+    return mainElement([...this.children(), this.tail], this.prose ? 'prose' : this.dash ? 'dashboard' : 'document');
   }
 }
 

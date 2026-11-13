@@ -5,8 +5,8 @@
 // blocks that grow besides the diagram, the bucket set (see `grew`) and the decision (see `update`). `end()` checks the result against the whole-page render and
 // corrects what the rules missed (the settle); the tests and the bench switch the correction off, so they measure the rules and not
 // the safety net.
-import type { Block, BucketBlock, DataSet, DecisionBlock, DiagramBlock, LedeDocument, PresetBlock, QuestionBlock } from '@lede-lang/core';
-import { FIELD_KINDS, resolve, walkBlocks } from '@lede-lang/core';
+import type { Block, BucketBlock, DataSet, DecisionBlock, DiagramBlock, LedeDocument, QuestionBlock } from '@lede-lang/core';
+import { resolve, walkBlocks } from '@lede-lang/core';
 import {
   Ctx,
   DASH,
@@ -23,7 +23,7 @@ import {
   standfirst,
   styleOf,
   tallyProse,
-  usesDecisions,
+  pageParts,
   type CtxMark,
   type Masthead,
   type PickScan,
@@ -232,19 +232,6 @@ function inspect(blocks: Block[]): Pick<U, 'diagrams' | 'buckets' | 'decisions' 
   return { diagrams, buckets, decisions, reads, picks, exports };
 }
 
-/** The question fields, the `preset` blocks and whether an `export` is among a block and the blocks it holds, found in one walk. */
-function questionsIn(block: Block): { fields: QuestionBlock[]; presets: PresetBlock[]; hasExport: boolean } {
-  const fields: QuestionBlock[] = [];
-  const presets: PresetBlock[] = [];
-  let hasExport = false;
-  walkBlocks([block], (b) => {
-    if (Object.hasOwn(FIELD_KINDS, b.type)) fields.push(b as QuestionBlock);
-    else if (b.type === 'preset') presets.push(b);
-    else if (b.type === 'export') hasExport = true;
-  });
-  return { fields, presets, hasExport };
-}
-
 /** The ops, and the drawings still pending, of several units drawn in one step. */
 class Batch {
   readonly ops: IncrementalOp[] = [];
@@ -330,8 +317,6 @@ class Renderer implements Incremental {
 
   private prose = false;
   private proseFrozen = false;
-  /** The page is a dashboard so far (`layoutClass`): latched by the first block a dashboard has (`latchDash`), or by `@width wide`. */
-  private dash = false;
   private dashFrozen = false;
   private dashFlips = 0;
   /** The essay test's counts over the blocks read so far, while the layout is still undecided. */
@@ -418,11 +403,11 @@ class Renderer implements Incremental {
    * block did any of them, so the caller emits the style (the first block's style is `begin`'s).
    */
   private takeQuestions(block: Block): boolean {
-    const { fields: found, presets, hasExport } = questionsIn(block);
+    const { fields: found, presets, exports, decisions } = pageParts([block]);
     this.fields.push(...found);
-    const controls = !this.controls && (found.length > 0 || hasExport);
+    const controls = !this.controls && (found.length > 0 || exports.length > 0);
     const editors = !this.editors && usesEditors(found, presets);
-    const decided = !this.decided && usesDecisions([block]);
+    const decided = !this.decided && decisions;
     if (controls) this.controls = true;
     if (editors) this.editors = true;
     if (decided) this.decided = true;
@@ -430,8 +415,8 @@ class Renderer implements Incremental {
   }
 
   /** The page stylesheet for `meta`, with the controls', the editors' and the decision card's rules once the first of each has arrived. */
-  private style(meta: Record<string, string>, dash = this.dash): string {
-    return styleOf(meta, this.controls, this.editors, dash, this.decided, this.renderOpts.theme);
+  private style(meta: Record<string, string>, dash = this.ctx.dash): string {
+    return styleOf(meta, { controls: this.controls, editors: this.editors, dash, decisions: this.decided, theme: this.renderOpts.theme });
   }
 
   /**
@@ -472,9 +457,9 @@ class Renderer implements Incremental {
     const m = this.meta();
     this.startMeta = { ...m };
     // `@width wide` is a dashboard from the first block.
-    this.dash = this.ctx.dash = isWide(m);
+    if (isWide(m)) this.ctx.layout = 'dashboard';
     const ops: IncrementalOp[] = [{ op: 'style', css: this.style(m) }];
-    if (this.dash) ops.push({ op: 'dash', on: true });
+    if (this.ctx.dash) ops.push({ op: 'dash', on: true });
     const mh = masthead({ meta: m, blocks: [first], data: {}, diagnostics: [] }, this.ctx);
     const consumed = mh.rest.length === 0;
     this.titleBranch = Boolean(m.title) && !consumed;
@@ -520,10 +505,10 @@ class Renderer implements Incremental {
    * A section of prose that comes later is a settle case: the class goes off at `end()` (cause `layout`).
    */
   private latchDash(block: Block, ops: IncrementalOp[]): void {
-    if (this.dashFrozen || this.dash || this.prose || !DASH.has(block.type)) return;
+    if (this.dashFrozen || this.ctx.dash || this.prose || !DASH.has(block.type)) return;
     this.dashFrozen = true;
     if (this.meta().width === 'narrow' || hasProseSection(this.rest)) return;
-    this.dash = this.ctx.dash = true;
+    this.ctx.layout = 'dashboard';
     this.dashFlips++;
     ops.push({ op: 'style', css: this.style(this.startMeta) }, { op: 'dash', on: true });
   }
@@ -794,7 +779,9 @@ class Renderer implements Incremental {
     const whole = new Ctx(doc, this.renderOpts);
     whole.cacheLayouts = true;
     const mh = masthead(doc, whole);
-    const { body, prose, dash, h1At } = await renderMain(doc, whole, mh);
+    const { body, layout, h1At } = await renderMain(doc, whole, mh);
+    const prose = layout === 'prose';
+    const dash = layout === 'dashboard';
     // The subtitle and byline that follow the first `#` heading are children of `<main>` of their own in `render()`, and part of
     // that heading's unit here: the heading is the one unit a late masthead decision changes.
     if (h1At >= 0) body.splice(h1At, 3, body[h1At] + body[h1At + 1] + body[h1At + 2]);
@@ -837,7 +824,7 @@ class Renderer implements Incremental {
       causes.push('prose');
       edits.push({ op: 'prose', on: prose });
     }
-    const dashChanged = dash !== this.dash;
+    const dashChanged = dash !== this.ctx.dash;
     if (dashChanged) {
       causes.push('layout');
       edits.push({ op: 'dash', on: dash }, { op: 'style', css: this.style(m, dash) });
@@ -912,7 +899,7 @@ class Renderer implements Incremental {
     const picked = whole.picks.length !== this.ctx.picks.length || whole.picks.some((p, i) => p !== this.ctx.picks[i]);
     if ((u ? u.picks : /<table\b/.test(other)) && picked) return 'picks';
     if (prose !== this.prose) return 'prose';
-    if (whole.dash !== this.dash) return 'layout';
+    if (whole.dash !== this.ctx.dash) return 'layout';
     return 'other';
   }
 }

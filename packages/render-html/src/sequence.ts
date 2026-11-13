@@ -456,10 +456,7 @@ function drawSeq(d: DiagramBlock, uid: string, phone: boolean): { svg: string; W
   const H = y + 8;
   const out: string[] = [
     svgOpen(uid, Math.ceil(W), Math.ceil(H), plain(d.title ?? `${d.name} sequence`), describeSeq(d), 'seq'),
-    markers(
-      uid,
-      d.edges.map((e) => e.tone),
-    ),
+    markers(uid, d.edges),
   ];
   parts.forEach((_p, i) => {
     out.push(`<line class="life" x1="${xs[i]}" x2="${xs[i]}" y1="${pad + boxH}" y2="${H - 8}"/>`);
@@ -511,10 +508,10 @@ function describeSeq(d: DiagramBlock): string {
   return (
     `Sequence between ${d.nodes.map((n) => n.label).join(', ')}. ` +
     d.edges
-      .map(
-        (e, i) =>
-          `${i + 1}. ${name(e.from)} to ${name(e.to)}${edgeWords(e) ? `: ${edgeWords(e)}` : ''}${e.style === 'dashed' ? ' (reply)' : ''}`,
-      )
+      .map((e, i) => {
+        const words = edgeWords(e);
+        return `${i + 1}. ${name(e.from)} to ${name(e.to)}${words ? `: ${words}` : ''}${e.style === 'dashed' ? ' (reply)' : ''}`;
+      })
       .join('; ')
   );
 }

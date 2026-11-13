@@ -64,6 +64,18 @@ test('og:description needs a description, published_time an ISO date, and the au
   assert.ok(tags.includes('<meta name="author" content="Ana Ruiz">'));
 });
 
+test('the author tag names whoever the byline names, a trailing or leading comma included', async () => {
+  for (const [author, name] of [
+    ['Ana,', 'Ana,'],
+    [',Platform', ',Platform'],
+    ['Ana Ruiz , Platform', 'Ana Ruiz'],
+  ]) {
+    const html = await page(`@title T\n@author ${author}\n\nText.`);
+    assert.ok(headTags(html).includes(`<meta name="author" content="${name}">`), author);
+    assert.ok(html.includes(`<span class="by-n">${name}</span>`), author);
+  }
+});
+
 test('an image that is not an absolute https URL writes no og:image and no twitter:card, a canonical that is not writes no link', async () => {
   for (const bad of [
     '/a.png',

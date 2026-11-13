@@ -1,7 +1,15 @@
 // The compiler owns the design: every color is a token, redefined for dark mode.
 // Categorical series colors are the validated eight-slot order from the dataviz
 // reference palette (adjacent-pair CVD ΔE ≥ 8 in both modes).
-import { FIXED_TOKENS, PALETTES, usableAccent, type PaletteTokens, type ThemeName, type ThemeTokens } from '@lede-lang/core';
+import {
+  FIXED_TOKENS,
+  PALETTES,
+  THEME_SERIES_MAX,
+  usableAccent,
+  type PaletteTokens,
+  type ThemeName,
+  type ThemeTokens,
+} from '@lede-lang/core';
 
 /**
  * Every token's declaration, in the order the stylesheet writes them. The palette tokens come from core's palette table and the
@@ -33,7 +41,7 @@ const HEX = /^#[0-9a-f]{6}$/;
 /** The declarations of one theme: a palette, with the page's own chart colours (`series`, from the first slot) over the house ones. */
 function tokens(theme: ThemeName, palette: PaletteTokens, series: readonly string[] = []): string {
   const v: Record<string, string> = { ...palette, ...FIXED_TOKENS[theme] };
-  series.slice(0, 8).forEach((c, i) => (v[`c${i + 1}`] = c));
+  series.slice(0, THEME_SERIES_MAX).forEach((c, i) => (v[`c${i + 1}`] = c));
   const decl = (k: string): string => {
     if (!HEX.test(v[k])) throw new TypeError(`theme token ${k} is not a #rrggbb colour`);
     return `--${k}:${v[k]};`;
@@ -42,6 +50,17 @@ function tokens(theme: ThemeName, palette: PaletteTokens, series: readonly strin
 }
 const HOUSE_LIGHT = tokens('light', PALETTES.paper.light);
 const HOUSE_DARK = tokens('dark', PALETTES.paper.dark);
+
+/** A brand theme's two declaration blocks, worked out once per theme object: `watch` and a server draw many pages with one. */
+const BRANDS = new WeakMap<ThemeTokens, { light: string; dark: string }>();
+function brandTokens(t: ThemeTokens): { light: string; dark: string } {
+  let out = BRANDS.get(t);
+  if (!out) {
+    out = { light: tokens('light', t.light, t.series?.light), dark: tokens('dark', t.dark, t.series?.dark) };
+    BRANDS.set(t, out);
+  }
+  return out;
+}
 
 /** The question words' controls (spec §4.18). Added only to a page that has a field or an `export`, so other pages are unchanged. */
 const CONTROLS = `/* question words */
@@ -172,9 +191,7 @@ export function css(opts: {
   // Only a hex color that passes AA text contrast reaches the stylesheet (D49, D77); the parser warns on the rest.
   const picked = usableAccent(opts.accent, opts.theme);
   const accent = picked ? `--accent:${picked};--accent-ink:${picked};` : '';
-  const T = opts.tokens;
-  const LIGHT = T ? tokens('light', T.light, T.series?.light) : HOUSE_LIGHT;
-  const DARK = T ? tokens('dark', T.dark, T.series?.dark) : HOUSE_DARK;
+  const { light: LIGHT, dark: DARK } = opts.tokens ? brandTokens(opts.tokens) : { light: HOUSE_LIGHT, dark: HOUSE_DARK };
   const forced =
     opts.theme === 'dark'
       ? `:root{${DARK}}`

@@ -15,11 +15,13 @@ import type {
   StepsBlock,
   Kpi,
   QuestionBlock,
+  PresetBlock,
+  ExportBlock,
 } from '@lede-lang/core';
 import {
   browserUrl,
   dataSet,
-  exportsOf,
+  FIELD_KINDS,
   factEntries,
   factName,
   httpsUrl,
@@ -31,7 +33,6 @@ import {
   num,
   NOTE_KINDS,
   parse,
-  presetsOf,
   walkBlocks,
   readStatus,
   statusKey,
@@ -91,17 +92,21 @@ const WIDE = new Set(['grid', 'diagram']);
 export async function render(doc: LedeDocument, opts: RenderOptions = {}): Promise<string> {
   if (opts.shell && opts.unsafeHtml)
     throw new Error('shell cannot be combined with unsafeHtml: raw html could plant its own controls and data block');
-  const fields = fieldsOf(doc.blocks);
-  const exports = exportsOf(doc.blocks);
-  const presets = presetsOf(doc.blocks);
+  const { fields, exports, presets, decisions } = pageParts(doc.blocks);
   const shell = !!opts.shell && !opts.fragment && fields.length > 0 && exports.length > 0;
   const ctx = new Ctx(doc, { ...opts, shell }, fields);
   const mh = masthead(doc, ctx);
-  const { body, prose, dash } = await renderMain(doc, ctx, mh);
+  const { body, layout } = await renderMain(doc, ctx, mh);
   const title = mh.title;
-  const main = mainElement(body, prose, dash);
+  const main = mainElement(body, layout);
   if (opts.fragment) return main;
-  const style = `<style>${styleOf(doc.meta, fields.length > 0 || exports.length > 0, usesEditors(fields, presets), dash, usesDecisions(doc.blocks), opts.theme)}</style>`;
+  const style = `<style>${styleOf(doc.meta, {
+    controls: fields.length > 0 || exports.length > 0,
+    editors: usesEditors(fields, presets),
+    dash: layout === 'dashboard',
+    decisions,
+    theme: opts.theme,
+  })}</style>`;
   const scripts = shell ? `${shellScripts(ctx.page, fields, exports, presets)}\n` : '';
   if (opts.artifact) return `<title>${esc(title)}</title>\n${style}\n${main}\n${scripts}`;
   const desc = (doc.meta.description ? `\n<meta name="description" content="${esc(doc.meta.description)}">` : '') + headTags(doc, title);
@@ -134,7 +139,7 @@ function headTags(doc: LedeDocument, title: string): string {
   const m = doc.meta;
   const tags = [`<meta property="og:title" content="${esc(title)}">`, '<meta property="og:type" content="article">'];
   if (m.description) tags.push(`<meta property="og:description" content="${esc(m.description)}">`);
-  const author = m.author?.split(',')[0].trim();
+  const author = authorName(m.author);
   if (author) tags.push(`<meta name="author" content="${esc(author)}">`);
   if (ISO_DATE.test(m.date ?? '')) tags.push(`<meta property="article:published_time" content="${m.date}">`);
   const image = httpsUrl(m.image ?? '');
@@ -148,36 +153,64 @@ function headTags(doc: LedeDocument, title: string): string {
   return tags.map((t) => `\n${t}`).join('');
 }
 
+/**
+ * The most cells a dashboard grid row holds: n cells of at least 420px with 16px gaps fit the 1024px column while
+ * 420n + 16(n - 1) <= 1024 (theme.ts `DASH_RULES`), which is 2.
+ */
+const DASH_GRID_COLS = Math.floor((1024 + 16) / (420 + 16));
+
 /** `@width wide`. */
 export const isWide = (meta: Record<string, string>): boolean => meta.width === 'wide';
 
-/**
- * The page stylesheet for a document's meta. `controls`: the page has a question field or an `export`, which add their own rules.
- * `editors`: it draws an editor word (`param`, `toggle`, `bucket`, `template` or `preset`), which adds more (`usesEditors`).
- * `dash`: the page is a dashboard (`layoutClass`), which takes the 64rem column and the dashboard rules (D80).
- * `decisions`: it holds a decision block (spec §4.20), which adds the card's rules.
- */
-export const styleOf = (
-  meta: Record<string, string>,
-  controls = false,
-  editors = false,
-  dash = false,
-  decisions = false,
-  theme?: ThemeTokens,
-): string => css({ ...(theme ? { tokens: theme } : { accent: meta.accent }), theme: meta.theme, dash, controls, editors, decisions });
-
-/** Whether `blocks`, or a grid or card among them, holds a decision. */
-export function usesDecisions(blocks: readonly Block[]): boolean {
-  let found = false;
-  walkBlocks(blocks, (b) => {
-    if (b.type === 'decision') found = true;
-  });
-  return found;
+/** What a page draws that adds rules to its stylesheet (`styleOf`). */
+export interface StyleFeatures {
+  /** The page has a question field or an `export`, which add their own rules. */
+  controls?: boolean;
+  /** It draws an editor word (`param`, `toggle`, `bucket`, `template` or `preset`), which adds more (`usesEditors`). */
+  editors?: boolean;
+  /** The page is a dashboard (`layoutClass`), which takes the 64rem column and the dashboard rules (D80). */
+  dash?: boolean;
+  /** It holds a decision block (spec §4.20), which adds the card's rules. */
+  decisions?: boolean;
+  /** An operator's brand theme (`RenderOptions.theme`): it replaces the page's `@accent`. */
+  theme?: ThemeTokens | undefined;
 }
 
-/** `<main>` around the page's top-level children (empty ones left out). `dash`: a dashboard page (`layoutClass`). */
-export const mainElement = (children: string[], prose: boolean, dash = false): string =>
-  `<main class="doc${prose ? ' prose' : dash ? ' dash' : ''}">\n${children.filter(Boolean).join('\n')}\n</main>`;
+/** The page stylesheet for a document's meta and what the page draws. */
+export const styleOf = (
+  meta: Record<string, string>,
+  { controls = false, editors = false, dash = false, decisions = false, theme }: StyleFeatures = {},
+): string => css({ ...(theme ? { tokens: theme } : { accent: meta.accent }), theme: meta.theme, dash, controls, editors, decisions });
+
+/**
+ * The question fields, `preset` and `export` blocks among `blocks` and the blocks they hold, in source order (as `fieldsOf`,
+ * `presetsOf` and `exportsOf` list them), and whether a decision is among them: everything that adds rules or a script, in one walk.
+ */
+export function pageParts(blocks: readonly Block[]): {
+  fields: QuestionBlock[];
+  presets: PresetBlock[];
+  exports: ExportBlock[];
+  decisions: boolean;
+} {
+  const fields: QuestionBlock[] = [];
+  const presets: PresetBlock[] = [];
+  const exports: ExportBlock[] = [];
+  let decisions = false;
+  walkBlocks(blocks, (b) => {
+    if (Object.hasOwn(FIELD_KINDS, b.type)) fields.push(b as QuestionBlock);
+    else if (b.type === 'preset') presets.push(b);
+    else if (b.type === 'export') exports.push(b);
+    else if (b.type === 'decision') decisions = true;
+  });
+  return { fields, presets, exports, decisions };
+}
+
+/** The class each layout adds to `<main>`. */
+const LAYOUT_CLASS: Record<Layout, string> = { prose: ' prose', dashboard: ' dash', document: '' };
+
+/** `<main>` around the page's top-level children (empty ones left out), with its layout's class (`layoutClass`). */
+export const mainElement = (children: string[], layout: Layout): string =>
+  `<main class="doc${LAYOUT_CLASS[layout]}">\n${children.filter(Boolean).join('\n')}\n</main>`;
 
 /** A short paragraph straight after the title is the standfirst: its markup, or null when `b` is not one. `first` is the first body block. */
 export function standfirst(b: Block, first: Block | undefined, header: string, prose: boolean): string | null {
@@ -231,21 +264,16 @@ export function masthead(doc: LedeDocument, ctx: Ctx): Masthead {
 
 /**
  * The page body as top-level children, in order (the header first), and whether the page is set as prose or as a dashboard
- * (`layoutClass`, which also sets `ctx.dash`). Every block is drawn by `ctx`, in document order, so that ids are numbered in
+ * (`layoutClass`, which also sets `ctx.layout`). Every block is drawn by `ctx`, in document order, so that ids are numbered in
  * document order.
  */
-export async function renderMain(
-  doc: LedeDocument,
-  ctx: Ctx,
-  mh: Masthead,
-): Promise<{ body: string[]; prose: boolean; dash: boolean; h1At: number }> {
+export async function renderMain(doc: LedeDocument, ctx: Ctx, mh: Masthead): Promise<{ body: string[]; layout: Layout; h1At: number }> {
   const { rest, firstH1, sub, by } = mh;
   const body: string[] = [];
   if (mh.header) body.push(mh.header);
   const layout = layoutClass(rest, doc.meta);
   const prose = layout === 'prose';
-  const dash = layout === 'dashboard';
-  ctx.dash = dash;
+  ctx.layout = layout;
   // Where the heading that carries the subtitle and byline is in `body` (they follow it as children of their own), or -1.
   let h1At = -1;
   for (const u of plan(rest, prose)) {
@@ -260,7 +288,7 @@ export async function renderMain(
       // oxlint-disable-next-line eslint/no-await-in-loop -- sequential on purpose: uid() numbers ids in document order
     } else body.push(await ctx.unit(u));
   }
-  return { body, prose, dash, h1At };
+  return { body, layout, h1At };
 }
 
 /** Parse and render in one call. */
@@ -276,25 +304,34 @@ export async function compile(src: string, opts: RenderOptions & ParseOptions = 
 function facts(meta: Record<string, string>, st: Status): string {
   const rows = factEntries(meta).map(([key, value]) => {
     const hit = st(value);
-    const text = hit
-      ? `<span class="pill ${hit}">${inline(value)}</span>`
-      : ISO_DATE.test(value)
-        ? `<time datetime="${value}">${esc(value)}</time>`
-        : inline(value);
+    const text = hit ? pill(hit, value) : ISO_DATE.test(value) ? `<time datetime="${value}">${esc(value)}</time>` : inline(value);
     return `<div><dt>${esc(plain(key))}</dt><dd>${text}</dd></div>`;
   });
   return rows.length ? `<dl class="facts">${rows.join('')}</dl>` : '';
 }
 
+/**
+ * `@author` as "Name, Role": the name and the role when a comma after some text is followed by more, else the whole value as the
+ * name. The byline and the `author` meta tag both read it, so they name the same person.
+ */
+function authorParts(author: string): { name: string; role: string } {
+  const comma = author.indexOf(',');
+  const role = comma > 0 ? author.slice(comma + 1).trim() : '';
+  return role ? { name: author.slice(0, comma).trim(), role } : { name: author, role: '' };
+}
+
+/** The name in `@author`, as the byline shows it (`authorParts`). */
+const authorName = (author?: string): string => (author ? authorParts(author).name.trim() : '');
+
 function byline(author?: string, date?: string): string {
   if (!author && !date) return '';
   // "Name, Role": the role follows the name, muted. The comma stays in the markup, so the byline
   // still reads as "Name, Role" as text.
-  const comma = author ? author.indexOf(',') : -1;
-  const a = author
-    ? comma > 0 && author.slice(comma + 1).trim()
-      ? `<span class="by-n">${esc(author.slice(0, comma).trim())}</span><span class="by-r">, ${esc(author.slice(comma + 1).trim())}</span>`
-      : `<span class="by-n">${esc(author)}</span>`
+  const parts = author ? authorParts(author) : null;
+  const a = parts
+    ? parts.role
+      ? `<span class="by-n">${esc(parts.name)}</span><span class="by-r">, ${esc(parts.role)}</span>`
+      : `<span class="by-n">${esc(parts.name)}</span>`
     : '';
   const d = date ? `<time${ISO_DATE.test(date) ? ` datetime="${date}"` : ''}>${esc(date)}</time>` : '';
   return `<p class="byline">${[a, d].filter(Boolean).join('<span class="by-s" aria-hidden="true"> · </span>')}</p>`;
@@ -586,10 +623,14 @@ export class Ctx {
   private readonly opts: RenderOptions;
   picks: string[];
   /**
-   * The page is a dashboard (`layoutClass`, D80): `renderMain` sets it from the blocks, the incremental renderer when the page
-   * first shows one. It sizes what is drawn for the 64rem column: the cards' and grid cells' charts, and a flow diagram's direction.
+   * The page's layout (`layoutClass`, D80): `renderMain` sets it from the blocks, the incremental renderer when the page first shows
+   * a dashboard. A dashboard sizes what is drawn for the 64rem column: the cards' and grid cells' charts, and a flow diagram's direction.
    */
-  dash = false;
+  layout: Layout = 'document';
+  /** The page is a dashboard. */
+  get dash(): boolean {
+    return this.layout === 'dashboard';
+  }
   /**
    * Set by the incremental renderer only. For a diagram `blockSync` meets, returns the markup of a slot to show in its place
    * (a figure of the right height, the drawing comes later) or null to draw it. A flow diagram cannot be drawn by `blockSync`.
@@ -641,11 +682,10 @@ export class Ctx {
   /** The page's status lexicon (`@status`, D80). Worked out when read, from the meta as it is then, so it follows a page still being written. */
   get status(): Status {
     const spec = this.doc.meta.status ?? '';
-    if (this.statusSpec !== spec || !this.statusFn) [this.statusSpec, this.statusFn] = [spec, statusFor(spec)];
-    return this.statusFn;
+    if (this.statusMemo?.spec !== spec) this.statusMemo = { spec, fn: statusFor(spec) };
+    return this.statusMemo.fn;
   }
-  private statusSpec: string | undefined = undefined;
-  private statusFn: Status | undefined = undefined;
+  private statusMemo: { spec: string; fn: Status } | undefined = undefined;
 
   uid(prefix: string): string {
     return `${prefix}${++this.n}`;
@@ -864,8 +904,7 @@ export class Ctx {
    * draws two to a row.
    */
   private gridKid<T>(b: GridBlock, c: Block, other: (c: Block) => T): string | T {
-    let cols = b.columns;
-    if (this.dash) while (cols > 1 && (1024 - 16 * (cols - 1)) / cols < 420) cols--;
+    const cols = this.dash ? Math.min(b.columns, DASH_GRID_COLS) : b.columns;
     const cellWidth = Math.floor((1024 - 16 * (cols - 1)) / cols) - 34;
     const d = c.type === 'chart' && b.columns >= 2 ? this.dataFor(c) : undefined;
     return c.type === 'chart' && d ? renderChart(c, d, this.uid('c'), { cellWidth }) : other(c);
@@ -996,10 +1035,13 @@ export function dateLike(raw: string): boolean {
   return toks.some((k) => STRONG.test(k));
 }
 
+/** A status word's pill: the word stays the text, the tone is a class. */
+const pill = (tone: StatusTone, raw: string): string => `<span class="pill ${tone}">${inline(raw)}</span>`;
+
 /** A status word as a status pill, a date/time phrase as a neutral chip; `force` chips any text. */
 function chip(st: Status, raw: string, force = false): string {
   const hit = st(raw);
-  if (hit) return `<span class="pill ${hit}">${inline(raw)}</span>`;
+  if (hit) return pill(hit, raw);
   if (force || dateLike(raw)) return `<span class="chip">${inline(raw)}</span>`;
   return '';
 }
@@ -1255,7 +1297,13 @@ function barPercents(raws: string[], targets: (number | null)[] = []): (string |
 }
 
 /** `fit`: the narrowest width the table must read at (the 368px phone column, or a card). */
-function table(b: TableBlock, d: DataSet, st: Status, picks: string[] = [], fit = 364): string {
+function table(b: TableBlock, d: DataSet, page: Status, picks: string[] = [], fit = 364): string {
+  // Every cell's tone is asked for by the width estimate, the row marks and the cell itself: look each value up once.
+  const tones = new Map<string, StatusTone | undefined>();
+  const st: Status = (raw) => {
+    if (!tones.has(raw)) tones.set(raw, page(raw));
+    return tones.get(raw);
+  };
   const cols = b.cols ?? d.columns;
   const idx = cols.map((c) => d.columns.indexOf(c));
   let rows = [...d.rows];
@@ -1299,10 +1347,11 @@ function table(b: TableBlock, d: DataSet, st: Status, picks: string[] = [], fit 
   const est = idx.reduce((sum, i, j) => {
     const head = maxOf(words(cols[j]).map((w) => textWidth(w.toUpperCase(), 11, { bold: true }) * 1.1));
     const cellW = (raw: string) => {
-      const chipped = !!st(raw) || (!(j === 0 && rowHead) && dateLike(raw));
+      const tone = st(raw);
+      const chipped = !!tone || (!(j === 0 && rowHead) && dateLike(raw));
       // A date chip is bold with a border and 8px side padding, wider than a status pill: 38 keeps a date column from overflowing at 400px.
       const full = Math.max(
-        textWidth(plain(fmtCell(raw, hdr[j])), 13) + (st(raw) ? 24 : chipped ? 38 : 0),
+        textWidth(plain(fmtCell(raw, hdr[j])), 13) + (tone ? 24 : chipped ? 38 : 0),
         b.bars?.includes(cols[j]) ? 80 : 0,
       );
       if (numeric[j] || nowrap[j] || chipped) return full;
@@ -1459,7 +1508,9 @@ const STATUS: [RegExp, StatusTone][] = [
 const norm = (raw: string) => plain(raw).trim().replace(/[.!]$/, '');
 /** The tone of a status word, or undefined when `raw` is not one. */
 export type Status = (raw: string) => StatusTone | undefined;
-const builtinStatus: Status = (raw) => STATUS.find(([re]) => re.test(norm(raw)))?.[1];
+/** The built-in tone of a status word already through `norm`. */
+const builtinTone = (word: string): StatusTone | undefined => STATUS.find(([re]) => re.test(word))?.[1];
+const builtinStatus: Status = (raw) => builtinTone(norm(raw));
 
 /**
  * The status lexicon of a page: its `@status` words first (D80), matched like the built-in ones (case-insensitive, spaces collapsed,
@@ -1467,13 +1518,17 @@ const builtinStatus: Status = (raw) => STATUS.find(([re]) => re.test(norm(raw)))
  */
 function statusFor(spec: string): Status {
   const own = new Map(readStatus(spec).entries.map(([word, tone]) => [statusKey(word), tone]));
-  return own.size === 0 ? builtinStatus : (raw) => own.get(statusKey(norm(raw))) ?? builtinStatus(raw);
+  if (own.size === 0) return builtinStatus;
+  return (raw) => {
+    const word = norm(raw);
+    return own.get(statusKey(word)) ?? builtinTone(word);
+  };
 }
 
 /** `dates`: a cell that is only a date/time phrase becomes a neutral chip (not in row headers or timelines). */
 function cell(st: Status, raw: string, header = '', dates = false): string {
   const hit = st(raw);
-  if (hit) return `<span class="pill ${hit}">${inline(raw)}</span>`;
+  if (hit) return pill(hit, raw);
   if (dates && dateLike(raw)) return `<span class="chip">${inline(raw)}</span>`;
   const em = EM.exec(raw.trim());
   return inline(em ? `${em[1]}${fmtCell(em[2], header)}${em[1]}` : fmtCell(raw, header));

@@ -842,14 +842,14 @@ function roundedPath(pts: P[], r = 6): string {
 }
 
 /**
- * The arrowhead every edge ends in, and one more per tone in `tones` (D80): a marker is drawn in its own document, so it takes the tone's
- * colour from a class on its own path and not from the edge that points to it.
+ * The arrowhead every edge ends in, and one more per tone among `edges` (D80): a marker is drawn in its own document, so it takes the
+ * tone's colour from a class on its own path and not from the edge that points to it.
  */
-export function markers(uid: string, tones: Iterable<EdgeTone | undefined> = []): string {
+export function markers(uid: string, edges: readonly DiagramEdge[]): string {
   const head = (id: string, cls: string) =>
     `<marker id="${uid}-${id}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 Z" class="${cls}"/></marker>`;
   const used = new Set<EdgeTone>();
-  for (const t of tones) if (t) used.add(t);
+  for (const e of edges) if (e.tone) used.add(e.tone);
   return `<defs>${head('a', 'ah')}${[...used].map((t) => head(`a-${t}`, `ah${toneClass(t)}`)).join('')}</defs>`;
 }
 
@@ -1077,7 +1077,7 @@ export function rankShape(d: DiagramBlock): { layers: number; breadth: number } 
     const r = up(n.id);
     sizes.set(r, (sizes.get(r) ?? 0) + 1);
   }
-  return { layers: sizes.size, breadth: Math.max(0, ...sizes.values()) };
+  return { layers: sizes.size, breadth: maxOf([...sizes.values()], 0) };
 }
 
 /**
@@ -1097,30 +1097,47 @@ interface Layouts {
   lr: boolean;
 }
 
+/** Whether a dashboard's desktop drawing turns `d` left to right (`wantsLeftToRight`); elsewhere the written direction is kept. */
+const leftToRight = (d: DiagramBlock, dash: boolean): boolean => dash && d.dir !== 'LR' && wantsLeftToRight(d);
+
+const deskFit = (d: DiagramBlock, lr: boolean): Promise<Fit> => bestFit(lr ? { ...d, dir: 'LR' } : d, false, FIT_DESKTOP);
+
 const layoutsFor = async (d: DiagramBlock, dash: boolean): Promise<Layouts> => {
-  const lr = dash && d.dir !== 'LR' && wantsLeftToRight(d);
-  return { desk: await bestFit(lr ? { ...d, dir: 'LR' } : d, false, FIT_DESKTOP), phone: await phoneFit(d), lr };
+  const lr = leftToRight(d, dash);
+  return { desk: await deskFit(d, lr), phone: await phoneFit(d), lr };
 };
 
 /**
  * The layouts of each flow diagram, kept while the block reads the same, so drawing it again (the incremental renderer draws a
  * unit more than once, and checks the finished page against the whole-page render) costs a drawing and no layout. A drawing
- * only reads a layout, and everything it reads of the block is in the key. Only a caller that draws a block more than once asks
- * for this (`renderFlow`'s `cached`): the key is the block serialized, which a page drawn once would pay for and never use.
+ * only reads a layout, and everything it reads of the block is in the key. The desktop layout is kept per direction (`lr`), and
+ * the phone layout, which no page layout changes, once. Only a caller that draws a block more than once asks for this
+ * (`renderFlow`'s `cached`): the key is the block serialized, which a page drawn once would pay for and never use.
  */
-const laidOut = new WeakMap<DiagramBlock, { key: string; layouts: Promise<Layouts> }>();
+const laidOut = new WeakMap<DiagramBlock, { key: string; desk: Map<boolean, Promise<Fit>>; phone?: Promise<Fit | null> }>();
 
 function cachedLayoutsOf(d: DiagramBlock, dash: boolean): Promise<Layouts> {
-  const key = `${dash ? 'dash:' : ''}${JSON.stringify(d)}`;
-  const hit = laidOut.get(d);
-  if (hit?.key === key) return hit.layouts;
-  const layouts = layoutsFor(d, dash);
-  laidOut.set(d, { key, layouts });
-  // A layout that failed is not kept.
-  layouts.catch(() => {
-    if (laidOut.get(d)?.layouts === layouts) laidOut.delete(d);
-  });
-  return layouts;
+  const key = JSON.stringify(d);
+  let entry = laidOut.get(d);
+  if (entry?.key !== key) laidOut.set(d, (entry = { key, desk: new Map() }));
+  const kept = entry;
+  // A layout that failed is not kept: the block's entry goes, and the next drawing lays it out again.
+  const forget = () => {
+    if (laidOut.get(d) === kept) laidOut.delete(d);
+  };
+  const lr = leftToRight(d, dash);
+  let desk = kept.desk.get(lr);
+  if (!desk) {
+    desk = deskFit(d, lr);
+    desk.catch(forget);
+    kept.desk.set(lr, desk);
+  }
+  if (!kept.phone) {
+    kept.phone = phoneFit(d);
+    kept.phone.catch(forget);
+  }
+  const phone = kept.phone;
+  return desk.then(async (fit) => ({ desk: fit, phone: await phone, lr }));
 }
 
 /**
@@ -1136,22 +1153,14 @@ export async function renderFlow(d: DiagramBlock, uid: string, cached = false, d
   const h = drawPlaced(desk.d, desk.p, uid, false);
   // `data-dir` names the direction only when the renderer chose it: a diagram left to right that was not written so.
   const chose = lr && desk.d.dir === 'LR' ? ' data-dir="LR"' : '';
-  if (!phone) {
-    const fig = figure(
-      d,
-      `<div class="dg-h">${h.svg}</div><div class="dg-v" data-flow style="--wv:560px">${flowList(d)}</div>`,
-      h.W,
-      240,
-      chose,
-    );
-    return withLegend(d, fig);
-  }
-  const v = drawPlaced(phone.d, phone.p, `${uid}v`, true);
+  // The phone drawing, or the list when nothing fits (`--wv:560px`, and a narrow width of 240).
+  const v = phone ? drawPlaced(phone.d, phone.p, `${uid}v`, true) : null;
+  const [inner, wv, narrowW] = v ? [v.svg, v.W, v.W] : [flowList(d), 560, 240];
   const fig = figure(
     d,
-    `<div class="dg-h">${h.svg}</div><div class="dg-v" data-flow style="--wv:${v.W}px">${v.svg}</div>`,
+    `<div class="dg-h">${h.svg}</div><div class="dg-v" data-flow style="--wv:${wv}px">${inner}</div>`,
     h.W,
-    v.W,
+    narrowW,
     chose,
   );
   return withLegend(d, fig);
@@ -1258,12 +1267,7 @@ function drawPlaced(d: DiagramBlock, p: Placed, uid: string, compact: boolean): 
   const out: string[] = [];
   const label = plain(d.title ?? `${d.name} diagram`);
   out.push(svgOpen(uid, W, H, label, describeFlow(d)));
-  out.push(
-    markers(
-      uid,
-      d.edges.map((e) => e.tone),
-    ),
-  );
+  out.push(markers(uid, d.edges));
   for (const g of [...p.groups].toSorted((a, b) => a.depth - b.depth)) {
     out.push(`<rect class="grp" x="${g.x.toFixed(1)}" y="${g.y.toFixed(1)}" width="${g.w.toFixed(1)}" height="${g.h.toFixed(1)}" rx="8"/>`);
   }
@@ -1363,6 +1367,9 @@ function describeFlow(d: DiagramBlock): string {
   const groups = d.groups.map(
     (g) => `${g.label} contains ${g.members.map((m) => d.groups.find((x) => x.id === m)?.label ?? name(m)).join(', ')}`,
   );
-  const edges = d.edges.map((e) => `${name(e.from)} ${e.both ? '↔' : '→'} ${name(e.to)}${edgeWords(e) ? ` (${edgeWords(e)})` : ''}`);
+  const edges = d.edges.map((e) => {
+    const words = edgeWords(e);
+    return `${name(e.from)} ${e.both ? '↔' : '→'} ${name(e.to)}${words ? ` (${words})` : ''}`;
+  });
   return [`${d.nodes.length} nodes.`, groups.join('. '), edges.join('; ')].filter(Boolean).join(' ');
 }
