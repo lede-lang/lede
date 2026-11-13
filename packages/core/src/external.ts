@@ -7,6 +7,7 @@
 // look-behind that lets a match start only at the start of a run, so a 200,000-character line costs one pass and not one per start.
 // Anything a regex cannot settle in one pass (a bracket count, a digit in a token) is judged in code on the text it matched.
 import type { Diagnostic } from './ast.ts';
+import { browserUrl } from './url.ts';
 
 export type ExternalKind = 'url' | 'ip' | 'host' | 'account' | 'key' | 'email';
 
@@ -163,9 +164,13 @@ function trimTail(s: string, from: number, to: number): number {
   return end;
 }
 
-/** The host a URL names (lower case, no port or brackets), and whether it carries credentials before the `@`. */
+/**
+ * The host a URL names (lower case, no port or brackets), and whether it carries credentials before the `@`. It reads the URL the
+ * browser loads (`browserUrl`), so `https://a.com\@b.com/` is a.com with no credentials, as url.ts judges an image's src. The authority
+ * is cut out by hand and not by `new URL`, whose `hostname` is the punycode form: `mañana.com` must meet `--allow` as written.
+ */
 function urlHost(url: string): { host: string; userinfo: boolean } {
-  let s = url.replace(/^[A-Za-z0-9]+:\/\//, '');
+  let s = browserUrl(url).replace(/^[A-Za-z0-9]+:\/\//, '');
   const cut = s.search(/[/?#]/);
   if (cut >= 0) s = s.slice(0, cut);
   const at = s.lastIndexOf('@');
@@ -209,6 +214,8 @@ class Scan {
   private pem: { from: number; at: number; end: number } | null = null;
 
   readonly src: string;
+  /** Where the line being scanned starts in `src`. */
+  private base = 0;
 
   constructor(src: string, allow: readonly string[]) {
     this.src = src;
@@ -235,24 +242,27 @@ class Scan {
   }
 
   scanLine(line: string, base: number): void {
-    const add = (kind: ExternalKind, start: number, end: number, textEnd?: number): void => {
-      const hit: Hit = { kind, start: base + start, end: base + end };
-      if (textEnd !== undefined) hit.textEnd = base + textEnd;
-      this.hits.push(hit);
-    };
     if (line.length < 3) return;
-    this.urls(line, add);
-    if (line.includes('@')) this.emails(line, add);
+    this.base = base;
+    this.urls(line);
+    if (line.includes('@')) this.emails(line);
     if (line.includes('.')) {
-      this.ipv4(line, add);
-      this.hosts(line, add);
+      this.ipv4(line);
+      this.hosts(line);
     }
-    if (line.includes(':')) this.ipv6(line, add);
-    this.accounts(line, add);
-    this.keys(line, add, base);
+    if (line.includes(':')) this.ipv6(line);
+    this.accounts(line);
+    this.keys(line);
   }
 
-  private urls(line: string, add: (k: ExternalKind, s: number, e: number) => void): void {
+  /** A hit at `start..end` of the line being scanned; `textEnd`, where its text ends when that is not `end`. */
+  private add(kind: ExternalKind, start: number, end: number, textEnd?: number): void {
+    const hit: Hit = { kind, start: this.base + start, end: this.base + end };
+    if (textEnd !== undefined) hit.textEnd = this.base + textEnd;
+    this.hits.push(hit);
+  }
+
+  private urls(line: string): void {
     for (const re of [SCHEME_URL, WWW_URL]) {
       for (const m of line.matchAll(re)) {
         const start = m.index;
@@ -263,12 +273,12 @@ class Scan {
         } else if (!/^[^:]+:\/\/[A-Za-z0-9[]/.test(text)) continue; // `https://{tenant}`, `http://$HOST` and `https://<host>` name nothing
         const { host, userinfo } = urlHost(text);
         if (!userinfo && (this.allow.has(host) || isDocHost(host))) continue;
-        add('url', start, end);
+        this.add('url', start, end);
       }
     }
   }
 
-  private emails(line: string, add: (k: ExternalKind, s: number, e: number) => void): void {
+  private emails(line: string): void {
     for (let at = line.indexOf('@'); at >= 0; at = line.indexOf('@', at + 1)) {
       let from = at;
       while (from > 0 && at - from < 65 && isLocal(line[from - 1])) from--;
@@ -284,18 +294,18 @@ class Scan {
       if (labels.length < 2 || !/^[A-Za-z]{2,24}$/.test(tld) || labels.some((l) => l === '' || l.startsWith('-') || l.endsWith('-')))
         continue;
       if (isDocHost(domain.toLowerCase())) continue;
-      add('email', from, to);
+      this.add('email', from, to);
     }
   }
 
-  private ipv4(line: string, add: (k: ExternalKind, s: number, e: number) => void): void {
+  private ipv4(line: string): void {
     for (const m of line.matchAll(V4)) {
       if (DOC_V4.test(m[0]) || this.allow.has(m[0].replace(/\/\d+$/, ''))) continue;
-      add('ip', m.index, m.index + m[0].length);
+      this.add('ip', m.index, m.index + m[0].length);
     }
   }
 
-  private ipv6(line: string, add: (k: ExternalKind, s: number, e: number) => void): void {
+  private ipv6(line: string): void {
     for (const m of line.matchAll(V6)) {
       let s = m[0];
       const slash = s.indexOf('/');
@@ -311,11 +321,11 @@ class Scan {
       }
       const v = ipv6(s);
       if (!v || v.doc || this.allow.has(s.toLowerCase())) continue;
-      add('ip', m.index, m.index + length);
+      this.add('ip', m.index, m.index + length);
     }
   }
 
-  private hosts(line: string, add: (k: ExternalKind, s: number, e: number) => void): void {
+  private hosts(line: string): void {
     for (const m of line.matchAll(RUN)) {
       const run = m[0];
       if (!run.includes('.')) continue;
@@ -325,7 +335,7 @@ class Scan {
       let firstAt = 0;
       const close = (k: number, end: number): void => {
         // parts[first..k) are the labels of one dotted name, ending at `end`. A name that opens a run with a single dot is a dot file.
-        if (first >= 0 && k - first >= 2 && !(first === 1 && parts[0] === '')) this.name(line, parts, first, k, firstAt, end, add);
+        if (first >= 0 && k - first >= 2 && !(first === 1 && parts[0] === '')) this.name(line, parts, first, k, firstAt, end);
         first = -1;
       };
       for (let k = 0; k < parts.length; k++) {
@@ -340,15 +350,7 @@ class Scan {
     }
   }
 
-  private name(
-    line: string,
-    parts: string[],
-    from: number,
-    to: number,
-    start: number,
-    end: number,
-    add: (k: ExternalKind, s: number, e: number) => void,
-  ): void {
+  private name(line: string, parts: string[], from: number, to: number, start: number, end: number): void {
     const tld = parts[to - 1];
     if (!PUBLIC_SUFFIXES.has(tld) && !INTERNAL_SUFFIXES.has(tld)) return;
     // `1.2.3.dev` is a version; a name needs a letter in the label before its suffix. A call, `log.info(`, is not a name either.
@@ -356,31 +358,34 @@ class Scan {
     for (let k = from; k < to; k++) if (parts[k].startsWith('-') || parts[k].endsWith('-')) return;
     const name = line.slice(start, end).toLowerCase();
     if (isDocHost(name) || this.allow.has(name)) return;
-    add('host', start, end);
+    this.add('host', start, end);
   }
 
-  private accounts(line: string, add: (k: ExternalKind, s: number, e: number) => void): void {
+  private accounts(line: string): void {
     // Not a time stamp, and not a round number: an account id does not end in five zeros.
-    for (const m of line.matchAll(AWS_ACCOUNT)) if (!STAMP.test(m[0]) && !m[0].endsWith('00000')) add('account', m.index, m.index + 12);
-    if (line.includes('arn:')) for (const m of line.matchAll(ARN)) add('account', m.index, trimTail(line, m.index, m.index + m[0].length));
+    for (const m of line.matchAll(AWS_ACCOUNT))
+      if (!STAMP.test(m[0]) && !m[0].endsWith('00000')) this.add('account', m.index, m.index + 12);
+    if (line.includes('arn:'))
+      for (const m of line.matchAll(ARN)) this.add('account', m.index, trimTail(line, m.index, m.index + m[0].length));
     if (line.includes('-'))
       for (const m of line.matchAll(GUID))
-        if (/subscription/i.test(line.slice(Math.max(0, m.index - 40), m.index))) add('account', m.index, m.index + 36);
+        if (/subscription/i.test(line.slice(Math.max(0, m.index - 40), m.index))) this.add('account', m.index, m.index + 36);
     if (/project/i.test(line))
-      for (const m of line.matchAll(GCP_PROJECT)) add('account', m.index + m[0].length - m[1].length, m.index + m[0].length);
+      for (const m of line.matchAll(GCP_PROJECT)) this.add('account', m.index + m[0].length - m[1].length, m.index + m[0].length);
   }
 
-  private keys(line: string, add: (k: ExternalKind, s: number, e: number, t?: number) => void, base: number): void {
-    for (const re of KEYS) for (const m of line.matchAll(re)) add('key', m.index, m.index + m[0].length);
-    for (const m of line.matchAll(OPENAI_KEY)) if (looksRandom(m[1], false)) add('key', m.index, m.index + m[0].length);
+  private keys(line: string): void {
+    const base = this.base;
+    for (const re of KEYS) for (const m of line.matchAll(re)) this.add('key', m.index, m.index + m[0].length);
+    for (const m of line.matchAll(OPENAI_KEY)) if (looksRandom(m[1], false)) this.add('key', m.index, m.index + m[0].length);
     for (const m of line.matchAll(KEYED_VALUE)) {
-      if (looksRandom(m[1], true)) add('key', m.index + m[0].length - m[1].length, m.index + m[0].length);
+      if (looksRandom(m[1], true)) this.add('key', m.index + m[0].length - m[1].length, m.index + m[0].length);
     }
     if (line.includes('-----BEGIN '))
       for (const m of line.matchAll(PEM_HEADER)) {
         const headerEnd = m.index + m[0].length;
         const end = this.pemEnd(base + headerEnd);
-        add('key', m.index, end < 0 ? headerEnd : end - base, headerEnd);
+        this.add('key', m.index, end < 0 ? headerEnd : end - base, headerEnd);
       }
   }
 

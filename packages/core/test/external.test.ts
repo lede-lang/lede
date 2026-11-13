@@ -297,6 +297,15 @@ test('--allow leaves a host and the urls on it alone, whole names and ip literal
   assert.deepEqual(found('ada@docs.acme.io', ['docs.acme.io']), [['email', 'ada@docs.acme.io']]);
 });
 
+test('a url is judged by the host the browser loads: a backslash before an @ ends the host', () => {
+  // The browser reads `\` as `/`, so `https://docs.acme.io\@evil.example.net/` loads docs.acme.io with no credentials.
+  assert.deepEqual(found('https://docs.acme.io\\@evil.example.net/', ['docs.acme.io']), []);
+  assert.deepEqual(found('https://a.com\\@b.com/'), [['url', 'https://a.com\\@b.com/']]);
+  assert.deepEqual(found('https://a.com\\@b.com/', ['b.com']), [['url', 'https://a.com\\@b.com/']]);
+  // The name in the path is still a host name the page shows.
+  assert.deepEqual(found('https://a.com\\@b.com/', ['a.com']), [['host', 'b.com']]);
+});
+
 test('findings become warnings with code external and detail {kind, text}', () => {
   const [d, ...rest] = externalDiagnostics('x\nsee https://acme.io/a\n');
   assert.equal(rest.length, 0);
