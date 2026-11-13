@@ -922,7 +922,9 @@ rules are taken as written. The text colours are held to WCAG 2.x AA on the surf
 `muted` at 4.5:1 on `bg` and `surface`; `accent` and `accent-ink` at 4.5:1 on `bg`, `surface` and `accent-tint`; and each `series` colour at 3:1 on `bg` and
 `surface`. The pages' later parts need no rule of their own, because they read these same tokens: the `info` pill and edge tone are `accent-ink` on
 `accent-tint`, the `neutral` ones `fg2` on `info-bg`, and the decision card, the callout kinds and the facts row use `fg`, `fg2` and `muted` on `bg` and
-`surface`; the `good`, `warn` and `bad` colours are the house's and are not themed. A colour that fails is moved, not refused, which is the opposite of the rule for a page's `@accent` (§4.3) and on purpose: a writer's accent is one
+`surface`. The `good`, `warn` and `bad` colours are the house's and the file cannot name them, but they are text too (a pill, a callout label, a kpi
+delta): each is held to 4.5:1 on `bg`, `surface` and its own tint (`good-bg`, `warn-bg`, `bad-bg`, on which it is drawn as a chip), and moved like the
+others when the file's surfaces leave it short, reported at the theme (`token` `good`, `warn` or `bad`). Only a moved one is written over the house value. A colour that fails is moved, not refused, which is the opposite of the rule for a page's `@accent` (§4.3) and on purpose: a writer's accent is one
 colour in a page they wrote and is used whole or not at all; a house palette is a brand to be matched as closely as AA allows. It is moved in OKLCH lightness only:
 hue and chroma are kept (chroma is reduced only where sRGB has no colour of that lightness with it), the lightness is searched by halving on each side of the
 colour, and the nearer passing value is used, tested as the 8-bit colour that is written. The colour moved is reported as W `theme-adjusted`

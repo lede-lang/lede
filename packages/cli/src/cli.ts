@@ -59,7 +59,8 @@ options:
   --link-images   build/watch/check: leave local image paths as written (no inlining, no image-inline warnings)
   --theme FILE    build/watch/check: brand tokens, a JSON file (at most 64 KiB) of hex colours: {"accent", "light": {...}, "dark": {...},
                   "series"}. Its palette and chart colours replace the house ones in both themes, and the page's own @accent is ignored
-                  (W theme-override). Every colour that is text must read on its surfaces, 7:1 for fg and 4.5:1 for the other text tokens,
+                  (W theme-override). Every colour that is text must read on its surfaces, 7:1 for fg and 4.5:1 for the other text tokens
+                  and the house good, warn and bad,
                   3:1 for series on the page and card: one that does not is moved in lightness only, hue and chroma kept, to the nearest
                   value that does (W theme-adjusted; E theme-surface if no lightness can). A value that is not a hex colour is
                   E theme-value. The file is named by you and is not confined to the document's directory. Spec section 9

@@ -115,6 +115,18 @@ test('the main is the same with and without a theme: only the stylesheet moves',
   assert.equal(a, b);
 });
 
+test('a status colour the theme moved is written in its own theme block; the others keep the house value', () => {
+  const grey = parseTheme('{"light":{"bg":"#e0e0e0","surface":"#e0e0e0"}}').theme;
+  const good = grey.status?.light?.good;
+  assert.ok(good && good !== FIXED_TOKENS.light.good);
+  const sheet = css({ tokens: grey });
+  assert.ok(sheet.includes(`--good:${good};`));
+  assert.ok(!sheet.includes(`--good:${FIXED_TOKENS.light.good};`));
+  assert.ok(sheet.includes(`--bad:${FIXED_TOKENS.light.bad};`) && sheet.includes(`--good:${FIXED_TOKENS.dark.good};`));
+  // A theme that moves no status colour writes the house ones.
+  assert.ok(css({ tokens: theme }).includes(`--good:${FIXED_TOKENS.light.good};`));
+});
+
 test('a theme that holds anything but #rrggbb is refused where it is written, and nothing is written', () => {
   const hostile = [
     'red',
@@ -132,6 +144,7 @@ test('a theme that holds anything but #rrggbb is refused where it is written, an
     }
     const series = { ...theme, series: { light: [v], dark: ['#000000'] } };
     assert.throws(() => css({ tokens: series }), TypeError, `series ${v}`);
+    assert.throws(() => css({ tokens: { ...theme, status: { light: { good: v } } } }), TypeError, `status ${v}`);
   }
   // A missing token is as bad.
   const { bg: _bg, ...rest } = theme.light;

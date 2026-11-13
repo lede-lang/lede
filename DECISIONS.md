@@ -1062,7 +1062,8 @@ SKILL.md now lists, uncounted until a session has an API key.
   `--external`, a key inside a URL or a quoted data row included.
 - **`--theme tokens.json`.** An operator's house palette as hex tokens over D74's palette table (built here without the
   `@fonts`/`@palette` words). A colour that would miss WCAG AA is moved in OKLCH lightness only, to the nearest passing value, and
-  W `theme-adjusted` says so (`--theme-strict` makes it an error). This is the opposite of D49's rule for `@accent`, on purpose:
+  W `theme-adjusted` says so (`--theme-strict` makes it an error). The house `good`, `warn` and `bad` text colours are held to
+  the file's page and card the same way. This is the opposite of D49's rule for `@accent`, on purpose:
   a writer's accent is one colour in a page they wrote, a house palette is a brand the operator wants matched as closely as AA
   allows. Under `--theme` a page's `@accent` is ignored with W `theme-override`.
 

@@ -25,7 +25,16 @@ export interface ThemeTokens {
   dark: PaletteTokens;
   /** `c1`, `c2`, ... of each theme, as many as the file gave; the rest keep the house series. Absent when the file gave none. */
   series?: { light: string[]; dark: string[] };
+  /**
+   * The status colours (`good`, `bad`, `warn`) of a theme whose surfaces they would not read on, moved like any text token. Only a
+   * moved one is here; the rest keep the house value. Absent when none moved, so a theme that moves none draws as before.
+   */
+  status?: Partial<Record<ThemeName, Partial<Record<StatusToken, string>>>>;
 }
+
+/** The fixed status colours that are text (a pill, a callout label, a kpi delta) and so are held to AA under `--theme`. */
+export const STATUS_TOKENS = ['good', 'bad', 'warn'] as const;
+export type StatusToken = (typeof STATUS_TOKENS)[number];
 
 export interface ThemeResult {
   theme: ThemeTokens;
@@ -226,6 +235,7 @@ const RENAMED: Record<string, string> = { tint: 'accent-tint', fg3: 'muted' };
  * eight chart colours. A token the file leaves out keeps the house palette's value. The text tokens (`fg`, `fg2`, `muted`, `accent`,
  * `accent-ink`) must read on the surfaces they sit on, at 7:1 for `fg` and 4.5:1 for the rest, and the series at 3:1 on the page and
  * card: one that does not is moved (W `theme-adjusted`, or E with `strict`), and one that no lightness can save is E `theme-surface`.
+ * The house status colours (`good`, `bad`, `warn`) are held to 4.5:1 on `bg`, `surface` and their own tint, and moved the same way.
  * The surfaces themselves are taken as given. Throws `ThemeFileError` when the text is not a JSON object or is over `THEME_MAX_BYTES`.
  */
 export function parseTheme(text: string, opts: { strict?: boolean } = {}): ThemeResult {
@@ -360,6 +370,16 @@ export function parseTheme(text: string, opts: { strict?: boolean } = {}): Theme
       fix(token, p[token as PaletteToken], checks, fromTop ? ['accent'] : [name, token], (to) => (p[token as PaletteToken] = to));
     }
     if (inkFollows) p['accent-ink'] = p.accent;
+    // The status colours are the house's, but they are text on the page and card the file chose (a pill, a callout label, a kpi
+    // delta), and on their own tint as a chip: held to AA there, and moved like any other text token when they miss it.
+    for (const token of STATUS_TOKENS) {
+      const tint = `${token}-bg`;
+      const checks: Check[] = [
+        ...(['bg', 'surface'] as const).map((g) => ({ against: g, hex: grounds[g], required: AA_TEXT })),
+        { against: tint, hex: FIXED_TOKENS[name][tint], required: AA_TEXT },
+      ];
+      fix(token, FIXED_TOKENS[name][token], checks, [name, token], (to) => (((theme.status ??= {})[name] ??= {})[token] = to));
+    }
     if (series !== null) {
       const colours = series.map((hex, i) => {
         let out = hex;

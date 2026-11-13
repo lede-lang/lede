@@ -39,8 +39,8 @@ const GROUPS = [
 const HEX = /^#[0-9a-f]{6}$/;
 
 /** The declarations of one theme: a palette, with the page's own chart colours (`series`, from the first slot) over the house ones. */
-function tokens(theme: ThemeName, palette: PaletteTokens, series: readonly string[] = []): string {
-  const v: Record<string, string> = { ...palette, ...FIXED_TOKENS[theme] };
+function tokens(theme: ThemeName, palette: PaletteTokens, series: readonly string[] = [], status: Record<string, string> = {}): string {
+  const v: Record<string, string> = { ...palette, ...FIXED_TOKENS[theme], ...status };
   series.slice(0, THEME_SERIES_MAX).forEach((c, i) => (v[`c${i + 1}`] = c));
   const decl = (k: string): string => {
     if (!HEX.test(v[k])) throw new TypeError(`theme token ${k} is not a #rrggbb colour`);
@@ -56,7 +56,10 @@ const BRANDS = new WeakMap<ThemeTokens, { light: string; dark: string }>();
 function brandTokens(t: ThemeTokens): { light: string; dark: string } {
   let out = BRANDS.get(t);
   if (!out) {
-    out = { light: tokens('light', t.light, t.series?.light), dark: tokens('dark', t.dark, t.series?.dark) };
+    out = {
+      light: tokens('light', t.light, t.series?.light, t.status?.light),
+      dark: tokens('dark', t.dark, t.series?.dark, t.status?.dark),
+    };
     BRANDS.set(t, out);
   }
   return out;

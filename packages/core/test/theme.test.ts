@@ -223,6 +223,33 @@ test('where no lightness can make the text read, that is E theme-surface and the
   );
 });
 
+test("the status colours are text on the file's page and card and on their own tint: moved there like any text token", () => {
+  const r = parseTheme('{"light":{"bg":"#e0e0e0","surface":"#e0e0e0"}}');
+  const moved = r.diagnostics.filter((d) => ['good', 'bad', 'warn'].includes(String(detail(d).token)));
+  assert.deepEqual(
+    moved.map((d) => [d.code, d.severity, detail(d).token, detail(d).theme, detail(d).against]),
+    [
+      ['theme-adjusted', 'warning', 'good', 'light', 'bg'],
+      ['theme-adjusted', 'warning', 'warn', 'light', 'bg'],
+    ],
+  );
+  const status = r.theme.status?.light ?? {};
+  assert.deepEqual(Object.keys(status), ['good', 'warn']);
+  for (const [token, hex] of Object.entries(status)) {
+    assert.ok(ratio(hex, '#e0e0e0') >= 4.5, token);
+    assert.ok(ratio(hex, FIXED_TOKENS.light[`${token}-bg`]) >= 4.5, `${token} on its tint`);
+  }
+  // Only a moved colour is carried, so a file that moves none leaves the status colours to the house.
+  assert.equal(parseTheme('{}').theme.status, undefined);
+  assert.equal(parseTheme('{"accent":"#0b5fff","light":{"bg":"#fff8e1"}}').theme.status, undefined);
+  // Under --theme-strict the move is an error, and the moved colour is still returned.
+  const strict = parseTheme('{"dark":{"bg":"#303030","surface":"#3a3a3a"}}', { strict: true });
+  const bad = strict.diagnostics.find((d) => detail(d).token === 'bad');
+  assert.equal(bad?.code, 'theme-adjusted');
+  assert.equal(bad?.severity, 'error');
+  assert.ok(ratio(strict.theme.status?.dark?.bad ?? '', '#3a3a3a') >= 4.5);
+});
+
 test('chart colours are held to 3:1 on the page and card, in each theme, and the others keep the house series', () => {
   const r = parseTheme('{"series":["#2a78d6","#f5e6a0","#102030"]}');
   assert.equal(r.theme.series?.light.length, 3);
