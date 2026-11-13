@@ -1,6 +1,6 @@
 // D80: `build`, `watch` and `check` turn a local image into a data: URI, so a page with pictures is one file. The libraries read no
 // files, so the rewrite is here: it changes `ImageBlock.src` after the parse and before the render.
-import { readFileSync, statSync } from 'node:fs';
+import { closeSync, openSync, readFileSync, readSync, realpathSync, statSync } from 'node:fs';
 import { browserUrl, imageSrcKind, walkBlocks, type Diagnostic, type ImageBlock, type LedeDocument } from '@lede-lang/core';
 import { confine, Unreachable } from './confine.ts';
 
@@ -69,27 +69,66 @@ function filePath(url: string): string {
   }
 }
 
+/** Bytes enough for every raster type's signature; an SVG's prolog can run longer, and then the whole file is read. */
+const HEAD = 4096;
+
+/** The first `n` bytes of the file at `path`. */
+function head(path: string, n: number): Buffer {
+  const fd = openSync(path, 'r');
+  try {
+    const buf = Buffer.alloc(n);
+    return buf.subarray(0, readSync(fd, buf, 0, n, 0));
+  } finally {
+    closeSync(fd);
+  }
+}
+
+/**
+ * The type of the image file at `path` of `length` bytes, as `imageType` reads the whole file, from as little of it as settles it: the
+ * first `HEAD` bytes settle every raster type, and only a file they do not settle is read whole, for an SVG with a long prolog.
+ */
+function sniff(path: string, length: number): string | null {
+  const first = head(path, Math.min(length, HEAD));
+  return imageType(first) ?? (length > first.length ? imageType(readFileSync(path)) : null);
+}
+
+/** What an image file can be inlined as: its data: URI (`encode`) and size, or the reason it cannot be. */
+type Inlined = { uri: string; bytes: number } | Reason;
+
 /**
  * Replaces the `src` of every `image` block whose source is a local path with a data: URI of the file, and returns W `image-inline`
  * for each one it leaves as a path. The path is read as the browser reads it, confined to `base`'s tree like `data x < file.csv`
  * (symlinks resolved), and typed by its first bytes. `max` is the per-image size in bytes; the whole page may inline `PAGE_FACTOR`
- * times that, counting an image once for each place it is used. Remote and data: sources are left as they are.
+ * times that, counting an image once for each place it is used. Remote and data: sources are left as they are. A file used in more
+ * than one place is read once. Without `encode` (`lede check`, which draws no page) the warnings are the same and no image is read
+ * whole or encoded: the src becomes `data:TYPE;base64,` with no payload, so what reads the document after sees an inlined image.
  */
-export function inlineImages(doc: LedeDocument, base: string, max: number): Diagnostic[] {
+export function inlineImages(doc: LedeDocument, base: string, max: number, encode = true): Diagnostic[] {
   const out: Diagnostic[] = [];
   let total = 0;
+  const realBase = realpathSync(base);
+  const files = new Map<string, Inlined>();
+  /** The data: URI for the file at `full`, without the page's running total. */
+  const read = (full: string): Inlined => {
+    const stat = statSync(full);
+    if (!stat.isFile()) return 'missing';
+    if (stat.size > max) return 'size';
+    if (!encode) {
+      const mime = sniff(full, stat.size);
+      return mime === null ? 'type' : { uri: `data:${mime};base64,`, bytes: stat.size };
+    }
+    const bytes = readFileSync(full);
+    const mime = imageType(bytes);
+    return mime === null ? 'type' : { uri: `data:${mime};base64,${bytes.toString('base64')}`, bytes: bytes.length };
+  };
   /** The data: URI for `b`'s file, or the reason it cannot be one. */
-  const inline = (b: ImageBlock): { uri: string; bytes: number } | Reason => {
+  const inline = (b: ImageBlock): Inlined => {
     try {
-      const full = confine(base, filePath(browserUrl(b.src)));
-      const stat = statSync(full);
-      if (!stat.isFile()) return 'missing';
-      if (stat.size > max) return 'size';
-      const bytes = readFileSync(full);
-      const mime = imageType(bytes);
-      if (mime === null) return 'type';
-      if (total + bytes.length > max * PAGE_FACTOR) return 'page-size';
-      return { uri: `data:${mime};base64,${bytes.toString('base64')}`, bytes: bytes.length };
+      const full = confine(base, filePath(browserUrl(b.src)), realBase);
+      let got = files.get(full);
+      if (got === undefined) files.set(full, (got = read(full)));
+      if (typeof got !== 'string' && total + got.bytes > max * PAGE_FACTOR) return 'page-size';
+      return got;
     } catch (e) {
       // Outside the tree, or a file system error (no such file, no permission, a directory): both leave the path as it was.
       return e instanceof Unreachable ? e.reason : 'missing';

@@ -272,6 +272,25 @@ test('check reports the same warnings as build, never ends ok on one, and writes
   assert.equal(run(['check', 'p.lede'], clean).stderr.trimEnd(), 'ok');
 });
 
+test('check types every format and an SVG whose prolog runs past the first 4 KB as build does, without encoding them', () => {
+  const dir = folder(...FORMATS.map(([f]) => f));
+  // A comment longer than the bytes check reads first: the root is found only in the whole file.
+  writeFileSync(join(dir, 'long.svg'), `<!--${'x'.repeat(6000)}--><svg xmlns="http://www.w3.org/2000/svg"/>`);
+  writeFileSync(join(dir, 'long.txt'), `<!--${'x'.repeat(6000)}--> not an svg`);
+  const uses = [...FORMATS.map(([f]) => f), 'long.svg', 'long.txt', 'long.svg'];
+  page(dir, uses.map((f, i) => `image ${f} "${i}"`).join('\n'));
+  const diagnostics = (s: string) => s.split('\n').filter((l) => l.startsWith('p.lede:'));
+  for (const max of ['6k', '700b']) {
+    const c = run(['check', 'p.lede', `--image-max=${max}`, '--artifact'], dir);
+    const b = run(['build', 'p.lede', '-o', 'out.html', `--image-max=${max}`, '--artifact'], dir);
+    assert.deepEqual(diagnostics(c.stderr), diagnostics(b.stderr), max);
+  }
+  assert.deepEqual(
+    inlineWarnings(dir, '--image-max=6k').map((d) => [d.detail?.src, d.detail?.reason]),
+    [['long.txt', 'type']],
+  );
+});
+
 test('--artifact: an inlined image raises no artifact-image, one that stays a path still does, and --link-images brings them all back', () => {
   const dir = folder('tile.png');
   page(dir, 'image tile.png "ok"\nimage nope.png "gone"\n');

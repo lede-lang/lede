@@ -14,6 +14,7 @@ import {
   ThemeFileError,
   THEME_MAX_BYTES,
   type Diagnostic,
+  type ExternalFinding,
   type ExternalOptions,
   type LedeDocument,
   type ThemeTokens,
@@ -114,8 +115,12 @@ interface ThemeFlag {
   strict: boolean;
 }
 
-/** A tokens file read and validated: the theme the renderer takes, the file's text (for the report) and what the validator said of it. */
+/**
+ * A tokens file read and validated: the flag it was read for, the theme the renderer takes, the file's text (for the report) and what
+ * the validator said of it.
+ */
 interface LoadedTheme {
+  flag: ThemeFlag;
   tokens: ThemeTokens;
   src: string;
   diagnostics: Diagnostic[];
@@ -150,7 +155,7 @@ function loadTheme(flag: ThemeFlag): LoadedTheme {
   }
   try {
     const { theme, diagnostics } = parseTheme(src, { strict: flag.strict });
-    return { tokens: theme, src, diagnostics };
+    return { flag, tokens: theme, src, diagnostics };
   } catch (e) {
     if (e instanceof ThemeFileError) return fail(e.message);
     throw e;
@@ -161,36 +166,38 @@ function loadTheme(flag: ThemeFlag): LoadedTheme {
 interface Inputs {
   /** The largest local image inlined as a data: URI, in bytes, or null (`--link-images`) to leave the paths. */
   images: number | null;
-  theme: ThemeFlag | null;
+  /** `--theme`'s file, read once by `main` (a watch reads it again for each rebuild). */
+  theme: LoadedTheme | null;
 }
 
 /**
  * Read and parse `file` (`-` is stdin). With `images` (bytes), each local image in the document becomes a data: URI and its
- * diagnostics hold W `image-inline` for the ones that could not. With `artifact`, its diagnostics also hold the warnings only an
- * Artifact host needs, for the images that are still paths. With `external`, what the page gives away. With `themed`, a `--theme`
- * file is in force: the document's `@accent` is ignored, with W `theme-override`.
+ * diagnostics hold W `image-inline` for the ones that could not; `encode: false` (check) types and sizes them without encoding them.
+ * With `artifact`, its diagnostics also hold the warnings only an Artifact host needs, for the images that are still paths. With
+ * `external`, what the page gives away, from one scan whose `findings` are returned too. With `themed`, a `--theme` file is in force:
+ * the document's `@accent` is ignored, with W `theme-override`.
  */
 async function load(
   file: string,
-  opts: { artifact?: boolean; images?: number | null; external?: ExternalOptions | null; themed?: boolean } = {},
-): Promise<{ src: string; doc: LedeDocument }> {
+  opts: { artifact?: boolean; images?: number | null; encode?: boolean; external?: ExternalOptions | null; themed?: boolean } = {},
+): Promise<{ src: string; doc: LedeDocument; findings: ExternalFinding[] }> {
   const src = file === '-' ? await readAll(process.stdin) : readFileSync(file, 'utf8');
   const doc = parse(src, { ...parseOptions(file), themed: !!opts.themed });
-  if (opts.images != null) doc.diagnostics.push(...inlineImages(doc, baseOf(file), opts.images));
+  if (opts.images != null) doc.diagnostics.push(...inlineImages(doc, baseOf(file), opts.images, opts.encode ?? true));
   if (opts.artifact) doc.diagnostics.push(...artifactDiagnostics(doc));
-  if (opts.external) doc.diagnostics.push(...externalDiagnostics(src, opts.external));
-  return { src, doc };
+  const findings = opts.external ? scanExternal(src, opts.external) : [];
+  if (opts.external) doc.diagnostics.push(...externalDiagnostics(src, opts.external, findings));
+  return { src, doc, findings };
 }
 
 /**
- * Where each line of `src` that holds a credential starts holding it (line to column, both 1-based), for `--external`: a line echoed
- * under a diagnostic, or as the old side of a `--dry-run` diff, is cut there, so a CI log never holds a key whole. Every line inside a
- * private key block is cut at its start.
+ * Where each line of `src` that holds a credential starts holding it (line to column, both 1-based), from `findings`, the scan of
+ * `src` for `--external`: a line echoed under a diagnostic, or as the old side of a `--dry-run` diff, is cut there, so a CI log never
+ * holds a key whole. Every line inside a private key block is cut at its start.
  */
-function keyCuts(src: string, external: ExternalOptions | null): Map<number, number> {
+function keyCuts(src: string, findings: readonly ExternalFinding[]): Map<number, number> {
   const cuts = new Map<number, number>();
-  if (!external) return cuts;
-  for (const f of scanExternal(src, external)) {
+  for (const f of findings) {
     if (f.kind !== 'key') continue;
     cuts.set(f.line, Math.min(cuts.get(f.line) ?? f.col, f.col));
     const extra = src.slice(f.start, f.end).split('\n').length - 1;
@@ -217,6 +224,17 @@ function report(file: string, src: string, diags: Diagnostic[], cuts: Map<number
   }
 }
 
+/** How many of `diags` are errors and how many warnings. */
+function tally(diags: readonly Diagnostic[]): { errors: number; warnings: number } {
+  let errors = 0;
+  let warnings = 0;
+  for (const d of diags) {
+    if (d.severity === 'error') errors++;
+    else if (d.severity === 'warning') warnings++;
+  }
+  return { errors, warnings };
+}
+
 /** The last line of `check`: `ok` only when nothing was reported, so a warning is never followed by a success word. */
 function summary(errors: number, warnings: number): string {
   const counts = [errors && `${errors} error(s)`, warnings && `${warnings} warning(s)`].filter(Boolean);
@@ -230,13 +248,11 @@ interface Watching {
 
 async function build(file: string, out: string | null, flags: Set<string>, inputs: Inputs, watching?: Watching): Promise<boolean> {
   const name = nameOf(file);
-  const { theme } = inputs;
-  // The tokens file is read for each build, so a watch picks up a new one with the next save of the document.
-  const brand = theme ? loadTheme(theme) : null;
+  const brand = inputs.theme;
   const { src, doc } = await load(file, { artifact: flags.has('--artifact'), images: inputs.images, themed: brand !== null });
-  if (brand && theme) report(theme.path, brand.src, brand.diagnostics);
+  if (brand) report(brand.flag.path, brand.src, brand.diagnostics);
   report(name, src, doc.diagnostics);
-  const errors = [...doc.diagnostics, ...(brand?.diagnostics ?? [])].filter((d) => d.severity === 'error').length;
+  const errors = tally(doc.diagnostics).errors + (brand ? tally(brand.diagnostics).errors : 0);
   if (errors && !flags.has('--force')) {
     process.stderr.write(`${name}: ${errors} error(s); not written (use --force to render anyway)\n`);
     return false;
@@ -280,10 +296,14 @@ async function watchFile(file: string, target: string, flags: Set<string>, input
   // The first build is not guarded: an unreadable FILE or an unwritable OUT stops the command (exit 70), not a loop of the same line.
   await build(file, target, watched, inputs, watching);
   let gone = false;
-  /** One rebuild, which never throws: a missing or unreadable FILE is a line on stderr, and the next change tries again. */
+  /**
+   * One rebuild, which never throws: a missing or unreadable FILE is a line on stderr, and the next change tries again. The tokens
+   * file is read again too, so a watch picks up a new one with the next save of the document.
+   */
   const rebuild = async (): Promise<void> => {
     try {
-      await build(file, target, watched, inputs, watching);
+      const theme = inputs.theme && loadTheme(inputs.theme.flag);
+      await build(file, target, watched, { ...inputs, theme }, watching);
       gone = false;
       return;
     } catch (e) {
@@ -355,19 +375,22 @@ async function watchFile(file: string, target: string, flags: Set<string>, input
  * the page gives away is reported too, as warnings, and any of it is also exit 1; under --fix it is replaced after the other repairs.
  */
 async function check(files: string[], flags: Set<string>, inputs: Inputs, allow: string[]): Promise<number> {
-  const { theme } = inputs;
+  const brand = inputs.theme;
   const external: ExternalOptions | null = flags.has('--external') ? { allow } : null;
   let bad = 0;
   let warned = 0;
   let leaks = 0;
   const all: Record<string, Diagnostic[]> = {};
+  const count = (diags: readonly Diagnostic[]): void => {
+    const t = tally(diags);
+    bad += t.errors;
+    warned += t.warnings;
+  };
   // The tokens file is checked once, ahead of the documents, and reported under its own name.
-  const brand = theme ? loadTheme(theme) : null;
-  if (brand && theme) {
-    all[theme.path] = brand.diagnostics;
-    if (!flags.has('--json')) report(theme.path, brand.src, brand.diagnostics);
-    bad += brand.diagnostics.filter((d) => d.severity === 'error').length;
-    warned += brand.diagnostics.filter((d) => d.severity === 'warning').length;
+  if (brand) {
+    all[brand.flag.path] = brand.diagnostics;
+    if (!flags.has('--json')) report(brand.flag.path, brand.src, brand.diagnostics);
+    count(brand.diagnostics);
   }
   for (const f of files) {
     const dry = flags.has('--dry-run');
@@ -387,7 +410,7 @@ async function check(files: string[], flags: Set<string>, inputs: Inputs, allow:
       if (dry) {
         // Neither kind of repair changes the line count, so a line-by-line comparison is the whole diff.
         const was = before.split('\n');
-        const cuts = keyCuts(before, external);
+        const cuts = keyCuts(before, external ? scanExternal(before, external) : []);
         after.split('\n').forEach((line, i) => {
           if (line !== was[i]) process.stderr.write(`${f}:${i + 1}:\n- ${echo(was, i + 1, cuts)}\n+ ${line}\n`);
         });
@@ -395,12 +418,17 @@ async function check(files: string[], flags: Set<string>, inputs: Inputs, allow:
     }
     // Files are reported one after the other, in the order given, and stdin can be read only once.
     // oxlint-disable-next-line eslint/no-await-in-loop -- sequential on purpose
-    const { src, doc } = await load(f, { artifact: flags.has('--artifact'), images: inputs.images, external, themed: brand !== null });
+    const { src, doc, findings } = await load(f, {
+      artifact: flags.has('--artifact'),
+      images: inputs.images,
+      encode: false,
+      external,
+      themed: brand !== null,
+    });
     all[nameOf(f)] = doc.diagnostics;
-    if (!flags.has('--json')) report(nameOf(f), src, doc.diagnostics, keyCuts(src, external));
-    bad += doc.diagnostics.filter((d) => d.severity === 'error').length;
-    warned += doc.diagnostics.filter((d) => d.severity === 'warning').length;
-    leaks += doc.diagnostics.filter((d) => d.code === 'external').length;
+    if (!flags.has('--json')) report(nameOf(f), src, doc.diagnostics, keyCuts(src, findings));
+    count(doc.diagnostics);
+    leaks += findings.length;
   }
   if (flags.has('--json')) process.stdout.write(`${JSON.stringify(all, null, 2)}\n`);
   else process.stderr.write(`${summary(bad, warned)}\n`);
@@ -424,6 +452,8 @@ const FLAGS = [
   '--external',
   '--theme-strict',
 ];
+/** The options that take a value, as `NAME VALUE` or `NAME=VALUE` (`--allow` only as `--allow=VALUE`). */
+const VALUE_OPTIONS = new Set(['-o', '--image-max', '--allow', '--theme']);
 /** What a misspelled option is compared with: the flags, plus the options that take a value and the ones `main` handles before it parses. */
 const KNOWN_OPTIONS = [...FLAGS, '--allow', '--help', '--version', '-o', '--image-max', '--theme', '-h', '-V'];
 
@@ -488,32 +518,37 @@ function parseArgs(argv: string[]): Args | UsageError {
   let options = true; // until `--`, after which every word is a FILE
   for (let i = 0; i < rest.length; i++) {
     const a = rest[i];
+    const name = a.split('=', 1)[0];
     if (!options) files.push(a);
     else if (a === '--') options = false;
-    else if (a === '-o' || a.startsWith('-o=')) {
-      // A value that is itself an option is a forgotten value, not a file called --force; -o=--force says it on purpose.
-      const value = a === '-o' ? rest[++i] : a.slice(3);
-      if (!value || (a === '-o' && value.startsWith('-'))) return { usage: '-o needs a file name' };
-      if (out !== null) return { usage: '-o given more than once' };
-      out = value;
-    } else if (a === '--image-max' || a.startsWith('--image-max=')) {
-      const bytes = parseSize((a === '--image-max' ? rest[++i] : a.slice('--image-max='.length)) ?? '');
-      if (bytes === null) return { usage: '--image-max needs a size such as 300k or 2m' };
-      imageMax = bytes;
-    } else if (a === '--allow' || a.startsWith('--allow=')) {
-      const names = a
-        .slice('--allow='.length)
-        .split(',')
-        .map((n) => n.trim())
-        .filter(Boolean);
-      if (a === '--allow' || !names.length) return { usage: '--allow needs host names: --allow=host1,host2' };
-      allow.push(...names);
-    } else if (a === '--theme' || a.startsWith('--theme=')) {
-      // As for -o: a value that is itself an option is a forgotten value; --theme=-x says it on purpose.
-      const value = a === '--theme' ? rest[++i] : a.slice('--theme='.length);
-      if (!value || (a === '--theme' && value.startsWith('-'))) return { usage: '--theme needs a tokens file' };
-      if (theme !== null) return { usage: '--theme given more than once' };
-      theme = value;
+    else if (VALUE_OPTIONS.has(name)) {
+      // `NAME VALUE` takes the next word (`spaced`), `NAME=VALUE` the rest of this one.
+      const spaced = a === name;
+      const value = spaced ? rest[++i] : a.slice(name.length + 1);
+      // For -o and --theme a spaced value that is itself an option is a forgotten value, not a file called --force;
+      // -o=--force says it on purpose.
+      const file = !!value && !(spaced && value.startsWith('-'));
+      if (name === '-o') {
+        if (!file) return { usage: '-o needs a file name' };
+        if (out !== null) return { usage: '-o given more than once' };
+        out = value;
+      } else if (name === '--theme') {
+        if (!file) return { usage: '--theme needs a tokens file' };
+        if (theme !== null) return { usage: '--theme given more than once' };
+        theme = value;
+      } else if (name === '--image-max') {
+        const bytes = parseSize(value ?? '');
+        if (bytes === null) return { usage: '--image-max needs a size such as 300k or 2m' };
+        imageMax = bytes;
+      } else {
+        // --allow takes only the `=` form.
+        const names = (spaced ? '' : value)
+          .split(',')
+          .map((n) => n.trim())
+          .filter(Boolean);
+        if (!names.length) return { usage: '--allow needs host names: --allow=host1,host2' };
+        allow.push(...names);
+      }
     } else if (FLAGS.includes(a)) flags.add(a);
     else if (a !== '-' && a.startsWith('-')) return { usage: unknownOption(a) };
     else files.push(a);
@@ -584,12 +619,12 @@ async function main(argv: string[]): Promise<number> {
       return 2;
     }
   }
-  // `ast` prints the parse and takes no theme. For the others the file is read here, so that one that cannot be used is a usage error
-  // before anything is built; `build`, `watch` and `check` read it again for themselves (a watch for every rebuild).
-  const brand: ThemeFlag | null = cmd !== 'ast' && theme !== null ? { path: theme, strict: flags.has('--theme-strict') } : null;
-  if (brand) {
+  // `ast` prints the parse and takes no theme. For the others the file is read here, once, so that one that cannot be used is a usage
+  // error before anything is built (a watch reads it again for every rebuild).
+  let brand: LoadedTheme | null = null;
+  if (cmd !== 'ast' && theme !== null) {
     try {
-      loadTheme(brand);
+      brand = loadTheme({ path: theme, strict: flags.has('--theme-strict') });
     } catch (e) {
       if (!(e instanceof ThemeFileError)) throw e;
       process.stderr.write(`lede: ${e.message}\n`);

@@ -462,9 +462,13 @@ const shown = (text: string): string => (text.length > 60 ? `${text.slice(0, 57)
 const reportText = (kind: ExternalKind, text: string): string =>
   kind === 'key' ? `${text.slice(0, 4)}... (${text.length} characters)` : text;
 
-/** `scanExternal` as warnings, code `external`, with `detail {kind, text}`. */
-export function externalDiagnostics(src: string, opts: ExternalOptions = {}): Diagnostic[] {
-  return scanExternal(src, opts).map((f) => ({
+/** `scanExternal` as warnings, code `external`, with `detail {kind, text}`. A caller that has scanned `src` already passes its `findings`. */
+export function externalDiagnostics(
+  src: string,
+  opts: ExternalOptions = {},
+  findings: readonly ExternalFinding[] = scanExternal(src, opts),
+): Diagnostic[] {
+  return findings.map((f) => ({
     severity: 'warning' as const,
     code: 'external',
     message: `${WHAT[f.kind]} (${shown(reportText(f.kind, f.text))}) would leave with the page; replace it with ${EXTERNAL_PLACEHOLDERS[f.kind]}${f.kind === 'url' || f.kind === 'host' || f.kind === 'ip' ? ', or list its host with --allow' : ''}`,
