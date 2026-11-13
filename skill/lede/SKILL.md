@@ -118,6 +118,18 @@ grid 2            (the next 2 blocks sit side by side; `grid 3`, or `grid 2 coun
 
 Rules: keywords (`data chart table kpi diagram image grid cards step`) are lowercase and start the line. Declare every data name and diagram above its first use. Charts for trends, tables for exact values, kpi tiles for headline numbers, diagrams for structure. `bar` for up to 12 points of one series, `line` for longer trends. The one headline number goes on a lone kpi line; a runbook opens with a kpi row of thresholds or contacts. Repeat a chart's data in a table only when exact values matter. `heat` for scorecards, `bar=` for progress or share columns. Write numbers with their unit: 54.7%, $17.2M, 182 ms, never "percent" or "million". `cards` compare options side by side, `step` lists dated actions, `chart range` shows spans on a scale. Lede only: no HTML unless unavoidable, no Markdown tables, no Mermaid.
 
+## Composing the page
+
+The compiler draws well what it is given; these choices decide whether the page reads as designed or as a plain document.
+
+- Open with the answer. The one headline number goes on a lone `kpi` line (add `| bar` when it is progress toward a target), then a row of two to four supporting `kpi` tiles. Put the decision, ask or risk in a `!` or `!!` callout near the top, in one sentence.
+- Give every chart, table and diagram a `title="..."` that says what it shows and in what unit ("Monthly revenue, $ thousands"). It is printed as written, so use sentence case.
+- Prefer a component to a paragraph: options side by side are `cards`, dated actions are `step` lines, per-item progress is a table with `bar=` on the share column and a status word (On track, Behind, Blocked) in its own column.
+- In a table that sums, make the last row `Total` and bold its numbers (`**5,870**`); it is ruled off and aligned for you.
+- Diagram edge and message labels are printed as written: short lowercase phrases ("check stock", "302 + cookie"), not sentences and not capitals.
+- Keep category names short enough to sit under a bar (two or three words); longer names read better in `hbar`.
+- One idea per section: a heading, one or two sentences that say what to notice, then the figure. Do not repeat a figure's numbers in a paragraph below it.
+
 ## Setup
 
 `lede` is the compiler, from the npm package `@lede-lang/cli` (needs Node 22.12 or later). If `lede` is not found, ask the user before installing anything. With their go-ahead run `npm install -g @lede-lang/cli` (`pnpm add -g @lede-lang/cli` if they use pnpm), or for one build without installing, `npx @lede-lang/cli build page.lede -o page.html`. If Node is missing or older, tell the user and stop; do not install Node.

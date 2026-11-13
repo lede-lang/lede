@@ -840,7 +840,11 @@ edge-arrow = "->" | "-->" | "<->" | "-x-" | "-x->" ;
 ### E.1 Table `heat` and `bar=`
 - `table DATA heat` tints every numeric column by rank; `heat=col,col` limits it to those columns.
   AST: `heat: true` or `heat: ["col", …]` on the table block.
-- `table DATA bar=col,col` draws a proportional bar behind the numbers of those columns.
+- `table DATA bar=col,col` draws a proportional bar on a track beside the numbers of those columns (D79; before 0.2.4 the bar
+  sat behind the number).
+- A table's last row whose first cell is Total, Totals, Subtotal, Grand total, Sum or Overall (three rows or more) is its total
+  row: it is ruled off, stays last through `sort=` and `limit=`, and takes no `heat` tint or bar. A cell that is one bold or
+  italic number (`**5870**`) is read as that number by `heat`, `bar=`, `target=`, `sort=` and column alignment (D79).
   AST: `bars: ["col", …]`. Both options work on inline tables (`table heat = a,b; …`).
 - **Errors.** E `unknown-column`: a named column does not exist (the table is not emitted).
   W `table-option`: a named column is not numeric; it is ignored, and the option is omitted if no

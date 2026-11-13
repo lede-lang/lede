@@ -267,3 +267,13 @@ export function num(v: string | undefined): number | null {
   const n = Number(t.replace('−', '-'));
   return Number.isFinite(n) ? n : null;
 }
+
+/** A table cell without the markup of a cell set whole in bold or italic (`**5,870**`, a total); other cells as they are, trimmed. */
+export function bareCell(v: string | undefined): string {
+  return (v ?? '').trim().replace(/^(\*{1,2})([^*]+)\1$/, '$2');
+}
+
+/** `num` as tables read a cell: a number set whole in bold or italic is still a number (D79). */
+export function cellNum(v: string | undefined): number | null {
+  return num(bareCell(v));
+}

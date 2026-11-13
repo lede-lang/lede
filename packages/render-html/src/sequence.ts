@@ -1,5 +1,5 @@
 import type { DiagramBlock, DiagramFrame } from '@lede-lang/core';
-import { esc, maxOf, plain, snap4, textWidth } from './util.ts';
+import { esc, maxOf, plain, sansLabelW, snap4, textWidth } from './util.ts';
 import { figure, kindClass, markers, nodeSvg, svgOpen } from './diagram.ts';
 
 const ELABEL = 12; // message labels, desktop (up from 10)
@@ -7,9 +7,22 @@ const PHONE_W = 360;
 const NOTE_MAX = 320; // desktop notes wrap at this width
 const SAFE = 1.05; // estimates are approximate; wrap a little early rather than clip
 
-/** Uppercase mono label width including the stylesheet's .04em tracking. */
-const labelW = (s: string, size: number) => s.length * size * 0.66;
 const TAGW = (kind: string, size: number) => Math.ceil(kind.length * size * 0.68) + 14;
+
+/**
+ * Length of the longest prefix of `s` that `fits`, by bisection (0 when not even one character does). `fits` reads
+ * every character it is given, and `s` can be the whole of a very long label, so the cut is not found one character at a time.
+ */
+function fitPrefix(s: string, fits: (t: string) => boolean): number {
+  let lo = 0;
+  let hi = s.length;
+  while (lo < hi) {
+    const mid = (lo + hi + 1) >> 1;
+    if (fits(s.slice(0, mid))) lo = mid;
+    else hi = mid - 1;
+  }
+  return lo;
+}
 
 /**
  * Wraps `text` into at most `maxLines` lines of `max` px. A word wider than a line is split when
@@ -21,15 +34,24 @@ function wrap(text: string, max: number, w: (s: string) => number, maxLines: num
   const push = (s: string) => {
     lines.push(s);
   };
-  for (let word of text.split(/\s+/).filter(Boolean)) {
+  const words = text.split(/\s+/).filter(Boolean);
+  for (let wi = 0; wi < words.length; wi++) {
+    let word = words[wi];
+    // Past the last line everything left is cut with one ellipsis below, so it is not measured word by word.
+    if (lines.length > maxLines) {
+      cur = [cur, ...words.slice(wi)].filter(Boolean).join(' ');
+      break;
+    }
     if (breakLong) {
-      while (w(word) > max && word.length > 1) {
+      while (lines.length <= maxLines && word.length > 1 && w(word) > max) {
         if (cur) {
           push(cur);
           cur = '';
         }
-        let k = word.length - 1;
-        while (k > 1 && w(word.slice(0, k)) > max) k--;
+        const k = Math.max(
+          fitPrefix(word.slice(0, -1), (t) => w(t) <= max),
+          1,
+        );
         push(word.slice(0, k));
         word = word.slice(k);
       }
@@ -43,7 +65,14 @@ function wrap(text: string, max: number, w: (s: string) => number, maxLines: num
   if (cur) push(cur);
   if (lines.length > maxLines) {
     let last = lines.slice(maxLines - 1).join(' ');
-    while (last.length > 1 && w(`${last}…`) > max) last = last.slice(0, -1);
+    if (w(`${last}…`) > max)
+      last = last.slice(
+        0,
+        Math.max(
+          fitPrefix(last.slice(0, -1), (t) => w(`${t}…`) <= max),
+          1,
+        ),
+      );
     lines.length = maxLines - 1;
     lines.push(`${last}…`);
   }
@@ -111,7 +140,7 @@ export function renderSequence(d: DiagramBlock, uid: string): string {
 }
 
 function msgsOf(d: DiagramBlock, idx: Map<string, number>, w: (m: string) => number): Msg[] {
-  return d.edges.map((e) => ({ e, a: idx.get(e.from)!, b: idx.get(e.to)!, w: w(e.label.toUpperCase()) }));
+  return d.edges.map((e) => ({ e, a: idx.get(e.from)!, b: idx.get(e.to)!, w: w(e.label) }));
 }
 
 function seqList(d: DiagramBlock): string {
@@ -147,7 +176,7 @@ function drawSeq(d: DiagramBlock, uid: string, phone: boolean): { svg: string; W
   const idx = new Map(parts.map((p, i) => [p.id, i]));
   const FS = 12; // frame and note text, sans (desktop was 11: at 0.97 scale it fell under 11px)
   const LH = 14;
-  const msgs = msgsOf(d, idx, (s) => labelW(s, ELABEL) + 24);
+  const msgs = msgsOf(d, idx, (s) => sansLabelW(s, ELABEL) + 24);
   const pad = phone ? 8 : 16;
   /** Desktop note box: centred over the participants it names, wide enough to span them. */
   const deskNote = (n: (typeof d.notes)[number], at: number[]) => {
@@ -309,7 +338,7 @@ function drawSeq(d: DiagramBlock, uid: string, phone: boolean): { svg: string; W
     );
     return Math.max(1, ls.length) * LH + base;
   };
-  const lm = (l: string) => labelW(l, ELABEL);
+  const lm = (l: string) => sansLabelW(l, ELABEL);
   for (const it of items) {
     if (it.k === 'open') {
       y += 6;
@@ -346,7 +375,7 @@ function drawSeq(d: DiagramBlock, uid: string, phone: boolean): { svg: string; W
     const x2 = xs[m.b];
     const cls = ['edge', m.e.style === 'dashed' ? 'dash' : ''].filter(Boolean).join(' ');
     const n = String(++msgNo);
-    const text = m.e.label.toUpperCase();
+    const text = m.e.label;
     if (m.a === m.b) {
       const loopTop = y + 8;
       if (!phone) {
