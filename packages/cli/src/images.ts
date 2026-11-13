@@ -30,7 +30,7 @@ function isSvg(b: Buffer): boolean {
 }
 
 /** The MIME type of an image file, read from its first bytes and never from its name, or null for anything that is not one of the six. */
-export function imageType(b: Buffer): string | null {
+function imageType(b: Buffer): string | null {
   if (b.length >= 8 && b.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) return 'image/png';
   if (b.length >= 3 && b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) return 'image/jpeg';
   if (b.length >= 6 && /^GIF8[79]a$/.test(ascii(b, 0, 6))) return 'image/gif';

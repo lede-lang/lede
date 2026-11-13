@@ -9,6 +9,7 @@ import {
   artifactDiagnostics,
   externalDiagnostics,
   redactExternal,
+  scanExternal,
   parseTheme,
   ThemeFileError,
   THEME_MAX_BYTES,
@@ -156,37 +157,62 @@ function loadTheme(flag: ThemeFlag): LoadedTheme {
   }
 }
 
+/** What `build`, `watch` and `check` read besides the document, from the command line. */
+interface Inputs {
+  /** The largest local image inlined as a data: URI, in bytes, or null (`--link-images`) to leave the paths. */
+  images: number | null;
+  theme: ThemeFlag | null;
+}
+
 /**
- * Read and parse `file` (`-` is stdin). With `imageMax` (bytes), each local image in the document becomes a data: URI and its
- * diagnostics hold W `image-inline` for the ones that could not; null leaves the paths. With `artifact`, its diagnostics also hold
- * the warnings only an Artifact host needs, for the images that are still paths. With `external`, what the page gives away. With
- * `themed`, a `--theme` file is in force: the document's `@accent` is ignored, with W `theme-override`.
+ * Read and parse `file` (`-` is stdin). With `images` (bytes), each local image in the document becomes a data: URI and its
+ * diagnostics hold W `image-inline` for the ones that could not. With `artifact`, its diagnostics also hold the warnings only an
+ * Artifact host needs, for the images that are still paths. With `external`, what the page gives away. With `themed`, a `--theme`
+ * file is in force: the document's `@accent` is ignored, with W `theme-override`.
  */
 async function load(
   file: string,
-  artifact = false,
-  imageMax: number | null = null,
-  external: ExternalOptions | null = null,
-  themed = false,
+  opts: { artifact?: boolean; images?: number | null; external?: ExternalOptions | null; themed?: boolean } = {},
 ): Promise<{ src: string; doc: LedeDocument }> {
   const src = file === '-' ? await readAll(process.stdin) : readFileSync(file, 'utf8');
-  const doc = parse(src, { ...parseOptions(file), themed });
-  if (imageMax !== null) doc.diagnostics.push(...inlineImages(doc, baseOf(file), imageMax));
-  if (artifact) doc.diagnostics.push(...artifactDiagnostics(doc));
-  if (external) doc.diagnostics.push(...externalDiagnostics(src, external));
+  const doc = parse(src, { ...parseOptions(file), themed: !!opts.themed });
+  if (opts.images != null) doc.diagnostics.push(...inlineImages(doc, baseOf(file), opts.images));
+  if (opts.artifact) doc.diagnostics.push(...artifactDiagnostics(doc));
+  if (opts.external) doc.diagnostics.push(...externalDiagnostics(src, opts.external));
   return { src, doc };
 }
 
-function report(file: string, src: string, diags: Diagnostic[]): void {
+/**
+ * Where each line of `src` that holds a credential starts holding it (line to column, both 1-based), for `--external`: a line echoed
+ * under a diagnostic, or as the old side of a `--dry-run` diff, is cut there, so a CI log never holds a key whole. Every line inside a
+ * private key block is cut at its start.
+ */
+function keyCuts(src: string, external: ExternalOptions | null): Map<number, number> {
+  const cuts = new Map<number, number>();
+  if (!external) return cuts;
+  for (const f of scanExternal(src, external)) {
+    if (f.kind !== 'key') continue;
+    cuts.set(f.line, Math.min(cuts.get(f.line) ?? f.col, f.col));
+    const extra = src.slice(f.start, f.end).split('\n').length - 1;
+    for (let i = 1; i <= extra; i++) cuts.set(f.line + i, 1);
+  }
+  return cuts;
+}
+
+/** Line `n` (1-based) of `lines`, cut where `cuts` says a credential starts. */
+const echo = (lines: string[], n: number, cuts: Map<number, number>): string | undefined => {
+  const at = cuts.get(n);
+  const l = lines[n - 1];
+  return at === undefined || l === undefined ? l : `${l.slice(0, at - 1)}...`;
+};
+
+function report(file: string, src: string, diags: Diagnostic[], cuts: Map<number, number> = new Map()): void {
   const lines = src.split('\n');
   for (const d of diags) {
     const color = d.severity === 'error' ? '\x1b[31m' : '\x1b[33m';
     const tty = process.stderr.isTTY;
     process.stderr.write(`${file}:${d.line}:${d.col}: ${tty ? color : ''}${d.severity}${tty ? '\x1b[0m' : ''} [${d.code}] ${d.message}\n`);
-    // A credential is not echoed with its line: the line is cut where it starts, so a CI log never holds it whole.
-    const whole = lines[d.line - 1];
-    const key = d.code === 'external' && (d.detail as { kind?: string } | undefined)?.kind === 'key';
-    const l = key && whole !== undefined ? `${whole.slice(0, d.col - 1)}...` : whole;
+    const l = echo(lines, d.line, cuts);
     if (l !== undefined) process.stderr.write(`  ${l}\n  ${' '.repeat(Math.max(0, d.col - 1))}^\n`);
   }
 }
@@ -202,18 +228,12 @@ interface Watching {
   shellIdle: boolean;
 }
 
-async function build(
-  file: string,
-  out: string | null,
-  flags: Set<string>,
-  imageMax: number | null,
-  theme: ThemeFlag | null,
-  watching?: Watching,
-): Promise<boolean> {
+async function build(file: string, out: string | null, flags: Set<string>, inputs: Inputs, watching?: Watching): Promise<boolean> {
   const name = nameOf(file);
+  const { theme } = inputs;
   // The tokens file is read for each build, so a watch picks up a new one with the next save of the document.
   const brand = theme ? loadTheme(theme) : null;
-  const { src, doc } = await load(file, flags.has('--artifact'), imageMax, null, brand !== null);
+  const { src, doc } = await load(file, { artifact: flags.has('--artifact'), images: inputs.images, themed: brand !== null });
   if (brand && theme) report(theme.path, brand.src, brand.diagnostics);
   report(name, src, doc.diagnostics);
   const errors = [...doc.diagnostics, ...(brand?.diagnostics ?? [])].filter((d) => d.severity === 'error').length;
@@ -254,22 +274,16 @@ const watchTarget = (file: string, out: string | null): string => out ?? resolve
  * by name: an editor that saves by writing a temp file and renaming it over the original leaves a watcher on the file itself holding
  * the old inode, which never fires again, and deleting the file would end it.
  */
-async function watchFile(
-  file: string,
-  target: string,
-  flags: Set<string>,
-  imageMax: number | null,
-  theme: ThemeFlag | null,
-): Promise<number> {
+async function watchFile(file: string, target: string, flags: Set<string>, inputs: Inputs): Promise<number> {
   const watched = new Set([...flags, '--force']);
   const watching: Watching = { shellIdle: false };
   // The first build is not guarded: an unreadable FILE or an unwritable OUT stops the command (exit 70), not a loop of the same line.
-  await build(file, target, watched, imageMax, theme, watching);
+  await build(file, target, watched, inputs, watching);
   let gone = false;
   /** One rebuild, which never throws: a missing or unreadable FILE is a line on stderr, and the next change tries again. */
   const rebuild = async (): Promise<void> => {
     try {
-      await build(file, target, watched, imageMax, theme, watching);
+      await build(file, target, watched, inputs, watching);
       gone = false;
       return;
     } catch (e) {
@@ -340,13 +354,8 @@ async function watchFile(
  * `lede check`: print every diagnostic (or the JSON), repair first under --fix, and exit 1 if any is an error. With `--external`, what
  * the page gives away is reported too, as warnings, and any of it is also exit 1; under --fix it is replaced after the other repairs.
  */
-async function check(
-  files: string[],
-  flags: Set<string>,
-  imageMax: number | null,
-  allow: string[],
-  theme: ThemeFlag | null,
-): Promise<number> {
+async function check(files: string[], flags: Set<string>, inputs: Inputs, allow: string[]): Promise<number> {
+  const { theme } = inputs;
   const external: ExternalOptions | null = flags.has('--external') ? { allow } : null;
   let bad = 0;
   let warned = 0;
@@ -378,16 +387,17 @@ async function check(
       if (dry) {
         // Neither kind of repair changes the line count, so a line-by-line comparison is the whole diff.
         const was = before.split('\n');
+        const cuts = keyCuts(before, external);
         after.split('\n').forEach((line, i) => {
-          if (line !== was[i]) process.stderr.write(`${f}:${i + 1}:\n- ${was[i]}\n+ ${line}\n`);
+          if (line !== was[i]) process.stderr.write(`${f}:${i + 1}:\n- ${echo(was, i + 1, cuts)}\n+ ${line}\n`);
         });
       } else if (after !== before) writeFileSync(f, after);
     }
     // Files are reported one after the other, in the order given, and stdin can be read only once.
     // oxlint-disable-next-line eslint/no-await-in-loop -- sequential on purpose
-    const { src, doc } = await load(f, flags.has('--artifact'), imageMax, external, brand !== null);
+    const { src, doc } = await load(f, { artifact: flags.has('--artifact'), images: inputs.images, external, themed: brand !== null });
     all[nameOf(f)] = doc.diagnostics;
-    if (!flags.has('--json')) report(nameOf(f), src, doc.diagnostics);
+    if (!flags.has('--json')) report(nameOf(f), src, doc.diagnostics, keyCuts(src, external));
     bad += doc.diagnostics.filter((d) => d.severity === 'error').length;
     warned += doc.diagnostics.filter((d) => d.severity === 'warning').length;
     leaks += doc.diagnostics.filter((d) => d.code === 'external').length;
@@ -559,8 +569,6 @@ async function main(argv: string[]): Promise<number> {
     return 2;
   }
   const { cmd, files, out, imageMax, theme, flags, allow } = parsed;
-  // What `build`, `watch` and `check` do with local images: inline them up to this many bytes each, or (null) leave the paths.
-  const images = flags.has('--link-images') ? null : (imageMax ?? DEFAULT_IMAGE_MAX);
   if ((cmd === 'build' || cmd === 'watch') && flags.has('--shell') && flags.has('--unsafe-html')) {
     process.stderr.write('lede: --shell cannot be combined with --unsafe-html: raw html could plant its own controls and data block\n');
     return 2;
@@ -588,6 +596,7 @@ async function main(argv: string[]): Promise<number> {
       return 2;
     }
   }
+  const inputs: Inputs = { images: flags.has('--link-images') ? null : (imageMax ?? DEFAULT_IMAGE_MAX), theme: brand };
   // The page goes to OUT, so OUT must not be the document: `build ok.lede -o ok.lede` would turn the source into HTML.
   const watched = cmd === 'watch' ? watchTarget(files[0], out) : null;
   const target = watched ?? (cmd === 'build' ? out : null);
@@ -598,14 +607,14 @@ async function main(argv: string[]): Promise<number> {
   }
   switch (cmd) {
     case 'build':
-      return (await build(files[0], out, flags, images, brand)) ? 0 : 1;
+      return (await build(files[0], out, flags, inputs)) ? 0 : 1;
     case 'check':
-      return await check(files, flags, images, allow, brand);
+      return await check(files, flags, inputs, allow);
     case 'ast':
       process.stdout.write(`${JSON.stringify((await load(files[0])).doc, null, 2)}\n`);
       return 0;
     case 'watch':
-      return watched === null ? 2 : await watchFile(files[0], watched, flags, images, brand);
+      return watched === null ? 2 : await watchFile(files[0], watched, flags, inputs);
   }
   return 2;
 }

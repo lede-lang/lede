@@ -824,3 +824,17 @@ test('check --external never prints a credential whole, in the message or in the
   const j = run(['check', '--external', '--json', 'k.lede'], dir);
   assert.ok(!j.stdout.includes(key), j.stdout);
 });
+
+test('check --external cuts every echoed line that holds a credential: under another diagnostic, and in a --dry-run diff', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'lede-cli-'));
+  const key = ['AKIA', 'Z7Q2', 'EXAMPLE', 'KEY0', '1'].join('');
+  const body = ['MIIE', 'secret', 'body'].join('');
+  const pem = ['-----BEGIN RSA PRIVATE KEY-----', body, '-----END RSA PRIVATE KEY-----'];
+  writeFileSync(join(dir, 'k.lede'), ['# K', '', `@foo ${key}`, '', '```', ...pem, '```', ''].join('\n'));
+  const r = run(['check', '--external', 'k.lede'], dir);
+  assert.match(r.stderr, /\[unknown-meta\][^\n]*\n {2}@foo \.\.\.\n/);
+  assert.ok(!r.stderr.includes(key), r.stderr);
+  const dry = run(['check', '--external', '--fix', '--dry-run', 'k.lede'], dir);
+  assert.match(dry.stderr, /k\.lede:3:\n- @foo \.\.\.\n\+ @foo <key>\n/);
+  assert.ok(!dry.stderr.includes(key) && !dry.stderr.includes(body), dry.stderr);
+});
