@@ -125,6 +125,12 @@ node bench/src/aggregate.ts      # results/summary.json
 Results land in `bench/results/`; `DECISIONS.md` records the method and the numbers of each round (D12 to D18, D27 to D38), and D50 restates the
 cost, time and context figures with each writer's own tokenizer.
 
+## When not to use Lede
+
+Lede suits a model writing a page for people. For brand-exact design, interactive apps, fixed-structure reports, content that must render on
+GitHub, and the safety limits (a link still needs a click, and three flags change the policy), see
+[docs/when-not-to-use.md](docs/when-not-to-use.md).
+
 ## Contributing
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) first; it covers the tests, the documents that must stay in step and the commit format.
