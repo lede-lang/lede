@@ -39,7 +39,7 @@ test('the gate set hashes as D34 records it, and the held-out set as D69 records
   assert.equal(set(131, 185), '47e032ceebbff3671833be3126a9420b196a3cfc4c358b03e72602cce2f15e17');
 });
 
-test('arm D: the stylesheet is small and the prompt documents exactly the classes it defines', () => {
+test('arm D: the stylesheet is small and every class the prompt documents is defined in it', () => {
   const css = readFileSync(join(BENCH, 'arms', 'preloaded.css'), 'utf8');
   assert.ok(statSync(join(BENCH, 'arms', 'preloaded.css')).size < 6 * 1024);
   const defined = new Set([...css.matchAll(/\.([a-z][\w-]*)/g)].map((m) => m[1]));
@@ -127,4 +127,79 @@ test('measure: a Lede page is judged by the real parser, a fence around a reply 
   assert.equal((await measure(ARMS.D, "<main class='wide page'><h1>T</h1></main>")).valid, true);
   assert.equal((await measure(ARMS.D, '<main><h1>T</h1></main>')).valid, false);
   assert.equal((await measure(ARMS.D, '<html><body><main class="page"></main></body></html>')).valid, false);
+});
+
+test('arm E: the rules the prompt states are enforced, and nothing it does not state', () => {
+  const bad = (o: unknown) => validateJsonUi(JSON.stringify(o)).errors.join('|');
+  const page = (blocks: unknown[]) => ({ page: { title: 't', sections: [{ heading: 'h', blocks }] } });
+  const chart = (points: unknown[]) => page([{ type: 'chart', kind: 'bar', series: [{ name: 's', points }] }]);
+  assert.match(bad(chart([{ x: 'a', y: 1 }])), /at least two points/);
+  assert.equal(
+    bad(
+      chart([
+        { x: 'a', y: 1 },
+        { x: 'b', y: 2 },
+      ]),
+    ),
+    '',
+  );
+  assert.match(
+    bad(
+      chart([
+        { x: 'a', y: 1 },
+        { x: 'b', y: null },
+      ]),
+    ),
+    /numeric "y"/,
+  );
+  assert.match(bad(page([{ type: 'text', text: 'x', colour: 'red' }])), /no field "colour"/);
+  assert.match(
+    bad(
+      page([
+        {
+          type: 'chart',
+          kind: 'bar',
+          title: null,
+          series: [
+            {
+              name: 's',
+              points: [
+                { x: 'a', y: 1 },
+                { x: 'b', y: 2 },
+              ],
+            },
+          ],
+        },
+      ]),
+    ),
+    /null or an empty string/,
+  );
+  assert.match(bad(page([{ type: 'code', language: '', text: 'x' }])), /null or an empty string/);
+  assert.match(bad(page([{ type: 'steps', items: [{ title: 't', when: null }] }])), /null or an empty string/);
+  assert.equal(bad(page([{ type: 'code', text: 'x' }])), '');
+});
+
+test('arms B and D: an external resource fails the page (both prompts forbid it) and data-class is not class', async () => {
+  const frag = (inner: string) => `<main class="page">${inner}</main>`;
+  const doc = (inner: string) => `<!doctype html><html><body>${inner}</body></html>`;
+  for (const inner of [
+    '<img src="https://x.example/a.png">',
+    '<img src=//x.example/a.png>',
+    "<iframe src='http://x.example'></iframe>",
+    '<svg><image href="https://x.example/a.png"/></svg>',
+    '<svg><use xlink:href="http://x.example/s.svg#a"/></svg>',
+  ]) {
+    assert.equal((await measure(ARMS.D, frag(inner))).valid, false, inner);
+    assert.equal((await measure(ARMS.B, doc(inner))).valid, false, inner);
+  }
+  assert.equal((await measure(ARMS.D, frag('<p style="background:url(https://x.example/a.png)">x</p>'))).valid, false);
+  assert.equal((await measure(ARMS.D, frag('<p style="background:url(#g)">x</p>'))).valid, false);
+  assert.equal((await measure(ARMS.B, doc('<style>@import url("https://x.example/f.css");</style>'))).valid, false);
+  assert.equal((await measure(ARMS.B, doc('<link rel="stylesheet" href="//x.example/a.css">'))).valid, false);
+  // links to other pages are not loaded resources; local references are fine
+  assert.equal((await measure(ARMS.D, frag('<a href="https://x.example">x</a><svg><use href="#a"/></svg>'))).valid, true);
+  assert.equal((await measure(ARMS.B, doc('<a href="https://x.example">x</a><svg xmlns="http://www.w3.org/2000/svg"></svg>'))).valid, true);
+  assert.equal((await measure(ARMS.D, '<main data-class="page"><h1>T</h1></main>')).valid, false);
+  assert.equal((await measure(ARMS.D, '<main data-class="page" class="wide"><h1>T</h1></main>')).valid, false);
+  assert.equal((await measure(ARMS.D, '<main id="a" class=page><h1>T</h1></main>')).valid, true);
 });

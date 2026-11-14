@@ -1,6 +1,8 @@
 // Writer providers over `fetch`: Anthropic Messages and OpenAI-style chat completions (OpenAI itself or any compatible host).
-// One request per call, the prompt as the only user message. Retries are for the transport only (a connection that never opened,
-// 408, 429, 5xx): nothing the model wrote is ever looked at, or fed back, between attempts. Token counts are the provider's own `usage`.
+// One request per call, the prompt as the only user message. A request is retried only when no request can have been processed: a
+// connection that never opened, or a 429. Any other failure may follow a billed generation (a gateway 502 or 504 can), so it is not
+// retried and the run charges it at the worst case. Nothing the model wrote is ever looked at, or fed back, between attempts.
+// Token counts are the provider's own `usage`.
 export interface Completion {
   text: string;
   inputTokens: number | null;
@@ -9,6 +11,8 @@ export interface Completion {
   reasoningTokens: number | null;
   model: string;
   truncated: boolean;
+  /** The provider's stop reason when it is neither a normal end nor a length cut (a refusal, a content filter), else null. */
+  stopReason: string | null;
 }
 export interface Provider {
   kind: ProviderKind;
@@ -78,12 +82,18 @@ export function keyFor(
 export const keyNamesHint = (kind: ProviderKind): string =>
   `LEDE_BENCH_API_KEY (any host), or ${kind === 'anthropic' ? 'ANTHROPIC_API_KEY for api.anthropic.com' : 'OPENAI_API_KEY for api.openai.com'} itself`;
 
-const RETRYABLE = new Set([408, 429, 500, 502, 503, 504, 529]);
 /** fetch failures where no connection opened, so nothing reached the provider. Any other (a reset, a timeout) may have been billed. */
 const NOT_SENT = new Set(['ECONNREFUSED', 'ENOTFOUND', 'EAI_AGAIN', 'ENETUNREACH', 'EHOSTUNREACH', 'UND_ERR_CONNECT_TIMEOUT']);
 
+const LOOPBACK = new Set(['localhost', '127.0.0.1', '[::1]']);
+
 export function createProvider(o: ProviderOptions): Provider {
   const baseUrl = cleanBaseUrl(o.baseUrl ?? DEFAULT_BASE[o.kind]);
+  const u = new URL(baseUrl);
+  if (u.protocol !== 'https:' && !LOOPBACK.has(u.hostname))
+    throw new FatalProviderError(
+      `--base-url must be https (plain http is allowed only for localhost, 127.0.0.1 and ::1), got ${u.protocol}//${u.host}`,
+    );
   const key = keyFor(o.kind, baseUrl, o.env);
   if (key === null) throw new FatalProviderError(`no API key: set ${keyNamesHint(o.kind)}`);
   const secret = key.value;
@@ -100,6 +110,7 @@ export function createProvider(o: ProviderOptions): Provider {
           url: `${baseUrl}/v1/messages`,
           init: {
             method: 'POST',
+            redirect: 'error',
             headers: { 'content-type': 'application/json', 'x-api-key': secret, 'anthropic-version': '2023-06-01' },
             body: JSON.stringify({ model: o.model, max_tokens: maxTokens, messages: [{ role: 'user', content: prompt }] }),
           },
@@ -108,6 +119,7 @@ export function createProvider(o: ProviderOptions): Provider {
           url: `${baseUrl}/chat/completions`,
           init: {
             method: 'POST',
+            redirect: 'error',
             headers: { 'content-type': 'application/json', authorization: `Bearer ${secret}` },
             body: JSON.stringify({ model: o.model, [limitField]: maxTokens, messages: [{ role: 'user', content: prompt }] }),
           },
@@ -126,16 +138,18 @@ export function createProvider(o: ProviderOptions): Provider {
         reasoningTokens: null,
         model: String(j.model ?? o.model),
         truncated: j.stop_reason === 'max_tokens',
+        stopReason: abnormal(j.stop_reason, ['end_turn', 'stop_sequence', 'max_tokens']),
       };
     }
     const choice = j.choices?.[0];
     return {
-      text: String(choice?.message?.content ?? ''),
+      text: contentText(choice?.message?.content),
       inputTokens: numOrNull(j.usage?.prompt_tokens),
       outputTokens: numOrNull(j.usage?.completion_tokens),
       reasoningTokens: numOrNull(j.usage?.completion_tokens_details?.reasoning_tokens),
       model: String(j.model ?? o.model),
       truncated: choice?.finish_reason === 'length',
+      stopReason: abnormal(choice?.finish_reason, ['stop', 'length']),
     };
   };
 
@@ -163,16 +177,35 @@ export function createProvider(o: ProviderOptions): Provider {
         if (res.ok) {
           try {
             return parse(JSON.parse(body));
-          } catch {
-            throw new FatalProviderError('the provider returned a reply this kit cannot read (not the documented response shape)', true);
+          } catch (e) {
+            const why = e instanceof ContentShapeError ? e.message : 'not the documented response shape';
+            throw new FatalProviderError(`the provider returned a reply this kit cannot read (${why})`, true);
           }
         }
-        last = `HTTP ${res.status}: ${redact(body)}`;
-        if (!RETRYABLE.has(res.status)) throw new FatalProviderError(last);
+        // 401 and 403 bodies can echo a masked key that redaction would not recognise, so they are never printed.
+        const authFailure = res.status === 401 || res.status === 403;
+        last = authFailure
+          ? `HTTP ${res.status} (the key was refused: check it and that it belongs to this host)`
+          : `HTTP ${res.status}: ${redact(body)}`;
+        if (res.status === 429) continue;
+        // Anything else may have been processed (a gateway 502 or 504 can follow a billed generation): no retry, worst-case charge.
+        if (res.status === 408 || res.status >= 500) throw new TransportError(last, true);
+        throw new FatalProviderError(last);
       }
       throw new TransportError(`${last} (after ${retries} retries)`);
     },
   };
 }
 
+class ContentShapeError extends Error {}
+/** Chat-completions content: a string, or an array of parts whose text parts are joined; null is an empty reply, anything else is an error. */
+function contentText(c: unknown): string {
+  if (c === undefined || c === null) return '';
+  if (typeof c === 'string') return c;
+  if (Array.isArray(c))
+    return c.map((p: { type?: unknown; text?: unknown }) => (p?.type === 'text' && typeof p.text === 'string' ? p.text : '')).join('');
+  throw new ContentShapeError(`message.content is a ${typeof c}, not a string or an array of parts`);
+}
+const abnormal = (reason: unknown, normal: string[]): string | null =>
+  typeof reason === 'string' && !normal.includes(reason) ? reason : null;
 const numOrNull = (v: unknown): number | null => (typeof v === 'number' && Number.isFinite(v) ? v : null);

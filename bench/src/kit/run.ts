@@ -85,6 +85,7 @@ export interface Row {
   fenceStripped: boolean;
   usageMissing: boolean;
   costUsd: number;
+  stopReason?: string;
   error?: string;
   valid?: boolean;
   problems?: string[];
@@ -113,9 +114,10 @@ const mean = (v: number[]) => (v.length === 0 ? null : v.reduce((a, b) => a + b,
 
 /** The summary table: per arm, validity, build, tokens, bytes and the ratio of its tokens to the HTML arm's on the same tasks. */
 export function summarise(rows: Row[], arms: Arm[]): string {
-  const ok = (r: Row) => r.error === undefined && r.outputTokens !== null;
+  // A truncated reply or an error row says nothing about how long a finished page is, so neither enters the token means or the ratio.
+  const ok = (r: Row) => r.error === undefined && r.outputTokens !== null && !r.truncated;
   const htmlByTask = new Map(rows.filter((r) => r.arm === 'B' && ok(r)).map((r) => [r.id, r.outputTokens!]));
-  const lines = ['arm  n   valid  built  out-tok mean  median  bytes mean  ratio to B  truncated  errors'];
+  const lines = ['arm  n   valid  built  out-tok mean  median  bytes mean  ratio to B  truncated  errors  excluded'];
   for (const a of arms) {
     const rs = rows.filter((r) => r.arm === a.letter);
     const done = rs.filter((r) => r.error === undefined);
@@ -139,14 +141,50 @@ export function summarise(rows: Row[], arms: Arm[]): string {
         f(mean(done.map((r) => r.srcBytes ?? 0))).padEnd(11),
         (ratio === null ? '-' : `${ratio.toFixed(3)} (n=${paired.length})`).padEnd(11),
         String(done.filter((r) => r.truncated).length).padEnd(10),
-        String(rs.length - done.length),
+        String(rs.length - done.length).padEnd(7),
+        String(rs.filter((r) => !ok(r)).length),
       ].join(' '),
     );
   }
   lines.push(
     "ratio to B = sum of this arm's output tokens over the sum of arm B's, on tasks both finished. Tokens are the provider's own usage.",
+    'excluded = rows left out of the token mean, median and ratio because the reply was truncated, errored or reported no usage.',
   );
   return lines.join('\n');
+}
+
+/** What a stored run was written with; a resume into a different one would mix two experiments in one table. */
+interface RunMeta {
+  model: string;
+  provider: string;
+  baseUrl: string;
+  maxTokens: number;
+  armPromptSha256: Record<string, string>;
+}
+function metaDiff(a: RunMeta, b: RunMeta): string[] {
+  const out: string[] = [];
+  for (const k of ['model', 'provider', 'baseUrl', 'maxTokens'] as const)
+    if (a[k] !== b[k]) out.push(`${k === 'maxTokens' ? 'max-tokens' : k} (stored ${String(a[k])}, now ${String(b[k])})`);
+  for (const [arm, h] of Object.entries(b.armPromptSha256))
+    if (a.armPromptSha256[arm] !== undefined && a.armPromptSha256[arm] !== h) out.push(`prompt for arm ${arm} (hash differs)`);
+  return out;
+}
+
+/** The rows a run already wrote. A last line cut short (a killed process) is dropped, with a note and from the file, so it cannot swallow the next row. */
+function readRows(file: string, say: (s: string) => void): Row[] {
+  if (!existsSync(file)) return [];
+  const lines = readFileSync(file, 'utf8').split('\n').filter(Boolean);
+  const rows: Row[] = [];
+  for (const [i, l] of lines.entries()) {
+    try {
+      rows.push(JSON.parse(l) as Row);
+    } catch {
+      if (i < lines.length - 1) throw new UsageError(`${file} line ${i + 1} is not JSON; the file is damaged`);
+      say(`note: the last line of ${file} was cut short and is ignored; that task is asked again`);
+      writeFileSync(file, rows.map((r) => `${JSON.stringify(r)}\n`).join(''));
+    }
+  }
+  return rows;
 }
 
 export async function runKit(
@@ -249,12 +287,25 @@ export async function runKit(
     const outDir = resolve(v.out ?? join(BENCH, 'out', 'replicate', `${new Date().toISOString().slice(0, 10)}-${slug(v.model)}`));
     mkdirSync(outDir, { recursive: true });
     const rowsFile = join(outDir, 'rows.jsonl');
-    const rows: Row[] = existsSync(rowsFile)
-      ? readFileSync(rowsFile, 'utf8')
-          .split('\n')
-          .filter(Boolean)
-          .map((l) => JSON.parse(l) as Row)
-      : [];
+    const rows = readRows(rowsFile, say);
+    const metaFile = join(outDir, 'meta.json');
+    const meta: RunMeta = {
+      model: v.model,
+      provider: provider.kind,
+      baseUrl: provider.baseUrl,
+      maxTokens,
+      armPromptSha256: Object.fromEntries(arms.map((a) => [a.letter, sha256(promptText(a))])),
+    };
+    const stored = existsSync(metaFile) ? (JSON.parse(readFileSync(metaFile, 'utf8')) as RunMeta) : null;
+    if (stored === null && rows.length > 0)
+      throw new UsageError(`${outDir} holds rows but no meta.json, so they cannot be checked against this run; use a new --out`);
+    if (stored !== null) {
+      const differs = metaDiff(stored, meta);
+      if (differs.length > 0)
+        throw new UsageError(`refusing to resume into ${outDir}: it was written with a different ${differs.join('; ')}. Use a new --out.`);
+      meta.armPromptSha256 = { ...stored.armPromptSha256, ...meta.armPromptSha256 };
+    }
+    writeFileSync(metaFile, JSON.stringify(meta, null, 1));
     let spent = rows.reduce((s, r) => s + r.costUsd, 0);
     if (rows.length > 0)
       say(`resuming: ${rows.length} rows already in ${outDir} (${spent.toFixed(4)} USD already spent); they are not asked again`);
@@ -292,6 +343,7 @@ export async function runKit(
           row.outputTokens = c.outputTokens;
           row.reasoningTokens = c.reasoningTokens;
           row.truncated = c.truncated;
+          if (c.stopReason !== null) row.stopReason = c.stopReason;
           row.usageMissing = c.inputTokens === null || c.outputTokens === null;
           // No usage in the reply: charge the worst case, so the cap still holds.
           row.costUsd = usd(c.inputTokens ?? inMax, c.outputTokens ?? limit, priceIn, priceOut);

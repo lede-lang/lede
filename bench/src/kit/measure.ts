@@ -1,6 +1,6 @@
 // The measure step: no model, no network. Validity and build success of what a writer wrote, by arm.
 //   C  the real parser (`lede check` is this parse plus printing): valid = no error diagnostic; build = the real renderer ran
-//   B  a complete HTML document (doctype and a closing </html>)
+//   B  a complete HTML document (doctype and a closing </html>) that loads nothing external, as its prompt requires
 //   D  a body fragment that uses the preloaded stylesheet and none of the things the prompt forbids; built = fragment + css
 //   E  parses as JSON and passes the structure check (src/kit/json-ui.ts)
 //   A  non-empty Markdown (nothing validates it further here)
@@ -30,6 +30,24 @@ export const PRELOADED_CSS = join(BENCH, 'arms', 'preloaded.css');
 export const preloadedPage = (fragment: string) =>
   `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Page</title><style>${readFileSync(PRELOADED_CSS, 'utf8')}</style></head><body>${fragment}</body></html>`;
 
+/** The first external resource a page loads, as the B and D prompts forbid: a src or href on a loading element, or a url() or @import. */
+function externalResource(src: string): string | null {
+  const url = String.raw`["']?\s*(?:https?:|\/\/)`;
+  for (const m of src.matchAll(/<(img|script|link|iframe|image|use)\b[^>]*>/gi))
+    if (new RegExp(String.raw`\s(?:src|href|xlink:href)\s*=\s*${url}`, 'i').test(m[0]))
+      return `loads an external resource (${m[1].toLowerCase()})`;
+  if (new RegExp(String.raw`url\(\s*${url}`, 'i').test(src) || new RegExp(String.raw`@import\s+(?:url\(\s*)?${url}`, 'i').test(src))
+    return 'loads an external resource (css url)';
+  return null;
+}
+
+/** The class tokens of the first <main>, from its own class attribute (data-class and the like do not count). */
+function mainClasses(src: string): string[] {
+  const tag = /<main\b[^>]*>/i.exec(src)?.[0] ?? '';
+  const m = /\sclass\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>"']+))/i.exec(tag);
+  return (m?.[1] ?? m?.[2] ?? m?.[3] ?? '').split(/\s+/);
+}
+
 export async function measure(arm: Arm, src: string): Promise<Measure> {
   const m: Measure = { valid: true, problems: [], warnings: 0, buildOk: false, pageBytes: null, srcBytes: Buffer.byteLength(src) };
   const fail = (p: string) => {
@@ -39,6 +57,10 @@ export async function measure(arm: Arm, src: string): Promise<Measure> {
   if (src.trim() === '') {
     fail('empty reply');
     return m;
+  }
+  if (arm.letter === 'B' || arm.letter === 'D') {
+    const ext = externalResource(src);
+    if (ext !== null) fail(ext);
   }
   switch (arm.letter) {
     case 'C': {
@@ -68,7 +90,8 @@ export async function measure(arm: Arm, src: string): Promise<Measure> {
         [/<script[\s>]/i, 'writes a script'],
       ] as const)
         if (re.test(src)) fail(why);
-      if (!/<main\s[^>]*class=["']?[^"'>]*\bpage\b/i.test(src)) fail('no <main class="page"> wrapper');
+      if (!mainClasses(src).includes('page')) fail('no <main class="page"> wrapper');
+      if (/\sstyle\s*=\s*(?:"[^"]*|'[^']*)\burl\(/i.test(src)) fail('url() in an inline style');
       m.buildOk = m.valid;
       m.pageBytes = m.valid ? Buffer.byteLength(preloadedPage(src)) : null;
       break;

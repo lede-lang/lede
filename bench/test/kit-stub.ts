@@ -19,6 +19,8 @@ export interface StubOptions {
   /** A body to send with a non-200 status. */
   errorBody?: (headers: IncomingMessage['headers']) => string;
   omitUsage?: boolean;
+  /** Sent as the Location header with a 3xx status. */
+  location?: string;
 }
 
 export async function startStub(kind: 'anthropic' | 'openai', o: StubOptions = {}): Promise<Stub> {
@@ -32,7 +34,7 @@ export async function startStub(kind: 'anthropic' | 'openai', o: StubOptions = {
       requests.push({ path: req.url ?? '', headers: req.headers, body });
       const status = statuses.shift() ?? 200;
       if (status !== 200) {
-        res.writeHead(status, { 'content-type': 'application/json' });
+        res.writeHead(status, { 'content-type': 'application/json', ...(o.location ? { location: o.location } : {}) });
         res.end(o.errorBody?.(req.headers) ?? JSON.stringify({ error: 'stub error' }));
         return;
       }

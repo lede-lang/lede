@@ -1,13 +1,13 @@
 // The replication kit (bench/src/bench.ts) against a local stub provider. No model API is called and no real key is used.
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { mkdtempSync, readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
+import { mkdtempSync, readFileSync, readdirSync, statSync, existsSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { runKit } from '../src/kit/run.ts';
+import { runKit, summarise } from '../src/kit/run.ts';
 import { estimate, estTokens, usd } from '../src/kit/estimate.ts';
 import { parseTaskSpec, TaskSelectionError } from '../src/kit/tasks.ts';
-import { ARMS, writerMessage } from '../src/kit/arms.ts';
+import { ARMS, promptText, sha256, writerMessage } from '../src/kit/arms.ts';
 import { createProvider, keyFor, type Provider } from '../src/kit/provider.ts';
 import { startStub } from './kit-stub.ts';
 
@@ -278,9 +278,9 @@ test('a rerun resumes from rows.jsonl and does not ask a finished task again', a
   assert.match(again.text, /resuming/);
 });
 
-test('transport retries see no content: 503 then success; a 4xx stops the run; the key is redacted from an echoing error', async () => {
+test('retries see no content: 429 then success; a 4xx stops the run and its body is never printed', async () => {
   const sleeps: number[] = [];
-  const retry = await startStub('openai', { statuses: [503, 429], text: 'hello' });
+  const retry = await startStub('openai', { statuses: [429, 429], text: 'hello' });
   const p = createProvider({
     kind: 'openai-compatible',
     baseUrl: retry.url,
@@ -322,7 +322,7 @@ test('transport retries see no content: 503 then success; a 4xx stops the run; t
   assert.equal(bad.requests.length, 1);
   assert.match(r.text, /HTTP 401/);
   assert.ok(!r.text.includes(KEY));
-  assert.match(r.text, /\[redacted\]/);
+  assert.ok(!r.text.includes('bad key'));
   for (const f of filesUnder(out)) assert.ok(!readFileSync(f, 'utf8').includes(KEY), f);
 });
 
@@ -428,4 +428,195 @@ test('measure re-reads saved pages with no network', async () => {
   const r = await run(['measure', '--out', out]);
   assert.equal(r.code, 0);
   assert.match(r.text, /1\/1/);
+});
+
+const ask = (p: Provider) => p.complete('hi', 100);
+const mk = (baseUrl: string, kind: 'anthropic' | 'openai-compatible' = 'anthropic') =>
+  createProvider({ kind, baseUrl, model: 'm', env: { LEDE_BENCH_API_KEY: KEY }, sleep: async () => {} });
+
+test('a 504 (or 408, 500, 529) is not retried and is charged at the worst case; a 429 is retried', async () => {
+  for (const status of [504, 502, 408, 500, 529]) {
+    const stub = await startStub('anthropic', { statuses: [status, 200] });
+    await assert.rejects(ask(mk(stub.url)), (e: any) => e.maybeBilled === true && e.message.includes(`HTTP ${status}`));
+    assert.equal(stub.requests.length, 1, String(status));
+    await stub.close();
+  }
+  const limited = await startStub('anthropic', { statuses: [429, 429, 429, 429] });
+  await assert.rejects(ask(mk(limited.url)), (e: any) => e.maybeBilled === false && /after 3 retries/.test(e.message));
+  assert.equal(limited.requests.length, 4);
+  await limited.close();
+
+  const stub = await startStub('anthropic', { statuses: [504] });
+  const out = tmp();
+  const r = await run(
+    [
+      '--base-url',
+      stub.url,
+      '--model',
+      'm',
+      '--tasks',
+      '101-102',
+      '--arms',
+      'B',
+      '--cap',
+      '5',
+      '--price-in',
+      '1',
+      '--price-out',
+      '1',
+      '--out',
+      out,
+    ],
+    { LEDE_BENCH_API_KEY: KEY },
+  );
+  await stub.close();
+  assert.equal(r.code, 0);
+  const rows = JSON.parse(readFileSync(join(out, 'results.json'), 'utf8')).rows;
+  assert.match(rows[0].error, /HTTP 504/);
+  assert.ok(rows[0].costUsd >= 16000 / 1e6, String(rows[0].costUsd));
+});
+
+test('a 401 or 403 body is never part of the error, even a masked key the redaction cannot match', async () => {
+  for (const status of [401, 403]) {
+    const stub = await startStub('openai', { statuses: [status], errorBody: () => '{"error":"invalid key sk-t****CRET"}' });
+    await assert.rejects(
+      ask(mk(stub.url, 'openai-compatible')),
+      (e: any) => /HTTP \d+/.test(e.message) && !/sk-t|CRET|invalid key/.test(e.message),
+    );
+    await stub.close();
+  }
+});
+
+test('redirects are refused, and a non-https base URL only on loopback', async () => {
+  const target = await startStub('anthropic');
+  const hop = await startStub('anthropic', { statuses: [302], location: `${target.url}/v1/messages` });
+  await assert.rejects(ask(mk(hop.url)));
+  assert.equal(target.requests.length, 0);
+  await hop.close();
+  await target.close();
+  for (const u of ['http://gateway.example', 'http://10.0.0.5:8080', 'ftp://gateway.example'])
+    assert.throws(() => mk(u), /must be https/, u);
+  for (const u of ['http://localhost:1', 'http://127.0.0.1:1', 'http://[::1]:1', 'https://gateway.example'])
+    assert.doesNotThrow(() => mk(u), u);
+});
+
+test('reply parsing: content parts are joined, an odd content shape is an error, an odd stop reason is recorded', async () => {
+  const reply = (message: unknown, finish = 'stop') =>
+    mkWith(JSON.stringify({ choices: [{ message, finish_reason: finish }], usage: { prompt_tokens: 1, completion_tokens: 2 } }));
+  const mkWith = (body: string) =>
+    createProvider({
+      kind: 'openai-compatible',
+      baseUrl: 'https://h.example/v1',
+      model: 'm',
+      env: { LEDE_BENCH_API_KEY: KEY },
+      fetchImpl: async () => new Response(body),
+    });
+  const c = await ask(reply({ content: [{ type: 'text', text: 'a' }, { type: 'image_url' }, { type: 'text', text: 'b' }] }));
+  assert.equal(c.text, 'ab');
+  assert.equal(c.stopReason, null);
+  await assert.rejects(
+    ask(reply({ content: { text: 'x' } })),
+    (e: any) => /cannot read/.test(e.message) && e.maybeBilled && !e.message.includes('[object'),
+  );
+  assert.equal((await ask(reply({ content: 'x' }, 'content_filter'))).stopReason, 'content_filter');
+  const anth = createProvider({
+    kind: 'anthropic',
+    baseUrl: 'https://h.example',
+    model: 'm',
+    env: { LEDE_BENCH_API_KEY: KEY },
+    fetchImpl: async () =>
+      new Response(
+        JSON.stringify({ content: [{ type: 'text', text: 'no' }], stop_reason: 'refusal', usage: { input_tokens: 1, output_tokens: 1 } }),
+      ),
+  });
+  const a = await ask(anth);
+  assert.equal(a.stopReason, 'refusal');
+  assert.equal(a.truncated, false);
+});
+
+test('resume: a different model, max-tokens or prompt is refused with the difference named; a cut-short last line is ignored', async () => {
+  const stub = await startStub('anthropic', { text: lede });
+  const out = tmp();
+  const argv = (model: string, extra: string[] = []) => [
+    '--base-url',
+    stub.url,
+    '--model',
+    model,
+    '--tasks',
+    '101-102',
+    '--arms',
+    'C',
+    '--cap',
+    '5',
+    '--price-in',
+    '1',
+    '--price-out',
+    '1',
+    '--out',
+    out,
+    ...extra,
+  ];
+  const env = { LEDE_BENCH_API_KEY: KEY };
+  await run(argv('m1'), env);
+  assert.equal(stub.requests.length, 2);
+  const other = await run(argv('m2'), env);
+  assert.equal(other.code, 2);
+  assert.match(other.text, /different model \(stored m1, now m2\)/);
+  const tokens = await run(argv('m1', ['--max-tokens', '999']), env);
+  assert.equal(tokens.code, 2);
+  assert.match(tokens.text, /max-tokens \(stored 16000, now 999\)/);
+  const metaFile = join(out, 'meta.json');
+  const meta = JSON.parse(readFileSync(metaFile, 'utf8'));
+  meta.armPromptSha256.C = '0'.repeat(64);
+  writeFileSync(metaFile, JSON.stringify(meta));
+  assert.match((await run(argv('m1'), env)).text, /prompt for arm C/);
+  assert.equal(stub.requests.length, 2);
+  // a killed run: the last line is half written, and only that task is asked again
+  const good = JSON.parse(readFileSync(join(out, 'results.json'), 'utf8')).rows;
+  meta.armPromptSha256.C = sha256(promptText(ARMS.C));
+  writeFileSync(metaFile, JSON.stringify(meta));
+  writeFileSync(join(out, 'rows.jsonl'), `${JSON.stringify(good[0])}\n${JSON.stringify(good[1]).slice(0, 30)}`);
+  const again = await run(argv('m1'), env);
+  await stub.close();
+  assert.equal(again.code, 0, again.text);
+  assert.match(again.text, /cut short and is ignored/);
+  assert.equal(stub.requests.length, 3);
+  assert.equal(readFileSync(join(out, 'rows.jsonl'), 'utf8').trim().split('\n').length, 2);
+});
+
+test('summary: truncated and error rows are left out of the token means and the ratio, and counted', () => {
+  const row = (arm: string, id: string, out: number | null, o: Record<string, unknown> = {}) =>
+    ({
+      arm,
+      id,
+      category: 'c',
+      model: 'm',
+      inputTokens: 1,
+      outputTokens: out,
+      reasoningTokens: null,
+      truncated: false,
+      fenceStripped: false,
+      usageMissing: false,
+      costUsd: 0,
+      valid: true,
+      buildOk: true,
+      ...o,
+    }) as any;
+  const text = summarise(
+    [
+      row('B', '1', 1000),
+      row('B', '2', 16000, { truncated: true }),
+      row('B', '3', 1000),
+      row('C', '1', 100),
+      row('C', '2', 200),
+      row('C', '3', null, { error: 'HTTP 504' }),
+      row('C', '4', 16000, { truncated: true }),
+    ],
+    [ARMS.B, ARMS.C],
+  );
+  const c = text.split('\n').find((l) => l.startsWith('C '))!;
+  assert.match(c, /\b150\b/); // mean of 100 and 200
+  assert.match(c, /0\.100 \(n=1\)/); // only task 1 is finished in both arms
+  assert.match(c, /1\s+1\s+2$/); // truncated, errors, excluded
+  assert.match(text, /excluded = /);
 });
