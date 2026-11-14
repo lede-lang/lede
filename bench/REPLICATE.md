@@ -39,12 +39,15 @@ Tasks 131 to 185 are the sealed held-out set. The kit refuses them, alone or ins
 ## What a writer sees
 
 One request per task and arm: the arm's prompt file (`bench/prompts/`), then `Brief:` and the task's brief, then one closing line asking for
-the complete page once, with no code fence. No system prompt, no examples, no retry that shows the model an error. Retries happen only
-for the transport, with the request unchanged: a connection that never opened, or an HTTP 408, 429 or 5xx. A connection that fails
-after the request went out (a reset or a timeout) is not retried, because the provider may already have charged for it. A reply that
+the complete page once, with no code fence. No system prompt, no examples, no retry that shows the model an error. A request is retried only
+when nothing can have processed it, with the request unchanged: a connection that never opened, or an HTTP 429. Any other failure (a
+reset or a timeout, a 408, a 5xx including a gateway 502 or 504, a 529) is not retried and is charged at the worst case, because the
+provider may already have billed a generation. A 401 or 403 error shows the status only, never the body. Redirects are refused, and a
+`--base-url` must be https unless the host is localhost, 127.0.0.1 or ::1. A reply that
 arrives inside one code fence is unwrapped and the row says `fenceStripped`; nothing else is edited. A rerun with the same `--out` skips
 rows already written, error rows included, so an interrupted run does not ask twice; delete a row's line from `rows.jsonl` to ask it
-again.
+again. `meta.json` in the directory records the model, provider, base URL, `--max-tokens` and each arm's prompt hash; a rerun that
+differs in any of them is refused and says which. A last line of `rows.jsonl` cut short by a killed run is dropped with a note.
 
 ## What it costs
 
@@ -76,8 +79,8 @@ Some models count hidden reasoning as output. Those tokens are billed and are in
 Per page: output tokens and input tokens from the provider's own `usage`, bytes of what was written, and:
 
 - C (Lede): `valid` is the real parser with no error diagnostic (what `lede check` reports, minus its printing), and `buildOk` is the real renderer running to completion. Warnings are counted.
-- B (HTML): a complete document, doctype to `</html>`. Bytes only; nothing is rendered.
-- D (HTML over a preloaded stylesheet): a body fragment inside `<main class="page">` that writes no wrapper, style, link or script. The kit wraps it with `bench/arms/preloaded.css` to report the page size.
+- B (HTML): a complete document, doctype to `</html>`, that loads no external resource (its prompt forbids them): no http, https or protocol-relative `src` or `href` on `img`, `script`, `link`, `iframe`, `image` or `use`, and no remote `url()` or `@import`. Bytes only; nothing is rendered.
+- D (HTML over a preloaded stylesheet): a body fragment inside `<main class="page">` that writes no wrapper, style, link or script, loads no external resource (same rule as B) and has no `url()` in an inline style; the `page` class must be on the `<main>` itself. The kit wraps it with `bench/arms/preloaded.css` to report the page size.
 - E (JSON UI): parses as JSON and passes the structure check in `bench/src/kit/json-ui.ts`, which follows the format `bench/prompts/E-json-ui.md` documents. **This arm measures tokens and validity only, not looks.** There is no renderer for it, and nothing in this kit says how it would look.
 - A (Markdown): non-empty. Nothing else is checked.
 
@@ -86,7 +89,9 @@ Per page: output tokens and input tokens from the provider's own `usage`, bytes 
 The output is `DIR/results.json` (commit hash, whether the worktree was dirty, SHA-256 of each prompt file, of the task set and of the
 stylesheet, provider, base URL without credentials, requested and returned model ids, date, prices, cap, spend, the estimate, and one row
 per task and arm), `DIR/pages/<arm>/<id>.<ext>` and a summary table: per arm the pages that are valid and built, mean and median output
-tokens, mean bytes, and the ratio of its output tokens to HTML's on the tasks both finished.
+tokens, mean bytes, and the ratio of its output tokens to HTML's on the tasks both finished. Rows whose reply was truncated at the
+output limit, rows that errored and rows with no usage are left out of the token mean, median and ratio; the `excluded` column counts
+them per arm, and a row's `stopReason` records any stop other than a normal end or the length limit (a refusal, a content filter).
 
 ## Before the first real call
 

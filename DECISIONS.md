@@ -1076,7 +1076,8 @@ that close those gaps. Nothing here changes the parser, the renderer, the spec o
 affected; no model run has been made under this entry.
 
 - **`pnpm bench` (`bench/src/kit/`, `bench/REPLICATE.md`).** The writer step only: one request per task and arm, the arm's
-  prompt and the brief, written once, no validation, and no retry that could bill twice. The reader brings a key, the
+  prompt and the brief, written once, no validation, and no retry that could bill twice: only a connection that never opened,
+  or a 429, is retried, and any other failure (a 408, a 5xx, a 529) is charged at the worst case. The reader brings a key, the
   prices and a cap; the kit prints an estimate, refuses to start above the cap, reserves each call at its worst case and
   stops before the cap is passed. It holds no price table, because one would go stale. Judged rounds stay with `run.ts`
   and `pairs.ts`, so a replication reproduces tokens, validity and build success, and not the win-or-tie figures.
@@ -1094,8 +1095,10 @@ affected; no model run has been made under this entry.
   per row). Kit results are therefore compared with other kit results, and not merged into the earlier tables.
 - **A second model family (`bench/SECOND-FAMILY.md`).** Any OpenAI-compatible endpoint, the writer prompt unchanged, tokens
   taken from that provider's own usage figures and never from the Claude tokenizer. The stop rule is fixed before the run:
-  Lede validity more than 10 points under the Claude-family rate, or a token ratio to HTML more than 1.5 times worse, is
-  the headline of the report.
+  Lede validity more than 10 points under the Claude-family rate, or a saving over HTML (HTML tokens divided by Lede
+  tokens, "N times fewer", as in D50) under two thirds of the Claude-family saving, is the headline of the report. The
+  baseline is kit runs of `C-lede-0.5.md` where they exist, otherwise the D37 and D50 figures, which came from subagent
+  writers and other prompts and are only indicative.
 - **Exfiltration demo (`demos/exfil/`).** It calls no model: it takes the worst case, an injected model that writes the
   leaking markup, in raw HTML, Markdown and Lede, and counts the requests that reach a stub host from headless Chromium. It
   shows that a default `lede build` page makes no request without a click, and where that ends: a clicked link,
