@@ -17,13 +17,16 @@ sends nothing. The short form: no script and no automatic remote fetch; a link s
 
 ## What the demo does
 
-- `fixtures/brief.txt` is the poisoned brief: a forwarded email with an instruction to add a tracking image whose address ends in an
-  API key. The key, `sk-demo-NOT-A-REAL-SECRET`, is fake.
-- The other fixtures are the worst case, the text a fully obedient model would write for that brief, in three forms: raw HTML
-  (`html-*.html`), Markdown (`markdown-image.md`) and Lede (`lede-*.lede`). Each places the leak URL
-  `attacker.example/leak?q=<secret>` where `@@LEAK@@` stands. The HTML and Lede files use the same six vectors: an `<img>`, a CSS
-  `background:url()`, an `@font-face` font, a `<link rel="stylesheet">`, a `<script>` that calls `fetch`, and a meta refresh. Lede
-  also gets its two native forms, an `image` line and a `[text](url)` link.
+- `brief.txt` is the poisoned brief: a forwarded email with an instruction to add a tracking image whose address ends in an API
+  key. The key, `sk-demo-NOT-A-REAL-SECRET`, is fake.
+- `run.ts` holds the worst case, the text a fully obedient model would write for that brief, in three forms: raw HTML, Markdown and
+  Lede. Each places the leak URL `attacker.example/leak?q=<secret>` where `@@LEAK@@` stands. Raw HTML and Lede's `html:` block carry
+  the same six one-line vectors (`VECTORS` in `run.ts`): an `<img>`, a CSS `background:url()`, an `@font-face` font, a
+  `<link rel="stylesheet">`, a `<script>` that calls `fetch`, and a meta refresh. Lede also gets its two native forms, an `image`
+  line and a `[text](url)` link.
+- A count of 0 has to come from the browser, not from a page that never held the URL. Every raw HTML, Markdown, opt-out and
+  clicked-link page is checked to contain the leak URL before it is opened, and the run stops if one does not. Each default-flag Lede
+  row compiles the same source as one of those rows.
 - Lede pages are built by the real CLI (`packages/cli/src/cli.ts build`) as a child process. The Markdown is rendered with
   `markdown-it` (already a dependency of `bench/`) at its defaults: raw HTML off, images on. A real chat host may differ, for
   example by proxying or blocking remote images, and the demo does not test any product.
@@ -42,9 +45,9 @@ default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; base-uri 'n
 ```
 
 `--allow-remote` changes `img-src` to `'self' data: https:`, and `--shell` appends a `script-src` hash for its one fixed script. The
-sanitizer also removes `script`, `style`, `iframe`, event attributes and remote image sources from `html:` blocks before the policy
-is applied, and an `image` line with a remote source is written as its alt text unless `--allow-remote` is given
-(`spec/lede-0.1.md` sections 4.10 and 4.16). So two layers apply; the `--unsafe-html` rows show the policy alone.
+sanitizer keeps only an allowlist of structural and text elements in `html:` blocks (no `script`, `style`, `link`, `meta`, `iframe`
+or event attributes, and no remote image source without `--allow-remote`) before the policy is applied, and an `image` line with a
+remote source is written as its alt text unless `--allow-remote` is given (`spec/lede-0.1.md` sections 4.10 and 4.16). So two layers apply; the `--unsafe-html` rows show the policy alone.
 
 ## What the table shows
 

