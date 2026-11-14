@@ -1068,3 +1068,42 @@ SKILL.md now lists, uncounted until a session has an API key.
   allows. Under `--theme` a page's `@accent` is ignored with W `theme-override`.
 
 Gate: D67 step 1 has not reported, so, as with D78 and D79, the PR is a draft and its merge timing is the owner's call.
+
+## D81. The proof pack: a replication kit, two stronger baselines, a second-family method and two rerunnable demos
+D47 moved the public harness and the non-Claude round to after launch. The numbers so far compare Lede with hand-written HTML
+only, on Claude-family writers only, from runs an outsider cannot repeat. This entry records the method choices of the pieces
+that close those gaps. Nothing here changes the parser, the renderer, the spec or a frozen prompt, so the D67 round is not
+affected; no model run has been made under this entry.
+
+- **`pnpm bench` (`bench/src/kit/`, `bench/REPLICATE.md`).** The writer step only: one request per task and arm, the arm's
+  prompt and the brief, written once, no validation, and no retry that could bill twice. The reader brings a key, the
+  prices and a cap; the kit prints an estimate, refuses to start above the cap, reserves each call at its worst case and
+  stops before the cap is passed. It holds no price table, because one would go stale. Judged rounds stay with `run.ts`
+  and `pairs.ts`, so a replication reproduces tokens, validity and build success, and not the win-or-tie figures.
+- **Open and sealed tasks.** The kit runs tasks 1 to 130 (the default is the retired gate set 101 to 130, D38) and refuses
+  131 to 185 (D69) on the numbers, before a file is read. A test pins the hashes of `C-lede-0.1.md` to `0.4.md` and of
+  every task file.
+- **Arms D and E.** D is HTML written against a preloaded stylesheet the writer knows only by its class list
+  (`bench/prompts/D-html-preloaded-css.md`, `bench/arms/preloaded.css`); E is a compact JSON UI spec
+  (`bench/prompts/E-json-ui.md`). They test whether the line syntax or merely the absence of CSS drives the saving of D50.
+  E has no renderer, so it measures tokens and structure, never looks. Validity for B, D and E is a structural check and is
+  more lenient than Lede's parser; the write-up says so wherever the columns sit side by side. If the gap to D or E is
+  small, that is reported as the result.
+- **API writers are not subagent writers.** Earlier rounds used isolated subagents; the kit sends the prompt over an API
+  with a closing line in the shape of `prompts/refine-revision.md`, and strips one outer code fence from a reply (recorded
+  per row). Kit results are therefore compared with other kit results, and not merged into the earlier tables.
+- **A second model family (`bench/SECOND-FAMILY.md`).** Any OpenAI-compatible endpoint, the writer prompt unchanged, tokens
+  taken from that provider's own usage figures and never from the Claude tokenizer. The stop rule is fixed before the run:
+  Lede validity more than 10 points under the Claude-family rate, or a token ratio to HTML more than 1.5 times worse, is
+  the headline of the report.
+- **Exfiltration demo (`demos/exfil/`).** It calls no model: it takes the worst case, an injected model that writes the
+  leaking markup, in raw HTML, Markdown and Lede, and counts the requests that reach a stub host from headless Chromium. It
+  shows that a default `lede build` page makes no request without a click, and where that ends: a clicked link,
+  `--allow-remote`, `--unsafe-html` (a meta refresh still navigates) and `--artifact`, which carries no page policy of its
+  own. The wording the evidence supports is "no script and no automatic remote fetch; a link still needs a click", which is
+  narrower than "zero-JS is safe" and replaces it in new copy.
+- **Streaming and edit cost (`bench/src/stream-edit-demo.ts`, `bench/STREAM-EDIT.md`).** Computed from stored outputs with
+  the offline legacy tokenizer (D12), so the counts are not D50's units. The first-block rule for HTML is the earliest a
+  tag-level reading allows (any closed element with text, or an image), which favours HTML; it differs from D13's
+  heading-plus-block rule, so the two sets of figures are not interchangeable. Edit sizes are minimal patches between the
+  stored original and the stored edited page, a lower bound on what a model wrote. All stored writers are Claude-family.
