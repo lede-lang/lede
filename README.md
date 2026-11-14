@@ -1,5 +1,7 @@
 # Lede
 
+Lede (lede-lang) is the line format a model writes when you ask it for a page: a few lines in, one self-contained HTML page out, with no script and no remote fetch.
+
 A line-oriented document format for AI-written web artifacts. It compiles to a single
 self-contained HTML page with charts, diagrams, light and dark themes and phone layouts, and
 no JavaScript. A page can ask the reader questions (`ask`, `choose`, `confirm`, `export`); building with `--shell` then adds one
@@ -23,6 +25,8 @@ aws: group vpc "VPC 10.20.0.0/16" api, db
 ```
 
 > **Status:** pre-release (0.x), on npm as `@lede-lang/cli`, `@lede-lang/html` and `@lede-lang/core` (install, below). It will change.
+
+**What Lede is not.** It is not a format for models to read documents, and it is not a UI spec that a client app interprets at run time. It is not the OpenWrt-related project of a similar name. See [when not to use Lede](docs/when-not-to-use.md).
 
 ## Layout
 
