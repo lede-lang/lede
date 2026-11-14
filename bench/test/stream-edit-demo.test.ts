@@ -14,13 +14,15 @@ test('Lede: the first block arrives with the newline that ends its line, and a d
   assert.ok(withData.slice(0, hit ?? 0).includes('# Heading'));
 });
 
-test('HTML: style, script and empty containers do not count; the first closed leaf with text does', () => {
+test('HTML: style, script and empty containers do not count; the first closed element with text does, inline or not', () => {
   const head = '<!doctype html><html><head><style>h1{color:red}p{margin:0}</style></head>';
   const body = '<body><header><div class="x"></div></header><script>1</script><h1>Hi <b>there</b></h1><p>later</p></body></html>';
   const src = head + body;
-  const at = htmlFirstBlock(src);
-  assert.equal(src.slice(0, at ?? 0).endsWith('</h1>'), true);
-  assert.equal(src.slice(0, at ?? 0).includes('<p>'), false);
+  assert.equal(src.slice(0, htmlFirstBlock(src) ?? 0).endsWith('<b>there</b>'), true);
+  const div = '<head></head><body><div class="kpi-value">47</div><p>later</p>';
+  assert.equal(div.slice(0, htmlFirstBlock(div) ?? 0).endsWith('47</div>'), true);
+  const img = '<head></head><body><div><img src="data:image/png;base64,AA" alt=""><p>later</p>';
+  assert.equal(img.slice(0, htmlFirstBlock(img) ?? 0).endsWith('alt="">'), true);
 });
 
 test('HTML: hidden leaves, comments and empty leaves are skipped; an svg counts; no head falls back to the last style', () => {

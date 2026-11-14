@@ -1,5 +1,5 @@
 // Streaming and edit-cost demonstration, Lede against HTML, from files already in the repo. No API key, no browser.
-//   node bench/src/stream-edit-demo.ts            prints two tables, writes bench/results/stream-edit-demo.json
+//   node bench/src/stream-edit-demo.ts            prints two tables, writes their summary to bench/results/stream-edit-demo.json
 // Method note: bench/STREAM-EDIT.md.
 import { readFileSync, readdirSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
@@ -7,7 +7,12 @@ import { createRequire } from 'node:module';
 import { LedeStream } from '@lede-lang/core';
 
 const require = createRequire(import.meta.url);
-const { countTokens } = require('@anthropic-ai/tokenizer') as { countTokens: (s: string) => number };
+// The same counts as the package's countTokens, from one encoder; countTokens builds a new one per call (about 35 ms each).
+const { getTokenizer } = require('@anthropic-ai/tokenizer') as {
+  getTokenizer: () => { encode: (s: string, allowed: 'all') => { length: number } };
+};
+const encoder = getTokenizer();
+const countTokens = (s: string) => encoder.encode(s.normalize('NFKC'), 'all').length;
 const BENCH = join(import.meta.dirname, '..');
 
 // ------------------------------------------------------------------ first visible block
@@ -27,46 +32,27 @@ export function ledeFirstBlock(src: string): number | null {
   return null;
 }
 
-/** Elements that are one complete, visible block of content once closed. Containers (div, section, ul, header) are not on the list: their children close first. */
-const LEAF = new Set([
-  'h1',
-  'h2',
-  'h3',
-  'h4',
-  'h5',
-  'h6',
-  'p',
-  'li',
-  'dt',
-  'dd',
-  'pre',
-  'blockquote',
-  'figcaption',
-  'td',
-  'th',
-  'summary',
-  'svg',
-  'table',
-]);
 /** Elements whose content is never painted as page text. */
 const SKIP = new Set(['head', 'style', 'script', 'template', 'noscript', 'title']);
 const VOID = new Set(['br', 'hr', 'img', 'meta', 'link', 'input', 'wbr', 'source', 'col', 'area', 'base']);
 
 /**
- * Characters of an HTML page that must have arrived before the first visible body content after the `<style>` block is complete.
- * Rule: walk the tags after `</head>` (or, with no head, after the last `</style>`); ignore head, style, script, template, noscript and
- * title content; the first closing tag of a LEAF element (headings, p, li, dt, dd, pre, blockquote, figcaption, td, th, summary, svg,
- * table) whose content holds a non-space character, an `<img` or an `<svg`, is the end of the first block. A leaf with the `hidden`
- * attribute is skipped. Comments are skipped. Null when no such element closes.
+ * Characters of an HTML page that must have arrived before its first visible content is complete. Rule, chosen to favour HTML: walk the
+ * tags after `</head>` (or, with no head, after the last `</style>`); ignore head, style, script, template, noscript and title content,
+ * comments, and anything inside a `hidden` element; the first `<img>`, or the first closing tag of any element (a `<span>` or `<b>`
+ * counts, not only a block) whose content holds a non-space character, an `<img` or an `<svg`, ends the first block. Null when none.
  */
-export function htmlFirstBlock(src: string): number | null {
+/** Where the body starts: after `</head>`, or with no head after the last `</style>`, else 0. */
+export function htmlBodyStart(src: string): number {
   const lc = src.toLowerCase();
-  let at = lc.indexOf('</head>');
-  if (at >= 0) at += 7;
-  else {
-    at = lc.lastIndexOf('</style>');
-    at = at >= 0 ? at + 8 : 0;
-  }
+  const head = lc.indexOf('</head>');
+  if (head >= 0) return head + 7;
+  const style = lc.lastIndexOf('</style>');
+  return style >= 0 ? style + 8 : 0;
+}
+
+export function htmlFirstBlock(src: string): number | null {
+  const at = htmlBodyStart(src);
   const re = /<!--[\s\S]*?-->|<(\/?)([a-z][a-z0-9-]*)((?:"[^"]*"|'[^']*'|[^>"'])*)>/gi;
   re.lastIndex = at;
   const stack: { name: string; start: number; hidden: boolean }[] = [];
@@ -78,6 +64,7 @@ export function htmlFirstBlock(src: string): number | null {
     const name = m[2].toLowerCase();
     const attrs = m[3] ?? '';
     if (!close) {
+      if (name === 'img' && skipDepth === 0 && !stack.some((x) => x.hidden)) return re.lastIndex;
       if (VOID.has(name) || attrs.endsWith('/')) continue;
       stack.push({ name, start: re.lastIndex, hidden: /(^|\s)hidden(\s|=|$)/i.test(attrs) });
       if (SKIP.has(name)) skipDepth++;
@@ -92,7 +79,7 @@ export function htmlFirstBlock(src: string): number | null {
       skipDepth--;
       continue;
     }
-    if (skipDepth > 0 || !LEAF.has(name) || el.hidden || stack.some((x) => x.hidden)) continue;
+    if (skipDepth > 0 || el.hidden || stack.some((x) => x.hidden)) continue;
     const inner = src.slice(el.start, m.index);
     if (/\S/.test(inner.replace(/<[^>]*>/g, '')) || /<(img|svg)\b/i.test(inner) || name === 'svg') return re.lastIndex;
   }
@@ -215,6 +202,8 @@ interface PairRow {
   id: string;
   ledeTokens: number;
   htmlTokens: number;
+  /** Of htmlTokens, those before the body starts (the head, mostly its `<style>`). */
+  htmlHeadTokens: number;
   ledeChars: number;
   htmlChars: number;
 }
@@ -244,6 +233,7 @@ function firstBlockPairs(): PairRow[] {
         htmlChars: hc,
         ledeTokens: countTokens(lede.slice(0, lc)),
         htmlTokens: countTokens(html.slice(0, hc)),
+        htmlHeadTokens: countTokens(html.slice(0, htmlBodyStart(html))),
       });
     }
   }
@@ -307,14 +297,21 @@ function main() {
         0.5,
       ),
       ledeFirstShare: rs.filter((r) => r.ledeTokens < r.htmlTokens).length / rs.length,
+      htmlHeadShareMedian: quantile(
+        rs.map((r) => r.htmlHeadTokens / r.htmlTokens),
+        0.5,
+      ),
     }));
   console.log(
     'Table 1. Output tokens (legacy tokenizer) before the first visible block. Median [p25-p75]; ratio = median of HTML/Lede per pair.',
   );
-  console.log(col(['writer / Lede round', 'pairs', 'Lede tok', 'HTML tok', 'HTML/Lede', 'Lede first'], 22));
+  console.log(col(['writer / Lede round', 'pairs', 'Lede tok', 'HTML tok', 'HTML/Lede', 'Lede first', 'HTML in head'], 22));
   for (const g of t1) {
     const f = (s: ReturnType<typeof spread>) => `${r1(s.median)} [${r1(s.p25)}-${r1(s.p75)}]`;
-    console.log(col([g.group, g.pairs, f(g.ledeTokens), f(g.htmlTokens), r1(g.ratioMedian), `${Math.round(g.ledeFirstShare * 100)}%`], 22));
+    const pct = (x: number) => `${Math.round(x * 100)}%`;
+    console.log(
+      col([g.group, g.pairs, f(g.ledeTokens), f(g.htmlTokens), r1(g.ratioMedian), pct(g.ledeFirstShare), pct(g.htmlHeadShareMedian)], 22),
+    );
   }
 
   const edits = editRows();
@@ -356,7 +353,7 @@ function main() {
   writeFileSync(
     join(BENCH, 'results', 'stream-edit-demo.json'),
     JSON.stringify(
-      { unit: 'tokens of @anthropic-ai/tokenizer (legacy, offline); characters also given', firstBlock: t1, edit: t2, pairs, edits },
+      { unit: 'tokens of @anthropic-ai/tokenizer (legacy, offline); characters also given', firstBlock: t1, edit: t2 },
       null,
       1,
     ) + '\n',

@@ -1,7 +1,7 @@
 # Streaming and edit cost, Lede against HTML
 
-Rerun, no API key, no browser: `node bench/src/stream-edit-demo.ts`. It reads files in `bench/`, prints both tables and writes
-`bench/results/stream-edit-demo.json` (every per-page row).
+Rerun, no API key, no browser, about a second: `node bench/src/stream-edit-demo.ts`. It reads files in `bench/`, prints both tables
+and writes their summary (median, quartiles, range) to `bench/results/stream-edit-demo.json`.
 
 ## 1. Output before the first visible block
 
@@ -9,20 +9,21 @@ Unit: tokens of `@anthropic-ai/tokenizer`, the offline legacy tokenizer (D12), n
 JSON. Counts, not seconds; at a fixed decode rate seconds scale with tokens (D13).
 
 - Lede: text fed to `LedeStream` one character at a time; the first block `write` returns that is not `data` or `preset`.
-- HTML: after `</head>` (else the last `</style>`), the first closing tag of a leaf (h1-h6, p, li, dt, dd, pre, blockquote,
-  figcaption, td, th, summary, svg, table) holding text, an `img` or an `svg`. Script, style, template, comments and `hidden` skipped.
+- HTML: after `</head>` (else the last `</style>`), the first `<img>`, or the first closing tag of any element holding text, an
+  `img` or an `svg`. Any element counts, so a closed `<span>` or `<b>` ends the first block before its paragraph does: the rule is as
+  early as a tag-level reading of HTML can be, which favours HTML. Script, style, template, comments and `hidden` are skipped.
 
-Pairs: each Lede page in `bench/gen/*/C` with the same writer's HTML for the same task id (583 pairs). Lede rounds r2 to r6 reuse
-the same HTML pages, so rows are not independent. Median [p25-p75]:
+Pairs: each Lede page in `bench/gen/*/C` with the same writer's HTML for the same task id (583 pairs). Every Lede round of a writer
+is paired with that writer's one set of HTML pages (`gen/<writer>/B`), so rows are not independent. Median [p25-p75]:
 
-| Writer (pairs) | Lede tokens | HTML tokens | HTML/Lede per pair |
-| --- | --- | --- | --- |
-| haiku (240) | 52 [35-74] | 1040 [867-1164] | 19 |
-| opus (240) | 67 [47-85] | 1467 [1224-1917] | 24 |
-| sonnet (103) | 61 [46-77] | 1734 [1525-1931] | 29 |
+| Writer (pairs) | Lede tokens | HTML tokens | HTML/Lede per pair | HTML tokens in the head |
+| --- | --- | --- | --- | --- |
+| haiku (240) | 52 [35-74] | 1040 [867-1164] | 19 | 97% |
+| opus (240) | 67 [47-85] | 1455 [1224-1915] | 24 | 98% |
+| sonnet (103) | 61 [46-77] | 1734 [1510-1931] | 29 | 98% |
 
-Lede was first in every pair. Most of the HTML figure is the `<style>` block that precedes any body content; that is how these
-writers shape HTML, and it is the cost being measured.
+Lede was first in every pair. Almost all of the HTML figure (the median share in the last column) comes before the body starts,
+mostly the `<style>` block; that is how these writers shape HTML, and it is the cost being measured.
 
 ## 2. Edit cost
 
