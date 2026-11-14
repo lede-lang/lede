@@ -123,4 +123,8 @@ test('measure: a Lede page is judged by the real parser, a fence around a reply 
   assert.deepEqual(stripFence('# H\n'), { text: '# H\n', stripped: false });
   assert.equal((await measure(ARMS.B, '<!doctype html><html></html>')).valid, true);
   assert.equal((await measure(ARMS.B, '<p>x</p>')).valid, false);
+  // arm D: the wrapper may be written with other quotes or class order; a document wrapper is still refused
+  assert.equal((await measure(ARMS.D, "<main class='wide page'><h1>T</h1></main>")).valid, true);
+  assert.equal((await measure(ARMS.D, '<main><h1>T</h1></main>')).valid, false);
+  assert.equal((await measure(ARMS.D, '<html><body><main class="page"></main></body></html>')).valid, false);
 });

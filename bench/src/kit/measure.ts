@@ -68,7 +68,7 @@ export async function measure(arm: Arm, src: string): Promise<Measure> {
         [/<script[\s>]/i, 'writes a script'],
       ] as const)
         if (re.test(src)) fail(why);
-      if (!/<main class="page/.test(src)) fail('no <main class="page"> wrapper');
+      if (!/<main\s[^>]*class=["']?[^"'>]*\bpage\b/i.test(src)) fail('no <main class="page"> wrapper');
       m.buildOk = m.valid;
       m.pageBytes = m.valid ? Buffer.byteLength(preloadedPage(src)) : null;
       break;
