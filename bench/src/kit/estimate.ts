@@ -10,9 +10,10 @@ export const estTokens = (text: string, charsPerToken = DEFAULT_CHARS_PER_TOKEN)
 export const usd = (inTok: number, outTok: number, priceIn: number, priceOut: number) => (inTok * priceIn + outTok * priceOut) / 1e6;
 
 /**
- * Expected output tokens per page by arm. Source: the mean `tokens` per arm over bench/results/raw-heldout.json (Claude-tokenizer
- * counts of Haiku and Opus pages, tasks 41-70). Arms A, D and E have no row there and take the HTML mean, which is an upper bound for
- * them (a conservative estimate, not a measurement). `--est-out B=3000,C=500` overrides any of them.
+ * Expected output tokens per page by arm. Source: the mean `tokens` per arm over bench/results/raw-heldout.json (legacy
+ * `@anthropic-ai/tokenizer` counts of Haiku and Opus pages, tasks 41-70; D50 finds current Claude counts 1.26 to 1.43 times higher).
+ * Arms A, D and E have no row there and are assumed to equal the HTML mean, which is not a measurement. `--est-out B=3000,C=500`
+ * overrides any of them.
  */
 export function defaultOutputEstimates(resultsDir = join(BENCH, 'results')): { perArm: Record<string, number>; source: string } {
   const file = join(resultsDir, 'raw-heldout.json');
@@ -26,7 +27,7 @@ export function defaultOutputEstimates(resultsDir = join(BENCH, 'results')): { p
   const b = mean('B') ?? fallback.B;
   return {
     perArm: { A: mean('A') ?? b, B: b, C: mean('C') ?? fallback.C, D: mean('D') ?? b, E: mean('E') ?? b },
-    source: 'bench/results/raw-heldout.json arm means (Claude tokenizer; A, D, E assumed equal to the HTML mean)',
+    source: 'bench/results/raw-heldout.json arm means (legacy Claude tokenizer; A, D, E assumed equal to the HTML mean)',
   };
 }
 
@@ -106,7 +107,7 @@ export function formatEstimate(e: Estimate, priced: boolean): string {
     `all  ${String(e.calls).padStart(5)}  ${String(e.inputTotal).padStart(10)} in total, ${e.outputTotal} out total  ${money(e.expectedUsd).padStart(8)}  ${money(e.worstCaseUsd).padStart(10)}`,
     `expected = tasks x arms x (est input x price-in + est output x price-out); worst-case = every call writing max-tokens (${e.maxTokens}).`,
     `output estimate source: ${e.outputSource}.`,
-    'input estimate: characters / chars-per-token, not a tokenizer count.',
+    'input estimate: characters / chars-per-token, not a tokenizer count. The cap does not rely on it (see bench/REPLICATE.md).',
   );
   if (!priced) lines.push('no --price-in and --price-out given: dollar columns are empty.');
   return lines.join('\n');

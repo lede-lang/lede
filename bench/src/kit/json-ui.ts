@@ -1,5 +1,5 @@
-// Structure-only validator for arm E (prompts/E-json-ui.md; the schema is arms/page-ui.schema.json). It checks that the reply
-// parses and that every block has the fields the prompt documents; it does not draw anything and does not check facts.
+// Structure-only validator for arm E. The format is the one prompts/E-json-ui.md documents; this file is its only machine check.
+// It checks that the reply parses and that every block has the fields the prompt documents; it draws nothing and checks no facts.
 type Obj = Record<string, unknown>;
 const isObj = (v: unknown): v is Obj => typeof v === 'object' && v !== null && !Array.isArray(v);
 const isStr = (v: unknown): v is string => typeof v === 'string';

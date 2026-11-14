@@ -1,9 +1,9 @@
 // The replication kit: estimate, write (one request per task and arm), measure, summarise.
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { join, posix, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
-import { ARMS, BENCH, parseArms, promptText, sha256, writerMessage, type Arm } from './arms.ts';
+import { ARMS, BENCH, UsageError, parseArms, promptText, sha256, writerMessage, type Arm } from './arms.ts';
 import { PRELOADED_CSS, measure, stripFence } from './measure.ts';
 import {
   DEFAULT_BASE,
@@ -15,8 +15,8 @@ import {
   type Provider,
   type ProviderKind,
 } from './provider.ts';
-import { DEFAULT_CHARS_PER_TOKEN, defaultOutputEstimates, estTokens, estimate, formatEstimate, usd } from './estimate.ts';
-import { NAMED_SETS, TaskSelectionError, loadTasks, parseTaskSpec, taskSetHash, type Task } from './tasks.ts';
+import { DEFAULT_CHARS_PER_TOKEN, defaultOutputEstimates, estimate, formatEstimate, usd } from './estimate.ts';
+import { NAMED_SETS, loadTasks, parseTaskSpec, taskSetHash, type Task } from './tasks.ts';
 
 export const USAGE = `usage: pnpm bench [run] [options]      write, measure and summarise (a dry run when no key is set)
        pnpm bench measure --out DIR      re-measure the pages a run saved (no model, no network)
@@ -34,12 +34,12 @@ export const USAGE = `usage: pnpm bench [run] [options]      write, measure and 
   --max-tokens-field NAME                  chat completions: the limit's parameter name (default max_completion_tokens on api.openai.com, else max_tokens)
   --dry-run                                print the estimate and stop; the default when no key is set
   --out DIR                                default bench/out/replicate/<date>-<model>
-keys (environment only; never printed or written): ANTHROPIC_API_KEY | LEDE_BENCH_API_KEY (any compatible host) | OPENAI_API_KEY (api.openai.com only)`;
+keys (environment only; never printed or written): ANTHROPIC_API_KEY (https://api.anthropic.com only) | OPENAI_API_KEY (https://api.openai.com only) | LEDE_BENCH_API_KEY (any other host)`;
 
 export interface IO {
   out(s: string): void;
 }
-export class UsageError extends Error {}
+export { UsageError };
 
 const OPTIONS = {
   provider: { type: 'string' },
@@ -59,12 +59,19 @@ const OPTIONS = {
   help: { type: 'boolean' },
 } as const;
 
-const num = (name: string, v: string | undefined): number | undefined => {
+const num = (name: string, v: string | undefined, integer = false): number | undefined => {
   if (v === undefined) return undefined;
   const n = Number(v);
-  if (!Number.isFinite(n) || n <= 0) throw new UsageError(`--${name} must be a positive number, got "${v}"`);
+  if (!Number.isFinite(n) || n <= 0 || (integer && !Number.isInteger(n)))
+    throw new UsageError(`--${name} must be a positive ${integer ? 'whole number' : 'number'}, got "${v}"`);
   return n;
 };
+
+/**
+ * Input tokens a message can cost at most, for the cap: a byte-level tokenizer never makes more tokens than the UTF-8 bytes, plus a
+ * margin for the message framing. The chars-per-token estimate is for the printed figure only; the cap never leans on it.
+ */
+const maxInputTokens = (message: string) => Buffer.byteLength(message) + 64;
 
 export interface Row {
   arm: string;
@@ -184,7 +191,7 @@ export async function runKit(
     const ids = parseTaskSpec(v.tasks ?? 'retired');
     const tasksDir = join(BENCH, 'tasks');
     const tasks: Task[] = loadTasks(tasksDir, ids);
-    const maxTokens = num('max-tokens', v['max-tokens']) ?? 16000;
+    const maxTokens = num('max-tokens', v['max-tokens'], true) ?? 16000;
     const priceIn = num('price-in', v['price-in']);
     const priceOut = num('price-out', v['price-out']);
     const cap = num('cap', v.cap);
@@ -218,7 +225,7 @@ export async function runKit(
         mkdirSync(resolve(v.out), { recursive: true });
         writeFileSync(join(resolve(v.out), 'estimate.json'), JSON.stringify(est, null, 1));
       }
-      say('dry run: no request was made and no key was read.');
+      say('dry run: no request was made and no key was used.');
       return 0;
     }
 
@@ -257,9 +264,9 @@ export async function runKit(
       for (const arm of arms) {
         if (rows.some((r) => r.arm === arm.letter && r.id === task.id)) continue;
         const prompt = writerMessage(arm, task.brief);
-        const inEst = estTokens(prompt, cpt);
-        // The largest reply this call may be allowed so that, even at that length, the cap holds.
-        const room = Math.floor(((cap - spent - (inEst * priceIn) / 1e6) * 1e6) / priceOut);
+        const inMax = maxInputTokens(prompt);
+        // The largest reply this call may be allowed so that, even at that length and the largest possible input, the cap holds.
+        const room = Math.floor(((cap - spent - (inMax * priceIn) / 1e6) * 1e6) / priceOut);
         const limit = Math.min(maxTokens, room);
         if (limit < 500) {
           stopped = `stopped before ${arm.letter}/${task.id}: $${spent.toFixed(4)} spent of the $${cap.toFixed(2)} cap leaves no room for a page`;
@@ -287,32 +294,34 @@ export async function runKit(
           row.truncated = c.truncated;
           row.usageMissing = c.inputTokens === null || c.outputTokens === null;
           // No usage in the reply: charge the worst case, so the cap still holds.
-          row.costUsd = usd(c.inputTokens ?? inEst, c.outputTokens ?? limit, priceIn, priceOut);
+          row.costUsd = usd(c.inputTokens ?? inMax, c.outputTokens ?? limit, priceIn, priceOut);
           const { text, stripped } = stripFence(c.text);
           row.fenceStripped = stripped;
-          const file = join('pages', arm.letter, `${task.id}.${arm.ext}`);
+          const file = posix.join('pages', arm.letter, `${task.id}.${arm.ext}`);
           mkdirSync(join(outDir, 'pages', arm.letter), { recursive: true });
           writeFileSync(join(outDir, file), text);
           row.file = file;
           Object.assign(row, await measure(arm, text));
         } catch (e) {
-          if (e instanceof FatalProviderError) {
-            say(`stopped: ${e.message}`);
-            stopped = e.message;
-            break outer;
-          }
-          row.error = e instanceof TransportError ? e.message : `unexpected: ${(e as Error).message.slice(0, 200)}`;
+          const fromProvider = e instanceof FatalProviderError || e instanceof TransportError;
+          row.error = fromProvider ? e.message : `unexpected: ${(e as Error).message.slice(0, 200)}`;
+          // A request that may have reached the provider is charged as if it wrote max tokens, so the cap still holds.
+          if (fromProvider && e.maybeBilled) row.costUsd = usd(inMax, limit, priceIn, priceOut);
+          if (e instanceof FatalProviderError) stopped = `stopped: ${e.message}`;
         }
         spent += row.costUsd;
-        rows.push(row);
-        appendFileSync(rowsFile, `${JSON.stringify(row)}\n`);
-        say(
-          `${arm.letter}/${task.id} ${row.error ?? `in=${String(row.inputTokens)} out=${String(row.outputTokens)} valid=${String(row.valid)} spent=$${spent.toFixed(4)}`}`,
-        );
+        // A fatal error on a request that never reached the provider leaves no row, so a fixed rerun asks that task again.
+        if (stopped === null || row.costUsd > 0) {
+          rows.push(row);
+          appendFileSync(rowsFile, `${JSON.stringify(row)}\n`);
+          say(
+            `${arm.letter}/${task.id} ${row.error ?? `in=${String(row.inputTokens)} out=${String(row.outputTokens)} valid=${String(row.valid)}`} spent=$${spent.toFixed(4)}`,
+          );
+        }
+        if (stopped !== null) break outer;
       }
     }
-    if (stopped !== null && !stopped.startsWith('stopped')) say(`run stopped early: ${stopped}`);
-    else if (stopped !== null) say(stopped);
+    if (stopped !== null) say(stopped);
 
     const returned = [...new Set(rows.map((r) => r.model))];
     const git = gitState();
@@ -348,15 +357,9 @@ export async function runKit(
     say(
       `spend: $${spent.toFixed(4)} of the $${cap.toFixed(2)} cap (${rows.length} requests recorded). Results: ${join(outDir, 'results.json')}`,
     );
-    return stopped !== null && !stopped.startsWith('stopped before') ? 1 : 0;
+    return stopped?.startsWith('stopped: ') ? 1 : 0;
   } catch (e) {
-    if (
-      e instanceof UsageError ||
-      e instanceof TaskSelectionError ||
-      e instanceof FatalProviderError ||
-      (e instanceof Error && /^(unknown arm|--|Unknown option|Unexpected)/.test(e.message)) ||
-      (e as { code?: string }).code?.startsWith('ERR_PARSE_ARGS')
-    ) {
+    if (e instanceof UsageError || e instanceof FatalProviderError || (e as { code?: string }).code?.startsWith('ERR_PARSE_ARGS')) {
       say(`error: ${(e as Error).message}`);
       say(USAGE);
       return 2;
@@ -374,8 +377,10 @@ async function remeasure(out: string | undefined, say: (s: string) => void): Pro
   for (const r of results.rows) {
     if (r.file === undefined) continue;
     // A results file is data a stranger may hand you: only a page under pages/ is ever read.
-    if (!/^pages\/[A-E]\/\d+\.\w+$/.test(r.file)) throw new UsageError(`unexpected page path in results.json: ${r.file}`);
-    Object.assign(r, await measure(ARMS[r.arm], readFileSync(join(dir, r.file), 'utf8')));
+    const arm = ARMS[r.arm];
+    if (arm === undefined || r.file !== posix.join('pages', arm.letter, `${r.id}.${arm.ext}`))
+      throw new UsageError(`unexpected arm or page path in results.json: ${r.arm} ${r.file}`);
+    Object.assign(r, await measure(arm, readFileSync(join(dir, r.file), 'utf8')));
   }
   writeFileSync(file, JSON.stringify(results, null, 1));
   say(

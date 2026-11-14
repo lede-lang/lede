@@ -8,13 +8,13 @@ import { runKit } from '../src/kit/run.ts';
 import { estimate, estTokens, usd } from '../src/kit/estimate.ts';
 import { parseTaskSpec, TaskSelectionError } from '../src/kit/tasks.ts';
 import { ARMS, writerMessage } from '../src/kit/arms.ts';
-import { createProvider, keyFor } from '../src/kit/provider.ts';
+import { createProvider, keyFor, type Provider } from '../src/kit/provider.ts';
 import { startStub } from './kit-stub.ts';
 
 const KEY = 'sk-test-0123456789-SECRET';
-const run = async (argv: string[], env: Record<string, string | undefined> = {}) => {
+const run = async (argv: string[], env: Record<string, string | undefined> = {}, provider?: Provider) => {
   const lines: string[] = [];
-  const code = await runKit(argv, env, { out: (s) => lines.push(s) });
+  const code = await runKit(argv, env, { out: (s) => lines.push(s) }, provider ? { provider } : {});
   return { code, text: lines.join('\n') };
 };
 const tmp = () => mkdtempSync(join(tmpdir(), 'lede-kit-'));
@@ -74,7 +74,7 @@ test('sealed tasks 131 to 185 are always refused, alone, in a range or inside a 
   const stub = await startStub('anthropic');
   const r2 = await run(
     ['--tasks', '140', '--model', 'm', '--cap', '5', '--price-in', '1', '--price-out', '1', '--base-url', stub.url, '--out', tmp()],
-    { ANTHROPIC_API_KEY: KEY },
+    { LEDE_BENCH_API_KEY: KEY },
   );
   await stub.close();
   assert.equal(r2.code, 2);
@@ -92,7 +92,7 @@ test('dry run needs no key, sends nothing and reads no key', async () => {
   assert.equal(stub.requests.length, 0);
   // an explicit --dry-run wins even when a key is set
   const stub2 = await startStub('anthropic');
-  const r2 = await run(['--dry-run', '--tasks', '101', '--base-url', stub2.url], { ANTHROPIC_API_KEY: KEY });
+  const r2 = await run(['--dry-run', '--tasks', '101', '--base-url', stub2.url], { LEDE_BENCH_API_KEY: KEY });
   await stub2.close();
   assert.equal(r2.code, 0);
   assert.equal(stub2.requests.length, 0);
@@ -102,7 +102,7 @@ test('dry run needs no key, sends nothing and reads no key', async () => {
 test('a real run needs a model, a cap and prices; the estimate over the cap is refused with nothing sent', async () => {
   const stub = await startStub('anthropic');
   const base = ['--tasks', '101-102', '--arms', 'B', '--base-url', stub.url, '--out', tmp()];
-  const env = { ANTHROPIC_API_KEY: KEY };
+  const env = { LEDE_BENCH_API_KEY: KEY };
   assert.equal((await run([...base, '--price-in', '1', '--price-out', '1', '--cap', '5'], env)).code, 2); // no model
   assert.equal((await run([...base, '--model', 'm', '--price-in', '1', '--price-out', '1'], env)).code, 2); // no cap
   assert.equal((await run([...base, '--model', 'm', '--cap', '5'], env)).code, 2); // no prices
@@ -117,7 +117,7 @@ for (const kind of ['anthropic', 'openai'] as const) {
   test(`usage accounting and measure, ${kind}: spend comes from the reported usage, the key rides in a header only`, async () => {
     const stub = await startStub(kind, { inputTokens: 2000, outputTokens: 400, text: lede });
     const out = tmp();
-    const env = kind === 'anthropic' ? { ANTHROPIC_API_KEY: KEY } : { LEDE_BENCH_API_KEY: KEY };
+    const env = { LEDE_BENCH_API_KEY: KEY };
     const argv = [
       '--provider',
       kind === 'anthropic' ? 'anthropic' : 'openai-compatible',
@@ -178,7 +178,8 @@ for (const kind of ['anthropic', 'openai'] as const) {
 test('the cap holds: replies are shortened to fit it and the run stops before passing it', async () => {
   const stub = await startStub('anthropic', { inputTokens: 3000, outputTokens: 2000, text: lede });
   const out = tmp();
-  // 10 USD/MTok both ways: a 3000+2000 token call costs 0.05; the estimate (0.27) fits the 0.28 cap, five calls do, a sixth would not.
+  // 10 USD/MTok both ways: a 3000+2000 token call costs 0.05 and the estimate (0.27) fits the 0.28 cap. Each request is reserved
+  // at its largest possible input (its UTF-8 bytes), so the run stops before the reservation, not the real spend, would pass the cap.
   const r = await run(
     [
       '--base-url',
@@ -200,16 +201,52 @@ test('the cap holds: replies are shortened to fit it and the run stops before pa
       '--est-out',
       'C=100',
     ],
-    { ANTHROPIC_API_KEY: KEY },
+    { LEDE_BENCH_API_KEY: KEY },
   );
   await stub.close();
   const results = JSON.parse(readFileSync(join(out, 'results.json'), 'utf8'));
   assert.ok(results.spentUsd <= 0.28 + 1e-9, String(results.spentUsd));
-  assert.equal(results.rows.length, 5);
+  assert.ok(results.rows.length >= 3 && results.rows.length < 10, String(results.rows.length));
   assert.match(results.stoppedEarly, /leaves no room/);
   assert.match(r.text, /spend: /);
-  // every request's output limit left the cap whole: spent so far + this call's worst case <= cap
-  assert.ok(stub.requests.every((q) => q.body.max_tokens <= 16000));
+  // Before every request, spent so far plus that request's worst case (all its input bytes, every output token allowed) fits the cap.
+  let spent = 0;
+  for (const q of stub.requests) {
+    const worst = ((Buffer.byteLength(q.body.messages[0].content) + 64) * 10 + q.body.max_tokens * 10) / 1e6;
+    assert.ok(spent + worst <= 0.28 + 1e-9, `${spent} + ${worst}`);
+    spent += (3000 * 10 + Math.min(2000, q.body.max_tokens) * 10) / 1e6;
+  }
+});
+
+test('a request that may have reached the provider is not retried and is charged at the worst case', async () => {
+  let calls = 0;
+  const reset = Object.assign(new TypeError('fetch failed'), { cause: { code: 'ECONNRESET' } });
+  const refused = Object.assign(new TypeError('fetch failed'), { cause: { code: 'ECONNREFUSED' } });
+  const provider = createProvider({
+    kind: 'anthropic',
+    baseUrl: 'https://gateway.example',
+    model: 'm',
+    env: { LEDE_BENCH_API_KEY: KEY },
+    sleep: async () => {},
+    fetchImpl: async () => {
+      calls++;
+      // Task 101: refused once (never sent, so retried), then reset after sending (not retried). Task 102: an unreadable 200.
+      if (calls === 1) throw refused;
+      if (calls === 2) throw reset;
+      return new Response('<html>not json</html>');
+    },
+  });
+  const out = tmp();
+  const argv = ['--model', 'm', '--tasks', '101-103', '--arms', 'C', '--cap', '5', '--price-in', '1', '--price-out', '1', '--out', out];
+  const r = await run(argv, {}, provider);
+  assert.equal(calls, 3);
+  assert.equal(r.code, 1);
+  assert.match(r.text, /stopped: the provider returned a reply this kit cannot read/);
+  const rows = JSON.parse(readFileSync(join(out, 'results.json'), 'utf8')).rows;
+  assert.equal(rows.length, 2);
+  assert.match(rows[0].error, /ECONNRESET/);
+  // both rows are charged as if the whole output limit had been written
+  for (const row of rows) assert.ok(row.costUsd >= 16000 / 1e6, String(row.costUsd));
 });
 
 test('a rerun resumes from rows.jsonl and does not ask a finished task again', async () => {
@@ -233,9 +270,9 @@ test('a rerun resumes from rows.jsonl and does not ask a finished task again', a
     '--out',
     out,
   ];
-  await run(argv, { ANTHROPIC_API_KEY: KEY });
+  await run(argv, { LEDE_BENCH_API_KEY: KEY });
   assert.equal(stub.requests.length, 2);
-  const again = await run(argv, { ANTHROPIC_API_KEY: KEY });
+  const again = await run(argv, { LEDE_BENCH_API_KEY: KEY });
   await stub.close();
   assert.equal(stub.requests.length, 2);
   assert.match(again.text, /resuming/);
@@ -278,7 +315,7 @@ test('transport retries see no content: 503 then success; a 4xx stops the run; t
       '--out',
       out,
     ],
-    { ANTHROPIC_API_KEY: KEY },
+    { LEDE_BENCH_API_KEY: KEY },
   );
   await bad.close();
   assert.equal(r.code, 1);
@@ -311,7 +348,7 @@ test('missing usage is charged at the worst case, so the cap still holds', async
       '--out',
       out,
     ],
-    { ANTHROPIC_API_KEY: KEY },
+    { LEDE_BENCH_API_KEY: KEY },
   );
   await stub.close();
   const row = JSON.parse(readFileSync(join(out, 'results.json'), 'utf8')).rows[0];
@@ -319,7 +356,7 @@ test('missing usage is charged at the worst case, so the cap still holds', async
   assert.ok(row.costUsd > 0.01);
 });
 
-test('keys: OPENAI_API_KEY is used only for api.openai.com; other hosts need LEDE_BENCH_API_KEY', () => {
+test('keys: ANTHROPIC_API_KEY and OPENAI_API_KEY go only to their own https origin; other hosts need LEDE_BENCH_API_KEY', () => {
   const env = { OPENAI_API_KEY: 'a'.repeat(12) };
   assert.equal(keyFor('openai-compatible', 'https://api.openai.com/v1', env)?.name, 'OPENAI_API_KEY');
   assert.equal(keyFor('openai-compatible', 'https://host.example/v1', env), null);
@@ -327,7 +364,12 @@ test('keys: OPENAI_API_KEY is used only for api.openai.com; other hosts need LED
     keyFor('openai-compatible', 'https://host.example/v1', { ...env, LEDE_BENCH_API_KEY: 'b'.repeat(12) })?.name,
     'LEDE_BENCH_API_KEY',
   );
-  assert.equal(keyFor('anthropic', 'https://api.anthropic.com', { ANTHROPIC_API_KEY: 'c'.repeat(12) })?.name, 'ANTHROPIC_API_KEY');
+  assert.equal(keyFor('openai-compatible', 'http://api.openai.com/v1', env), null);
+  const ant = { ANTHROPIC_API_KEY: 'c'.repeat(12) };
+  assert.equal(keyFor('anthropic', 'https://api.anthropic.com', ant)?.name, 'ANTHROPIC_API_KEY');
+  assert.equal(keyFor('anthropic', 'https://gateway.example', ant), null);
+  // on its own origin the provider's key wins over a LEDE_BENCH_API_KEY meant for another host
+  assert.equal(keyFor('anthropic', 'https://api.anthropic.com', { ...ant, LEDE_BENCH_API_KEY: 'd'.repeat(12) })?.name, 'ANTHROPIC_API_KEY');
   assert.throws(() => createProvider({ kind: 'anthropic', model: 'm', env: {} }), /ANTHROPIC_API_KEY/);
 });
 
@@ -379,7 +421,7 @@ test('measure re-reads saved pages with no network', async () => {
       '--out',
       out,
     ],
-    { ANTHROPIC_API_KEY: KEY },
+    { LEDE_BENCH_API_KEY: KEY },
   );
   await stub.close();
   assert.ok(existsSync(join(out, 'pages', 'C', '101.lede')));

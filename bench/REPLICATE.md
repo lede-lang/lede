@@ -12,7 +12,7 @@ pnpm install
 pnpm bench --dry-run --model <MODEL_ID> --arms B,C --tasks retired --price-in <USD per M input> --price-out <USD per M output>
 
 # 2. the real run: a key in the environment, and a hard cap
-export ANTHROPIC_API_KEY=...            # or LEDE_BENCH_API_KEY, or OPENAI_API_KEY (api.openai.com only)
+export ANTHROPIC_API_KEY=...            # api.anthropic.com only; any other host takes LEDE_BENCH_API_KEY
 pnpm bench --model <MODEL_ID> --arms B,C --tasks retired --price-in <P> --price-out <P> --cap 10
 ```
 
@@ -29,9 +29,10 @@ pnpm bench --model <MODEL_ID> --arms B,C --tasks retired --price-in <P> --price-
 | `--dry-run`                               | Print the estimate and stop. The default whenever no key is set.                                    |
 | `--out DIR`                               | Default `bench/out/replicate/<date>-<model>` (gitignored).                                          |
 
-Keys come from the environment only: `ANTHROPIC_API_KEY` for `--provider anthropic`; `LEDE_BENCH_API_KEY` for any `openai-compatible`
-host; `OPENAI_API_KEY` is read only when the base URL is `api.openai.com`, so it is never sent to another host. A key is never printed,
-never written to a file, and is redacted from any error text.
+Keys come from the environment only. `ANTHROPIC_API_KEY` is sent only to `https://api.anthropic.com` and `OPENAI_API_KEY` only to
+`https://api.openai.com`; any other base URL (a gateway, a compatible host) gets `LEDE_BENCH_API_KEY` and nothing else. A key is never
+printed, never written to a file, and is redacted from any error text. The base URL loses any user, password and query string before it
+is used or stored, so a host that needs a query parameter (Azure OpenAI's `api-version`) is not supported.
 
 Tasks 131 to 185 are the sealed held-out set. The kit refuses them, alone or inside a range, whatever flags you pass.
 
@@ -39,9 +40,11 @@ Tasks 131 to 185 are the sealed held-out set. The kit refuses them, alone or ins
 
 One request per task and arm: the arm's prompt file (`bench/prompts/`), then `Brief:` and the task's brief, then one closing line asking for
 the complete page once, with no code fence. No system prompt, no examples, no retry that shows the model an error. Retries happen only
-for the transport (a network error, 408, 429 or 5xx), with the request unchanged. A reply that arrives inside one code fence is
-unwrapped and the row says `fenceStripped`; nothing else is edited. A rerun with the same `--out` skips rows already written, so an
-interrupted run does not ask twice.
+for the transport, with the request unchanged: a connection that never opened, or an HTTP 408, 429 or 5xx. A connection that fails
+after the request went out (a reset or a timeout) is not retried, because the provider may already have charged for it. A reply that
+arrives inside one code fence is unwrapped and the row says `fenceStripped`; nothing else is edited. A rerun with the same `--out` skips
+rows already written, error rows included, so an interrupted run does not ask twice; delete a row's line from `rows.jsonl` to ask it
+again.
 
 ## What it costs
 
@@ -53,14 +56,17 @@ worst case = the same with every reply at --max-tokens
 ```
 
 Input tokens are estimated as characters / 3.5 (change with `--chars-per-token`); this is not a tokenizer count. Expected output tokens
-per page come from the means in `bench/results/raw-heldout.json` (Claude-tokenizer counts for Haiku and Opus pages); arms A, D and E have
-no measurements and take the HTML mean, an upper bound. Override any arm with `--est-out B=3000,C=500`. A different model family tokenizes
-differently, so treat the figure as an order of magnitude, not a quote.
+per page come from the means in `bench/results/raw-heldout.json`, counted with the legacy `@anthropic-ai/tokenizer` for Haiku and Opus
+pages (current Claude tokenizers count 1.26 to 1.43 times more, D50). Arms A, D and E have no measurements there and are assumed to equal
+the HTML mean. Override any arm with `--est-out B=3000,C=500`. A different model family tokenizes differently, so treat the figure as an
+order of magnitude, not a quote.
 
-The run refuses to start if the expected figure is over `--cap`. During the run, spend is the sum of the provider's reported `usage`
-(a reply with no usage is charged at the worst case). Before each request the kit shortens that request's output limit so that, even if
-the reply uses all of it, spend stays at or under the cap; when less than 500 output tokens would fit, it stops and says so. It ends with
-a spend line. The cap holds to the accuracy of the input estimate, which is a few percent; keep a margin if it matters.
+The run refuses to start if the expected figure is over `--cap`. During the run, spend is the sum of the provider's reported `usage`.
+A reply with no usage, an unreadable reply, and a request whose connection failed after it was sent are each charged at the worst case.
+Before each request the kit shortens that request's output limit so that, even if the input is as long as its UTF-8 bytes (no tokenizer
+makes more tokens than that) and the reply uses every token allowed, spend stays at or under the cap; when less than 500 output tokens
+would fit, it stops and says so. It ends with a spend line. The cap rests on the provider honouring the output limit and reporting its
+own usage, and on one run per `--out` at a time: two runs writing the same directory each see only their own spend.
 
 Some models count hidden reasoning as output. Those tokens are billed and are inside `outputTokens`; the row also carries
 `reasoningTokens` where the provider reports it.
@@ -72,7 +78,7 @@ Per page: output tokens and input tokens from the provider's own `usage`, bytes 
 - C (Lede): `valid` is the real parser with no error diagnostic (what `lede check` reports, minus its printing), and `buildOk` is the real renderer running to completion. Warnings are counted.
 - B (HTML): a complete document, doctype to `</html>`. Bytes only; nothing is rendered.
 - D (HTML over a preloaded stylesheet): a body fragment inside `<main class="page">` that writes no wrapper, style, link or script. The kit wraps it with `bench/arms/preloaded.css` to report the page size.
-- E (JSON UI): parses as JSON and passes a structure check against the schema in `bench/arms/page-ui.schema.json`. **This arm measures tokens and validity only, not looks.** There is no renderer for it, and nothing in this kit says how it would look.
+- E (JSON UI): parses as JSON and passes the structure check in `bench/src/kit/json-ui.ts`, which follows the format `bench/prompts/E-json-ui.md` documents. **This arm measures tokens and validity only, not looks.** There is no renderer for it, and nothing in this kit says how it would look.
 - A (Markdown): non-empty. Nothing else is checked.
 
 `pnpm bench measure --out DIR` re-measures the saved pages without any network.
@@ -81,6 +87,18 @@ The output is `DIR/results.json` (commit hash, whether the worktree was dirty, S
 stylesheet, provider, base URL without credentials, requested and returned model ids, date, prices, cap, spend, the estimate, and one row
 per task and arm), `DIR/pages/<arm>/<id>.<ext>` and a summary table: per arm the pages that are valid and built, mean and median output
 tokens, mean bytes, and the ratio of its output tokens to HTML's on the tasks both finished.
+
+## Before the first real call
+
+These have not been tried against a real API (the kit is tested against a local stub), so check them on a one-task run first
+(`--tasks 101 --arms C --cap 1`):
+
+- Requests are not streamed. Node's `fetch` gives up when no response header arrives within 300 seconds, and a non-streamed reply sends
+  its headers only when the whole page is written, so a slow model writing near `--max-tokens` can time out. That row is then charged at
+  the worst case and recorded as an error. Lower `--max-tokens` if it happens.
+- Some models take a smaller output limit than the default 16000 and refuse the request; the run stops on that first error with the
+  provider's message.
+- A host that bills reasoning outside the output limit, or that ignores the limit, can pass the cap by that much.
 
 ## What it does not reproduce
 

@@ -1,6 +1,6 @@
 // Writer providers over `fetch`: Anthropic Messages and OpenAI-style chat completions (OpenAI itself or any compatible host).
-// One request per call, the prompt as the only user message. Retries are for the transport only (network errors, 408, 429, 5xx):
-// nothing the model wrote is ever looked at, or fed back, between attempts. Token counts are the provider's own `usage`.
+// One request per call, the prompt as the only user message. Retries are for the transport only (a connection that never opened,
+// 408, 429, 5xx): nothing the model wrote is ever looked at, or fed back, between attempts. Token counts are the provider's own `usage`.
 export interface Completion {
   text: string;
   inputTokens: number | null;
@@ -18,10 +18,18 @@ export interface Provider {
 }
 export type ProviderKind = 'anthropic' | 'openai-compatible';
 
-/** A failure that retrying will not fix (a bad key, a bad model id, a refused request): the run stops. */
-export class FatalProviderError extends Error {}
-/** The transport kept failing after its retries; the row is recorded as an error and the run goes on. */
-export class TransportError extends Error {}
+/** `maybeBilled`: the request reached the provider and may have been charged, so the run counts it at the worst case. */
+class ProviderError extends Error {
+  readonly maybeBilled: boolean;
+  constructor(message: string, maybeBilled = false) {
+    super(message);
+    this.maybeBilled = maybeBilled;
+  }
+}
+/** A failure that retrying will not fix (a bad key, a bad model id, a refused request, an unreadable reply): the run stops. */
+export class FatalProviderError extends ProviderError {}
+/** The transport failed (after its retries, or once a request may have reached the provider); the row is an error and the run goes on. */
+export class TransportError extends ProviderError {}
 
 export const DEFAULT_BASE: Record<ProviderKind, string> = {
   anthropic: 'https://api.anthropic.com',
@@ -49,18 +57,17 @@ export function cleanBaseUrl(raw: string): string {
   return u.toString().replace(/\/+$/, '');
 }
 
-/** The key for a provider, from the environment only. OPENAI_API_KEY is used only for api.openai.com, never sent to another host. */
+/**
+ * The key for a provider, from the environment only. ANTHROPIC_API_KEY is sent only to https://api.anthropic.com and OPENAI_API_KEY only
+ * to https://api.openai.com; any other origin gets LEDE_BENCH_API_KEY or nothing.
+ */
 export function keyFor(
   kind: ProviderKind,
   baseUrl: string,
   env: Record<string, string | undefined>,
 ): { name: string; value: string } | null {
-  const names =
-    kind === 'anthropic'
-      ? ['ANTHROPIC_API_KEY']
-      : new URL(baseUrl).hostname === 'api.openai.com'
-        ? ['LEDE_BENCH_API_KEY', 'OPENAI_API_KEY']
-        : ['LEDE_BENCH_API_KEY'];
+  const own = kind === 'anthropic' ? 'ANTHROPIC_API_KEY' : 'OPENAI_API_KEY';
+  const names = new URL(baseUrl).origin === new URL(DEFAULT_BASE[kind]).origin ? [own, 'LEDE_BENCH_API_KEY'] : ['LEDE_BENCH_API_KEY'];
   for (const name of names) {
     const value = env[name];
     if (value !== undefined && value.trim() !== '') return { name, value: value.trim() };
@@ -69,9 +76,11 @@ export function keyFor(
 }
 
 export const keyNamesHint = (kind: ProviderKind): string =>
-  kind === 'anthropic' ? 'ANTHROPIC_API_KEY' : 'LEDE_BENCH_API_KEY (any compatible host), or OPENAI_API_KEY for api.openai.com itself';
+  `LEDE_BENCH_API_KEY (any host), or ${kind === 'anthropic' ? 'ANTHROPIC_API_KEY for api.anthropic.com' : 'OPENAI_API_KEY for api.openai.com'} itself`;
 
 const RETRYABLE = new Set([408, 429, 500, 502, 503, 504, 529]);
+/** fetch failures where no connection opened, so nothing reached the provider. Any other (a reset, a timeout) may have been billed. */
+const NOT_SENT = new Set(['ECONNREFUSED', 'ENOTFOUND', 'EAI_AGAIN', 'ENETUNREACH', 'EHOSTUNREACH', 'UND_ERR_CONNECT_TIMEOUT']);
 
 export function createProvider(o: ProviderOptions): Provider {
   const baseUrl = cleanBaseUrl(o.baseUrl ?? DEFAULT_BASE[o.kind]);
@@ -139,18 +148,23 @@ export function createProvider(o: ProviderOptions): Provider {
       for (let attempt = 0; attempt <= retries; attempt++) {
         if (attempt > 0) await sleep(1000 * 2 ** (attempt - 1));
         let res: Response;
+        let body: string;
         try {
           res = await doFetch(url, init);
+          body = await res.text();
         } catch (e) {
-          last = `network error: ${redact((e as Error).message)}`;
-          continue;
+          const cause = (e as { cause?: { code?: unknown } }).cause?.code;
+          const code = typeof cause === 'string' ? cause : '';
+          last = `network error: ${redact(`${(e as Error).message} ${code}`.trim())}`;
+          if (NOT_SENT.has(code)) continue;
+          // The request may have reached the provider: asking again could pay twice, so the row ends here.
+          throw new TransportError(last, true);
         }
-        const body = await res.text();
         if (res.ok) {
           try {
             return parse(JSON.parse(body));
           } catch {
-            throw new FatalProviderError('the provider returned a reply this kit cannot read (not the documented response shape)');
+            throw new FatalProviderError('the provider returned a reply this kit cannot read (not the documented response shape)', true);
           }
         }
         last = `HTTP ${res.status}: ${redact(body)}`;

@@ -6,6 +6,9 @@ import { join } from 'node:path';
 export const BENCH = join(import.meta.dirname, '..', '..');
 export const PROMPTS = join(BENCH, 'prompts');
 
+/** A bad flag or value: the kit prints it with the usage text and exits 2. */
+export class UsageError extends Error {}
+
 export interface Arm {
   letter: string;
   file: string;
@@ -24,7 +27,7 @@ export function parseArms(spec: string): Arm[] {
   const out: Arm[] = [];
   for (const s of spec.split(',').map((x) => x.trim().toUpperCase())) {
     const arm = ARMS[s];
-    if (arm === undefined) throw new Error(`unknown arm "${s}"; arms are ${Object.keys(ARMS).join(', ')}`);
+    if (arm === undefined) throw new UsageError(`unknown arm "${s}"; arms are ${Object.keys(ARMS).join(', ')}`);
     if (!out.includes(arm)) out.push(arm);
   }
   return out;
@@ -33,7 +36,7 @@ export function parseArms(spec: string): Arm[] {
 export const sha256 = (data: string | Buffer) => createHash('sha256').update(data).digest('hex');
 export const promptText = (arm: Arm, dir = PROMPTS) => readFileSync(join(dir, arm.file), 'utf8');
 
-/** The one message a writer receives: the arm's prompt, then the brief. The same shape the refinement round's wrapper uses (D67). */
+/** The one message a writer receives: the arm's prompt, then the brief, in the shape of prompts/refine-revision.md (D67). */
 export function writerMessage(arm: Arm, brief: string, dir = PROMPTS): string {
   return `${promptText(arm, dir).trimEnd()}\n\nBrief:\n${brief}\n\nWrite the complete page, once. It is your only output: no commentary, and no code fence around it. Read no file and run no command.`;
 }

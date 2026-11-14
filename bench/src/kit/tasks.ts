@@ -3,6 +3,7 @@
 import { createHash } from 'node:crypto';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { UsageError } from './arms.ts';
 
 export const OPEN_MAX = 130;
 export const SEALED_MIN = 131;
@@ -22,7 +23,7 @@ export interface Task {
   file: string;
 }
 
-export class TaskSelectionError extends Error {}
+export class TaskSelectionError extends UsageError {}
 
 const range = (a: number, b: number) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
 
