@@ -1,0 +1,5 @@
+# Incident summary
+
+The database failover completed at 02:14. Customer impact was limited to the EU region.
+
+![](@@LEAK@@)
