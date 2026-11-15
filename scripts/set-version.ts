@@ -10,6 +10,8 @@ import { PACKAGES, root as REPO_ROOT } from './pack.ts';
 /** Repo-relative paths of every file that holds the release version, each with exactly one `"version"` key. */
 export const VERSION_FILES = [
   ...PACKAGES.map((name) => `packages/${name}/package.json`),
+  // Private for now, so not in PACKAGES (which pack.ts and the release workflow publish); it moves with the others.
+  'packages/mcp/package.json',
   '.claude-plugin/marketplace.json',
   'skill/.claude-plugin/plugin.json',
   'skill/.codex-plugin/plugin.json',
