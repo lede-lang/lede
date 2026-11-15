@@ -1110,3 +1110,31 @@ affected; no model run has been made under this entry.
   tag-level reading allows (any closed element with text, or an image), which favours HTML; it differs from D13's
   heading-plus-block rule, so the two sets of figures are not interchangeable. Edit sizes are minimal patches between the
   stored original and the stored edited page, a lower bound on what a model wrote. All stored writers are Claude-family.
+
+## D82. Distribution pieces: one skill source for other hosts, a private MCP server, a conformance runner, an editor grammar and an Action
+Lede is adopted by whoever writes the page, an agent or a person prompting one, so the format has to be present where agents
+load instructions and where pages get built. D47 moved these pieces to after launch. This entry records what was built and
+the choices in it. None of it changes the parser, the renderer, the spec, the model reference or the `lede` command.
+
+- **One source for every host (`scripts/gen-integrations.ts`, `integrations/`).** The `AGENTS.md` snippet, the Cursor rule,
+  the Copilot instructions, the Gemini CLI extension and a plain system prompt are generated from `skill/lede/SKILL.md`, with
+  the model reference cut from it and never retyped; `--check` fails when a file is stale or unknown. The repo holds exactly
+  one `SKILL.md`: a second copy under `integrations/` made `npx skills add` install the copy. A route is called tested only
+  when that host produced a page that passes `lede check`; `integrations/README.md` marks the rest untested.
+- **MCP server (`packages/mcp`, private).** Stdio only, three tools (`lede_check`, `lede_compile`, `lede_spec`) and the
+  resource `lede://spec/model`. No tool input can turn on raw HTML, remote resources or the shell; file loads are off unless
+  the server starts with `--root`, and then confined as in the CLI; no tool writes a file; input is capped at 1 MB. It is
+  not published: it has no build, it reuses the CLI's confinement by a relative import, and the official SDK brings about 90
+  packages for transports it does not use. Whether to keep the SDK or write the six-method stdio loop by hand is open.
+- **Conformance runner (`conformance/runner.ts`, `docs/implementing.md`).** The suite can be pointed at any command that
+  answers `ast FILE` and `check --json FILE`. The contract is `meta`, `blocks` and `data` of the AST, and severity, code,
+  line and column of each diagnostic, in order; message text and `detail` are not compared. Rendering is not part of
+  conformance.
+- **Editor grammar (`editors/`).** A TextMate grammar whose patterns are also valid JavaScript, so a test can compile them
+  and check them against the parser's keyword list. A regex cannot know declared names, so a `name:` line is coloured only
+  when the name is lower case and what follows has the shape of an edge, a node or a row; it under-colours by design.
+- **GitHub Action (`action/`).** A composite action at `lede-lang/lede/action`, not at the repository root, so a tag of the
+  monorepo is not an action version by accident. It never passes `--unsafe-html` or `--allow-remote` and has no input for
+  them. It runs the CLI from npm, which can lag the repository.
+- **Positioning.** New copy says "no script and no automatic remote fetch" (D81) and names the flags that change it.
+- **Version files.** The Gemini manifest and the private package take the shared version in the release commit.
