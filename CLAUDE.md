@@ -23,6 +23,9 @@ pnpm test:pack                  # build, `pnpm pack` the three packages, npm-ins
 node --test packages/core/test/fix.test.ts          # one test file
 node --test --test-name-pattern="<part of the test name>" packages/core/test/grammar.test.ts   # one test by name
 UPDATE=1 node --test conformance/run.test.ts        # regenerate expected AST/diagnostics after an intentional parser change; review the JSON diff
+node scripts/gen-integrations.ts [--check]          # after editing skill/lede/SKILL.md: rewrites integrations/ (other hosts' formats); a test runs --check
+node conformance/runner.ts --cmd "node packages/cli/src/cli.ts"   # the conformance suite against any implementation's command (docs/implementing.md)
+pnpm bench                                          # the writer-round replication kit (bench/REPLICATE.md); needs a key and a --cap to send anything
 node scripts/gen-runtime.ts                         # after editing packages/render-html/src/shell-runtime.js: rewrites shell-runtime.ts and the hash file (--check fails when stale)
 LEDE_REQUIRE_CHROME=1 pnpm test                     # make every browser check (question words, editor words, shell, layout, chart, diagram and block batteries) fail, not skip, without Chromium (CI sets CI, which does the same, and points CHROME at the Chromium it installs)
 pnpm lede build page.lede -o page.html   # also: check [--json] [--fix], watch, ast
@@ -32,7 +35,7 @@ pnpm lede build page.lede -o page.html   # also: check [--json] [--fix], watch, 
 
 ## Architecture
 
-Three packages, one pipeline: `core` parses, `render-html` draws, `cli` wires them.
+Three published packages, one pipeline: `core` parses, `render-html` draws, `cli` wires them. A fourth, `packages/mcp` (`@lede-lang/mcp`, a stdio MCP server), is private: it imports `cli/src/confine.ts` by relative path and has no build, so it cannot be packed yet (its README, "Before publishing").
 
 - `packages/core`: `LedeParser` (`parser.ts`) turns lines into typed blocks plus `Diagnostic`s (each has line, col, a code, and an optional machine-readable `detail`). `LedeStream` wraps it for incremental model output (`write` returns finished blocks, `snapshot` returns a renderable document for the text so far), so anything added to the parser must keep working mid-stream. `fix.ts` repairs source text from those diagnostics: it re-parses after each pass and discards a pass that adds errors.
 - `packages/render-html`: `render`/`compile` (`index.ts`) turn a `LedeDocument` into HTML; `chart.ts`, `diagram.ts` (elkjs layout), `sequence.ts`, `theme.ts` (CSS) are the drawers. Output is sanitized and fetches nothing remote unless `--allow-remote`. Rendering is async because of elkjs.
@@ -55,5 +58,5 @@ Source of truth is split on purpose, and the pieces must stay in step:
 - Seed strings from `seeded-direction` must never appear in pages, commits or summaries.
 - Public surface changes (CLI flags, `--json` shape, diagnostic codes or `detail` keys, exit codes) are documented in `spec/lede-0.1.md` §9 and in `lede --help` in the same change, with no approval step. Add a conformance case or test too. Treat a missing spec update as a defect in the change, not an optional follow-up.
 - Commit messages and PR text: body lines at most 100 columns (commitlint), and never the skip-CI marker (the words "skip ci" in square brackets): GitHub then runs no checks on the PR and the required check `test` never reports. Fix a message with `git commit --amend` and `git push --force-with-lease` on your own branch.
-- Work on a branch and open a PR; do not commit to `main`. Commits are Conventional Commits and signed off (`git commit -s`, DCO); `CHANGELOG.md` and the version in the three packages and the three plugin manifests are written by `.github/workflows/changelog.yml` from them (D54), never by hand. A consumer-visible change goes in the commit body in plain prose, with no `!` and no `BREAKING CHANGE:` footer. A minor release is asked for only by the owner, with a `chore(minor):` commit (D75); everything else is a patch.
+- Work on a branch and open a PR; do not commit to `main`. Commits are Conventional Commits and signed off (`git commit -s`, DCO); `CHANGELOG.md` and the version in the packages (`packages/mcp` included), the three plugin manifests and `integrations/gemini/gemini-extension.json` are written by `.github/workflows/changelog.yml` from them (D54), never by hand. A consumer-visible change goes in the commit body in plain prose, with no `!` and no `BREAKING CHANGE:` footer. A minor release is asked for only by the owner, with a `chore(minor):` commit (D75); everything else is a patch.
 - The three packages share one version (`workspace:*` is packed as an exact pin). Publishing is `.github/workflows/release.yml`, started by the GitHub release that `changelog.yml` publishes, from the public repository only, and it stages on npm only after the owner approves the `npm` environment; a version goes public only when the owner approves it on npm with 2FA (D48, D58, D61); never `npm publish` from a package directory, which would ship entries that point at `src/`.
