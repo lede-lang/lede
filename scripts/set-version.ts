@@ -1,4 +1,4 @@
-// Writes one version into everything that carries it (D54): the three published packages, and the plugin manifests that
+// Writes one version into everything that carries it (D54): the published packages and the private MCP one, and the manifests that
 // hosts cache an installed plugin by (packages/cli/test/plugin-manifests.test.ts pins them to the CLI version). semantic-release
 // runs it as its prepare step, so the tag, the changelog and these files agree; the packages move in lockstep because pnpm packs
 // `workspace:*` as an exact pin (D48).
@@ -15,6 +15,8 @@ export const VERSION_FILES = [
   '.claude-plugin/marketplace.json',
   'skill/.claude-plugin/plugin.json',
   'skill/.codex-plugin/plugin.json',
+  // The Gemini CLI extension manifest (scripts/gen-integrations.ts writes it; its --check compares the version too).
+  'integrations/gemini/gemini-extension.json',
 ];
 
 const SEMVER = /^\d+\.\d+\.\d+$/;
