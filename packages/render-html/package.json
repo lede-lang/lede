@@ -1,7 +1,7 @@
 {
   "name": "@lede-lang/html",
   "version": "0.2.4",
-  "description": "Lede (lede-lang): the line format an AI model writes instead of HTML. One self-contained page out, no script, no remote fetch. This package renders a document to the page.",
+  "description": "Lede (lede-lang): the line format an AI model writes instead of HTML. One self-contained page out, no script, no automatic remote fetch. This package renders a document to the page.",
   "keywords": [
     "lede",
     "html",

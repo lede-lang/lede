@@ -1,7 +1,7 @@
 {
   "name": "@lede-lang/cli",
   "version": "0.2.4",
-  "description": "Lede (lede-lang): the line format an AI model writes instead of HTML. One self-contained page out, no script, no remote fetch. This package is the `lede` command.",
+  "description": "Lede (lede-lang): the line format an AI model writes instead of HTML. One self-contained page out, no script, no automatic remote fetch. This package is the `lede` command.",
   "keywords": [
     "lede",
     "cli",

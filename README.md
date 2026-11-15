@@ -1,6 +1,7 @@
 # Lede
 
-Lede (lede-lang) is the line format a model writes when you ask it for a page: a few lines in, one self-contained HTML page out, with no script and no remote fetch.
+Lede (lede-lang) is the line format a model writes when you ask it for a page: a few lines in, one self-contained HTML page out, with no script and no automatic remote fetch. Flags
+opt out: `--shell` adds one fixed script and `--allow-remote` lets remote images load ([every flag that changes this](docs/when-not-to-use.md)).
 
 A line-oriented document format for AI-written web artifacts. It compiles to a single
 self-contained HTML page with charts, diagrams, light and dark themes and phone layouts, and
