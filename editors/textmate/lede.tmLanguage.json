@@ -1,0 +1,1829 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Lede",
+  "scopeName": "source.lede",
+  "fileTypes": [
+    "lede"
+  ],
+  "patterns": [
+    {
+      "include": "#meta.table-row"
+    },
+    {
+      "include": "#markup.fenced_code.block.raw-html"
+    },
+    {
+      "include": "#invalid.illegal.raw-format"
+    },
+    {
+      "include": "#markup.fenced_code.block.js"
+    },
+    {
+      "include": "#markup.fenced_code.block.ts"
+    },
+    {
+      "include": "#markup.fenced_code.block.tsx"
+    },
+    {
+      "include": "#markup.fenced_code.block.json"
+    },
+    {
+      "include": "#markup.fenced_code.block.python"
+    },
+    {
+      "include": "#markup.fenced_code.block.shell"
+    },
+    {
+      "include": "#markup.fenced_code.block.css"
+    },
+    {
+      "include": "#markup.fenced_code.block.yaml"
+    },
+    {
+      "include": "#markup.fenced_code.block.sql"
+    },
+    {
+      "include": "#markup.fenced_code.block.go"
+    },
+    {
+      "include": "#markup.fenced_code.block.rust"
+    },
+    {
+      "include": "#markup.fenced_code.block.java"
+    },
+    {
+      "include": "#markup.fenced_code.block.c"
+    },
+    {
+      "include": "#markup.fenced_code.block.cpp"
+    },
+    {
+      "include": "#markup.fenced_code.block.diff"
+    },
+    {
+      "include": "#markup.fenced_code.block.xml"
+    },
+    {
+      "include": "#markup.fenced_code.block.toml"
+    },
+    {
+      "include": "#markup.fenced_code.block.ruby"
+    },
+    {
+      "include": "#markup.fenced_code.block.html-markdown"
+    },
+    {
+      "include": "#markup.fenced_code.block.html-basic"
+    },
+    {
+      "include": "#markup.fenced_code.block.lede"
+    },
+    {
+      "include": "#markup.fenced_code.block.csv"
+    },
+    {
+      "include": "#markup.fenced_code.block"
+    },
+    {
+      "include": "#meta.paragraph.escaped"
+    },
+    {
+      "include": "#meta.meta-line"
+    },
+    {
+      "include": "#markup.heading"
+    },
+    {
+      "include": "#markup.list.unnumbered.task"
+    },
+    {
+      "include": "#markup.list.unnumbered.sub"
+    },
+    {
+      "include": "#meta.separator"
+    },
+    {
+      "include": "#markup.list.unnumbered"
+    },
+    {
+      "include": "#markup.list.numbered"
+    },
+    {
+      "include": "#markup.note.kind"
+    },
+    {
+      "include": "#markup.note"
+    },
+    {
+      "include": "#markup.note.warning"
+    },
+    {
+      "include": "#markup.note.danger"
+    },
+    {
+      "include": "#markup.quote"
+    },
+    {
+      "include": "#meta.html-line"
+    },
+    {
+      "include": "#meta.data"
+    },
+    {
+      "include": "#meta.chart"
+    },
+    {
+      "include": "#meta.table"
+    },
+    {
+      "include": "#meta.kpi"
+    },
+    {
+      "include": "#meta.diagram"
+    },
+    {
+      "include": "#meta.image"
+    },
+    {
+      "include": "#meta.grid"
+    },
+    {
+      "include": "#meta.cards"
+    },
+    {
+      "include": "#meta.step"
+    },
+    {
+      "include": "#meta.ask"
+    },
+    {
+      "include": "#meta.choose"
+    },
+    {
+      "include": "#meta.confirm"
+    },
+    {
+      "include": "#meta.export"
+    },
+    {
+      "include": "#meta.param"
+    },
+    {
+      "include": "#meta.toggle"
+    },
+    {
+      "include": "#meta.bucket"
+    },
+    {
+      "include": "#meta.template"
+    },
+    {
+      "include": "#meta.preset"
+    },
+    {
+      "include": "#meta.decision"
+    },
+    {
+      "include": "#meta.statement"
+    },
+    {
+      "include": "#meta.edge"
+    },
+    {
+      "include": "#meta.node"
+    },
+    {
+      "include": "#meta.row"
+    },
+    {
+      "include": "#inline"
+    }
+  ],
+  "repository": {
+    "string": {
+      "name": "string.quoted.double.lede",
+      "match": "\"(?:\"\"|\\\\\"|[^\"])*\""
+    },
+    "date": {
+      "name": "constant.numeric.date.lede",
+      "match": "(?<![\\w.])\\d{4}-\\d{2}-\\d{2}(?![\\w.])"
+    },
+    "number": {
+      "name": "constant.numeric.lede",
+      "match": "(?<![\\w.])-?\\d+(?:\\.\\d+)?(?![\\w.])"
+    },
+    "reference": {
+      "match": "(?<=\\s)(=)([A-Za-z_][\\w-]*)(\\.)(\\S+)",
+      "captures": {
+        "1": {
+          "name": "keyword.operator.reference.lede"
+        },
+        "2": {
+          "name": "variable.other.lede"
+        },
+        "3": {
+          "name": "punctuation.accessor.lede"
+        },
+        "4": {
+          "name": "variable.other.property.lede"
+        }
+      }
+    },
+    "option": {
+      "match": "(?<![\\w-])([A-Za-z][\\w-]*)(\\+?=)",
+      "captures": {
+        "1": {
+          "name": "variable.parameter.option.lede"
+        },
+        "2": {
+          "name": "keyword.operator.assignment.lede"
+        }
+      }
+    },
+    "pipe": {
+      "name": "punctuation.separator.pipe.lede",
+      "match": "\\|"
+    },
+    "row-sep": {
+      "name": "punctuation.separator.row.lede",
+      "match": ";"
+    },
+    "field-sep": {
+      "name": "punctuation.separator.field.lede",
+      "match": ","
+    },
+    "arrow": {
+      "name": "keyword.operator.arrow.lede",
+      "match": "<->|-->|-x->|(?<=\\s)-x-(?=\\s)|->"
+    },
+    "inline": {
+      "patterns": [
+        {
+          "name": "constant.character.escape.lede",
+          "match": "\\\\[`*_\\[\\]\\\\]"
+        },
+        {
+          "name": "markup.inline.raw.lede",
+          "match": "(`+)(?!`).+?(?<!`)\\1(?!`)"
+        },
+        {
+          "name": "markup.bold.lede",
+          "match": "\\*\\*(?=\\S).+?(?<=\\S)\\*\\*"
+        },
+        {
+          "name": "markup.italic.lede",
+          "match": "(?<![\\w*])([*_])(?=[^\\s*_]).*?(?<=[^\\s*_])\\1(?![\\w*])"
+        },
+        {
+          "name": "meta.link.inline.lede",
+          "match": "(\\[)([^\\[\\]]+)(\\])(\\()([^\\s()]*(?:\\([^\\s()]*\\)[^\\s()]*)*)(\\))",
+          "captures": {
+            "1": {
+              "name": "punctuation.definition.link.begin.lede"
+            },
+            "2": {
+              "name": "string.other.link.title.lede"
+            },
+            "3": {
+              "name": "punctuation.definition.link.end.lede"
+            },
+            "4": {
+              "name": "punctuation.definition.metadata.begin.lede"
+            },
+            "5": {
+              "name": "markup.underline.link.lede"
+            },
+            "6": {
+              "name": "punctuation.definition.metadata.end.lede"
+            }
+          }
+        }
+      ]
+    },
+    "meta.table-row": {
+      "name": "meta.table-row.lede",
+      "match": "^\\s*(:)(?=\\s|$)(.*)$",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.table-row.lede"
+        },
+        "2": {
+          "patterns": [
+            {
+              "include": "#pipe"
+            },
+            {
+              "include": "#inline"
+            }
+          ]
+        }
+      }
+    },
+    "markup.fenced_code.block.raw-html": {
+      "name": "markup.fenced_code.block.raw-html.lede",
+      "begin": "^\\s*(`{3,})\\s*(=)(html)\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.markdown.lede"
+        },
+        "2": {
+          "name": "keyword.operator.raw.lede"
+        },
+        "3": {
+          "name": "fenced_code.block.language.lede"
+        }
+      },
+      "end": "^\\s*\\1`*\\s*$",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.markdown.lede"
+        }
+      },
+      "contentName": "meta.embedded.block.html",
+      "patterns": [
+        {
+          "include": "text.html.basic"
+        }
+      ]
+    },
+    "invalid.illegal.raw-format": {
+      "name": "invalid.illegal.raw-format.lede",
+      "match": "^\\s*`{3,}\\s*=(?!html\\s*$)[\\w+-]*\\s*$"
+    },
+    "markup.fenced_code.block.js": {
+      "name": "markup.fenced_code.block.js.lede",
+      "begin": "^\\s*(`{3,})\\s*(js|javascript|jsx|mjs|cjs)\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.markdown.lede"
+        },
+        "2": {
+          "name": "fenced_code.block.language.lede"
+        }
+      },
+      "end": "^\\s*\\1`*\\s*$",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.markdown.lede"
+        }
+      },
+      "contentName": "meta.embedded.block.js",
+      "patterns": [
+        {
+          "include": "source.js"
+        }
+      ]
+    },
+    "markup.fenced_code.block.ts": {
+      "name": "markup.fenced_code.block.ts.lede",
+      "begin": "^\\s*(`{3,})\\s*(ts|typescript)\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.markdown.lede"
+        },
+        "2": {
+          "name": "fenced_code.block.language.lede"
+        }
+      },
+      "end": "^\\s*\\1`*\\s*$",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.markdown.lede"
+        }
+      },
+      "contentName": "meta.embedded.block.ts",
+      "patterns": [
+        {
+          "include": "source.ts"
+        }
+      ]
+    },
+    "markup.fenced_code.block.tsx": {
+      "name": "markup.fenced_code.block.tsx.lede",
+      "begin": "^\\s*(`{3,})\\s*(tsx)\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.markdown.lede"
+        },
+        "2": {
+          "name": "fenced_code.block.language.lede"
+        }
+      },
+      "end": "^\\s*\\1`*\\s*$",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.markdown.lede"
+        }
+      },
+      "contentName": "meta.embedded.block.tsx",
+      "patterns": [
+        {
+          "include": "source.tsx"
+        }
+      ]
+    },
+    "markup.fenced_code.block.json": {
+      "name": "markup.fenced_code.block.json.lede",
+      "begin": "^\\s*(`{3,})\\s*(json|jsonc)\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.markdown.lede"
+        },
+        "2": {
+          "name": "fenced_code.block.language.lede"
+        }
+      },
+      "end": "^\\s*\\1`*\\s*$",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.markdown.lede"
+        }
+      },
+      "contentName": "meta.embedded.block.json",
+      "patterns": [
+        {
+          "include": "source.json"
+        }
+      ]
+    },
+    "markup.fenced_code.block.python": {
+      "name": "markup.fenced_code.block.python.lede",
+      "begin": "^\\s*(`{3,})\\s*(py|python)\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.markdown.lede"
+        },
+        "2": {
+          "name": "fenced_code.block.language.lede"
+        }
+      },
+      "end": "^\\s*\\1`*\\s*$",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.markdown.lede"
+        }
+      },
+      "contentName": "meta.embedded.block.python",
+      "patterns": [
+        {
+          "include": "source.python"
+        }
+      ]
+    },
+    "markup.fenced_code.block.shell": {
+      "name": "markup.fenced_code.block.shell.lede",
+      "begin": "^\\s*(`{3,})\\s*(sh|bash|shell|zsh|console)\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.markdown.lede"
+        },
+        "2": {
+          "name": "fenced_code.block.language.lede"
+        }
+      },
+      "end": "^\\s*\\1`*\\s*$",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.markdown.lede"
+        }
+      },
+      "contentName": "meta.embedded.block.shell",
+      "patterns": [
+        {
+          "include": "source.shell"
+        }
+      ]
+    },
+    "markup.fenced_code.block.css": {
+      "name": "markup.fenced_code.block.css.lede",
+      "begin": "^\\s*(`{3,})\\s*(css)\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.markdown.lede"
+        },
+        "2": {
+          "name": "fenced_code.block.language.lede"
+        }
+      },
+      "end": "^\\s*\\1`*\\s*$",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.markdown.lede"
+        }
+      },
+      "contentName": "meta.embedded.block.css",
+      "patterns": [
+        {
+          "include": "source.css"
+        }
+      ]
+    },
+    "markup.fenced_code.block.yaml": {
+      "name": "markup.fenced_code.block.yaml.lede",
+      "begin": "^\\s*(`{3,})\\s*(yml|yaml)\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.markdown.lede"
+        },
+        "2": {
+          "name": "fenced_code.block.language.lede"
+        }
+      },
+      "end": "^\\s*\\1`*\\s*$",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.markdown.lede"
+        }
+      },
+      "contentName": "meta.embedded.block.yaml",
+      "patterns": [
+        {
+          "include": "source.yaml"
+        }
+      ]
+    },
+    "markup.fenced_code.block.sql": {
+      "name": "markup.fenced_code.block.sql.lede",
+      "begin": "^\\s*(`{3,})\\s*(sql)\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.markdown.lede"
+        },
+        "2": {
+          "name": "fenced_code.block.language.lede"
+        }
+      },
+      "end": "^\\s*\\1`*\\s*$",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.markdown.lede"
+        }
+      },
+      "contentName": "meta.embedded.block.sql",
+      "patterns": [
+        {
+          "include": "source.sql"
+        }
+      ]
+    },
+    "markup.fenced_code.block.go": {
+      "name": "markup.fenced_code.block.go.lede",
+      "begin": "^\\s*(`{3,})\\s*(go)\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.markdown.lede"
+        },
+        "2": {
+          "name": "fenced_code.block.language.lede"
+        }
+      },
+      "end": "^\\s*\\1`*\\s*$",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.markdown.lede"
+        }
+      },
+      "contentName": "meta.embedded.block.go",
+      "patterns": [
+        {
+          "include": "source.go"
+        }
+      ]
+    },
+    "markup.fenced_code.block.rust": {
+      "name": "markup.fenced_code.block.rust.lede",
+      "begin": "^\\s*(`{3,})\\s*(rs|rust)\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.markdown.lede"
+        },
+        "2": {
+          "name": "fenced_code.block.language.lede"
+        }
+      },
+      "end": "^\\s*\\1`*\\s*$",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.markdown.lede"
+        }
+      },
+      "contentName": "meta.embedded.block.rust",
+      "patterns": [
+        {
+          "include": "source.rust"
+        }
+      ]
+    },
+    "markup.fenced_code.block.java": {
+      "name": "markup.fenced_code.block.java.lede",
+      "begin": "^\\s*(`{3,})\\s*(java)\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.markdown.lede"
+        },
+        "2": {
+          "name": "fenced_code.block.language.lede"
+        }
+      },
+      "end": "^\\s*\\1`*\\s*$",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.markdown.lede"
+        }
+      },
+      "contentName": "meta.embedded.block.java",
+      "patterns": [
+        {
+          "include": "source.java"
+        }
+      ]
+    },
+    "markup.fenced_code.block.c": {
+      "name": "markup.fenced_code.block.c.lede",
+      "begin": "^\\s*(`{3,})\\s*(c|h)\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.markdown.lede"
+        },
+        "2": {
+          "name": "fenced_code.block.language.lede"
+        }
+      },
+      "end": "^\\s*\\1`*\\s*$",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.markdown.lede"
+        }
+      },
+      "contentName": "meta.embedded.block.c",
+      "patterns": [
+        {
+          "include": "source.c"
+        }
+      ]
+    },
+    "markup.fenced_code.block.cpp": {
+      "name": "markup.fenced_code.block.cpp.lede",
+      "begin": "^\\s*(`{3,})\\s*(cpp|c\\+\\+|cc|hpp)\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.markdown.lede"
+        },
+        "2": {
+          "name": "fenced_code.block.language.lede"
+        }
+      },
+      "end": "^\\s*\\1`*\\s*$",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.markdown.lede"
+        }
+      },
+      "contentName": "meta.embedded.block.cpp",
+      "patterns": [
+        {
+          "include": "source.cpp"
+        }
+      ]
+    },
+    "markup.fenced_code.block.diff": {
+      "name": "markup.fenced_code.block.diff.lede",
+      "begin": "^\\s*(`{3,})\\s*(diff|patch)\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.markdown.lede"
+        },
+        "2": {
+          "name": "fenced_code.block.language.lede"
+        }
+      },
+      "end": "^\\s*\\1`*\\s*$",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.markdown.lede"
+        }
+      },
+      "contentName": "meta.embedded.block.diff",
+      "patterns": [
+        {
+          "include": "source.diff"
+        }
+      ]
+    },
+    "markup.fenced_code.block.xml": {
+      "name": "markup.fenced_code.block.xml.lede",
+      "begin": "^\\s*(`{3,})\\s*(xml|svg)\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.markdown.lede"
+        },
+        "2": {
+          "name": "fenced_code.block.language.lede"
+        }
+      },
+      "end": "^\\s*\\1`*\\s*$",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.markdown.lede"
+        }
+      },
+      "contentName": "meta.embedded.block.xml",
+      "patterns": [
+        {
+          "include": "text.xml"
+        }
+      ]
+    },
+    "markup.fenced_code.block.toml": {
+      "name": "markup.fenced_code.block.toml.lede",
+      "begin": "^\\s*(`{3,})\\s*(toml)\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.markdown.lede"
+        },
+        "2": {
+          "name": "fenced_code.block.language.lede"
+        }
+      },
+      "end": "^\\s*\\1`*\\s*$",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.markdown.lede"
+        }
+      },
+      "contentName": "meta.embedded.block.toml",
+      "patterns": [
+        {
+          "include": "source.toml"
+        }
+      ]
+    },
+    "markup.fenced_code.block.ruby": {
+      "name": "markup.fenced_code.block.ruby.lede",
+      "begin": "^\\s*(`{3,})\\s*(rb|ruby)\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.markdown.lede"
+        },
+        "2": {
+          "name": "fenced_code.block.language.lede"
+        }
+      },
+      "end": "^\\s*\\1`*\\s*$",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.markdown.lede"
+        }
+      },
+      "contentName": "meta.embedded.block.ruby",
+      "patterns": [
+        {
+          "include": "source.ruby"
+        }
+      ]
+    },
+    "markup.fenced_code.block.html-markdown": {
+      "name": "markup.fenced_code.block.html-markdown.lede",
+      "begin": "^\\s*(`{3,})\\s*(md|markdown)\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.markdown.lede"
+        },
+        "2": {
+          "name": "fenced_code.block.language.lede"
+        }
+      },
+      "end": "^\\s*\\1`*\\s*$",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.markdown.lede"
+        }
+      },
+      "contentName": "meta.embedded.block.html-markdown",
+      "patterns": [
+        {
+          "include": "text.html.markdown"
+        }
+      ]
+    },
+    "markup.fenced_code.block.html-basic": {
+      "name": "markup.fenced_code.block.html-basic.lede",
+      "begin": "^\\s*(`{3,})\\s*(html|htm)\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.markdown.lede"
+        },
+        "2": {
+          "name": "fenced_code.block.language.lede"
+        }
+      },
+      "end": "^\\s*\\1`*\\s*$",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.markdown.lede"
+        }
+      },
+      "contentName": "meta.embedded.block.html-basic",
+      "patterns": [
+        {
+          "include": "text.html.basic"
+        }
+      ]
+    },
+    "markup.fenced_code.block.lede": {
+      "name": "markup.fenced_code.block.lede.lede",
+      "begin": "^\\s*(`{3,})\\s*(lede)\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.markdown.lede"
+        },
+        "2": {
+          "name": "fenced_code.block.language.lede"
+        }
+      },
+      "end": "^\\s*\\1`*\\s*$",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.markdown.lede"
+        }
+      },
+      "contentName": "meta.embedded.block.lede",
+      "patterns": [
+        {
+          "include": "source.lede"
+        }
+      ]
+    },
+    "markup.fenced_code.block.csv": {
+      "name": "markup.fenced_code.block.csv.lede",
+      "begin": "^\\s*(`{3,})\\s*(csv)\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.markdown.lede"
+        },
+        "2": {
+          "name": "fenced_code.block.language.lede"
+        }
+      },
+      "end": "^\\s*\\1`*\\s*$",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.markdown.lede"
+        }
+      },
+      "contentName": "meta.embedded.block.csv",
+      "patterns": [
+        {
+          "include": "source.csv"
+        }
+      ]
+    },
+    "markup.fenced_code.block": {
+      "name": "markup.fenced_code.block.lede",
+      "begin": "^\\s*(`{3,})\\s*([\\w+-]*)\\s*$",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.markdown.lede"
+        },
+        "2": {
+          "name": "fenced_code.block.language.lede"
+        }
+      },
+      "end": "^\\s*\\1`*\\s*$",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.markdown.lede"
+        }
+      },
+      "contentName": "markup.raw.code-fence.lede"
+    },
+    "meta.paragraph.escaped": {
+      "name": "meta.paragraph.escaped.lede",
+      "match": "^\\s*(\\\\)(.*)$",
+      "captures": {
+        "1": {
+          "name": "constant.character.escape.lede"
+        },
+        "2": {
+          "patterns": [
+            {
+              "include": "#inline"
+            }
+          ]
+        }
+      }
+    },
+    "meta.meta-line": {
+      "name": "meta.meta-line.lede",
+      "match": "^\\s*(@)([A-Za-z][\\w-]*)(?:\\s+(.*))?$",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.meta.lede"
+        },
+        "2": {
+          "name": "entity.name.tag.meta-key.lede"
+        },
+        "3": {
+          "patterns": [
+            {
+              "include": "#pipe"
+            },
+            {
+              "include": "#date"
+            }
+          ]
+        }
+      }
+    },
+    "markup.heading": {
+      "name": "markup.heading.lede",
+      "match": "^\\s*(#{1,6})(?:(\\s+)(.*))?$",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.heading.lede"
+        },
+        "3": {
+          "name": "entity.name.section.lede",
+          "patterns": [
+            {
+              "include": "#inline"
+            }
+          ]
+        }
+      }
+    },
+    "markup.list.unnumbered.task": {
+      "name": "markup.list.unnumbered.task.lede",
+      "match": "^\\s*(-)\\s+(\\[)([ xX])(\\])\\s+(.*)$",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.list.begin.markdown.lede"
+        },
+        "2": {
+          "name": "punctuation.definition.checkbox.lede"
+        },
+        "3": {
+          "name": "constant.language.task-state.lede"
+        },
+        "4": {
+          "name": "punctuation.definition.checkbox.lede"
+        },
+        "5": {
+          "patterns": [
+            {
+              "include": "#inline"
+            }
+          ]
+        }
+      }
+    },
+    "markup.list.unnumbered.sub": {
+      "name": "markup.list.unnumbered.sub.lede",
+      "match": "^\\s*(--)\\s+(.*)$",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.list.begin.markdown.lede"
+        },
+        "2": {
+          "patterns": [
+            {
+              "include": "#inline"
+            }
+          ]
+        }
+      }
+    },
+    "meta.separator": {
+      "name": "meta.separator.lede",
+      "match": "^\\s*-{3,}\\s*$"
+    },
+    "markup.list.unnumbered": {
+      "name": "markup.list.unnumbered.lede",
+      "match": "^\\s*(-)(?:\\s+(.*))?$",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.list.begin.markdown.lede"
+        },
+        "2": {
+          "patterns": [
+            {
+              "include": "#inline"
+            }
+          ]
+        }
+      }
+    },
+    "markup.list.numbered": {
+      "name": "markup.list.numbered.lede",
+      "match": "^\\s*(\\d{1,9}[.)])\\s+(.*)$",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.list.begin.markdown.lede"
+        },
+        "2": {
+          "patterns": [
+            {
+              "include": "#inline"
+            }
+          ]
+        }
+      }
+    },
+    "markup.note.kind": {
+      "name": "markup.note.kind.lede",
+      "match": "^\\s*(!)\\s+([Tt][Ii][Pp]|[Rr][Ee][Cc][Oo][Mm][Mm][Ee][Nn][Dd][Aa][Tt][Ii][Oo][Nn]|[Rr][Ee][Cc][Oo][Mm][Mm][Ee][Nn][Dd][Ee][Dd]|[Dd][Ee][Cc][Ii][Ss][Ii][Oo][Nn]|[Ss][Uu][Cc][Cc][Ee][Ss][Ss]|[Dd][Oo][Nn][Ee]|[Ii][Nn][Ff][Oo]|[Qq][Uu][Ee][Ss][Tt][Ii][Oo][Nn]|[Ee][Xx][Aa][Mm][Pp][Ll][Ee])(:)(?=\\s*\\S)(.*)$",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.note.lede"
+        },
+        "2": {
+          "name": "keyword.other.note-kind.lede"
+        },
+        "3": {
+          "name": "punctuation.separator.colon.lede"
+        },
+        "4": {
+          "patterns": [
+            {
+              "include": "#inline"
+            }
+          ]
+        }
+      }
+    },
+    "markup.note": {
+      "name": "markup.note.lede",
+      "match": "^\\s*(!)\\s+(.*)$",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.note.lede"
+        },
+        "2": {
+          "patterns": [
+            {
+              "include": "#inline"
+            }
+          ]
+        }
+      }
+    },
+    "markup.note.warning": {
+      "name": "markup.note.warning.lede",
+      "match": "^\\s*(!!)\\s+(.*)$",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.note.lede"
+        },
+        "2": {
+          "patterns": [
+            {
+              "include": "#inline"
+            }
+          ]
+        }
+      }
+    },
+    "markup.note.danger": {
+      "name": "markup.note.danger.lede",
+      "match": "^\\s*(!!!)\\s+(.*)$",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.note.lede"
+        },
+        "2": {
+          "patterns": [
+            {
+              "include": "#inline"
+            }
+          ]
+        }
+      }
+    },
+    "markup.quote": {
+      "name": "markup.quote.lede",
+      "match": "^\\s*(>)\\s?(.*)$",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.quote.begin.markdown.lede"
+        },
+        "2": {
+          "patterns": [
+            {
+              "include": "#inline"
+            }
+          ]
+        }
+      }
+    },
+    "meta.html-line": {
+      "name": "meta.html-line.lede",
+      "match": "^\\s*(html:)(.*)$",
+      "captures": {
+        "1": {
+          "name": "keyword.control.html.lede"
+        },
+        "2": {
+          "name": "meta.embedded.line.html",
+          "patterns": [
+            {
+              "include": "text.html.basic"
+            }
+          ]
+        }
+      }
+    },
+    "meta.data": {
+      "name": "meta.data.lede",
+      "match": "^\\s*(data)(?=\\s|$)(?:\\s+([A-Za-z_][\\w-]*))?(.*)$",
+      "captures": {
+        "1": {
+          "name": "keyword.control.data.lede"
+        },
+        "2": {
+          "name": "entity.name.type.lede"
+        },
+        "3": {
+          "patterns": [
+            {
+              "include": "#string"
+            },
+            {
+              "include": "#date"
+            },
+            {
+              "include": "#number"
+            },
+            {
+              "include": "#row-sep"
+            },
+            {
+              "include": "#field-sep"
+            },
+            {
+              "include": "#pipe"
+            }
+          ]
+        }
+      }
+    },
+    "meta.chart": {
+      "name": "meta.chart.lede",
+      "match": "^\\s*(chart)(?=\\s|$)(?:\\s+(line|area|bar|hbar|range)(?=\\s|$))?(?:\\s+([A-Za-z][\\w-]*)(?=\\s|$))?(.*)$",
+      "captures": {
+        "1": {
+          "name": "keyword.control.chart.lede"
+        },
+        "2": {
+          "name": "constant.language.chart-kind.lede"
+        },
+        "3": {
+          "name": "variable.other.lede"
+        },
+        "4": {
+          "patterns": [
+            {
+              "include": "#string"
+            },
+            {
+              "include": "#date"
+            },
+            {
+              "include": "#reference"
+            },
+            {
+              "include": "#option"
+            },
+            {
+              "include": "#number"
+            },
+            {
+              "include": "#pipe"
+            }
+          ]
+        }
+      }
+    },
+    "meta.table": {
+      "name": "meta.table.lede",
+      "match": "^\\s*(table)(?=\\s|$)(?:\\s+([A-Za-z][\\w-]*)(?=\\s|$))?(.*)$",
+      "captures": {
+        "1": {
+          "name": "keyword.control.table.lede"
+        },
+        "2": {
+          "name": "variable.other.lede"
+        },
+        "3": {
+          "patterns": [
+            {
+              "include": "#string"
+            },
+            {
+              "include": "#date"
+            },
+            {
+              "include": "#number"
+            },
+            {
+              "include": "#row-sep"
+            },
+            {
+              "include": "#field-sep"
+            },
+            {
+              "include": "#pipe"
+            }
+          ]
+        }
+      }
+    },
+    "meta.kpi": {
+      "name": "meta.kpi.lede",
+      "match": "^\\s*(kpi)(?=\\s|$)(.*)$",
+      "captures": {
+        "1": {
+          "name": "keyword.control.kpi.lede"
+        },
+        "2": {
+          "patterns": [
+            {
+              "include": "#string"
+            },
+            {
+              "include": "#date"
+            },
+            {
+              "include": "#reference"
+            },
+            {
+              "include": "#option"
+            },
+            {
+              "include": "#number"
+            },
+            {
+              "include": "#pipe"
+            }
+          ]
+        }
+      }
+    },
+    "meta.diagram": {
+      "name": "meta.diagram.lede",
+      "match": "^\\s*(diagram)(?=\\s|$)(?:\\s+([A-Za-z][\\w-]*)(?=\\s|$))?(?:\\s+(flow|sequence)(?=\\s|$))?(.*)$",
+      "captures": {
+        "1": {
+          "name": "keyword.control.diagram.lede"
+        },
+        "2": {
+          "name": "entity.name.type.lede"
+        },
+        "3": {
+          "name": "constant.language.diagram-kind.lede"
+        },
+        "4": {
+          "patterns": [
+            {
+              "include": "#string"
+            },
+            {
+              "include": "#date"
+            },
+            {
+              "include": "#reference"
+            },
+            {
+              "include": "#option"
+            },
+            {
+              "include": "#number"
+            },
+            {
+              "include": "#pipe"
+            }
+          ]
+        }
+      }
+    },
+    "meta.image": {
+      "name": "meta.image.lede",
+      "match": "^\\s*(image)(?=\\s|$)(.*)$",
+      "captures": {
+        "1": {
+          "name": "keyword.control.image.lede"
+        },
+        "2": {
+          "patterns": [
+            {
+              "include": "#string"
+            },
+            {
+              "include": "#date"
+            },
+            {
+              "include": "#reference"
+            },
+            {
+              "include": "#option"
+            },
+            {
+              "include": "#number"
+            },
+            {
+              "include": "#pipe"
+            }
+          ]
+        }
+      }
+    },
+    "meta.grid": {
+      "name": "meta.grid.lede",
+      "match": "^\\s*(grid)(?=\\s|$)(.*)$",
+      "captures": {
+        "1": {
+          "name": "keyword.control.grid.lede"
+        },
+        "2": {
+          "patterns": [
+            {
+              "include": "#string"
+            },
+            {
+              "include": "#date"
+            },
+            {
+              "include": "#reference"
+            },
+            {
+              "include": "#option"
+            },
+            {
+              "include": "#number"
+            },
+            {
+              "include": "#pipe"
+            }
+          ]
+        }
+      }
+    },
+    "meta.cards": {
+      "name": "meta.cards.lede",
+      "match": "^\\s*(cards)\\s*$",
+      "captures": {
+        "1": {
+          "name": "keyword.control.cards.lede"
+        }
+      }
+    },
+    "meta.step": {
+      "name": "meta.step.lede",
+      "match": "^\\s*(step)(?=\\s|$)(.*)$",
+      "captures": {
+        "1": {
+          "name": "keyword.control.step.lede"
+        },
+        "2": {
+          "patterns": [
+            {
+              "include": "#string"
+            },
+            {
+              "include": "#date"
+            },
+            {
+              "include": "#reference"
+            },
+            {
+              "include": "#option"
+            },
+            {
+              "include": "#number"
+            },
+            {
+              "include": "#pipe"
+            }
+          ]
+        }
+      }
+    },
+    "meta.ask": {
+      "name": "meta.ask.lede",
+      "match": "^\\s*(ask)(?=\\s|$)(?:\\s+([A-Za-z][\\w-]*))?(.*)$",
+      "captures": {
+        "1": {
+          "name": "keyword.control.ask.lede"
+        },
+        "2": {
+          "name": "entity.name.type.lede"
+        },
+        "3": {
+          "patterns": [
+            {
+              "include": "#string"
+            },
+            {
+              "include": "#date"
+            },
+            {
+              "include": "#reference"
+            },
+            {
+              "include": "#option"
+            },
+            {
+              "include": "#number"
+            },
+            {
+              "include": "#pipe"
+            }
+          ]
+        }
+      }
+    },
+    "meta.choose": {
+      "name": "meta.choose.lede",
+      "match": "^\\s*(choose)(?=\\s|$)(?:\\s+([A-Za-z][\\w-]*))?(.*)$",
+      "captures": {
+        "1": {
+          "name": "keyword.control.choose.lede"
+        },
+        "2": {
+          "name": "entity.name.type.lede"
+        },
+        "3": {
+          "patterns": [
+            {
+              "include": "#string"
+            },
+            {
+              "include": "#date"
+            },
+            {
+              "include": "#number"
+            },
+            {
+              "include": "#row-sep"
+            },
+            {
+              "include": "#field-sep"
+            },
+            {
+              "include": "#pipe"
+            }
+          ]
+        }
+      }
+    },
+    "meta.confirm": {
+      "name": "meta.confirm.lede",
+      "match": "^\\s*(confirm)(?=\\s|$)(?:\\s+([A-Za-z][\\w-]*))?(.*)$",
+      "captures": {
+        "1": {
+          "name": "keyword.control.confirm.lede"
+        },
+        "2": {
+          "name": "entity.name.type.lede"
+        },
+        "3": {
+          "patterns": [
+            {
+              "include": "#string"
+            },
+            {
+              "include": "#date"
+            },
+            {
+              "include": "#reference"
+            },
+            {
+              "include": "#option"
+            },
+            {
+              "include": "#number"
+            },
+            {
+              "include": "#pipe"
+            }
+          ]
+        }
+      }
+    },
+    "meta.export": {
+      "name": "meta.export.lede",
+      "match": "^\\s*(export)(?:\\s+(\\S+))?\\s*$",
+      "captures": {
+        "1": {
+          "name": "keyword.control.export.lede"
+        },
+        "2": {
+          "name": "constant.language.export-format.lede"
+        }
+      }
+    },
+    "meta.param": {
+      "name": "meta.param.lede",
+      "match": "^\\s*(param)(?=\\s+[A-Za-z][\\w-]*(?:(?=[\\s|])[^|]*\\||\\s+unit=))\\s+([A-Za-z][\\w-]*)(.*)$",
+      "captures": {
+        "1": {
+          "name": "keyword.control.param.lede"
+        },
+        "2": {
+          "name": "entity.name.type.lede"
+        },
+        "3": {
+          "patterns": [
+            {
+              "include": "#string"
+            },
+            {
+              "include": "#date"
+            },
+            {
+              "include": "#reference"
+            },
+            {
+              "include": "#option"
+            },
+            {
+              "include": "#number"
+            },
+            {
+              "include": "#pipe"
+            }
+          ]
+        }
+      }
+    },
+    "meta.toggle": {
+      "name": "meta.toggle.lede",
+      "match": "^\\s*(toggle)(?=\\s+[A-Za-z][\\w-]*(?:(?=[\\s|])[^|]*\\||\\s+(?:on|off)(?=[\\s|]|$)|\\s+needs=))\\s+([A-Za-z][\\w-]*)(.*)$",
+      "captures": {
+        "1": {
+          "name": "keyword.control.toggle.lede"
+        },
+        "2": {
+          "name": "entity.name.type.lede"
+        },
+        "3": {
+          "patterns": [
+            {
+              "include": "#string"
+            },
+            {
+              "include": "#date"
+            },
+            {
+              "include": "#reference"
+            },
+            {
+              "include": "#option"
+            },
+            {
+              "include": "#number"
+            },
+            {
+              "include": "#pipe"
+            }
+          ]
+        }
+      }
+    },
+    "meta.bucket": {
+      "name": "meta.bucket.lede",
+      "match": "^\\s*(bucket)(?=\\s+[A-Za-z][\\w-]*(?:(?=[\\s|])[^|]*\\|))\\s+([A-Za-z][\\w-]*)(.*)$",
+      "captures": {
+        "1": {
+          "name": "keyword.control.bucket.lede"
+        },
+        "2": {
+          "name": "entity.name.type.lede"
+        },
+        "3": {
+          "patterns": [
+            {
+              "include": "#string"
+            },
+            {
+              "include": "#date"
+            },
+            {
+              "include": "#number"
+            },
+            {
+              "include": "#row-sep"
+            },
+            {
+              "include": "#field-sep"
+            },
+            {
+              "include": "#pipe"
+            }
+          ]
+        }
+      }
+    },
+    "meta.template": {
+      "name": "meta.template.lede",
+      "match": "^\\s*(template)(?=\\s+[A-Za-z][\\w-]*(?:(?=[\\s|])[^|]*\\|))\\s+([A-Za-z][\\w-]*)(.*)$",
+      "captures": {
+        "1": {
+          "name": "keyword.control.template.lede"
+        },
+        "2": {
+          "name": "entity.name.type.lede"
+        },
+        "3": {
+          "patterns": [
+            {
+              "include": "#string"
+            },
+            {
+              "include": "#date"
+            },
+            {
+              "include": "#reference"
+            },
+            {
+              "include": "#option"
+            },
+            {
+              "include": "#number"
+            },
+            {
+              "include": "#pipe"
+            }
+          ]
+        }
+      }
+    },
+    "meta.preset": {
+      "name": "meta.preset.lede",
+      "match": "^\\s*(preset)(?=\\s+[A-Za-z][\\w-]*(?:(?=[\\s|])[^|]*\\|))\\s+([A-Za-z][\\w-]*)(.*)$",
+      "captures": {
+        "1": {
+          "name": "keyword.control.preset.lede"
+        },
+        "2": {
+          "name": "entity.name.type.lede"
+        },
+        "3": {
+          "patterns": [
+            {
+              "include": "#string"
+            },
+            {
+              "include": "#date"
+            },
+            {
+              "include": "#reference"
+            },
+            {
+              "include": "#option"
+            },
+            {
+              "include": "#number"
+            },
+            {
+              "include": "#pipe"
+            }
+          ]
+        }
+      }
+    },
+    "meta.decision": {
+      "name": "meta.decision.lede",
+      "match": "^\\s*(decision)(?=\\s+[A-Za-z][\\w-]*\\s+(?:\"|(?:status|by)=))\\s+([A-Za-z][\\w-]*)(.*)$",
+      "captures": {
+        "1": {
+          "name": "keyword.control.decision.lede"
+        },
+        "2": {
+          "name": "entity.name.type.lede"
+        },
+        "3": {
+          "patterns": [
+            {
+              "include": "#string"
+            },
+            {
+              "include": "#date"
+            },
+            {
+              "include": "#reference"
+            },
+            {
+              "include": "#option"
+            },
+            {
+              "include": "#number"
+            },
+            {
+              "include": "#pipe"
+            }
+          ]
+        }
+      }
+    },
+    "meta.statement": {
+      "name": "meta.statement.lede",
+      "match": "^\\s*([A-Za-z][\\w-]*)(:)\\s+(group(?=\\s)|note(?=\\s+[\\w.-]+(?:\\s*,\\s*[\\w.-]+)*\\s*:)|legend(?=\\s*$)|(?:alt|opt)(?=\\s+\")|else(?=\\s|$)|end(?=\\s*$)|option(?=\\s+[A-Za-z0-9][\\w-]*\\s+\")|question(?=\\s+\")|role(?=\\s+[^\\s\"]+(?:\\s+[^\\s\"]+)?\\s+\"))(.*)$",
+      "captures": {
+        "1": {
+          "name": "entity.name.type.lede"
+        },
+        "2": {
+          "name": "punctuation.separator.colon.lede"
+        },
+        "3": {
+          "name": "keyword.other.statement.lede"
+        },
+        "4": {
+          "patterns": [
+            {
+              "include": "#string"
+            },
+            {
+              "include": "#arrow"
+            },
+            {
+              "include": "#pipe"
+            }
+          ]
+        }
+      }
+    },
+    "meta.edge": {
+      "name": "meta.edge.lede",
+      "match": "^\\s*([A-Za-z][\\w-]*)(:)\\s+(?=.*(?:<->|-->|->|\\s-x-))(.*)$",
+      "captures": {
+        "1": {
+          "name": "entity.name.type.lede"
+        },
+        "2": {
+          "name": "punctuation.separator.colon.lede"
+        },
+        "3": {
+          "patterns": [
+            {
+              "include": "#arrow"
+            },
+            {
+              "include": "#string"
+            },
+            {
+              "include": "#pipe"
+            }
+          ]
+        }
+      }
+    },
+    "meta.node": {
+      "name": "meta.node.lede",
+      "match": "^\\s*([A-Za-z][\\w-]*)(:)\\s+([A-Za-z0-9_][\\w.-]*)(?=\\s+\")(.*)$",
+      "captures": {
+        "1": {
+          "name": "entity.name.type.lede"
+        },
+        "2": {
+          "name": "punctuation.separator.colon.lede"
+        },
+        "3": {
+          "name": "variable.other.node.lede"
+        },
+        "4": {
+          "patterns": [
+            {
+              "include": "#string"
+            },
+            {
+              "include": "#pipe"
+            }
+          ]
+        }
+      }
+    },
+    "meta.row": {
+      "name": "meta.row.lede",
+      "match": "^\\s*([A-Za-z][\\w-]*)(:)\\s+(?=.*\\s\\|(?:\\s|$))(.*)$",
+      "captures": {
+        "1": {
+          "name": "entity.name.type.lede"
+        },
+        "2": {
+          "name": "punctuation.separator.colon.lede"
+        },
+        "3": {
+          "patterns": [
+            {
+              "include": "#pipe"
+            },
+            {
+              "include": "#inline"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
