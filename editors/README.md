@@ -18,8 +18,9 @@ document, and the grammar does not have it:
   above. The grammar does not know the names, so it claims a `identifier:` line at the start of a line only when what follows has
   a diagram-like or row-like shape: an edge (`->`, `-->`, `<->`, `-x-`), a statement word (`group`, `note`, `legend`, `alt`,
   `opt`, `else`, `end`, `option`, `question`, `role`), a node (`id "Label"`) or pipe fields (` | `). Any other `Word: text` line is
-  left as prose. The cost: a prose line such as `Result: a -> b` is scoped as an edge, and a declared name whose line has none of
-  those shapes is not coloured.
+  left as prose. The name must start with a lowercase letter or `_`, since prose lines start with capitals and no declared name in this
+  repository's examples does. The cost: a lowercase prose line such as `result: a -> b` is scoped as an edge, and a capitalised
+  name, or a declared name whose line has none of those shapes, is not coloured.
 - **A `: a | b` table row** belongs to a table only while an inline table is open. The grammar colours any line that starts with `:`.
 - **An editor word** (`param`, `toggle`, `bucket`, `template`, `preset`) and `decision` are keyword lines only in a shape, so
   `toggle the flag on Monday` is prose. The grammar copies the parser's shape rules as lookaheads; a test compares both on the same

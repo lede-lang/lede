@@ -1727,7 +1727,7 @@
     },
     "meta.statement": {
       "name": "meta.statement.lede",
-      "match": "^\\s*([A-Za-z][\\w-]*)(:)\\s+(group(?=\\s)|note(?=\\s+[\\w.-]+(?:\\s*,\\s*[\\w.-]+)*\\s*:)|legend(?=\\s*$)|(?:alt|opt)(?=\\s+\")|else(?=\\s|$)|end(?=\\s*$)|option(?=\\s+[A-Za-z0-9][\\w-]*\\s+\")|question(?=\\s+\")|role(?=\\s+[^\\s\"]+(?:\\s+[^\\s\"]+)?\\s+\"))(.*)$",
+      "match": "^\\s*([a-z_][\\w-]*)(:)\\s+(group(?=\\s)|note(?=\\s+[\\w.-]+(?:\\s*,\\s*[\\w.-]+)*\\s*:)|legend(?=\\s*$)|(?:alt|opt)(?=\\s+\")|else(?=\\s|$)|end(?=\\s*$)|option(?=\\s+[A-Za-z0-9][\\w-]*\\s+\")|question(?=\\s+\")|role(?=\\s+[^\\s\"]+(?:\\s+[^\\s\"]+)?\\s+\"))(.*)$",
       "captures": {
         "1": {
           "name": "entity.name.type.lede"
@@ -1755,7 +1755,7 @@
     },
     "meta.edge": {
       "name": "meta.edge.lede",
-      "match": "^\\s*([A-Za-z][\\w-]*)(:)\\s+(?=.*(?:<->|-->|->|\\s-x-))(.*)$",
+      "match": "^\\s*([a-z_][\\w-]*)(:)\\s+(?=.*(?:<->|-->|->|\\s-x-))(.*)$",
       "captures": {
         "1": {
           "name": "entity.name.type.lede"
@@ -1780,7 +1780,7 @@
     },
     "meta.node": {
       "name": "meta.node.lede",
-      "match": "^\\s*([A-Za-z][\\w-]*)(:)\\s+([A-Za-z0-9_][\\w.-]*)(?=\\s+\")(.*)$",
+      "match": "^\\s*([a-z_][\\w-]*)(:)\\s+([A-Za-z0-9_][\\w.-]*)(?=\\s+\")(.*)$",
       "captures": {
         "1": {
           "name": "entity.name.type.lede"
@@ -1805,7 +1805,7 @@
     },
     "meta.row": {
       "name": "meta.row.lede",
-      "match": "^\\s*([A-Za-z][\\w-]*)(:)\\s+(?=.*\\s\\|(?:\\s|$))(.*)$",
+      "match": "^\\s*([a-z_][\\w-]*)(:)\\s+(?=.*\\s\\|(?:\\s|$))(.*)$",
       "captures": {
         "1": {
           "name": "entity.name.type.lede"

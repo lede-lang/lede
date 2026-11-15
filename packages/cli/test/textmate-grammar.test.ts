@@ -254,6 +254,10 @@ const SAMPLES: [line: string, scope: string | undefined][] = [
   ['Warning: the end of the file is near', undefined],
   ['Result: done', undefined],
   ['Summary: the bucket list is long', undefined],
+  // a capitalised NAME is prose: no declared name in the examples starts with a capital, and prose lines often do
+  ['Result: a -> b', undefined],
+  ['Flow: request -> queue | worker', undefined],
+  ['Arch: api "Payments API"', undefined],
   // inline markup, in a paragraph: the earliest inline match is the rule
   ['`code` at the start', 'markup.inline.raw.lede'],
   ['Some **bold** words', 'markup.bold.lede'],
