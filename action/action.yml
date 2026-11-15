@@ -1,0 +1,58 @@
+name: Build Lede pages
+description: Build .lede files to self-contained HTML pages
+author: lede-lang
+branding:
+  icon: file-text
+  color: blue
+
+inputs:
+  files:
+    description: 'Glob patterns or paths of .lede files, one per line, relative to the repository root.'
+    required: false
+    default: '**/*.lede'
+  out-dir:
+    description: 'Folder the HTML is written to, relative to the repository root. The folders of each source file are kept under it.'
+    required: false
+    default: '_site'
+  version:
+    description: >-
+      Version or dist-tag of @lede-lang/cli to run. Empty (the default) means the action's own release when it is a version tag
+      such as v0.2.4, and the latest published CLI for any other ref (a branch, a commit SHA or a major tag). The CLI on npm can
+      lag the repository, so pin this if the output must not change.
+    required: false
+    default: ''
+  check:
+    description: 'Run "lede check" on every file first and fail on errors (warnings do not fail it).'
+    required: false
+    default: 'true'
+  artifact:
+    description: 'Pass --artifact: write only title, style and main, for hosts that wrap the page themselves.'
+    required: false
+    default: 'false'
+
+outputs:
+  files:
+    description: 'The built HTML files, one path per line, relative to the repository root.'
+    value: ${{ steps.build.outputs.files }}
+  out-dir:
+    description: 'The output folder, relative to the repository root.'
+    value: ${{ steps.build.outputs.out-dir }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+    - id: build
+      shell: bash
+      # Inputs go through env, never into the script text, so a value cannot become shell code.
+      env:
+        LEDE_FILES: ${{ inputs.files }}
+        LEDE_OUT_DIR: ${{ inputs.out-dir }}
+        LEDE_VERSION: ${{ inputs.version }}
+        LEDE_CHECK: ${{ inputs.check }}
+        LEDE_ARTIFACT: ${{ inputs.artifact }}
+        LEDE_ACTION_REF: ${{ github.action_ref }}
+        ACTION_PATH: ${{ github.action_path }}
+      run: node "$ACTION_PATH/build.mjs"
