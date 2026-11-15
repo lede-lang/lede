@@ -51,6 +51,21 @@ None of these can be changed by a tool input; the input schemas have no such fie
 - `source` is limited to 1 MB (1,048,576 bytes of UTF-8); a larger one is refused with an error that says so.
 - A page with errors is an answer, not a crash: the diagnostics come back and the server keeps running.
 
+## Before publishing
+
+The package is private (`"private": true`) and cannot be packed as it stands:
+
+- `src/tools.ts` imports the CLI's path confinement by relative path, `../../cli/src/confine.ts`, which is not inside this package
+  and would not be in its tarball. Either export it from a published package (a Node-only subpath such as
+  `@lede-lang/cli/confine`, built to `dist/` like the rest of the CLI) and import it by name, or have this package's build bundle
+  that one file into its own `dist/`. Keep one copy of the confinement code either way.
+- There is no build: no `tsconfig.build.json`, and `pnpm build` does not reach this package, so the `dist/server.js` that
+  `publishConfig.bin` names is never written. Node does not strip types under `node_modules`, so the `src/` entry cannot ship.
+- `scripts/pack.ts` (`PACKAGES`) and the release workflow publish only the three other packages; add this one there and to
+  `pnpm test:pack` when it goes out.
+- The MCP SDK brings about 90 packages (express and hono among them, for transports this server does not use). A hand-written
+  stdio JSON-RPC loop for the six methods this server answers would have none; decide before publishing.
+
 ## What it does not do
 
 It does not serve over HTTP, watch files, fix pages (`lede check --fix`), inline local images, take a `--theme`, or write output
