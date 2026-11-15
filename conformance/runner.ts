@@ -91,7 +91,12 @@ function main(argv: string[]): number {
     process.stderr.write('usage: node conformance/runner.ts --cmd "<command>" [--filter TEXT] [--timeout MS] [--json]\n');
     return 2;
   }
-  const report = runSuite(cmd, { filter: opt('--filter'), timeout: Number(opt('--timeout') ?? 20000) });
+  const timeout = Number(opt('--timeout') ?? 20000);
+  if (!Number.isInteger(timeout) || timeout <= 0) {
+    process.stderr.write('--timeout takes a whole number of milliseconds\n');
+    return 2;
+  }
+  const report = runSuite(cmd, { filter: opt('--filter'), timeout });
   if (argv.includes('--json')) process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
   else {
     for (const r of report.results) process.stdout.write(`${r.pass ? 'pass' : 'FAIL'}  ${r.name}${r.reason ? `  ${r.reason}` : ''}\n`);

@@ -33,6 +33,8 @@ node conformance/runner.ts --cmd "./my-lede" --json > result.json   # machine-re
 ```
 
 Other options: `--timeout MS` per case (default 20000). The exit status is non-zero unless every case passes.
+The command runs under `/bin/sh` with the file path single-quoted, so on Windows run it from WSL or another POSIX shell. A timeout
+stops that shell; a process your command starts in the background is not stopped with it.
 The reference CLI scores 100% (`--cmd "node packages/cli/src/cli.ts"`).
 
 ## Reporting a result
