@@ -2,7 +2,7 @@
 // interpolated into a shell command: every input arrives as an environment variable, and the CLI is run with an argument vector,
 // never through a shell. It never passes --unsafe-html or --allow-remote, and has no input that could.
 import { spawnSync } from 'node:child_process';
-import { appendFileSync, globSync, mkdirSync, statSync } from 'node:fs';
+import { appendFileSync, mkdirSync, readdirSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
 import { dirname, isAbsolute, join, normalize, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -42,32 +42,54 @@ function inside(root, p, what) {
 }
 
 /**
+ * A glob as a regular expression over `/`-separated relative paths: `**` matches any number of folders, `*` anything within one
+ * name, `?` one character. Nothing else is special. (fs.globSync is experimental in Node 22.12, which this repository supports.)
+ */
+export function globRegExp(pattern) {
+  let re = '';
+  for (let i = 0; i < pattern.length; i++) {
+    const c = pattern[i];
+    if (c === '*' && pattern[i + 1] === '*') {
+      i++;
+      if (pattern[i + 1] === '/') {
+        i++;
+        re += '(?:[^/]*/)*';
+      } else re += '.*';
+    } else if (c === '*') re += '[^/]*';
+    else if (c === '?') re += '[^/]';
+    else re += c.replace(/[\\^$.|+()[\]{}]/g, '\\$&');
+  }
+  return new RegExp(`^${re}$`);
+}
+
+/** Every regular file under `dir`, as `/`-separated paths relative to it. Symbolic links are not followed or listed. */
+function walk(dir, skip, prefix = '') {
+  const out = [];
+  for (const d of readdirSync(dir, { withFileTypes: true })) {
+    const rel = prefix + d.name;
+    if (skip(rel)) continue;
+    if (d.isDirectory()) out.push(...walk(join(dir, d.name), skip, `${rel}/`));
+    else if (d.isFile()) out.push(rel);
+  }
+  return out;
+}
+
+/**
  * The `.lede` files the patterns name, relative to `root`, sorted and unique. Patterns are one per line (a glob or a path).
- * node_modules, .git and the output folder are skipped.
+ * node_modules, .git and the output folder are skipped, and so are symbolic links.
  */
 export function findFiles(root, patterns, outDir) {
-  const found = new Set();
   const out = relative(root, outDir).split(sep).join('/');
-  const skip = (p) => {
-    const q = String(p.name ?? p)
-      .split(sep)
-      .join('/');
-    return /(^|\/)(node_modules|\.git)(\/|$)/.test(q) || (out !== '' && (q === out || q.startsWith(`${out}/`)));
-  };
+  const skip = (q) => /(^|\/)(node_modules|\.git)$/.test(q) || (out !== '' && q === out);
+  const res = [];
   for (const raw of patterns.split(/\r?\n/)) {
     const pat = raw.trim();
     if (!pat) continue;
     inside(root, pat, 'file pattern');
-    for (const hit of globSync(pat, {
-      cwd: root,
-      exclude: (d) => /^(node_modules|\.git)$/.test(typeof d === 'string' ? (d.split(/[\\/]/).pop() ?? '') : d.name),
-    })) {
-      const rel = String(hit).split(sep).join('/');
-      if (skip(rel) || !rel.endsWith('.lede')) continue;
-      if (statSync(join(root, rel)).isFile()) found.add(rel);
-    }
+    res.push(globRegExp(normalize(pat).split(sep).join('/')));
   }
-  return [...found].toSorted((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+  const all = walk(root, skip).filter((f) => f.endsWith('.lede'));
+  return all.filter((f) => res.some((re) => re.test(f))).toSorted((a, b) => (a < b ? -1 : a > b ? 1 : 0));
 }
 
 /** The output path of a source file: the same folders under `outDir`, `.html` in place of `.lede`. */
@@ -107,7 +129,7 @@ export function main(env, log = console.log) {
   const result = { files: built, outDir: relative(root, outDir).split(sep).join('/') };
   if (env.GITHUB_OUTPUT) {
     const d = `lede_${randomBytes(8).toString('hex')}`;
-    appendFileSync(env.GITHUB_OUTPUT, `files<<${d}\n${built.join('\n')}\n${d}\nout-dir=${result.outDir}\n`);
+    appendFileSync(env.GITHUB_OUTPUT, `files<<${d}\n${built.join('\n')}\n${d}\nout-dir<<${d}\n${result.outDir}\n${d}\n`);
   }
   return result;
 }

@@ -3,11 +3,11 @@
 // is checked as text.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, symlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { findFiles, flag, main, outputFor, resolveVersion } from '../../../action/build.mjs';
+import { findFiles, flag, globRegExp, main, outputFor, resolveVersion } from '../../../action/build.mjs';
 
 const ACTION = new URL('../../../action/', import.meta.url).pathname;
 const CLI = new URL('../src/cli.ts', import.meta.url).pathname;
@@ -100,6 +100,17 @@ test('findFiles takes globs, skips node_modules and the output folder, and sorts
   assert.throws(() => findFiles(root, '../*.lede', join(root, '_site')), /relative path/);
   assert.throws(() => findFiles(root, '/etc/*.lede', join(root, '_site')), /relative path/);
   assert.equal(outputFor('_site', 'docs/b.lede'), join('_site', 'docs/b.html'));
+  assert.deepEqual(findFiles(root, 'docs/**/*.lede', join(root, '_site')), ['docs/b.lede', 'docs/deep/c d.lede']);
+  assert.deepEqual(findFiles(root, './docs/b.lede', join(root, '_site')), ['docs/b.lede']);
+  symlinkSync(join(root, 'a.lede'), join(root, 'link.lede'));
+  assert.ok(!findFiles(root, '*.lede', join(root, '_site')).includes('link.lede'), 'a symbolic link is not followed');
+});
+
+test('globRegExp: ** spans folders, * and ? stay within a name, the rest is literal', () => {
+  const m = (g: string, p: string) => globRegExp(g).test(p);
+  assert.ok(m('**/*.lede', 'a.lede') && m('**/*.lede', 'x/y/a.lede'));
+  assert.ok(!m('*.lede', 'x/a.lede') && m('?.lede', 'a.lede') && !m('?.lede', 'ab.lede'));
+  assert.ok(m('a+b (1).lede', 'a+b (1).lede') && !m('a.lede', 'axlede'));
 });
 
 test('the script builds every file under out-dir, keeps the folders and writes the step outputs', () => {
@@ -118,7 +129,7 @@ test('the script builds every file under out-dir, keeps the folders and writes t
   const o = readFileSync(out, 'utf8');
   assert.match(
     o,
-    /^files<<(lede_[0-9a-f]+)\n_site\/-dash\.html\n_site\/a\.html\n_site\/docs\/b\.html\n_site\/docs\/deep\/c d\.html\n\1\nout-dir=_site\n$/,
+    /^files<<(lede_[0-9a-f]+)\n_site\/-dash\.html\n_site\/a\.html\n_site\/docs\/b\.html\n_site\/docs\/deep\/c d\.html\n\1\nout-dir<<\1\n_site\n\1\n$/,
   );
 });
 

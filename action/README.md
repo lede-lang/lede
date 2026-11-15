@@ -14,7 +14,7 @@ two apart and costs one path segment in `uses:`. Moving it to the root later is 
 
 | Input      | Default      | Meaning                                                                                                    |
 | ---------- | ------------ | ---------------------------------------------------------------------------------------------------------- |
-| `files`    | `**/*.lede`  | Globs or paths of `.lede` files, one per line, relative to the repository root. `node_modules` and `.git` are skipped, and so is `out-dir`. |
+| `files`    | `**/*.lede`  | Globs or paths of `.lede` files, one per line, relative to the repository root. `**` spans folders, `*` and `?` match within a name, and nothing else is special. `node_modules`, `.git`, `out-dir` and symbolic links are skipped. |
 | `out-dir`  | `_site`      | Where the HTML goes. Each file keeps its folders: `docs/a.lede` becomes `_site/docs/a.html`.               |
 | `version`  | (empty)      | The `@lede-lang/cli` version or dist-tag to run through `npx`. See below.                                  |
 | `check`    | `true`       | Run `lede check` on every file first; an error fails the step (a warning does not).                        |
@@ -168,8 +168,8 @@ One zip keeps the folders: release assets are a flat list, so two `a.html` files
 ## Pinning
 
 The examples pin third-party actions by major version for readability. For a stricter supply chain, pin each by full commit SHA
-with the version in a comment (`uses: actions/checkout@<sha> # v4.x.y`); the action's own `actions/setup-node@v4` step is by major
-version too.
+with the version in a comment (`uses: actions/checkout@<sha> # v4.x.y`). The action's own `actions/setup-node` step is pinned by
+SHA. It installs Node 22 and puts it first on `PATH`, so later steps in the same job run Node 22 too.
 
 ## Trying it locally
 
