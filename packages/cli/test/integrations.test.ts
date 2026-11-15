@@ -15,7 +15,6 @@ const single = [
   'integrations/copilot/copilot-instructions.md',
   'integrations/gemini/GEMINI.md',
   'integrations/system-prompt/lede.txt',
-  'integrations/gemini/skills/lede/SKILL.md',
 ];
 
 test('every generated integration file is fresh', () => {
@@ -28,7 +27,7 @@ test('every integration carries the model reference verbatim', () => {
 });
 
 test('generated files say where they came from, where the format allows a comment', () => {
-  for (const path of single.filter((p) => !p.endsWith('SKILL.md'))) assert.match(read(path), /generated from skill\/lede\/SKILL\.md/, path);
+  for (const path of single) assert.match(read(path), /generated from skill\/lede\/SKILL\.md/, path);
 });
 
 test("the AGENTS.md snippet fits Codex's 32 KiB default with room for the project's own file", () => {
@@ -56,8 +55,11 @@ test('the Gemini manifest parses, tracks the package version and names an existi
   assert.ok(read('integrations/gemini/GEMINI.md').length > 0);
 });
 
-test('the Gemini skill copy is identical to the skill folder', () => {
-  assert.equal(read('integrations/gemini/skills/lede/SKILL.md'), read('skill/lede/SKILL.md'));
+// Skill scanners (`npx skills add`) list one skill per name and took a committed copy over the source when there was one.
+test('the repository holds one SKILL.md', () => {
+  const r = spawnSync('git', ['ls-files', '*SKILL.md'], { cwd: root, encoding: 'utf8' });
+  assert.equal(r.status, 0, r.stderr);
+  assert.deepEqual(r.stdout.trim().split('\n'), ['skill/lede/SKILL.md']);
 });
 
 test('the system prompt snippet says how to compile', () => {

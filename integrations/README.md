@@ -2,7 +2,8 @@
 
 The skill is one source, `skill/lede/SKILL.md`. Everything under this folder except this file is generated from it by
 `node scripts/gen-integrations.ts` (`--check` fails when a file is stale, and the test suite runs that check). Do not edit a
-generated file; edit the skill and regenerate. Each file holds the same model reference, byte for byte.
+generated file; edit the skill and regenerate. Each file holds the same model reference, byte for byte. There is no copy of the skill folder here: a second `SKILL.md` would
+be listed by skill scanners in place of the source.
 
 Every route needs the compiler: `npx @lede-lang/cli build page.lede -o page.html` (Node 22.12 or later). The agent asks before
 installing anything.
@@ -21,5 +22,5 @@ the file and a request for a page, produces a `.lede` file that passes `lede che
 | GitHub Copilot (skill) | `skill/lede/` | `.github/skills/lede/`, `.claude/skills/lede/` or `.agents/skills/lede/` | copy the folder | untested |
 | GitHub Copilot (instructions) | `integrations/copilot/copilot-instructions.md` | add to `.github/copilot-instructions.md` | `cat integrations/copilot/copilot-instructions.md >> .github/copilot-instructions.md` | untested |
 | Cursor | `integrations/cursor/lede.mdc` | `.cursor/rules/lede.mdc` (the extension must be `.mdc`); applies when `.lede` files are in play, or ask for it | `mkdir -p .cursor/rules && cp integrations/cursor/lede.mdc .cursor/rules/` | structure checked (frontmatter shape); untested in Cursor. Cursor also reads `AGENTS.md`, so the Codex row works there too |
-| Gemini CLI | `integrations/gemini/` (manifest, `GEMINI.md`, `skills/lede/`) | a Gemini CLI extension | `gemini extensions install <path or git URL of this folder>` | structure checked (manifest parses, version equals the CLI's); untested in Gemini CLI |
+| Gemini CLI | `integrations/gemini/` (manifest and `GEMINI.md`) | a Gemini CLI extension | from a clone, `gemini extensions install ./integrations/gemini` (a local path; the manifest is in this folder, not at the repository root) | structure checked (manifest parses, version equals the CLI's); untested in Gemini CLI |
 | Any chat model or API | `integrations/system-prompt/lede.txt` | the system prompt, or the first message | paste it; compile the reply with `npx @lede-lang/cli build page.lede -o page.html` | untested |

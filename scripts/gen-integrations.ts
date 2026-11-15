@@ -2,8 +2,8 @@
 // (adoption spec task C2, internal spec, lede-lang/meta). The body text is cut from SKILL.md, never retyped, so the model reference
 // exists once. `--check` writes nothing and fails when a generated file is missing, stale or breaks a gate (AGENTS.md under 32 KiB).
 //   node scripts/gen-integrations.ts [--check]
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
-import { dirname, join, relative } from 'node:path';
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 
 const root = join(import.meta.dirname, '..');
 const SKILL_DIR = join(root, 'skill', 'lede');
@@ -34,7 +34,9 @@ const version = (JSON.parse(readFileSync(join(root, 'packages', 'cli', 'package.
 const section = (heading: string): string => `${heading}\n\n${RULE}\n\n${body}\n`;
 const htmlMarker = `<!-- ${MARKER} -->\n`;
 
-const files = new Map<string, string | Buffer>();
+// No copy of skill/lede/ goes under gemini/: a second committed SKILL.md named lede is what `npx skills add lede-lang/lede`
+// installs in place of the source, and GEMINI.md already carries the reference.
+const files = new Map<string, string>();
 const agents = `${htmlMarker}${section('## Lede')}`;
 files.set('agents-md/AGENTS.md', agents);
 files.set(
@@ -52,16 +54,10 @@ files.set(
   `[${MARKER}]\n\nYou can write pages as Lede, a line-oriented page format, instead of HTML.\n${RULE}\n\n${body}\n`,
 );
 
-function walk(dir: string): string[] {
-  return readdirSync(dir).flatMap((n) => (statSync(join(dir, n)).isDirectory() ? walk(join(dir, n)) : [join(dir, n)]));
-}
-for (const f of walk(SKILL_DIR)) files.set(join('gemini', 'skills', 'lede', relative(SKILL_DIR, f)), readFileSync(f));
-
-const bytes = (v: string | Buffer): number => (typeof v === 'string' ? Buffer.byteLength(v) : v.length);
+const bytes = (v: string): number => Buffer.byteLength(v);
 const problems: string[] = [];
-if (bytes(files.get('agents-md/AGENTS.md')!) >= AGENTS_LIMIT)
-  problems.push(`AGENTS.md is ${bytes(files.get('agents-md/AGENTS.md')!)} bytes; the limit is ${AGENTS_LIMIT}`);
-process.stdout.write(`gen-integrations: AGENTS.md snippet is ${bytes(files.get('agents-md/AGENTS.md')!)} bytes (limit ${AGENTS_LIMIT})\n`);
+if (bytes(agents) >= AGENTS_LIMIT) problems.push(`AGENTS.md is ${bytes(agents)} bytes; the limit is ${AGENTS_LIMIT}`);
+process.stdout.write(`gen-integrations: AGENTS.md snippet is ${bytes(agents)} bytes (limit ${AGENTS_LIMIT})\n`);
 
 const check = process.argv.includes('--check');
 let stale = false;
@@ -69,22 +65,18 @@ if (check) {
   for (const [name, content] of files) {
     const path = join(OUT, name);
     const have = existsSync(path) ? readFileSync(path) : null;
-    if (!have || !have.equals(typeof content === 'string' ? Buffer.from(content) : content)) {
+    if (!have || !have.equals(Buffer.from(content))) {
       process.stderr.write(`gen-integrations: ${name} is out of date; run node scripts/gen-integrations.ts\n`);
       stale = true;
     }
   }
-  // A leftover file under the generated skill copy is stale too.
-  const copy = join(OUT, 'gemini', 'skills', 'lede');
-  if (existsSync(copy))
-    for (const f of walk(copy)) {
-      if (!files.has(relative(OUT, f))) {
-        process.stderr.write(`gen-integrations: ${relative(OUT, f)} is not generated; run node scripts/gen-integrations.ts\n`);
-        stale = true;
-      }
+  // Anything else under integrations/ is not generated, so nothing regenerates it either (README.md is written by hand).
+  for (const name of readdirSync(OUT, { recursive: true, encoding: 'utf8' }))
+    if (name !== 'README.md' && !files.has(name.split('\\').join('/')) && statSync(join(OUT, name)).isFile()) {
+      process.stderr.write(`gen-integrations: integrations/${name} is not generated; remove it or add it to the generator\n`);
+      stale = true;
     }
 } else {
-  rmSync(join(OUT, 'gemini', 'skills'), { recursive: true, force: true });
   for (const [name, content] of files) {
     mkdirSync(dirname(join(OUT, name)), { recursive: true });
     writeFileSync(join(OUT, name), content);
