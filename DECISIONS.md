@@ -1125,7 +1125,7 @@ the choices in it. None of it changes the parser, the renderer, the spec, the mo
   resource `lede://spec/model`. No tool input can turn on raw HTML, remote resources or the shell; file loads are off unless
   the server starts with `--root`, and then confined as in the CLI; no tool writes a file; input is capped at 1 MB. It is
   not published: it has no build, it reuses the CLI's confinement by a relative import, and the official SDK brings about 90
-  packages for transports it does not use. Whether to keep the SDK or write the six-method stdio loop by hand is open.
+  packages for transports it does not use. Whether to keep the SDK or write the six-method stdio loop by hand is open. The SDK was replaced by a hand-written stdio loop, and confinement is imported from the CLI's export (owner's decision, 2026-11-17).
 - **Conformance runner (`conformance/runner.ts`, `docs/implementing.md`).** The suite can be pointed at any command that
   answers `ast FILE` and `check --json FILE`. The contract is `meta`, `blocks` and `data` of the AST, and severity, code,
   line and column of each diagnostic, in order; message text and `detail` are not compared. Rendering is not part of

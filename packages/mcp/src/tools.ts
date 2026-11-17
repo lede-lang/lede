@@ -3,8 +3,8 @@ import { readFileSync, realpathSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parse, type Diagnostic, type ParseOptions } from '@lede-lang/core';
 import { compile } from '@lede-lang/html';
-// The CLI's confinement, imported by path inside the workspace: the cli package exports no module, and Node does not strip types under node_modules.
-import { confine, unreadable } from '../../cli/src/confine.ts';
+// The CLI's confinement, the one copy: exported by the cli package as a subpath.
+import { confine, unreadable } from '@lede-lang/cli/confine';
 
 /** The largest `source` a tool takes, in bytes of UTF-8. */
 export const MAX_SOURCE_BYTES = 1024 * 1024;

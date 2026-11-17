@@ -1,45 +1,29 @@
-// The server is spawned over stdio and spoken to with the MCP SDK's own client, so these tests are also the check that a real
-// client can connect, list tools and call them.
+// The server is spawned over stdio and spoken to in raw JSON-RPC (test/rpc.ts): tools, resources, the security defaults and startup.
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { after, before, test } from 'node:test';
-import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
+import { Rpc, serverPath as server, type Called } from './rpc.ts';
 
-const server = join(import.meta.dirname, '../src/server.ts');
 const specFile = join(import.meta.dirname, '../../../spec/model-spec.md');
 
-const clients: Client[] = [];
-async function connect(...args: string[]): Promise<Client> {
-  const client = new Client({ name: 'lede-mcp-test', version: '0.0.0' });
-  await client.connect(new StdioClientTransport({ command: process.execPath, args: [server, ...args], stderr: 'pipe' }));
+const clients: Rpc[] = [];
+async function connect(...args: string[]): Promise<Rpc> {
+  const client = new Rpc(...args);
   clients.push(client);
+  await client.initialize();
   return client;
 }
 
-interface Called {
-  text: string;
-  isError: boolean;
-  structured: { ok?: boolean; diagnostics?: { severity: string; code: string; line: number; col: number; message: string }[] } | undefined;
-}
-async function call(c: Client, name: string, args: Record<string, unknown> = {}): Promise<Called> {
-  const r = (await c.callTool({ name, arguments: args })) as {
-    content: { type: string; text: string }[];
-    isError?: boolean;
-    structuredContent?: Called['structured'];
-  };
-  assert.equal(r.content[0].type, 'text');
-  return { text: r.content[0].text, isError: r.isError === true, structured: r.structuredContent };
-}
+const call = (c: Rpc, name: string, args: Record<string, unknown> = {}): Promise<Called> => c.call(name, args);
 
 let tmp = '';
 let outside = '';
 let root = '';
-let open: Client; // started without --root
-let rooted: Client; // started with --root
+let open: Rpc; // started without --root
+let rooted: Rpc; // started with --root
 
 before(async () => {
   tmp = mkdtempSync(join(tmpdir(), 'lede-mcp-'));
@@ -55,21 +39,24 @@ before(async () => {
 });
 
 after(async () => {
-  await Promise.all(clients.map((c) => c.close()));
+  for (const c of clients) c.close();
   if (tmp) rmSync(tmp, { recursive: true, force: true });
 });
 
 const GOOD = '# Hello\n\nA paragraph.\n\ndiagram f\nf: a -> b\n';
 
 test('initialize names the server and offers tools and resources', async () => {
-  const info = open.getServerVersion();
-  assert.equal(info?.name, 'lede');
-  assert.ok(open.getServerCapabilities()?.tools);
-  assert.ok(open.getServerCapabilities()?.resources);
+  const c = new Rpc();
+  clients.push(c);
+  const { result } = await c.initialize();
+  assert.equal(result.serverInfo.name, 'lede');
+  assert.match(result.serverInfo.version, /^\d+\.\d+\.\d+$/);
+  assert.ok(result.capabilities.tools);
+  assert.ok(result.capabilities.resources);
 });
 
 test('tools/list: the three tools, with the input shapes the design fixes', async () => {
-  const { tools } = await open.listTools();
+  const { tools } = (await open.request('tools/list')).result as { tools: { name: string; inputSchema: object }[] };
   assert.deepEqual(tools.map((t) => t.name).toSorted(), ['lede_check', 'lede_compile', 'lede_spec']);
   const by = Object.fromEntries(
     tools.map((t) => [t.name, t.inputSchema as { properties?: Record<string, { type: string }>; required?: string[] }]),
@@ -129,7 +116,12 @@ test('lede_compile: a page with errors returns diagnostics and no HTML, not a cr
 
 test('raw html is sanitized, with no way to ask otherwise', async () => {
   const hostile = '# T\n\nhtml: <p onclick="x()">hi</p><script>alert(1)</script><iframe src="https://evil.example/"></iframe>\n';
-  const r = await call(open, 'lede_compile', { source: hostile, unsafeHtml: true, unsafe_html: true });
+  for (const extra of ['unsafeHtml', 'unsafe_html']) {
+    const refused = await call(open, 'lede_compile', { source: hostile, [extra]: true });
+    assert.equal(refused.isError, true, `${extra} is not an argument`);
+    assert.doesNotMatch(refused.text, /<p/);
+  }
+  const r = await call(open, 'lede_compile', { source: hostile });
   assert.doesNotMatch(r.text, /<script/i);
   assert.doesNotMatch(r.text, /onclick/i);
   assert.doesNotMatch(r.text, /<iframe/i);
@@ -141,13 +133,18 @@ test('a remote image is not emitted, with no way to ask otherwise', async () => 
     '# T\n\nimage https://example.com/a.png "A chart"\n',
     '# T\n\nhtml: <p><img src="https://evil.example/?q=1" alt="a"></p>\n',
   ]) {
-    const r = await call(open, 'lede_compile', { source: src, allowRemote: true, allow_remote: true });
+    for (const extra of ['allowRemote', 'allow_remote']) {
+      assert.equal((await call(open, 'lede_compile', { source: src, [extra]: true })).isError, true, extra);
+    }
+    const r = await call(open, 'lede_compile', { source: src });
     assert.doesNotMatch(r.text, /https?:\/\/(example\.com|evil\.example)/, src);
   }
 });
 
 test('--shell is not available: a page with a question has no script', async () => {
-  const r = await call(open, 'lede_compile', { source: '# Go\n\nask a | Who?\nexport json\n', shell: true });
+  const src = '# Go\n\nask a | Who?\nexport json\n';
+  assert.equal((await call(open, 'lede_compile', { source: src, shell: true })).isError, true, 'shell is not an argument');
+  const r = await call(open, 'lede_compile', { source: src });
   assert.doesNotMatch(r.text, /<script/i);
 });
 
@@ -200,14 +197,14 @@ test('lede_spec and lede://spec/model are the model reference, byte for byte', a
   assert.equal(tool.text, want);
   assert.equal(Buffer.from(tool.text).equals(readFileSync(specFile)), true);
 
-  const { resources } = await open.listResources();
+  const { resources } = (await open.request('resources/list')).result as { resources: { uri: string }[] };
   assert.deepEqual(
     resources.map((r) => r.uri),
     ['lede://spec/model'],
   );
-  const read = await open.readResource({ uri: 'lede://spec/model' });
+  const read = (await open.request('resources/read', { uri: 'lede://spec/model' })).result as { contents: { text?: string }[] };
   const [content] = read.contents;
-  assert.equal('text' in content ? content.text : undefined, want);
+  assert.equal(content.text, want);
 });
 
 test('oversize input is refused with a clear error, at the limit it is not', async () => {

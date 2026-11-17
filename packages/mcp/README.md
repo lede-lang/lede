@@ -13,6 +13,20 @@ instead of HTML. It gives an MCP client three tools and one resource, over stdio
 The resource is named for what it holds, the model reference, and not for the format version, so it does not read as the full
 `spec/lede-0.1.md`.
 
+## What it costs to run
+
+The server runs locally, as a child process of your MCP client, over stdio. It needs no hosting, no network and no account: nothing
+listens on a port. It has no third-party protocol dependency: the stdio JSON-RPC loop is written by hand (about 300 lines,
+`src/server.ts`), and the package depends only on the other three Lede packages.
+
+What it costs the model is the size of what the client loads when it connects. The `tools/list` response is 1,591 bytes (the whole
+JSON-RPC line, measured by `test/protocol.test.ts`), which is roughly 400 tokens. That token figure is an estimate, bytes divided
+by 4, not a count: no tokenizer was run on it. The tool descriptions are the whole of it; `lede_spec` and the resource add the
+model reference (see `spec/model-spec.md`) only when the model asks for it.
+
+Protocol revisions answered: 2025-11-25, 2025-06-18, 2025-03-26, 2024-11-05 and 2024-10-07, the list in the MCP TypeScript SDK
+1.32.2. `initialize` answers with the client's revision when it is one of these, and with 2025-11-25 otherwise.
+
 ## Install
 
 This package is not published yet. Every `npx -y @lede-lang/mcp` below applies once it is; from a checkout, run
@@ -53,18 +67,16 @@ None of these can be changed by a tool input; the input schemas have no such fie
 
 ## Before publishing
 
-The package is private (`"private": true`) and cannot be packed as it stands:
+The package is private (`"private": true`); the owner publishes it. It builds like the other three (`pnpm build` writes `dist/`,
+and `publishConfig` points the packed package at it), and it imports the CLI's confinement as `@lede-lang/cli/confine`. What is
+left:
 
-- `src/tools.ts` imports the CLI's path confinement by relative path, `../../cli/src/confine.ts`, which is not inside this package
-  and would not be in its tarball. Either export it from a published package (a Node-only subpath such as
-  `@lede-lang/cli/confine`, built to `dist/` like the rest of the CLI) and import it by name, or have this package's build bundle
-  that one file into its own `dist/`. Keep one copy of the confinement code either way.
-- There is no build: no `tsconfig.build.json`, and `pnpm build` does not reach this package, so the `dist/server.js` that
-  `publishConfig.bin` names is never written. Node does not strip types under `node_modules`, so the `src/` entry cannot ship.
-- `scripts/pack.ts` (`PACKAGES`) and the release workflow publish only the three other packages; add this one there and to
-  `pnpm test:pack` when it goes out.
-- The MCP SDK brings about 90 packages (express and hono among them, for transports this server does not use). A hand-written
-  stdio JSON-RPC loop for the six methods this server answers would have none; decide before publishing.
+- Try it in a real client. The Claude Code route in "Install" was tried against the earlier SDK-based server; the hand-written
+  loop has been driven only by this package's tests (raw JSON-RPC over stdio), not by Claude Code, Claude Desktop or Cursor.
+- Add it to `scripts/pack.ts` (`PACKAGES`, after `cli`, which it depends on) and to `test/pack.test.ts`, so that the release
+  workflow packs and publishes it and `pnpm test:pack` installs it. Until then neither does, and `scripts/set-version.ts` keeps
+  it at the shared version through its own entry.
+- Publish it to npm (the owner's step, 2FA), then list it in the MCP registry.
 
 ## What it does not do
 

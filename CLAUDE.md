@@ -35,7 +35,7 @@ pnpm lede build page.lede -o page.html   # also: check [--json] [--fix], watch, 
 
 ## Architecture
 
-Three published packages, one pipeline: `core` parses, `render-html` draws, `cli` wires them. A fourth, `packages/mcp` (`@lede-lang/mcp`, a stdio MCP server), is private: it imports `cli/src/confine.ts` by relative path and has no build, so it cannot be packed yet (its README, "Before publishing").
+Three published packages, one pipeline: `core` parses, `render-html` draws, `cli` wires them. A fourth, `packages/mcp` (`@lede-lang/mcp`, a stdio MCP server with a hand-written JSON-RPC loop and no SDK), is private by the owner's choice: it builds to `dist/` with `pnpm build` and imports the confinement as `@lede-lang/cli/confine`, but `scripts/pack.ts` and the release workflow do not pack it (its README, "Before publishing").
 
 - `packages/core`: `LedeParser` (`parser.ts`) turns lines into typed blocks plus `Diagnostic`s (each has line, col, a code, and an optional machine-readable `detail`). `LedeStream` wraps it for incremental model output (`write` returns finished blocks, `snapshot` returns a renderable document for the text so far), so anything added to the parser must keep working mid-stream. `fix.ts` repairs source text from those diagnostics: it re-parses after each pass and discards a pass that adds errors.
 - `packages/render-html`: `render`/`compile` (`index.ts`) turn a `LedeDocument` into HTML; `chart.ts`, `diagram.ts` (elkjs layout), `sequence.ts`, `theme.ts` (CSS) are the drawers. Output is sanitized and fetches nothing remote unless `--allow-remote`. Rendering is async because of elkjs.
