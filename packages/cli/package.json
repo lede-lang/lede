@@ -31,6 +31,9 @@
   "bin": {
     "lede": "./src/cli.ts"
   },
+  "exports": {
+    "./confine": "./src/confine.ts"
+  },
   "dependencies": {
     "@lede-lang/core": "workspace:*",
     "@lede-lang/html": "workspace:*"
@@ -40,6 +43,12 @@
     "provenance": true,
     "bin": {
       "lede": "./dist/cli.js"
+    },
+    "exports": {
+      "./confine": {
+        "types": "./dist/confine.d.ts",
+        "default": "./dist/confine.js"
+      }
     }
   }
 }
