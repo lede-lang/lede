@@ -1068,3 +1068,98 @@ SKILL.md now lists, uncounted until a session has an API key.
   allows. Under `--theme` a page's `@accent` is ignored with W `theme-override`.
 
 Gate: D67 step 1 has not reported, so, as with D78 and D79, the PR is a draft and its merge timing is the owner's call.
+
+## D81. The proof pack: a replication kit, two stronger baselines, a second-family method and two rerunnable demos
+D47 moved the public harness and the non-Claude round to after launch. The numbers so far compare Lede with hand-written HTML
+only, on Claude-family writers only, from runs an outsider cannot repeat. This entry records the method choices of the pieces
+that close those gaps. Nothing here changes the parser, the renderer, the spec or a frozen prompt, so the D67 round is not
+affected; no model run has been made under this entry.
+
+- **`pnpm bench` (`bench/src/kit/`, `bench/REPLICATE.md`).** The writer step only: one request per task and arm, the arm's
+  prompt and the brief, written once, no validation, and no retry that could bill twice: only a connection that never opened,
+  or a 429, is retried, and any other failure (a 408, a 5xx, a 529) is charged at the worst case. The reader brings a key, the
+  prices and a cap; the kit prints an estimate, refuses to start above the cap, reserves each call at its worst case and
+  stops before the cap is passed. It holds no price table, because one would go stale. Judged rounds stay with `run.ts`
+  and `pairs.ts`, so a replication reproduces tokens, validity and build success, and not the win-or-tie figures.
+- **Open and sealed tasks.** The kit runs tasks 1 to 130 (the default is the retired gate set 101 to 130, D38) and refuses
+  131 to 185 (D69) on the numbers, before a file is read. A test pins the hashes of `C-lede-0.1.md` to `0.4.md` and of
+  every task file.
+- **Arms D and E.** D is HTML written against a preloaded stylesheet the writer knows only by its class list
+  (`bench/prompts/D-html-preloaded-css.md`, `bench/arms/preloaded.css`); E is a compact JSON UI spec
+  (`bench/prompts/E-json-ui.md`). They test whether the line syntax or merely the absence of CSS drives the saving of D50.
+  E has no renderer, so it measures tokens and structure, never looks. Validity for B, D and E is a structural check and is
+  more lenient than Lede's parser; the write-up says so wherever the columns sit side by side. If the gap to D or E is
+  small, that is reported as the result.
+- **API writers are not subagent writers.** Earlier rounds used isolated subagents; the kit sends the prompt over an API
+  with a closing line in the shape of `prompts/refine-revision.md`, and strips one outer code fence from a reply (recorded
+  per row). Kit results are therefore compared with other kit results, and not merged into the earlier tables.
+- **A second model family (`bench/SECOND-FAMILY.md`).** Any OpenAI-compatible endpoint, the writer prompt unchanged, tokens
+  taken from that provider's own usage figures and never from the Claude tokenizer. The stop rule is fixed before the run:
+  Lede validity more than 10 points under the Claude-family rate, or a saving over HTML (HTML tokens divided by Lede
+  tokens, "N times fewer", as in D50) under two thirds of the Claude-family saving, is the headline of the report. The
+  baseline is kit runs of `C-lede-0.5.md` where they exist, otherwise the D37 and D50 figures, which came from subagent
+  writers and other prompts and are only indicative.
+- **Exfiltration demo (`demos/exfil/`).** It calls no model: it takes the worst case, an injected model that writes the
+  leaking markup, in raw HTML, Markdown and Lede, and counts the requests that reach a stub host from headless Chromium. It
+  shows that a default `lede build` page makes no request without a click, and where that ends: a clicked link,
+  `--allow-remote`, `--unsafe-html` (a meta refresh still navigates) and `--artifact`, which carries no page policy of its
+  own. The wording the evidence supports is "no script and no automatic remote fetch; a link still needs a click", which is
+  narrower than "zero-JS is safe" and replaces it in new copy.
+- **Streaming and edit cost (`bench/src/stream-edit-demo.ts`, `bench/STREAM-EDIT.md`).** Computed from stored outputs with
+  the offline legacy tokenizer (D12), so the counts are not D50's units. The first-block rule for HTML is the earliest a
+  tag-level reading allows (any closed element with text, or an image), which favours HTML; it differs from D13's
+  heading-plus-block rule, so the two sets of figures are not interchangeable. Edit sizes are minimal patches between the
+  stored original and the stored edited page, a lower bound on what a model wrote. All stored writers are Claude-family.
+
+## D82. Distribution pieces: one skill source for other hosts, a private MCP server, a conformance runner, an editor grammar and an Action
+Lede is adopted by whoever writes the page, an agent or a person prompting one, so the format has to be present where agents
+load instructions and where pages get built. D47 moved these pieces to after launch. This entry records what was built and
+the choices in it. None of it changes the parser, the renderer, the spec, the model reference or the `lede` command.
+
+- **One source for every host (`scripts/gen-integrations.ts`, `integrations/`).** The `AGENTS.md` snippet, the Cursor rule,
+  the Copilot instructions, the Gemini CLI extension and a plain system prompt are generated from `skill/lede/SKILL.md`, with
+  the model reference cut from it and never retyped; `--check` fails when a file is stale or unknown. The repo holds exactly
+  one `SKILL.md`: a second copy under `integrations/` made `npx skills add` install the copy. A route is called tested only
+  when that host produced a page that passes `lede check`; `integrations/README.md` marks the rest untested.
+- **MCP server (`packages/mcp`, private).** Stdio only, three tools (`lede_check`, `lede_compile`, `lede_spec`) and the
+  resource `lede://spec/model`. No tool input can turn on raw HTML, remote resources or the shell; file loads are off unless
+  the server starts with `--root`, and then confined as in the CLI; no tool writes a file; input is capped at 1 MB. It is
+  not published: it has no build, it reuses the CLI's confinement by a relative import, and the official SDK brings about 90
+  packages for transports it does not use. Whether to keep the SDK or write the six-method stdio loop by hand is open. The SDK was replaced by a hand-written stdio loop, and confinement is imported from the CLI's export (owner's decision, 2026-11-17).
+- **Conformance runner (`conformance/runner.ts`, `docs/implementing.md`).** The suite can be pointed at any command that
+  answers `ast FILE` and `check --json FILE`. The contract is `meta`, `blocks` and `data` of the AST, and severity, code,
+  line and column of each diagnostic, in order; message text and `detail` are not compared. Rendering is not part of
+  conformance.
+- **Editor grammar (`editors/`).** A TextMate grammar whose patterns are also valid JavaScript, so a test can compile them
+  and check them against the parser's keyword list. A regex cannot know declared names, so a `name:` line is coloured only
+  when the name is lower case and what follows has the shape of an edge, a node or a row; it under-colours by design.
+- **GitHub Action (`action/`).** A composite action at `lede-lang/lede/action`, not at the repository root, so a tag of the
+  monorepo is not an action version by accident. It never passes `--unsafe-html` or `--allow-remote` and has no input for
+  them. It runs the CLI from npm, which can lag the repository.
+- **Positioning.** New copy says "no script and no automatic remote fetch" (D81) and names the flags that change it.
+- **Version files.** The Gemini manifest and the private package take the shared version in the release commit.
+
+## D83. Grammar stability is promised on its own track: spec 1.0 for the grammar, packages stay 0.x
+D22 and D47 tied two signals together: the 60% win-or-tie bar against frontier HTML "gates calling Lede finished (1.0)". A
+reader who only wants to know whether the grammar will break under them was told that nothing is stable until the pages look
+as good as HTML. The owner decided on 2026-11-17 to separate them.
+
+- **What is promised.** The grammar only: the keyword set, the line forms, the AST JSON shape, and the diagnostic codes with
+  their `detail` keys, as pinned by `conformance/`. It will be declared "Lede spec 1.0". Spec §8 already says the spec
+  version is independent of the package versions.
+- **What is not.** Rendering and CSS, exact HTML bytes, CLI flags, theme tokens, the wording of `spec/model-spec.md` (it
+  trades words under the token cap, D55), benchmark and token numbers, and the `--shell` runtime hash. The three packages
+  keep their 0.x line, and D47's meaning of a package 1.0 (the D22 quality bar) is unchanged. The safety statement in
+  `SECURITY.md` stays a separate promise.
+- **The rule after the freeze.** No change to a keyword, line form, AST shape or code meaning without a spec major. New
+  keywords are reserved one minor ahead. A new diagnostic may only be a warning; raising a warning to an error is breaking.
+  Until the freeze, a grammar change needs one minor's notice, a migration note and the conformance diff in its PR.
+- **When it takes effect.** Not yet. The spec is declared 1.0 when all of these hold: every diagnostic code and every
+  keyword has a conformance case; the AST JSON shape is written in the spec; the implementer's guide and runner have run
+  against the reference CLI (done, D82); the RFC process of spec §8 is published; the open grammar RFCs are settled or
+  deferred; and the D67 refinement verdict is in, so no grammar change is queued behind it. Until then the README says the
+  grammar is pinned by the conformance suite and names this decision, and claims no version.
+- **Rejected.** A stability label with no version (0.x still reads as unstable), and package 1.0.0 now (the release tooling
+  refuses anything not 0.x, D54 and D75, and it would spend "1.0" on something other than D47's meaning).
+- **Cost.** Two version numbers to explain. When the freeze happens, `lede --version` also names the spec version it
+  implements; that is a public CLI change and goes in spec §9 and `--help` in the same change.

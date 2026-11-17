@@ -1,0 +1,28 @@
+{
+  "name": "lede-language",
+  "displayName": "Lede",
+  "description": "Syntax highlighting for Lede (.lede) documents",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "publisher": "lede-lang",
+  "engines": { "vscode": "^1.80.0" },
+  "categories": ["Programming Languages"],
+  "contributes": {
+    "languages": [
+      {
+        "id": "lede",
+        "aliases": ["Lede", "lede"],
+        "extensions": [".lede"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "lede",
+        "scopeName": "source.lede",
+        "path": "../textmate/lede.tmLanguage.json"
+      }
+    ]
+  }
+}

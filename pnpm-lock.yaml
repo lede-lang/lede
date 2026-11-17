@@ -61,7 +61,7 @@ importers:
     dependencies:
       '@anthropic-ai/sdk':
         specifier: ^1.1.0
-        version: 1.1.0
+        version: 1.1.0(zod@4.6.7)
       '@anthropic-ai/tokenizer':
         specifier: ^0.0.4
         version: 0.0.4
@@ -104,6 +104,18 @@ importers:
         version: link:../render-html
 
   packages/core: {}
+
+  packages/mcp:
+    dependencies:
+      '@lede-lang/cli':
+        specifier: workspace:*
+        version: link:../cli
+      '@lede-lang/core':
+        specifier: workspace:*
+        version: link:../core
+      '@lede-lang/html':
+        specifier: workspace:*
+        version: link:../render-html
 
   packages/render-html:
     dependencies:
@@ -2690,6 +2702,9 @@ packages:
     resolution: {integrity: sha512-xYqdZFUK/VYazNl/oCDYN+3WloWQwMfZxBoiNt6qNyk+xfOdi598muWE42rNZFp1kNOiqW936q5RhUdnpqElSg==}
     engines: {node: '>=18'}
 
+  zod@4.6.7:
+    resolution: {integrity: sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==}
+
 snapshots:
 
   '@actions/core@3.0.1':
@@ -2713,11 +2728,13 @@ snapshots:
       package-manager-detector: 1.9.0
       tinyexec: 1.3.1
 
-  '@anthropic-ai/sdk@1.1.0':
+  '@anthropic-ai/sdk@1.1.0(zod@4.6.7)':
     dependencies:
       '@opentelemetry/api': 1.10.0
       json-schema-to-ts: 3.1.1
       standardwebhooks: 1.1.1
+    optionalDependencies:
+      zod: 4.6.7
 
   '@anthropic-ai/tokenizer@0.0.4':
     dependencies:
@@ -5193,3 +5210,6 @@ snapshots:
       yargs-parser: 22.0.0
 
   yoctocolors@2.2.0: {}
+
+  zod@4.6.7:
+    optional: true

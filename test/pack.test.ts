@@ -6,7 +6,7 @@
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { after, before, test } from 'node:test';
@@ -75,6 +75,7 @@ test('packed manifests point at dist/, and the tarballs hold the build, the sour
       assert.match(f, /^(LICENSE|README\.md|package\.json|src\/[\w-]+\.ts|dist\/[\w-]+\.(js|d\.ts)(\.map)?)$/, `${p.name}: ${f}`);
     if (p.name === '@lede-lang/cli') {
       assert.deepEqual(m.bin, { lede: './dist/cli.js' });
+      assert.deepEqual(m.exports, { './confine': { types: './dist/confine.d.ts', default: './dist/confine.js' } });
       assert.match(tarText(p.filename, 'dist/cli.js'), /^#!\/usr\/bin\/env node\n/);
     } else {
       assert.deepEqual(m.exports, { '.': { types: './dist/index.d.ts', default: './dist/index.js' } });
@@ -154,6 +155,33 @@ console.log(JSON.stringify({
   assert.equal(out.blocks, 1);
   assert.match(String(out.coreUrl), /\/node_modules\/@lede-lang\/core\/dist\/index\.js$/);
   assert.match(String(out.htmlUrl), /\/node_modules\/@lede-lang\/html\/dist\/index\.js$/);
+});
+
+test('the CLI confinement subpath resolves from the installed tarball and keeps its symlink checks', () => {
+  mkdirSync(join(app, 'tree/inside'), { recursive: true });
+  mkdirSync(join(app, 'outside'), { recursive: true });
+  writeFileSync(join(app, 'tree/inside/a.csv'), 'k,v\n');
+  writeFileSync(join(app, 'outside/secret.csv'), 'k,v\n');
+  symlinkSync(join(app, 'outside'), join(app, 'tree/link'));
+  writeFileSync(
+    join(app, 'confine.mjs'),
+    `import { confine, Unreachable } from '@lede-lang/cli/confine';
+const base = new URL('./tree', import.meta.url).pathname;
+const refused = (p) => { try { confine(base, p); return false; } catch (e) { return e instanceof Unreachable && e.reason; } };
+console.log(JSON.stringify({
+  url: import.meta.resolve('@lede-lang/cli/confine'),
+  inside: confine(base, 'inside/a.csv').endsWith('/tree/inside/a.csv'),
+  parent: refused('../outside/secret.csv'), symlink: refused('link/secret.csv'),
+}));
+`,
+  );
+  const r = run(process.execPath, ['confine.mjs']);
+  assert.equal(r.status, 0, r.stderr);
+  const out = JSON.parse(r.stdout) as Record<string, unknown>;
+  assert.match(String(out.url), /\/node_modules\/@lede-lang\/cli\/dist\/confine\.js$/);
+  assert.equal(out.inside, true);
+  assert.equal(out.parent, 'outside');
+  assert.equal(out.symlink, 'outside');
 });
 
 test('the installed library renders a shell page whose script hashes to its policy', () => {
