@@ -25,7 +25,9 @@ aws: api -> db : sql
 aws: group vpc "VPC 10.20.0.0/16" api, db
 ```
 
-> **Status:** pre-release (0.x), on npm as `@lede-lang/cli`, `@lede-lang/html` and `@lede-lang/core` (install, below). It will change.
+> **Status:** pre-release (0.x), on npm as `@lede-lang/cli`, `@lede-lang/html` and `@lede-lang/core` (install, below). Rendering and
+> flags will change. The grammar is pinned by the conformance suite and is to be frozen as spec 1.0 on its own track (D83);
+> that freeze has not happened yet.
 > The MCP server, the editor grammar and the GitHub Action in this repository are not published yet.
 
 **What Lede is not.** It is not a format for models to read documents, and it is not a UI spec that a client app interprets at run time. It is not the OpenWrt-related project of a similar name. See [when not to use Lede](docs/when-not-to-use.md).

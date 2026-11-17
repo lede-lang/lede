@@ -1138,3 +1138,28 @@ the choices in it. None of it changes the parser, the renderer, the spec, the mo
   them. It runs the CLI from npm, which can lag the repository.
 - **Positioning.** New copy says "no script and no automatic remote fetch" (D81) and names the flags that change it.
 - **Version files.** The Gemini manifest and the private package take the shared version in the release commit.
+
+## D83. Grammar stability is promised on its own track: spec 1.0 for the grammar, packages stay 0.x
+D22 and D47 tied two signals together: the 60% win-or-tie bar against frontier HTML "gates calling Lede finished (1.0)". A
+reader who only wants to know whether the grammar will break under them was told that nothing is stable until the pages look
+as good as HTML. The owner decided on 2026-11-17 to separate them.
+
+- **What is promised.** The grammar only: the keyword set, the line forms, the AST JSON shape, and the diagnostic codes with
+  their `detail` keys, as pinned by `conformance/`. It will be declared "Lede spec 1.0". Spec §8 already says the spec
+  version is independent of the package versions.
+- **What is not.** Rendering and CSS, exact HTML bytes, CLI flags, theme tokens, the wording of `spec/model-spec.md` (it
+  trades words under the token cap, D55), benchmark and token numbers, and the `--shell` runtime hash. The three packages
+  keep their 0.x line, and D47's meaning of a package 1.0 (the D22 quality bar) is unchanged. The safety statement in
+  `SECURITY.md` stays a separate promise.
+- **The rule after the freeze.** No change to a keyword, line form, AST shape or code meaning without a spec major. New
+  keywords are reserved one minor ahead. A new diagnostic may only be a warning; raising a warning to an error is breaking.
+  Until the freeze, a grammar change needs one minor's notice, a migration note and the conformance diff in its PR.
+- **When it takes effect.** Not yet. The spec is declared 1.0 when all of these hold: every diagnostic code and every
+  keyword has a conformance case; the AST JSON shape is written in the spec; the implementer's guide and runner have run
+  against the reference CLI (done, D82); the RFC process of spec §8 is published; the open grammar RFCs are settled or
+  deferred; and the D67 refinement verdict is in, so no grammar change is queued behind it. Until then the README says the
+  grammar is pinned by the conformance suite and names this decision, and claims no version.
+- **Rejected.** A stability label with no version (0.x still reads as unstable), and package 1.0.0 now (the release tooling
+  refuses anything not 0.x, D54 and D75, and it would spend "1.0" on something other than D47's meaning).
+- **Cost.** Two version numbers to explain. When the freeze happens, `lede --version` also names the spec version it
+  implements; that is a public CLI change and goes in spec §9 and `--help` in the same change.
