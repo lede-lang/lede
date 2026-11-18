@@ -311,12 +311,14 @@ class Renderer implements Incremental {
    * The question fields of every block pushed, in source order: the array `ctx.fields` is, so an `export` lists the fields read so
    * far. `controls`: a field or an `export` has arrived, so the stylesheet carries the controls' rules (as `render()`'s does).
    * `editors`: an editor word (`param`, `toggle`, `bucket`, `template` or `preset`) has, so it carries theirs too.
-   * `decided`: a decision has, so it carries the card's.
+   * `decided`: a decision has, so it carries the card's. `coded`: a highlighted or numbered code fence has (an open one too, which
+   * the tail draws), so it carries the syntax colours and the code rules.
    */
   private readonly fields: QuestionBlock[] = [];
   private controls = false;
   private editors = false;
   private decided = false;
+  private coded = false;
   /** The committed units that hold an `export`. */
   private readonly exportUnits: U[] = [];
 
@@ -404,24 +406,37 @@ class Renderer implements Incremental {
 
   /**
    * A question field joins `fields`. The first field or `export` of the page adds the controls' rules to the stylesheet, the
-   * first editor word (a `preset` too, which is no field) adds the editors', and the first decision adds the card's; true when this
-   * block did any of them, so the caller emits the style (the first block's style is `begin`'s).
+   * first editor word (a `preset` too, which is no field) adds the editors', the first decision adds the card's, and the first
+   * highlighted or numbered code fence adds the code rules; true when this block did any of them, so the caller emits the style
+   * (the first block's style is `begin`'s).
    */
   private takeQuestions(block: Block): boolean {
-    const { fields: found, presets, exports, decisions } = pageParts([block]);
+    const { fields: found, presets, exports, decisions, code } = pageParts([block]);
     this.fields.push(...found);
     const controls = !this.controls && (found.length > 0 || exports.length > 0);
     const editors = !this.editors && usesEditors(found, presets);
     const decided = !this.decided && decisions;
+    const coded = !this.coded && code;
     if (controls) this.controls = true;
     if (editors) this.editors = true;
     if (decided) this.decided = true;
-    return controls || editors || decided;
+    if (coded) this.coded = true;
+    return controls || editors || decided || coded;
   }
 
-  /** The page stylesheet for `meta`, with the controls', the editors' and the decision card's rules once the first of each has arrived. */
+  /**
+   * The page stylesheet for `meta`, with the controls', the editors', the decision card's and the code rules once the first of each
+   * has arrived.
+   */
   private style(meta: Record<string, string>, dash = this.ctx.dash): string {
-    return styleOf(meta, { controls: this.controls, editors: this.editors, dash, decisions: this.decided, theme: this.renderOpts.theme });
+    return styleOf(meta, {
+      controls: this.controls,
+      editors: this.editors,
+      dash,
+      decisions: this.decided,
+      code: this.coded,
+      theme: this.renderOpts.theme,
+    });
   }
 
   /**

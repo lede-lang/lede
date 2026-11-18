@@ -4,9 +4,12 @@
 import {
   FIXED_TOKENS,
   PALETTES,
+  SYNTAX_COLOURS,
+  SYNTAX_TOKENS,
   THEME_SERIES_MAX,
   usableAccent,
   type PaletteTokens,
+  type SyntaxColours,
   type ThemeName,
   type ThemeTokens,
 } from '@lede-lang/core';
@@ -51,14 +54,53 @@ function tokens(theme: ThemeName, palette: PaletteTokens, series: readonly strin
 const HOUSE_LIGHT = tokens('light', PALETTES.paper.light);
 const HOUSE_DARK = tokens('dark', PALETTES.paper.dark);
 
+/**
+ * The seven syntax colours of one theme (D84), a line after its other declarations: the house values, with a brand theme's moved ones
+ * over them. Only a page that highlights or numbers a fence declares them, so every other page keeps its bytes.
+ */
+function syntaxTokens(theme: ThemeName, moved: Partial<SyntaxColours> = {}): string {
+  const v = { ...SYNTAX_COLOURS[theme], ...moved };
+  for (const k of SYNTAX_TOKENS) if (!HEX.test(v[k])) throw new TypeError(`theme token ${k} is not a #rrggbb colour`);
+  return `\n  ${SYNTAX_TOKENS.map((k) => `--${k}:${v[k]};`).join(' ')}`;
+}
+const SYNTAX_LIGHT = syntaxTokens('light');
+const SYNTAX_DARK = syntaxTokens('dark');
+
+/**
+ * Highlighted and numbered code (spec §4.9), added only to a page that has such a fence. The token classes are colour and nothing
+ * else, so a span never moves a character. A diff's added and removed lines are inline blocks as wide as the longest line, in the
+ * status colours on their own tints, and their sign (or a context line's leading space) is a two-character gutter. A numbered
+ * fence counts its `.ln` lines: the number is generated content in the padding of `<code>`, so it is never selected or copied, and a
+ * wrapped line (phones, print) hangs beside it. `g3` to `g6` widen the gutter for three to six digits. Both make `<code>` a block,
+ * which would set its lines closer than a plain fence's (those take the height of the `<pre>`'s own line), so it is given that height.
+ */
+const CODE = `/* code */
+.tk-kw{color:var(--tk-kw)}.tk-str{color:var(--tk-str)}.tk-num{color:var(--tk-num)}.tk-cm{color:var(--tk-cm)}
+.tk-fn,.tk-hd{color:var(--tk-fn)}.tk-ty{color:var(--tk-ty)}.tk-op{color:var(--tk-op)}.tk-pn{color:var(--fg2)}
+.tk-hd{font-weight:600}
+.tk-add,.tk-del{display:inline-block;min-width:100%;border-radius:3px}
+.tk-add{color:var(--good);background:var(--good-bg)}.tk-del{color:var(--bad);background:var(--bad-bg)}
+:is(.tk-add,.tk-del)>.tk-op,pre.code[data-lang="diff"] .tk-pn{display:inline-block;width:2ch;color:inherit}
+pre.code[data-lang="diff"] code,pre.code.nums code{display:block;line-height:1.6rem}
+pre.code[data-lang="diff"] code{width:max-content;min-width:100%}
+pre.code.nums{--lnw:2ch}pre.code.g3{--lnw:3ch}pre.code.g4{--lnw:4ch}pre.code.g5{--lnw:5ch}pre.code.g6{--lnw:6ch}
+pre.code.nums code{counter-reset:ln;padding-left:calc(var(--lnw) + 16px)}
+.ln{counter-increment:ln}
+.ln::before{content:counter(ln);display:inline-block;width:var(--lnw);margin:0 16px 0 calc(-16px - var(--lnw));text-align:right;color:var(--muted);-webkit-user-select:none;user-select:none}
+@media (max-width:560px){pre.code[data-lang="diff"] code{width:auto}}
+@media print{pre.code[data-lang="diff"] code{width:auto}}
+`;
+
 /** A brand theme's two declaration blocks, worked out once per theme object: `watch` and a server draw many pages with one. */
-const BRANDS = new WeakMap<ThemeTokens, { light: string; dark: string }>();
-function brandTokens(t: ThemeTokens): { light: string; dark: string } {
+const BRANDS = new WeakMap<ThemeTokens, { light: string; dark: string; syntaxLight: string; syntaxDark: string }>();
+function brandTokens(t: ThemeTokens): { light: string; dark: string; syntaxLight: string; syntaxDark: string } {
   let out = BRANDS.get(t);
   if (!out) {
     out = {
       light: tokens('light', t.light, t.series?.light, t.status?.light),
       dark: tokens('dark', t.dark, t.series?.dark, t.status?.dark),
+      syntaxLight: syntaxTokens('light', t.syntax?.light),
+      syntaxDark: syntaxTokens('dark', t.syntax?.dark),
     };
     BRANDS.set(t, out);
   }
@@ -189,12 +231,18 @@ export function css(opts: {
   editors?: boolean;
   /** A page that holds a decision block: the card's rules. */
   decisions?: boolean;
+  /** A page that highlights or numbers a code fence: the syntax colours and the code rules. */
+  code?: boolean;
   tokens?: ThemeTokens;
 }): string {
   // Only a hex color that passes AA text contrast reaches the stylesheet (D49, D77); the parser warns on the rest.
   const picked = usableAccent(opts.accent, opts.theme);
   const accent = picked ? `--accent:${picked};--accent-ink:${picked};` : '';
-  const { light: LIGHT, dark: DARK } = opts.tokens ? brandTokens(opts.tokens) : { light: HOUSE_LIGHT, dark: HOUSE_DARK };
+  const set = opts.tokens
+    ? brandTokens(opts.tokens)
+    : { light: HOUSE_LIGHT, dark: HOUSE_DARK, syntaxLight: SYNTAX_LIGHT, syntaxDark: SYNTAX_DARK };
+  const LIGHT = opts.code ? set.light + set.syntaxLight : set.light;
+  const DARK = opts.code ? set.dark + set.syntaxDark : set.dark;
   const forced =
     opts.theme === 'dark'
       ? `:root{${DARK}}`
@@ -704,5 +752,5 @@ ol.steps.sx>li>.sn{grid-column:2;min-width:0;color:var(--fg2);overflow-wrap:anyw
 .dg .elabel.tn{fill:var(--tn);font-weight:500}
 .et.tn{color:var(--tn);background:var(--tf);border-radius:4px;padding:0 6px;font-weight:600;font-size:14px}
 .dgk-t{min-width:0;overflow-wrap:anywhere}
-${opts.controls ? CONTROLS : ''}${opts.controls && opts.editors ? EDITORS : ''}${opts.dash ? DASH_RULES : ''}${opts.decisions ? DECISIONS : ''}`;
+${opts.controls ? CONTROLS : ''}${opts.controls && opts.editors ? EDITORS : ''}${opts.dash ? DASH_RULES : ''}${opts.decisions ? DECISIONS : ''}${opts.code ? CODE : ''}`;
 }

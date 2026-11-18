@@ -3,7 +3,17 @@
 // decimals as `accentContrast` does.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { FIXED_TOKENS, PALETTES, PALETTE_NAMES, PALETTE_TOKENS, THEME_SURFACES, paletteSurfaces, parseTheme } from '../src/index.ts';
+import {
+  FIXED_TOKENS,
+  PALETTES,
+  PALETTE_NAMES,
+  PALETTE_TOKENS,
+  SYNTAX_COLOURS,
+  SYNTAX_TOKENS,
+  THEME_SURFACES,
+  paletteSurfaces,
+  parseTheme,
+} from '../src/index.ts';
 import { contrastRatio, parseHex } from '../src/contrast.ts';
 
 const THEMES = ['light', 'dark'] as const;
@@ -68,6 +78,31 @@ for (const name of PALETTE_NAMES)
       }
     });
   }
+
+test('the seven syntax colours read as text on the page and card of every palette, and a diff line on its own tint (D84)', () => {
+  assert.deepEqual([...SYNTAX_TOKENS], ['tk-kw', 'tk-str', 'tk-num', 'tk-cm', 'tk-fn', 'tk-ty', 'tk-op']);
+  let lowest = Infinity;
+  for (const theme of THEMES) {
+    assert.deepEqual(Object.keys(SYNTAX_COLOURS[theme]), [...SYNTAX_TOKENS], theme);
+    for (const [token, hex] of Object.entries(SYNTAX_COLOURS[theme])) {
+      assert.match(hex, /^#[0-9a-f]{6}$/, `${theme} ${token}`);
+      for (const name of PALETTE_NAMES)
+        for (const ground of ['bg', 'surface'] as const) {
+          const r = ratio(hex, PALETTES[name][theme][ground]);
+          lowest = Math.min(lowest, r);
+          assert.ok(r >= 4.5, `${theme} ${token} ${hex} on ${name} ${ground} is ${r}:1, needs 4.5:1`);
+        }
+    }
+    // An added or removed line is the status colour on its tint, and punctuation is `fg2` on the card (held above).
+    const f = FIXED_TOKENS[theme];
+    assert.ok(ratio(f.good, f['good-bg']) >= 4.5, `${theme} good on its tint`);
+    assert.ok(ratio(f.bad, f['bad-bg']) >= 4.5, `${theme} bad on its tint`);
+    // The seven are told apart from one another and from body text.
+    const all = [...Object.values(SYNTAX_COLOURS[theme]), PALETTES.paper[theme].fg];
+    assert.equal(new Set(all).size, all.length, theme);
+  }
+  assert.equal(lowest, 5.14, 'the margin D84 records');
+});
 
 test('the brand-token validator, which holds the same rules, leaves every palette as it is', () => {
   for (const name of PALETTE_NAMES) {

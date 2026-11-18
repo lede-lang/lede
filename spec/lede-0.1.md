@@ -51,7 +51,7 @@ line         = table-row | blank | fence-open | escaped | meta | heading | task-
 
 blank        = "" ;
 escaped      = "\" , REST ;                         (* REST is paragraph text *)
-fence-open   = "```" , { "`" } , [ "=" ] , [ lang ] ;   (* see 4.9; collects until a closing fence *)
+fence-open   = "```" , { "`" } , ( "=" , [ lang ] | [ lang , [ WS , "lines" ] ] ) ;   (* see 4.9; collects until a closing fence *)
 meta         = "@" , key , [ WS , REST ] ;
 heading      = ( "#" | "##" | "###" ) , [ WS , REST ] ;   (* 4–6 #s: warning, rendered as ### *)
 task-item    = "-" , WS , "[" , ( " " | "x" | "X" ) , "]" , WS , REST ;
@@ -223,6 +223,22 @@ indentation of the body is removed.
 - ```` ```lang ```` → code block.
 - ```` ```=html ```` → raw HTML block (§4.10). Any other `=format`: E `raw-format`.
 - End of document inside a fence: W `unclosed-fence`; the fence closes there.
+- ```` ```lang lines ```` → a code block whose lines are numbered: the word `lines` after a language and white space (D84). The block
+  is `{type:"code", lang, text, lines:true, line}`; without the word there is no `lines` key. The word needs a language before it
+  (```` ``` lines ```` is, as before, a fence whose language is `lines`; use ```` ```text lines ```` to number plain text), it is not
+  taken after `=html` (that line is paragraph text), and it does nothing on the fence of a `template` (§4.19), whose text the
+  shell fills.
+
+**Highlighting (D84).** A code block whose language is one of `ts`, `js`, `tsx`, `jsx`, `json`, `yaml`, `toml`, `sh`, `bash`, `py`,
+`go`, `rs`, `java`, `kt`, `swift`, `c`, `cpp`, `cs`, `rb`, `sql`, `html`, `css`, `diff` or `lede`, written exactly so (lower case, no
+other spelling: `python` and `TS` are not in the list), is cut into tokens when the page is built. Any other language, or none, is
+drawn as plain text, as before. The cut is a scanner's, not a grammar's: comments, strings, numbers, keywords, calls, capitalised names
+and, by language, keys, tags and attributes; a string ends at the end of its line unless the language has a form that spans lines.
+`diff` is read by line (file and hunk headers, added, removed and context lines; before the first hunk `---` and `+++` are file
+headers, inside one they are a removed and an added line), and `lede` as the parser classifies lines (§3): meta keys, headings,
+keyword lines with their options, `NAME:` lines of a name declared above in the fence, list, note and quote marks, and the inline
+markup of §5; a fence inside it is left as text. A `template`'s fence is never highlighted. The reading is approximate by design and
+never changes the text: the text of the block is the fence's text, character for character, in every case (§7).
 
 ### 4.10 HTML
 `html: <markup>` on one line, or a ```` ```=html ```` fence for several. HTML is **sanitized** by
@@ -774,6 +790,25 @@ written anywhere else was given on its declaration.
   theme that holds anything else is refused by the renderer (it throws), and one built by `parseTheme` cannot. The `<style>` under `artifact` is the full
   page's, as ever, and a page rendered without a theme is the house page byte for byte. `ParseOptions.themed` makes the parser warn about `@accent` as
   above.
+- Code blocks (§4.9, D84). A fence is `<pre class="code" tabindex="0" role="region" aria-label="…">` holding one `<code>`, with
+  `data-lang` when it has a language. A highlighted fence holds, inside that `<code>`, the fence's text as text nodes and
+  `<span class="tk-K">` runs, K one of `kw` (keyword), `str` (string), `num` (number), `cm` (comment), `fn` (a called or declared
+  name), `ty` (a type, key or attribute name), `op` (operator), `pn` (punctuation), `add`, `del` (an added or removed line of a
+  diff) and `hd` (a diff's file and hunk headers, a TOML table, a Lede heading). A span carries that one class and no other
+  attribute, never holds a line break, and nests in one case only: a diff's `add` or `del` line holds its sign as an `op` span,
+  and a context line's leading space is a `pn` span, which is the diff's two-character gutter. A numbered fence (`lines`) has the
+  class `code nums` (and `g3` to `g6` when its last line number has three to six digits), and each of its lines is a
+  `<span class="ln">` with the line breaks as text between them; the numbers are CSS counters in generated content, so they are
+  neither in the text nor in a selection. Nothing else is emitted: the security corpus (D49) runs every payload through a fence of
+  every listed language, and its audit refuses any other element, class or attribute inside a code block. The text of the
+  `<code>` (its `textContent`) is the fence's text exactly, highlighted, numbered or neither. The colours are seven custom
+  properties, `--tk-kw`, `--tk-str`, `--tk-num`, `--tk-cm`, `--tk-fn`, `--tk-ty` and `--tk-op` (`SYNTAX_COLOURS` in
+  `@lede-lang/core`), in the light block, the dark block and print, each at least 4.5:1 on the page and card of every palette;
+  punctuation is `--fg2`, and an added or removed line is `--good` or `--bad` on its own tint across the whole line. The
+  declarations and the rules are written only into the stylesheet of a page that has a highlighted or numbered fence (the
+  incremental form adds them when the first one arrives, an open fence included), so a page with no fence, or with fences in no
+  listed language and no `lines`, has the `<main>` and the `<style>` it had before D84, byte for byte. The class names and the
+  `ln` line are the contract; the scanner behind them may be replaced.
 - Light and dark themes from CSS custom properties; `prefers-color-scheme` plus
   `data-theme="light|dark"` on `<html>` to override. Print uses the light tokens whatever the device or `@theme` says (paper is
   white), keeps a figure, card, note, quote or table row on one page where it fits, and wraps code lines.
@@ -927,7 +962,9 @@ rules are taken as written. The text colours are held to WCAG 2.x AA on the surf
 `accent-tint`, the `neutral` ones `fg2` on `info-bg`, and the decision card, the callout kinds and the facts row use `fg`, `fg2` and `muted` on `bg` and
 `surface`. The `good`, `warn` and `bad` colours are the house's and the file cannot name them, but they are text too (a pill, a callout label, a kpi
 delta): each is held to 4.5:1 on `bg`, `surface` and its own tint (`good-bg`, `warn-bg`, `bad-bg`, on which it is drawn as a chip), and moved like the
-others when the file's surfaces leave it short, reported at the theme (`token` `good`, `warn` or `bad`). Only a moved one is written over the house value. A colour that fails is moved, not refused, which is the opposite of the rule for a page's `@accent` (§4.3) and on purpose: a writer's accent is one
+others when the file's surfaces leave it short, reported at the theme (`token` `good`, `warn` or `bad`). Only a moved one is written over the house value. The seven
+syntax colours of highlighted code (§4.9; `token` `tk-kw`, `tk-str`, `tk-num`, `tk-cm`, `tk-fn`, `tk-ty` or `tk-op`) are the house's in the same way: each is held
+to 4.5:1 on `bg` and `surface`, moved and reported like a status colour, and written only into a page that highlights or numbers a fence. A colour that fails is moved, not refused, which is the opposite of the rule for a page's `@accent` (§4.3) and on purpose: a writer's accent is one
 colour in a page they wrote and is used whole or not at all; a house palette is a brand to be matched as closely as AA allows. It is moved in OKLCH lightness only:
 hue and chroma are kept (chroma is reduced only where sRGB has no colour of that lightness with it), the lightness is searched by halving on each side of the
 colour, and the nearer passing value is used, tested as the 8-bit colour that is written. The colour moved is reported as W `theme-adjusted`
@@ -1425,3 +1462,24 @@ that commit and with this one, every one of those pages is byte-identical in the
 fragment, `--artifact` and, for a page with a question and an `export`, `--shell`): the card's markup and its CSS exist only for a
 document that has a decision, and so do the `decision-update` and `decision-seal` events. Every earlier conformance case passes
 unedited.
+
+## Appendix I. Highlighted and numbered code fences (2026-11)
+Status: **preview**, D84 (RFC #35). A fence in a listed language is highlighted when the page is built, and `lines` after the language
+numbers its lines (§4.9, §7). The grammar gains one optional word on the fence line and the AST one optional key, `lines:true` on a
+`code` block; there is no new diagnostic, keyword or command-line flag. Conformance case 49 is normative. `spec/model-spec.md` does
+not describe either: a model that writes ```` ```ts ```` already gets the colours, and `lines` is taught by the on-demand reference
+(D55 cap, D72).
+
+**What changed for existing input.** Input that parsed before parses identically except one line shape: three or more backticks, a
+language, white space and the word `lines` was paragraph text (and the lines after it were read as Lede) and is now a fence opener.
+Searched across the 889 `.lede` files tracked at `1081a7e` (benchmark outputs, examples, conformance, fixtures), parsed with the
+parser at that commit and with this one: none has such a line, and the ASTs and diagnostics are identical for all 889. Compiled with
+the renderer at that commit and with this one in the plain, `fragment` and `--artifact` modes, 871 pages are byte-identical and 18
+change: exactly the 18 that hold a fence in a listed language (14 under `examples/article/`, 2 under `bench/article/`,
+`examples/spike-c/04-runbook.lede` and conformance case 04), 46 fences in all. A changed page gains 1,710 bytes of stylesheet once
+(the seven colours in three blocks and the code rules) and, on those 46 fences, 1,446 bytes of markup a fence on average (231 to
+3,373 on the article pages; `examples/article/03-pr-review.lede` goes from 85,790 to 91,379 bytes). A page with no fence, or with
+fences in no listed language, has the same `<main>` and the same `<style>` as before. Under `--theme`, a tokens file whose page or
+card is too close to one of the seven syntax colours now draws W `theme-adjusted` for it (E with `--theme-strict`), as it already
+does for the status colours; the house palettes and a file that keeps their surfaces draw none. Every earlier conformance case
+passes unedited.
