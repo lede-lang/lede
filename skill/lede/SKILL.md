@@ -146,5 +146,5 @@ Read a file below before using what it teaches; the reference above does not cov
 | File | Read it when the page needs | Tokens |
 |---|---|---|
 | `reference/meta.md` | share previews, its own status words, owner and review facts, a narrow or wide column | not counted |
-| `reference/pages.md` | a recommendation or tip callout, rows whose cells hold commas, a decision with owners | not counted |
+| `reference/pages.md` | a recommendation or tip callout, rows whose cells hold commas, a decision with owners, numbered code lines | not counted |
 | `reference/diagrams.md` | allowed and denied paths shown in colour | not counted |

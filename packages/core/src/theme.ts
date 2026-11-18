@@ -7,7 +7,17 @@
 // used whole or not at all; a house palette is a brand the operator wants matched as closely as AA allows.
 import type { Diagnostic } from './ast.ts';
 import { AA_NON_TEXT, AA_TEXT, flooredRatio, parseHex, toLinear } from './contrast.ts';
-import { FIXED_TOKENS, PALETTES, PALETTE_TOKENS, type PaletteToken, type PaletteTokens, type ThemeName } from './palette.ts';
+import {
+  FIXED_TOKENS,
+  PALETTES,
+  PALETTE_TOKENS,
+  SYNTAX_COLOURS,
+  SYNTAX_TOKENS,
+  type PaletteToken,
+  type PaletteTokens,
+  type SyntaxColours,
+  type ThemeName,
+} from './palette.ts';
 
 /** The most a tokens file may hold, in bytes. */
 export const THEME_MAX_BYTES = 64 * 1024;
@@ -30,6 +40,11 @@ export interface ThemeTokens {
    * moved one is here; the rest keep the house value. Absent when none moved, so a theme that moves none draws as before.
    */
   status?: Partial<Record<ThemeName, Partial<Record<StatusToken, string>>>>;
+  /**
+   * The syntax colours of highlighted code (`SYNTAX_COLOURS`) that the theme's page or card would not carry at 4.5:1, moved the same
+   * way. Only a moved one is here, and the key is absent when none moved.
+   */
+  syntax?: Partial<Record<ThemeName, Partial<SyntaxColours>>>;
 }
 
 /** The fixed status colours that are text (a pill, a callout label, a kpi delta) and so are held to AA under `--theme`. */
@@ -235,7 +250,8 @@ const RENAMED: Record<string, string> = { tint: 'accent-tint', fg3: 'muted' };
  * eight chart colours. A token the file leaves out keeps the house palette's value. The text tokens (`fg`, `fg2`, `muted`, `accent`,
  * `accent-ink`) must read on the surfaces they sit on, at 7:1 for `fg` and 4.5:1 for the rest, and the series at 3:1 on the page and
  * card: one that does not is moved (W `theme-adjusted`, or E with `strict`), and one that no lightness can save is E `theme-surface`.
- * The house status colours (`good`, `bad`, `warn`) are held to 4.5:1 on `bg`, `surface` and their own tint, and moved the same way.
+ * The house status colours (`good`, `bad`, `warn`) are held to 4.5:1 on `bg`, `surface` and their own tint, and moved the same way,
+ * and so are the seven syntax colours of highlighted code (`tk-kw` to `tk-op`), on `bg` and `surface`.
  * The surfaces themselves are taken as given. Throws `ThemeFileError` when the text is not a JSON object or is over `THEME_MAX_BYTES`.
  */
 export function parseTheme(text: string, opts: { strict?: boolean } = {}): ThemeResult {
@@ -379,6 +395,11 @@ export function parseTheme(text: string, opts: { strict?: boolean } = {}): Theme
         { against: tint, hex: FIXED_TOKENS[name][tint], required: AA_TEXT },
       ];
       fix(token, FIXED_TOKENS[name][token], checks, [name, token], (to) => (((theme.status ??= {})[name] ??= {})[token] = to));
+    }
+    // So are the colours of highlighted code (§4.9), which is text on the card and, where a block is drawn on it, on the page.
+    for (const token of SYNTAX_TOKENS) {
+      const checks: Check[] = (['bg', 'surface'] as const).map((g) => ({ against: g, hex: grounds[g], required: AA_TEXT }));
+      fix(token, SYNTAX_COLOURS[name][token], checks, [name, token], (to) => (((theme.syntax ??= {})[name] ??= {})[token] = to));
     }
     if (series !== null) {
       const colours = series.map((hex, i) => {

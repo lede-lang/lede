@@ -29,4 +29,7 @@ queue: role consulted "Platform team"
 ```
 Rules: one decision per question; name the person who decides. Use a callout kind for a single recommendation and a
 decision block when the options and owners matter.
-<!-- teaches: callout kinds, pipe rows, decision -->
+
+Code fences in `ts js tsx jsx json yaml toml sh py go rs java kt swift c cpp cs rb sql html css diff lede` are coloured;
+` lines` after the language numbers them.
+<!-- teaches: callout kinds, pipe rows, decision, code lines -->

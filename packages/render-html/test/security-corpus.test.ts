@@ -137,6 +137,8 @@ const CONTROL_ATTRS: Record<string, string[]> = {
   'button.q-pre': ['type', 'class', 'hidden'],
 };
 const row = (k: string): string[] | undefined => (Object.hasOwn(CONTROL_ATTRS, k) ? CONTROL_ATTRS[k] : undefined);
+/** The one class a span inside a code block may carry: a token kind, or the line of a numbered fence. Written out here, not imported. */
+const CODE_SPAN = /^(?:tk-(?:kw|str|num|cm|fn|ty|op|pn|add|del|hd)|ln)$/;
 const QUESTION_NAME = /^[A-Za-z][\w-]*$/;
 /** An item radio is named for its bucket set and its index: the colon is outside the name set, so no field can collide with one. */
 const ITEM_NAME = /^[A-Za-z][\w-]*:\d+$/;
@@ -193,7 +195,7 @@ function audit(html: string, opts: { allowRemote?: boolean; fields?: FieldKind[]
   // Every colour token the stylesheet declares is a hex colour: the page's `@accent`, and the operator's brand tokens (D80), which the
   // renderer writes into every block of the palette.
   for (const m of css.matchAll(
-    /--(accent(?:-ink)?|bg|surface|fg2?|muted|line2?|accent-(?:tint|line)|info-bg|(?:good|bad|warn)(?:-bg|-line)?|c[1-8m]|h[1-5]):([^;}]*)/g,
+    /--(accent(?:-ink)?|bg|surface|fg2?|muted|line2?|accent-(?:tint|line)|info-bg|(?:good|bad|warn)(?:-bg|-line)?|c[1-8m]|h[1-5]|tk-[a-z]+):([^;}]*)/g,
   ))
     if (!HEX_COLOR.test(m[2].trim())) bad.push(`--${m[1]} value is not a hex color: ${m[2]}`);
 
@@ -217,6 +219,8 @@ function audit(html: string, opts: { allowRemote?: boolean; fields?: FieldKind[]
   const scripts: { attribs: Record<string, string>; text: string; at: number }[] = [];
   let script: (typeof scripts)[number] | null = null;
   let fieldset = '';
+  /** Inside a `<pre class="code …">`: a code block, highlighted or not (spec §4.9). */
+  let codeBlock = false;
   const count = (m: Map<string, number>, k: string) => m.set(k, (m.get(k) ?? 0) + 1);
   const parser = new Parser(
     {
@@ -226,9 +230,22 @@ function audit(html: string, opts: { allowRemote?: boolean; fields?: FieldKind[]
       onclosetag(name) {
         if (name === 'fieldset') fieldset = '';
         if (name === 'script') script = null;
+        if (name === 'pre') codeBlock = false;
       },
       onopentag(name, attribs) {
         const inHead = parser.startIndex < headEnd;
+        // A code block holds one `<code>` and, when it is highlighted or numbered, spans that carry one class from a fixed list and
+        // nothing else (D84): the scanner's output is limited to them, whatever the fence holds.
+        if (codeBlock) {
+          const keys = Object.keys(attribs);
+          if (name === 'code' ? keys.length > 0 : name !== 'span') bad.push(`<${name}> inside a code block`);
+          else if (name === 'span' && !(keys.length === 1 && CODE_SPAN.test(attribs.class ?? '')))
+            bad.push(`<span ${JSON.stringify(attribs)}> inside a code block is not a token or line span`);
+        }
+        if (name === 'pre' && /^code(?: |$)/.test(attribs.class ?? '')) {
+          codeBlock = true;
+          if (!/^code(?: nums(?: g[3-6])?)?$/.test(attribs.class)) bad.push(`<pre class="${attribs.class}">`);
+        }
         if (shell && name === 'script' && !inHead) {
           script = { attribs, text: '', at: parser.startIndex };
           scripts.push(script);
@@ -487,9 +504,36 @@ test('the audit catches what it claims to catch', () => {
     '--h5:var(--bg)',
     '--info-bg:#12345',
     '--accent-line:expression(1)',
+    '--tk-kw:red',
+    '--tk-str:var(--bg)',
   ])
     assert.notDeepEqual(audit(page('').replace('a{}', `:root{${decl}}`)), [], decl);
   assert.notDeepEqual(audit(page('').replace('a{}', ':root{--accent:#fff;}body{background:url(//x)}')), []);
+});
+
+test('the audit admits a highlighted code block by shape and refuses anything else inside one', async () => {
+  const { html } = await compile('```ts lines\nconst a = "<b>";\n```\n\n```diff\n+a\n-b\n```\n\n```text\n<i>\n```\n');
+  assert.deepEqual(audit(html), []);
+  for (const want of ['<pre class="code nums"', '<span class="ln">', '<span class="tk-kw">const</span>', '<span class="tk-add">'])
+    assert.ok(html.includes(want), want);
+  const refused: [string, string, RegExp][] = [
+    ['a second class', html.replace('<span class="tk-kw">', '<span class="tk-kw sr">'), /is not a token or line span/],
+    ['an unknown kind', html.replace('<span class="tk-kw">', '<span class="tk-zz">'), /is not a token or line span/],
+    ['a style', html.replace('<span class="tk-kw">', '<span class="tk-kw" style="color:red">'), /is not a token or line span/],
+    ['a title', html.replace('<span class="ln">', '<span class="ln" title="x">'), /is not a token or line span/],
+    ['a bare span', html.replace('<span class="tk-kw">', '<span>'), /is not a token or line span/],
+    ['a link', html.replace('<span class="tk-kw">const</span>', '<a href="#x">const</a>'), /<a> inside a code block/],
+    ['bold', html.replace('<span class="tk-add">', '<span class="tk-add"><b>x</b>'), /<b> inside a code block/],
+    ['an attribute on <code>', html.replace('<code>', '<code class="x">'), /<code> inside a code block/],
+    ['another class on the block', html.replace('<pre class="code nums"', '<pre class="code nums wide"'), /<pre class="code nums wide">/],
+  ];
+  for (const [what, changed, re] of refused) {
+    assert.notEqual(changed, html, what);
+    assert.ok(
+      audit(changed).some((m) => re.test(m)),
+      `${what}: wanted ${re}, got ${JSON.stringify(audit(changed))}`,
+    );
+  }
 });
 
 /** Every editor word once, and the sentinel and hostile text the rules are about. */

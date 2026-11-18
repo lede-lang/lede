@@ -195,6 +195,106 @@
    "lede": "```ts\nMk20 {T}\n```"
   },
   {
+   "name": "highlighted fence: bash",
+   "lede": "```bash\nMk101 {T}\n```"
+  },
+  {
+   "name": "highlighted fence: c",
+   "lede": "```c\nMk102 {T}\n```"
+  },
+  {
+   "name": "highlighted fence: cpp",
+   "lede": "```cpp\nMk103 {T}\n```"
+  },
+  {
+   "name": "highlighted fence: cs",
+   "lede": "```cs\nMk104 {T}\n```"
+  },
+  {
+   "name": "highlighted fence: css",
+   "lede": "```css\nMk105 {T}\n```"
+  },
+  {
+   "name": "highlighted fence: diff, a context, an added and a removed line",
+   "lede": "```diff\nMk106 {T}\n {T}\n+{T}\n-{T}\n@@ {T}\n```"
+  },
+  {
+   "name": "highlighted fence: go",
+   "lede": "```go\nMk107 {T}\n```"
+  },
+  {
+   "name": "highlighted fence: html",
+   "lede": "```html\nMk108 {T}\n<a title={T}>\n```"
+  },
+  {
+   "name": "highlighted fence: java",
+   "lede": "```java\nMk109 {T}\n```"
+  },
+  {
+   "name": "highlighted fence: js",
+   "lede": "```js\nMk110 {T}\n```"
+  },
+  {
+   "name": "highlighted fence: json",
+   "lede": "```json\nMk111 {T}\n```"
+  },
+  {
+   "name": "highlighted fence: jsx",
+   "lede": "```jsx\nMk112 {T}\n```"
+  },
+  {
+   "name": "highlighted fence: kt",
+   "lede": "```kt\nMk113 {T}\n```"
+  },
+  {
+   "name": "highlighted fence: lede, prose, a keyword line and a meta line",
+   "lede": "````lede\nMk114 {T}\nchart bar d title=\"{Q}\" {T}\n@title {T}\n````"
+  },
+  {
+   "name": "highlighted fence: py",
+   "lede": "```py\nMk115 {T}\n```"
+  },
+  {
+   "name": "highlighted fence: rb",
+   "lede": "```rb\nMk116 {T}\n```"
+  },
+  {
+   "name": "highlighted fence: rs",
+   "lede": "```rs\nMk117 {T}\n```"
+  },
+  {
+   "name": "highlighted fence: sh",
+   "lede": "```sh\nMk118 {T}\n```"
+  },
+  {
+   "name": "highlighted fence: sql",
+   "lede": "```sql\nMk119 {T}\n```"
+  },
+  {
+   "name": "highlighted fence: swift",
+   "lede": "```swift\nMk120 {T}\n```"
+  },
+  {
+   "name": "highlighted fence: toml",
+   "lede": "```toml\nMk121 {T}\n```"
+  },
+  {
+   "name": "highlighted fence: ts",
+   "lede": "```ts\nMk122 {T}\n```"
+  },
+  {
+   "name": "highlighted fence: tsx",
+   "lede": "```tsx\nMk123 {T}\n```"
+  },
+  {
+   "name": "highlighted fence: yaml",
+   "lede": "```yaml\nMk124 {T}\n```"
+  },
+  {
+   "name": "numbered fences: a listed language and an unlisted one",
+   "lede": "```ts lines\nMk125 {T}\n```\n\n```text lines\nMk126 {T}\n```"
+  },
+  {
    "name": "inline code",
    "lede": "Mk21 `{T}`"
   },
