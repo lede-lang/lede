@@ -1,5 +1,10 @@
 # Changelog
 
+## <small>0.2.5 (2026-11-25)</small>
+
+* Merge pull request #45 from lede-lang/claude/project-thread-rpew22 ([c26d0dc](https://github.com/lede-lang/lede/commit/c26d0dc)), closes [#45](https://github.com/lede-lang/lede/issues/45)
+* feat(html): highlight code fences at build time and number lines with `lines` ([ab742ab](https://github.com/lede-lang/lede/commit/ab742ab)), closes [#35](https://github.com/lede-lang/lede/issues/35)
+
 ## <small>0.2.4 (2026-11-13)</small>
 
 * Merge pull request #42 from lede-lang/claude/project-thread-lf1cmv ([93915e6](https://github.com/lede-lang/lede/commit/93915e6)), closes [#42](https://github.com/lede-lang/lede/issues/42)
