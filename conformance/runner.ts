@@ -1,7 +1,8 @@
 // Points the conformance suite at any Lede implementation.
 //   node conformance/runner.ts --cmd "<command>" [--filter TEXT] [--timeout MS] [--json]
 // Protocol (what the reference CLI already does): for each file in cases/, run `<command> ast <file>` and read the document as JSON
-// on stdout; for each file in errors/, run `<command> check --json <file>` and read `{ "<file>": [diagnostic, ...] }` on stdout.
+// on stdout; for each file in errors/, run `<command> check --json <file>` and read `{ "<file>": [diagnostic, ...] }` on stdout (a
+// page of tabs adds an entry per part after the file's own, D85; only the first entry is compared).
 // <file> is an absolute path, shell-quoted and appended to the command; the working directory is yours. Exit codes are
 // ignored. Contract: a case's `meta`, `blocks` and `data` match exactly, and its diagnostics, like every error case's, match on
 // severity, code, line and col, in order. `message` and `detail` are implementation detail and are never compared.
@@ -57,7 +58,7 @@ function checkCase(cmd: string, dir: Kind, f: string, timeout: number): void {
     const got = run(cmd, 'check --json', file, timeout);
     assert.ok(isObj(got), 'check --json did not print an object keyed by file');
     const values = Object.values(got);
-    assert.equal(values.length, 1, 'expected one entry, keyed by the file');
+    assert.ok(values.length >= 1, 'expected an entry keyed by the file');
     assert.deepEqual(diagsOf(values[0]), diagsOf(expected));
   }
 }

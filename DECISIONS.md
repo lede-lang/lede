@@ -1210,6 +1210,27 @@ Gates: the RFC asked to land after D67 step 1 and after the owner compares artic
 the branch this was built on, so the comparison (85,790 to 91,379 bytes, six fences) is still owed to the owner before a release.
 The number D84 is one past the highest in this file; the internal file and open branches were not readable from that branch.
 
+## D85. Several Lede sources build one page, a tab per source, with no script
+Owner's decision (2026-11-25, every recommendation of the proposal taken). A page whose sections come from different writers, or move on
+different schedules, was pasted together into one file with colliding ids and no record of which version of each section was reviewed.
+A manifest is an ordinary `.lede` file holding the page's `@` keys, an optional lead and one line `tab [LABEL] < PATH.lede [#HEX]` per
+part (spec §4.21; the `<` and the `.lede` ending make it a keyword line, and none of the 891 tracked `.lede` files starts a line with
+`tab`). `lede build` reads each part as a `data` file is read, confined to the manifest's tree, and writes one page: a `<nav>` of links and
+one `<section>` per part, switched by `:target` and `:has()` inside `@supports`, so a tab has a URL, a heading anchor opens its tab, the
+back button steps through tabs, and a browser without `:has()` (or print) shows every part stacked. Each panel is the part's standalone
+`<main>` with its ids prefixed by the panel's id, its headings one level down (styled as on its own page) and its page-level keys
+(`@accent`, `@fonts`, `@theme`, `@lang`, `@description`, `@image`, `@canonical`: W `tab-part-meta`) left to the manifest; a parity test
+over ten example pages holds that, so `lede build part.lede` is the reviewer's true view of one tab. A link a part makes to one of its own
+ids follows the prefix, and a link to any other id is left alone, so `#costs` opens the Costs tab. A part keeps its own layout class
+(D80). Generated CSS names tabs by index, never by writer text (D49). Diagnostics stay per part, under the part's path. A pin, the start
+of the part's SHA-256 that `build` prints per tab, fails the build with E `tab-stale` once the part changes, so a part edited after review
+cannot slip in. Question names are unique across the page (E `tab-field-clash`), and `--shell` is not added to a page of tabs (stderr
+says so) until questions across tabs have their own decision. At most 12 tabs. The model spec does not change (D55); the word is taught in
+`skill/lede/reference/tabs.md` (D72). Pages with no tab line are byte-identical (all 891 tracked files compared). Rejected: CLI flags
+alone (no record of labels, order, theme or pins), D73's radio pills (no URL per tab, an anchor into a hidden tab goes nowhere, and form
+controls the shell must ignore), and `<details>` (not tabs). Later, each as its own decision: questions across tabs under `--shell`,
+and tabs written inline in one file. The build is a draft PR; its merge, and so D67's gate, is the owner's call.
+
 ## D86. Diagrams keep a written row, enclose their labels and draw decision ladders; check flags rows and tones it cannot read
 
 A status brief written from the skill at 0.2.4 and built with the npm CLI (0.2.3) showed seven defects. Pipe-row tables and edge

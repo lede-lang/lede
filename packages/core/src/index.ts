@@ -8,6 +8,7 @@ export {
   KEYWORDS,
   META_KEYS,
   NOTE_KINDS,
+  TAB_MAX,
   type ParseHooks,
   type ParseOptions,
 } from './parser.ts';
@@ -23,6 +24,7 @@ export type { ThemeResult, ThemeTokens } from './theme.ts';
 export { browserUrl, httpsUrl, httpsUrlProblem, imageSrcKind } from './url.ts';
 export { artifactDiagnostics } from './artifact.ts';
 export { walkBlocks } from './walk.ts';
+export { PART_PAGE_KEYS, resolveTabs, tabsOf, type LoadedPart, type ResolveOptions, type TabPart } from './tabs.ts';
 export {
   EXTERNAL_PLACEHOLDERS,
   externalDiagnostics,

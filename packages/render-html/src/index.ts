@@ -18,6 +18,7 @@ import type {
   QuestionBlock,
   PresetBlock,
   ExportBlock,
+  TabPart,
 } from '@lede-lang/core';
 import {
   browserUrl,
@@ -62,6 +63,7 @@ import {
   usesEditors,
 } from './question.ts';
 import { SCRIPT_SRC, shellScripts } from './shell.ts';
+import { prefixIds, renderTabs, tabPlaceholder } from './tabs.ts';
 import { css } from './theme.ts';
 import { esc, fmtCell, inline, maxOf, plain, slug, textWidth } from './util.ts';
 
@@ -88,6 +90,12 @@ export interface RenderOptions {
    * The `<style>` is the same in the full page and under `artifact`. Without it the page is the house page, byte for byte.
    */
   theme?: ThemeTokens;
+  /**
+   * The parts of a page of tabs (spec §4.21, D85), as `resolveTabs` in `@lede-lang/core` returns them for `doc`, the manifest: the page
+   * is the manifest's masthead and lead, a bar of links, and one panel per part. Without it a `tab` line draws as a placeholder.
+   * The shell is not added to a page of tabs.
+   */
+  parts?: readonly TabPart[];
 }
 
 const WIDE = new Set(['grid', 'diagram']);
@@ -95,6 +103,7 @@ const WIDE = new Set(['grid', 'diagram']);
 export async function render(doc: LedeDocument, opts: RenderOptions = {}): Promise<string> {
   if (opts.shell && opts.unsafeHtml)
     throw new Error('shell cannot be combined with unsafeHtml: raw html could plant its own controls and data block');
+  if (opts.parts) return renderTabs(doc, opts.parts, opts);
   const { fields, exports, presets, decisions, code } = pageParts(doc.blocks);
   const shell = !!opts.shell && !opts.fragment && fields.length > 0 && exports.length > 0;
   const ctx = new Ctx(doc, { ...opts, shell }, fields);
@@ -112,6 +121,19 @@ export async function render(doc: LedeDocument, opts: RenderOptions = {}): Promi
     theme: opts.theme,
   })}</style>`;
   const scripts = shell ? `${shellScripts(ctx.page, fields, exports, presets)}\n` : '';
+  return pageHtml(doc, title, style, main, scripts, opts, shell);
+}
+
+/** The page around a rendered `<main>`: the Artifact form, or the full page with its head, policy and tags. */
+export function pageHtml(
+  doc: LedeDocument,
+  title: string,
+  style: string,
+  main: string,
+  scripts: string,
+  opts: RenderOptions,
+  shell: boolean,
+): string {
   if (opts.artifact) return `<title>${esc(title)}</title>\n${style}\n${main}\n${scripts}`;
   const desc = (doc.meta.description ? `\n<meta name="description" content="${esc(doc.meta.description)}">` : '') + headTags(doc, title);
   const lang = /^[a-z]{2,3}(-[A-Za-z0-9]+)*$/.test(doc.meta.lang ?? '') ? doc.meta.lang : 'en';
@@ -233,7 +255,7 @@ export function pageParts(blocks: readonly Block[]): {
 }
 
 /** The class each layout adds to `<main>`. */
-const LAYOUT_CLASS: Record<Layout, string> = { prose: ' prose', dashboard: ' dash', document: '' };
+export const LAYOUT_CLASS: Record<Layout, string> = { prose: ' prose', dashboard: ' dash', document: '' };
 
 /** `<main>` around the page's top-level children (empty ones left out), with its layout's class (`layoutClass`). */
 export const mainElement = (children: string[], layout: Layout): string =>
@@ -275,8 +297,8 @@ export function masthead(doc: LedeDocument, ctx: Ctx): Masthead {
   // @title that no `#` heading repeats becomes the page heading, and the document's own
   // headings move down a level so the page keeps one h1.
   if (doc.meta.title && (!firstH1 || (firstH1.type === 'heading' && plain(firstH1.text).trim() !== plain(doc.meta.title).trim()))) {
-    head.push(`<h1>${inline(doc.meta.title)}</h1>`, sub, by);
-    if (firstH1) ctx.shift = 1;
+    head.push(`<h${1 + ctx.base}>${inline(doc.meta.title)}</h${1 + ctx.base}>`, sub, by);
+    if (firstH1) ctx.shift = ctx.base + 1;
     firstH1 = undefined;
   } else if (firstH1 && blocks[0] === firstH1) {
     head.push(ctx.blockSync(firstH1, true), sub, by);
@@ -714,8 +736,16 @@ export class Ctx {
   }
   private statusMemo: { spec: string; fn: Status } | undefined = undefined;
 
+  /**
+   * Put before every id this context writes. A tab's panel (D85) sets it to the panel's id and `--`, so its ids never meet another tab's
+   * and do not depend on them.
+   */
+  idPrefix = '';
+  /** Levels every heading moves down, the title included: 1 in a tab's panel, under the page's own `h1` (D85). */
+  base = 0;
+
   uid(prefix: string): string {
-    return `${prefix}${++this.n}`;
+    return `${this.idPrefix}${prefix}${++this.n}`;
   }
 
   mark(): CtxMark {
@@ -733,11 +763,11 @@ export class Ctx {
   }
 
   heading(b: HeadingBlock, cls = ''): string {
-    let id = slug(b.text);
+    let id = this.idPrefix + slug(b.text);
     while (this.idTaken(id)) id += '-x';
     this.idAt[this.taken] = id;
     this.idPos.set(id, this.taken++);
-    const lvl = Math.min(4, b.level + this.shift);
+    const lvl = Math.min(4 + this.base, b.level + this.shift);
     return `<h${lvl} id="${id}"${cls ? ` class="${cls}"` : ''}>${inline(b.text)}</h${lvl}>`;
   }
 
@@ -842,8 +872,12 @@ export class Ctx {
         return '<hr>';
       case 'code':
         return codeBlockHtml(b);
-      case 'html':
-        return this.opts.unsafeHtml ? b.html : sanitize(b.html, { allowRemote: this.opts.allowRemote });
+      case 'html': {
+        const html = this.opts.unsafeHtml ? b.html : sanitize(b.html, { allowRemote: this.opts.allowRemote });
+        return this.idPrefix ? prefixIds(html, this.idPrefix) : html;
+      }
+      case 'tab':
+        return tabPlaceholder(b);
       case 'data':
         return '';
       case 'chart': {

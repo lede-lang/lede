@@ -859,6 +859,11 @@
     "fragment": "88c48f2e3950ae5a3326905bad4cc753d2244a4dc744dc68686d88d7ff5cd9a8",
     "artifact": "6528f1d75db40647380292505fdb8e7ab0d75e33a50e838f73ffaf517b9eb12c"
   },
+  "conformance/cases/55-tabs.lede": {
+    "ordinary": "2a2e89dd94055488940229e976eef6c9dbc0736ec8d24d213eb3228a9194ed7e",
+    "fragment": "770c9a3c02cce0d0207349c6814c7b411de4f44e97256e8dda542f1ef49d0a3b",
+    "artifact": "9492eda839e81b966a800efb498853aaec3aca65f01837b461a19989fba86fa5"
+  },
   "conformance/errors/e01-unknown-data.lede": {
     "ordinary": "bbd2e2b0a4c27a245639b9ca41334d2719b6d6a913ed691a0ee2d5e34f1c1bd7",
     "fragment": "8dcc3b19dc4077a5552fac6bc496da62a1216385482f7fd7b314b6953876fd8e",
@@ -1230,6 +1235,21 @@
     "fragment": "aa9bda39f51bddf36bd274cbeec9ca0b48db5fb056be7f8610e67b6ab06f7391",
     "artifact": "73a91538423ff8a931e63d59d9c898f160238b504d9016c11715e78f91675b09"
   },
+  "conformance/errors/e65-tab-trailing-duplicate.lede": {
+    "ordinary": "d0bc655fcce5b4b286959c291077a09fdce85f6cc636626b464294ae39d7b71a",
+    "fragment": "d2de655ec55a32fcd809631407dc0608aeea812faa6055be19547a69d46e006a",
+    "artifact": "dcb6f442f73b45bd351e2cc49fabb306220bf222c50cde7f1d5faef2e5e7abf7"
+  },
+  "conformance/errors/tab-parts/a.lede": {
+    "ordinary": "04e6379b2534c96483f1c9c80b5c8238ec7466115c716500a3a53f7abe9ba859",
+    "fragment": "35deba3908cc19f8e82b579fdb5182672c2ae97bbe8b2ca0982ef20d7f4ad63e",
+    "artifact": "45f0638a2443cadf8d337961925cf095c44d3c0a55c9f83c9dbf971507590cc4"
+  },
+  "conformance/errors/tab-parts/b.lede": {
+    "ordinary": "684fc7e000f90f7a802bf6a137174da7bfb00e142f57ad8a5357f3b04978d959",
+    "fragment": "c7d2fc125c2b27519da0d19ee6b8e6d6543ac1b3c4e2f20bea64d2210009239b",
+    "artifact": "6e7121106d860620a4bdf138c6272752f83aa84fdfb71386cd68c989146d7717"
+  },
   "examples/article/01-options-grid.lede": {
     "ordinary": "46a799fb0e08cd9c00b269853e9d9c334124eb45ec79807bd853abb93ea6cb9c",
     "fragment": "627828753363f19db9ec0079ffe23b247ef92a3dc850a3151cf6096e6b668710",
@@ -1562,6 +1582,26 @@
     "ordinary": "a716d5e26bf01c86ec9d90ac86215c8a66094669f0d71eafa127479d80e6afa9",
     "fragment": "70cc5a6c85c48b35b41f3163af1b2261fa5f99d30395b8e92effd57c4d64d5e1",
     "artifact": "1eb2fb6ab626b0f5e56625d3afd8066eb026dc860c5c3397aa05a63b51a95176"
+  },
+  "examples/tabs/costs.lede": {
+    "ordinary": "7e4c979dcd52f1cbec79095cd4f77c9158969c7ebb90cf61f8e505f51356d62e",
+    "fragment": "7305cc9f9bcd118e06056a6985e50691f807bf3d3c48521e065b2d5b35987e5d",
+    "artifact": "1faaf5c9d6e7001186486a1425f68f3aa1d29fcb8f994aaa53eb5c5a1da99101"
+  },
+  "examples/tabs/overview.lede": {
+    "ordinary": "2ef285b35814cbe8b3a23e1c8b058d10d6b0ad6dc59bf2713c589ea6c0b16aab",
+    "fragment": "a79ba9d39f3bd5ce12d558117cb935237f6c98b863b11ae6b967f25dd4310800",
+    "artifact": "321a114de5b3af627716db95ac406bbfd99b7fd31713b4f3155e94ad03ebc361"
+  },
+  "examples/tabs/review.lede": {
+    "ordinary": "b742649f0b7595a062d41c07a2c8d11ea6260ce91c76b135d2239ac5abb59b81",
+    "fragment": "beaba2e82ff5713abd79a3e98304f379483548d02ea9261470e5792293ee7f7a",
+    "artifact": "8e0ed338cb1c443efb6a0f620d4efc926bb3abf69238d51873b2f7e4389ca87d"
+  },
+  "examples/tabs/risks.lede": {
+    "ordinary": "6acddafea8428272a2d6619afcec69faa048f65d2c54b72cb5551c36c7a5c750",
+    "fragment": "76bcad5da6158fc424d2819b4efd131f422934db8f8d1594bb46d8c47e23e144",
+    "artifact": "7e825040f0d7b0c12ff2241c1b15555d2aa1a25454ac9702eb3711b36bc694f4"
   },
   "examples/v04/annotations.lede": {
     "ordinary": "e816ef2466c1ecb784009438fff48b4de02d944068c93fd2974400774031ab99",

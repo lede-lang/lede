@@ -186,6 +186,22 @@ const SHAPES: Partial<Record<string, RegExp>> = {
  * ID "Label"`, `question "Text"` and `role WORD [WORD] "Who"`. A line that has one of them and no decision to bind to is E `decision-ref`.
  */
 const DECISION_LINE = /^(?:option\s+[A-Za-z0-9][\w-]*\s+"|question\s+"|role\s+[^\s"]+(?:\s+[^\s"]+)?\s+")/;
+/**
+ * A tab line (spec §4.21, D85): `tab`, an optional label, `<`, a path ending in `.lede` with no space in it, and an optional `#` and 12 to
+ * 64 hex digits. The `<` and the ending are what make the line a keyword line, so `tab the Costs sheet over` stays prose.
+ */
+const TAB_TAIL = /\s<\s*(\S+\.lede)(?:\s+#([0-9a-fA-F]{12,64}))?\s*$/;
+/**
+ * The parts of a tab line, or null when `s` is not one. The label is what comes before the first ` <` the rest of the line matches; it
+ * is cut off by index rather than by a lazy group, which backtracked in cubic time on a long line of spaces.
+ */
+function tabLineOf(s: string): { label: string | null; path: string; pin: string | null } | null {
+  if (!/^tab\s/.test(s)) return null;
+  const m = TAB_TAIL.exec(s.slice(3));
+  return m ? { label: s.slice(3, 3 + m.index).trim() || null, path: m[1], pin: m[2]?.toLowerCase() ?? null } : null;
+}
+/** The most tabs a page may have: the bar still fits a phone with a scroll, and each gets one CSS rule (D85). */
+export const TAB_MAX = 12;
 const DECISION_STATUS: readonly DecisionStatus[] = ['open', 'settled', 'deferred'];
 /** The verdict words of an option: the first three choose it, `rejected` strikes it. Case does not matter. */
 const VERDICTS: ReadonlyMap<string, NonNullable<DecisionOption['verdict']>> = new Map([
@@ -345,6 +361,10 @@ export class LedeParser {
   private lineNo = 0;
   /** The level of the last heading as written (before the `heading-depth` clamp), for W `heading-skip`; null before the first. */
   private lastHeading: number | null = null;
+  /** Each tab's path, without a leading `./`, to the line that named it (spec §4.21). */
+  private tabPaths = new Map<string, number>();
+  /** The line of the first tab line, after which only tabs and `@` lines may come. */
+  private firstTab: number | null = null;
   /** The `export` formats seen, to the line that first used each. */
   private exports = new Map<string, number>();
   /**
@@ -732,6 +752,11 @@ export class LedeParser {
       this.emit({ type: 'html', html: s.slice(5).trim(), line: L });
       return;
     }
+    const tab = tabLineOf(s);
+    if (tab) {
+      this.tabLine(tab.label, tab.path, tab.pin, lead + 1);
+      return;
+    }
     const kw = KEYWORD_RE.exec(s);
     // Some keywords start a keyword line only in their shape; the rest of the time the line is prose (see SHAPES).
     if (kw && (SHAPES[kw[1]]?.test(s) ?? true)) {
@@ -856,7 +881,41 @@ export class LedeParser {
     else this.emit(fenceBlock(f));
   }
 
+  /** A `tab` line (spec §4.21): it ends any open block, and the lines after the first one may only be tabs and `@` lines. */
+  private tabLine(label: string | null, path: string, pin: string | null, col: number): void {
+    const L = this.lineNo;
+    this.flush();
+    if (this.cards) this.closeCards();
+    if (this.grid) this.closeGrid(true);
+    const norm = path.replace(/^(\.\/)+/, '');
+    if (this.tabPaths.has(norm)) {
+      this.diag('error', 'tab-duplicate', `${path} is already a tab, on line ${this.tabPaths.get(norm)}; a part is drawn once`, L, col, {
+        path,
+      });
+      return;
+    }
+    this.tabPaths.set(norm, L);
+    if (this.tabPaths.size > TAB_MAX) {
+      this.diag('error', 'tab-count', `a page holds at most ${TAB_MAX} tabs; this is tab ${this.tabPaths.size}`, L, col, {
+        count: this.tabPaths.size,
+        max: TAB_MAX,
+      });
+    }
+    this.firstTab ??= L;
+    this.emit({ type: 'tab', label, path, pin, line: L });
+  }
+
   private emit(b: Block): void {
+    if (this.firstTab !== null && b.type !== 'tab') {
+      this.diag(
+        'error',
+        'tab-trailing',
+        `only tab lines and @ lines may follow the first tab line (line ${this.firstTab}); move this into the lead above it or into a part`,
+        b.line,
+        1,
+        { first: this.firstTab },
+      );
+    }
     // An open `cards` run takes blocks once its first ### has arrived. Content before that is
     // emitted as usual. Diagrams cannot sit in a card: they are shown after the cards block.
     // (A grid is never open inside a run: a `grid` line ends the run.)
