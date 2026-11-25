@@ -6,7 +6,7 @@
 // from each page's parsed blocks, by block, so the site doubles as a registry of what each block looks like.
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
-import { dirname, join, relative, resolve } from 'node:path';
+import { basename, dirname, join, relative, resolve } from 'node:path';
 import { parse, walkBlocks, type Block } from '@lede-lang/core';
 
 const root = resolve(import.meta.dirname, '..');
@@ -85,14 +85,33 @@ const text = (s: string) => s.replace(/[\\`*[\]]/g, (c) => `\\${c}`);
 const build = (src: string, dest: string) =>
   execFileSync(process.execPath, [cli, 'build', src, '-o', dest], { stdio: ['ignore', 'ignore', 'inherit'] });
 
+/**
+ * The agent-written pages are also ledelang.dev's gallery, compiled from the same sources; their copies here name that
+ * page as canonical, so search engines index one of the two. The temporary source sits beside the original, where any
+ * `data x < file` it holds still resolves.
+ */
+function buildPage(src: string, dest: string, rel: string): void {
+  if (dirname(rel) !== 'article') return void build(src, dest);
+  const tmp = `${src}.canonical.lede`;
+  writeFileSync(tmp, `@canonical https://ledelang.dev/gallery/${basename(rel)}\n${readFileSync(src, 'utf8')}`);
+  try {
+    build(tmp, dest);
+  } finally {
+    rmSync(tmp);
+  }
+}
+
 rmSync(out, { recursive: true, force: true });
 const groups = new Map<string, string[]>();
+/** The pages this site is canonical for: all but the agent-written ones (buildPage). */
+const indexed: string[] = [];
 /** Block name to the pages that use it, each with how many kinds of block that page holds. */
 const byBlock = new Map<string, { link: string; kinds: number }[]>();
 for (const src of sources(examples).toSorted()) {
   const rel = relative(examples, src).replace(/\.lede$/, '.html');
   mkdirSync(dirname(join(out, rel)), { recursive: true });
-  build(src, join(out, rel));
+  buildPage(src, join(out, rel), rel);
+  if (dirname(rel) !== 'article') indexed.push(rel);
   const title = text(titleOf(src));
   const group = GROUPS[dirname(rel)] ?? dirname(rel);
   groups.set(group, [...(groups.get(group) ?? []), `- [${title}](${rel}) ([source](${repo}/blob/main/${relative(root, src)}))`]);
@@ -130,6 +149,13 @@ const indexSrc = join(out, 'index.lede');
 writeFileSync(indexSrc, index);
 build(indexSrc, join(out, 'index.html'));
 rmSync(indexSrc);
+// For Search Console: the github.io root is not ours, so no robots.txt can point here; submit this URL by hand.
+writeFileSync(
+  join(out, 'sitemap.xml'),
+  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${['', ...indexed]
+    .map((u) => `  <url><loc>${site}${u}</loc></url>`)
+    .join('\n')}\n</urlset>\n`,
+);
 // Pages runs Jekyll on an uploaded branch, not on an uploaded artifact; the marker keeps a branch deploy correct too.
 writeFileSync(join(out, '.nojekyll'), '');
 process.stderr.write(`build-pages: ${[...groups.values()].flat().length} pages and an index in ${relative(root, out)}\n`);
