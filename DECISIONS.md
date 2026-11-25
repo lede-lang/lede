@@ -1209,3 +1209,13 @@ not use); letting a tokens file name the syntax colours (no request, and seven m
 Gates: the RFC asked to land after D67 step 1 and after the owner compares article page 03 before and after; both were waived for
 the branch this was built on, so the comparison (85,790 to 91,379 bytes, six fences) is still owed to the owner before a release.
 The number D84 is one past the highest in this file; the internal file and open branches were not readable from that branch.
+
+## D87. The skill zip for Claude.ai and Claude Desktop is a GitHub release asset
+Claude.ai and Claude Desktop install a skill only by uploading a zip, and every other host installs from this repository. The zip
+used to be a file on the website, copied in by hand from a checkout of this repository: it went stale between syncs, and the copy
+on the site held `SKILL.md` and `LICENSE` but not `reference/`, which the skill tells agents to read. Now semantic-release builds
+it in its prepare step (`scripts/skill-zip.ts`: every file under `skill/lede/`, stored under `lede/`, fixed timestamps, so the same
+skill gives the same bytes) and attaches it to each GitHub release as `lede-skill.zip`. Links use
+`releases/latest/download/lede-skill.zip`; a pinned version is `releases/download/v<version>/lede-skill.zip`. The zip carries only
+the skill's Markdown, JSON and licence, no scripts, and GitHub shows its digest on the release page. `test/skill-zip.test.ts`
+holds the contents to `skill/lede/` and the release config to building and attaching it.
