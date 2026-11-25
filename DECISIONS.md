@@ -1240,6 +1240,16 @@ Checked, not changed: at 400px in headless Chromium the brief's headline, hero, 
 Open: the npm release. Publishing 0.2.5 (or the release this lands in) closes the gap for every reader of the README; that is the
 owner's approval step (D48, D58, D61).
 
+## D87. The skill zip for Claude.ai and Claude Desktop is a GitHub release asset
+Claude.ai and Claude Desktop install a skill only by uploading a zip, and every other host installs from this repository. The zip
+used to be a file on the website, copied in by hand from a checkout of this repository: it went stale between syncs, and the copy
+on the site held `SKILL.md` and `LICENSE` but not `reference/`, which the skill tells agents to read. Now semantic-release builds
+it in its prepare step (`scripts/skill-zip.ts`: every file under `skill/lede/`, stored under `lede/`, fixed timestamps, so the same
+skill gives the same bytes) and attaches it to each GitHub release as `lede-skill.zip`. Links use
+`releases/latest/download/lede-skill.zip`; a pinned version is `releases/download/v<version>/lede-skill.zip`. The zip carries only
+the skill's Markdown, JSON and licence, no scripts, and GitHub shows its digest on the release page. `test/skill-zip.test.ts`
+holds the contents to `skill/lede/` and the release config to building and attaching it.
+
 ## D88. Every merge to main publishes to npm automatically, with no approval step
 The owner decided on 2026-11-25 that npm publishing is automatic. Until now two people-steps stood between a merge and the
 registry: approving the `npm` environment on the run (D58, D60) and approving each staged version on npm with 2FA (D61). Releases

@@ -1,5 +1,11 @@
 # Changelog
 
+## <small>0.2.8 (2026-11-25)</small>
+
+* Merge pull request #50 from lede-lang/claude/project-thread-717f11 ([b41075f](https://github.com/lede-lang/lede/commit/b41075f)), closes [#50](https://github.com/lede-lang/lede/issues/50)
+* Merge remote-tracking branch 'origin/main' into claude/project-thread-717f11 ([bff957a](https://github.com/lede-lang/lede/commit/bff957a))
+* ci(release): attach lede-skill.zip to each GitHub release ([cfa254c](https://github.com/lede-lang/lede/commit/cfa254c))
+
 ## <small>0.2.7 (2026-11-25)</small>
 
 * Merge pull request #49 from lede-lang/claude/project-thread-xd9h60 ([36db6b6](https://github.com/lede-lang/lede/commit/36db6b6)), closes [#49](https://github.com/lede-lang/lede/issues/49)
