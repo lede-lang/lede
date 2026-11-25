@@ -45,6 +45,10 @@ function blockName(b: Block): string | undefined {
       return 'step';
     case 'note':
       return 'note (!)';
+    case 'list':
+      return 'list (- or 1.)';
+    case 'quote':
+      return 'quote (>)';
     default:
       return b.type;
   }
@@ -66,8 +70,14 @@ function titleOf(file: string): string {
   return line ? line.replace(/^(@title|#) /, '').trim() : relative(examples, file);
 }
 
+/** A section's place: the order of GROUPS, then any other folder. */
+const rank = (group: string) => {
+  const i = Object.values(GROUPS).indexOf(group);
+  return i < 0 ? Infinity : i;
+};
+
 /** How many pages the block list links for each block: the most focused ones, those with the fewest kinds of block. */
-const PER_BLOCK = 3;
+const PER_BLOCK = 3; // the index text says "up to three"
 
 /** Link text is inline Lede: escape what would start markup. */
 const text = (s: string) => s.replace(/[\\`*[\]]/g, (c) => `\\${c}`);
@@ -105,7 +115,7 @@ const index = [
   '',
   '## Find an example by block',
   '',
-  `The ${PER_BLOCK} most focused pages that use each block; the sections after it list every page.`,
+  'Up to three of the most focused pages that use each block; the sections after it list every page.',
   '',
   ...[...byBlock]
     .toSorted(([a], [b]) => a.localeCompare(b))
@@ -113,7 +123,7 @@ const index = [
       const best = pages.toSorted((a, b) => a.kinds - b.kinds).slice(0, PER_BLOCK);
       return `- \`${name}\`: ${best.map((p) => p.link).join(', ')}`;
     }),
-  ...[...groups].flatMap(([group, links]) => ['', `## ${group}`, ''].concat(links)),
+  ...[...groups].toSorted(([a], [b]) => rank(a) - rank(b)).flatMap(([group, links]) => ['', `## ${group}`, ''].concat(links)),
   '',
 ].join('\n');
 const indexSrc = join(out, 'index.lede');
