@@ -3,19 +3,19 @@
 // Regenerate expectations after an intentional change with UPDATE=1 and review the diff.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { parse } from '@lede-lang/core';
+import { contractDiag, expectedPath, here, listCases, type Kind } from './shared.ts';
 
-const here = import.meta.dirname;
 const update = process.env.UPDATE === '1';
 
-for (const dir of ['cases', 'errors']) {
-  for (const f of readdirSync(join(here, dir)).filter((name) => name.endsWith('.lede'))) {
+for (const dir of ['cases', 'errors'] as Kind[]) {
+  for (const f of listCases(dir)) {
     test(`${dir}/${f}`, () => {
       const doc = parse(readFileSync(join(here, dir, f), 'utf8'), { loadFile: () => 'a,b\n1,2' });
-      const got = dir === 'cases' ? doc : doc.diagnostics.map((d) => ({ severity: d.severity, code: d.code, line: d.line, col: d.col }));
-      const file = join(here, dir, f.replace(/\.lede$/, '.json'));
+      const got = dir === 'cases' ? doc : doc.diagnostics.map(contractDiag);
+      const file = expectedPath(dir, f);
       if (update || !existsSync(file)) writeFileSync(file, `${JSON.stringify(got, null, 2)}\n`);
       assert.deepEqual(got, JSON.parse(readFileSync(file, 'utf8')));
       if (dir === 'cases')

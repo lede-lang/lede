@@ -149,3 +149,5 @@ Read a file below before using what it teaches; the reference above does not cov
 | `reference/pages.md` | a recommendation or tip callout, rows whose cells hold commas, a decision with owners, numbered code lines | not counted |
 | `reference/diagrams.md` | allowed and denied paths shown in colour | not counted |
 | `reference/tabs.md` | sections written or reviewed separately, several files combined into one page with tabs | not counted |
+
+For jobs Lede does not suit (brand-exact design, apps, fixed-structure reports, content for GitHub previews) and what the page policy does not block, see https://github.com/lede-lang/lede/blob/main/docs/when-not-to-use.md.
