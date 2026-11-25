@@ -1,5 +1,12 @@
 # Changelog
 
+## <small>0.2.13 (2026-11-25)</small>
+
+* docs(pages): add a sitemap; point the agent-written pages at ledelang.dev as canonical ([caa5dc4](https://github.com/lede-lang/lede/commit/caa5dc4))
+* docs(pages): name list and quote by how they are written; put the overview section first ([caa5dc4](https://github.com/lede-lang/lede/commit/caa5dc4))
+* docs: point the README at the Pages gallery and list examples by block ([caa5dc4](https://github.com/lede-lang/lede/commit/caa5dc4))
+* chore(packages): add search keywords to the npm package metadata ([caa5dc4](https://github.com/lede-lang/lede/commit/caa5dc4))
+
 ## <small>0.2.12 (2026-11-25)</small>
 
 * Merge pull request #39 from lede-lang/dependabot/npm_and_yarn/dev-tooling-0b09fd7a65 ([f58a6f6](https://github.com/lede-lang/lede/commit/f58a6f6)), closes [#39](https://github.com/lede-lang/lede/issues/39)
