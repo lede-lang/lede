@@ -44,6 +44,13 @@ test('a line that only starts with tab stays prose', () => {
   }
 });
 
+test('a long line that starts with tab and is not one parses in linear time', () => {
+  const t = performance.now();
+  for (const line of [`tab${' '.repeat(50_000)}x`, `tab ${'< '.repeat(25_000)}x`, `tab ${'a '.repeat(25_000)}< x.lede #12`])
+    assert.equal(parse(`${line}\n`).blocks[0]?.type, 'paragraph');
+  assert.ok(performance.now() - t < 2000);
+});
+
 test('after the first tab line only tabs and @ lines may come; blocks before it are the lead', () => {
   const doc = parse('@title Review\n\nLead.\n\n## Lead heading\n\ntab A < a.lede\n@subtitle Late\n\ntab B < b.lede\n\nStray.\n\n- item\n');
   assert.deepEqual(codes(doc), ['12:tab-trailing', '14:tab-trailing']);

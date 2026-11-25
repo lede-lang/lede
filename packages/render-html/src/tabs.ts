@@ -60,6 +60,7 @@ export async function renderTabs(doc: LedeDocument, parts: readonly TabPart[], o
   }
   const nav = parts.length ? `<nav class="tabbar" aria-label="Tabs" tabindex="0">${links.join('')}</nav>` : '';
   const main = `<main class="doc tabs">\n${[...body, nav, ...panels].filter(Boolean).join('\n')}\n</main>`;
+  if (opts.fragment) return main;
   const fields = features.flatMap((f) => f.fields);
   const sheet = styleOf(doc.meta, {
     controls: fields.length > 0 || features.some((f) => f.exports.length > 0),

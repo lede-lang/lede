@@ -190,7 +190,16 @@ const DECISION_LINE = /^(?:option\s+[A-Za-z0-9][\w-]*\s+"|question\s+"|role\s+[^
  * A tab line (spec §4.21, D85): `tab`, an optional label, `<`, a path ending in `.lede` with no space in it, and an optional `#` and 12 to
  * 64 hex digits. The `<` and the ending are what make the line a keyword line, so `tab the Costs sheet over` stays prose.
  */
-const TAB_LINE = /^tab(?:\s+(.*?))?\s+<\s*(\S+\.lede)(?:\s+#([0-9a-fA-F]{12,64}))?\s*$/;
+const TAB_TAIL = /\s<\s*(\S+\.lede)(?:\s+#([0-9a-fA-F]{12,64}))?\s*$/;
+/**
+ * The parts of a tab line, or null when `s` is not one. The label is what comes before the first ` <` the rest of the line matches; it
+ * is cut off by index rather than by a lazy group, which backtracked in cubic time on a long line of spaces.
+ */
+function tabLineOf(s: string): { label: string | null; path: string; pin: string | null } | null {
+  if (!/^tab\s/.test(s)) return null;
+  const m = TAB_TAIL.exec(s.slice(3));
+  return m ? { label: s.slice(3, 3 + m.index).trim() || null, path: m[1], pin: m[2]?.toLowerCase() ?? null } : null;
+}
 /** The most tabs a page may have: the bar still fits a phone with a scroll, and each gets one CSS rule (D85). */
 export const TAB_MAX = 12;
 const DECISION_STATUS: readonly DecisionStatus[] = ['open', 'settled', 'deferred'];
@@ -732,9 +741,9 @@ export class LedeParser {
       this.emit({ type: 'html', html: s.slice(5).trim(), line: L });
       return;
     }
-    const tab = TAB_LINE.exec(s);
+    const tab = tabLineOf(s);
     if (tab) {
-      this.tabLine(tab[1]?.trim() || null, tab[2], tab[3]?.toLowerCase() ?? null, lead + 1);
+      this.tabLine(tab.label, tab.path, tab.pin, lead + 1);
       return;
     }
     const kw = KEYWORD_RE.exec(s);

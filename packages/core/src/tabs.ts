@@ -47,13 +47,14 @@ function pageKeyLines(src: string): { key: string; line: number; col: number }[]
   let fence = 0;
   src.split('\n').forEach((raw, i) => {
     const s = raw.trim();
-    const ticks = /^(`{3,})/.exec(s)?.[1].length ?? 0;
     if (fence) {
-      if (ticks >= fence && /^`+$/.test(s)) fence = 0;
+      if (/^`{3,}$/.test(s) && s.length >= fence) fence = 0;
       return;
     }
-    if (ticks) {
-      fence = ticks;
+    // The parser's own test for a fence that opens (`` ```js extra `` is text, and so is `` ```=html lines ``).
+    const open = /^(`{3,})\s*(=?)[\w+-]*(?:\s+(lines))?\s*$/.exec(s);
+    if (open && !(open[2] === '=' && open[3])) {
+      fence = open[1].length;
       return;
     }
     const m = /^@([A-Za-z][\w-]*)(?=\s|$)/.exec(s);

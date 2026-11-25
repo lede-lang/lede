@@ -355,6 +355,12 @@ async function build(file: string, out: string | null, flags: Set<string>, input
   const page = await load(file, { artifact: flags.has('--artifact'), images: inputs.images, themed: brand !== null });
   const { src, doc, tabs } = page;
   if (watching) watching.files = page.partFiles;
+  // `main` keeps OUT off FILE; a manifest's parts are inputs too, and are known only once it is read.
+  const clash = out === null ? undefined : page.partFiles.find((p) => sameFile(p, out));
+  if (clash !== undefined) {
+    process.stderr.write(`lede: ${out} is the same file as the part ${clash}; not overwriting the source\n`);
+    return false;
+  }
   if (brand) report(brand.flag.path, brand.src, brand.diagnostics);
   const docs = [page, ...page.parts];
   for (const d of docs) report(d.name, d.src, d.doc.diagnostics);

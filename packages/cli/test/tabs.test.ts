@@ -37,6 +37,14 @@ test('build writes one page with a panel per part and prints each tab with its h
   assert.doesNotMatch(html, /<script/);
 });
 
+test('build will not write over a part', () => {
+  const dir = folder('tab < risks.lede\n');
+  const r = run(['build', 'page.lede', '-o', 'risks.lede'], dir);
+  assert.notEqual(r.status, 0);
+  assert.match(r.stderr, /not overwriting the source/);
+  assert.equal(readFileSync(join(dir, 'risks.lede'), 'utf8'), RISKS);
+});
+
 test('check --json keys every part by its path; an error in a part stops the build', () => {
   const dir = folder('tab < parts/costs.lede\ntab < risks.lede\n');
   writeFileSync(join(dir, 'risks.lede'), '# Risks\nchart line nope\n');
