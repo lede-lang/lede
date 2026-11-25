@@ -16,7 +16,7 @@ Rendering is not part of conformance today. The suite does not look at HTML, so 
 The runner drives any executable that speaks the interface of the reference CLI:
 
 - `<command> ast <file>` prints the parsed document as JSON on stdout.
-- `<command> check --json <file>` prints `{ "<file>": [ {severity, code, line, col, ...} ] }` on stdout.
+- `<command> check --json <file>` prints `{ "<file>": [ {severity, code, line, col, ...} ] }` on stdout. A page of tabs (D85) adds an entry per part after it; the runner compares the first.
 - `<file>` is an absolute path appended to the command; exit codes are ignored.
 
 Both are documented in `spec/lede-0.1.md` section 9. Compared exactly: `meta`, `blocks`, `data`. Compared on `severity`, `code`,

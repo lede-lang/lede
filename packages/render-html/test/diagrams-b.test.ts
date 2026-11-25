@@ -124,10 +124,10 @@ test('answers leave a diamond by different points', async () => {
   assert.notDeepEqual(yes.points[0], no.points[0]);
 });
 
-test('yes/no answers keep their words and get a color class; other labels do not', async () => {
+test('answers leaving a decision keep their words and are set bold, with no colour from the word (D86); other labels are plain', async () => {
   const out = await html(`diagram f dir=LR${DEC}f: p -> r : done`.replace('\n', '\n'));
-  assert.match(out, /class="elabel yes"[^>]*>yes</);
-  assert.match(out, /class="elabel no"[^>]*>no</);
+  assert.match(out, /class="elabel ans"[^>]*>yes</);
+  assert.match(out, /class="elabel ans"[^>]*>no</);
   assert.match(out, /class="elabel"[^>]*>done</);
 });
 

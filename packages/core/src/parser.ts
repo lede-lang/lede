@@ -186,6 +186,22 @@ const SHAPES: Partial<Record<string, RegExp>> = {
  * ID "Label"`, `question "Text"` and `role WORD [WORD] "Who"`. A line that has one of them and no decision to bind to is E `decision-ref`.
  */
 const DECISION_LINE = /^(?:option\s+[A-Za-z0-9][\w-]*\s+"|question\s+"|role\s+[^\s"]+(?:\s+[^\s"]+)?\s+")/;
+/**
+ * A tab line (spec §4.21, D85): `tab`, an optional label, `<`, a path ending in `.lede` with no space in it, and an optional `#` and 12 to
+ * 64 hex digits. The `<` and the ending are what make the line a keyword line, so `tab the Costs sheet over` stays prose.
+ */
+const TAB_TAIL = /\s<\s*(\S+\.lede)(?:\s+#([0-9a-fA-F]{12,64}))?\s*$/;
+/**
+ * The parts of a tab line, or null when `s` is not one. The label is what comes before the first ` <` the rest of the line matches; it
+ * is cut off by index rather than by a lazy group, which backtracked in cubic time on a long line of spaces.
+ */
+function tabLineOf(s: string): { label: string | null; path: string; pin: string | null } | null {
+  if (!/^tab\s/.test(s)) return null;
+  const m = TAB_TAIL.exec(s.slice(3));
+  return m ? { label: s.slice(3, 3 + m.index).trim() || null, path: m[1], pin: m[2]?.toLowerCase() ?? null } : null;
+}
+/** The most tabs a page may have: the bar still fits a phone with a scroll, and each gets one CSS rule (D85). */
+export const TAB_MAX = 12;
 const DECISION_STATUS: readonly DecisionStatus[] = ['open', 'settled', 'deferred'];
 /** The verdict words of an option: the first three choose it, `rejected` strikes it. Case does not matter. */
 const VERDICTS: ReadonlyMap<string, NonNullable<DecisionOption['verdict']>> = new Map([
@@ -345,6 +361,10 @@ export class LedeParser {
   private lineNo = 0;
   /** The level of the last heading as written (before the `heading-depth` clamp), for W `heading-skip`; null before the first. */
   private lastHeading: number | null = null;
+  /** Each tab's path, without a leading `./`, to the line that named it (spec §4.21). */
+  private tabPaths = new Map<string, number>();
+  /** The line of the first tab line, after which only tabs and `@` lines may come. */
+  private firstTab: number | null = null;
   /** The `export` formats seen, to the line that first used each. */
   private exports = new Map<string, number>();
   /**
@@ -613,6 +633,17 @@ export class LedeParser {
       this.textLine(s.slice(1));
       return;
     }
+    // `: a | b` is a row only directly under a `table … = A | B` header or another row (D80). Anywhere else it is a paragraph, which
+    // is rarely what was meant: a blank line or a named `table x` above it, or a lede that predates pipe rows (D86).
+    if (!fm && /^:\s/.test(s) && splitPipes(s.slice(1)).length > 1) {
+      this.diag(
+        'warning',
+        'table-row',
+        '`: a | b` is a table row only directly under a `table [options] = A | B` header or another row; this line is a paragraph',
+        L,
+        lead + 1,
+      );
+    }
     if (fm) {
       this.flush();
       this.fence = { ticks: fm[1].length, raw: fm[2] === '=', lang: fm[3], numbered: fm[4] !== undefined, lines: [], line: L };
@@ -719,6 +750,11 @@ export class LedeParser {
     if (s.startsWith('html:')) {
       this.flush();
       this.emit({ type: 'html', html: s.slice(5).trim(), line: L });
+      return;
+    }
+    const tab = tabLineOf(s);
+    if (tab) {
+      this.tabLine(tab.label, tab.path, tab.pin, lead + 1);
       return;
     }
     const kw = KEYWORD_RE.exec(s);
@@ -845,7 +881,41 @@ export class LedeParser {
     else this.emit(fenceBlock(f));
   }
 
+  /** A `tab` line (spec §4.21): it ends any open block, and the lines after the first one may only be tabs and `@` lines. */
+  private tabLine(label: string | null, path: string, pin: string | null, col: number): void {
+    const L = this.lineNo;
+    this.flush();
+    if (this.cards) this.closeCards();
+    if (this.grid) this.closeGrid(true);
+    const norm = path.replace(/^(\.\/)+/, '');
+    if (this.tabPaths.has(norm)) {
+      this.diag('error', 'tab-duplicate', `${path} is already a tab, on line ${this.tabPaths.get(norm)}; a part is drawn once`, L, col, {
+        path,
+      });
+      return;
+    }
+    this.tabPaths.set(norm, L);
+    if (this.tabPaths.size > TAB_MAX) {
+      this.diag('error', 'tab-count', `a page holds at most ${TAB_MAX} tabs; this is tab ${this.tabPaths.size}`, L, col, {
+        count: this.tabPaths.size,
+        max: TAB_MAX,
+      });
+    }
+    this.firstTab ??= L;
+    this.emit({ type: 'tab', label, path, pin, line: L });
+  }
+
   private emit(b: Block): void {
+    if (this.firstTab !== null && b.type !== 'tab') {
+      this.diag(
+        'error',
+        'tab-trailing',
+        `only tab lines and @ lines may follow the first tab line (line ${this.firstTab}); move this into the lead above it or into a part`,
+        b.line,
+        1,
+        { first: this.firstTab },
+      );
+    }
     // An open `cards` run takes blocks once its first ### has arrived. Content before that is
     // emitted as usual. Diagrams cannot sit in a card: they are shown after the cards block.
     // (A grid is never open inside a run: a `grid` line ends the run.)
@@ -2762,7 +2832,11 @@ export class LedeParser {
       }
       if (tn.word !== undefined) {
         const allowed = [...STATUS_TONES];
-        const meant = tn.suggest ? `tone words are lower case: write "${tn.suggest}"` : allowed.join(', ');
+        const meant = !tn.suggest
+          ? allowed.join(', ')
+          : tn.suggest === tn.word.toLowerCase()
+            ? `tone words are lower case: write "${tn.suggest}"`
+            : `write "${tn.suggest}" for that colour; tones: ${allowed.join(', ')}`;
         this.diag(
           'warning',
           'edge-tone',
@@ -2863,11 +2937,24 @@ function afterColon(s: string, lead: number): number {
   return lead + 1 + at + (s.length - at - s.slice(at).trimStart().length);
 }
 
+/** Colour words written where a tone was meant (`: allow | green`), to the tone each names (D86). */
+const TONE_WORDS = new Map<string, EdgeTone>([
+  ['green', 'good'],
+  ['red', 'bad'],
+  ['amber', 'warn'],
+  ['yellow', 'warn'],
+  ['orange', 'warn'],
+  ['blue', 'info'],
+  ['grey', 'neutral'],
+  ['gray', 'neutral'],
+]);
+
 /**
  * An edge or message line without its tone. The tone is the line's last ` | ` field (`a -> b : allow | good`, `a -> b | warn`): a
  * pipe with a space on each side, outside any pair of double quotes, and a field that is exactly one of STATUS_TONES. Inside a label
  * (after the `:`) any other last field is label text, as it was before tones (`client -> server : GET | POST`); a case variant of a
- * tone word (`Good`) stays label text too, and comes back as `word`, with `suggest` the tone it was likely meant as, for a warning.
+ * tone word (`Good`) or a colour word (`green`, TONE_WORDS) stays label text too, and comes back as `word`, with `suggest` the tone it
+ * was likely meant as, for a warning.
  * Before any `:` (no label) the line did not parse before tones, so a lone other word there is a mistyped tone: `word`, dropped with
  * its pipe. `at` is the word's offset in `s`.
  */
@@ -2879,7 +2966,7 @@ function splitTone(s: string): { head: string; tone?: EdgeTone; word?: string; s
   const head = s.slice(0, at).trimEnd();
   const tone = STATUS_TONES.find((t) => t === field);
   if (tone) return { head, tone, at: 0 };
-  const suggest = STATUS_TONES.find((t) => t === field.toLowerCase());
+  const suggest = STATUS_TONES.find((t) => t === field.toLowerCase()) ?? TONE_WORDS.get(field.toLowerCase());
   const word = { word: field, at: s.lastIndexOf(field), ...(suggest ? { suggest } : {}) };
   if (head.includes(':')) return suggest ? { head: s, ...word } : { head: s, at: 0 };
   return { head, dropped: true, ...word };

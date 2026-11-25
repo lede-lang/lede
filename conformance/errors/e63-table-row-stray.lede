@@ -1,0 +1,7 @@
+data runs = a,b; 1,2
+table runs
+: x | y
+
+table title="Options" = Option | Cost
+
+: SQS | low, managed

@@ -525,8 +525,7 @@ figure.img figcaption{font:14px/1.4 var(--sans);color:var(--muted)}
 /* stream-b */
 .dg .node.dec .box{fill:var(--warn-bg);stroke:color-mix(in srgb,var(--warn) 55%,var(--surface));stroke-width:1.25}
 .dg .node.dec.focus .box{fill:var(--accent-tint);stroke:var(--accent);stroke-width:1.5}
-.dg .elabel.yes{fill:var(--good);font-weight:700}
-.dg .elabel.no{fill:var(--bad);font-weight:700}
+.dg .elabel.ans{font-weight:700}
 .dg .fr{fill:none;stroke:var(--muted);stroke-width:1}
 .dg .fr-tag{fill:var(--fg2)}
 .dg .fr-k{font:700 9px var(--mono);letter-spacing:.06em;fill:var(--surface)}
@@ -553,6 +552,7 @@ thead th.n{white-space:normal}
   @media (max-width:560px){.kpi.hero .kv{font-size:min(clamp(4rem,13vw,7rem),calc(100cqw / var(--kvn,1) * 1.5))}}
 }
 .kv.long{white-space:normal;overflow-wrap:anywhere;font-size:1.45rem;line-height:1.2}
+.kpi.hero .kv.words{font-size:min(4.5rem,calc(100cqw / var(--kvn,1) * 1.5));letter-spacing:-.02em}
 .kpi.hero .kv.long{font-size:2.4rem}
 @media (max-width:560px){.kv.long{font-size:1.25rem}.kpi.hero .kv.long{font-size:1.9rem}}
 /* end stream 3.1 */
@@ -750,7 +750,48 @@ ol.steps.sx>li>.sn{grid-column:2;min-width:0;color:var(--fg2);overflow-wrap:anyw
 .dg .blk.tn :is(circle,path){stroke:var(--tn)}
 .dg .lmask.tn{fill:var(--tf);stroke:color-mix(in srgb,var(--tn) 40%,var(--tf));stroke-width:1;rx:4px}
 .dg .elabel.tn{fill:var(--tn);font-weight:500}
+.dg .elabel.ans.tn{font-weight:700}
 .et.tn{color:var(--tn);background:var(--tf);border-radius:4px;padding:0 6px;font-weight:600;font-size:14px}
 .dgk-t{min-width:0;overflow-wrap:anywhere}
 ${opts.controls ? CONTROLS : ''}${opts.controls && opts.editors ? EDITORS : ''}${opts.dash ? DASH_RULES : ''}${opts.decisions ? DECISIONS : ''}${opts.code ? CODE : ''}`;
+}
+
+/**
+ * The rules of a page of tabs (spec §4.21, D85), for `count` panels, added only to such a page. A panel shows when it is the fragment's
+ * target or holds it, and the first shows when nothing is targeted; the tab of the panel shown is marked. Every rule names a panel by
+ * its index (`p1`, `tl1`), never by its id, so no label reaches the stylesheet. A browser without `:has()` skips the whole block and
+ * shows every panel, with the bar as a list of links; print shows every panel too, each from a new page.
+ */
+export function tabsCss(count: number): string {
+  const shown = (n: number): string => `.tabs:has(.p${n}:target,.p${n} :target)`;
+  const none = '.tabs:not(:has(.part:target,.part :target))';
+  const marks = Array.from({ length: count }, (_, i) => `${shown(i + 1)} .tl${i + 1}`);
+  return `
+/* tabs (D85) */
+:root{scroll-padding-top:64px}
+.doc>.part{grid-column:1/-1;padding:8px 0 0}
+.doc.part{--col:46rem} .doc.part.dash{--col:64rem} .doc.part.prose{--col:37rem}
+/* a panel's headings sit one level down (an h2 title, then h3 for ##), and look as they do on the part's own page */
+.part>.mast h2{font-size:2rem;border-top:0;padding-top:0;margin-top:0} .part>.mast h2::before{display:none}
+.part>h3{font-size:1.5rem;margin-top:28px;padding-top:18px;border-top:1px solid var(--line);position:relative}
+.part>h3::before{content:"";position:absolute;top:-1px;left:0;width:40px;height:3px;background:var(--accent)}
+.part>.mast+h3{border-top:0;padding-top:0;margin-top:12px} .part>.mast+h3::before{display:none}
+.part>h4{font-size:1.18rem;margin-top:10px}
+.part h5{font-family:var(--serif);font-size:1rem;line-height:1.18;text-wrap:balance;margin:4px 0 0;font-weight:600;color:var(--fg)}
+.part .card>h5{margin:0;font-size:1.12rem;line-height:1.3} .part .card.faq>h4{font-size:1.15rem}
+.part.prose>h3{font-size:1.55rem;margin-top:36px;padding-top:0;border-top:0} .part.prose>h3::before{display:none}
+.part.prose>h4{font-size:1.22rem;margin-top:20px} .part.prose>.mast+h3{margin-top:20px}
+.part.prose>h3+*,.part.prose>h4+*{margin-top:-4px}
+@media (max-width:560px){.part>.mast h2{font-size:1.6rem} .part>h3{font-size:1.3rem;margin-top:20px;padding-top:14px}}
+.tabbar{position:sticky;top:0;z-index:2;display:flex;gap:2px;overflow-x:auto;background:var(--bg);border-bottom:1px solid var(--line);margin-top:8px}
+.tabbar a{flex:none;display:flex;align-items:center;min-height:44px;padding:0 14px;color:var(--fg2);text-decoration:none;border-bottom:3px solid transparent;font:500 15px/1.3 var(--sans);white-space:nowrap}
+.tabbar a:hover{color:var(--fg)} .tabbar a:focus-visible{outline-offset:-2px}
+.tabref{font:14px/1.5 var(--sans);color:var(--fg2)}
+@supports selector(:has(*)){
+.part{display:none}
+.part:target,.part:has(:target),${none}>.p1{display:grid}
+${none} .tl1,${marks.join(',')}{color:var(--fg);border-bottom-color:var(--accent)}
+}
+@media print{.tabbar{display:none} .doc>.part{display:grid!important} .doc>.part+.part{break-before:page}}
+`;
 }

@@ -1,0 +1,4 @@
+diagram n
+n: a -> b : allow | green
+n: a -> c : deny | red
+n: b -> c : GET | POST

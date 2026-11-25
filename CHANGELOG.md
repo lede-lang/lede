@@ -1,5 +1,37 @@
 # Changelog
 
+## <small>0.2.10 (2026-11-25)</small>
+
+* Merge pull request #47 from lede-lang/claude/project-thread-w1ga9i ([ad016ae](https://github.com/lede-lang/lede/commit/ad016ae)), closes [#47](https://github.com/lede-lang/lede/issues/47)
+* Merge remote-tracking branch 'origin/main' into claude/project-thread-w1ga9i ([b8f6a87](https://github.com/lede-lang/lede/commit/b8f6a87))
+* test(conformance): give the tab error case real parts; compare a file's own check entry ([40dbb9d](https://github.com/lede-lang/lede/commit/40dbb9d))
+* chore: merge main; renumber the tab conformance cases after main's new ones ([33e657b](https://github.com/lede-lang/lede/commit/33e657b))
+* fix(tabs): linear-time tab lines, fragment output, no -o over a part ([3c27777](https://github.com/lede-lang/lede/commit/3c27777))
+* feat: build one page of tabs from several Lede files (D85) ([6c09cb3](https://github.com/lede-lang/lede/commit/6c09cb3))
+* docs(decisions): record proposed D85, tabbed pages built from several Lede sources ([aa6b9c5](https://github.com/lede-lang/lede/commit/aa6b9c5))
+
+## <small>0.2.9 (2026-11-25)</small>
+
+* Merge pull request #48 from lede-lang/claude/project-thread-kc56wj ([d55e71c](https://github.com/lede-lang/lede/commit/d55e71c)), closes [#48](https://github.com/lede-lang/lede/issues/48)
+* Merge remote-tracking branch 'origin/main' into claude/project-thread-kc56wj ([0d97fd9](https://github.com/lede-lang/lede/commit/0d97fd9))
+* Merge remote-tracking branch 'origin/main' into claude/project-thread-kc56wj ([bd521f0](https://github.com/lede-lang/lede/commit/bd521f0))
+* ci(pages): publish the shipped examples to GitHub Pages from main ([8a1b43b](https://github.com/lede-lang/lede/commit/8a1b43b))
+* ci(release): publish to npm on every release with no approval step ([dac724f](https://github.com/lede-lang/lede/commit/dac724f))
+
+## <small>0.2.8 (2026-11-25)</small>
+
+* Merge pull request #50 from lede-lang/claude/project-thread-717f11 ([b41075f](https://github.com/lede-lang/lede/commit/b41075f)), closes [#50](https://github.com/lede-lang/lede/issues/50)
+* Merge remote-tracking branch 'origin/main' into claude/project-thread-717f11 ([bff957a](https://github.com/lede-lang/lede/commit/bff957a))
+* ci(release): attach lede-skill.zip to each GitHub release ([cfa254c](https://github.com/lede-lang/lede/commit/cfa254c))
+
+## <small>0.2.7 (2026-11-25)</small>
+
+* Merge pull request #49 from lede-lang/claude/project-thread-xd9h60 ([36db6b6](https://github.com/lede-lang/lede/commit/36db6b6)), closes [#49](https://github.com/lede-lang/lede/issues/49)
+* Merge remote-tracking branch 'origin/main' into claude/project-thread-xd9h60 ([db6e7ce](https://github.com/lede-lang/lede/commit/db6e7ce))
+* chore: merge main and regenerate the integrations from the skill ([5a58c05](https://github.com/lede-lang/lede/commit/5a58c05))
+* fix(html): keep a written diagram row, enclose labels and draw decision ladders ([53e6a23](https://github.com/lede-lang/lede/commit/53e6a23))
+* fix(html): scope the ladder answer rule and tighten tone and hero checks ([0ea567d](https://github.com/lede-lang/lede/commit/0ea567d))
+
 ## <small>0.2.6 (2026-11-25)</small>
 
 * Merge pull request #43 from lede-lang/claude/project-thread-5og54g ([63502f8](https://github.com/lede-lang/lede/commit/63502f8)), closes [#43](https://github.com/lede-lang/lede/issues/43)

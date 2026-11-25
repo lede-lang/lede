@@ -1,0 +1,13 @@
+@title Costs
+@meta Writer | Costs agent
+@meta Reviewed | 2026-11-24
+
+## By service
+
+data cost = service,USD; Compute,18400; "Database, Aurora",11200; Data transfer,6100; Observability,3900; Other,1600
+
+chart hbar cost unit=$ title="Monthly cost by service"
+
+## What moved
+
+Compute grew with the new settlement workers. Data transfer fell after the CDN change, and is now the third line instead of the second.

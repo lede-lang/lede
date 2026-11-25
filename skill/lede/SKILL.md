@@ -134,6 +134,11 @@ The compiler draws well what it is given; these choices decide whether the page 
 
 `lede` is the compiler, from the npm package `@lede-lang/cli` (needs Node 22.12 or later). If `lede` is not found, ask the user before installing anything. With their go-ahead run `npm install -g @lede-lang/cli` (`pnpm add -g @lede-lang/cli` if they use pnpm), or for one build without installing, `npx @lede-lang/cli build page.lede -o page.html`. If Node is missing or older, tell the user and stop; do not install Node.
 
+This skill's syntax needs `@lede-lang/cli` 0.2.5 or later. Run `lede --version` first: an older compiler reads pipe rows
+(`: a | b`), edge tones (`| good`) and ` lines` on a fence as plain text and still prints ok. With an older one, use
+`npx @lede-lang/cli@latest`; if npm has nothing that new, tell the user the published compiler is behind this skill, and write
+tables in the `table = a,b; c,d` form and edges without tones.
+
 Local images are written into the page, so the built file stands alone (`--link-images` keeps the paths). Before a page
 leaves the user's organisation, run `lede check page.lede --external` and resolve every finding: it lists URLs, host names,
 IP addresses, account ids, keys and emails. If the user has a house palette as a tokens file, build with
@@ -148,5 +153,6 @@ Read a file below before using what it teaches; the reference above does not cov
 | `reference/meta.md` | share previews, its own status words, owner and review facts, a narrow or wide column | not counted |
 | `reference/pages.md` | a recommendation or tip callout, rows whose cells hold commas, a decision with owners, numbered code lines | not counted |
 | `reference/diagrams.md` | allowed and denied paths shown in colour | not counted |
+| `reference/tabs.md` | sections written or reviewed separately, several files combined into one page with tabs | not counted |
 
 For jobs Lede does not suit (brand-exact design, apps, fixed-structure reports, content for GitHub previews) and what the page policy does not block, see https://github.com/lede-lang/lede/blob/main/docs/when-not-to-use.md.

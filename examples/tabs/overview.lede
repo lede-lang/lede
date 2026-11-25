@@ -1,0 +1,14 @@
+@title Overview
+@meta Writer | Overview agent
+
+kpi Uptime | 99.97% | +0.02 pts | good
+kpi p99 latency | 182 ms | -12% | good
+kpi Monthly cost | $41,200 | +8% | bad
+
+The quarter held its availability target and cut tail latency; cost grew faster than traffic, which the [Costs](#costs) tab explains.
+
+## Decisions this quarter
+
+- Move settlement to a queue
+- Keep Aurora; revisit in Q2
+- [x] Retire the legacy webhook relay

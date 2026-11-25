@@ -1,0 +1,25 @@
+diagram decide title="Should a record be deleted?"
+decide: start "Record due" svc
+decide: d1 "Opted out?" decision
+decide: d2 "Protected group?" decision
+decide: d3 "Locked?" decision
+decide: d4 "Legal hold?" decision
+decide: d5 "Open dispute?" decision
+decide: d6 "Past retention?" decision
+decide: kept "Kept" store
+decide: del "Delete" fn
+decide: archive "Archive" ext
+decide: start -> d1
+decide: d1 -> kept : yes
+decide: d1 -> d2 : no
+decide: d2 -> kept : yes
+decide: d2 -> d3 : no
+decide: d3 -> kept : yes
+decide: d3 -> d4 : no
+decide: d4 -> kept : yes
+decide: d4 -> d5 : no
+decide: d5 -> kept : yes
+decide: d5 -> d6 : no
+decide: d6 -> del : yes
+decide: d6 -> archive : no
+decide: legend
