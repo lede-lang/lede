@@ -107,8 +107,8 @@ test(
         for (const p of pages) {
           await page.goto(pathToFileURL(p.file).href, { waitUntil: 'load' });
           await page.addScriptTag({ path: AXE });
-          const run = (await page.evaluate(RUN)) as Omit<Run, 'best'>;
-          out.push({ ...run, best: best ? ((await page.evaluate(RUN_BEST)) as Run['best']) : [] });
+          const run = await page.evaluate<Omit<Run, 'best'>>(RUN);
+          out.push({ ...run, best: best ? await page.evaluate<Run['best']>(RUN_BEST) : [] });
         }
         await ctx.close();
         return out;

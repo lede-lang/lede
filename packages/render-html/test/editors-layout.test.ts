@@ -54,7 +54,7 @@ for (const shell of [false, true])
         const ctx = await browser.newContext({ viewport: { width: 360, height: 900 }, colorScheme: scheme, bypassCSP: true });
         const page = await ctx.newPage();
         await page.setContent(html);
-        const counts = (await page.evaluate(COUNTS)) as Record<string, number>;
+        const counts = await page.evaluate<Record<string, number>>(COUNTS);
         assert.ok(counts.range >= 1 && counts.number === counts.range, `a range and a number box per param: ${JSON.stringify(counts)}`);
         assert.ok(
           counts.checkbox >= 2 && counts.seg === 3 && counts.tiles === 3 && counts.tpl === 1 && counts.preset === 1,
@@ -62,9 +62,9 @@ for (const shell of [false, true])
         );
         assert.deepEqual(await page.evaluate(MEASURE), []);
         await page.addScriptTag({ path: AXE });
-        const found = (await page.evaluate(
+        const found = await page.evaluate<string[]>(
           `axe.run(document, { runOnly: ['label', 'color-contrast'] }).then(r => r.violations.map(v => v.id + ': ' + v.nodes.map(n => n.target.join(' ')).join(', ')))`,
-        )) as string[];
+        );
         assert.deepEqual(found, []);
         await ctx.close();
       },
@@ -104,7 +104,7 @@ browserTest('a bucket on a prose page keeps its tiles level and its number badge
   const ctx = await browser.newContext({ viewport: { width: 360, height: 900 }, bypassCSP: true });
   const page = await ctx.newPage();
   await page.setContent(html);
-  const got = (await page.evaluate(LISTS)) as Record<string, unknown>;
+  const got = await page.evaluate<Record<string, unknown>>(LISTS);
   assert.equal(got.prose, true, 'the page takes the prose layout');
   assert.equal(new Set(got.tileTops as number[]).size, 1, `the three tiles share a top: ${JSON.stringify(got.tileTops)}`);
   assert.deepEqual(got.tileMargins, ['0px', '0px', '0px']);

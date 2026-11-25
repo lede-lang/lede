@@ -295,7 +295,7 @@ browserTest(
     await page.locator('input[name=checkout_v2]').check();
     await page.locator('input[name="triage:0"][value=Later]').check();
     await page.locator('.q-preset > button.q-pre').click();
-    const seen = (await page.evaluate('window.__m')) as { type: string; attr: string | null; added: string[]; in: string }[];
+    const seen = await page.evaluate<{ type: string; attr: string | null; added: string[]; in: string }[]>('window.__m');
     assert.ok(seen.length > 20);
     for (const m of seen) {
       assert.deepEqual(
@@ -389,7 +389,7 @@ browserTest(
     // The controls and the three code blocks in one round trip, so they are read from the same state.
     const READ = `({ entries: ${SNAPSHOT}, codes: ${JSON.stringify(FORMATS)}.map((f) => document.querySelector('figure[data-x=' + f + '] code').textContent) })`;
     const compare = async (label: string) => {
-      const read = (await page.evaluate(READ)) as { entries: Entry[]; codes: string[] };
+      const read = await page.evaluate<{ entries: Entry[]; codes: string[] }>(READ);
       const held = heldValues(blocks, read.entries);
       FORMATS.forEach((fmt, k) => assert.equal(read.codes[k], serializeExport(fmt, block.page, blocks, held), `${label} ${fmt}`));
     };
@@ -486,8 +486,8 @@ for (const [name, src] of [
       // Without these the comparison could pass because nothing was activated.
       assert.equal(await off.page.locator('.q-bar').first().isVisible(), false, 'the blocked page shows no copy bar');
       assert.equal(await on.page.locator('.q-bar').first().isVisible(), true, 'the live page ran its runtime');
-      const before = (await off.page.evaluate(BOXES)) as Box[];
-      const after = (await on.page.evaluate(BOXES)) as Box[];
+      const before = await off.page.evaluate<Box[]>(BOXES);
+      const after = await on.page.evaluate<Box[]>(BOXES);
       assert.deepEqual(
         after.map((b) => b[0]),
         before.map((b) => b[0]),
@@ -542,8 +542,8 @@ browserTest('4.9 on the large page a change is handled in under 50 ms (16 ms is 
     for (const k of [round, 7 + round, 15 + round, 29 - round])
       await page.locator(`input[name="triage:${k}"][value=${['Cut', 'Later', 'Next'][round]}]`).check();
   }
-  const handler = (await page.evaluate('window.__t')) as number[];
-  const laidOut = (await page.evaluate('window.__l')) as number[];
+  const handler = await page.evaluate<number[]>('window.__t');
+  const laidOut = await page.evaluate<number[]>('window.__l');
   assert.ok(handler.length >= 40, `${handler.length} input events were timed`);
   const med = (a: number[]) => a.toSorted((x, y) => x - y)[Math.floor(a.length / 2)];
   console.log(

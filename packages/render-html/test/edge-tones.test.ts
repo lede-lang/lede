@@ -336,15 +336,15 @@ async function check(browser: Browser): Promise<string[]> {
       await page.goto(`file://${file}`, { waitUntil: 'load' });
       await page.waitForTimeout(50);
       const at = `@${width} ${scheme}`;
-      const res = (await page.evaluate(MEASURE)) as string[];
+      const res = await page.evaluate<string[]>(MEASURE);
       const tones = res.pop()!;
       for (const m of res) bad.push(`${at}: ${m}`);
       // Every tone shows up on a visible drawing: the phone shows the phone drawing, the desktop the desktop one.
       if (tones !== 'tones:t-bad,t-good,t-info,t-neutral,t-warn') bad.push(`${at}: ${tones}`);
       await page.addScriptTag({ path: AXE });
-      const n = (await page.evaluate(
+      const n = await page.evaluate<number>(
         `axe.run(document, { runOnly: ['color-contrast'] }).then(r => r.violations.reduce((a, v) => a + v.nodes.length, 0))`,
-      )) as number;
+      );
       if (n) bad.push(`${at}: ${n} contrast violation${n === 1 ? '' : 's'}`);
       await ctx.close();
     }

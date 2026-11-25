@@ -542,11 +542,11 @@ browserTest(
           const ctx = await browser.newContext({ viewport: { width, height: 900 }, colorScheme: scheme, bypassCSP: true });
           const page = await ctx.newPage();
           await page.goto(`file://${file}`, { waitUntil: 'load' });
-          for (const m of (await page.evaluate(MEASURE)) as string[]) found.push(`${name} @${width} ${scheme}: ${m}`);
+          for (const m of await page.evaluate<string[]>(MEASURE)) found.push(`${name} @${width} ${scheme}: ${m}`);
           await page.addScriptTag({ path: AXE });
-          const bad = (await page.evaluate(
+          const bad = await page.evaluate<string[]>(
             `axe.run(document, { runOnly: ['color-contrast'] }).then(r => r.violations.flatMap(v => v.nodes.map(n => n.target.join(' '))))`,
-          )) as string[];
+          );
           for (const t of bad) found.push(`${name} @${width} ${scheme}: contrast ${t}`);
           await ctx.close();
         }
