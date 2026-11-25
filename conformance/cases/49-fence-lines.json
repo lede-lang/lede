@@ -1,0 +1,69 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "code",
+      "lang": "ts",
+      "text": "const a = 1;",
+      "lines": true,
+      "line": 1
+    },
+    {
+      "type": "code",
+      "lang": "diff",
+      "text": "-old\n+new",
+      "lines": true,
+      "line": 4
+    },
+    {
+      "type": "code",
+      "lang": "text",
+      "text": "plain, numbered",
+      "lines": true,
+      "line": 8
+    },
+    {
+      "type": "code",
+      "lang": "lines",
+      "text": "the language is \"lines\", as before",
+      "line": 11
+    },
+    {
+      "type": "code",
+      "lang": "lines",
+      "text": "the language is \"lines\", and it is numbered",
+      "lines": true,
+      "line": 14
+    },
+    {
+      "type": "paragraph",
+      "text": "```=html lines",
+      "line": 17
+    },
+    {
+      "type": "ask",
+      "name": "name",
+      "text": "Who is it for?",
+      "lines": 1,
+      "line": 18
+    },
+    {
+      "type": "template",
+      "name": "t",
+      "text": "A template's fence is never numbered",
+      "body": "For {name}.",
+      "lang": "text",
+      "slots": [
+        "name"
+      ],
+      "line": 19
+    },
+    {
+      "type": "export",
+      "format": "json",
+      "line": 23
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

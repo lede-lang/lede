@@ -758,6 +758,56 @@ test('questions: each field and each export is a block of its own, drawn as rend
   assert.equal(stylesOf(await drive(first, { parse: parseOpts })).length, 1);
 });
 
+// ---- highlighted and numbered code (spec §4.9) ---------------------------------------------------------------------------------
+
+const CODE_PAGE = [
+  '# Review',
+  '',
+  'The plain fence comes first and adds nothing.',
+  '',
+  '```text',
+  'plain <b>',
+  '```',
+  '',
+  '```ts lines',
+  'export const retry = async (fn: () => Promise<void>) => {',
+  '  /* twice',
+  '     at most */',
+  '  await fn();',
+  '};',
+  '```',
+  '',
+  '```diff',
+  '@@ -1 +1 @@',
+  '-old',
+  '+new',
+  '```',
+  '',
+  'Done.',
+  '',
+].join('\n');
+
+test('code: a highlighted or numbered fence streams as render() draws it, and the code rules arrive with the first one', async () => {
+  const expected = await whole(CODE_PAGE);
+  assert.match(expected, /<pre class="code nums"[^>]*><code><span class="ln"><span class="tk-kw">export<\/span>/);
+  for (const chunk of [1, 7, 64]) {
+    const d = await drive(CODE_PAGE, { chunk, parse: parseOpts });
+    assert.equal(streamed(d), expected, `chunks of ${chunk}`);
+    assert.equal(d.end.equal, true);
+    assert.equal(d.model.css, await wholeStyle(CODE_PAGE), `chunks of ${chunk}`);
+  }
+  // The plain style from the first block, then the one with the syntax colours and the code rules: twice, not more.
+  const d = await drive(CODE_PAGE, { chunk: 7, parse: parseOpts });
+  const styles = stylesOf(d).map((o) => (o as { css: string }).css);
+  assert.equal(styles.length, 2);
+  assert.ok(!styles[0].includes('--tk-kw') && !styles[0].includes('.tk-kw'), 'the page before its first highlighted fence');
+  assert.ok(styles[1].includes('--tk-kw:') && styles[1].includes('.tk-kw{'));
+  // A page whose fences are all plain never gains them.
+  const plain = await drive('# T\n\n```text\nx\n```\n\n```\ny\n```\n', { parse: parseOpts });
+  assert.equal(stylesOf(plain).length, 1);
+  assert.ok(!plain.model.css.includes('tk-'));
+});
+
 test('questions: an export written before its fields lists them once they arrive, in place, and the ids do not move', async () => {
   const src = [
     '# Answers',

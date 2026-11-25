@@ -244,3 +244,22 @@ export function paletteSurfaces(name: string | undefined, theme: ThemeName): { b
   const p = (name !== undefined && Object.hasOwn(PALETTES, name) ? PALETTES[name as PaletteName] : PALETTES.paper)[theme];
   return { bg: p.bg, surface: p.surface, 'accent-tint': p['accent-tint'] };
 }
+
+/**
+ * The colours of highlighted code (spec §4.9, D84), named as the CSS custom properties are (`--tk-kw`, ...): keyword, string, number,
+ * comment, function, type and operator. They are text on a code block, which sits on the card surface, and each is held to 4.5:1 on
+ * `bg` and `surface` of every palette (a test) and moved like a status colour under a `--theme` whose surfaces it would not read on.
+ * Punctuation takes `--fg2`, and a diff's added and removed lines the status colours on their own tints, so these seven are all the
+ * stylesheet gains. Only a page that highlights or numbers a fence declares them.
+ */
+export const SYNTAX_TOKENS = ['tk-kw', 'tk-str', 'tk-num', 'tk-cm', 'tk-fn', 'tk-ty', 'tk-op'] as const;
+export type SyntaxToken = (typeof SYNTAX_TOKENS)[number];
+export type SyntaxColours = Record<SyntaxToken, string>;
+
+/** One theme's syntax colours, written in `SYNTAX_TOKENS` order. */
+const syntax = (...v: string[]): SyntaxColours => Object.fromEntries(SYNTAX_TOKENS.map((k, i) => [k, v[i]])) as SyntaxColours;
+
+export const SYNTAX_COLOURS: Record<ThemeName, SyntaxColours> = {
+  light: syntax('#8f2a9e', '#0e6245', '#9a4200', '#636875', '#1d4fb0', '#0a6577', '#51566b'),
+  dark: syntax('#d7a2f2', '#7fd3a6', '#f2ac6e', '#9ea2ad', '#93b8ff', '#74d2e2', '#bcc0cb'),
+};

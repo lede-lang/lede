@@ -75,6 +75,8 @@ export interface CodeBlock {
   type: 'code';
   lang: string;
   text: string;
+  /** The fence was opened as ` ```lang lines `: its lines are numbered (§4.9). Absent otherwise. */
+  lines?: true;
   line: number;
 }
 export interface HtmlBlock {

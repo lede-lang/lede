@@ -1,0 +1,23 @@
+```ts lines
+const a = 1;
+```
+````diff   lines
+-old
++new
+````
+```text lines
+plain, numbered
+```
+``` lines
+the language is "lines", as before
+```
+```lines lines
+the language is "lines", and it is numbered
+```
+```=html lines
+ask name | Who is it for?
+template t | A template's fence is never numbered
+```text lines
+For {name}.
+```
+export json

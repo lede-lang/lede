@@ -1,0 +1,105 @@
+@title Review: token bucket for the orders API
+@subtitle Pull request 482, read with the code in view
+@author Ana Ruiz
+@date 2026-11-18
+
+# What the change does
+
+The limiter refilled a bucket only when a request was rejected, so a quiet client kept an empty bucket for ever. The fix refills on every call and adds a test for the idle case.
+
+```diff
+diff --git a/src/limiter.ts b/src/limiter.ts
+--- a/src/limiter.ts
++++ b/src/limiter.ts
+@@ -12,7 +12,8 @@ export class Limiter {
+   allow(key: string): boolean {
+     const b = this.buckets.get(key) ?? this.fresh();
+-    if (b.tokens < 1) return false;
++    this.refill(b, Date.now());
++    if (b.tokens < 1) return this.reject(key);
+     b.tokens -= 1;
+     return true;
+```
+
+## The refill, line by line
+
+Line 4 is the one to read twice: the elapsed time is clamped, so a clock that steps backwards cannot drain a bucket.
+
+```ts lines
+/** Adds the tokens earned since the last call, up to the bucket's capacity. */
+private refill(b: Bucket, now: number): void {
+  // A clock that steps backwards earns nothing.
+  const elapsed = Math.max(0, now - b.last) / 1000;
+  b.tokens = Math.min(this.capacity, b.tokens + elapsed * this.rate);
+  b.last = now;
+}
+```
+
+! Recommendation: Merge after the idle test lands; the change is small and the behaviour is now the documented one.
+
+## The same idea in other places
+
+The worker that drains the queue is Python and uses the same arithmetic.
+
+```py
+@dataclass
+class Bucket:
+    """A token bucket: `rate` tokens a second, at most `capacity`."""
+    rate: float = 5.0
+    capacity: int = 10
+
+    def allow(self, now: float) -> bool:
+        self.tokens = min(self.capacity, self.tokens + (now - self.last) * self.rate)
+        return self.tokens >= 1  # the caller spends it
+```
+
+The limits live in configuration, and the dashboard reads the rejections from SQL.
+
+```yaml
+# limits per client tier
+limiter:
+  default: { rate: 5, capacity: 10 }
+  partners:
+    - name: "acme"
+      rate: 50
+```
+
+```json
+{"tier": "partners", "rate": 50, "capacity": 100, "burst": true, "notes": null}
+```
+
+```sql
+SELECT client_id, count(*) AS rejected
+FROM limiter_events -- one row per rejected call
+WHERE kind = 'reject' AND at > now() - interval '1 hour'
+GROUP BY client_id ORDER BY rejected DESC LIMIT 10;
+```
+
+```sh
+# replay an hour of traffic against the branch
+for f in logs/*.jsonl; do
+  ./replay --rate=5 "$f" >> "${OUT:-replay.txt}"
+done
+```
+
+## The status page, as Lede
+
+The page that reports the limiter is written in Lede, and a fence can show its source.
+
+````lede
+@title Limiter status
+# Rejections this week
+data rej = day, calls; Mon, 120; Tue, 80; Wed, 45
+chart bar rej title="Rejected calls" unit=calls
+diagram path dir=LR
+path: client "Client" user
+path: api "Orders API" svc
+path: client -> api : allowed | good
+! Tip: A quiet day is the normal case; `0` is not an outage.
+````
+
+A fence in a language the compiler does not list is drawn as plain text, as before.
+
+```text
+limiter: 482 calls, 3 rejected, 0 errors
+```
