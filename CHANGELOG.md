@@ -1,5 +1,13 @@
 # Changelog
 
+## <small>0.2.9 (2026-11-25)</small>
+
+* Merge pull request #48 from lede-lang/claude/project-thread-kc56wj ([d55e71c](https://github.com/lede-lang/lede/commit/d55e71c)), closes [#48](https://github.com/lede-lang/lede/issues/48)
+* Merge remote-tracking branch 'origin/main' into claude/project-thread-kc56wj ([0d97fd9](https://github.com/lede-lang/lede/commit/0d97fd9))
+* Merge remote-tracking branch 'origin/main' into claude/project-thread-kc56wj ([bd521f0](https://github.com/lede-lang/lede/commit/bd521f0))
+* ci(pages): publish the shipped examples to GitHub Pages from main ([8a1b43b](https://github.com/lede-lang/lede/commit/8a1b43b))
+* ci(release): publish to npm on every release with no approval step ([dac724f](https://github.com/lede-lang/lede/commit/dac724f))
+
 ## <small>0.2.8 (2026-11-25)</small>
 
 * Merge pull request #50 from lede-lang/claude/project-thread-717f11 ([b41075f](https://github.com/lede-lang/lede/commit/b41075f)), closes [#50](https://github.com/lede-lang/lede/issues/50)
