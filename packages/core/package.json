@@ -6,7 +6,17 @@
     "lede",
     "parser",
     "document-format",
-    "llm"
+    "llm",
+    "ai",
+    "ai-agents",
+    "agent-skills",
+    "claude",
+    "markdown",
+    "html-generator",
+    "report",
+    "dashboard",
+    "charts",
+    "diagrams"
   ],
   "license": "Apache-2.0",
   "type": "module",
