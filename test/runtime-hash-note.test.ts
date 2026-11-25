@@ -154,5 +154,6 @@ test('.releaserc.json appends the line after the notes generator, and the exec p
   assert.ok(names.indexOf('semantic-release-unsquash') < names.indexOf('@semantic-release/exec'), 'the notes generator comes first');
   assert.match(generateNotesCmd, /^node scripts\/runtime-hash-note\.ts "\$\{lastRelease\.gitTag\}"$/);
   assert.ok(existsSync(join(root, generateNotesCmd.split(' ')[1])));
-  assert.match(prepareCmd, /^node scripts\/set-version\.ts \$\{nextRelease\.version\}$/);
+  // set-version runs first; D87 chains the skill zip after it (test/skill-zip.test.ts).
+  assert.match(prepareCmd, /^node scripts\/set-version\.ts \$\{nextRelease\.version\}(?: && |$)/);
 });

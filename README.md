@@ -86,8 +86,9 @@ codex plugin marketplace add lede-lang/lede        # Codex, then run /plugins an
 cp -r skill/lede ~/.claude/skills/lede             # from a clone: Claude Code, every project
 ```
 
-For Claude.ai and Claude Desktop, upload [`lede-skill.zip`](https://ledelang.dev/skill/lede-skill.zip) under Customize →
-Skills (+ → Upload a skill). Skills need code execution ("Create and edit files") turned on in Settings.
+For Claude.ai and Claude Desktop, upload [`lede-skill.zip`](https://github.com/lede-lang/lede/releases/latest/download/lede-skill.zip) under Customize →
+Skills (+ → Upload a skill). Skills need code execution ("Create and edit files") turned on in Settings. Each
+GitHub release carries the zip of its own skill, so a pinned version is `releases/download/v<version>/lede-skill.zip`.
 
 The skill tells the agent to run `lede`, so install the CLI too (next section); if it is missing, the agent asks before
 installing it.
