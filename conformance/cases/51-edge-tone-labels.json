@@ -1,0 +1,71 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "diagram",
+      "name": "net",
+      "kind": "flow",
+      "dir": "LR",
+      "dirExplicit": true,
+      "title": "Who may reach the database",
+      "nodes": [
+        {
+          "id": "api",
+          "label": "Orders API",
+          "kind": "svc",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "db",
+          "label": "Orders DB",
+          "kind": "db",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "admin",
+          "label": "Laptop",
+          "kind": "user",
+          "sub": null,
+          "focus": false
+        }
+      ],
+      "edges": [
+        {
+          "from": "api",
+          "to": "db",
+          "label": "allow",
+          "style": "solid",
+          "both": false,
+          "tone": "good",
+          "line": 5
+        },
+        {
+          "from": "admin",
+          "to": "db",
+          "label": "deny",
+          "style": "blocked",
+          "both": false,
+          "tone": "bad",
+          "line": 6
+        },
+        {
+          "from": "api",
+          "to": "admin",
+          "label": "approved",
+          "style": "solid",
+          "both": false,
+          "tone": "warn",
+          "line": 7
+        }
+      ],
+      "groups": [],
+      "notes": [],
+      "line": 1,
+      "legend": true
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}
