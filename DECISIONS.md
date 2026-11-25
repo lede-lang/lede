@@ -1249,3 +1249,14 @@ skill gives the same bytes) and attaches it to each GitHub release as `lede-skil
 `releases/latest/download/lede-skill.zip`; a pinned version is `releases/download/v<version>/lede-skill.zip`. The zip carries only
 the skill's Markdown, JSON and licence, no scripts, and GitHub shows its digest on the release page. `test/skill-zip.test.ts`
 holds the contents to `skill/lede/` and the release config to building and attaching it.
+
+## D88. Every merge to main publishes to npm automatically, with no approval step
+The owner decided on 2026-11-25 that npm publishing is automatic. Until now two people-steps stood between a merge and the
+registry: approving the `npm` environment on the run (D58, D60) and approving each staged version on npm with 2FA (D61). Releases
+piled up unapproved (npm stayed at 0.2.3 while `main` reached 0.2.7). `release.yml` now runs `npm publish --provenance` in place of
+`npm stage publish`, and the `npm` environment carries no required reviewers. What still holds: the build job tests and packs from
+the release tag, refuses a tag that is not on `main` or does not name the packages' version, and the publish job runs no repository
+code and uploads exactly the tarballs the build job tested; authentication is trusted publishing (OIDC), with the `NPM_TOKEN`
+bootstrap of D48 only if a secret is set. CI on `main` is the gate, so a merge is a release. A bad version is fixed forward with the
+next patch, or deprecated with `npm deprecate`; npm allows an unpublish only within 72 hours. Replaces the approval parts of D58 and
+D61; the trigger (D60) and versioning (D54, D75) are unchanged.
