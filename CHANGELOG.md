@@ -1,5 +1,14 @@
 # Changelog
 
+## <small>0.2.11 (2026-11-25)</small>
+
+* Merge pull request #51 from lede-lang/dependabot/github_actions/actions-a71ad79015 ([3aaf55a](https://github.com/lede-lang/lede/commit/3aaf55a)), closes [#51](https://github.com/lede-lang/lede/issues/51)
+* Merge pull request #46 from lede-lang/dependabot/npm_and_yarn/runtime-757cc35621 ([cc72605](https://github.com/lede-lang/lede/commit/cc72605)), closes [#46](https://github.com/lede-lang/lede/issues/46)
+* Merge pull request #52 from lede-lang/claude/project-thread-kc56wj ([33983de](https://github.com/lede-lang/lede/commit/33983de)), closes [#52](https://github.com/lede-lang/lede/issues/52)
+* ci(deps): Bump the actions group across 1 directory with 2 updates ([c9c686a](https://github.com/lede-lang/lede/commit/c9c686a))
+* ci(release): stage on npm again; only the GitHub-side approval is gone ([6982a4f](https://github.com/lede-lang/lede/commit/6982a4f))
+* build(deps): Bump the runtime group across 1 directory with 2 updates ([53477bf](https://github.com/lede-lang/lede/commit/53477bf))
+
 ## <small>0.2.10 (2026-11-25)</small>
 
 * Merge pull request #47 from lede-lang/claude/project-thread-w1ga9i ([ad016ae](https://github.com/lede-lang/lede/commit/ad016ae)), closes [#47](https://github.com/lede-lang/lede/issues/47)
