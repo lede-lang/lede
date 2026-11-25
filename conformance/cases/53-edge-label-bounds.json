@@ -1,0 +1,106 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "diagram",
+      "name": "live",
+      "kind": "flow",
+      "dir": "LR",
+      "dirExplicit": true,
+      "title": "Live run pipeline",
+      "nodes": [
+        {
+          "id": "ok",
+          "label": "Approved",
+          "kind": "decision",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "snap",
+          "label": "Snapshot",
+          "kind": "store",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "del",
+          "label": "Delete",
+          "kind": "fn",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "verify",
+          "label": "Verify",
+          "kind": "svc",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "audit",
+          "label": "Audit log",
+          "kind": "db",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "done",
+          "label": "Done",
+          "kind": "ext",
+          "sub": null,
+          "focus": false
+        }
+      ],
+      "edges": [
+        {
+          "from": "ok",
+          "to": "snap",
+          "label": "approved",
+          "style": "solid",
+          "both": false,
+          "tone": "warn",
+          "line": 8
+        },
+        {
+          "from": "snap",
+          "to": "del",
+          "label": "deletes",
+          "style": "solid",
+          "both": false,
+          "tone": "bad",
+          "line": 9
+        },
+        {
+          "from": "del",
+          "to": "verify",
+          "label": "",
+          "style": "solid",
+          "both": false,
+          "line": 10
+        },
+        {
+          "from": "verify",
+          "to": "audit",
+          "label": "log",
+          "style": "solid",
+          "both": false,
+          "line": 11
+        },
+        {
+          "from": "audit",
+          "to": "done",
+          "label": "",
+          "style": "solid",
+          "both": false,
+          "line": 12
+        }
+      ],
+      "groups": [],
+      "notes": [],
+      "line": 1
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

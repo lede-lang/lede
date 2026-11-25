@@ -613,6 +613,17 @@ export class LedeParser {
       this.textLine(s.slice(1));
       return;
     }
+    // `: a | b` is a row only directly under a `table … = A | B` header or another row (D80). Anywhere else it is a paragraph, which
+    // is rarely what was meant: a blank line or a named `table x` above it, or a lede that predates pipe rows (D86).
+    if (!fm && /^:\s/.test(s) && splitPipes(s.slice(1)).length > 1) {
+      this.diag(
+        'warning',
+        'table-row',
+        '`: a | b` is a table row only directly under a `table [options] = A | B` header or another row; this line is a paragraph',
+        L,
+        lead + 1,
+      );
+    }
     if (fm) {
       this.flush();
       this.fence = { ticks: fm[1].length, raw: fm[2] === '=', lang: fm[3], numbered: fm[4] !== undefined, lines: [], line: L };
@@ -2762,7 +2773,11 @@ export class LedeParser {
       }
       if (tn.word !== undefined) {
         const allowed = [...STATUS_TONES];
-        const meant = tn.suggest ? `tone words are lower case: write "${tn.suggest}"` : allowed.join(', ');
+        const meant = !tn.suggest
+          ? allowed.join(', ')
+          : tn.suggest === tn.word.toLowerCase()
+            ? `tone words are lower case: write "${tn.suggest}"`
+            : `write "${tn.suggest}" for that colour; tones: ${allowed.join(', ')}`;
         this.diag(
           'warning',
           'edge-tone',
@@ -2863,11 +2878,24 @@ function afterColon(s: string, lead: number): number {
   return lead + 1 + at + (s.length - at - s.slice(at).trimStart().length);
 }
 
+/** Colour words written where a tone was meant (`: allow | green`), to the tone each names (D86). */
+const TONE_WORDS = new Map<string, EdgeTone>([
+  ['green', 'good'],
+  ['red', 'bad'],
+  ['amber', 'warn'],
+  ['yellow', 'warn'],
+  ['orange', 'warn'],
+  ['blue', 'info'],
+  ['grey', 'neutral'],
+  ['gray', 'neutral'],
+]);
+
 /**
  * An edge or message line without its tone. The tone is the line's last ` | ` field (`a -> b : allow | good`, `a -> b | warn`): a
  * pipe with a space on each side, outside any pair of double quotes, and a field that is exactly one of STATUS_TONES. Inside a label
  * (after the `:`) any other last field is label text, as it was before tones (`client -> server : GET | POST`); a case variant of a
- * tone word (`Good`) stays label text too, and comes back as `word`, with `suggest` the tone it was likely meant as, for a warning.
+ * tone word (`Good`) or a colour word (`green`, TONE_WORDS) stays label text too, and comes back as `word`, with `suggest` the tone it
+ * was likely meant as, for a warning.
  * Before any `:` (no label) the line did not parse before tones, so a lone other word there is a mistyped tone: `word`, dropped with
  * its pipe. `at` is the word's offset in `s`.
  */
@@ -2879,7 +2907,7 @@ function splitTone(s: string): { head: string; tone?: EdgeTone; word?: string; s
   const head = s.slice(0, at).trimEnd();
   const tone = STATUS_TONES.find((t) => t === field);
   if (tone) return { head, tone, at: 0 };
-  const suggest = STATUS_TONES.find((t) => t === field.toLowerCase());
+  const suggest = STATUS_TONES.find((t) => t === field.toLowerCase()) ?? TONE_WORDS.get(field.toLowerCase());
   const word = { word: field, at: s.lastIndexOf(field), ...(suggest ? { suggest } : {}) };
   if (head.includes(':')) return suggest ? { head: s, ...word } : { head: s, at: 0 };
   return { head, dropped: true, ...word };

@@ -78,7 +78,8 @@ const TIERS: Metrics[] = [
   { ...PHONE, nameMax: 104, nameLines: 4, subMax: 104, elMax: 84, decLines: 5, K: 1.3, nodeNode: 10, edgeNode: 8, glMax: 112 },
   { ...PHONE, nameMax: 80, nameLines: 5, subMax: 84, elMax: 64, decLines: 6, K: 1.2, nodeNode: 10, edgeNode: 8, glMax: 88 },
 ];
-const metrics = (compact: boolean, tier = 0): Metrics => (compact ? TIERS[tier] : DESK);
+const DESK_TIERS: Metrics[] = [DESK, { ...DESK, nameMax: 120, elMax: 76, nodeNode: 24, edgeNode: 16 }];
+const metrics = (compact: boolean, tier = 0): Metrics => (compact ? TIERS[tier] : DESK_TIERS[tier]);
 const EL_LINE = 14; // extra height per wrapped edge label line (and group label line)
 
 /** A group's label as written, wrapped to the tier's group label width (measured in the sans it is drawn in, with sansLabelW's margin). */
@@ -275,8 +276,20 @@ function geometric(
 }
 
 /** Which point of a diamond each edge attaches to: in at the back, "yes" straight on, "no" out a side. */
-function decisionPorts(d: DiagramBlock, dir: DiagramBlock['dir'], ids: Set<string>, prior?: Placed, zig = false): Map<string, Side> {
-  const [entry, fwd, ahead] = {
+function decisionPorts(
+  d: DiagramBlock,
+  dir: DiagramBlock['dir'],
+  ids: Set<string>,
+  prior?: Placed,
+  zig = false,
+  ladder?: Ladder,
+): Map<string, Side> {
+  // On a ladder's rungs and the decision after them, the answer the rungs continue on goes straight on and the other out the
+  // side; every other decision sends "yes" straight on and "no" out a side.
+  const on = (id: string) => (ladder?.on && (ladder.rungs.includes(id) || ladder.after === id) ? ladder.on : null);
+  const ahead = (id: string, l: string) => (on(id) ? l.toLowerCase() === on(id) : YES.test(l));
+  const aside = (id: string, l: string) => (on(id) ? l !== '' && l.toLowerCase() !== on(id) : NO.test(l));
+  const [entry, fwd, across] = {
     LR: ['WEST', 'EAST', ['SOUTH', 'NORTH']],
     RL: ['EAST', 'WEST', ['SOUTH', 'NORTH']],
     TB: ['NORTH', 'SOUTH', ['EAST', 'WEST']],
@@ -289,9 +302,9 @@ function decisionPorts(d: DiagramBlock, dir: DiagramBlock['dir'], ids: Set<strin
     const side =
       zig &&
       d.edges.some(
-        (e) => e.to === id && ids.has(e.from) && !YES.test(e.label.trim()) && d.edges.filter((x) => x.from === e.from).length > 1,
+        (e) => e.to === id && ids.has(e.from) && !ahead(e.from, e.label.trim()) && d.edges.filter((x) => x.from === e.from).length > 1,
       );
-    const sides = side ? [ahead[1], ahead[0]] : ahead;
+    const sides = side ? [across[1], across[0]] : across;
     const outs: number[] = [];
     d.edges.forEach((e, i) => {
       if (e.to === id) out.set(`${i}:t`, entry);
@@ -319,8 +332,8 @@ function decisionPorts(d: DiagramBlock, dir: DiagramBlock['dir'], ids: Set<strin
     } else {
       for (const i of outs) {
         const l = d.edges[i].label.trim();
-        if (YES.test(l) && !used.has(fwd)) give(i, fwd);
-        else if (NO.test(l) && !used.has(sides[0])) give(i, sides[0]);
+        if (ahead(id, l) && !used.has(fwd)) give(i, fwd);
+        else if (aside(id, l) && !used.has(sides[0])) give(i, sides[0]);
       }
       for (const i of outs) {
         if (out.has(`${i}:s`)) continue;
@@ -375,18 +388,167 @@ function nodeSize(n: DiagramNode, compact = false, tier = 0): { w: number; h: nu
  * 0 to 2) wraps names, sublabels and edge labels narrower, for drawings the PHONE sizes leave too wide.
  */
 export async function layoutFlow(d: DiagramBlock, compact = false, tier = 0): Promise<Placed> {
-  tier = compact ? Math.max(0, Math.min(TIERS.length - 1, tier)) : 0;
-  const first = await layoutOnce(d, compact, undefined, tier);
+  tier = Math.max(0, Math.min((compact ? TIERS : DESK_TIERS).length - 1, tier));
+  const lad = ladderOf(d);
+  const p = lad ? await ladderLayout(d, lad, compact, tier) : await layered(d, compact, tier);
+  clearLabels(p);
+  encloseLabels(p);
+  return p;
+}
+
+/** Grows the drawing so that every edge label lies inside it with the 4-unit margin, moving everything right or down if one sticks out left or up. */
+function encloseLabels(p: Placed): void {
+  const ls = p.edges.flatMap((e) => (e.label ? [e.label] : []));
+  if (!ls.length) return;
+  const dx = Math.max(0, 4 - Math.min(...ls.map((l) => l.x)));
+  const dy = Math.max(0, 4 - Math.min(...ls.map((l) => l.y)));
+  if (dx || dy) {
+    const move = <T extends { x: number; y: number }>(b: T): T => ({ ...b, x: b.x + dx, y: b.y + dy });
+    p.nodes = p.nodes.map(move);
+    p.groups = p.groups.map(move);
+    for (const e of p.edges) {
+      e.points = e.points.map(move);
+      if (e.label) e.label = move(e.label);
+    }
+  }
+  p.width = Math.max(p.width + dx, ...p.edges.flatMap((e) => (e.label ? [e.label.x + e.label.w + 4] : [])));
+  p.height = Math.max(p.height + dy, ...p.edges.flatMap((e) => (e.label ? [e.label.y + e.label.h + 4] : [])));
+}
+
+/** `ladder`: lay out the rest of a ladder (`ladderLayout`): layers closer, and the word the rungs continue on goes straight on. */
+async function layered(d: DiagramBlock, compact: boolean, tier: number, ladder?: Ladder): Promise<Placed> {
+  const first = await layoutOnce(d, compact, undefined, tier, ladder);
   // Decisions with two or more answers get a second pass that aims each answer at its target.
   const multi = d.nodes.some(
     (n) => isDecision(n) && d.edges.some((e) => e.from === n.id) && d.edges.filter((e) => e.from === n.id || e.to === n.id).length >= 3,
   );
-  const p = multi ? await layoutOnce(d, compact, first, tier) : first;
+  const p = multi ? await layoutOnce(d, compact, first, tier, ladder) : first;
   if (compact) {
     hugGroups(d, p);
     fitGroupLabels(d, p);
   }
-  clearLabels(p);
+  return p;
+}
+
+/** A decision ladder: `rungs`, decisions in a chain, each with two answers, one to the next rung and one to the shared `target`. */
+interface Ladder {
+  target: string;
+  rungs: string[];
+  /** The answer every rung continues on (`no`), when they all write the same one. */
+  on?: string;
+  /** Where the last rung continues: a decision there answers the way the rungs do. */
+  after: string;
+}
+
+/**
+ * The ladder in a top-to-bottom flow, if it has one (D86): a node with no answers of its own that three or more decisions, each with
+ * exactly two answers, point at, where each of those decisions' other answer goes to the next of them. Laid out as layers, every
+ * answer to the shared node runs back around the chain; `ladderLayout` draws it beside the chain instead. Not in a diagram with groups.
+ */
+export function ladderOf(d: DiagramBlock): Ladder | null {
+  if (d.dir !== 'TB' || d.groups.length) return null;
+  const decisions = new Set(d.nodes.filter(isDecision).map((n) => n.id));
+  const outs = (id: string) => d.edges.filter((e) => e.from === id);
+  for (const t of d.nodes) {
+    const into = d.edges.filter((e) => e.to === t.id);
+    if (into.length < 3 || outs(t.id).length || decisions.has(t.id)) continue;
+    if (into.some((e) => e.both || e.from === t.id || !decisions.has(e.from) || outs(e.from).length !== 2)) continue;
+    const src = new Set(into.map((e) => e.from));
+    if (src.size !== into.length) continue;
+    const next = (id: string) => outs(id).find((e) => e.to !== t.id)!.to;
+    const heads = [...src].filter((s) => ![...src].some((o) => next(o) === s));
+    if (heads.length !== 1) continue;
+    const rungs = [heads[0]];
+    for (let n = next(heads[0]); src.has(n) && !rungs.includes(n); n = next(n)) rungs.push(n);
+    if (rungs.length < src.size) continue;
+    const words = new Set(
+      rungs.map((r) =>
+        outs(r)
+          .find((e) => e.to !== t.id)!
+          .label.trim()
+          .toLowerCase(),
+      ),
+    );
+    const on = words.size === 1 ? [...words][0] : '';
+    return { target: t.id, rungs, ...(on ? { on } : {}), after: next(rungs.at(-1)!) };
+  }
+  return null;
+}
+
+/**
+ * A ladder drawn as a ladder: the diagram without the shared target is laid out as layers, its chain answers unlabelled so the
+ * rungs sit one diamond and one layer gap apart, each rung's continuing answer leaving by the forward point. The target then
+ * stands beside the chain, as tall as the rungs it serves, and each answer to it is one straight line out the same side of
+ * its diamond. The continuing answers' labels go back on beside the diamond they leave.
+ */
+async function ladderLayout(d: DiagramBlock, lad: Ladder, compact: boolean, tier: number): Promise<Placed> {
+  const m = metrics(compact, tier);
+  const rungs = new Set(lad.rungs);
+  const kept = d.edges.filter((e) => e.to !== lad.target);
+  const bare = new Map(kept.map((e) => [e, rungs.has(e.from) ? { ...e, label: '' } : e]));
+  const back = new Map([...bare].map(([o, b]) => [b, o]));
+  const p = await layered({ ...d, nodes: d.nodes.filter((n) => n.id !== lad.target), edges: [...bare.values()] }, compact, tier, lad);
+  const labelBox = (text: string) => {
+    const lines = monoLines(text, m.ELABEL, m.elMax);
+    const w = Math.ceil(Math.max(...lines.map((l) => edgeLabelW(l, m.ELABEL, compact ? m.ELABEL : m.ELABEL + 1))) + 12);
+    return { x: 0, y: 0, w, h: m.elH + (lines.length - 1) * EL_LINE, text, ...(lines.length > 1 ? { lines } : {}) };
+  };
+  const box = (id: string) => p.nodes.find((n) => n.node.id === id)!;
+  for (const e of p.edges) {
+    e.edge = back.get(e.edge) ?? e.edge;
+    if (!rungs.has(e.edge.from) || !e.edge.label) continue;
+    // Beside the line, in the gap between the two diamonds (at least as tall as the label).
+    const [a, b] = e.points;
+    const l = labelBox(e.edge.label);
+    e.label = { ...l, x: a.x + 6, y: Math.round((a.y + b.y) / 2 - l.h / 2) };
+  }
+  const rs = lad.rungs.map(box);
+  const top = Math.min(...rs.map((r) => r.y));
+  const bottom = Math.max(...rs.map((r) => r.y + r.h));
+  const beside = (y0: number, y1: number) => y0 < bottom && y1 > top;
+  const toTarget = d.edges.filter((e) => e.to === lad.target);
+  const gap = Math.max(40, ...toTarget.map((e) => (e.label ? labelBox(e.label).w + 24 : 0)));
+  const right = Math.max(
+    ...p.nodes.filter((n) => beside(n.y, n.y + n.h)).map((n) => n.x + n.w),
+    ...p.edges.flatMap((e) => e.points.filter((q) => beside(q.y, q.y + 1)).map((q) => q.x)),
+    ...p.edges.flatMap((e) => (e.label && beside(e.label.y, e.label.y + e.label.h) ? [e.label.x + e.label.w] : [])),
+  );
+  const node = d.nodes.find((n) => n.id === lad.target)!;
+  const size = nodeSize(node, compact, tier);
+  const h = Math.max(size.h, bottom - top);
+  const t = {
+    x: right + gap,
+    y: Math.max(4, Math.round((top + bottom) / 2 - h / 2)),
+    w: size.w,
+    h,
+    node,
+    ...nodeText(node, compact, tier),
+  };
+  // Each answer is a straight line from its rung to the target: if a node stands in the way, the ladder is not drawn as one.
+  const blocked = lad.rungs.some((id) => {
+    const r = box(id);
+    const line = { x: r.x + r.w, y: Math.round(r.y + r.h / 2), w: t.x - r.x - r.w, h: 1 };
+    return p.nodes.some((n) => n !== r && overlaps(line, n));
+  });
+  if (blocked) return layered(d, compact, tier);
+  p.nodes.push(t);
+  for (const e of toTarget) {
+    const r = box(e.from);
+    const y = Math.round(r.y + r.h / 2);
+    const x0 = r.x + r.w;
+    const l = e.label ? labelBox(e.label) : null;
+    const label = l ? { ...l, x: Math.round(x0 + 8), y: y - l.h - 3 } : null;
+    p.edges.push({
+      edge: e,
+      points: [
+        { x: x0, y },
+        { x: t.x, y },
+      ],
+      label,
+    });
+  }
+  p.width = Math.max(p.width, t.x + t.w + 4);
+  p.height = Math.max(p.height, t.y + t.h + 4);
   return p;
 }
 
@@ -407,7 +569,7 @@ function parentsOf(d: DiagramBlock): Map<string, string> {
   return parent;
 }
 
-async function layoutOnce(d: DiagramBlock, compact: boolean, prior?: Placed, tier = 0): Promise<Placed> {
+async function layoutOnce(d: DiagramBlock, compact: boolean, prior?: Placed, tier = 0, ladder?: Ladder): Promise<Placed> {
   const groupIds = new Set(d.groups.map((g) => g.id));
   const parent = parentsOf(d);
   const direction = { LR: 'RIGHT', TB: 'DOWN', RL: 'LEFT', BT: 'UP' }[d.dir];
@@ -421,7 +583,7 @@ async function layoutOnce(d: DiagramBlock, compact: boolean, prior?: Placed, tie
       'elk.edgeRouting': 'ORTHOGONAL',
       'elk.hierarchyHandling': 'INCLUDE_CHILDREN',
       'elk.spacing.nodeNode': String(m.nodeNode),
-      'elk.layered.spacing.nodeNodeBetweenLayers': compact ? '28' : '48',
+      'elk.layered.spacing.nodeNodeBetweenLayers': ladder ? '24' : compact ? '28' : tier ? '20' : '48',
       'elk.spacing.edgeNode': String(m.edgeNode),
       'elk.spacing.edgeEdge': compact ? '10' : '16',
       'elk.layered.spacing.edgeNodeBetweenLayers': compact ? '10' : '20',
@@ -472,7 +634,7 @@ async function layoutOnce(d: DiagramBlock, compact: boolean, prior?: Placed, tie
     elkNodes.set(n.id, en);
   }
   const decisions = new Set(d.nodes.filter((n) => isDecision(n) && !groupIds.has(n.id)).map((n) => n.id));
-  const portSide = decisionPorts(d, d.dir, decisions, prior, compact && tier >= 1);
+  const portSide = decisionPorts(d, d.dir, decisions, prior, compact && tier >= 1, ladder);
   const containerOf = (id: string) => parent.get(id) ?? '__root';
   for (const [id, en] of elkNodes) {
     if (id === '__root') continue;
@@ -604,6 +766,10 @@ function nearSource(
 ): Box & { text: string } {
   const GAP = 5;
   const free = (c: Box) =>
+    c.x >= 0 &&
+    c.y >= 0 &&
+    c.x + c.w <= placed.width &&
+    c.y + c.h <= placed.height &&
     !placed.nodes.some((n) => overlaps(c, n, 1)) &&
     !placed.edges.some((o) =>
       o === self
@@ -933,10 +1099,21 @@ const PHONE_MAX = 372;
 
 type Fit = { d: DiagramBlock; p: Placed };
 
+/** The smallest scale at which a desktop drawing keeps the direction its `dir=` names: 10-unit edge labels at 8px. */
+const KEEP_WRITTEN = 0.8;
+
 /** The declared direction or its flip, whichever fits `width` at the larger scale; ties keep the declared one. */
 async function bestFit(d: DiagramBlock, compact: boolean, width: number, tier = 0): Promise<Fit> {
-  const declared = await layoutFlow(d, compact, tier);
   const scale = (p: Placed) => Math.min(1, width / p.width);
+  let declared = await layoutFlow(d, compact, tier);
+  // Desktop, a `dir=` the author wrote: a drawing too wide as written is laid out again with edge labels wrapped and layers closer
+  // (DESK_TIERS[1]), and keeps its direction while its text renders at KEEP_WRITTEN or larger. A pipeline asked for as a row stays
+  // a row in the page column; only the phone drawing, which has its own fit, turns it into a column (D86).
+  if (!compact && d.dirExplicit && scale(declared) < 1) {
+    const tight = await layoutFlow(d, false, 1);
+    if (tight.width < declared.width) declared = tight;
+    if (scale(declared) >= KEEP_WRITTEN) return { d, p: declared };
+  }
   // Desktop only: a written direction that already renders at 85% or better is kept unless the other one
   // gains at least 15% (a pipeline written left-to-right stays one row instead of becoming a tall column).
   const gain = !compact && scale(declared) >= 0.85 ? 1.15 : 1;
@@ -1188,20 +1365,19 @@ function flowList(d: DiagramBlock): string {
 }
 
 /**
- * Below the drawing. By default: one mono-caps tag per distinct node kind, in first-seen order; none for fewer than
- * two kinds. With `legend` (v0.4 `NAME: legend`): the full key instead, never both.
+ * Below the drawing, with `legend` (v0.4 `NAME: legend`): the key. Without it, nothing: each node's tag names its kind (D86 dropped
+ * the row of kind tags that repeated them).
  */
 function withLegend(d: DiagramBlock, fig: string): string {
-  const put = (html: string) => fig.replace(/<\/figure>$/, () => `${html}</figure>`);
-  if (d.legend === true) {
-    const key = legendKey(d);
-    return key ? put(key) : fig;
-  }
-  const kinds: string[] = [];
-  for (const n of d.nodes) if (n.kind && !kinds.includes(n.kind)) kinds.push(n.kind);
-  if (kinds.length < 2) return fig;
-  return put(`<div class="dg-legend">${kinds.map((k) => `<span class="tag">${esc(k.toUpperCase())}</span>`).join('')}</div>`);
+  if (d.legend !== true) return fig;
+  const key = legendKey(d);
+  return key ? fig.replace(/<\/figure>$/, () => `${key}</figure>`) : fig;
 }
+
+/** How a kind's nodes are drawn: a diamond, a dashed box, or the plain box every other kind gets. */
+// A `user` box's page-coloured fill sits on the card's own near-white, so its swatch reads as the plain one; the tag says it.
+const lookOf = (k: string): 'dec' | 'dash' | 'plain' =>
+  isDecision({ kind: k } as DiagramNode) ? 'dec' : /^(ext|external)$/.test(k) ? 'dash' : 'plain';
 
 const KEY_ARROW = { solid: 'request / flow', dashed: 'async / reply / optional', both: 'both ways', blocked: 'must not exist' } as const;
 type KeyArrow = keyof typeof KEY_ARROW;
@@ -1239,7 +1415,10 @@ function legendKey(d: DiagramBlock): string {
   const item = (sw: string, text: string) => items.push(`<span class="dgk">${sw}<span class="dgk-t">${text}</span></span>`);
   const kinds: string[] = [];
   for (const n of d.nodes) if (n.kind && !kinds.includes(n.kind)) kinds.push(n.kind);
-  for (const k of kinds) {
+  // A kind is keyed only when its nodes are drawn differently from others in the drawing (a diamond, a dashed box); a plain box
+  // says its kind in its own tag, and a row of identical swatches tells the reader nothing (D86).
+  const looks = new Set([...kinds.map(lookOf), ...(d.nodes.some((n) => !n.kind) ? (['plain'] as const) : [])]);
+  for (const k of kinds.filter((x) => looks.size > 1 && lookOf(x) !== 'plain')) {
     const dec = isDecision({ kind: k } as DiagramNode);
     const shape = dec ? '<polygon class="box" points="15,1 29,10 15,19 1,10"/>' : SW_BOX;
     const cls = ['node', dec ? 'dec' : '', kindClass(k)].filter(Boolean).join(' ');
@@ -1336,12 +1515,10 @@ function drawPlaced(d: DiagramBlock, p: Placed, uid: string, compact: boolean): 
   return { svg: out.join(''), W, H };
 }
 
-/** Yes/no answers leaving a decision get a color class (the words stay; color is a second cue). */
+/** An answer leaving a decision is set in bold. It takes a colour only from a written tone: "no" is often the path that goes on (D86). */
 function yn(d: DiagramBlock, e: DiagramEdge): string {
   const src = d.nodes.find((n) => n.id === e.from);
-  if (!src || !isDecision(src)) return '';
-  const l = e.label.trim();
-  return YES.test(l) ? ' yes' : NO.test(l) ? ' no' : '';
+  return src && isDecision(src) && e.label.trim() ? ' ans' : '';
 }
 
 function isFocusEdge(d: DiagramBlock, e: DiagramEdge): boolean {

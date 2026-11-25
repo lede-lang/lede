@@ -1,0 +1,12 @@
+diagram live dir=LR title="Live run pipeline"
+live: ok "Approved" decision
+live: snap "Snapshot" store
+live: del "Delete" fn
+live: verify "Verify" svc
+live: audit "Audit log" db
+live: done "Done" ext
+live: ok -> snap : approved | warn
+live: snap -> del : deletes | bad
+live: del -> verify
+live: verify -> audit : log
+live: audit -> done

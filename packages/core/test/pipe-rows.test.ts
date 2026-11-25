@@ -141,11 +141,15 @@ test('a blank line, a heading, a data line, a paragraph or another table ends th
   }
 });
 
-test('a `:` line that is not under an open table is prose, and a table with a row on its own line takes none', () => {
+test('a `:` line that is not under an open table is prose, with W table-row (D86), and a table with a row on its own line takes none', () => {
   assert.deepEqual(types(parse(': a | b\n').blocks), ['paragraph']);
   assert.deepEqual(types(parse('table = a,b; 1,2\n: 3 | 4\n').blocks), ['table', 'paragraph']);
   assert.deepEqual(types(parse('table = a | b\n\n: 1 | 2\n').blocks), ['table', 'paragraph']);
-  assert.deepEqual(codes('table = a | b\n\n: 1 | 2\n'), []);
+  assert.deepEqual(codes('table = a | b\n\n: 1 | 2\n'), ['warning:table-row@3']);
+  assert.deepEqual(codes(': a | b\n'), ['warning:table-row@1']);
+  // A colon line with no pipe separator is ordinary prose.
+  assert.deepEqual(codes(': note this\n'), []);
+  assert.deepEqual(codes('```\n: a | b\n```\n'), []);
 });
 
 test('a `:` row can be a single field, an empty field, or a markdown-style row with a pipe at each end', () => {
