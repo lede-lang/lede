@@ -1,6 +1,6 @@
 {
   "name": "lede",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "description": "Write a styled, phone-ready, safe web page as a `.lede` file instead of HTML, then compile it to one self-contained zero-JavaScript HTML file. Use when asked for a report, status page, comparison, runbook, architecture or decision page, or any shareable page where layout, dark mode and phone fit should be handled for you. Cuts output tokens 5-7x against hand-written HTML. Not for apps, interactive widgets or pages that need script.",
   "contextFileName": "GEMINI.md"
 }

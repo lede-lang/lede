@@ -1,5 +1,12 @@
 # Changelog
 
+## <small>0.2.12 (2026-11-25)</small>
+
+* Merge pull request #39 from lede-lang/dependabot/npm_and_yarn/dev-tooling-0b09fd7a65 ([f58a6f6](https://github.com/lede-lang/lede/commit/f58a6f6)), closes [#39](https://github.com/lede-lang/lede/issues/39)
+* Merge remote-tracking branch 'origin/main' into dep39 ([4664e1a](https://github.com/lede-lang/lede/commit/4664e1a))
+* test: pass type arguments to page.evaluate instead of asserting its result ([0eb1660](https://github.com/lede-lang/lede/commit/0eb1660))
+* build(deps-dev): Bump the dev-tooling group across 1 directory with 3 updates ([9676509](https://github.com/lede-lang/lede/commit/9676509))
+
 ## <small>0.2.11 (2026-11-25)</small>
 
 * Merge pull request #51 from lede-lang/dependabot/github_actions/actions-a71ad79015 ([3aaf55a](https://github.com/lede-lang/lede/commit/3aaf55a)), closes [#51](https://github.com/lede-lang/lede/issues/51)
