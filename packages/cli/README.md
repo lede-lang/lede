@@ -21,4 +21,8 @@ To have an AI agent write the pages, add the skill: `npx skills add lede-lang/le
 - Source, specification and issues: https://github.com/lede-lang/lede
 - Apache-2.0. An early 0.x release: it will change.
 
+One module is importable, for tools that read files a page names: `import { confine, unreadable } from '@lede-lang/cli/confine'`.
+`confine(base, path)` returns the real path of `path` once it lies inside `base`'s directory tree, symlinks resolved on both
+sides, and throws an `Unreachable` otherwise; it is the check `data x < file.csv` and local images go through.
+
 This package depends on `@lede-lang/core` (the parser) and `@lede-lang/html` (the renderer).

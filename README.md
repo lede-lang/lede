@@ -1,5 +1,8 @@
 # Lede
 
+Lede (lede-lang) is the line format a model writes when you ask it for a page: a few lines in, one self-contained HTML page out, with no script and no automatic remote fetch. Flags
+opt out: `--shell` adds one fixed script and `--allow-remote` lets remote images load ([every flag that changes this](docs/when-not-to-use.md)).
+
 A line-oriented document format for AI-written web artifacts. It compiles to a single
 self-contained HTML page with charts, diagrams, light and dark themes and phone layouts, and
 no JavaScript. A page can ask the reader questions (`ask`, `choose`, `confirm`, `export`); building with `--shell` then adds one
@@ -22,7 +25,12 @@ aws: api -> db : sql
 aws: group vpc "VPC 10.20.0.0/16" api, db
 ```
 
-> **Status:** pre-release (0.x), on npm as `@lede-lang/cli`, `@lede-lang/html` and `@lede-lang/core` (install, below). It will change.
+> **Status:** pre-release (0.x), on npm as `@lede-lang/cli`, `@lede-lang/html` and `@lede-lang/core` (install, below). Rendering and
+> flags will change. The grammar is pinned by the conformance suite and is to be frozen as spec 1.0 on its own track (D83);
+> that freeze has not happened yet.
+> The MCP server, the editor grammar and the GitHub Action in this repository are not published yet.
+
+**What Lede is not.** It is not a format for models to read documents, and it is not a UI spec that a client app interprets at run time. It is not the OpenWrt-related project of a similar name. See [when not to use Lede](docs/when-not-to-use.md).
 
 ## Layout
 
@@ -33,9 +41,15 @@ aws: group vpc "VPC 10.20.0.0/16" api, db
 | `packages/core` | Streaming parser: lines in, typed AST and diagnostics out |
 | `packages/render-html` | AST to page: charts, elkjs diagrams, tables, theme |
 | `packages/cli` | `lede build`, `lede watch`, `lede check`, `lede ast` |
+| `packages/mcp` | A stdio MCP server with check, compile and spec tools (private, not on npm; [README](packages/mcp/README.md)) |
 | `scripts/pack.ts`, `test/pack.test.ts` | Build and pack the npm tarballs; install and run them (`pnpm test:pack`) |
 | `conformance/` | `.lede` cases with expected AST JSON, and error cases with expected diagnostics |
 | `bench/` | Benchmark: tasks, generated outputs, harness, results |
+| `integrations/` | The skill in other agent hosts' formats, generated from `skill/lede/SKILL.md` |
+| `editors/` | A TextMate grammar and a VS Code folder: highlighting only, unpublished ([README](editors/README.md)) |
+| `action/` | A composite GitHub Action that builds `.lede` files ([README](action/README.md)) |
+| `demos/exfil/` | Exfiltration demo: what a poisoned brief makes a page fetch, in HTML, Markdown and Lede |
+| `docs/` | When not to use Lede, implementing it in another language, issue triage |
 | `DECISIONS.md` | Design, format, renderer and benchmark-method decisions (ADR log) |
 
 ## Install the skill
@@ -78,6 +92,17 @@ Skills (+ → Upload a skill). Skills need code execution ("Create and edit file
 The skill tells the agent to run `lede`, so install the CLI too (next section); if it is missing, the agent asks before
 installing it.
 
+### Other agent hosts
+
+[`integrations/`](integrations/README.md) holds the same skill as an `AGENTS.md` snippet (Codex and others), a Cursor rule, a
+Copilot instructions file, a Gemini CLI extension and a plain system prompt, each generated from `skill/lede/SKILL.md`. Its README
+says how to install each and which have been checked; most of those routes have not been run in their host yet.
+
+An MCP client can check and compile pages through [`packages/mcp`](packages/mcp/README.md), a stdio server that is not yet
+published to npm (run it from a checkout). For editors, [`editors/`](editors/README.md) has a TextMate grammar and a VS Code
+folder: highlighting only, and unpublished. In GitHub Actions, `uses: lede-lang/lede/action@<ref>` builds `.lede` files to
+HTML; see [`action/README.md`](action/README.md).
+
 ## Install the CLI and libraries
 
 Needs Node 22.12+. The skill in this repository teaches syntax that needs `@lede-lang/cli` 0.2.5 or later (`lede --version`); an
@@ -93,7 +118,7 @@ import { compile } from '@lede-lang/html';
 const { html, doc } = await compile('# Hello\n\nkpi Uptime | 99.97% | +0.02 pts | good');
 ```
 
-The three packages share one version. To run from a checkout instead: after `pnpm install` (below),
+The three published packages share one version (the private `packages/mcp` carries it too). To run from a checkout instead: after `pnpm install` (below),
 `alias lede="node $PWD/packages/cli/src/cli.ts"`.
 
 ## Use
@@ -112,7 +137,8 @@ pnpm test:pack                                      # pack the three packages, i
 ```
 
 Regenerate conformance expectations after an intentional parser change with
-`UPDATE=1 node --test conformance/run.test.ts`, then review the JSON diff.
+`UPDATE=1 node --test conformance/run.test.ts`, then review the JSON diff. To write Lede in another language, see
+[docs/implementing.md](docs/implementing.md): `node conformance/runner.ts --cmd "<your command>"` runs the suite against it.
 
 ## Benchmark
 
@@ -123,8 +149,18 @@ node bench/src/pairs.ts          # build blind pairwise images for the judge
 node bench/src/aggregate.ts      # results/summary.json
 ```
 
+To rerun the writer round with your own API key and a spend cap, `pnpm bench` is the kit; [bench/REPLICATE.md](bench/REPLICATE.md)
+says how (without a key it prints an estimate and stops). `node demos/exfil/run.ts` reruns the exfiltration demo, with no model
+and no network ([demos/exfil/README.md](demos/exfil/README.md)).
+
 Results land in `bench/results/`; `DECISIONS.md` records the method and the numbers of each round (D12 to D18, D27 to D38), and D50 restates the
 cost, time and context figures with each writer's own tokenizer.
+
+## When not to use Lede
+
+Lede suits a model writing a page for people. For brand-exact design, interactive apps, fixed-structure reports, content that must render on
+GitHub, and the safety limits (a link still needs a click, and three flags change the policy), see
+[docs/when-not-to-use.md](docs/when-not-to-use.md).
 
 ## Contributing
 

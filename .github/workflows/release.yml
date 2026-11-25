@@ -19,6 +19,9 @@ name: release
 # Versions move in lockstep: pnpm pins `workspace:*` to the exact version, and test:pack fails if the three differ.
 # A version already on npm is skipped, so a run that failed halfway can be rerun. A version already staged is not detected:
 # reject the older stage with `npm stage reject <stage-id>` before rerunning.
+#
+# Off for now (owner, 2026-11-25): both jobs skip unless the repository variable NPM_PUBLISH is `true`
+# (Settings, Secrets and variables, Actions, Variables). Set it to turn staging back on; nothing else changes.
 
 on:
   release:
@@ -34,7 +37,7 @@ concurrency:
 jobs:
   # Everything that runs repository and dependency code happens here, without an OIDC token or the npm secret.
   build:
-    if: ${{ !github.event.repository.private }}
+    if: ${{ !github.event.repository.private && vars.NPM_PUBLISH == 'true' }}
     # Pinned: Playwright's Chromium install does not support the newest ubuntu-latest image yet.
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -110,7 +113,7 @@ jobs:
   # maintainer approves each staged version with 2FA.
   publish:
     needs: build
-    if: ${{ !github.event.repository.private }}
+    if: ${{ !github.event.repository.private && vars.NPM_PUBLISH == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: npm
