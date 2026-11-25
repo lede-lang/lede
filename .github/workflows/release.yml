@@ -1,19 +1,24 @@
 name: release
 
-# Publishes @lede-lang/core, @lede-lang/html and @lede-lang/cli to npm, with provenance (D48, D88).
+# Stages @lede-lang/core, @lede-lang/html and @lede-lang/cli on npm, with provenance (D48, D61).
 #
-# Started by the GitHub release that changelog.yml publishes for every merge to main (D60), or by hand, and only from a public
-# repository. No person approves anything (D88, replacing the approvals of D58 and D61): the build job tests and packs, and the
-# publish job uploads exactly those tarballs with `npm publish`, public at once. CI on main is the gate.
+# Started by the GitHub release that changelog.yml publishes for every version (D60), or by hand, and only from a public repository.
+# Nothing is published before the public repository exists (D45), and npm provenance needs a public repository anyway; in a private
+# one both jobs are skipped. The build job tests and packs and writes what it packed to the run summary; the publish job then runs
+# `npm stage publish` with no approval on the GitHub side (D88: the `npm` environment has no required reviewers), which uploads the
+# tarballs without making them public. The one manual check is on npm (D61): a maintainer approves each staged version on
+# npmjs.com (Staged Packages tab) or with `npm stage approve <stage-id>`, with 2FA. Core and html first, then cli.
 # A tag push does not start it: the release commit says [skip ci], and GitHub applies that to the push of a tag on that commit too.
 #
 # Authentication is npm trusted publishing (OIDC): each package on npmjs.com names this repository, this file
-# (release.yml) and the `npm` environment, which must have no required reviewers. An NPM_TOKEN secret on the `npm`
-# environment is used instead when one is set (bootstrap only; delete it once trusted publishing works).
+# (release.yml) and the `npm` environment. npm configures a trusted publisher on a package that already exists, so the
+# very first stage uses an NPM_TOKEN secret on the `npm` environment instead; delete the secret once trusted
+# publishing is set up. Staging a package that does not exist makes npm publish a public placeholder, 0.0.0-stage.
 #
-# The build job tests and packs; the publish job, the only one with an OIDC token, publishes those tarballs.
+# The build job tests and packs; the publish job, the only one with an OIDC token, stages those tarballs.
 # Versions move in lockstep: pnpm pins `workspace:*` to the exact version, and test:pack fails if the three differ.
-# A version already on npm is skipped, so a run that failed halfway can be rerun.
+# A version already on npm is skipped, so a run that failed halfway can be rerun. A version already staged is not detected:
+# reject the older stage with `npm stage reject <stage-id>` before rerunning.
 
 on:
   release:
@@ -69,13 +74,13 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/release"
           node scripts/pack.ts "$RUNNER_TEMP/release" > "$RUNNER_TEMP/release/packed.tsv"
-      # The exact tarballs the publish job uploads.
-      - name: Summarise what is published
+      # The exact tarballs the publish job stages, for the maintainer approving them on npm.
+      - name: Summarise what is staged
         run: |
           {
-            echo "## To publish on npm: v$(node -p "require('./packages/cli/package.json').version")"
+            echo "## Staged for npm: v$(node -p "require('./packages/cli/package.json').version")"
             echo
-            echo "Started from \`$GITHUB_REF_NAME\` ($GITHUB_EVENT_NAME). Commit \`$GITHUB_SHA\`. The publish job uploads these tarballs as they are."
+            echo "Started from \`$GITHUB_REF_NAME\` ($GITHUB_EVENT_NAME). Commit \`$GITHUB_SHA\`. The publish job stages these tarballs on npm. Staged versions are public only after a maintainer approves them on npm with 2FA."
             echo
             echo "| Package | On npm | Files | Bytes | sha256 |"
             echo "| --- | --- | --- | --- | --- |"
@@ -101,7 +106,8 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-  # Publishes the tarballs the build job tested; no checkout, no install, no repository code.
+  # Stages the tarballs the build job tested; no checkout, no install, no repository code. npm makes nothing public until a
+  # maintainer approves each staged version with 2FA.
   publish:
     needs: build
     if: ${{ !github.event.repository.private }}
@@ -115,27 +121,42 @@ jobs:
         with:
           node-version: 24
           package-manager-cache: false
-      # Trusted publishing needs npm 11.5.1 or later; pinned like the actions.
+      # `npm stage` needs npm 11.15.0 or later, which Node 24 does not bundle. Pinned like the actions.
       - name: Install npm
         run: npm install --global npm@11.21.1
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: tarballs
           path: release
-      - name: Publish
+      - name: Stage
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
+          node -e '
+            const [a, b] = process.argv[1].split(".").map(Number);
+            if (a < 11 || (a === 11 && b < 15)) throw new Error(`npm ${process.argv[1]} is older than 11.15.0, which npm stage needs`);
+          ' "$(npm --version)"
           # Bootstrap only. npm reads the token from the environment; with none set it authenticates through OIDC.
           if [ -n "$NPM_TOKEN" ]; then echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' > "$HOME/.npmrc"; fi
           if [ ! -s release/packed.tsv ]; then echo '::error::release/packed.tsv lists no packages'; exit 1; fi
-          # packed.tsv is in dependency order (core, html, cli), so cli never goes out before what it pins.
           while IFS=$'\t' read -r spec file; do
             if [ -n "$(npm view "$spec" version 2>/dev/null)" ]; then
               echo "$spec is already on npm; skipped"
               continue
             fi
             # The ./ matters: npm reads a bare "release/x.tgz" as the GitHub repository release/x.tgz.
-            npm publish "./release/$(basename "$file")" --access public --provenance
-            echo "- \`$spec\` published" >> "$GITHUB_STEP_SUMMARY"
+            npm stage publish "./release/$(basename "$file")" --access public --provenance
           done < release/packed.tsv
+          # What the maintainer approves next, with the stage ids npm assigned.
+          {
+            echo "## Staged on npm"
+            echo
+            echo "Nothing is public yet. Approve each version with 2FA, core and html before cli: on npmjs.com, Staged Packages tab, or \`npm stage approve <stage-id>\`."
+            while IFS=$'\t' read -r spec file; do
+              echo
+              echo "\`${spec%@*}\`"
+              echo '```'
+              npm stage list "${spec%@*}" 2>&1 || echo "npm stage list failed"
+              echo '```'
+            done < release/packed.tsv
+          } >> "$GITHUB_STEP_SUMMARY"
