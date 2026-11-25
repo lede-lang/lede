@@ -3,8 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test packages/*/test/*.test.ts conformance/run.test.ts test/set-version.test.ts test/runtime-hash-note.test.ts bench/test/*.test.ts",
-    "build": "node scripts/gen-runtime.ts --check && tsc -b packages/cli/tsconfig.build.json",
+    "test": "node --test packages/*/test/*.test.ts conformance/run.test.ts conformance/runner.test.ts test/set-version.test.ts test/runtime-hash-note.test.ts bench/test/*.test.ts",
+    "build": "node scripts/gen-runtime.ts --check && tsc -b packages/cli/tsconfig.build.json packages/mcp/tsconfig.build.json",
     "test:pack": "node --test test/pack.test.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lede": "node packages/cli/src/cli.ts",
@@ -12,7 +12,8 @@
     "format": "oxfmt",
     "format:check": "oxfmt --check",
     "check:examples": "find examples -name '*.lede' -not -path '*/as-written/*' -print0 | xargs -0 node packages/cli/src/cli.ts check",
-    "commitlint": "commitlint"
+    "commitlint": "commitlint",
+    "bench": "node bench/src/bench.ts"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.5.3",

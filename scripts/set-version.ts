@@ -1,4 +1,4 @@
-// Writes one version into everything that carries it (D54): the three published packages, and the plugin manifests that
+// Writes one version into everything that carries it (D54): the published packages and the private MCP one, and the manifests that
 // hosts cache an installed plugin by (packages/cli/test/plugin-manifests.test.ts pins them to the CLI version). semantic-release
 // runs it as its prepare step, so the tag, the changelog and these files agree; the packages move in lockstep because pnpm packs
 // `workspace:*` as an exact pin (D48).
@@ -10,9 +10,13 @@ import { PACKAGES, root as REPO_ROOT } from './pack.ts';
 /** Repo-relative paths of every file that holds the release version, each with exactly one `"version"` key. */
 export const VERSION_FILES = [
   ...PACKAGES.map((name) => `packages/${name}/package.json`),
+  // Private for now, so not in PACKAGES (which pack.ts and the release workflow publish); it moves with the others.
+  'packages/mcp/package.json',
   '.claude-plugin/marketplace.json',
   'skill/.claude-plugin/plugin.json',
   'skill/.codex-plugin/plugin.json',
+  // The Gemini CLI extension manifest (scripts/gen-integrations.ts writes it; its --check compares the version too).
+  'integrations/gemini/gemini-extension.json',
 ];
 
 const SEMVER = /^\d+\.\d+\.\d+$/;

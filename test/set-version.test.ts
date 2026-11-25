@@ -34,6 +34,17 @@ test('the plugin manifests end up at the CLI version, as plugin-manifests.test.t
   assert.equal(json('.claude-plugin/marketplace.json').plugins[0].version, '0.4.7');
   assert.equal(json('skill/.claude-plugin/plugin.json').version, '0.4.7');
   assert.equal(json('skill/.codex-plugin/plugin.json').version, '0.4.7');
+  assert.equal(json('integrations/gemini/gemini-extension.json').version, '0.4.7');
+  assert.equal(json('packages/mcp/package.json').version, '0.4.7');
+});
+
+test('the release commit carries every file the version is written to', () => {
+  const assets: string[] = JSON.parse(readFileSync(join(root, '.releaserc.json'), 'utf8')).plugins.find(
+    (p: unknown) => Array.isArray(p) && p[0] === '@semantic-release/git',
+  )[1].assets;
+  const glob = (a: string) => new RegExp(`^${a.replaceAll('.', '\\.').replaceAll('*', '[^/]+')}$`);
+  const covered = (path: string) => assets.some((a) => glob(a).test(path));
+  for (const path of VERSION_FILES) assert.ok(covered(path), path);
 });
 
 test('a 1.0 or malformed version is refused, so the release cannot leave 0.x by accident', () => {

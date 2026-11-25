@@ -1,7 +1,7 @@
 {
   "name": "@lede-lang/cli",
   "version": "0.2.5",
-  "description": "The lede command: build, check, watch and inspect Lede documents",
+  "description": "Lede (lede-lang): the line format an AI model writes instead of HTML. One self-contained page out, no script, no automatic remote fetch. This package is the `lede` command.",
   "keywords": [
     "lede",
     "cli",
@@ -31,6 +31,9 @@
   "bin": {
     "lede": "./src/cli.ts"
   },
+  "exports": {
+    "./confine": "./src/confine.ts"
+  },
   "dependencies": {
     "@lede-lang/core": "workspace:*",
     "@lede-lang/html": "workspace:*"
@@ -40,6 +43,12 @@
     "provenance": true,
     "bin": {
       "lede": "./dist/cli.js"
+    },
+    "exports": {
+      "./confine": {
+        "types": "./dist/confine.d.ts",
+        "default": "./dist/confine.js"
+      }
     }
   }
 }
