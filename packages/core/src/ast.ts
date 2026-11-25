@@ -373,6 +373,19 @@ export interface ExportBlock {
   line: number;
 }
 
+/**
+ * `tab [LABEL] < PATH.lede [#PIN]` (spec §4.21, D85): a manifest's line that names a part, another Lede file drawn as one tab of the
+ * page. `label` is the text as written, or null when the line has none (the part's title stands in); `pin` is the lower-case hex
+ * written after `#`, or null.
+ */
+export interface TabBlock {
+  type: 'tab';
+  label: string | null;
+  path: string;
+  pin: string | null;
+  line: number;
+}
+
 export type Block =
   | HeadingBlock
   | ParagraphBlock
@@ -400,7 +413,8 @@ export type Block =
   | TemplateBlock
   | PresetBlock
   | DecisionBlock
-  | ExportBlock;
+  | ExportBlock
+  | TabBlock;
 
 export interface LedeDocument {
   meta: Record<string, string>;

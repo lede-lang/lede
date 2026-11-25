@@ -834,6 +834,11 @@
     "artifact": "7b10ab20ca365428f46de71f07efda0ddb06d3ffc2538208b5ddab2d49236514",
     "shell": "5238c9a7b9c02d10654e1f4b0949d3e1da5ac6213f2c9e8e2c2c01a33037317c"
   },
+  "conformance/cases/50-tabs.lede": {
+    "ordinary": "a67b42b386db1bb1cef50eb348184a3a6ed4c6d1211638536f4c1839e5bd7643",
+    "fragment": "770c9a3c02cce0d0207349c6814c7b411de4f44e97256e8dda542f1ef49d0a3b",
+    "artifact": "3f260afb3fe2e11920ce895007f3667ab1440be7c0a49f81f7c03d3004eff83c"
+  },
   "conformance/errors/e01-unknown-data.lede": {
     "ordinary": "4d8c9231bd1da3e2f3c5a532a84f17ffbb539e9b6e1da80bea5b89e5455075a3",
     "fragment": "8dcc3b19dc4077a5552fac6bc496da62a1216385482f7fd7b314b6953876fd8e",
@@ -1195,6 +1200,11 @@
     "fragment": "a1b66a62624eb97dabefcf429bf179a51e076d94baca8cd4f5da57da86df35cf",
     "artifact": "67833a6c7e4ffb03d194ca2efaa6a749e27392b3cd0b66feab6f40d0294c94a9"
   },
+  "conformance/errors/e63-tab-trailing-duplicate.lede": {
+    "ordinary": "e2d76f31b8fa195964f6c52078cbcd988c6cdc82eec0c803434d236b5757c654",
+    "fragment": "1d6692a70f14a659333558884bc335d4c3ce80e89563ce1c77fcd355e9db8e8d",
+    "artifact": "dbe38d59c6ecee4fe71e801a077ac14da6de8ffe2df9581c1aa03d40e8b72bd3"
+  },
   "examples/article/01-options-grid.lede": {
     "ordinary": "5d4feeaf7508d5ad94a64d254b79b0f5a97c5f0612f8c94d565a110b96a5baf9",
     "fragment": "780d0e27d3ec3a5bb3a62e4948344f4dcd3d8f34a3ea6fd116e9d908bfa3931f",
@@ -1527,6 +1537,26 @@
     "ordinary": "7a1cd7ea13d24d010a8a9858eec6b59b30d785b3dcc852df87d91e6b29956c55",
     "fragment": "70cc5a6c85c48b35b41f3163af1b2261fa5f99d30395b8e92effd57c4d64d5e1",
     "artifact": "8396b63b81dd4a349f6a18d2b59e2b33f87ede7732c0b4b309204cd843c3d058"
+  },
+  "examples/tabs/costs.lede": {
+    "ordinary": "d8a63fd927f6f0bdcfbbc72159c6a477410a8afc6c70f74374ceacd28befe56c",
+    "fragment": "7305cc9f9bcd118e06056a6985e50691f807bf3d3c48521e065b2d5b35987e5d",
+    "artifact": "2d60e68b2b29c13ba9612476320bace2f4ddaea132976ee266a2e935dc42b77b"
+  },
+  "examples/tabs/overview.lede": {
+    "ordinary": "5d1c1dac2e74c0656b89095b63e44996615acb87624290929dfee299a5b5b343",
+    "fragment": "a79ba9d39f3bd5ce12d558117cb935237f6c98b863b11ae6b967f25dd4310800",
+    "artifact": "2a9331c0a830e13691b0a401e2c1dbdb787a34dc5fcb6e9fdde22b2002b39c6f"
+  },
+  "examples/tabs/review.lede": {
+    "ordinary": "b996649f44a7225ab9d2c4996f356855e7422d2e34273bf4180d3de0e252c662",
+    "fragment": "beaba2e82ff5713abd79a3e98304f379483548d02ea9261470e5792293ee7f7a",
+    "artifact": "2495eae93270fe2f78261ecfa252b90f34564c89d80afa3724c933f00362aa4f"
+  },
+  "examples/tabs/risks.lede": {
+    "ordinary": "bf1dfcf95cfd581600590cf76d0b72da9f665518bb09f8d24cc0379b4bf58f7d",
+    "fragment": "76bcad5da6158fc424d2819b4efd131f422934db8f8d1594bb46d8c47e23e144",
+    "artifact": "3afeac19f59b913b19f36e0c6e7a0f0358efdf70b461ec540e79f887abcc13f0"
   },
   "examples/v04/annotations.lede": {
     "ordinary": "fe98fcfcdabd1a7b9601f8761b1d88a1d957612d80a15541480c8733d1c3f363",

@@ -1,0 +1,15 @@
+@title Risks
+@meta Writer | Risks agent
+
+## Open risks
+
+data risks = risk,owner,status; Single-region database,Data team,At risk; Webhook retries unbounded,API team,In progress; Card vault audit due,Security,On track
+
+table risks
+
+!! The database runs in one region. A regional outage stops settlement until the restore finishes; see [the plan](#mitigation).
+
+## Mitigation
+
+1. Add a cross-region read replica
+2. Test the failover runbook each quarter

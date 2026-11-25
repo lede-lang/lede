@@ -47,7 +47,7 @@ the line after the matched prefix.
 ```ebnf
 document     = { line , NL } ;
 line         = table-row | blank | fence-open | escaped | meta | heading | task-item | bullet | ordered
-             | note | quote | rule | html-line | keyword-line | bucket-item | decision-line | diagram-line | data-row | text ;
+             | note | quote | rule | html-line | tab-line | keyword-line | bucket-item | decision-line | diagram-line | data-row | text ;
 
 blank        = "" ;
 escaped      = "\" , REST ;                         (* REST is paragraph text *)
@@ -63,6 +63,7 @@ kind-word    = "Tip" | "Recommendation" | "Recommended" | "Decision" | "Success"
 quote        = ">" , [ " " ] , REST ;
 rule         = "---" , { "-" } ;
 html-line    = "html:" , REST ;
+tab-line     = "tab" , [ WS , LABEL ] , WS , "<" , [ WS ] , PATH , [ WS , "#" , HEX ] , [ WS ] ;   (* 4.21; PATH ends in .lede, no space; HEX 12-64 digits *)
 keyword-line = data | chart | table | kpi | diagram | image | grid | ask | choose | confirm | export
              | param | toggle | bucket | template | preset | decision ;
 bucket-item  = NAME , ":" , WS , REST , [ WS ] , "|" , [ WS ] , TEXT ;   (* only if NAME is a declared bucket set; REST runs to the last | *)
@@ -125,6 +126,7 @@ Keywords are case-sensitive and lowercase. `Table 3 shows…` is prose; `table o
 error (no data named `of`) and must be written `\table of contents`. The five editor words `param`, `toggle`, `bucket`, `template`
 and `preset` are keyword lines only in the shape §4.19 gives (a name, and a `|` after it); `toggle the flag on Monday` is prose. `decision`
 is a keyword line only in the shape §4.20 gives (a name, then a quoted question or `status=` or `by=`); `decision was made on Monday` is prose.
+`tab` is a keyword line only in the shape §4.21 gives (a `<` and a path ending in `.lede`); `tab the Costs sheet over` is prose.
 
 ## 4. Blocks
 
@@ -697,6 +699,62 @@ the date are plain text; everything is escaped. The card's CSS is added only to 
 screen without sideways scroll: long words wrap, and the date chip wraps inside the card. Print keeps the card on one page where it
 fits.
 
+### 4.21 Tabs
+
+A page of tabs is built from several Lede files (D85): a manifest names them, and each, a part, is drawn as one tab. Each part stays a
+whole page of its own, which its writer can build, check and revise alone, so a page whose sections come from different writers is
+reviewed a section at a time.
+
+```
+@title Q4 platform review
+@fonts clean
+
+What we spent, what could break, and what we are changing, one tab each.
+
+tab Overview < overview.lede
+tab Costs < costs.lede #9f2c41d07ab3
+tab < parts/risks.lede
+```
+
+`tab [LABEL] < PATH`, where PATH ends in `.lede` and holds no space, makes a document a manifest. The `<` and the ending make the line a
+keyword line; any other line that starts with `tab` is prose. LABEL is what the tab is called (inline text, drawn plain in the bar); with
+none, the part's `@title` is used, else its first `#` heading, else its file name without `.lede`. A trailing `#HEX` of 12 to 64 hex
+digits pins the part (below). The blocks before the first tab line are the lead, drawn under the masthead and above the tabs; after it
+only tab lines, `@` lines and blank lines may come, and any other block is E `tab-trailing` `{first}` (the first tab line's number). A
+path named twice (`./` ignored) is E `tab-duplicate` `{path}`, and a thirteenth tab is E `tab-count` `{count, max}`: a page holds at most
+12. The parser reads no file: `resolveTabs` in `@lede-lang/core` takes each part as the caller read and parsed it, and the command line
+(§9) reads them as it reads a `data` file, from the manifest's directory tree.
+
+The manifest's `@` keys are the page's: its title, masthead, palette, fonts, accent, theme, language, description and head tags, and
+`--theme` applies to every tab. A part's `@theme`, `@accent`, `@fonts`, `@lang`, `@description`, `@image` and `@canonical` are left
+out of the page of tabs, each W `tab-part-meta` `{key, part}` on its line in the part; its standalone page is unchanged. Its `@title`,
+`@subtitle`, `@author`, `@date`, `@meta`, `@status` and `@width` apply to its own tab, so a part's facts row is where its writer and
+review date go. A part may not hold tab lines (E `tab-nested` `{path}`, reported in the part). The tabs share one page, so a question name
+(§4.18, §4.19) may appear in one of them only: a second is E `tab-field-clash` `{name, other}`, `other` being the earlier part's path or
+`the manifest`.
+
+A pin is the start of the SHA-256 of the part's bytes, which `lede build` prints for every tab. A part that no longer starts with that hash
+is E `tab-stale` `{path, pinned, actual}` on the tab line: pin a part once it is reviewed, and an edit after that fails the build until
+the pin is moved, which is a one-line change to the manifest that a reviewer sees. `check --fix` never moves a pin.
+
+**What the page is.** One `<main class="doc tabs">`: the manifest's masthead and lead, then `<nav class="tabbar" aria-label="Tabs">` with one
+link per tab (`<a class="tl tlN" href="#ID">`), then one `<section class="doc part pN" id="ID" aria-label="LABEL" data-part="PATH"
+data-sha="HASH">` per part, in order. ID is the label's slug (lower case, punctuation dropped, spaces and runs of `-` as one `-`), with `-2`, `-3`, ... when the
+lead or an earlier tab took it. A panel holds what the part's own `<main>` holds, with three changes and no others: every id the
+compiler writes in it (headings, figures, decisions, the ids in a sanitized `html` fence) starts with ID and `--`, and so does every
+in-page link the panel's own ids answer (a link to any other id is kept as written, so `[Costs](#costs)` in one part opens the Costs
+tab); every heading is one level lower, the part's title an `h2` under the page's `h1`, and its levels styled as on its own page; and the
+keys above are not drawn. A panel keeps the layout class (§7) the part has alone, so a dashboard tab gets the 64rem column and an essay
+tab the prose one. A tab line drawn without its parts (the incremental form, or `render` with no `parts`) is a placeholder,
+`<p class="tabref">`, naming the file.
+
+Switching tabs is CSS, with no script: a panel shows when the URL's fragment names it or an element inside it, the first shows when the
+fragment names neither, and the current tab is marked. Every tab has a URL, a link to a heading opens its tab, and the back button steps
+through the tabs. The rules sit inside `@supports selector(:has(*))` and name panels by index only (`p1`, `tl1`), so no label reaches the
+stylesheet; a browser without `:has()` shows every panel in order, with the bar as a list of links, and print does the same, each panel
+from a new page. The bar is sticky, scrolls sideways in its own box on a phone, and gives each tab a 44px target. `--shell` is not
+added to a page of tabs.
+
 ## 5. Inline markup
 `` `code` ``, `**bold**`, `*italic*` or `_italic_`, `[text](url)`. URLs must be `http`,
 `https`, `mailto`, relative or `#fragment`; others render as plain text. `\` escapes
@@ -809,6 +867,10 @@ written anywhere else was given on its declaration.
   incremental form adds them when the first one arrives, an open fence included), so a page with no fence, or with fences in no
   listed language and no `lines`, has the `<main>` and the `<style>` it had before D84, byte for byte. The class names and the
   `ln` line are the contract; the scanner behind them may be replaced.
+- A page of tabs (§4.21, D85) is the manifest's masthead and lead, a `<nav class="tabbar">` of links and one `<section class="doc part
+  pN">` per part, switched by `:target` and `:has()` with no script. Its stylesheet is the house one for the union of what the parts draw,
+  plus the tab rules, which name panels by index only. A page with no tab line has the `<main>` and `<style>` it had before D85, byte for
+  byte.
 - Light and dark themes from CSS custom properties; `prefers-color-scheme` plus
   `data-theme="light|dark"` on `<html>` to override. Print uses the light tokens whatever the device or `@theme` says (paper is
   white), keeps a figure, card, note, quote or table row on one page where it fits, and wraps code lines.
@@ -998,9 +1060,21 @@ is printed like any other diagnostic by `build`, `watch` and `check`, and `check
 fetched, with or without `--allow-remote`, and a `data:` source passes through unchanged, as does a path that starts with `/` (a web-root URL,
 §4.16), with no `image-inline` warning.
 
+**Pages of tabs (D85).** When FILE is a manifest (§4.21), `build`, `watch` and `check` read each part a tab line names as a `data x <
+file.csv` load is read: relative to FILE's directory and confined to its tree, symlinks resolved on both sides, at most 5 MB. A part that
+cannot be read is E `tab-path` `{path, kind}` on its tab line, `kind` `outside` (the path, as written or through a symlink, leaves the tree)
+or `missing` (not there, or not readable), and nothing of it is read. Each part is checked as a page of its own, with the same flags
+(local images inlined against its own directory, `--artifact`, `--external`, `--theme`), and its diagnostics, the tab codes of §4.21
+among them, are reported under its own path (FILE's directory joined with the path as written): after FILE's in text, and as keys of their
+own under `check --json`. An error in any part counts as an error of the page: `build` does not write it (unless `--force`) and `check`
+exits 1. `build` prints one line per tab on stderr, `FILE: tab LABEL < PATH #HASH`, HASH the first 12 hex digits of the SHA-256 of the
+part's bytes, which is what a pin (§4.21) is taken from. `check --fix` rewrites FILE only; a part is repaired by checking it. `watch`
+rebuilds on a change to FILE or to any part the last build read. `ast` prints the manifest alone and reads no part. `--shell` adds
+nothing to a page of tabs, and stderr says so (`FILE: --shell had no effect: a page of tabs does not take the shell yet`).
+
 `lede watch FILE [-o OUT] [--theme TOKENS [--theme-strict]]` builds FILE to OUT, or to `NAME.html` beside `NAME.lede`, then rebuilds on every change until stopped. It always
 renders as if `--force` were given, and honours `--unsafe-html`, `--allow-remote`, `--shell`, `--image-max`, `--link-images`, `--theme` and `--theme-strict`; a change to an image file
-does not rebuild, only a change to FILE does. With `--shell`, the note that the flag had no
+does not rebuild, only a change to FILE (or, for a manifest, to one of its parts) does. With `--shell`, the note that the flag had no
 effect is printed on the first build it holds for, and again only if a page that took the shell stops doing so; it is not repeated on every save. It watches FILE's
 directory and picks FILE's events by name, so an editor's save that writes a temporary file and renames it over FILE is seen like an in-place write. Only the first
 build is fatal (exit 70, as for `build`). After that nothing ends the process but a signal: if FILE is deleted, stderr gets `lede: FILE is gone; waiting for it to
@@ -1037,7 +1111,9 @@ the five tones. So does `note-kind` (§4.7) `{word, use}`. So does `meta-url` (�
 `local`. So does `image-inline` `{src, reason}`: `src` is the path as written and `reason` is `size`, `page-size`, `type`, `missing` or `outside`. The brand-token codes carry it too:
 `theme-value` `{key, value}`, `theme-key` `{key}` (`fonts` also has `reason`), `theme-adjusted` `{token, theme, from, to, ratio, required, against}`, `theme-surface`
 `{token, theme, required, against}` and `theme-override` `{key}`. So does `heading-skip` (§4.4) `{from, to}`: the level of the heading before and of this one, as written (`--fix` leaves it). So does the error
-form of `data-redefined` (§4.11) `{name, columns, redefined}`; the warning of the same code has none.
+form of `data-redefined` (§4.11) `{name, columns, redefined}`; the warning of the same code has none. The tab codes (§4.21) carry it:
+`tab-trailing` `{first}`, `tab-duplicate` `{path}`, `tab-count` `{count, max}`, `tab-path` `{path, kind}`, `tab-stale` `{path, pinned,
+actual}`, `tab-nested` `{path}`, `tab-part-meta` `{key, part}` and `tab-field-clash` `{name, other}`.
 New keys may be added; existing ones are not removed or retyped within 0.x.
 
 `--fix` rewrites each file to repair mechanical slips and prints one line per repair. It repairs:
@@ -1483,3 +1559,15 @@ fences in no listed language, has the same `<main>` and the same `<style>` as be
 card is too close to one of the seven syntax colours now draws W `theme-adjusted` for it (E with `--theme-strict`), as it already
 does for the status colours; the house palettes and a file that keeps their surfaces draw none. Every earlier conformance case
 passes unedited.
+
+## Appendix J. Pages of tabs (2026-11)
+Status: **preview**, D85. A manifest's `tab` lines (§4.21) build one page with a tab per Lede file, switched with no script. The
+grammar gains one line shape and the AST one block, `{type: "tab", label, path, pin, line}`; the diagnostics gain the eight tab codes
+of §4.21 and §9; the command line gains no flag. Conformance case 50 and error case e63 are normative. `spec/model-spec.md` does not
+describe it (D55 cap): a page of tabs is composed by whoever splits the work, who learns it from the on-demand reference (D72).
+
+**What changed for existing input.** Input that parsed before parses identically except one line shape: `tab`, optional text, `<` and a
+path ending in `.lede` was paragraph text and is now a tab line. Searched across the 891 `.lede` files tracked at `be053d7` (benchmark
+outputs, examples, conformance, fixtures): none starts a line with `tab`, and parsed and compiled with the parser and renderer at that
+commit and with this one, all 891 have identical ASTs, diagnostics and pages, byte for byte. Every earlier conformance case passes
+unedited.

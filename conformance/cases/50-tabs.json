@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "title": "Review",
+    "subtitle": "Set after the tabs"
+  },
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "The lead, above the tabs. A line that only starts with the word stays prose: tab the Costs sheet over to finance",
+      "line": 3
+    },
+    {
+      "type": "tab",
+      "label": "Overview",
+      "path": "overview.lede",
+      "pin": null,
+      "line": 6
+    },
+    {
+      "type": "tab",
+      "label": null,
+      "path": "parts/costs.lede",
+      "pin": "0123456789ab",
+      "line": 7
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

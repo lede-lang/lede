@@ -1,7 +1,19 @@
 #!/usr/bin/env node
 // lede build | watch | check | ast
-import { readFileSync, writeFileSync, watch as fsWatch, existsSync, realpathSync, statSync, openSync, readSync, closeSync } from 'node:fs';
-import { dirname, resolve, basename } from 'node:path';
+import {
+  readFileSync,
+  writeFileSync,
+  watch as fsWatch,
+  type FSWatcher,
+  existsSync,
+  realpathSync,
+  statSync,
+  openSync,
+  readSync,
+  closeSync,
+} from 'node:fs';
+import { createHash } from 'node:crypto';
+import { dirname, resolve, basename, join } from 'node:path';
 import { text as readAll } from 'node:stream/consumers';
 import {
   parse,
@@ -13,12 +25,15 @@ import {
   maskSecrets,
   scanExternal,
   parseTheme,
+  resolveTabs,
+  tabsOf,
   ThemeFileError,
   THEME_MAX_BYTES,
   type Diagnostic,
   type ExternalFinding,
   type ExternalOptions,
   type LedeDocument,
+  type TabPart,
   type ThemeTokens,
 } from '@lede-lang/core';
 import { confine, unreadable } from './confine.ts';
@@ -47,6 +62,10 @@ commands:
 
 A file may be - to read the document from stdin (build, check and ast; not with watch, --fix or --dry-run). Diagnostics call
 it <stdin>, and \`data x < file.csv\` loads resolve against the current directory, confined to it like a file's.
+
+A FILE with tab lines (\`tab Costs < costs.lede\`) is a page of tabs, one tab per part: build, watch and check read each part from
+FILE's folder as a data file is read, report its diagnostics under its own path, and build prints each tab's hash. A hash written after
+the part (\`tab Costs < costs.lede #9f2c41d07ab3\`) pins it: once the part changes, E tab-stale stops the build. Spec section 4.21
 
 options:
   -o FILE         build/watch: write the HTML here (-o=FILE does too), never over an input file
@@ -97,18 +116,23 @@ const nameOf = (file: string): string => (file === '-' ? '<stdin>' : file);
 /** The folder a document's local files (data and images) are read from, and confined to. Data files of a document on stdin load from where the command was run. */
 const baseOf = (file: string): string => (file === '-' ? process.cwd() : dirname(resolve(file)));
 
+/** The text of `p`, confined to `base` (symlinks resolved on both sides) and at most 5 MB, with the path it was read from. */
+function readConfined(base: string, p: string): { full: string; text: string } {
+  const full = confine(base, p);
+  try {
+    if (statSync(full).size > 5 * 1024 * 1024) throw new Error(`${p} is larger than 5 MB`);
+    return { full, text: readFileSync(full, 'utf8') };
+  } catch (e) {
+    throw (e as NodeJS.ErrnoException).code === undefined ? e : unreadable(p, e as NodeJS.ErrnoException);
+  }
+}
+
 function parseOptions(file: string) {
   const base = baseOf(file);
   return {
     loadFile: (p: string) => {
       if (/^[a-z]+:/i.test(p)) throw new Error('only local files can be loaded');
-      const full = confine(base, p);
-      try {
-        if (statSync(full).size > 5 * 1024 * 1024) throw new Error(`${p} is larger than 5 MB`);
-        return readFileSync(full, 'utf8');
-      } catch (e) {
-        throw (e as NodeJS.ErrnoException).code === undefined ? e : unreadable(p, e as NodeJS.ErrnoException);
-      }
+      return readConfined(base, p).text;
     },
   };
 }
@@ -174,6 +198,37 @@ interface Inputs {
   theme: LoadedTheme | null;
 }
 
+interface LoadOptions {
+  artifact?: boolean;
+  images?: number | null;
+  encode?: boolean;
+  external?: ExternalOptions | null;
+  themed?: boolean;
+  /** Read the parts a manifest's `tab` lines name (spec §4.21, D85). Default true; `ast` prints the manifest alone. */
+  tabs?: boolean;
+}
+
+/** A document read and checked: what diagnostics call it, its text, the parse and the `--external` findings. */
+interface Loaded {
+  name: string;
+  src: string;
+  doc: LedeDocument;
+  findings: ExternalFinding[];
+}
+
+/**
+ * `load`'s result: the document, and for a manifest its tabs (`resolveTabs`) and each part as read (in tab order, the unreadable ones
+ * left out), each checked as a page of its own and reported under its own name.
+ */
+interface LoadedPage extends Loaded {
+  tabs: TabPart[];
+  parts: Loaded[];
+  /** The absolute path of every part read, for `watch`. */
+  partFiles: string[];
+}
+
+const sha256 = (text: string): string => createHash('sha256').update(text).digest('hex');
+
 /**
  * Read and parse `file` (`-` is stdin). With `images` (bytes), each local image in the document becomes a data: URI and its
  * diagnostics hold W `image-inline` for the ones that could not; `encode: false` (check) types and sizes them without encoding them.
@@ -181,11 +236,31 @@ interface Inputs {
  * `external`, what the page gives away, from one scan whose `findings` are returned too. With `themed`, a `--theme` file is in force:
  * the document's `@accent` is ignored, with W `theme-override`.
  */
-async function load(
-  file: string,
-  opts: { artifact?: boolean; images?: number | null; encode?: boolean; external?: ExternalOptions | null; themed?: boolean } = {},
-): Promise<{ src: string; doc: LedeDocument; findings: ExternalFinding[] }> {
+async function load(file: string, opts: LoadOptions = {}): Promise<LoadedPage> {
   const src = file === '-' ? await readAll(process.stdin) : readFileSync(file, 'utf8');
+  const page = loadText(file, nameOf(file), src, opts);
+  const parts: Loaded[] = [];
+  const partFiles: string[] = [];
+  const base = baseOf(file);
+  const tabs =
+    opts.tabs !== false && tabsOf(page.doc).length
+      ? resolveTabs(page.doc, {
+          read: (tab) => {
+            // A part is read as a `data` file is: confined to the manifest's tree, symlinks resolved on both sides.
+            const { full, text } = readConfined(base, tab.path);
+            const part = loadText(full, file === '-' ? tab.path : join(dirname(file), tab.path), text, opts);
+            parts.push(part);
+            partFiles.push(full);
+            return part;
+          },
+          sha256,
+        })
+      : [];
+  return { ...page, tabs, parts, partFiles };
+}
+
+/** Parse `src`, the text of `file`, and add the checks the options ask for; `name` is what its diagnostics call it. */
+function loadText(file: string, name: string, src: string, opts: LoadOptions): Loaded {
   const doc = parse(src, { ...parseOptions(file), themed: !!opts.themed });
   if (opts.images != null) doc.diagnostics.push(...inlineImages(doc, baseOf(file), opts.images, opts.encode ?? true));
   if (opts.artifact) doc.diagnostics.push(...artifactDiagnostics(doc));
@@ -196,7 +271,7 @@ async function load(
     const secrets = findingSecrets(findings);
     if (secrets.length) doc.diagnostics = doc.diagnostics.map((d) => maskDiagnostic(d, secrets));
   }
-  return { src, doc, findings };
+  return { name, src, doc, findings };
 }
 
 /** `d` with `secrets` masked in its message and in every string of its detail, however deep. */
@@ -270,15 +345,20 @@ function summary(errors: number, warnings: number): string {
 /** What `watch` remembers between rebuilds: whether the last one said `--shell` had no effect, so the next says it only when that starts to hold. */
 interface Watching {
   shellIdle: boolean;
+  /** The parts the last build read (absolute paths): a change to one rebuilds the page too. */
+  files: string[];
 }
 
 async function build(file: string, out: string | null, flags: Set<string>, inputs: Inputs, watching?: Watching): Promise<boolean> {
   const name = nameOf(file);
   const brand = inputs.theme;
-  const { src, doc } = await load(file, { artifact: flags.has('--artifact'), images: inputs.images, themed: brand !== null });
+  const page = await load(file, { artifact: flags.has('--artifact'), images: inputs.images, themed: brand !== null });
+  const { src, doc, tabs } = page;
+  if (watching) watching.files = page.partFiles;
   if (brand) report(brand.flag.path, brand.src, brand.diagnostics);
-  report(name, src, doc.diagnostics);
-  const errors = tally(doc.diagnostics).errors + (brand ? tally(brand.diagnostics).errors : 0);
+  const docs = [page, ...page.parts];
+  for (const d of docs) report(d.name, d.src, d.doc.diagnostics);
+  const errors = docs.reduce((n, d) => n + tally(d.doc.diagnostics).errors, 0) + (brand ? tally(brand.diagnostics).errors : 0);
   if (errors && !flags.has('--force')) {
     process.stderr.write(`${name}: ${errors} error(s); not written (use --force to render anyway)\n`);
     return false;
@@ -286,18 +366,24 @@ async function build(file: string, out: string | null, flags: Set<string>, input
   // The renderer pulls in elkjs and sanitize-html, about 170 ms that `check`, `ast` and `--help` never need, so it loads only here.
   const { render, wantsShell } = await import('@lede-lang/html');
   const shell = flags.has('--shell');
+  const tabbed = tabsOf(doc).length > 0;
   const html = await render(doc, {
     unsafeHtml: flags.has('--unsafe-html'),
     allowRemote: flags.has('--allow-remote'),
     artifact: flags.has('--artifact'),
     shell,
     ...(brand ? { theme: brand.tokens } : {}),
+    ...(tabbed ? { parts: tabs } : {}),
   });
-  const idle = shell && !wantsShell(doc);
+  const idle = shell && (tabbed || !wantsShell(doc));
   if (idle && !watching?.shellIdle)
     process.stderr.write(
-      `${name}: --shell had no effect: the page needs a field (ask, choose, confirm, param, toggle, bucket or template) and an export line\n`,
+      tabbed
+        ? `${name}: --shell had no effect: a page of tabs does not take the shell yet\n`
+        : `${name}: --shell had no effect: the page needs a field (ask, choose, confirm, param, toggle, bucket or template) and an export line\n`,
     );
+  // Which version of each part went in, for whoever reviews the page against the parts (D85).
+  for (const t of tabs) process.stderr.write(`${name}: tab ${t.label} < ${t.tab.path} #${t.sha ?? ''}\n`);
   if (watching) watching.shellIdle = idle;
   if (out) writeFileSync(out, html);
   else process.stdout.write(html);
@@ -318,7 +404,7 @@ const watchTarget = (file: string, out: string | null): string => out ?? resolve
  */
 async function watchFile(file: string, target: string, flags: Set<string>, inputs: Inputs): Promise<number> {
   const watched = new Set([...flags, '--force']);
-  const watching: Watching = { shellIdle: false };
+  const watching: Watching = { shellIdle: false, files: [] };
   // The first build is not guarded: an unreadable FILE or an unwritable OUT stops the command (exit 70), not a loop of the same line.
   await build(file, target, watched, inputs, watching);
   let gone = false;
@@ -367,33 +453,59 @@ async function watchFile(file: string, target: string, flags: Set<string>, input
   // Names are compared as a file system that ignores case and normalization would: FILE typed `readme.lede` may be `README.lede`
   // on disk, and the event carries the name on disk. A neighbour that differs only so costs one rebuild.
   const key = (n: string) => n.normalize('NFC').toLowerCase();
-  const name = key(basename(real));
-  // Some platforms give no name. Any change in the folder may then be FILE's, and so may the page this command just wrote there,
-  // so such an event counts only when FILE itself has changed since the last one that did.
-  const stamp = (): string => {
-    const s = statSync(file, { throwIfNoEntry: false });
-    return s ? `${s.mtimeMs}:${s.size}` : '';
-  };
+  // FILE and, for a manifest, every part the last build read (D85): each folder is watched once, for the names it holds.
+  const sources = (): string[] => [file, ...watching.files];
+  // Some platforms give no name. Any change in the folder may then be a source's, and so may the page this command just wrote
+  // there, so such an event counts only when a source itself has changed since the last one that did.
+  const stamp = (): string =>
+    sources()
+      .map((f) => {
+        const s = statSync(f, { throwIfNoEntry: false });
+        return s ? `${s.mtimeMs}:${s.size}` : '';
+      })
+      .join('|');
   let seen = stamp();
   let timer: NodeJS.Timeout | null = null;
-  const watcher = fsWatch(dirname(real), (_event, changed) => {
-    if (changed !== null) {
-      if (key(changed) !== name) return;
-    } else {
-      const now = stamp();
-      if (now === seen) return;
-      seen = now;
+  const names = new Map<string, Set<string>>();
+  const watchers = new Map<string, FSWatcher>();
+  let fail: (code: number) => void = () => {};
+  const follow = (): void => {
+    names.clear();
+    for (const f of [real, ...watching.files]) {
+      const dir = dirname(f);
+      if (!names.has(dir)) names.set(dir, new Set());
+      names.get(dir)!.add(key(basename(f)));
+      if (watchers.has(dir)) continue;
+      const w = fsWatch(dir, (_event, changed) => {
+        if (changed !== null) {
+          if (!names.get(dir)?.has(key(changed))) return;
+        } else {
+          const now = stamp();
+          if (now === seen) return;
+          seen = now;
+        }
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => void cycle().then(follow), 60);
+      });
+      w.on('error', (e) => {
+        process.stderr.write(failure(e));
+        fail(70);
+      });
+      watchers.set(dir, w);
     }
-    if (timer) clearTimeout(timer);
-    timer = setTimeout(() => void cycle(), 60);
+    // A directory no source is in any more (a tab line removed) stops being watched.
+    for (const [dir, w] of watchers)
+      if (!names.has(dir)) {
+        w.close();
+        watchers.delete(dir);
+      }
+  };
+  const done = new Promise<number>((settle) => {
+    fail = settle;
   });
+  follow();
   process.stderr.write(`watching ${file} → ${target}\n`);
-  return await new Promise<number>((done) => {
-    watcher.on('error', (e) => {
-      process.stderr.write(failure(e));
-      done(70);
-    });
-  });
+  return await done;
 }
 
 /**
@@ -453,17 +565,20 @@ async function check(files: string[], flags: Set<string>, inputs: Inputs, allow:
     }
     // Files are reported one after the other, in the order given, and stdin can be read only once.
     // oxlint-disable-next-line eslint/no-await-in-loop -- sequential on purpose
-    const { src, doc, findings } = await load(f, {
+    const page = await load(f, {
       artifact: flags.has('--artifact'),
       images: inputs.images,
       encode: false,
       external,
       themed: brand !== null,
     });
-    all[nameOf(f)] = doc.diagnostics;
-    if (!flags.has('--json')) report(nameOf(f), src, doc.diagnostics, keyCuts(src, findings));
-    count(doc.diagnostics);
-    leaks += findings.length;
+    // A manifest's parts are reported after it, each under its own name (D85); --fix repairs only the files named.
+    for (const { name, src, doc, findings } of [page, ...page.parts]) {
+      all[name] = doc.diagnostics;
+      if (!flags.has('--json')) report(name, src, doc.diagnostics, keyCuts(src, findings));
+      count(doc.diagnostics);
+      leaks += findings.length;
+    }
   }
   if (flags.has('--json')) process.stdout.write(`${JSON.stringify(all, null, 2)}\n`);
   else process.stderr.write(`${summary(bad, warned)}\n`);
@@ -681,7 +796,7 @@ async function main(argv: string[]): Promise<number> {
     case 'check':
       return await check(files, flags, inputs, allow);
     case 'ast':
-      process.stdout.write(`${JSON.stringify((await load(files[0])).doc, null, 2)}\n`);
+      process.stdout.write(`${JSON.stringify((await load(files[0], { tabs: false })).doc, null, 2)}\n`);
       return 0;
     case 'watch':
       return watched === null ? 2 : await watchFile(files[0], watched, flags, inputs);
