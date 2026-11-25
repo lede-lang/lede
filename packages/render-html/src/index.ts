@@ -1195,7 +1195,9 @@ function kpis(b: KpiBlock, wide: string, top: boolean, st: Status): string {
     const n = Array.from(plain(value)).length;
     // Text values (names, ids, regions) wrap instead of shrinking below a readable size.
     const long = /[A-Za-z]{4,}/.test(value) && n > 8 ? ' long' : '';
-    return `<div class="kpi${hero ? ' hero' : ''}"><span class="kl">${inline(k.label)}</span><span class="kv${long}${vt}"${n > 5 ? ` style="--kvn:${n}"` : ''}>${inline(value)}</span>${k.bar ? kbar(k.value, k.tone) : ''}${delta}${notes.map((note) => `<span class="kn">${note}</span>`).join('')}</div>`;
+    // A hero value in words (`482 of 483`, `Q3 2026`) reads as a phrase, not one figure: a smaller cap than a lone number's (D86).
+    const words = hero && !long && n > 5 && /[A-Za-z]|\d\s+\S/.test(plain(value)) ? ' words' : '';
+    return `<div class="kpi${hero ? ' hero' : ''}"><span class="kl">${inline(k.label)}</span><span class="kv${long}${words}${vt}"${n > 5 ? ` style="--kvn:${n}"` : ''}>${inline(value)}</span>${k.bar ? kbar(k.value, k.tone) : ''}${delta}${notes.map((note) => `<span class="kn">${note}</span>`).join('')}</div>`;
   });
   return `<div class="kpis${hero ? ' solo' : ''}${wide}">${cells.join('')}</div>`;
 }

@@ -80,7 +80,8 @@ installing it.
 
 ## Install the CLI and libraries
 
-Needs Node 22.12+:
+Needs Node 22.12+. The skill in this repository teaches syntax that needs `@lede-lang/cli` 0.2.5 or later (`lede --version`); an
+older compiler reads the newer lines as text without an error.
 
 ```sh
 npm install -g @lede-lang/cli      # the lede command

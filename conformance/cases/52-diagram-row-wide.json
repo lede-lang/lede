@@ -1,0 +1,109 @@
+{
+  "meta": {
+    "title": "Dry run",
+    "width": "wide"
+  },
+  "blocks": [
+    {
+      "type": "diagram",
+      "name": "dry",
+      "kind": "flow",
+      "dir": "LR",
+      "dirExplicit": true,
+      "title": "Dry run pipeline: from change request to approved scope",
+      "nodes": [
+        {
+          "id": "req",
+          "label": "Change request",
+          "kind": "user",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "plan",
+          "label": "Plan",
+          "kind": "svc",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "scan",
+          "label": "Scan stores",
+          "kind": "svc",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "diff",
+          "label": "Diff report",
+          "kind": "store",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "review",
+          "label": "Review",
+          "kind": "team",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "ok",
+          "label": "Approved",
+          "kind": "decision",
+          "sub": null,
+          "focus": false
+        }
+      ],
+      "edges": [
+        {
+          "from": "req",
+          "to": "plan",
+          "label": "change reference",
+          "style": "solid",
+          "both": false,
+          "line": 10
+        },
+        {
+          "from": "plan",
+          "to": "scan",
+          "label": "scope list",
+          "style": "solid",
+          "both": false,
+          "line": 11
+        },
+        {
+          "from": "scan",
+          "to": "diff",
+          "label": "matches",
+          "style": "solid",
+          "both": false,
+          "line": 12
+        },
+        {
+          "from": "diff",
+          "to": "review",
+          "label": "report",
+          "style": "solid",
+          "both": false,
+          "tone": "info",
+          "line": 13
+        },
+        {
+          "from": "review",
+          "to": "ok",
+          "label": "approved scope",
+          "style": "solid",
+          "both": false,
+          "tone": "good",
+          "line": 14
+        }
+      ],
+      "groups": [],
+      "notes": [],
+      "line": 3
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}

@@ -330,7 +330,8 @@ matches exactly, or else case-insensitively with runs of spaces collapsed. The c
 right-aligned. A cell whose whole text is a status word from the renderer's lexicon (done, on
 track, ready, at risk, in progress, blocked, failed, go, no-go, …), or one the page defines with `@status` (§4.3), renders as a pill that keeps
 the word as its text. The built-in words that mean "not yet" (not started, todo, tbd, skipped, paused, on hold) are the `neutral` tone. Sorting is numeric when every cell of the sort column is numeric, else lexical.
-- E `unknown-data`, `unknown-column`, `table-option` (bad `limit`). W `table-option` (ignored, or an unclosed `"`).
+- E `unknown-data`, `unknown-column`, `table-option` (bad `limit`). W `table-option` (ignored, or an unclosed `"`), `table-row`
+  (a `: a | b` line that is not a row, below).
 
 **Block form (D80).** An inline table with a header and no rows on its own line takes its rows from the lines below it:
 ```
@@ -347,7 +348,8 @@ table [options] = Option | Cost, USD | Verdict
 - A row is a line that begins with `:` followed by a space (or by nothing). It is split into pipe fields (§2) and appended to the table;
   fields keep their inline markup (§5), so a status word is still a chip. The first line of any other kind, a blank line included,
   ends the table, and a `:` line anywhere else (after a blank line, under a table that has rows on its own line, under no table)
-  is prose. A `table DATA` line names data and takes no rows.
+  is prose. A `table DATA` line names data and takes no rows. Such a prose line that holds a pipe separator (`: a | b`) is
+  W `table-row` (D86): it was almost always meant as a row, and a compiler older than D80 reads every row this way.
 - A row with the wrong number of fields is E `data-row-width` on that row, as in §4.11. The options (`cols=`, `sort=`, `limit=`,
   `heat`, `bar=`, `target=`, `title=`) are read against the finished table, so `heat` and `bar=` see the rows below the line; their
   diagnostics point at the `table` line, and are reported when the table ends.
@@ -402,8 +404,10 @@ other blocks. A diagram renders where it is declared.
   AST: `DiagramEdge.tone`, omitted when the line has none. The field is a tone only when it is exactly one of the five
   words, in lower case. Inside a label (after the `:`) any other last field is label text and stays as it was written,
   with no warning (`client -> server : GET | POST`, `: yes | no, retry later`, `: 1 | 2`), except a case variant of a
-  tone word (`: allow | Good`, `| BAD`): it stays in the label too, and is W `edge-tone` `{value, allowed}` (`allowed` the
-  five words) with a message naming the lower-case word. A line with no label whose last field is one other word (letters,
+  tone word (`: allow | Good`, `| BAD`) or a colour or status word written for one (D86: `green`, `ok`, `success`, `pass` for
+  `good`; `red`, `error`, `danger`, `fail`, `critical` for `bad`; `amber`, `yellow`, `orange`, `warning`, `caution` for `warn`;
+  `blue` for `info`; `grey`, `gray`, `muted` for `neutral`, in any case): it stays in the label too, and is W `edge-tone`
+  `{value, allowed}` (`allowed` the five words) with a message naming the tone word to write. A line with no label whose last field is one other word (letters,
   digits, `_`, `-`, starting with a letter: `a -> b | red`), which did not parse before tones, is W `edge-tone` too; that
   edge is drawn untoned and the field is dropped, pipe included. For input that parsed before, the only change is a label
   whose last ` | ` field is exactly a tone word: it is now a tone. The renderer draws a toned edge's line, arrowhead and label chip with
@@ -430,6 +434,18 @@ phone also gets a top-to-bottom layout that the page uses at phone widths. A flo
 may be drawn left to right on a dashboard page (§7); the parsed document tells the two apart: its
 `dirExplicit` is `true` when the writer gave a valid `dir=`, and the key is omitted otherwise (a
 `dir` that is not LR, TB, RL or BT is W `diagram-option` and counts as not given).
+
+A written `dir=` holds on the desktop drawing (D86): a drawing too wide for the page column as written is laid out again with
+edge labels wrapped and layers closer, and keeps the written direction while it renders at 80% or more; only below that does the
+renderer turn it, and the phone drawing always fits its own width. Every edge label lies inside the drawing's bounds. A
+**decision ladder** in a top-to-bottom flow without groups (three or more decisions in a chain, each with exactly two answers,
+one to the next of them and one to a shared node that has no answers of its own) is drawn as a ladder: the chain in one column,
+the shared node beside it as tall as the decisions it serves, each answer to it one straight line out the same side, and the
+answer the chain continues on leaving every decision, the one after the chain included, by the forward point. An answer that
+leaves a decision is set in bold and takes a colour only from a written tone: `no` is often the path that goes on, so the words
+`yes` and `no` colour nothing. With `legend` (§F.7) the key lists a node kind only when its nodes are drawn differently from the
+others in the diagram (a decision diamond, a dashed `ext` box); without it, no row of kind tags is added, since each node shows
+its own.
 
 ### 4.18 Questions and the export
 Four lines let a page ask and collect. They are blocks in every build mode: `lede build` draws each as a plain control with no
