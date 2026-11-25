@@ -1,5 +1,15 @@
 # Changelog
 
+## <small>0.2.10 (2026-11-25)</small>
+
+* Merge pull request #47 from lede-lang/claude/project-thread-w1ga9i ([ad016ae](https://github.com/lede-lang/lede/commit/ad016ae)), closes [#47](https://github.com/lede-lang/lede/issues/47)
+* Merge remote-tracking branch 'origin/main' into claude/project-thread-w1ga9i ([b8f6a87](https://github.com/lede-lang/lede/commit/b8f6a87))
+* test(conformance): give the tab error case real parts; compare a file's own check entry ([40dbb9d](https://github.com/lede-lang/lede/commit/40dbb9d))
+* chore: merge main; renumber the tab conformance cases after main's new ones ([33e657b](https://github.com/lede-lang/lede/commit/33e657b))
+* fix(tabs): linear-time tab lines, fragment output, no -o over a part ([3c27777](https://github.com/lede-lang/lede/commit/3c27777))
+* feat: build one page of tabs from several Lede files (D85) ([6c09cb3](https://github.com/lede-lang/lede/commit/6c09cb3))
+* docs(decisions): record proposed D85, tabbed pages built from several Lede sources ([aa6b9c5](https://github.com/lede-lang/lede/commit/aa6b9c5))
+
 ## <small>0.2.9 (2026-11-25)</small>
 
 * Merge pull request #48 from lede-lang/claude/project-thread-kc56wj ([d55e71c](https://github.com/lede-lang/lede/commit/d55e71c)), closes [#48](https://github.com/lede-lang/lede/issues/48)
