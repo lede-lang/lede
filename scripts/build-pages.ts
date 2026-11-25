@@ -2,15 +2,53 @@
 //   node scripts/build-pages.ts [out-dir]     default _site
 // Each example keeps its path under examples/ (examples/parity/bars.lede becomes parity/bars.html), built by this
 // commit's CLI with no flags, so the site shows what `lede build` does on main. The index is a Lede page written here at
-// build time and never tracked: a tracked .lede file would join the render-hash tests.
+// build time and never tracked: a tracked .lede file would join the render-hash tests. It lists the pages by folder and, read
+// from each page's parsed blocks, by block, so the site doubles as a registry of what each block looks like.
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
+import { parse, walkBlocks, type Block } from '@lede-lang/core';
 
 const root = resolve(import.meta.dirname, '..');
 const examples = join(root, 'examples');
 const cli = join(root, 'packages/cli/src/cli.ts');
 const out = resolve(root, process.argv[2] ?? '_site');
+const repo = 'https://github.com/lede-lang/lede';
+const site = 'https://lede-lang.github.io/lede/';
+
+/** Section names for the example folders; a folder not named here keeps its own name. */
+const GROUPS: Record<string, string> = {
+  '.': 'Every block on one page',
+  article: 'Agent-written pages',
+  parity: 'One block at a time',
+  'spike-a': 'Chart markers',
+  'spike-b': 'Flow and sequence diagrams',
+  'spike-c': 'Page types',
+  tabs: 'Tabs',
+  v04: 'Cards, ranges and annotations',
+};
+
+/** The block a reader would look a page up by, as its keyword is written; undefined for plain text and headings. */
+function blockName(b: Block): string | undefined {
+  switch (b.type) {
+    case 'heading':
+    case 'paragraph':
+    case 'rule':
+      return undefined;
+    case 'chart':
+      return `chart ${b.kind}`;
+    case 'diagram':
+      return b.kind === 'sequence' ? 'diagram (sequence)' : 'diagram';
+    case 'kpis':
+      return 'kpi';
+    case 'steps':
+      return 'step';
+    case 'note':
+      return 'note (!)';
+    default:
+      return b.type;
+  }
+}
 
 /** The same set `pnpm check:examples` checks: every .lede under examples/ outside an as-written folder. */
 function sources(dir: string): string[] {
@@ -28,6 +66,9 @@ function titleOf(file: string): string {
   return line ? line.replace(/^(@title|#) /, '').trim() : relative(examples, file);
 }
 
+/** How many pages the block list links for each block: the most focused ones, those with the fewest kinds of block. */
+const PER_BLOCK = 3;
+
 /** Link text is inline Lede: escape what would start markup. */
 const text = (s: string) => s.replace(/[\\`*[\]]/g, (c) => `\\${c}`);
 
@@ -36,22 +77,42 @@ const build = (src: string, dest: string) =>
 
 rmSync(out, { recursive: true, force: true });
 const groups = new Map<string, string[]>();
+/** Block name to the pages that use it, each with how many kinds of block that page holds. */
+const byBlock = new Map<string, { link: string; kinds: number }[]>();
 for (const src of sources(examples).toSorted()) {
   const rel = relative(examples, src).replace(/\.lede$/, '.html');
   mkdirSync(dirname(join(out, rel)), { recursive: true });
   build(src, join(out, rel));
-  const group = dirname(rel) === '.' ? 'Overview' : dirname(rel);
-  const links = groups.get(group) ?? [];
-  links.push(`- [${text(titleOf(src))}](${rel})`);
-  groups.set(group, links);
+  const title = text(titleOf(src));
+  const group = GROUPS[dirname(rel)] ?? dirname(rel);
+  groups.set(group, [...(groups.get(group) ?? []), `- [${title}](${rel}) ([source](${repo}/blob/main/${relative(root, src)}))`]);
+  const names = new Set<string>();
+  walkBlocks(parse(readFileSync(src, 'utf8')).blocks, (b) => {
+    const name = blockName(b);
+    if (name) names.add(name);
+  });
+  for (const name of names) byBlock.set(name, [...(byBlock.get(name) ?? []), { link: `[${title}](${rel})`, kinds: names.size }]);
 }
 
 const index = [
   '@title Lede examples',
   '@subtitle Every shipped example, built from main by the lede command with no flags',
+  '@description Every Lede block (charts, diagrams, sequence diagrams, tables, metric tiles, cards, steps, questions and tabs) in a page an AI agent could write, compiled to one self-contained HTML page with no JavaScript.',
+  `@canonical ${site}`,
   '# Lede examples',
   '',
-  'Each page below is one self-contained HTML file compiled from a `.lede` source in [lede-lang/lede](https://github.com/lede-lang/lede/tree/main/examples).',
+  `Each page below is one self-contained HTML file compiled from a \`.lede\` source in [lede-lang/lede](${repo}/tree/main/examples). This site is built and published by the repository's own GitHub Actions workflow ([pages.yml](${repo}/blob/main/.github/workflows/pages.yml)); to publish your own pages the same way, see [the Lede action](${repo}/blob/main/action/README.md). The full reference is at [ledelang.dev](https://ledelang.dev/reference/).`,
+  '',
+  '## Find an example by block',
+  '',
+  `The ${PER_BLOCK} most focused pages that use each block; the sections after it list every page.`,
+  '',
+  ...[...byBlock]
+    .toSorted(([a], [b]) => a.localeCompare(b))
+    .map(([name, pages]) => {
+      const best = pages.toSorted((a, b) => a.kinds - b.kinds).slice(0, PER_BLOCK);
+      return `- \`${name}\`: ${best.map((p) => p.link).join(', ')}`;
+    }),
   ...[...groups].flatMap(([group, links]) => ['', `## ${group}`, ''].concat(links)),
   '',
 ].join('\n');

@@ -7,6 +7,8 @@ A line-oriented document format for AI-written web artifacts. It compiles to a s
 self-contained HTML page with charts, diagrams, light and dark themes and phone layouts, and
 no JavaScript. A page can ask the reader questions (`ask`, `choose`, `confirm`, `export`); building with `--shell` then adds one
 fixed script, pinned by hash in the page's policy, that copies the answers out. Without the flag there is still no script.
+It sits between Markdown, which cannot draw a chart or a diagram, and HTML, which costs a model five to seven times the output
+tokens for the same page.
 
 Site, reference, gallery and a playground that compiles Lede in your browser: [ledelang.dev](https://ledelang.dev/).
 
@@ -25,12 +27,42 @@ aws: api -> db : sql
 aws: group vpc "VPC 10.20.0.0/16" api, db
 ```
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/img/page-dark.png">
+  <img src="docs/img/page-light.png" alt="A compiled Lede page: the title Payments platform review, four metric tiles (uptime, p99 latency, monthly cost, incidents) and an architecture diagram of a payments API inside a VPC." width="880">
+</picture>
+
+The top of [`examples/kitchen-sink.lede`](examples/kitchen-sink.lede) built by `lede build`, in your GitHub theme.
+[See it live, with every other example.](https://lede-lang.github.io/lede/kitchen-sink.html)
+
 > **Status:** pre-release (0.x), on npm as `@lede-lang/cli`, `@lede-lang/html` and `@lede-lang/core` (install, below). Rendering and
 > flags will change. The grammar is pinned by the conformance suite and is to be frozen as spec 1.0 on its own track (D83);
 > that freeze has not happened yet.
 > The MCP server, the editor grammar and the GitHub Action in this repository are not published yet.
 
 **What Lede is not.** It is not a format for models to read documents, and it is not a UI spec that a client app interprets at run time. It is not the OpenWrt-related project of a similar name. See [when not to use Lede](docs/when-not-to-use.md).
+
+## Examples
+
+[**lede-lang.github.io/lede**](https://lede-lang.github.io/lede/) holds every example in [`examples/`](examples/), built from
+`main` by this repository's own CLI with no flags. It is two things:
+
+- **A registry of the blocks.** "Find an example by block" names each block (`chart line`, `diagram`, `kpi`, `cards`, `ask`,
+  `tab` and the rest) with the most focused pages that use it, and every page links its `.lede` source.
+- **The publishing workflow, running.** [`.github/workflows/pages.yml`](.github/workflows/pages.yml) builds the site and deploys it
+  to GitHub Pages on each merge to `main`. To publish your own `.lede` files the same way, copy the workflow in
+  [`action/README.md`](action/README.md).
+
+Every page has a phone layout and a dark theme, with no script; this is
+[an incident report](https://lede-lang.github.io/lede/article/11-incident-report.html) at 390 pixels wide:
+
+<p>
+  <img src="docs/img/phone-light.png" alt="An incident report on a phone, light theme: title, a critical callout and four metric tiles in two columns." width="300">
+  <img src="docs/img/phone-dark.png" alt="The same incident report on a phone in the dark theme." width="300">
+</p>
+
+The [twelve agent-written pages on ledelang.dev](https://ledelang.dev/gallery/) show each brief, its source and what the page
+could not do; the [reference](https://ledelang.dev/reference/) has every keyword with an example to try in the playground.
 
 ## Layout
 
@@ -49,7 +81,7 @@ aws: group vpc "VPC 10.20.0.0/16" api, db
 | `editors/` | A TextMate grammar and a VS Code folder: highlighting only, unpublished ([README](editors/README.md)) |
 | `action/` | A composite GitHub Action that builds `.lede` files ([README](action/README.md)) |
 | `demos/exfil/` | Exfiltration demo: what a poisoned brief makes a page fetch, in HTML, Markdown and Lede |
-| `docs/` | When not to use Lede, implementing it in another language, issue triage |
+| `docs/` | When not to use Lede, implementing it in another language, issue triage; `docs/img/` holds this README's screenshots |
 | `DECISIONS.md` | Design, format, renderer and benchmark-method decisions (ADR log) |
 
 ## Install the skill
