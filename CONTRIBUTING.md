@@ -67,8 +67,7 @@ reports. Dependabot's own "Bump ..." subjects are exempt from the subject-case r
 
 Merging to `main` releases the next patch version (every commit type does, D54): `changelog.yml` tags it, writes `CHANGELOG.md` and
 a GitHub release, and commits the version into the packages and plugin manifests. The release starts `release.yml`, which tests and
-packs the three npm packages and stages them on npm (D61). A maintainer approves the `npm` environment, then each staged version on
-npm with 2FA. Contributors do nothing here.
+packs the three npm packages and publishes them to npm with no approval step (D88). Contributors do nothing here.
 
 ## Licences
 

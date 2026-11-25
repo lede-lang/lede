@@ -1239,3 +1239,14 @@ Checked, not changed: at 400px in headless Chromium the brief's headline, hero, 
 
 Open: the npm release. Publishing 0.2.5 (or the release this lands in) closes the gap for every reader of the README; that is the
 owner's approval step (D48, D58, D61).
+
+## D88. Every merge to main publishes to npm automatically, with no approval step
+The owner decided on 2026-11-25 that npm publishing is automatic. Until now two people-steps stood between a merge and the
+registry: approving the `npm` environment on the run (D58, D60) and approving each staged version on npm with 2FA (D61). Releases
+piled up unapproved (npm stayed at 0.2.3 while `main` reached 0.2.7). `release.yml` now runs `npm publish --provenance` in place of
+`npm stage publish`, and the `npm` environment carries no required reviewers. What still holds: the build job tests and packs from
+the release tag, refuses a tag that is not on `main` or does not name the packages' version, and the publish job runs no repository
+code and uploads exactly the tarballs the build job tested; authentication is trusted publishing (OIDC), with the `NPM_TOKEN`
+bootstrap of D48 only if a secret is set. CI on `main` is the gate, so a merge is a release. A bad version is fixed forward with the
+next patch, or deprecated with `npm deprecate`; npm allows an unpublish only within 72 hours. Replaces the approval parts of D58 and
+D61; the trigger (D60) and versioning (D54, D75) are unchanged.
