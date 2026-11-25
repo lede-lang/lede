@@ -1134,8 +1134,8 @@ written tone (`no` is often the path that continues). (5) The key lists a node k
 (diamond, dashed `ext`) from another node in the same drawing; a plain box's tag already names it, and identical swatches said nothing. Without `legend`, the row of kind
 tags under a diagram is dropped for the same reason (this supersedes the parity requirement 4.5). (6) A hero kpi whose value is a
 phrase (`482 of 483`) caps at 4.5rem instead of 7rem. (7) `lede check`: W `table-row` for a `: a | b` line that is not a row (after
-a blank line, under `table DATA`, under no table), and W `edge-tone` also for a colour or status word written as a tone
-(`| green`, `| red`, `| amber`, ...), which stays label text. Both are what an agent would see if a compiler older than the syntax
+a blank line, under `table DATA`, under no table), and W `edge-tone` also for a colour word written as a tone
+(`| green`, `| red`, `| amber`, ...), which stays label text; status words such as `ok` and `fail` stay quiet label text. Both are what an agent would see if a compiler older than the syntax
 read the page, so a newer page checked by a newer CLI says so; nothing can make 0.2.3 say it. The skill and the README now state the
 minimum CLI version (0.2.5), and a test holds the two to the same number and to no newer than the packages.
 

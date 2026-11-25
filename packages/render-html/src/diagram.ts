@@ -282,11 +282,13 @@ function decisionPorts(
   ids: Set<string>,
   prior?: Placed,
   zig = false,
-  on?: string,
+  ladder?: Ladder,
 ): Map<string, Side> {
-  // In a ladder the answer the rungs continue on goes straight on from every diamond, and the other answer out the side.
-  const ahead = on ? (l: string) => l.toLowerCase() === on : (l: string) => YES.test(l);
-  const aside = on ? (l: string) => l !== '' && l.toLowerCase() !== on : (l: string) => NO.test(l);
+  // On a ladder's rungs and the decision after them, the answer the rungs continue on goes straight on and the other out the
+  // side; every other decision sends "yes" straight on and "no" out a side.
+  const on = (id: string) => (ladder?.on && (ladder.rungs.includes(id) || ladder.after === id) ? ladder.on : null);
+  const ahead = (id: string, l: string) => (on(id) ? l.toLowerCase() === on(id) : YES.test(l));
+  const aside = (id: string, l: string) => (on(id) ? l !== '' && l.toLowerCase() !== on(id) : NO.test(l));
   const [entry, fwd, across] = {
     LR: ['WEST', 'EAST', ['SOUTH', 'NORTH']],
     RL: ['EAST', 'WEST', ['SOUTH', 'NORTH']],
@@ -299,7 +301,9 @@ function decisionPorts(
     // answer back the other way, toward the trunk, so a chain of "no" answers does not staircase off to one side.
     const side =
       zig &&
-      d.edges.some((e) => e.to === id && ids.has(e.from) && !ahead(e.label.trim()) && d.edges.filter((x) => x.from === e.from).length > 1);
+      d.edges.some(
+        (e) => e.to === id && ids.has(e.from) && !ahead(e.from, e.label.trim()) && d.edges.filter((x) => x.from === e.from).length > 1,
+      );
     const sides = side ? [across[1], across[0]] : across;
     const outs: number[] = [];
     d.edges.forEach((e, i) => {
@@ -328,8 +332,8 @@ function decisionPorts(
     } else {
       for (const i of outs) {
         const l = d.edges[i].label.trim();
-        if (ahead(l) && !used.has(fwd)) give(i, fwd);
-        else if (aside(l) && !used.has(sides[0])) give(i, sides[0]);
+        if (ahead(id, l) && !used.has(fwd)) give(i, fwd);
+        else if (aside(id, l) && !used.has(sides[0])) give(i, sides[0]);
       }
       for (const i of outs) {
         if (out.has(`${i}:s`)) continue;
@@ -432,6 +436,8 @@ interface Ladder {
   rungs: string[];
   /** The answer every rung continues on (`no`), when they all write the same one. */
   on?: string;
+  /** Where the last rung continues: a decision there answers the way the rungs do. */
+  after: string;
 }
 
 /**
@@ -453,7 +459,7 @@ export function ladderOf(d: DiagramBlock): Ladder | null {
     const heads = [...src].filter((s) => ![...src].some((o) => next(o) === s));
     if (heads.length !== 1) continue;
     const rungs = [heads[0]];
-    while (rungs.length < src.size && src.has(next(rungs.at(-1)!))) rungs.push(next(rungs.at(-1)!));
+    for (let n = next(heads[0]); src.has(n) && !rungs.includes(n); n = next(n)) rungs.push(n);
     if (rungs.length < src.size) continue;
     const words = new Set(
       rungs.map((r) =>
@@ -464,7 +470,7 @@ export function ladderOf(d: DiagramBlock): Ladder | null {
       ),
     );
     const on = words.size === 1 ? [...words][0] : '';
-    return { target: t.id, rungs, ...(on ? { on } : {}) };
+    return { target: t.id, rungs, ...(on ? { on } : {}), after: next(rungs.at(-1)!) };
   }
   return null;
 }
@@ -510,7 +516,21 @@ async function ladderLayout(d: DiagramBlock, lad: Ladder, compact: boolean, tier
   const node = d.nodes.find((n) => n.id === lad.target)!;
   const size = nodeSize(node, compact, tier);
   const h = Math.max(size.h, bottom - top);
-  const t = { x: right + gap, y: Math.round((top + bottom) / 2 - h / 2), w: size.w, h, node, ...nodeText(node, compact, tier) };
+  const t = {
+    x: right + gap,
+    y: Math.max(4, Math.round((top + bottom) / 2 - h / 2)),
+    w: size.w,
+    h,
+    node,
+    ...nodeText(node, compact, tier),
+  };
+  // Each answer is a straight line from its rung to the target: if a node stands in the way, the ladder is not drawn as one.
+  const blocked = lad.rungs.some((id) => {
+    const r = box(id);
+    const line = { x: r.x + r.w, y: Math.round(r.y + r.h / 2), w: t.x - r.x - r.w, h: 1 };
+    return p.nodes.some((n) => n !== r && overlaps(line, n));
+  });
+  if (blocked) return layered(d, compact, tier);
   p.nodes.push(t);
   for (const e of toTarget) {
     const r = box(e.from);
@@ -614,7 +634,7 @@ async function layoutOnce(d: DiagramBlock, compact: boolean, prior?: Placed, tie
     elkNodes.set(n.id, en);
   }
   const decisions = new Set(d.nodes.filter((n) => isDecision(n) && !groupIds.has(n.id)).map((n) => n.id));
-  const portSide = decisionPorts(d, d.dir, decisions, prior, compact && tier >= 1, ladder?.on);
+  const portSide = decisionPorts(d, d.dir, decisions, prior, compact && tier >= 1, ladder);
   const containerOf = (id: string) => parent.get(id) ?? '__root';
   for (const [id, en] of elkNodes) {
     if (id === '__root') continue;
@@ -1355,6 +1375,7 @@ function withLegend(d: DiagramBlock, fig: string): string {
 }
 
 /** How a kind's nodes are drawn: a diamond, a dashed box, or the plain box every other kind gets. */
+// A `user` box's page-coloured fill sits on the card's own near-white, so its swatch reads as the plain one; the tag says it.
 const lookOf = (k: string): 'dec' | 'dash' | 'plain' =>
   isDecision({ kind: k } as DiagramNode) ? 'dec' : /^(ext|external)$/.test(k) ? 'dash' : 'plain';
 

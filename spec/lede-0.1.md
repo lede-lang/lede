@@ -404,9 +404,8 @@ other blocks. A diagram renders where it is declared.
   AST: `DiagramEdge.tone`, omitted when the line has none. The field is a tone only when it is exactly one of the five
   words, in lower case. Inside a label (after the `:`) any other last field is label text and stays as it was written,
   with no warning (`client -> server : GET | POST`, `: yes | no, retry later`, `: 1 | 2`), except a case variant of a
-  tone word (`: allow | Good`, `| BAD`) or a colour or status word written for one (D86: `green`, `ok`, `success`, `pass` for
-  `good`; `red`, `error`, `danger`, `fail`, `critical` for `bad`; `amber`, `yellow`, `orange`, `warning`, `caution` for `warn`;
-  `blue` for `info`; `grey`, `gray`, `muted` for `neutral`, in any case): it stays in the label too, and is W `edge-tone`
+  tone word (`: allow | Good`, `| BAD`) or a colour word written for one (D86: `green` for `good`, `red` for `bad`, `amber`,
+  `yellow` and `orange` for `warn`, `blue` for `info`, `grey` and `gray` for `neutral`, in any case): it stays in the label too, and is W `edge-tone`
   `{value, allowed}` (`allowed` the five words) with a message naming the tone word to write. A line with no label whose last field is one other word (letters,
   digits, `_`, `-`, starting with a letter: `a -> b | red`), which did not parse before tones, is W `edge-tone` too; that
   edge is drawn untoned and the field is dropped, pipe included. For input that parsed before, the only change is a label

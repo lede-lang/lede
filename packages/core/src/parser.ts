@@ -2878,27 +2878,17 @@ function afterColon(s: string, lead: number): number {
   return lead + 1 + at + (s.length - at - s.slice(at).trimStart().length);
 }
 
-/** Colour and status words written where a tone was meant (`: allow | green`), to the tone each names (D86). */
-const TONE_WORDS: Record<string, EdgeTone> = {
-  green: 'good',
-  ok: 'good',
-  success: 'good',
-  pass: 'good',
-  red: 'bad',
-  error: 'bad',
-  danger: 'bad',
-  fail: 'bad',
-  critical: 'bad',
-  amber: 'warn',
-  yellow: 'warn',
-  orange: 'warn',
-  warning: 'warn',
-  caution: 'warn',
-  blue: 'info',
-  grey: 'neutral',
-  gray: 'neutral',
-  muted: 'neutral',
-};
+/** Colour words written where a tone was meant (`: allow | green`), to the tone each names (D86). */
+const TONE_WORDS = new Map<string, EdgeTone>([
+  ['green', 'good'],
+  ['red', 'bad'],
+  ['amber', 'warn'],
+  ['yellow', 'warn'],
+  ['orange', 'warn'],
+  ['blue', 'info'],
+  ['grey', 'neutral'],
+  ['gray', 'neutral'],
+]);
 
 /**
  * An edge or message line without its tone. The tone is the line's last ` | ` field (`a -> b : allow | good`, `a -> b | warn`): a
@@ -2917,7 +2907,7 @@ function splitTone(s: string): { head: string; tone?: EdgeTone; word?: string; s
   const head = s.slice(0, at).trimEnd();
   const tone = STATUS_TONES.find((t) => t === field);
   if (tone) return { head, tone, at: 0 };
-  const suggest = STATUS_TONES.find((t) => t === field.toLowerCase()) ?? TONE_WORDS[field.toLowerCase()];
+  const suggest = STATUS_TONES.find((t) => t === field.toLowerCase()) ?? TONE_WORDS.get(field.toLowerCase());
   const word = { word: field, at: s.lastIndexOf(field), ...(suggest ? { suggest } : {}) };
   if (head.includes(':')) return suggest ? { head: s, ...word } : { head: s, at: 0 };
   return { head, dropped: true, ...word };

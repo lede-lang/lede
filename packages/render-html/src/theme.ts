@@ -750,6 +750,7 @@ ol.steps.sx>li>.sn{grid-column:2;min-width:0;color:var(--fg2);overflow-wrap:anyw
 .dg .blk.tn :is(circle,path){stroke:var(--tn)}
 .dg .lmask.tn{fill:var(--tf);stroke:color-mix(in srgb,var(--tn) 40%,var(--tf));stroke-width:1;rx:4px}
 .dg .elabel.tn{fill:var(--tn);font-weight:500}
+.dg .elabel.ans.tn{font-weight:700}
 .et.tn{color:var(--tn);background:var(--tf);border-radius:4px;padding:0 6px;font-weight:600;font-size:14px}
 .dgk-t{min-width:0;overflow-wrap:anywhere}
 ${opts.controls ? CONTROLS : ''}${opts.controls && opts.editors ? EDITORS : ''}${opts.dash ? DASH_RULES : ''}${opts.decisions ? DECISIONS : ''}${opts.code ? CODE : ''}`;

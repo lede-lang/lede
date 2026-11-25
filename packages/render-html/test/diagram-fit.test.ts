@@ -51,7 +51,7 @@ for (const f of ['51-edge-tone-labels.lede', '52-diagram-row-wide.lede', '53-edg
 test('a decision ladder: rungs in one column, each answer to the shared node one straight line out the same side', async () => {
   const d = diagram(conf('54-decision-ladder.lede'));
   const rungs = ['d1', 'd2', 'd3', 'd4', 'd5'];
-  assert.deepEqual(ladderOf(d), { target: 'kept', rungs, on: 'no' });
+  assert.deepEqual(ladderOf(d), { target: 'kept', rungs, on: 'no', after: 'd6' });
   for (const compact of [false, true]) {
     const p = await layoutFlow(d, compact);
     const box = (id: string) => p.nodes.find((n) => n.node.id === id)!;
@@ -79,6 +79,17 @@ test('no ladder without three rungs, or when the shared node has answers of its 
   const src = conf('54-decision-ladder.lede');
   assert.equal(ladderOf(diagram(src.replace(/decide: d[345] -> kept : yes\n/g, ''))), null);
   assert.equal(ladderOf(diagram(`${src}decide: kept -> del\n`)), null);
+  // A rung that continues into itself does not make a chain.
+  const loop = 'diagram f\nf: a "A?" decision\nf: b "B?" decision\nf: c "C?" decision\nf: a -> t : y\nf: b -> t : y\nf: c -> t : y\n';
+  assert.equal(ladderOf(diagram(`${loop}f: a -> b : n\nf: b -> b : n\nf: c -> c : n\n`)), null);
+});
+
+test('a decision outside the ladder keeps "yes" straight on', async () => {
+  const src = `${conf('54-decision-ladder.lede')}decide: q "Other?" decision\ndecide: start -> q\ndecide: q -> r1 : yes\ndecide: q -> r2 : no\n`;
+  const p = await layoutFlow(diagram(src));
+  const q = p.nodes.find((n) => n.node.id === 'q')!;
+  const yes = p.edges.find((e) => e.edge.from === 'q' && e.edge.label === 'yes')!;
+  assert.equal(yes.points[0].y, q.y + q.h, 'yes leaves q by the bottom point');
 });
 
 test('answers are bold but take colour only from a written tone; the key lists only kinds drawn differently', async () => {
@@ -101,5 +112,6 @@ test('without `legend`, no row of kind tags repeats the tags on the nodes', asyn
 
 test('a hero value in words gets the smaller hero size; a number keeps the large one', async () => {
   assert.match(await render(parse('kpi Records reviewed | 482 of 483'), { fragment: true }), /class="kv words"/);
-  assert.doesNotMatch(await render(parse('kpi Revenue | $41,200'), { fragment: true }), /kv words/);
+  for (const v of ['$41,200', '120 ms', '3.2 GB'])
+    assert.doesNotMatch(await render(parse(`kpi Revenue | ${v}`), { fragment: true }), /kv words/, v);
 });
