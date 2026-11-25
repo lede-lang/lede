@@ -1,5 +1,54 @@
 # Changelog
 
+## <small>0.2.7 (2026-11-25)</small>
+
+* Merge pull request #49 from lede-lang/claude/project-thread-xd9h60 ([36db6b6](https://github.com/lede-lang/lede/commit/36db6b6)), closes [#49](https://github.com/lede-lang/lede/issues/49)
+* Merge remote-tracking branch 'origin/main' into claude/project-thread-xd9h60 ([db6e7ce](https://github.com/lede-lang/lede/commit/db6e7ce))
+* chore: merge main and regenerate the integrations from the skill ([5a58c05](https://github.com/lede-lang/lede/commit/5a58c05))
+* fix(html): keep a written diagram row, enclose labels and draw decision ladders ([53e6a23](https://github.com/lede-lang/lede/commit/53e6a23))
+* fix(html): scope the ladder answer rule and tighten tone and hero checks ([0ea567d](https://github.com/lede-lang/lede/commit/0ea567d))
+
+## <small>0.2.6 (2026-11-25)</small>
+
+* Merge pull request #43 from lede-lang/claude/project-thread-5og54g ([63502f8](https://github.com/lede-lang/lede/commit/63502f8)), closes [#43](https://github.com/lede-lang/lede/issues/43)
+* Merge remote-tracking branch 'origin/main' into pr43 ([5bdcf99](https://github.com/lede-lang/lede/commit/5bdcf99))
+* ci(release): skip npm staging unless NPM_PUBLISH is true ([20e77b7](https://github.com/lede-lang/lede/commit/20e77b7))
+* refactor(mcp): replace the MCP SDK with a hand-written stdio loop and build to dist/ ([3876190](https://github.com/lede-lang/lede/commit/3876190))
+* feat(action): add a composite GitHub Action that builds .lede files to HTML ([59a0057](https://github.com/lede-lang/lede/commit/59a0057))
+* feat(mcp): add a private stdio MCP server with check, compile and spec tools ([e70a863](https://github.com/lede-lang/lede/commit/e70a863))
+* feat(editors): add a TextMate grammar and a VS Code extension for .lede ([5cfb3ba](https://github.com/lede-lang/lede/commit/5cfb3ba))
+* feat(bench): add D and E baseline arms for the token claim ([7704bfe](https://github.com/lede-lang/lede/commit/7704bfe))
+* feat(bench): add the pnpm bench replication kit ([efa8ab1](https://github.com/lede-lang/lede/commit/efa8ab1))
+* feat(cli): export the path confinement as @lede-lang/cli/confine ([cf05078](https://github.com/lede-lang/lede/commit/cf05078))
+* feat(skill): generate the skill for other agent hosts from one source ([fedc83d](https://github.com/lede-lang/lede/commit/fedc83d))
+* feat(conformance): runner that points the suite at any implementation ([3130704](https://github.com/lede-lang/lede/commit/3130704))
+* feat(bench): streaming and edit-cost demonstration, Lede against HTML ([a5c4ff0](https://github.com/lede-lang/lede/commit/a5c4ff0))
+* docs: a form for what you could not write, and a weekly triage routine ([7d948dc](https://github.com/lede-lang/lede/commit/7d948dc))
+* docs(demo): add a rerunnable exfiltration demo ([0c5c7e7](https://github.com/lede-lang/lede/commit/0c5c7e7))
+* docs: add a when-not-to-use page ([6d49418](https://github.com/lede-lang/lede/commit/6d49418))
+* docs(bench): match the replication docs to the kit and state the stop rule in D50's units ([565aa41](https://github.com/lede-lang/lede/commit/565aa41))
+* docs(bench): method for a second-family writer round ([e26d788](https://github.com/lede-lang/lede/commit/e26d788))
+* docs(claude-md): name the generator, runner, kit and the private MCP package ([c2d78d5](https://github.com/lede-lang/lede/commit/c2d78d5))
+* docs: one positioning line, and what Lede is not ([171f681](https://github.com/lede-lang/lede/commit/171f681))
+* docs(readme): point at the integrations, MCP server, editor grammar, action and kit ([44dd310](https://github.com/lede-lang/lede/commit/44dd310))
+* docs: promise grammar stability on its own track (D83) ([ad99e97](https://github.com/lede-lang/lede/commit/ad99e97))
+* docs: record the distribution pieces and their limits (D82) ([ee1de41](https://github.com/lede-lang/lede/commit/ee1de41))
+* docs: record the proof pack's method choices (D81) ([3b66791](https://github.com/lede-lang/lede/commit/3b66791))
+* docs: say "no automatic remote fetch" in the positioning line, and name the opt-outs ([beca654](https://github.com/lede-lang/lede/commit/beca654))
+* docs(mcp): say what must change before the package can be published ([f6dcf38](https://github.com/lede-lang/lede/commit/f6dcf38))
+* build(mcp): take zod 4, the version already in the workspace ([8529695](https://github.com/lede-lang/lede/commit/8529695))
+* build(release): write the version into the Gemini extension manifest ([2d5df03](https://github.com/lede-lang/lede/commit/2d5df03))
+* fix(bench): accept arm D's main wrapper in any quote style or class order ([4f679d5](https://github.com/lede-lang/lede/commit/4f679d5))
+* fix(bench): fairer first-block rule for HTML, and a summary-only stream-edit file ([0f5d61f](https://github.com/lede-lang/lede/commit/0f5d61f))
+* fix(editors): leave capitalised NAME: lines as prose ([ee00d7b](https://github.com/lede-lang/lede/commit/ee00d7b))
+* fix(bench): make the kit's cap and key handling hold on a real provider ([7d97eaa](https://github.com/lede-lang/lede/commit/7d97eaa))
+* fix(bench): make the kit's retry, resume, summary and validity rules safe ([dd85cbb](https://github.com/lede-lang/lede/commit/dd85cbb))
+* fix(conformance): refuse a bad --timeout, and say the runner needs a POSIX shell ([6587a68](https://github.com/lede-lang/lede/commit/6587a68))
+* fix(skill): stop committing a second copy of the skill under integrations/gemini ([0ac8f1b](https://github.com/lede-lang/lede/commit/0ac8f1b))
+* fix(action): walk the tree instead of fs.globSync, and pin setup-node by SHA ([34021a5](https://github.com/lede-lang/lede/commit/34021a5))
+* chore(mcp): move the private package version with the others ([2ba8fa1](https://github.com/lede-lang/lede/commit/2ba8fa1))
+* test(demo): keep the exfiltration pages out of the tracked .lede corpus ([c5b8cf5](https://github.com/lede-lang/lede/commit/c5b8cf5))
+
 ## <small>0.2.5 (2026-11-25)</small>
 
 * Merge pull request #45 from lede-lang/claude/project-thread-rpew22 ([c26d0dc](https://github.com/lede-lang/lede/commit/c26d0dc)), closes [#45](https://github.com/lede-lang/lede/issues/45)

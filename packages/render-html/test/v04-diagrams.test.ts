@@ -44,12 +44,13 @@ const keyTexts = (html: string) => [...keyOf(html).matchAll(/<span class="dgk-t"
 
 // ------------------------------------------------------------------ legend
 
-test('legend: the key lists each node kind used, focus, the boundary and each arrow style used', async () => {
+test('legend: the key lists each node kind drawn differently (D86), focus, the boundary and each arrow style used', async () => {
   const html = await frag(KINDS, true);
   const key = keyOf(html);
   assert.ok(key, 'key present');
   const tags = [...key.matchAll(/<span class="tag">([A-Z]+)<\/span>/g)].map((m) => m[1]);
-  assert.deepEqual(tags, ['USER', 'EXT', 'SVC', 'DECISION', 'DB']);
+  // USER, SVC and DB are drawn as the same plain box, so their own tags say it; only the dashed EXT and the diamond are keyed.
+  assert.deepEqual(tags, ['EXT', 'DECISION']);
   const text = keyTexts(html).filter((t) => !t.startsWith('<span'));
   assert.deepEqual(text, ['focus', 'boundary', 'request / flow', 'async / reply / optional', 'both ways', 'must not exist']);
   assert.match(html, /<\/svg><\/div><\/div><\/div><div class="dg-key"/, 'key sits below the drawings, inside the figure');
@@ -58,7 +59,7 @@ test('legend: the key lists each node kind used, focus, the boundary and each ar
 test("legend: swatches are text-free svgs drawn with the diagram's own shapes, no markers, no scripts", async () => {
   const key = keyOf(await frag(KINDS, true));
   const sws = [...key.matchAll(/<svg class="dgk-sw"[^>]*>[\s\S]*?<\/svg>/g)].map((m) => m[0]);
-  assert.equal(sws.length, 11, '5 kinds, focus, boundary and 4 arrow styles');
+  assert.equal(sws.length, 8, '2 kinds drawn differently, focus, boundary and 4 arrow styles');
   for (const s of sws) {
     assert.doesNotMatch(s, /<text|marker|url\(|<script/);
     assert.match(s, /aria-hidden="true"/);
@@ -85,7 +86,7 @@ test('legend: only what is used is listed', async () => {
   const html = await frag(TWO, true);
   assert.deepEqual(
     keyTexts(html).map((t) => t.replace(/<[^>]+>/g, '')),
-    ['SVC', 'DB', 'request / flow'],
+    ['request / flow'],
   );
   assert.doesNotMatch(keyOf(html).replace(/<svg[\s\S]*?<\/svg>/g, ''), /focus|boundary|both ways|must not exist|async/);
   const dashed = await frag(`diagram f dir=LR\nf: a "A"\nf: b "B"\nf: a --> b`, true);
@@ -96,15 +97,15 @@ test('legend: it subsumes the automatic kind tags, so there is exactly one key',
   const on = await frag(KINDS, true);
   assert.doesNotMatch(on, /dg-legend/);
   assert.equal(on.match(/class="dg-key"/g)?.length, 1);
-  // One kind only: the automatic legend would have said nothing, the key still lists it and the arrows.
+  // One kind only: nothing to tell apart, so the key lists the arrows.
   const one = await frag(`diagram f dir=LR\nf: a "A" svc\nf: b "B" svc\nf: a -> b`, true);
-  assert.equal(keyTexts(one).length, 2);
+  assert.deepEqual(keyTexts(one), ['request / flow']);
 });
 
 test('legend: false or omitted leaves the page exactly as before', async () => {
   const base = await frag(KINDS);
   assert.equal(await frag(KINDS, false), base);
-  assert.match(base, /<div class="dg-legend">(?:<span class="tag">[A-Z]+<\/span>)+<\/div>/);
+  assert.doesNotMatch(base, /dg-legend/, 'no row of kind tags under the drawing (D86)');
   assert.doesNotMatch(base, /dg-key/);
   assert.notEqual(await frag(KINDS, true), base);
 });

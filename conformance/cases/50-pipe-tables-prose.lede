@@ -1,0 +1,8 @@
+@title Prose tables
+table title="Options" = Option | Cost | Verdict
+: SQS | low, managed | **chosen**
+: Kafka | high; needs a team | overkill
+
+table title="Stores in scope" = Store | Owner | Status
+: Orders DB | Payments, platform | On track
+: Archive | Data team; legal | At risk

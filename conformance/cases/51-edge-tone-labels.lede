@@ -1,0 +1,8 @@
+diagram net dir=LR title="Who may reach the database"
+net: api "Orders API" svc
+net: db "Orders DB" db
+net: admin "Laptop" user
+net: api -> db : allow | good
+net: admin -x- db : deny | bad
+net: api -> admin : approved | warn
+net: legend

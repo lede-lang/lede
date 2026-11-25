@@ -401,14 +401,10 @@ test('Req 4.4 edge labels never overlap a node box, in any direction, desktop or
   }
 });
 
-test('Req 4.5 a diagram with two or more node kinds gets a one-line legend of the kinds used', async () => {
+test('Req 4.5 (superseded by D86) a diagram without `legend` adds no row of kind tags: each node carries its own', async () => {
   const html = await page('flow-nested');
-  const m = /<div class="dg-legend">((?:<span class="tag">[A-Z]+<\/span>)+)<\/div>/.exec(html);
-  assert.ok(m, 'legend present');
-  const kinds = [...m[1].matchAll(/<span class="tag">([A-Z]+)<\/span>/g)].map((x) => x[1]);
-  assert.deepEqual([...kinds].toSorted(), ['DB', 'EXT', 'FN', 'LB', 'QUEUE', 'SVC', 'USER']);
-  assert.ok(html.indexOf('dg-legend') > html.indexOf('</svg>'), 'legend sits below the drawing');
-  assert.doesNotMatch(await page('flow-blocked'), /dg-legend/, 'one kind needs no legend');
+  assert.doesNotMatch(html, /dg-legend/);
+  assert.match(html, /<text class="tagt"[^>]*>DB<\/text>/, 'the node tags stay');
 });
 
 test('Req 4.6 a blocked edge is dashed, crossed at the midpoint, and labelled in the danger color', async () => {
