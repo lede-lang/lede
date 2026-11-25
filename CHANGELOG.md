@@ -1,5 +1,13 @@
 # Changelog
 
+## <small>0.2.7 (2026-11-25)</small>
+
+* Merge pull request #49 from lede-lang/claude/project-thread-xd9h60 ([36db6b6](https://github.com/lede-lang/lede/commit/36db6b6)), closes [#49](https://github.com/lede-lang/lede/issues/49)
+* Merge remote-tracking branch 'origin/main' into claude/project-thread-xd9h60 ([db6e7ce](https://github.com/lede-lang/lede/commit/db6e7ce))
+* chore: merge main and regenerate the integrations from the skill ([5a58c05](https://github.com/lede-lang/lede/commit/5a58c05))
+* fix(html): keep a written diagram row, enclose labels and draw decision ladders ([53e6a23](https://github.com/lede-lang/lede/commit/53e6a23))
+* fix(html): scope the ladder answer rule and tighten tone and hero checks ([0ea567d](https://github.com/lede-lang/lede/commit/0ea567d))
+
 ## <small>0.2.6 (2026-11-25)</small>
 
 * Merge pull request #43 from lede-lang/claude/project-thread-5og54g ([63502f8](https://github.com/lede-lang/lede/commit/63502f8)), closes [#43](https://github.com/lede-lang/lede/issues/43)

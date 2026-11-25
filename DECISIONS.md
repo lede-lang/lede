@@ -1230,3 +1230,33 @@ says so) until questions across tabs have their own decision. At most 12 tabs. T
 alone (no record of labels, order, theme or pins), D73's radio pills (no URL per tab, an anchor into a hidden tab goes nowhere, and form
 controls the shell must ignore), and `<details>` (not tabs). Later, each as its own decision: questions across tabs under `--shell`,
 and tabs written inline in one file. The build is a draft PR; its merge, and so D67's gate, is the owner's call.
+
+## D86. Diagrams keep a written row, enclose their labels and draw decision ladders; check flags rows and tones it cannot read
+
+A status brief written from the skill at 0.2.4 and built with the npm CLI (0.2.3) showed seven defects. Pipe-row tables and edge
+tones (defects 1 and 3) are gone at HEAD: they are the release gap, 0.2.4 and 0.2.5 never reached npm. The rest reproduced at HEAD
+and change here. (1) A written `dir=` holds on the desktop drawing: a drawing too wide for the column is laid out again with edge
+labels wrapped at 76 units, names at 120 and 20 units between layers, and keeps its direction while it renders at 80% or more;
+before, any drawing under 85% turned whenever the other direction scaled better, so a six-node pipeline with two-word labels became
+an 856-unit column in a 1,024px page. The phone drawing keeps its own fit. Diagrams with no `dir=` are unchanged. (2) Every edge
+label lies inside the drawing: an answer label moved beside a diamond is placed only inside the bounds, and the bounds then grow to
+any label still outside (the phone drawing clipped `approved`). (3) A decision ladder (three or more decisions in a top-to-bottom
+chain, each with two answers, one to the next and one to a shared node with no answers of its own; no groups) is laid out without
+the shared node, with the chain's labels taken off so rungs sit one diamond and 24 units apart; the shared node then stands beside
+the chain as tall as its rungs, each answer to it one straight line out the east point, and the answer the rungs continue on
+leaves every diamond by the forward point, the decision after the chain included. The brief's diagram goes from 520 by 1,292 units
+with nested elbows to 316 by 776. (4) The words yes and no no longer colour an answer: it is bold, and colour comes only from a
+written tone (`no` is often the path that continues). (5) The key lists a node kind only when its nodes are drawn differently
+(diamond, dashed `ext`) from another node in the same drawing; a plain box's tag already names it, and identical swatches said nothing. Without `legend`, the row of kind
+tags under a diagram is dropped for the same reason (this supersedes the parity requirement 4.5). (6) A hero kpi whose value is a
+phrase (`482 of 483`) caps at 4.5rem instead of 7rem. (7) `lede check`: W `table-row` for a `: a | b` line that is not a row (after
+a blank line, under `table DATA`, under no table), and W `edge-tone` also for a colour word written as a tone
+(`| green`, `| red`, `| amber`, ...), which stays label text; status words such as `ok` and `fail` stay quiet label text. Both are what an agent would see if a compiler older than the syntax
+read the page, so a newer page checked by a newer CLI says so; nothing can make 0.2.3 say it. The skill and the README now state the
+minimum CLI version (0.2.5), and a test holds the two to the same number and to no newer than the packages.
+
+Checked, not changed: at 400px in headless Chromium the brief's headline, hero, kpi row and callout do not overflow at HEAD or at
+0.2.3 (document scroll width 400). Diagram titles are sentence case at HEAD (0.2.3 set them in capitals).
+
+Open: the npm release. Publishing 0.2.5 (or the release this lands in) closes the gap for every reader of the README; that is the
+owner's approval step (D48, D58, D61).

@@ -1,0 +1,14 @@
+@title Dry run
+@width wide
+diagram dry dir=LR title="Dry run pipeline: from change request to approved scope"
+dry: req "Change request" user
+dry: plan "Plan" svc
+dry: scan "Scan stores" svc
+dry: diff "Diff report" store
+dry: review "Review" team
+dry: ok "Approved" decision
+dry: req -> plan : change reference
+dry: plan -> scan : scope list
+dry: scan -> diff : matches
+dry: diff -> review : report | info
+dry: review -> ok : approved scope | good

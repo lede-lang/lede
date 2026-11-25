@@ -525,8 +525,7 @@ figure.img figcaption{font:14px/1.4 var(--sans);color:var(--muted)}
 /* stream-b */
 .dg .node.dec .box{fill:var(--warn-bg);stroke:color-mix(in srgb,var(--warn) 55%,var(--surface));stroke-width:1.25}
 .dg .node.dec.focus .box{fill:var(--accent-tint);stroke:var(--accent);stroke-width:1.5}
-.dg .elabel.yes{fill:var(--good);font-weight:700}
-.dg .elabel.no{fill:var(--bad);font-weight:700}
+.dg .elabel.ans{font-weight:700}
 .dg .fr{fill:none;stroke:var(--muted);stroke-width:1}
 .dg .fr-tag{fill:var(--fg2)}
 .dg .fr-k{font:700 9px var(--mono);letter-spacing:.06em;fill:var(--surface)}
@@ -553,6 +552,7 @@ thead th.n{white-space:normal}
   @media (max-width:560px){.kpi.hero .kv{font-size:min(clamp(4rem,13vw,7rem),calc(100cqw / var(--kvn,1) * 1.5))}}
 }
 .kv.long{white-space:normal;overflow-wrap:anywhere;font-size:1.45rem;line-height:1.2}
+.kpi.hero .kv.words{font-size:min(4.5rem,calc(100cqw / var(--kvn,1) * 1.5));letter-spacing:-.02em}
 .kpi.hero .kv.long{font-size:2.4rem}
 @media (max-width:560px){.kv.long{font-size:1.25rem}.kpi.hero .kv.long{font-size:1.9rem}}
 /* end stream 3.1 */
@@ -750,6 +750,7 @@ ol.steps.sx>li>.sn{grid-column:2;min-width:0;color:var(--fg2);overflow-wrap:anyw
 .dg .blk.tn :is(circle,path){stroke:var(--tn)}
 .dg .lmask.tn{fill:var(--tf);stroke:color-mix(in srgb,var(--tn) 40%,var(--tf));stroke-width:1;rx:4px}
 .dg .elabel.tn{fill:var(--tn);font-weight:500}
+.dg .elabel.ans.tn{font-weight:700}
 .et.tn{color:var(--tn);background:var(--tf);border-radius:4px;padding:0 6px;font-weight:600;font-size:14px}
 .dgk-t{min-width:0;overflow-wrap:anywhere}
 ${opts.controls ? CONTROLS : ''}${opts.controls && opts.editors ? EDITORS : ''}${opts.dash ? DASH_RULES : ''}${opts.decisions ? DECISIONS : ''}${opts.code ? CODE : ''}`;

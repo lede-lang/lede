@@ -28,3 +28,17 @@ test('skill/lede/SKILL.md carries the current (0.5) model reference verbatim', (
     .join('\n');
   assert.ok(readFileSync(new URL('../../../skill/lede/SKILL.md', import.meta.url), 'utf8').includes(ref));
 });
+
+// D86: the skill names the oldest CLI its syntax needs, and the README the same one; neither may name a version newer than the
+// packages in this repository, which is the release the skill ships with.
+test('the skill and the README name the same minimum CLI version, no newer than the packages', () => {
+  const read = (p: string) => readFileSync(new URL(`../../../${p}`, import.meta.url), 'utf8');
+  const need = (text: string) => /needs `@lede-lang\/cli` (\d+\.\d+\.\d+) or later/.exec(text)?.[1];
+  const skill = need(read('skill/lede/SKILL.md'));
+  assert.ok(skill, 'SKILL.md states the minimum CLI version');
+  assert.equal(need(read('README.md')), skill);
+  const own = (JSON.parse(read('packages/cli/package.json')) as { version: string }).version;
+  const n = (v: string) => v.split('.').map(Number);
+  const [a, b] = [n(skill), n(own)];
+  assert.ok(a[0] < b[0] || (a[0] === b[0] && (a[1] < b[1] || (a[1] === b[1] && a[2] <= b[2]))), `${skill} is newer than ${own}`);
+});

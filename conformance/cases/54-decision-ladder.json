@@ -1,0 +1,196 @@
+{
+  "meta": {},
+  "blocks": [
+    {
+      "type": "diagram",
+      "name": "decide",
+      "kind": "flow",
+      "dir": "TB",
+      "title": "Should a record be deleted?",
+      "nodes": [
+        {
+          "id": "start",
+          "label": "Record due",
+          "kind": "svc",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "d1",
+          "label": "Opted out?",
+          "kind": "decision",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "d2",
+          "label": "Protected group?",
+          "kind": "decision",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "d3",
+          "label": "Locked?",
+          "kind": "decision",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "d4",
+          "label": "Legal hold?",
+          "kind": "decision",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "d5",
+          "label": "Open dispute?",
+          "kind": "decision",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "d6",
+          "label": "Past retention?",
+          "kind": "decision",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "kept",
+          "label": "Kept",
+          "kind": "store",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "del",
+          "label": "Delete",
+          "kind": "fn",
+          "sub": null,
+          "focus": false
+        },
+        {
+          "id": "archive",
+          "label": "Archive",
+          "kind": "ext",
+          "sub": null,
+          "focus": false
+        }
+      ],
+      "edges": [
+        {
+          "from": "start",
+          "to": "d1",
+          "label": "",
+          "style": "solid",
+          "both": false,
+          "line": 12
+        },
+        {
+          "from": "d1",
+          "to": "kept",
+          "label": "yes",
+          "style": "solid",
+          "both": false,
+          "line": 13
+        },
+        {
+          "from": "d1",
+          "to": "d2",
+          "label": "no",
+          "style": "solid",
+          "both": false,
+          "line": 14
+        },
+        {
+          "from": "d2",
+          "to": "kept",
+          "label": "yes",
+          "style": "solid",
+          "both": false,
+          "line": 15
+        },
+        {
+          "from": "d2",
+          "to": "d3",
+          "label": "no",
+          "style": "solid",
+          "both": false,
+          "line": 16
+        },
+        {
+          "from": "d3",
+          "to": "kept",
+          "label": "yes",
+          "style": "solid",
+          "both": false,
+          "line": 17
+        },
+        {
+          "from": "d3",
+          "to": "d4",
+          "label": "no",
+          "style": "solid",
+          "both": false,
+          "line": 18
+        },
+        {
+          "from": "d4",
+          "to": "kept",
+          "label": "yes",
+          "style": "solid",
+          "both": false,
+          "line": 19
+        },
+        {
+          "from": "d4",
+          "to": "d5",
+          "label": "no",
+          "style": "solid",
+          "both": false,
+          "line": 20
+        },
+        {
+          "from": "d5",
+          "to": "kept",
+          "label": "yes",
+          "style": "solid",
+          "both": false,
+          "line": 21
+        },
+        {
+          "from": "d5",
+          "to": "d6",
+          "label": "no",
+          "style": "solid",
+          "both": false,
+          "line": 22
+        },
+        {
+          "from": "d6",
+          "to": "del",
+          "label": "yes",
+          "style": "solid",
+          "both": false,
+          "line": 23
+        },
+        {
+          "from": "d6",
+          "to": "archive",
+          "label": "no",
+          "style": "solid",
+          "both": false,
+          "line": 24
+        }
+      ],
+      "groups": [],
+      "notes": [],
+      "line": 1,
+      "legend": true
+    }
+  ],
+  "data": {},
+  "diagnostics": []
+}
