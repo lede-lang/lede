@@ -100,9 +100,9 @@ const MEASURE = `(() => {
 
 async function axeViolations(page: import('playwright-core').Page): Promise<number> {
   await page.addScriptTag({ path: require.resolve('axe-core/axe.min.js') });
-  return page.evaluate(
+  return page.evaluate<number>(
     `axe.run(document, { runOnly: ['color-contrast'] }).then(r => r.violations.reduce((a, v) => a + v.nodes.length, 0))`,
-  ) as Promise<number>;
+  );
 }
 
 /** `source` reads a page's Lede text by name; the default reads examples/parity/<name>.lede. */
@@ -134,9 +134,9 @@ export async function checkFixtures(
         await page.goto(`file://${file}`, { waitUntil: 'load' });
         await page.waitForTimeout(50);
         const add = (req: string, msg: string) => findings.push({ fixture: name, width, scheme, req, msg });
-        if (measure) for (const f of (await page.evaluate(MEASURE)) as { req: string; msg: string }[]) add(f.req, f.msg);
+        if (measure) for (const f of await page.evaluate<{ req: string; msg: string }[]>(MEASURE)) add(f.req, f.msg);
         else {
-          const sw = (await page.evaluate('document.scrollingElement.scrollWidth - innerWidth')) as number;
+          const sw = await page.evaluate<number>('document.scrollingElement.scrollWidth - innerWidth');
           if (sw > 0) add('2.6', `page scrolls sideways by ${sw}px`);
         }
         const bad = await axeViolations(page);

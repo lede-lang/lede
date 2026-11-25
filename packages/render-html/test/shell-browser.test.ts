@@ -54,7 +54,7 @@ browserTest('the runtime adds no element and changes no attribute but hidden', a
   await page.locator('input[name="hasOwnProperty"][value="approved"]').check();
   await page.locator('fieldset.q-choose .q-clear').click();
   await page.locator('figure[data-x="json"] .q-copy').click();
-  const seen = (await page.evaluate('window.__m')) as { type: string; attr: string | null; added: string[]; in: string }[];
+  const seen = await page.evaluate<{ type: string; attr: string | null; added: string[]; in: string }[]>('window.__m');
   assert.ok(seen.length > 0);
   for (const m of seen) {
     assert.deepEqual(
@@ -85,7 +85,7 @@ browserTest(
         decide: ['', 'approved', 'rejected'][Math.floor(r() * 3)],
       };
       // Set the controls, then read back what they hold: a one-line input never keeps a line break.
-      const held = (await page.evaluate(
+      const held = await page.evaluate<Answer[]>(
         `((t) => {
         const q = (n) => document.querySelector('[name="' + n + '"]');
         q('constructor').value = t.ask1; q('notes').value = t.ask2;
@@ -95,7 +95,7 @@ browserTest(
         document.querySelector('main').dispatchEvent(new Event('input', { bubbles: true }));
         return [q('constructor').value, t.pick || null, t.decide || 'open', q('notes').value];
       })(${JSON.stringify(typed)})`,
-      )) as Answer[];
+      );
       for (const fmt of ['json', 'markdown'] as const)
         assert.equal(await code(page, fmt), serializeExport(fmt, 'Release 4.2 go/no-go', fields, held), `seed ${seed} ${fmt}`);
     }

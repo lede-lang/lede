@@ -39,9 +39,9 @@ async function violations(browser: Browser, html: string, width: number, scheme:
     const page = await ctx.newPage();
     await page.setContent(html);
     await page.addScriptTag({ path: AXE });
-    return (await page.evaluate(
+    return await page.evaluate<string[]>(
       `axe.run(document, { runOnly: ['color-contrast'] }).then(r => r.violations.flatMap(v => v.nodes.map(n => n.target.join(' '))))`,
-    )) as string[];
+    );
   } finally {
     await ctx.close();
   }

@@ -59,17 +59,17 @@ for (const scheme of ['light', 'dark'] as const)
         const ctx = await browser.newContext({ viewport: { width, height: 800 }, colorScheme: scheme, bypassCSP: true });
         const p = await ctx.newPage();
         await p.setContent(html);
-        const bad = (await p.evaluate(`(() => {
+        const bad = await p.evaluate<string[]>(`(() => {
         const bad = [];
         if (document.scrollingElement.scrollWidth > innerWidth) bad.push('page scrolls sideways');
         for (const a of document.querySelectorAll('.tabbar a')) if (a.getBoundingClientRect().height < 43.5) bad.push(a.textContent + ' is short');
         return bad;
-      })()`)) as string[];
+      })()`);
         assert.deepEqual(bad, []);
         await p.addScriptTag({ path: AXE });
-        const found = (await p.evaluate(
+        const found = await p.evaluate<string[]>(
           `axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'] } }).then(r => r.violations.map(v => v.id + ': ' + v.nodes.map(n => n.target.join(' ')).join(', ')))`,
-        )) as string[];
+        );
         assert.deepEqual(found, []);
         await ctx.close();
       },

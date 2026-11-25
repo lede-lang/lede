@@ -911,7 +911,7 @@ const STATE = `(() => ({
 
 /** After a drive: each export equals the oracle's over what the controls hold, and every forged element still has its text. */
 async function checkDriven(page: Tab, item: ShellOut, phase: string): Promise<string[]> {
-  const got = (await page.evaluate(STATE)) as { page?: string; entries: Entry[]; out: Record<string, string>; text: string };
+  const got = await page.evaluate<{ page?: string; entries: Entry[]; out: Record<string, string>; text: string }>(STATE);
   const bad: string[] = [];
   if (Object.keys(got.out).length === 0) bad.push(`${item.label}: ${phase}: no export was written`);
   const held = heldValues(item.blocks, got.entries);

@@ -311,15 +311,15 @@ async function check(browser: Browser): Promise<string[]> {
         await page.waitForTimeout(50);
         const at = `${name} @${width} ${scheme}`;
         if ((width === 400 && scheme === 'dark') || (width === 1280 && scheme === 'light')) {
-          for (const m of (await page.evaluate(MEASURE)) as string[]) bad.push(`${at}: ${m}`);
+          for (const m of await page.evaluate<string[]>(MEASURE)) bad.push(`${at}: ${m}`);
         } else {
-          const over = (await page.evaluate('document.scrollingElement.scrollWidth - innerWidth')) as number;
+          const over = await page.evaluate<number>('document.scrollingElement.scrollWidth - innerWidth');
           if (over > 0) bad.push(`${at}: page scrolls sideways by ${over}px`);
         }
         await page.addScriptTag({ path: AXE });
-        const n = (await page.evaluate(
+        const n = await page.evaluate<number>(
           `axe.run(document, { runOnly: ['color-contrast'] }).then(r => r.violations.reduce((a, v) => a + v.nodes.length, 0))`,
-        )) as number;
+        );
         if (n) bad.push(`${at}: ${n} contrast violation${n === 1 ? '' : 's'}`);
         await ctx.close();
       }

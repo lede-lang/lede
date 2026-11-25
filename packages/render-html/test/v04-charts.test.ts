@@ -415,11 +415,11 @@ async function battery(browser: Browser): Promise<string[]> {
         const ctx = await browser.newContext({ viewport: { width, height: 900 }, colorScheme: scheme, bypassCSP: true });
         const page = await ctx.newPage();
         await page.goto(`file://${file}`, { waitUntil: 'load' });
-        for (const msg of (await page.evaluate(MEASURE)) as string[]) found.push(`${name} @${width} ${scheme}: ${msg}`);
+        for (const msg of await page.evaluate<string[]>(MEASURE)) found.push(`${name} @${width} ${scheme}: ${msg}`);
         await page.addScriptTag({ path: AXE });
-        const bad = (await page.evaluate(
+        const bad = await page.evaluate<number>(
           `axe.run(document, { runOnly: ['color-contrast'] }).then(r => r.violations.reduce((a, v) => a + v.nodes.length, 0))`,
-        )) as number;
+        );
         if (bad) found.push(`${name} @${width} ${scheme}: ${bad} contrast violations`);
         await ctx.close();
       }

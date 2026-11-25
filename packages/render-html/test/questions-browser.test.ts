@@ -38,9 +38,9 @@ for (const shell of [false, true])
         await page.setContent(html);
         assert.deepEqual(await page.evaluate(MEASURE), []);
         await page.addScriptTag({ path: AXE });
-        const found = (await page.evaluate(
+        const found = await page.evaluate<string[]>(
           `axe.run(document, { runOnly: ['label', 'color-contrast'] }).then(r => r.violations.map(v => v.id + ': ' + v.nodes.map(n => n.target.join(' ')).join(', ')))`,
-        )) as string[];
+        );
         assert.deepEqual(found, []);
         await ctx.close();
       },

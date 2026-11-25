@@ -220,7 +220,7 @@ browserTest(
       for (const scheme of ['light', 'dark'] as const) {
         const { ctx, page: p } = await serve(browser, html, { width });
         await p.emulateMedia({ colorScheme: scheme });
-        const found = (await p.evaluate(`(() => {
+        const found = await p.evaluate<string[]>(`(() => {
         const doc = document.scrollingElement;
         const row = document.querySelector('dl.facts').getBoundingClientRect();
         const out = [];
@@ -230,7 +230,7 @@ browserTest(
           if (r.right > row.right + 1 || r.left < row.left - 1) out.push(e.textContent.slice(0, 20) + ' leaves the row');
         }
         return out;
-      })()`)) as string[];
+      })()`);
         assert.deepEqual(found, [], `${width}px ${scheme}`);
         await ctx.close();
       }

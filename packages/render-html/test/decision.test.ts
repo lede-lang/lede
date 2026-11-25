@@ -298,9 +298,9 @@ for (const [name, src] of [
       await page.setContent(html);
       assert.deepEqual(await page.evaluate(MEASURE), []);
       await page.addScriptTag({ path: AXE });
-      const found = (await page.evaluate(
+      const found = await page.evaluate<string[]>(
         `axe.run(document, { runOnly: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'] }).then(r => r.violations.map(v => v.id + ': ' + v.nodes.map(n => n.target.join(' ')).join(', ')))`,
-      )) as string[];
+      );
       assert.deepEqual(found, []);
       await ctx.close();
     });
@@ -320,7 +320,7 @@ browserTest('decision cards at 1280 px, in a cards run and on a prose page: no o
     await page.setContent(html);
     assert.deepEqual(await page.evaluate(MEASURE), [], `at ${width}`);
     // On the prose layout the card keeps the page's sans: the essay's serif is for the text around it.
-    const family = (await page.evaluate(`getComputedStyle(document.querySelector('.dc-ol')).fontFamily`)) as string;
+    const family = await page.evaluate<string>(`getComputedStyle(document.querySelector('.dc-ol')).fontFamily`);
     assert.match(family, /system-ui/, `at ${width}`);
     await ctx.close();
   }
