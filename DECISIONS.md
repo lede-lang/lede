@@ -1114,3 +1114,21 @@ not use); letting a tokens file name the syntax colours (no request, and seven m
 Gates: the RFC asked to land after D67 step 1 and after the owner compares article page 03 before and after; both were waived for
 the branch this was built on, so the comparison (85,790 to 91,379 bytes, six fences) is still owed to the owner before a release.
 The number D84 is one past the highest in this file; the internal file and open branches were not readable from that branch.
+
+## D85. Proposed: several Lede sources build one page, a tab per source, with no script
+Proposed (2026-11-25), not decided; the owner's answers settle it. A page whose sections come from different writers, or move on
+different schedules, is pasted together today into one file with colliding ids and no record of which version of each section was
+reviewed. The proposal: a manifest is an ordinary `.lede` file holding the page's `@` keys, an optional lead and one line
+`tab [LABEL] < PATH.lede` per part (the `<` and the `.lede` ending make it a keyword line; 0 of 891 tracked `.lede` files start a line
+with `tab`). `lede build` loads each part as a `data` load is loaded, confined to the manifest's tree, and writes one page: a `<nav>`
+of links and one `<section>` per part, switched by `:target` and `:has()` inside `@supports`, so a tab has a URL, a heading anchor
+opens its tab, and a browser without `:has()` shows every part stacked. Each panel is the part's standalone `<main>` with its ids
+prefixed by the panel's id, its headings one level down and its page-level keys (`@accent`, `@fonts`, `@theme`, `@lang`,
+`@description`, `@image`, `@canonical`, W `tab-part-meta`) left to the manifest; a parity test holds that, so `lede build part.lede`
+is the reviewer's true view of one tab. Generated CSS keys on tab indexes, never on writer text (D49). A part keeps its own layout
+class (D80). Diagnostics stay per part, under the part's path. A `tab` line may end in `#HEX`, the start of the part's SHA-256,
+and a mismatch is E `tab-stale`, so a part changed after review fails the build. `--shell` with a manifest whose parts ask
+questions is refused in the first version. The model spec does not change (D55); the word is taught in an on-demand reference file
+(D72). Rejected: CLI flags alone (no record of labels, order, theme or pins), D73's radio pills (no URL per tab, an anchor into a
+hidden tab goes nowhere, and form controls the shell must ignore), and `<details>` (not tabs). Gate: nothing in `packages/*/src`
+merges before D67 step 1's verdict unless the owner waives it.
