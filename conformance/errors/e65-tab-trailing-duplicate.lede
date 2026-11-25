@@ -1,6 +1,6 @@
-tab A < a.lede
+tab A < tab-parts/a.lede
 
 A stray paragraph.
 
-tab B < b.lede
-tab Again < ./a.lede
+tab B < tab-parts/b.lede
+tab Again < ./tab-parts/a.lede

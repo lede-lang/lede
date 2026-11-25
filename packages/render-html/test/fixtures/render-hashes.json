@@ -1236,9 +1236,19 @@
     "artifact": "73a91538423ff8a931e63d59d9c898f160238b504d9016c11715e78f91675b09"
   },
   "conformance/errors/e65-tab-trailing-duplicate.lede": {
-    "ordinary": "0b635b01e649cd2dc09cfdd4dc9ced449e20df4c620e0bf5d3f11ae54f0c223d",
-    "fragment": "1d6692a70f14a659333558884bc335d4c3ce80e89563ce1c77fcd355e9db8e8d",
-    "artifact": "b1d223f43f94cabb9b92f68741e727376649e8c0de935754f2dcddd92df09980"
+    "ordinary": "d0bc655fcce5b4b286959c291077a09fdce85f6cc636626b464294ae39d7b71a",
+    "fragment": "d2de655ec55a32fcd809631407dc0608aeea812faa6055be19547a69d46e006a",
+    "artifact": "dcb6f442f73b45bd351e2cc49fabb306220bf222c50cde7f1d5faef2e5e7abf7"
+  },
+  "conformance/errors/tab-parts/a.lede": {
+    "ordinary": "04e6379b2534c96483f1c9c80b5c8238ec7466115c716500a3a53f7abe9ba859",
+    "fragment": "35deba3908cc19f8e82b579fdb5182672c2ae97bbe8b2ca0982ef20d7f4ad63e",
+    "artifact": "45f0638a2443cadf8d337961925cf095c44d3c0a55c9f83c9dbf971507590cc4"
+  },
+  "conformance/errors/tab-parts/b.lede": {
+    "ordinary": "684fc7e000f90f7a802bf6a137174da7bfb00e142f57ad8a5357f3b04978d959",
+    "fragment": "c7d2fc125c2b27519da0d19ee6b8e6d6543ac1b3c4e2f20bea64d2210009239b",
+    "artifact": "6e7121106d860620a4bdf138c6272752f83aa84fdfb71386cd68c989146d7717"
   },
   "examples/article/01-options-grid.lede": {
     "ordinary": "46a799fb0e08cd9c00b269853e9d9c334124eb45ec79807bd853abb93ea6cb9c",
