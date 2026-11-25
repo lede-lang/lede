@@ -1,6 +1,7 @@
 import type {
   Block,
   ChartBlock,
+  CodeBlock,
   LedeDocument,
   TableBlock,
   DataSet,
@@ -47,6 +48,7 @@ import { renderFlow } from './diagram.ts';
 import { renderSequence } from './sequence.ts';
 import { decisionHtml } from './decision.ts';
 import { blankAnswers, serializeExport, type Value } from './export.ts';
+import { codeHtml, highlights } from './highlight.ts';
 import {
   askHtml,
   bucketHtml,
@@ -93,7 +95,7 @@ const WIDE = new Set(['grid', 'diagram']);
 export async function render(doc: LedeDocument, opts: RenderOptions = {}): Promise<string> {
   if (opts.shell && opts.unsafeHtml)
     throw new Error('shell cannot be combined with unsafeHtml: raw html could plant its own controls and data block');
-  const { fields, exports, presets, decisions } = pageParts(doc.blocks);
+  const { fields, exports, presets, decisions, code } = pageParts(doc.blocks);
   const shell = !!opts.shell && !opts.fragment && fields.length > 0 && exports.length > 0;
   const ctx = new Ctx(doc, { ...opts, shell }, fields);
   const mh = masthead(doc, ctx);
@@ -106,6 +108,7 @@ export async function render(doc: LedeDocument, opts: RenderOptions = {}): Promi
     editors: usesEditors(fields, presets),
     dash: layout === 'dashboard',
     decisions,
+    code,
     theme: opts.theme,
   })}</style>`;
   const scripts = shell ? `${shellScripts(ctx.page, fields, exports, presets)}\n` : '';
@@ -173,6 +176,8 @@ export interface StyleFeatures {
   dash?: boolean;
   /** It holds a decision block (spec §4.20), which adds the card's rules. */
   decisions?: boolean;
+  /** It holds a code fence that is highlighted or numbered (spec §4.9), which adds the syntax colours and the code rules. */
+  code?: boolean;
   /** An operator's brand theme (`RenderOptions.theme`): it replaces the page's `@accent`. */
   theme?: ThemeTokens | undefined;
 }
@@ -180,30 +185,51 @@ export interface StyleFeatures {
 /** The page stylesheet for a document's meta and what the page draws. */
 export const styleOf = (
   meta: Record<string, string>,
-  { controls = false, editors = false, dash = false, decisions = false, theme }: StyleFeatures = {},
-): string => css({ ...(theme ? { tokens: theme } : { accent: meta.accent }), theme: meta.theme, dash, controls, editors, decisions });
+  { controls = false, editors = false, dash = false, decisions = false, code = false, theme }: StyleFeatures = {},
+): string => css({ ...(theme ? { tokens: theme } : { accent: meta.accent }), theme: meta.theme, dash, controls, editors, decisions, code });
+
+/** A code block the renderer adds markup to: its language is highlighted, or its lines are numbered. Any other is drawn as plain text. */
+const marksCode = (b: CodeBlock): boolean => b.lines === true || highlights(b.lang);
+
+/**
+ * A code block (spec §4.9). A long line scrolls sideways, so the block takes focus and has a name (WCAG 2.1.1). A fence that is
+ * neither highlighted nor numbered is the escaped text and nothing else, as it was before D84; either way the text of `<code>` is
+ * the fence's text.
+ */
+function codeBlockHtml(b: CodeBlock): string {
+  const label = b.lang ? `aria-label="${esc(b.lang)} code" data-lang="${esc(b.lang)}"` : 'aria-label="Code"';
+  if (!marksCode(b)) return `<pre class="code" tabindex="0" role="region" ${label}><code>${esc(b.text)}</code></pre>`;
+  // The gutter is as wide as the last line's number: two characters, or `g3` to `g6` for three to six digits.
+  const digits = Math.min(6, String(b.text.split('\n').length).length);
+  const cls = b.lines ? ` nums${digits > 2 ? ` g${digits}` : ''}` : '';
+  return `<pre class="code${cls}" tabindex="0" role="region" ${label}><code>${codeHtml(b.text, b.lang, b.lines === true)}</code></pre>`;
+}
 
 /**
  * The question fields, `preset` and `export` blocks among `blocks` and the blocks they hold, in source order (as `fieldsOf`,
- * `presetsOf` and `exportsOf` list them), and whether a decision is among them: everything that adds rules or a script, in one walk.
+ * `presetsOf` and `exportsOf` list them), and whether a decision or a highlighted or numbered code fence is among them: everything
+ * that adds rules or a script, in one walk.
  */
 export function pageParts(blocks: readonly Block[]): {
   fields: QuestionBlock[];
   presets: PresetBlock[];
   exports: ExportBlock[];
   decisions: boolean;
+  code: boolean;
 } {
   const fields: QuestionBlock[] = [];
   const presets: PresetBlock[] = [];
   const exports: ExportBlock[] = [];
   let decisions = false;
+  let code = false;
   walkBlocks(blocks, (b) => {
     if (Object.hasOwn(FIELD_KINDS, b.type)) fields.push(b as QuestionBlock);
     else if (b.type === 'preset') presets.push(b);
     else if (b.type === 'export') exports.push(b);
     else if (b.type === 'decision') decisions = true;
+    else if (b.type === 'code') code ||= marksCode(b);
   });
-  return { fields, presets, exports, decisions };
+  return { fields, presets, exports, decisions, code };
 }
 
 /** The class each layout adds to `<main>`. */
@@ -815,9 +841,7 @@ export class Ctx {
       case 'rule':
         return '<hr>';
       case 'code':
-        // A long line scrolls sideways, so the block takes focus and has a name (WCAG 2.1.1).
-        if (!b.lang) return `<pre class="code" tabindex="0" role="region" aria-label="Code"><code>${esc(b.text)}</code></pre>`;
-        return `<pre class="code" tabindex="0" role="region" aria-label="${esc(b.lang)} code" data-lang="${esc(b.lang)}"><code>${esc(b.text)}</code></pre>`;
+        return codeBlockHtml(b);
       case 'html':
         return this.opts.unsafeHtml ? b.html : sanitize(b.html, { allowRemote: this.opts.allowRemote });
       case 'data':
@@ -1627,6 +1651,7 @@ export function sanitize(html: string, opts: { allowRemote?: boolean | undefined
 export { RUNTIME, RUNTIME_SHA256 } from './shell-runtime.ts';
 export { wantsShell } from './shell.ts';
 export { css } from './theme.ts';
+export { HIGHLIGHT_LANGS, TOKEN_KINDS, highlights, tokenize, type Token, type TokenKind } from './highlight.ts';
 export { layoutFlow } from './diagram.ts';
 export { setLayoutEngine, type LayoutFn } from './elk.ts';
 export {

@@ -263,6 +263,8 @@ interface Fence {
   ticks: number;
   lang: string;
   raw: boolean;
+  /** The info string ended with the word `lines`: the code block numbers its lines. A template's body never does. */
+  numbered: boolean;
   lines: string[];
   line: number;
   /** Set when the fence is a `template`'s body; closing it emits the template, not a code block. */
@@ -313,7 +315,8 @@ function fenceBody(f: Fence): string {
 /** The `code` (or raw `html`) block a fence becomes with the lines it holds. */
 function fenceBlock(f: Fence): Block {
   const body = fenceBody(f);
-  return f.raw ? { type: 'html', html: body, line: f.line } : { type: 'code', lang: f.lang, text: body, line: f.line };
+  if (f.raw) return { type: 'html', html: body, line: f.line };
+  return { type: 'code', lang: f.lang, text: body, ...(f.numbered ? { lines: true as const } : {}), line: f.line };
 }
 
 /**
@@ -597,7 +600,9 @@ export class LedeParser {
       this.flush();
       return;
     }
-    const fm = /^(`{3,})\s*(=?)([\w+-]*)\s*$/.exec(s);
+    // `lines` after a language asks for numbered lines (§4.9); a raw `=html` fence takes no such word, and that line stays text.
+    const opened = /^(`{3,})\s*(=?)([\w+-]*)(?:\s+(lines))?\s*$/.exec(s);
+    const fm = opened && !(opened[2] === '=' && opened[4]) ? opened : null;
     // A `template` line takes the next non-blank line as its fence; any other line, or a raw html fence, leaves it without one.
     const template = this.tpl ?? undefined;
     if (template) {
@@ -610,7 +615,7 @@ export class LedeParser {
     }
     if (fm) {
       this.flush();
-      this.fence = { ticks: fm[1].length, raw: fm[2] === '=', lang: fm[3], lines: [], line: L };
+      this.fence = { ticks: fm[1].length, raw: fm[2] === '=', lang: fm[3], numbered: fm[4] !== undefined, lines: [], line: L };
       if (template && fm[2] !== '=') this.fence.template = template;
       if (fm[2] === '=' && fm[3] !== 'html') {
         this.diag('error', 'raw-format', `raw fence must be \`\`\`=html, not =${fm[3]}`, L, lead + 1);

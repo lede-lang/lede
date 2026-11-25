@@ -1068,3 +1068,49 @@ SKILL.md now lists, uncounted until a session has an API key.
   allows. Under `--theme` a page's `@accent` is ignored with W `theme-override`.
 
 Gate: D67 step 1 has not reported, so, as with D78 and D79, the PR is a draft and its merge timing is the owner's call.
+
+## D84. Code fences are highlighted at build time by an in-repo scanner, and `lines` numbers them
+RFC #35. Code review and "understand a topic in code" are three of the article use cases, and a fence was a monospace block with a
+language label and no colour, so a PR-review page read as a grey wall. A fence whose language is one of 24 names (`ts`, `js`, `tsx`,
+`jsx`, `json`, `yaml`, `toml`, `sh`, `bash`, `py`, `go`, `rs`, `java`, `kt`, `swift`, `c`, `cpp`, `cs`, `rb`, `sql`, `html`, `css`,
+`diff`, `lede`) is now cut into tokens when the page is built and written as `<span class="tk-K">` runs inside the same `<pre>` and
+`<code>`, K one of `kw`, `str`, `num`, `cm`, `fn`, `ty`, `op`, `pn`, `add`, `del`, `hd`; ```` ```lang lines ```` numbers the lines of
+any fence with CSS counters, each line a `<span class="ln">`, so the numbers are never in the text or in a copied selection. Any
+other language, or none, is drawn as before. The scanner is `packages/render-html/src/highlight.ts`: one rule table per language
+family, a line reader for `diff` and for `lede`, no dependency. The span classes and the `ln` line are the stable surface (spec §7);
+the scanner behind them can be swapped for full grammars later without changing a page.
+
+What holds it. (1) Text: every character goes through the escaper once and in order, and tests assert that the text of every
+fence equals its source for each of the 127 corpus strings in every listed language, plain and numbered, for generated text, and for
+every fence of every tracked page read as every language; in Chromium the `textContent`, `innerText` and a copied selection are the
+source too. (2) Markup: the security corpus (D49) gains 25 contexts, one per language and one for `lines`, and its audit now
+refuses, inside any code block, any element but `<code>` and a span whose only attribute is one class from the list, with must-fail
+self-tests. (3) Colour: seven new tokens, `--tk-kw`, `--tk-str`, `--tk-num`, `--tk-cm`, `--tk-fn`, `--tk-ty`, `--tk-op`, light and
+dark, in `core` beside the palette table; a `core` test holds each to 4.5:1 on the page and card of all five palettes (the lowest is
+5.14:1), and `--theme` holds them to the file surfaces as it does the status colours (W `theme-adjusted`). Punctuation is `--fg2`;
+an added or removed diff line is `--good` or `--bad` on its own tint across the whole line, pairs the same test and D80 hold to 4.5:1,
+and its sign sits in a two-character gutter. (4) Bytes: the declarations and rules are written only into a page that has a
+highlighted or numbered fence, as the controls, editors and decision rules are, so of the 889 tracked pages 871 are byte-identical in
+the plain, fragment and artifact modes and the 18 that change are exactly those with a listed fence; all 889 parse to the same AST.
+A changed page gains 1,710 bytes of stylesheet once and 1,446 bytes of markup a fence on average over those 46 fences. (5) Time:
+every rule matches in one pass, and a test cuts 200,000 characters of the worst input for each rule in well under a second.
+
+Choices made here, each open to the owner. The list is matched as written: `python`, `typescript`, `shell` and upper case are not
+in it and stay plain (3 tracked fences say `python`). Keys, attribute names and CSS properties are `ty`; a TOML table and a Lede
+heading are `hd`, drawn in the function colour at weight 600, so `hd` needs no eighth token. `lines` needs a language before it
+(```` ``` lines ```` keeps its old reading, a fence whose language is `lines`), is not read after `=html`, and does nothing on a
+`template` fence, which the shell runtime fills by `textContent` and is therefore never highlighted either. Numbered and diff
+blocks make `<code>` a block box, so they are given the line height a plain fence gets from its `<pre>`. On phones and in print a
+numbered line wraps with a hanging indent beside its number. The model reference does not change (D55): the list and `lines` are
+two lines in `skill/lede/reference/pages.md` (D72), where the planned `at` line notes will anchor on the same gutter; the file is
+not counted (no API key in this session), so the 40-token allowance of the RFC is an estimate, and no probe round was run.
+
+Rejected: shiki and highlight.js (grammars plus a WASM engine, or 100 KB plus languages, and markup from grammars the corpus cannot
+audit; the page carries the result, not the library); highlighting in a script (D10); aliases and case folding at launch; a `nums`
+attribute or a `data-line` per line (the counter needs neither); block-level line elements (in Chromium a block line with its break
+inside doubles the break in `innerText`); declaring the seven tokens on every page (it would move every page for a feature most do
+not use); letting a tokens file name the syntax colours (no request, and seven more keys to validate).
+
+Gates: the RFC asked to land after D67 step 1 and after the owner compares article page 03 before and after; both were waived for
+the branch this was built on, so the comparison (85,790 to 91,379 bytes, six fences) is still owed to the owner before a release.
+The number D84 is one past the highest in this file; the internal file and open branches were not readable from that branch.
