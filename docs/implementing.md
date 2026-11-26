@@ -32,7 +32,9 @@ node conformance/runner.ts --cmd "./my-lede" --filter errors/ # a subset
 node conformance/runner.ts --cmd "./my-lede" --json > result.json   # machine-readable, for a badge
 ```
 
-Other options: `--timeout MS` per case (default 20000). The exit status is non-zero unless every case passes.
+Other options: `--timeout MS` per case (default 20000), and `--jobs N` to run N cases at once (default 1; use it only
+when your command can run several times side by side). Results print in case order either way. The exit status is
+non-zero unless every case passes.
 The command runs under `/bin/sh` with the file path single-quoted, so on Windows run it from WSL or another POSIX shell. A timeout
 stops that shell; a process your command starts in the background is not stopped with it.
 The reference CLI scores 100% (`--cmd "node packages/cli/src/cli.ts"`).

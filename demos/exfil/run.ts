@@ -6,6 +6,7 @@ import { createServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { fileURLToPath } from 'node:url';
 import { chromium, resolveChrome } from '../../bench/src/shot.ts';
+import { mapPool, POOL } from '../../bench/src/pool.ts';
 
 export const SECRET = 'sk-demo-NOT-A-REAL-SECRET';
 const HOST = 'attacker.example';
@@ -154,18 +155,14 @@ export async function runDemo(exe: string): Promise<Result[]> {
   await new Promise<void>((ok) => server.listen(0, '127.0.0.1', ok));
   const origin = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
   const browser = await chromium.launch({ executablePath: exe, args: ['--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1'] });
-  const results: Result[] = [];
   try {
-    for (const [i, c] of CASES.entries()) {
-      pages.set(`/${i}`, page(c));
-      // oxlint-disable-next-line eslint/no-await-in-loop -- one case at a time keeps the counts per page
-      results.push(await runCase(browser, c, `${origin}/${i}`));
-    }
+    for (const [i, c] of CASES.entries()) pages.set(`/${i}`, page(c));
+    // Each case counts requests in its own context, so the cases run side by side.
+    return await mapPool(CASES, POOL, (c, i) => runCase(browser, c, `${origin}/${i}`));
   } finally {
     await browser.close();
     server.close();
   }
-  return results;
 }
 
 export const expected = (): Record<string, boolean> => JSON.parse(readFileSync(`${dir}expected.json`, 'utf8')) as Record<string, boolean>;
