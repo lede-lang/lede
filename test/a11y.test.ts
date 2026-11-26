@@ -10,6 +10,7 @@ import { join, sep } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { compile } from '@lede-lang/html';
+import { mapPool } from '../bench/src/pool.ts';
 import { chromium, resolveChrome } from '../bench/src/shot.ts';
 
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
@@ -102,18 +103,21 @@ test(
       async function audit([width, scheme]: (typeof SETTINGS)[number]): Promise<Run[]> {
         // bypassCSP: pages ship default-src 'none', and the harness must still inject axe-core (bench/src/layout-check.ts does the same).
         const ctx = await browser.newContext({ viewport: { width, height: 900 }, colorScheme: scheme, bypassCSP: true });
-        const page = await ctx.newPage();
-        const out: Run[] = [];
-        for (const p of pages) {
-          await page.goto(pathToFileURL(p.file).href, { waitUntil: 'load' });
-          await page.addScriptTag({ path: AXE });
-          const run = await page.evaluate<Omit<Run, 'best'>>(RUN);
-          out.push({ ...run, best: best ? await page.evaluate<Run['best']>(RUN_BEST) : [] });
+        try {
+          const page = await ctx.newPage();
+          const out: Run[] = [];
+          for (const p of pages) {
+            await page.goto(pathToFileURL(p.file).href, { waitUntil: 'load' });
+            await page.addScriptTag({ path: AXE });
+            const run = await page.evaluate<Omit<Run, 'best'>>(RUN);
+            out.push({ ...run, best: best ? await page.evaluate<Run['best']>(RUN_BEST) : [] });
+          }
+          return out;
+        } finally {
+          await ctx.close();
         }
-        await ctx.close();
-        return out;
       }
-      const results = await Promise.all(SETTINGS.map(audit));
+      const results = await mapPool(SETTINGS, SETTINGS.length, audit);
 
       const found: string[] = [];
       const ids: { id: string; n: number }[] = [];

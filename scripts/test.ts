@@ -1,5 +1,6 @@
 // `pnpm test`: runs the test files under node --test. `--browser` keeps only the files with a browser check, `--no-browser` only the
-// rest, so CI can run the second set without installing Chromium. Any other argument goes to node --test.
+// rest, so CI can run the second set without installing Chromium. Any other argument goes to node --test ahead of the
+// files, so a file named there is added to the run (CI adds test/a11y.test.ts); to run one file alone, use node --test.
 // A file is a browser file when it imports what finds or drives Chromium (chrome.ts, bench/src/shot.ts, playwright-core, or a harness
 // built on them); a file with both kinds of check goes with the browser files whole. A browser file this misses still fails loudly in
 // the no-browser CI job: with CI set and no Chromium, a browser check fails instead of skipping.
@@ -16,7 +17,7 @@ const SINGLE = [
   'test/runtime-hash-note.test.ts',
   'test/skill-zip.test.ts',
 ];
-const BROWSER = /from '[^']*(?:\/chrome\.ts|\/shot\.ts|playwright-core|\/layout-check\.ts|\/exfil\/run\.ts)'/;
+const BROWSER = /(?:from |import\()['"][^'"]*(?:\/chrome\.ts|\/shot\.ts|playwright-core|\/layout-check\.ts|\/exfil\/run\.ts)['"]/;
 
 function testFiles(only?: 'browser' | 'no-browser'): string[] {
   const all = [

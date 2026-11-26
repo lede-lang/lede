@@ -33,7 +33,7 @@ async function run(cmd: string, args: string, file: string, timeout: number): Pr
   // Exit codes are ignored, so a non-zero exit is not a failure here; only a timeout or a command that cannot start is.
   const r = await new Promise<{ status: number; stdout: string; stderr: string }>((ok, fail) => {
     exec(`${cmd} ${args} ${quote(file)}`, { encoding: 'utf8', timeout, maxBuffer: 64 * 1024 * 1024 }, (err, stdout, stderr) => {
-      if (err?.killed) fail(new Error(`timed out after ${timeout} ms`));
+      if (err?.killed && (err.code as unknown) !== 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER') fail(new Error(`timed out after ${timeout} ms`));
       else if (err && typeof err.code !== 'number') fail(err);
       else ok({ status: typeof err?.code === 'number' ? err.code : 0, stdout, stderr });
     });

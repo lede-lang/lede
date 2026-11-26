@@ -29,7 +29,7 @@ node conformance/runner.ts --cmd "node packages/cli/src/cli.ts"   # the conforma
 pnpm bench                                          # the writer-round replication kit (bench/REPLICATE.md); needs a key and a --cap to send anything
 node scripts/build-pages.ts [out-dir]               # every shipped example plus an index into _site/; .github/workflows/pages.yml publishes it to GitHub Pages from main
 node scripts/gen-runtime.ts                         # after editing packages/render-html/src/shell-runtime.js: rewrites shell-runtime.ts and the hash file (--check fails when stale)
-LEDE_REQUIRE_CHROME=1 pnpm test                     # make every browser check (question words, editor words, shell, layout, chart, diagram and block batteries) fail, not skip, without Chromium (CI sets CI, which does the same, and points CHROME at the Chromium it installs)
+LEDE_REQUIRE_CHROME=1 pnpm test                     # make every browser check (question words, editor words, shell, layout, chart, diagram and block batteries) fail, not skip, without Chromium (CI sets CI, which does the same; its `a11y` job caches and installs Chromium, which the checks find in the Playwright cache)
 pnpm lede build page.lede -o page.html   # also: check [--json] [--fix], watch, ast
 ```
 

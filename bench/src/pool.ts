@@ -10,12 +10,22 @@ export const POOL = Math.max(2, Math.ceil(availableParallelism() / 2));
 export async function mapPool<T, R>(items: readonly T[], limit: number, fn: (item: T, i: number) => Promise<R>): Promise<R[]> {
   const out: R[] = [];
   let next = 0;
+  let failed = false;
   const worker = async (): Promise<void> => {
-    while (next < items.length) {
+    while (!failed && next < items.length) {
       const i = next++;
-      out[i] = await fn(items[i], i);
+      try {
+        out[i] = await fn(items[i], i);
+      } catch (e) {
+        failed = true;
+        throw e;
+      }
     }
   };
-  await Promise.all(Array.from({ length: Math.max(1, Math.min(limit, items.length)) }, worker));
+  // After a failure no worker takes a new item, and the call rejects only once every worker has stopped, so a caller's cleanup never
+  // runs under a call still in flight.
+  const settled = await Promise.allSettled(Array.from({ length: Math.max(1, Math.min(limit, items.length)) }, worker));
+  const bad = settled.find((s) => s.status === 'rejected');
+  if (bad) throw bad.reason;
   return out;
 }
