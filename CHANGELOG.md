@@ -1,5 +1,10 @@
 # Changelog
 
+## <small>0.2.14 (2026-11-26)</small>
+
+* test: let a pool stop cleanly after a failure; review fixes ([1756cc9](https://github.com/lede-lang/lede/commit/1756cc9))
+* test: run browser checks side by side and split CI into a no-browser and a browser job ([1756cc9](https://github.com/lede-lang/lede/commit/1756cc9))
+
 ## <small>0.2.13 (2026-11-25)</small>
 
 * docs(pages): add a sitemap; point the agent-written pages at ledelang.dev as canonical ([caa5dc4](https://github.com/lede-lang/lede/commit/caa5dc4))
