@@ -40,17 +40,13 @@ jobs:
       - run: pnpm lint
       - run: pnpm format:check
       - run: pnpm check:examples
-      # Every browser check (the question words, the editor words, the shell and the layout, chart, diagram and block batteries) fails, not
-      # skips, when `CI` is set (internal spec, lede-lang/meta); they find this Chromium through CHROME.
-      - name: Install Chromium for the browser checks
-        run: |
-          pnpm --filter ./bench exec playwright-core install --with-deps chromium
-          echo "CHROME=$(pnpm --filter ./bench exec node -e "import('playwright-core').then(m=>console.log(m.chromium.executablePath()))")" >> "$GITHUB_ENV"
-      - run: pnpm test
+      # The browser checks run in the `a11y` job, so this job installs no Chromium.
+      - run: pnpm test:unit
       - run: pnpm test:pack
 
-  # The accessibility gate (internal spec, lede-lang/meta): every shipped page through axe-core at four settings. A separate job so it runs
-  # beside `test` and needs no commitlint history. LEDE_REQUIRE_CHROME makes a missing Chromium a failure, not a skip.
+  # The browser checks: every test file that drives Chromium (scripts/test.ts picks them), then the accessibility gate (internal spec,
+  # lede-lang/meta), every shipped page through axe-core at four settings. Beside `test`, so the two halves run at once; it needs no
+  # commitlint history. CI (and LEDE_REQUIRE_CHROME for the gate) makes a missing Chromium a failure, not a skip.
   a11y:
     # Pinned: Playwright's Chromium install does not support the newest ubuntu-latest image yet.
     runs-on: ubuntu-24.04
@@ -67,8 +63,19 @@ jobs:
           node-version: 22.18
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      # The gate finds this install in the Playwright cache (bench/src/shot.ts), so CHROME is not set.
+      # The browser download is cached on bench/package.json, which pins playwright-core and so the build; the system libraries it
+      # needs are installed on every run. The checks find it in the Playwright cache (bench/src/shot.ts), so CHROME is not set.
+      - name: Cache Chromium
+        id: chromium
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ~/.cache/ms-playwright
+          key: chromium-${{ runner.os }}-${{ hashFiles('bench/package.json') }}
       - name: Install Chromium
-        run: pnpm --filter ./bench exec playwright-core install --with-deps chromium
-      - name: Accessibility gate
-        run: LEDE_REQUIRE_CHROME=1 node --test test/a11y.test.ts
+        if: steps.chromium.outputs.cache-hit != 'true'
+        run: pnpm --filter ./bench exec playwright-core install chromium
+      - name: Install Chromium's system libraries
+        run: pnpm --filter ./bench exec playwright-core install-deps chromium
+      # The gate is not in `pnpm test`; naming it here runs it beside the browser files.
+      - name: Browser checks and the accessibility gate
+        run: LEDE_REQUIRE_CHROME=1 pnpm test:browser test/a11y.test.ts

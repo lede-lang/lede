@@ -11,6 +11,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import Anthropic from '@anthropic-ai/sdk';
 import { countTokens, overheadOf } from './count-tokens.ts';
+import { mapPool } from './pool.ts';
 import { recountFiles, writerOf } from './rounds.ts';
 
 const ROOT = join(import.meta.dirname, '..');
@@ -74,21 +75,6 @@ async function recount(r: Row) {
   };
 }
 
-/** Maps `items` with at most `size` calls in flight; a slow or retried call holds up only its own worker. */
-async function pooled<T, R>(items: T[], size: number, fn: (item: T) => Promise<R>): Promise<R[]> {
-  const results: R[] = [];
-  let next = 0;
-  await Promise.all(
-    Array.from({ length: size }, async () => {
-      while (next < items.length) {
-        const i = next++;
-        results[i] = await fn(items[i]);
-      }
-    }),
-  );
-  return results;
-}
-
 /** The reference each writer reads, counted with that writer's tokenizer (the cap on the model spec is in these units, D55; it was set on the legacy tokenizer, D35). */
 const countReferences = async () =>
   Object.fromEntries(
@@ -103,7 +89,7 @@ const countReferences = async () =>
 
 // The reference counts need only the overhead, so they run alongside the rows.
 const referencePromise = countReferences();
-const out = await pooled(rows, 8, recount);
+const out = await mapPool(rows, 8, (r) => recount(r));
 
 const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length;
 const summary = Object.fromEntries(

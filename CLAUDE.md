@@ -12,14 +12,15 @@ Node 22.18+ runs the TypeScript sources directly in development (imports use `.t
 
 ```sh
 pnpm install
-pnpm test                       # node --test over packages/*/test and conformance/run.test.ts (~100 s; the render tests launch Chromium if found)
+pnpm test                       # scripts/test.ts: node --test over every test file (~130 s; the browser checks launch Chromium if found)
+pnpm test:unit                  # only the files with no browser check (~65 s); `pnpm test:browser` runs the rest. CI runs them in separate jobs
 pnpm typecheck                  # tsc --noEmit over src, tests, conformance, bench/src, scripts and test
 pnpm lint                       # oxlint, type-aware; warnings fail it too. Two rules are off on purpose (config): unsafe-type-assertion, consistent-function-scoping
                                 # an intentional `await` in a loop gets an `oxlint-disable-next-line ... -- reason` comment
 pnpm format:check               # oxfmt, TypeScript only, 140 columns; `pnpm format` rewrites
 pnpm check:examples             # every shipped .lede example must pass `lede check`
 pnpm test:pack                  # build, `pnpm pack` the three packages, npm-install them in a temp dir, run the bin and imports (~20 s, needs the npm registry)
-                                # CI runs typecheck, lint, format:check, check:examples, test, then test:pack
+                                # CI job `test`: typecheck, lint, format:check, check:examples, test:unit, test:pack; job `a11y`: test:browser with the a11y gate beside it
 node --test packages/core/test/fix.test.ts          # one test file
 node --test --test-name-pattern="<part of the test name>" packages/core/test/grammar.test.ts   # one test by name
 UPDATE=1 node --test conformance/run.test.ts        # regenerate expected AST/diagnostics after an intentional parser change; review the JSON diff

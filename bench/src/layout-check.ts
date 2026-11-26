@@ -2,12 +2,13 @@
 // 1280px (light) and 400px (dark) in Chromium, and measures what string tests cannot.
 //   node bench/src/layout-check.ts [fixture ...]     prints findings, exits 1 if any
 // Findings carry the requirement they belong to (the renderer-parity requirements).
-import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdtempSync, readdirSync, rmSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { chromium, type Browser } from 'playwright-core';
 import { compile } from '../../packages/render-html/src/index.ts';
+import { mapPool, POOL } from './pool.ts';
 import { resolveChrome } from './shot.ts';
 
 const require = createRequire(import.meta.url);
@@ -105,6 +106,14 @@ async function axeViolations(page: import('playwright-core').Page): Promise<numb
   );
 }
 
+/** Width, scheme, and whether the page is measured (the other two settings check only sideways scroll and contrast). */
+const SETTINGS = [
+  [1280, 'light', true],
+  [400, 'dark', true],
+  [1280, 'dark', false],
+  [400, 'light', false],
+] as const;
+
 /** `source` reads a page's Lede text by name; the default reads examples/parity/<name>.lede. */
 export async function checkFixtures(
   names: string[] = fixtures(),
@@ -113,27 +122,22 @@ export async function checkFixtures(
 ): Promise<Finding[]> {
   const exe = resolveChrome();
   if (!exe) throw new Error('no Chromium: set CHROME');
-  const own = !browser;
-  browser ??= await chromium.launch({ executablePath: exe });
+  const shared = browser ?? (await chromium.launch({ executablePath: exe }));
   const dir = mkdtempSync(join(tmpdir(), 'lede-layout-'));
-  const findings: Finding[] = [];
+  const file = (name: string) => join(dir, `${name}.html`);
+  // Every fixture at every setting is its own context, so they run side by side; findings keep fixture-then-setting order.
+  const jobs = names.flatMap((name) => SETTINGS.map((setting) => ({ name, setting })));
   try {
-    for (const name of names) {
-      const { html } = await compile(source(name));
-      const file = join(dir, `${name}.html`);
-      writeFileSync(file, html);
-      for (const [width, scheme, measure] of [
-        [1280, 'light', true],
-        [400, 'dark', true],
-        [1280, 'dark', false],
-        [400, 'light', false],
-      ] as const) {
-        // bypassCSP: pages ship default-src 'none' (D20); the harness must still inject axe-core.
-        const ctx = await browser.newContext({ viewport: { width, height: 900 }, colorScheme: scheme, bypassCSP: true });
+    for (const name of names) writeFileSync(file(name), (await compile(source(name))).html);
+    const found = await mapPool(jobs, POOL, async ({ name, setting: [width, scheme, measure] }) => {
+      const out: Finding[] = [];
+      const add = (req: string, msg: string) => out.push({ fixture: name, width, scheme, req, msg });
+      // bypassCSP: pages ship default-src 'none' (D20); the harness must still inject axe-core.
+      const ctx = await shared.newContext({ viewport: { width, height: 900 }, colorScheme: scheme, bypassCSP: true });
+      try {
         const page = await ctx.newPage();
-        await page.goto(`file://${file}`, { waitUntil: 'load' });
+        await page.goto(`file://${file(name)}`, { waitUntil: 'load' });
         await page.waitForTimeout(50);
-        const add = (req: string, msg: string) => findings.push({ fixture: name, width, scheme, req, msg });
         if (measure) for (const f of await page.evaluate<{ req: string; msg: string }[]>(MEASURE)) add(f.req, f.msg);
         else {
           const sw = await page.evaluate<number>('document.scrollingElement.scrollWidth - innerWidth');
@@ -141,14 +145,16 @@ export async function checkFixtures(
         }
         const bad = await axeViolations(page);
         if (bad) add('8.3', `${bad} contrast violation${bad === 1 ? '' : 's'}`);
+      } finally {
         await ctx.close();
       }
-    }
+      return out;
+    });
+    return found.flat();
   } finally {
-    if (own) await browser.close();
-    mkdirSync(dir, { recursive: true });
+    if (!browser) await shared.close();
+    rmSync(dir, { recursive: true, force: true });
   }
-  return findings;
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

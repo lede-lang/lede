@@ -19,7 +19,8 @@ Needs Node 22.18+ (the TypeScript sources run directly) and pnpm.
 
 ```sh
 pnpm install
-pnpm test               # about 100 s; the render tests launch Chromium if they find one
+pnpm test               # about 130 s; the browser checks launch Chromium if they find one
+pnpm test:unit          # about 65 s; only the files that need no browser (`pnpm test:browser` runs the rest)
 pnpm typecheck && pnpm lint && pnpm format:check && pnpm check:examples
 pnpm test:pack          # packs the three npm packages and runs them from a temp directory
 ```
